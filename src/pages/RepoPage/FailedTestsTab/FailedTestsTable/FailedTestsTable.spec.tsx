@@ -11,6 +11,8 @@ import { setupServer } from 'msw/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
+
 import FailedTestsTable from './FailedTestsTable'
 
 import { OrderingDirection, OrderingParameter } from '../hooks'
@@ -48,12 +50,14 @@ const wrapper =
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/tests" exact>
-          {children}
-        </Route>
-        <Route path="/:provider/:owner/:repo/tests/:branch" exact>
-          {children}
-        </Route>
+        <RepoBreadcrumbProvider>
+          <Route path="/:provider/:owner/:repo/tests" exact>
+            {children}
+          </Route>
+          <Route path="/:provider/:owner/:repo/tests/:branch" exact>
+            {children}
+          </Route>
+        </RepoBreadcrumbProvider>
       </MemoryRouter>
     </QueryClientProvider>
   )
