@@ -1,6 +1,6 @@
 import { ComparisonReturnType } from 'shared/utils/comparison'
 import A from 'ui/A'
-import Banner from 'ui/Banner'
+import { Alert } from 'ui/Alert'
 
 import { TBundleAnalysisComparisonResult } from '../../hooks'
 
@@ -12,20 +12,21 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
   if (errorType === ComparisonReturnType.MISSING_BASE_COMMIT) {
     return (
       <>
-        {' '}
-        <h1 className="font-semibold">Missing Base Commit</h1>
-        <div className="flex gap-1">
-          <span>
-            Unable to compare commit because no base commit was found.
-          </span>
-          <A
-            hook="compare errors"
-            to={{ pageName: 'missingComparisonCommit' }}
-            isExternal={true}
-          >
-            Learn more here
-          </A>
-        </div>
+        <Alert.Title>Missing Base Commit</Alert.Title>
+        <Alert.Description>
+          <div className="flex flex-wrap gap-1">
+            <span>
+              Unable to compare commit because no base commit was found.
+            </span>
+            <A
+              hook="compare errors"
+              to={{ pageName: 'missingComparisonCommit' }}
+              isExternal={true}
+            >
+              Learn more here
+            </A>
+          </div>
+        </Alert.Description>
       </>
     )
   }
@@ -33,21 +34,22 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
   if (errorType === ComparisonReturnType.MISSING_HEAD_COMMIT) {
     return (
       <>
-        {' '}
-        <h1 className="font-semibold">Missing Head Commit</h1>
-        <div className="flex gap-1">
-          <span>
-            Unable to compare commits because the head commit of the commit is
-            not found.
-          </span>
-          <A
-            hook="compare errors"
-            to={{ pageName: 'missingComparisonCommit' }}
-            isExternal={true}
-          >
-            Learn more here
-          </A>
-        </div>
+        <Alert.Title>Missing Head Commit</Alert.Title>
+        <Alert.Description>
+          <div className="flex flex-wrap gap-1">
+            <span>
+              Unable to compare commits because the head commit of the commit is
+              not found.
+            </span>
+            <A
+              hook="compare errors"
+              to={{ pageName: 'missingComparisonCommit' }}
+              isExternal={true}
+            >
+              Learn more here
+            </A>
+          </div>
+        </Alert.Description>
       </>
     )
   }
@@ -55,21 +57,22 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
   if (errorType === ComparisonReturnType.MISSING_HEAD_REPORT) {
     return (
       <>
-        {' '}
-        <h1 className="font-semibold">Missing Head Report</h1>
-        <div className="flex gap-1">
-          <span>
-            Unable to compare commits because the head of the commit request did
-            not upload a bundle analysis report.
-          </span>
-          <A
-            hook="compare errors"
-            to={{ pageName: 'missingComparisonReport' }}
-            isExternal={true}
-          >
-            Learn more here
-          </A>
-        </div>
+        <Alert.Title>Missing Head Report</Alert.Title>
+        <Alert.Description>
+          <div className="flex flex-wrap gap-1">
+            <span>
+              Unable to compare commits because the head of the commit request
+              did not upload a bundle analysis report.
+            </span>
+            <A
+              hook="compare errors"
+              to={{ pageName: 'missingComparisonReport' }}
+              isExternal={true}
+            >
+              Learn more here
+            </A>
+          </div>
+        </Alert.Description>
       </>
     )
   }
@@ -77,21 +80,22 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
   if (errorType === 'MissingComparison') {
     return (
       <>
-        {' '}
-        <h1 className="font-semibold">Missing Comparison</h1>
-        <div className="flex gap-1">
-          <span>
-            There was an error computing the comparison for the head and base
-            commits.
-          </span>
-          <A
-            hook="compare errors"
-            to={{ pageName: 'missingComparisonReport' }}
-            isExternal={true}
-          >
-            Learn more here
-          </A>
-        </div>
+        <Alert.Title>Missing Comparison</Alert.Title>
+        <Alert.Description>
+          <div className="flex flex-wrap gap-1">
+            <span>
+              There was an error computing the comparison for the head and base
+              commits.
+            </span>
+            <A
+              hook="compare errors"
+              to={{ pageName: 'missingComparisonReport' }}
+              isExternal={true}
+            >
+              Learn more here
+            </A>
+          </div>
+        </Alert.Description>
       </>
     )
   }
@@ -99,21 +103,22 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
   if (errorType === ComparisonReturnType.MISSING_BASE_REPORT) {
     return (
       <>
-        {' '}
-        <h1 className="font-semibold">Missing Base Report</h1>
-        <div className="flex gap-1">
-          <span>
-            Unable to compare commit because the commit did not upload a bundle
-            analysis report.
-          </span>
-          <A
-            hook="compare errors"
-            to={{ pageName: 'missingComparisonReport' }}
-            isExternal={true}
-          >
-            Learn more here
-          </A>
-        </div>
+        <Alert.Title>Missing Base Report</Alert.Title>
+        <Alert.Description>
+          <div className="flex flex-wrap gap-1">
+            <span>
+              Unable to compare commit because the commit did not upload a
+              bundle analysis report.
+            </span>
+            <A
+              hook="compare errors"
+              to={{ pageName: 'missingComparisonReport' }}
+              isExternal={true}
+            >
+              Learn more here
+            </A>
+          </div>
+        </Alert.Description>
       </>
     )
   }
@@ -123,11 +128,9 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
 
 const ErrorBanner: React.FC<Props> = ({ errorType }) => {
   return (
-    <Banner variant="warning">
-      <div className="flex flex-col gap-6 text-sm">
-        <BannerContent errorType={errorType} />
-      </div>
-    </Banner>
+    <Alert variant="warning">
+      <BannerContent errorType={errorType} />
+    </Alert>
   )
 }
 
