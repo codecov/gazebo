@@ -10,7 +10,7 @@ function BannerContent({ errorType }) {
       <>
         <Alert.Title>Missing Base Commit</Alert.Title>
         <Alert.Description>
-          <div className="flex flex-wrap gap-1">
+          <span className="flex flex-wrap gap-1">
             <span>
               Unable to compare commits because the base commit of the pull
               request is not found.
@@ -22,7 +22,7 @@ function BannerContent({ errorType }) {
             >
               Learn more here
             </A>
-          </div>
+          </span>
         </Alert.Description>
       </>
     )
@@ -33,7 +33,7 @@ function BannerContent({ errorType }) {
       <>
         <Alert.Title>Missing Head Commit</Alert.Title>
         <Alert.Description>
-          <div className="flex flex-wrap gap-1">
+          <span className="flex flex-wrap gap-1">
             <span>
               Unable to compare commits because the head commit of the pull
               request is not found.
@@ -45,7 +45,7 @@ function BannerContent({ errorType }) {
             >
               Learn more here
             </A>
-          </div>
+          </span>
         </Alert.Description>
       </>
     )
@@ -56,7 +56,7 @@ function BannerContent({ errorType }) {
       <>
         <Alert.Title>Missing Base Report</Alert.Title>
         <Alert.Description>
-          <div className="flex flex-wrap gap-1">
+          <span className="flex flex-wrap gap-1">
             <span>
               Unable to compare commits because the base of the pull request did
               not upload a coverage report.
@@ -68,7 +68,7 @@ function BannerContent({ errorType }) {
             >
               Learn more here
             </A>
-          </div>
+          </span>
         </Alert.Description>
       </>
     )
@@ -79,7 +79,7 @@ function BannerContent({ errorType }) {
       <>
         <Alert.Title>Missing Head Report</Alert.Title>
         <Alert.Description>
-          <div className="flex flex-wrap gap-1">
+          <span className="flex flex-wrap gap-1">
             <span>
               Unable to compare commits because the head of the pull request did
               not upload a coverage report.
@@ -91,7 +91,7 @@ function BannerContent({ errorType }) {
             >
               Learn more here
             </A>
-          </div>
+          </span>
         </Alert.Description>
       </>
     )
@@ -102,7 +102,7 @@ function BannerContent({ errorType }) {
       <>
         <Alert.Title>Missing Comparison</Alert.Title>
         <Alert.Description>
-          <div className="flex flex-wrap gap-1">
+          <span className="flex flex-wrap gap-1">
             <span>
               There was an error computing the comparison for the head and base
               commit.
@@ -114,7 +114,7 @@ function BannerContent({ errorType }) {
             >
               Learn more here
             </A>
-          </div>
+          </span>
         </Alert.Description>
       </>
     )

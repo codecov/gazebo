@@ -14,7 +14,7 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
       <>
         <Alert.Title>Missing Base Commit</Alert.Title>
         <Alert.Description>
-          <div className="flex flex-wrap gap-1">
+          <span className="flex flex-wrap gap-1">
             <span>
               Unable to compare commit because no base commit was found.
             </span>
@@ -25,7 +25,7 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
             >
               Learn more here
             </A>
-          </div>
+          </span>
         </Alert.Description>
       </>
     )
@@ -36,10 +36,9 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
       <>
         <Alert.Title>Missing Head Commit</Alert.Title>
         <Alert.Description>
-          <div className="flex flex-wrap gap-1">
+          <span className="flex flex-wrap gap-1">
             <span>
-              Unable to compare commits because the head commit of the commit is
-              not found.
+              Unable to compare commits because the head commit is not found.
             </span>
             <A
               hook="compare errors"
@@ -48,7 +47,7 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
             >
               Learn more here
             </A>
-          </div>
+          </span>
         </Alert.Description>
       </>
     )
@@ -59,10 +58,10 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
       <>
         <Alert.Title>Missing Head Report</Alert.Title>
         <Alert.Description>
-          <div className="flex flex-wrap gap-1">
+          <span className="flex flex-wrap gap-1">
             <span>
-              Unable to compare commits because the head of the commit request
-              did not upload a bundle analysis report.
+              Unable to compare commits because the head commit did not upload a
+              bundle analysis report.
             </span>
             <A
               hook="compare errors"
@@ -71,7 +70,7 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
             >
               Learn more here
             </A>
-          </div>
+          </span>
         </Alert.Description>
       </>
     )
@@ -82,7 +81,7 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
       <>
         <Alert.Title>Missing Comparison</Alert.Title>
         <Alert.Description>
-          <div className="flex flex-wrap gap-1">
+          <span className="flex flex-wrap gap-1">
             <span>
               There was an error computing the comparison for the head and base
               commits.
@@ -94,7 +93,7 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
             >
               Learn more here
             </A>
-          </div>
+          </span>
         </Alert.Description>
       </>
     )
@@ -105,7 +104,7 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
       <>
         <Alert.Title>Missing Base Report</Alert.Title>
         <Alert.Description>
-          <div className="flex flex-wrap gap-1">
+          <span className="flex flex-wrap gap-1">
             <span>
               Unable to compare commit because the commit did not upload a
               bundle analysis report.
@@ -117,7 +116,7 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
             >
               Learn more here
             </A>
-          </div>
+          </span>
         </Alert.Description>
       </>
     )
