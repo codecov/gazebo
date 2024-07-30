@@ -9,7 +9,6 @@ import {
 
 import { SentryRoute } from 'sentry'
 
-import testsFailedOnboarding from 'assets/svg/onboardingTests/testsFailedOnboarding.svg'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import { Card } from 'ui/Card'
@@ -91,15 +90,9 @@ function SetupOptionSelector() {
 
 function OnboardingWrapper({ usesCli }: { usesCli: boolean }) {
   return (
-    <div className="flex flex-col gap-6 pt-4 lg:w-3/5">
-      <img
-        src={testsFailedOnboarding.toString()}
-        alt="failed-tests-onboarding"
-        width="420px"
-        className="m-auto"
-      />
+    <div className="flex flex-col gap-4 pt-4 lg:w-3/5">
       <div>
-        <h1 className="text-2xl font-semibold">Test Analytics</h1>
+        <h1 className="text-lg font-semibold">Test Analytics</h1>
         <p className="mt-2 text-ds-gray-octonary">
           Test Analytics offers data on test run times, failure rates, and
           identifies flaky tests to help decrease the risk of deployment
