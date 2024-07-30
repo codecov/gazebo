@@ -145,7 +145,7 @@ export const BarChartStory: StoryObj = {
           tickLine={false}
           tickMargin={8}
           axisLine={false}
-          orientation="right"
+          orientation="left"
         />
         <ChartTooltip
           content={
@@ -266,7 +266,7 @@ export const DoubleBarChartStory: StoryObj = {
           tickLine={false}
           axisLine={false}
           tickMargin={8}
-          orientation="right"
+          orientation="left"
         />
         <ChartTooltip
           content={
