@@ -3,14 +3,12 @@ import { Redirect } from 'react-router-dom'
 
 import Footer from 'layouts/Footer'
 import Header from 'layouts/Header'
-import OldHeader from 'layouts/OldHeader'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
 import { useImpersonate } from 'services/impersonate'
 import { useTracking } from 'services/tracking'
-import { useFlags } from 'shared/featureFlags'
 import GlobalBanners from 'shared/GlobalBanners'
 import GlobalTopBanners from 'shared/GlobalTopBanners'
 import LoadingLogo from 'ui/LoadingLogo'
@@ -65,10 +63,6 @@ function BaseLayout({ children }) {
     useUserAccessGate()
   useTracking()
 
-  const { newHeader } = useFlags({
-    newHeader: false,
-  })
-
   // Pause rendering of a page till we know if the user is logged in or not
   if (isLoading) return <FullPageLoader />
 
@@ -79,7 +73,7 @@ function BaseLayout({ children }) {
           {isFullExperience ? (
             <>
               <GlobalTopBanners />
-              {newHeader ? <Header /> : <OldHeader />}
+              <Header />
             </>
           ) : (
             <Suspense fallback={null}>
