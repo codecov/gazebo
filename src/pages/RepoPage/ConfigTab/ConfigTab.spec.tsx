@@ -3,7 +3,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useOwner } from 'services/user'
 
-import SettingsTab from './SettingsTab'
+import ConfigTab from './ConfigTab'
 
 jest.mock('services/user')
 const mockedUseOwner = useOwner as jest.Mock
@@ -22,7 +22,7 @@ interface SetupArgs {
   isCurrentUserPartOfOrg?: boolean
 }
 
-describe('SettingsTab', () => {
+describe('ConfigTab', () => {
   function setup({ isCurrentUserPartOfOrg = true }: SetupArgs) {
     mockedUseOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
   }
@@ -30,7 +30,7 @@ describe('SettingsTab', () => {
   describe('Render for a repo', () => {
     it('renders the right links', async () => {
       setup({})
-      render(<SettingsTab />, { wrapper: wrapper() })
+      render(<ConfigTab />, { wrapper: wrapper() })
 
       expect(
         await screen.findByRole('link', { name: /General/ })
@@ -50,7 +50,7 @@ describe('SettingsTab', () => {
   describe('Render with an unknown path', () => {
     it('renders the right links', async () => {
       setup({})
-      render(<SettingsTab />, {
+      render(<ConfigTab />, {
         wrapper: wrapper('/gh/codecov/codecov-client/config/random'),
       })
 
@@ -72,7 +72,7 @@ describe('SettingsTab', () => {
   describe('Render with user not part of org', () => {
     it('renders 404', async () => {
       setup({ isCurrentUserPartOfOrg: false })
-      render(<SettingsTab />, { wrapper: wrapper() })
+      render(<ConfigTab />, { wrapper: wrapper() })
 
       expect(await screen.findByText('Error 404')).toBeInTheDocument()
     })

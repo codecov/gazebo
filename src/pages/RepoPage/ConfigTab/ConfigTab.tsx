@@ -25,7 +25,7 @@ interface URLParams {
   owner: string
 }
 
-function SettingsTab() {
+function ConfigTab() {
   const { owner } = useParams<URLParams>()
   const { data: currentOwner } = useOwner({ username: owner })
 
@@ -71,4 +71,4 @@ function SettingsTab() {
   )
 }
 
-export default SettingsTab
+export default ConfigTab

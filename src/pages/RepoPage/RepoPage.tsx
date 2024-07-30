@@ -20,7 +20,7 @@ const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./CoverageOnboarding'))
 const PullsTab = lazy(() => import('./PullsTab'))
-const SettingsTab = lazy(() => import('./SettingsTab'))
+const ConfigTab = lazy(() => import('./ConfigTab'))
 const FailedTestsTab = lazy(() => import('./FailedTestsTab'))
 
 const path = '/:provider/:owner/:repo'
@@ -156,7 +156,7 @@ function Routes({
           <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
         ) : null}
         <SentryRoute path={`${path}/config`}>
-          <SettingsTab />
+          <ConfigTab />
         </SentryRoute>
         {/* need to do these individual returns as the redirects won't work with a react fragment */}
         {!bundleAnalysisEnabled && jsOrTsPresent ? (
@@ -185,7 +185,7 @@ function Routes({
     return (
       <Switch>
         <SentryRoute path={`${path}/config`}>
-          <SettingsTab />
+          <ConfigTab />
         </SentryRoute>
         <SentryRoute path={[path, `${path}/bundles`]}>
           <DeactivatedRepo />
@@ -228,7 +228,7 @@ function Routes({
         </SentryRoute>
       ) : null}
       <SentryRoute path={`${path}/config`}>
-        <SettingsTab />
+        <ConfigTab />
       </SentryRoute>
       <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
       <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
