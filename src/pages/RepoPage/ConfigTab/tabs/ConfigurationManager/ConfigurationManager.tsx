@@ -26,8 +26,8 @@ function ConfigurationManager() {
   return (
     <div className="flex flex-col gap-6 lg:w-3/4">
       <CoverageConfiguration repoConfiguration={repoConfiguration} />
-      <TestAnalyticsConfiguration repoConfiguration={repoConfiguration} />
       <BundleAnalysisConfiguration repoConfiguration={repoConfiguration} />
+      <TestAnalyticsConfiguration repoConfiguration={repoConfiguration} />
       <IntegrationsList />
     </div>
   )
