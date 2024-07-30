@@ -488,6 +488,37 @@ describe('Chart', () => {
         })
       })
     })
+
+    describe('formatter', () => {
+      it('uses the formatter function', () => {
+        render(
+          <ChartContainer config={chartConfig} className="size-[400px]">
+            <ChartTooltipContent
+              indicator="dot"
+              formatter={() => "I'm a formatter"}
+              active={true}
+              payload={[
+                {
+                  stroke: 'var(--color-coverage)',
+                  dataKey: 'coverage',
+                  name: 'coverage',
+                  color: 'var(--color-coverage)',
+                  value: 45,
+                  payload: {
+                    month: '2024-03-01T04:00:00.000Z',
+                    coverage: 45,
+                  },
+                  hide: false,
+                },
+              ]}
+            />
+          </ChartContainer>
+        )
+
+        const formatted = screen.getByText("I'm a formatter")
+        expect(formatted).toBeInTheDocument()
+      })
+    })
   })
 
   describe('chart is not wrapped in a container', () => {
