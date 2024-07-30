@@ -90,7 +90,7 @@ function SetupOptionSelector() {
 
 function OnboardingWrapper({ usesCli }: { usesCli: boolean }) {
   return (
-    <div className="flex flex-col gap-4 pt-4 lg:w-3/5">
+    <div className="flex flex-col gap-4 pt-2 lg:w-3/5">
       <div>
         <h1 className="text-lg font-semibold">Test Analytics</h1>
         <p className="mt-2 text-ds-gray-octonary">
