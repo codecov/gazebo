@@ -21,14 +21,13 @@ const mockResponse = {
 
 const wrapper =
   () =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh']}>
-          <Route path="/:provider">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh']}>
+        <Route path="/:provider">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => server.listen())
 beforeEach(() => {

@@ -113,16 +113,15 @@ const queryClient = new QueryClient({
 
 const wrapper =
   (initialEntries = '/gh/codecov'): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner">
-            <Suspense fallback={null}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider/:owner">
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()
@@ -263,6 +262,40 @@ describe('PlanTypeOptions', () => {
         })
         expect(teamBtn).toBeInTheDocument()
         expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
+      })
+
+      describe('plan param is set to team', () => {
+        it('renders Team button as "selected"', async () => {
+          const { mockSetFormValue, mockSetSelectedPlan, planValue } = setup({
+            planValue: Plans.USERS_BASIC,
+            hasSentryPlans: false,
+            hasTeamPlans: true,
+          })
+
+          render(
+            <PlanTypeOptions
+              multipleTiers={true}
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper('/gh/codecov?plan=team'),
+            }
+          )
+
+          const proBtn = await screen.findByRole('button', {
+            name: 'Pro',
+          })
+          expect(proBtn).toBeInTheDocument()
+          expect(proBtn).not.toHaveClass('bg-ds-primary-base')
+
+          const teamBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(teamBtn).toBeInTheDocument()
+          expect(teamBtn).toHaveClass('bg-ds-primary-base')
+        })
       })
 
       describe('user clicks Team button', () => {

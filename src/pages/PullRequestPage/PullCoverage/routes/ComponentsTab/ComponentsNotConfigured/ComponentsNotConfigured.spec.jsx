@@ -6,12 +6,11 @@ import ComponentsNotConfigured from './ComponentsNotConfigured'
 
 const wrapper =
   (initialEntries = '/gh/codecov/gazebo/pull/123/components') =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+    </MemoryRouter>
+  )
 
 describe('ComponentsNotConfigured', () => {
   describe('when rendered', () => {

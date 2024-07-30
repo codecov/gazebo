@@ -40,14 +40,13 @@ afterAll(() => server.close())
 
 const wrapper =
   (initialEntries = ''): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider/:owner">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 describe('TeamPlanFeedbackBanner', () => {
   function setup() {

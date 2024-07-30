@@ -41,22 +41,21 @@ type WrapperClosure = (
 
 const wrapper: WrapperClosure =
   (initialEntries = ['/gh']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider">{children}</Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation.pathname = location.pathname
-              testLocation.search = location.search
-              return null
-            }}
-          />
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider">{children}</Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation.pathname = location.pathname
+            testLocation.search = location.search
+            return null
+          }}
+        />
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 const mockUser = {
   name: 'codecov',

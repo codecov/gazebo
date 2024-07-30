@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 
 import config from 'config'
 
+import { useImpersonate } from 'services/impersonate'
 import { useUser } from 'services/user'
 
 import AdminLink from './components/AdminLink'
@@ -12,29 +13,37 @@ import SeatDetails from './components/SeatDetails'
 import UserDropdown from './components/UserDropdown'
 
 function Header() {
+  const { isImpersonating } = useImpersonate()
   const { data: currentUser } = useUser()
 
   return (
-    <nav>
+    <header>
       {!currentUser ? <GuestHeader /> : null}
-      <div className="container flex h-14 min-h-14 w-full items-center">
+      {isImpersonating ? (
+        <div className="flex justify-center bg-ds-pink-tertiary">
+          <p className="text-white">Impersonating</p>
+        </div>
+      ) : null}
+      <nav className="container flex h-14 min-h-14 w-full items-center">
         <div className="flex-1">
           <Navigator currentUser={currentUser} />
         </div>
         {!currentUser ? null : (
           <div className="flex items-center justify-end gap-4">
             {config.IS_SELF_HOSTED ? (
-              <Suspense fallback={null}>
-                <SeatDetails />
-                <AdminLink />
-              </Suspense>
+              <div className="hidden items-center justify-end gap-4 md:flex">
+                <Suspense fallback={null}>
+                  <SeatDetails />
+                  <AdminLink />
+                </Suspense>
+              </div>
             ) : null}
             <HelpDropdown />
             <UserDropdown />
           </div>
         )}
-      </div>
-    </nav>
+      </nav>
+    </header>
   )
 }
 

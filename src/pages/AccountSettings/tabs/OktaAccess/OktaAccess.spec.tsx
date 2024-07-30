@@ -49,6 +49,7 @@ describe('OktaAccess', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              isUserOktaAuthenticated: true,
               account: {
                 oktaConfig: {
                   enabled: true,

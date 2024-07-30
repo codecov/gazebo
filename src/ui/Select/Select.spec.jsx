@@ -344,9 +344,8 @@ describe('Select', () => {
       const button = screen.getByText('Select')
       await user.click(button)
 
-      const searchField = await screen.findByPlaceholderText(
-        /Search for items/i
-      )
+      const searchField =
+        await screen.findByPlaceholderText(/Search for items/i)
       await user.type(searchField, 'any text here')
 
       await waitFor(() => expect(onSearch).toHaveBeenCalled())
@@ -371,9 +370,8 @@ describe('Select', () => {
         const button = screen.getByText('Select')
         await user.click(button)
 
-        const searchField = await screen.findByPlaceholderText(
-          /Search for items/i
-        )
+        const searchField =
+          await screen.findByPlaceholderText(/Search for items/i)
         await user.type(searchField, 'any text here')
 
         await waitFor(() => expect(onSearch).toHaveBeenCalled())

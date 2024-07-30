@@ -8,37 +8,36 @@ import { useNavLinks } from './useNavLinks'
 
 const wrapper =
   (location) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[location]} initialIndex={0}>
-        <Route path="/:provider">{children}</Route>
-        <Route path="/:provider/:owner">{children}</Route>
-        <Route path="/:provider/:owner/:repo">{children}</Route>
-        <Route path="/:provider/:owner/:repo/:id">{children}</Route>
-        <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
-        <Route path="/:provider/:owner/:repo/commit/:commit/file/:path">
-          {children}
-        </Route>
-        <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
-        <Route path="/:provider/:owner/:repo/pull/:pullId/commits">
-          {children}
-        </Route>
-        <Route path="/:provider/:owner/:repo/pull/:pullId/blob/:path+">
-          {children}
-        </Route>
-        <Route path="/:provider/:owner/:repo/pull/:pullId/tree/:path+">
-          {children}
-        </Route>
-        <Route path="/admin/:provider/access">{children}</Route>
-        <Route path="/admin/:provider/users">{children}</Route>
-        <Route path="/admin/:provider/:owner/access">{children}</Route>
-        <Route path="/admin/:provider/:owner/users">{children}</Route>
-        <Route path="/account/:provider/:owner">{children}</Route>
-        <Route path="/account/:provider/:owner/billing">{children}</Route>
-        <Route path="/:provider/:owner/:repo/bundles/:branch">{children}</Route>
-        <Route path="/:provider/:owner/:repo/bundles">{children}</Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[location]} initialIndex={0}>
+      <Route path="/:provider">{children}</Route>
+      <Route path="/:provider/:owner">{children}</Route>
+      <Route path="/:provider/:owner/:repo">{children}</Route>
+      <Route path="/:provider/:owner/:repo/:id">{children}</Route>
+      <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
+      <Route path="/:provider/:owner/:repo/commit/:commit/file/:path">
+        {children}
+      </Route>
+      <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+      <Route path="/:provider/:owner/:repo/pull/:pullId/commits">
+        {children}
+      </Route>
+      <Route path="/:provider/:owner/:repo/pull/:pullId/blob/:path+">
+        {children}
+      </Route>
+      <Route path="/:provider/:owner/:repo/pull/:pullId/tree/:path+">
+        {children}
+      </Route>
+      <Route path="/admin/:provider/access">{children}</Route>
+      <Route path="/admin/:provider/users">{children}</Route>
+      <Route path="/admin/:provider/:owner/access">{children}</Route>
+      <Route path="/admin/:provider/:owner/users">{children}</Route>
+      <Route path="/account/:provider/:owner">{children}</Route>
+      <Route path="/account/:provider/:owner/billing">{children}</Route>
+      <Route path="/:provider/:owner/:repo/bundles/:branch">{children}</Route>
+      <Route path="/:provider/:owner/:repo/bundles">{children}</Route>
+    </MemoryRouter>
+  )
 
 describe('useNavLinks', () => {
   describe('Sign Out', () => {
@@ -135,6 +134,15 @@ describe('useNavLinks', () => {
         owner: 'test-owner',
       })
       expect(path).toBe('/bb/test-owner')
+    })
+
+    it('can handle when owner is absent', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl'),
+      })
+
+      const path = result.current.owner.path()
+      expect(path).toBe('/')
     })
   })
 
@@ -1959,6 +1967,42 @@ describe('useNavLinks', () => {
       })
       expect(path).toBe('/bb/test-owner/test-repo/tests/new')
     })
+
+    it('can return the failed test table', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTests.path()
+      expect(path).toBe('/gl/codecov/cool-repo/tests')
+    })
+
+    it('can override the failed test table params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTests.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/tests')
+    })
+
+    it('can also accept a branch', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTests.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        branch: 'cool',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/tests/cool')
+    })
   })
 
   describe('Failed tests tab Codecov CLI view', () => {
@@ -1982,6 +2026,29 @@ describe('useNavLinks', () => {
         repo: 'test-repo',
       })
       expect(path).toBe('/bb/test-owner/test-repo/tests/new/codecov-cli')
+    })
+  })
+
+  describe('okta login', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/test-owner'),
+      })
+
+      const path = result.current.oktaLogin.path()
+      expect(path).toBe('/login/okta/gh/test-owner')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/bb/test-owner'),
+      })
+
+      const path = result.current.oktaLogin.path({
+        provider: 'bb',
+        owner: 'test-owner',
+      })
+      expect(path).toBe('/login/okta/bb/test-owner')
     })
   })
 })

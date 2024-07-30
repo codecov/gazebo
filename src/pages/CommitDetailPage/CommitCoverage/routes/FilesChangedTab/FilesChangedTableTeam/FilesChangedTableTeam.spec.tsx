@@ -218,16 +218,13 @@ const server = setupServer()
 
 const wrapper =
   (queryClient: QueryClient): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh/codecov/test-repo/commit/s2h5a6']}>
-          <Route path="/:provider/:owner/:repo/commit/:commit">
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov/test-repo/commit/s2h5a6']}>
+        <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

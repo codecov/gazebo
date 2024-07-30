@@ -1,15 +1,18 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect } from 'react'
 import { Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
+import { useCrumbs } from 'pages/RepoPage/context'
 import { useBranchBundleSummary } from 'services/bundleAnalysis'
 import { metrics } from 'shared/utils/metrics'
+import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
 import AssetsTable from './AssetsTable'
 import { BundleChart } from './BundleChart'
-import BundleSummary from './BundleSummary'
+import { BundleDetails, NoDetails } from './BundleDetails'
+import BundleSelection from './BundleSelection'
 import InfoBanner from './InfoBanner'
 import { ToggleElement } from './ToggleElement'
 import { TrendDropdown } from './TrendDropdown'
@@ -33,6 +36,7 @@ const Loader = () => (
 
 const BundleContent: React.FC = () => {
   const { provider, owner, repo, branch, bundle } = useParams<URLParams>()
+  const { setBreadcrumbs } = useCrumbs()
 
   useEffect(() => {
     metrics.increment('bundles_tab.bundle_details.visited_page', 1)
@@ -40,11 +44,29 @@ const BundleContent: React.FC = () => {
 
   const { data } = useBranchBundleSummary({ provider, owner, repo, branch })
 
+  useLayoutEffect(() => {
+    setBreadcrumbs([
+      {
+        pageName: '',
+        readOnly: true,
+        children: (
+          <span className="inline-flex items-center gap-1">
+            <Icon name="branch" variant="developer" size="sm" />
+            {decodeURIComponent(branch ?? '')}
+          </span>
+        ),
+      },
+    ])
+  }, [branch, setBreadcrumbs])
+
   const bundleType = data?.branch?.head?.bundleAnalysisReport?.__typename
 
   return (
     <div>
-      <BundleSummary />
+      <BundleSelection />
+      <Suspense fallback={<NoDetails />}>
+        <BundleDetails />
+      </Suspense>
       <Suspense fallback={<Loader />}>
         {bundleType === 'BundleAnalysisReport' ? (
           <Switch>

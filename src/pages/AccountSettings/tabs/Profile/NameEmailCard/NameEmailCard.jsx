@@ -1,7 +1,7 @@
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
-import * as yup from 'yup'
+import { z } from 'zod'
 
 import Card from 'old_ui/Card'
 import { useAddNotification } from 'services/toastNotification'
@@ -10,19 +10,19 @@ import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
 
 function getSchema() {
-  return yup.object().shape({
-    name: yup.string().required('Name is required'),
-    email: yup
+  return z.object({
+    name: z.string().min(1, { message: 'Name is required' }),
+    email: z
       .string()
       .email('Not a valid email')
-      .required('Email is required'),
+      .min(1, { message: 'Email is required' }),
   })
 }
 
 function NameEmailCard({ currentUser, provider }) {
   const addToast = useAddNotification()
   const { register, handleSubmit, formState, reset } = useForm({
-    resolver: yupResolver(getSchema()),
+    resolver: zodResolver(getSchema()),
     defaultValues: {
       email: currentUser?.email,
       name: currentUser?.name,

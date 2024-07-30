@@ -83,19 +83,18 @@ type WrapperClosure = (
 
 const wrapper: WrapperClosure =
   (initialEntries = ['/gh/test-org/test-repo/commit/sha256/tree']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path={'/:provider/:owner/:repo/commit/:commit/tree'}>
-            {children}
-          </Route>
-          <Route path={'/:provider/:owner/:repo/commit/:commit/tree/:path+'}>
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path={'/:provider/:owner/:repo/commit/:commit/tree'}>
+          {children}
+        </Route>
+        <Route path={'/:provider/:owner/:repo/commit/:commit/tree/:path+'}>
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

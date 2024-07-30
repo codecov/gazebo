@@ -87,14 +87,13 @@ type WrapperClosure = (
 ) => React.FC<React.PropsWithChildren>
 const wrapper: WrapperClosure =
   (initialEntries = ['/plan/gh/codecov/upgrade']) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/plan/:provider/:owner/upgrade">
-          <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
-        </Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={initialEntries}>
+      <Route path="/plan/:provider/:owner/upgrade">
+        <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
+      </Route>
+    </MemoryRouter>
+  )
 
 describe('UpgradeDetails', () => {
   describe('yearly plans', () => {

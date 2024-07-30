@@ -54,9 +54,20 @@ export function useNavLinks() {
       },
       isExternalLink: true,
     },
+    oktaLogin: {
+      text: 'Authenticate with Okta',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) => {
+        return `${config.API_URL}/login/okta/${provider}/${owner}`
+      },
+      isExternalLink: true,
+    },
     owner: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/${provider}/${owner}`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) => {
+        if (provider && owner) {
+          return `/${provider}/${owner}`
+        }
+        return '/'
+      },
       isExternalLink: false,
     },
     analytics: {
@@ -455,6 +466,16 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/settings`,
       text: 'General',
     },
+    settingsConfiguration: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/settings/config`,
+      text: 'Configuration Manager',
+    },
     settingsYaml: {
       path: (
         { provider = p, owner = o, repo = r } = {
@@ -776,6 +797,22 @@ export function useNavLinks() {
         `https://docs.google.com/forms/d/e/1FAIpQLSeoMHPyECewV7X3UaT-uUxZCmYy1T6hEX_aecCD2ppPHGSvUw/viewform`,
       text: 'Team plan feedback survey',
       isExternalLink: true,
+    },
+    failedTests: {
+      path: (
+        { provider = p, owner = o, repo = r, branch = undefined } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        if (branch) {
+          return `/${provider}/${owner}/${repo}/tests/${branch}`
+        }
+
+        return `/${provider}/${owner}/${repo}/tests`
+      },
+      text: 'Failed Tests',
     },
     failedTestsOnboarding: {
       path: (

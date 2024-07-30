@@ -166,8 +166,8 @@ describe('NameEmailCard', () => {
       })
       await user.click(button)
 
-      const emailRequired = await screen.findByText('Email is required')
-      expect(emailRequired).toBeInTheDocument()
+      const notValidEmail = await screen.findByText('Not a valid email')
+      expect(notValidEmail).toBeInTheDocument()
     })
   })
 

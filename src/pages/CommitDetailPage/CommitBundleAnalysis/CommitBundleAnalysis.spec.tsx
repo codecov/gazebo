@@ -41,8 +41,8 @@ const mockCommitPageData = ({
           __typename: firstPullRequest
             ? 'FirstPullRequest'
             : comparisonError
-            ? 'MissingHeadCommit'
-            : 'BundleAnalysisComparison',
+              ? 'MissingHeadCommit'
+              : 'BundleAnalysisComparison',
         },
       },
     },

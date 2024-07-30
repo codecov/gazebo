@@ -252,6 +252,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    statusChecks: {
+      text: 'Status Checks',
+      path: () => 'https://docs.codecov.com/docs/commit-status',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     ciProviderWorkflow: {
       text: 'CI provider workflow',
       path: () => 'https://circleci.com/blog/what-is-continuous-integration',
@@ -399,6 +405,18 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    codecovBrowserExtension: {
+      text: 'Codecov Browser Extension',
+      path: () => 'https://docs.codecov.com/docs/the-codecov-browser-extension',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    codecovSlackApp: {
+      text: 'Codecov Slack App',
+      path: () => 'https://notifications.codecov.io/slack/install',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     installSelfHosted: {
       text: 'Codecov Self-Hosted Installation Guide',
       path: () =>
@@ -409,6 +427,11 @@ export function useStaticNavLinks() {
     login: {
       text: 'Login',
       path: () => {
+        // Enterprise login page is at different url than Cloud; see App.tsx
+        if (config.IS_SELF_HOSTED) {
+          return '/'
+        }
+
         return `/login`
       },
       isExternalLink: false,

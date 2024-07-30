@@ -2,10 +2,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import qs from 'querystring'
 
 import { Trend } from 'shared/utils/timeseriesCharts'
 
@@ -85,18 +84,17 @@ const queryClient = new QueryClient({
 })
 const wrapper =
   (initialEntries = initialEntry): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <Suspense>
-          <MemoryRouter initialEntries={[initialEntries]}>
-            <Route path={'/:provider/:owner/:repo/bundles/:branch/:bundle'}>
-              {children}
-            </Route>
-          </MemoryRouter>
-        </Suspense>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <Suspense>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path={'/:provider/:owner/:repo/bundles/:branch/:bundle'}>
+            {children}
+          </Route>
+        </MemoryRouter>
+      </Suspense>
+    </QueryClientProvider>
+  )
 
 const server = setupServer()
 
@@ -210,7 +208,7 @@ describe('useBundleAssetsTable', () => {
     it('uses the trend from the search params', async () => {
       const { queryVarMock } = setup()
 
-      const url = `${initialEntry}?${qs.encode({ trend: Trend.SEVEN_DAYS })}`
+      const url = `${initialEntry}?${qs.stringify({ trend: Trend.SEVEN_DAYS })}`
       renderHook(
         () =>
           useBundleAssetsTable({
@@ -227,6 +225,31 @@ describe('useBundleAssetsTable', () => {
         expect(queryVarMock).toHaveBeenCalledWith(
           expect.objectContaining({
             interval: 'INTERVAL_1_DAY',
+          })
+        )
+      )
+    })
+
+    it('uses the type filters from the search params', async () => {
+      const { queryVarMock } = setup()
+
+      const url = `${initialEntry}?${qs.stringify({ types: ['JAVASCRIPT'] })}`
+      renderHook(
+        () =>
+          useBundleAssetsTable({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'test-repo',
+            branch: 'test-branch',
+            bundle: 'test-bundle',
+          }),
+        { wrapper: wrapper(url) }
+      )
+
+      await waitFor(() =>
+        expect(queryVarMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: { reportGroups: ['JAVASCRIPT'] },
           })
         )
       )

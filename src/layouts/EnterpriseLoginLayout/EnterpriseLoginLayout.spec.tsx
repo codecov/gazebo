@@ -4,7 +4,7 @@ import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import EnterpriseLoginLayout from './EnterpriseLoginLayout'
 
-jest.mock('./Header', () => () => 'Header')
+jest.mock('layouts/Header/components/GuestHeader', () => () => 'GuestHeader')
 jest.mock('layouts/Footer', () => () => 'Footer')
 jest.mock('shared/GlobalBanners', () => () => 'GlobalBanners')
 jest.mock('layouts/ToastNotifications', () => () => 'ToastNotifications')
@@ -63,7 +63,7 @@ describe('EnterpriseLoginLayout', () => {
   it('renders the header', () => {
     render(<>children</>, { wrapper })
 
-    const header = screen.getByText(/Header/)
+    const header = screen.getByText(/GuestHeader/)
     expect(header).toBeInTheDocument()
   })
 

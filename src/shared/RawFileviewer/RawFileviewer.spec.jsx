@@ -27,21 +27,20 @@ const server = setupServer()
 
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/blob/branch-name/a/file.js']) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/blob/:ref/:path+',
-            '/:provider/:owner/:repo/commit/:commit/blob/:path+',
-          ]}
-        >
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={initialEntries}>
+      <Route
+        path={[
+          '/:provider/:owner/:repo/blob/:ref/:path+',
+          '/:provider/:owner/:repo/commit/:commit/blob/:path+',
+        ]}
+      >
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </Route>
+    </MemoryRouter>
+  )
 
 beforeAll(() => {
   server.listen()

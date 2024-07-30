@@ -17,16 +17,15 @@ const queryClient = new QueryClient({
 
 const wrapper =
   (initialEntries = '/gh/codecov/test'): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider/:owner/:repo">
-          <QueryClientProvider client={queryClient}>
-            <Suspense fallback={null}>{children}</Suspense>
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path="/:provider/:owner/:repo">
+        <QueryClientProvider client={queryClient}>
+          <Suspense fallback={null}>{children}</Suspense>
+        </QueryClientProvider>
+      </Route>
+    </MemoryRouter>
+  )
 
 const server = setupServer()
 

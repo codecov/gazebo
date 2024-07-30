@@ -7,14 +7,13 @@ jest.mock('shared/featureFlags')
 
 const wrapper =
   ({ initialEntries, path }) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path={path} exact>
-          {children}
-        </Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path={path} exact>
+        {children}
+      </Route>
+    </MemoryRouter>
+  )
 
 describe('LoginButton', () => {
   describe('bitbucket', () => {

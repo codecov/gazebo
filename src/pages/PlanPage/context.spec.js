@@ -12,12 +12,11 @@ import {
 
 const wrapper =
   (initialEntries = '/plan/gh/codecov', path = '/plan/:provider/:owner') =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path={path}>{children}</Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path={path}>{children}</Route>
+    </MemoryRouter>
+  )
 
 const TestComponent = () => {
   const crumbs = useCrumbs()

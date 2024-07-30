@@ -12,12 +12,11 @@ jest.mock('./FrameworkTabs', () => ({
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo/tests') =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path={['/:provider/:owner/:repo/tests']}>{children}</Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path={['/:provider/:owner/:repo/tests']}>{children}</Route>
+    </MemoryRouter>
+  )
 
 describe('GitHubActions', () => {
   function setup() {

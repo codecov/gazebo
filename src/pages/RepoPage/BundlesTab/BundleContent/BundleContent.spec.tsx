@@ -6,9 +6,11 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
+
 import BundleContent from './BundleContent'
 
-jest.mock('./BundleSummary', () => () => <div>BundleSummary</div>)
+jest.mock('./BundleSelection', () => () => <div>BundleSelection</div>)
 
 const mockRepoOverview = {
   owner: {
@@ -71,7 +73,7 @@ const mockBranchBundlesError = {
   },
 }
 
-const mockEmptyBundleSummary = {
+const mockEmptyBundleSelection = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -192,6 +194,35 @@ const mockBundleTrendData = {
   },
 }
 
+const mockBundleSummary = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+            bundle: {
+              name: 'bundle1',
+              moduleCount: 10,
+              bundleData: {
+                loadTime: {
+                  threeG: 1000,
+                  highSpeed: 500,
+                },
+                size: {
+                  gzip: 1000,
+                  uncompress: 2000,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
@@ -201,22 +232,23 @@ const wrapper =
   (
     initialEntries = '/gh/codecov/test-repo/bundles'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/bundles/:branch/:bundle',
-              '/:provider/:owner/:repo/bundles/:branch',
-              '/:provider/:owner/:repo/bundles',
-            ]}
-          >
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/bundles/:branch/:bundle',
+            '/:provider/:owner/:repo/bundles/:branch',
+            '/:provider/:owner/:repo/bundles',
+          ]}
+        >
+          <RepoBreadcrumbProvider>
             <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+          </RepoBreadcrumbProvider>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()
@@ -233,20 +265,20 @@ afterAll(() => {
 
 interface SetupArgs {
   isBundleError?: boolean
-  isEmptyBundleSummary?: boolean
+  isEmptyBundleSelection?: boolean
 }
 
 describe('BundleContent', () => {
   function setup({
     isBundleError = false,
-    isEmptyBundleSummary = false,
+    isEmptyBundleSelection = false,
   }: SetupArgs) {
     server.use(
       graphql.query('BranchBundleSummaryData', (req, res, ctx) => {
         if (isBundleError) {
           return res(ctx.status(200), ctx.data(mockBranchBundlesError))
-        } else if (isEmptyBundleSummary) {
-          return res(ctx.status(200), ctx.data(mockEmptyBundleSummary))
+        } else if (isEmptyBundleSelection) {
+          return res(ctx.status(200), ctx.data(mockEmptyBundleSelection))
         }
         return res(ctx.status(200), ctx.data(mockBranchBundles))
       }),
@@ -262,6 +294,9 @@ describe('BundleContent', () => {
       }),
       graphql.query('GetBundleTrend', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockBundleTrendData))
+      }),
+      graphql.query('BundleSummary', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockBundleSummary))
       })
     )
   }
@@ -279,12 +314,12 @@ describe('BundleContent', () => {
     )
   })
 
-  describe('rendering summary section', () => {
+  describe('rendering select section', () => {
     it('renders the bundle summary', async () => {
       setup({})
       render(<BundleContent />, { wrapper: wrapper() })
 
-      const report = await screen.findByText(/BundleSummary/)
+      const report = await screen.findByText(/BundleSelection/)
       expect(report).toBeInTheDocument()
     })
   })
@@ -310,6 +345,56 @@ describe('BundleContent', () => {
           const [bundleLoadTime] = await screen.findAllByText(/2s/)
           expect(bundleLoadTime).toBeInTheDocument()
         })
+
+        describe('rendering bundle details', () => {
+          it('has correct total size', async () => {
+            setup({})
+            render(<BundleContent />, {
+              wrapper: wrapper(
+                '/gh/codecov/test-repo/bundles/main/test-bundle'
+              ),
+            })
+
+            const totalSize = await screen.findByText(/2kB/)
+            expect(totalSize).toBeInTheDocument()
+          })
+
+          it('has correct gzip size', async () => {
+            setup({})
+            render(<BundleContent />, {
+              wrapper: wrapper(
+                '/gh/codecov/test-repo/bundles/main/test-bundle'
+              ),
+            })
+
+            const gzipSize = await screen.findByText(/1kB/)
+            expect(gzipSize).toBeInTheDocument()
+          })
+
+          it('has correct download time', async () => {
+            setup({})
+            render(<BundleContent />, {
+              wrapper: wrapper(
+                '/gh/codecov/test-repo/bundles/main/test-bundle'
+              ),
+            })
+
+            const downloadTime = await screen.findByText(/1,000ms/)
+            expect(downloadTime).toBeInTheDocument()
+          })
+
+          it('has correct module count', async () => {
+            setup({})
+            render(<BundleContent />, {
+              wrapper: wrapper(
+                '/gh/codecov/test-repo/bundles/main/test-bundle'
+              ),
+            })
+
+            const moduleCount = await screen.findByText(/10/)
+            expect(moduleCount).toBeInTheDocument()
+          })
+        })
       })
 
       describe('when only the branch is set', () => {
@@ -323,7 +408,8 @@ describe('BundleContent', () => {
           expect(banner).toBeInTheDocument()
 
           const dashes = await screen.findAllByText('-')
-          expect(dashes).toHaveLength(4)
+          // has length 8 because bundle details being moved to this component
+          expect(dashes).toHaveLength(8)
         })
       })
 
@@ -338,7 +424,8 @@ describe('BundleContent', () => {
           expect(banner).toBeInTheDocument()
 
           const dashes = await screen.findAllByText('-')
-          expect(dashes).toHaveLength(4)
+          // has length 8 because bundle details being moved to this component
+          expect(dashes).toHaveLength(8)
         })
       })
     })
@@ -373,7 +460,7 @@ describe('BundleContent', () => {
     describe('when the bundle type is not BundleAnalysisReport', () => {
       describe('there is no branch data and no branch set', () => {
         it('renders the info banner', async () => {
-          setup({ isEmptyBundleSummary: true })
+          setup({ isEmptyBundleSelection: true })
           render(<BundleContent />, {
             wrapper: wrapper('/gh/codecov/test-repo/bundles'),
           })
@@ -388,19 +475,20 @@ describe('BundleContent', () => {
         })
 
         it('renders the empty table', async () => {
-          setup({ isEmptyBundleSummary: true })
+          setup({ isEmptyBundleSelection: true })
           render(<BundleContent />, {
             wrapper: wrapper('/gh/codecov/test-repo/bundles'),
           })
 
           const dashes = await screen.findAllByText('-')
-          expect(dashes).toHaveLength(4)
+          // has length 8 because bundle details being moved to this component
+          expect(dashes).toHaveLength(8)
         })
       })
 
       describe('there is a set branch but unknown bundle type', () => {
         it('renders the error banner', async () => {
-          setup({ isEmptyBundleSummary: true })
+          setup({ isEmptyBundleSelection: true })
           render(<BundleContent />, {
             wrapper: wrapper('/gh/codecov/test-repo/bundles/main'),
           })
@@ -415,13 +503,14 @@ describe('BundleContent', () => {
         })
 
         it('renders the empty table', async () => {
-          setup({ isEmptyBundleSummary: true })
+          setup({ isEmptyBundleSelection: true })
           render(<BundleContent />, {
             wrapper: wrapper('/gh/codecov/test-repo/bundles/main'),
           })
 
           const dashes = await screen.findAllByText('-')
-          expect(dashes).toHaveLength(4)
+          // has length 8 because bundle details being moved to this component
+          expect(dashes).toHaveLength(8)
         })
       })
     })

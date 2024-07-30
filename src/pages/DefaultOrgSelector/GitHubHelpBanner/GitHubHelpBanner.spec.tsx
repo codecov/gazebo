@@ -96,7 +96,10 @@ describe('GitHubHelpBanner', () => {
       const link = screen.getByRole('link', {
         name: /GitHub App is required/,
       })
-      expect(link).toHaveAttribute('href', 'https://github.com/apps/codecov')
+      expect(link).toHaveAttribute(
+        'href',
+        'https://github.com/apps/codecov/installations/select_target'
+      )
     })
   })
 

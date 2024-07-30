@@ -17,17 +17,16 @@ const server = setupServer()
 
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/tree/main']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
-            {children}
-          </Route>
-          <Route path="/:provider/:owner/:repo/tree/:branch">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
+          {children}
+        </Route>
+        <Route path="/:provider/:owner/:repo/tree/:branch">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })

@@ -10,19 +10,18 @@ let testLocation
 const history = createMemoryHistory()
 const wrapper =
   () =>
-  ({ children }) =>
-    (
-      <Router history={history}>
-        {children}
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </Router>
-    )
+  ({ children }) => (
+    <Router history={history}>
+      {children}
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation = location
+          return null
+        }}
+      />
+    </Router>
+  )
 
 describe('TrendDropdown', () => {
   it('updates the search params on select', async () => {

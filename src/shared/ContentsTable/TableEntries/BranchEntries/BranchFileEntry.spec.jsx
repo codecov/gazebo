@@ -59,14 +59,13 @@ const server = setupServer()
 
 const wrapper =
   (initialEntries = ['/gh/codecov/test-repo/']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo/">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 beforeAll(() => {
   server.listen()
 })

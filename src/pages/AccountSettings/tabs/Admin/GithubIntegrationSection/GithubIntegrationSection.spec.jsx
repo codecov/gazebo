@@ -20,14 +20,13 @@ const queryClient = new QueryClient({
 
 const wrapper =
   (initialEntries = ['/account/gh/codecov']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/account/:provider/:owner">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/account/:provider/:owner">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()
@@ -120,7 +119,10 @@ describe('GithubIntegrationSection', () => {
         name: /View the Codecov App on GitHub/i,
       })
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', 'https://github.com/apps/codecov')
+      expect(link).toHaveAttribute(
+        'href',
+        'https://github.com/apps/codecov/installations/select_target'
+      )
     })
   })
 

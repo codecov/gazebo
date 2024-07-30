@@ -43,23 +43,22 @@ let testLocation
 
 const wrapper =
   ({ url = '', path = '', repoDisplay = '' } = {}) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[url]}>
-          <ActiveContext.Provider value={repoDisplay}>
-            {children}
-            <Route
-              path={path}
-              render={({ location }) => {
-                testLocation = location
-                return null
-              }}
-            />
-          </ActiveContext.Provider>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[url]}>
+        <ActiveContext.Provider value={repoDisplay}>
+          {children}
+          <Route
+            path={path}
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </ActiveContext.Provider>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 describe('ListRepo', () => {
   function setup({ tierValue = TierNames.PRO } = { tierValue: TierNames.PRO }) {

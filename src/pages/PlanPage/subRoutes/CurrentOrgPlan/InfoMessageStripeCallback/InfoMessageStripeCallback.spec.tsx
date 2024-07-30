@@ -6,8 +6,9 @@ import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 
 const wrapper =
   (initialEntries = '/gh/codecov'): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
+  ({ children }) => (
     <MemoryRouter initialEntries={[initialEntries]}>{children}</MemoryRouter>
+  )
 
 describe('InfoMessageStripeCallback', () => {
   describe('when rendering without success or cancel in the url', () => {
@@ -28,18 +29,6 @@ describe('InfoMessageStripeCallback', () => {
 
       await expect(
         screen.getByText(/Subscription Update Successful/)
-      ).toBeInTheDocument()
-    })
-  })
-
-  describe('when rendering with cancel in the url', () => {
-    it('renders a cancel message', async () => {
-      render(<InfoMessageStripeCallback />, {
-        wrapper: wrapper('/account/gh/codecov?cancel'),
-      })
-
-      await expect(
-        screen.getByText(/Subscription Update Failed/)
       ).toBeInTheDocument()
     })
   })
