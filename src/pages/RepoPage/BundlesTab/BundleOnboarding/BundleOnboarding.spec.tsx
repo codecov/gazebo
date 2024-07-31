@@ -132,12 +132,19 @@ describe('BundleOnboarding', () => {
     return { hardRedirect, mockMetricMutationVariables, user }
   }
 
-  it('renders IntroBlurb', async () => {
+  it('renders intro', async () => {
     setup({})
     render(<BundleOnboarding />, { wrapper: wrapper() })
 
-    const introBlurb = await screen.findByTestId('ba-intro-blurb')
-    expect(introBlurb).toBeInTheDocument()
+    const heading = await screen.findByRole('heading', {
+      name: 'Bundle Analysis',
+    })
+    expect(heading).toBeInTheDocument()
+
+    const blurb = await screen.findByText(
+      /Javascript Bundle Analysis helps you improves your application's performance, bandwidth usage, and load times/
+    )
+    expect(blurb).toBeInTheDocument()
   })
 
   describe('navigation', () => {

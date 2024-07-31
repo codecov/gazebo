@@ -40,7 +40,7 @@ describe('ErrorBanner', () => {
       render(<ErrorBanner errorType="MissingHeadCommit" />, { wrapper })
 
       const description = screen.getByText(
-        /Unable to compare commits because the head commit of the commit is not found./
+        /Unable to compare commits because the head commit is not found./
       )
       expect(description).toBeInTheDocument()
     })
@@ -58,7 +58,7 @@ describe('ErrorBanner', () => {
       render(<ErrorBanner errorType="MissingHeadReport" />, { wrapper })
 
       const description = screen.getByText(
-        /Unable to compare commits because the head of the commit request did not upload a bundle analysis report./
+        /Unable to compare commits because the head commit did not upload a bundle analysis report./
       )
       expect(description).toBeInTheDocument()
     })

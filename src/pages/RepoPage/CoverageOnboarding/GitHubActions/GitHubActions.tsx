@@ -9,6 +9,7 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 
 import ExampleBlurb from '../ExampleBlurb'
+import LearnMoreBlurb from '../LearnMoreBlurb'
 
 interface URLParams {
   provider: string
@@ -51,6 +52,7 @@ function GitHubActions() {
       />
       <Step3 />
       <FeedbackCTA />
+      <LearnMoreBlurb />
     </div>
   )
 }
@@ -79,8 +81,8 @@ function Step1({ tokenCopy, uploadToken }: Step1Props) {
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <p>
-          Admin required to access repo settings &gt; secrets and variable &gt;
-          actions
+          Admin required to access repo configuration &gt; secrets and variable
+          &gt; actions
         </p>
         <div className="flex gap-4">
           <CodeSnippet

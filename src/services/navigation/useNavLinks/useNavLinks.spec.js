@@ -992,14 +992,14 @@ describe('useNavLinks', () => {
     })
   })
 
-  describe('repo settings link', () => {
+  describe('repo config link', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings'),
+        wrapper: wrapper('/gh/codecov/test/config'),
       })
 
-      const path = result.current.settings.path()
-      expect(path).toBe('/gh/codecov/test/settings')
+      const path = result.current.configuration.path()
+      expect(path).toBe('/gh/codecov/test/config')
     })
 
     it('can override the params', () => {
@@ -1007,12 +1007,12 @@ describe('useNavLinks', () => {
         wrapper: wrapper('/gh/codecov/test/pulls'),
       })
 
-      const path = result.current.settings.path({
+      const path = result.current.configuration.path({
         provider: 'bb',
         owner: 'test-owner',
         repo: 'test-repo',
       })
-      expect(path).toBe('/bb/test-owner/test-repo/settings')
+      expect(path).toBe('/bb/test-owner/test-repo/config')
     })
   })
 
@@ -1089,75 +1089,75 @@ describe('useNavLinks', () => {
     })
   })
 
-  describe('general repo settings link', () => {
+  describe('general repo configuration link', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings'),
+        wrapper: wrapper('/gh/codecov/test/config'),
       })
 
-      const path = result.current.settingsGeneral.path()
-      expect(path).toBe('/gh/codecov/test/settings')
+      const path = result.current.configGeneral.path()
+      expect(path).toBe('/gh/codecov/test/config/general')
     })
 
     it('can override the params', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings'),
+        wrapper: wrapper('/gh/codecov/test/config'),
       })
 
-      const path = result.current.settingsGeneral.path({
+      const path = result.current.configGeneral.path({
         provider: 'bb',
         owner: 'test-owner',
         repo: 'test-repo',
       })
-      expect(path).toBe('/bb/test-owner/test-repo/settings')
+      expect(path).toBe('/bb/test-owner/test-repo/config/general')
     })
   })
 
   describe('repo yaml link', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings/yaml'),
+        wrapper: wrapper('/gh/codecov/test/config/yaml'),
       })
 
-      const path = result.current.settingsYaml.path()
-      expect(path).toBe('/gh/codecov/test/settings/yaml')
+      const path = result.current.configYaml.path()
+      expect(path).toBe('/gh/codecov/test/config/yaml')
     })
 
     it('can override the params', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings/yaml'),
+        wrapper: wrapper('/gh/codecov/test/config/yaml'),
       })
 
-      const path = result.current.settingsYaml.path({
+      const path = result.current.configYaml.path({
         provider: 'bb',
         owner: 'test-owner',
         repo: 'test-repo',
       })
-      expect(path).toBe('/bb/test-owner/test-repo/settings/yaml')
+      expect(path).toBe('/bb/test-owner/test-repo/config/yaml')
     })
   })
 
-  describe('badge repo settings link', () => {
+  describe('badge repo configuration link', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings/badge'),
+        wrapper: wrapper('/gh/codecov/test/config/badge'),
       })
 
-      const path = result.current.settingsBadge.path()
-      expect(path).toBe('/gh/codecov/test/settings/badge')
+      const path = result.current.configBadge.path()
+      expect(path).toBe('/gh/codecov/test/config/badge')
     })
 
     it('can override the params', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings/badge'),
+        wrapper: wrapper('/gh/codecov/test/config/badge'),
       })
 
-      const path = result.current.settingsBadge.path({
+      const path = result.current.configBadge.path({
         provider: 'bb',
         owner: 'test-owner',
         repo: 'test-repo',
       })
-      expect(path).toBe('/bb/test-owner/test-repo/settings/badge')
+      expect(path).toBe('/bb/test-owner/test-repo/config/badge')
     })
   })
 
@@ -1602,7 +1602,7 @@ describe('useNavLinks', () => {
 
       const path = result.current.githubRepoSecrets.path()
       expect(path).toBe(
-        'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
+        'https://github.com/codecov/cool-repo/config/secrets/actions/new'
       )
     })
 
@@ -1616,7 +1616,7 @@ describe('useNavLinks', () => {
         repo: 'test-repo',
       })
       expect(path).toBe(
-        'https://github.com/test-owner/test-repo/settings/secrets/actions/new'
+        'https://github.com/test-owner/test-repo/config/secrets/actions/new'
       )
     })
   })

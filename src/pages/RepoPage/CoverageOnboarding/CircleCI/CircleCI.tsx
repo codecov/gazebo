@@ -10,6 +10,7 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 
 import ExampleBlurb from '../ExampleBlurb'
+import LearnMoreBlurb from '../LearnMoreBlurb'
 
 const orbsString = `orbs:
   codecov: codecov/codecov@4.0.1
@@ -52,6 +53,7 @@ function CircleCI() {
       <Step2 defaultBranch={data?.repository?.defaultBranch ?? ''} />
       <Step3 />
       <FeedbackCTA />
+      <LearnMoreBlurb />
     </div>
   )
 }
