@@ -9,6 +9,7 @@ import { useNavLinks } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useRedirect } from 'shared/useRedirect'
 import { providerToName } from 'shared/utils'
+import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 import Spinner from 'ui/Spinner'
@@ -16,7 +17,6 @@ import Spinner from 'ui/Spinner'
 import ActivationBanner from './ActivationBanner'
 import CircleCI from './CircleCI'
 import GitHubActions from './GitHubActions'
-import IntroBlurb from './IntroBlurb'
 
 const OtherCI = lazy(() => import('./OtherCI'))
 
@@ -151,8 +151,24 @@ function NewRepoTab() {
     !data?.isCurrentUserActivated && data?.repository.private
 
   return (
-    <div className="flex flex-col gap-6 pt-4 lg:w-3/5">
-      <IntroBlurb />
+    <div className="flex flex-col gap-4 pt-2 lg:w-3/5">
+      <div>
+        <h1 className="text-lg font-semibold">Coverage Analytics</h1>
+        <p className="mt-2 text-ds-gray-octonary">
+          Codecov analyzes your{' '}
+          <A
+            to={{ pageName: 'aboutCodeCoverage' }}
+            hook="coverage-onboarding-header-docs"
+            isExternal={true}
+          >
+            coverage reports
+          </A>{' '}
+          to help you identify untested code and improve test effectiveness.
+          Before integrating with Codecov, ensure your project generates
+          coverage reports, as Codecov relies on these reports for coverage
+          analysis.
+        </p>
+      </div>
       {renderActivationBanner ? <ActivationBanner /> : null}
       <CISelector provider={provider} owner={owner} repo={repo} />
       <Content />

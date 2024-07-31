@@ -9,6 +9,7 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 
 import ExampleBlurb from '../ExampleBlurb'
+import LearnMoreBlurb from '../LearnMoreBlurb'
 
 interface URLParams {
   provider: string
@@ -51,6 +52,7 @@ function GitHubActions() {
       />
       <Step3 />
       <FeedbackCTA />
+      <LearnMoreBlurb />
     </div>
   )
 }

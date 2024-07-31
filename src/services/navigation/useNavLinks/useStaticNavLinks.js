@@ -88,6 +88,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    aboutCodeCoverage: {
+      text: 'About Code Coverage',
+      path: () => 'https://docs.codecov.com/docs/about-code-coverage',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     oauthTroubleshoot: {
       text: 'OAuth Troubleshoot',
       path: () =>

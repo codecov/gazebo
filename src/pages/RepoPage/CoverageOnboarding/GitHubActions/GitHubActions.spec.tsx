@@ -257,7 +257,7 @@ describe('GitHubActions', () => {
     })
   })
 
-  describe('ending', () => {
+  describe('feedback CTA', () => {
     beforeEach(() => setup({}))
     it('renders body', async () => {
       render(<GitHubActions />, { wrapper })
@@ -269,6 +269,23 @@ describe('GitHubActions', () => {
       expect(bodyLink).toHaveAttribute(
         'href',
         'https://github.com/codecov/Codecov-user-feedback/issues/18'
+      )
+    })
+  })
+
+  describe('learn more blurb', () => {
+    it('renders body', async () => {
+      setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const body = await screen.findByText(/Visit our guide to/)
+      expect(body).toBeInTheDocument()
+
+      const link = await screen.findByRole('link', { name: /learn more/ })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/quick-start'
       )
     })
   })
