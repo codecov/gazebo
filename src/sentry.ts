@@ -66,6 +66,8 @@ export const SentryBugReporter = Sentry.feedbackIntegration({
   formTitle: 'Give Feedback',
   buttonLabel: 'Give Feedback',
   submitButtonLabel: 'Send Feedback',
+  messagePlaceholder:
+    'Share your experience and suggest opportunities for improvement.',
   nameLabel: 'Username',
   isEmailRequired: true,
   autoInject: false,
