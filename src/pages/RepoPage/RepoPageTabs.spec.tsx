@@ -95,7 +95,7 @@ const wrapper =
             '/:provider/:owner/:repo/components',
             '/:provider/:owner/:repo/new',
             '/:provider/:owner/:repo/pulls',
-            '/:provider/:owner/:repo/settings',
+            '/:provider/:owner/:repo/config',
             '/:provider/:owner/:repo/tree/:branch',
             '/:provider/:owner/:repo/tree/:branch/:path+',
             '/:provider/:owner/:repo',
@@ -368,32 +368,32 @@ describe('RepoPageTabs', () => {
     })
   })
 
-  describe('settings tab', () => {
+  describe('configuration tab', () => {
     describe('user is part of the org', () => {
-      it('renders the settings tab', async () => {
+      it('renders the configuration tab', async () => {
         setup({})
         render(<RepoPageTabs refetchEnabled={false} />, {
-          wrapper: wrapper('/gh/codecov/test-repo/settings'),
+          wrapper: wrapper('/gh/codecov/test-repo/config'),
         })
 
-        const tab = await screen.findByText('Settings')
+        const tab = await screen.findByText('Configuration')
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('aria-current', 'page')
-        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/settings')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/config')
       })
     })
 
     describe('user is not part of the org', () => {
-      it('does not render the settings tab', async () => {
+      it('does not render the configuration tab', async () => {
         setup({ isCurrentUserPartOfOrg: false })
         render(<RepoPageTabs refetchEnabled={false} />, {
-          wrapper: wrapper('/gh/codecov/test-repo/settings'),
+          wrapper: wrapper('/gh/codecov/test-repo/config'),
         })
 
         const loader = await screen.findByText('Loading')
         await waitForElementToBeRemoved(loader)
 
-        const tab = screen.queryByText('Settings')
+        const tab = screen.queryByText('Configuration')
         expect(tab).not.toBeInTheDocument()
       })
     })
@@ -840,9 +840,9 @@ describe('useRepoTabs', () => {
     })
   })
 
-  describe('settings tab', () => {
+  describe('configuration tab', () => {
     describe('when user is part of the org', () => {
-      it('adds the settings link to the array', async () => {
+      it('adds the configuration link to the array', async () => {
         setup({})
         const { result } = renderHook(
           () =>
@@ -854,7 +854,7 @@ describe('useRepoTabs', () => {
 
         const expectedTab = [
           {
-            pageName: 'settings',
+            pageName: 'configuration',
           },
         ]
         await waitFor(() =>
@@ -864,7 +864,7 @@ describe('useRepoTabs', () => {
     })
 
     describe('when user is not part of the org', () => {
-      it('does not add the settings link to the array', async () => {
+      it('does not add the configuration link to the array', async () => {
         setup({ isCurrentUserPartOfOrg: false })
         const { result } = renderHook(
           () =>
@@ -878,7 +878,7 @@ describe('useRepoTabs', () => {
 
         const expectedTab = [
           {
-            pageName: 'settings',
+            pageName: 'configuration',
           },
         ]
         await waitFor(() =>

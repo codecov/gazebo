@@ -12,7 +12,6 @@ import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 import Spinner from 'ui/Spinner'
 
-import IntroBlurb from './IntroBlurb'
 import RollupOnboarding from './RollupOnboarding'
 import ViteOnboarding from './ViteOnboarding'
 import WebpackOnboarding from './WebpackOnboarding'
@@ -140,7 +139,14 @@ const BundleOnboarding: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-6 pt-4 lg:w-3/5">
-      <IntroBlurb />
+      <div>
+        <h1 className="text-lg font-semibold">Bundle Analysis</h1>
+        <p className="mt-2 text-ds-gray-octonary">
+          Javascript Bundle Analysis helps you improves your application&apos;s
+          performance, bandwidth usage, and load times by identifying potential
+          performance regressions in your changes.
+        </p>
+      </div>
       <BundlerSelector provider={provider} owner={owner} repo={repo} />
       <Content />
     </div>

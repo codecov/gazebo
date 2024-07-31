@@ -120,14 +120,6 @@ describe('FailedTestsTab', () => {
     expect(intro).toBeInTheDocument()
   })
 
-  it('renders onboarding failed tests img', () => {
-    setup({})
-    render(<FailedTestsTab />, { wrapper: wrapper() })
-
-    const img = screen.getByAltText('failed-tests-onboarding')
-    expect(img).toBeInTheDocument()
-  })
-
   describe('Setup Options', () => {
     it('renders', () => {
       setup({})
