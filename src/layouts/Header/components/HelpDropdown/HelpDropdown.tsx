@@ -1,28 +1,15 @@
-// Copying UserDropdown implementation for now until we get a proper
-// component made up.
-
 import { feedbackIntegration } from '@sentry/react'
-import { useSelect } from 'downshift'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 
-import { cn } from 'shared/utils/cn'
 import Button from 'ui/Button'
+import { Dropdown } from 'ui/Dropdown/Dropdown'
 import Icon from 'ui/Icon'
 
-type toProps = {
-  pageName: string
-  options?: object
-}
-
-type ItemProps = {
-  to?: toProps
+type DropdownItem = {
+  to?: { pageName: string }
   hook?: string
   onClick?: () => void
-}
-
-type Item = {
-  props: ItemProps
-  children: string
+  children: React.ReactNode
 }
 
 const removeSentryForm = () => {
@@ -33,53 +20,41 @@ const removeSentryForm = () => {
 function HelpDropdown() {
   useEffect(() => removeSentryForm, [])
 
-  const items: Item[] = [
+  const items: DropdownItem[] = [
     {
-      props: { to: { pageName: 'docs' } },
+      to: { pageName: 'docs' },
       children: 'Developer docs',
     },
     {
-      props: { to: { pageName: 'support' } },
+      to: { pageName: 'support' },
       children: 'Support center',
     },
     {
-      props: {
-        onClick: async () => {
-          const sentryFeedback = feedbackIntegration({
-            showBranding: false,
-            colorScheme: 'light',
-            formTitle: 'Give Feedback',
-            buttonLabel: 'Give Feedback',
-            submitButtonLabel: 'Send Feedback',
-            nameLabel: 'Username',
-            isEmailRequired: true,
-            autoInject: false,
-            id: 'help-dropdown-widget',
-            onFormClose: removeSentryForm,
-          })
-          const form = await sentryFeedback.createForm()
-          form.appendToDom()
-          form.open()
-        },
-        hook: 'open-modal',
+      onClick: async () => {
+        const sentryFeedback = feedbackIntegration({
+          showBranding: false,
+          colorScheme: 'light',
+          formTitle: 'Give Feedback',
+          buttonLabel: 'Give Feedback',
+          submitButtonLabel: 'Send Feedback',
+          nameLabel: 'Username',
+          isEmailRequired: true,
+          autoInject: false,
+          id: 'help-dropdown-widget',
+          onFormClose: removeSentryForm,
+        })
+        const form = await sentryFeedback.createForm()
+        form.appendToDom()
+        form.open()
       },
+      hook: 'open-modal',
       children: 'Share feedback',
     },
     {
-      props: { to: { pageName: 'feedback' } },
+      to: { pageName: 'feedback' },
       children: 'Join GitHub discussions',
     },
   ]
-
-  const {
-    isOpen,
-    getToggleButtonProps,
-    getItemProps,
-    getLabelProps,
-    getMenuProps,
-  } = useSelect({
-    items,
-  })
 
   return (
     <div
@@ -87,48 +62,30 @@ function HelpDropdown() {
       data-testid="help-dropdown"
       data-cy="auth-help-dropdown"
     >
-      <label className="sr-only" {...getLabelProps()}>
-        Help menu dropdown
-      </label>
-      <button
-        className="flex flex-1 items-center gap-1 whitespace-nowrap text-left focus:outline-1"
-        data-marketing="help menu"
-        type="button"
-        {...getToggleButtonProps()}
-      >
-        <Icon variant="outline" name="questionMarkCircle" />
-        <span
-          aria-hidden="true"
-          className={cn('transition-transform', {
-            'rotate-180': isOpen,
-            'rotate-0': !isOpen,
-          })}
-        >
-          <Icon variant="solid" name="chevronDown" size="sm" />
+      <label className="sr-only">Help menu dropdown</label>
+
+      <Dropdown>
+        <span data-marketing="help menu">
+          <Dropdown.Trigger>
+            <Icon variant="outline" name="questionMarkCircle" />
+          </Dropdown.Trigger>
         </span>
-      </button>
-      <ul
-        className={cn(
-          'absolute right-0 top-8 z-50 w-[15.5rem] min-w-fit overflow-hidden rounded border border-ds-gray-tertiary bg-white text-gray-900',
-          { hidden: !isOpen }
-        )}
-        aria-label="help menu items"
-        {...getMenuProps()}
-      >
-        {isOpen &&
-          items.map((item, index) => (
-            <li
+
+        <Dropdown.Content
+          align="end"
+          className="w-[15.5rem] min-w-fit rounded border-ds-gray-tertiary shadow-none"
+        >
+          {items.map((item, index) => (
+            <Dropdown.Item
               key={`main-dropdown-${index}`}
-              className="grid cursor-pointer text-sm first:pt-2 last:pb-2 hover:bg-ds-gray-secondary"
-              {...getItemProps({ item, index })}
+              className="grid p-0 first:pt-2 last:pb-2"
             >
               {/* @ts-expect-error props might be overloaded with stuff */}
-              <Button variant="listbox" {...item.props}>
-                {item.children}
-              </Button>
-            </li>
+              <Button variant="listbox" {...item} />
+            </Dropdown.Item>
           ))}
-      </ul>
+        </Dropdown.Content>
+      </Dropdown>
     </div>
   )
 }
