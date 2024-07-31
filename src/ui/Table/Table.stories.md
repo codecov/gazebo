@@ -1,9 +1,3 @@
-{/_ Table.mdx _/}
-import { Meta } from '@storybook/blocks';
-import \* as TableStories from './Table.stories'
-
-{/_ Attach this MDX file to the Button component _/}
-
 <Meta of={TableStories} />
 
 # Table UI developer guide
