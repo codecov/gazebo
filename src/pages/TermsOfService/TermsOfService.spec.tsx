@@ -7,6 +7,10 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
+import { SentryBugReporter } from 'sentry'
+
 import { InternalUserData } from 'services/user/useInternalUser'
 import { useFlags } from 'shared/featureFlags'
 
@@ -593,6 +597,91 @@ describe('TermsOfService', () => {
       })
     }
   )
+  describe('sentry user feedback widget', () => {
+    describe('when SENTRY_DSN is not defined', () => {
+      it('does not render', async () => {
+        setup({
+          internalUserData: {
+            email: '',
+            name: '',
+            externalId: '',
+            owners: null,
+            termsAgreement: false,
+          },
+        })
+        const removeFromDom = jest.fn()
+        const createWidget = jest.fn().mockReturnValue({
+          removeFromDom,
+        })
+        SentryBugReporter.createWidget = createWidget
+        render(<TermsOfService />, { wrapper })
+
+        const welcome = await screen.findByText(/Welcome to Codecov/i)
+        expect(welcome).toBeInTheDocument()
+
+        expect(createWidget).not.toHaveBeenCalled()
+        expect(removeFromDom).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('when SENTRY_DSN is defined', () => {
+      it('renders', async () => {
+        setup({
+          internalUserData: {
+            email: '',
+            name: '',
+            externalId: '',
+            owners: null,
+            termsAgreement: false,
+          },
+        })
+        config.SENTRY_DSN = 'dsn'
+        const removeFromDom = jest.fn()
+        const createWidget = jest.fn().mockReturnValue({
+          removeFromDom,
+        })
+        SentryBugReporter.createWidget = createWidget
+        render(<TermsOfService />, { wrapper })
+
+        const welcome = await screen.findByText(/Welcome to Codecov/i)
+        expect(welcome).toBeInTheDocument()
+
+        expect(createWidget).toHaveBeenCalled()
+        expect(removeFromDom).not.toHaveBeenCalled()
+      })
+
+      describe('and component unmounts', () => {
+        it('removes the widget from the dom', async () => {
+          setup({
+            internalUserData: {
+              email: '',
+              name: '',
+              externalId: '',
+              owners: null,
+              termsAgreement: false,
+            },
+          })
+          config.SENTRY_DSN = 'dsn'
+          const removeFromDom = jest.fn()
+          const createWidget = jest.fn().mockReturnValue({
+            removeFromDom,
+          })
+          SentryBugReporter.createWidget = createWidget
+          const view = render(<TermsOfService />, { wrapper })
+
+          const welcome = await screen.findByText(/Welcome to Codecov/i)
+          expect(welcome).toBeInTheDocument()
+
+          expect(createWidget).toHaveBeenCalled()
+          expect(removeFromDom).not.toHaveBeenCalled()
+
+          view.unmount()
+
+          expect(removeFromDom).toHaveBeenCalled()
+        })
+      })
+    })
+  })
 })
 
 // Form validation assertion helper functions

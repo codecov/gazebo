@@ -59,6 +59,17 @@ const checkForBlockedUserAgents = () => {
   )
 }
 
+export const SentryBugReporter = Sentry.feedbackIntegration({
+  colorScheme: 'light',
+  showBranding: false,
+  formTitle: 'Give Feedback',
+  buttonLabel: 'Give Feedback',
+  submitButtonLabel: 'Send Feedback',
+  nameLabel: 'Username',
+  isEmailRequired: true,
+  autoInject: false,
+})
+
 export const setupSentry = ({
   history,
 }: {
@@ -76,20 +87,6 @@ export const setupSentry = ({
   })
 
   const integrations = [replay, tracing]
-
-  // Only show feedback button in production
-  if (config.NODE_ENV === 'production') {
-    const feedback = Sentry.feedbackIntegration({
-      colorScheme: 'light',
-      showBranding: false,
-      formTitle: 'Give Feedback',
-      buttonLabel: 'Give Feedback',
-      submitButtonLabel: 'Send Feedback',
-      nameLabel: 'Username',
-      isEmailRequired: true,
-    })
-    integrations.push(feedback)
-  }
 
   const tracePropagationTargets = ['api.codecov.io', 'stage-api.codecov.dev']
   // wrapped in a silent try/catch incase the URL is invalid
