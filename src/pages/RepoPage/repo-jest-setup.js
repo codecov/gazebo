@@ -37,7 +37,7 @@ function repoPageRender({
         <Route path="/:provider/:owner/:repo/compare">
           <RepoBreadcrumbProvider>{renderCompare()}</RepoBreadcrumbProvider>
         </Route>
-        <Route path="/:provider/:owner/:repo/settings">
+        <Route path="/:provider/:owner/:repo/config">
           <RepoBreadcrumbProvider>{renderSettings()}</RepoBreadcrumbProvider>
         </Route>
         <Route path="/:provider/:owner/:repo" exact>

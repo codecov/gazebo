@@ -106,9 +106,9 @@ describe('RepoContentsResult', () => {
     )
     expect(noCoverageForFlags).toBeInTheDocument()
 
-    const link = await screen.findByTestId('settings-page')
+    const link = await screen.findByTestId('config-page')
     expect(link).toBeInTheDocument()
-    expect(link).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
+    expect(link).toHaveAttribute('href', '/gh/codecov/cool-repo/config')
   })
 
   it('renders no coverage for components if user has components selected', async () => {
