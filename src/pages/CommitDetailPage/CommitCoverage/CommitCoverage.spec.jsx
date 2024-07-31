@@ -288,10 +288,10 @@ const mockCommitPageData = (
           __typename: hasCommitPageMissingCommitDataError
             ? 'MissingBaseCommit'
             : hasCommitPageOtherDataError
-            ? 'MissingBaseReport'
-            : hasFirstPR
-              ? 'FirstPullRequest'
-              : 'Comparison',
+              ? 'MissingBaseReport'
+              : hasFirstPR
+                ? 'FirstPullRequest'
+                : 'Comparison',
         },
         bundleAnalysisCompareWithParent: {
           __typename: 'BundleAnalysisComparison',
