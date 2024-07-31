@@ -106,12 +106,9 @@ function DefaultOrgSelector() {
 
   useLayoutEffect(() => {
     if (!config.SENTRY_DSN) {
-      console.log('bye')
       return
     }
-    console.log('hi')
     const widget = SentryBugReporter.createWidget()
-    console.log(widget)
     return widget.removeFromDom
   }, [])
 
