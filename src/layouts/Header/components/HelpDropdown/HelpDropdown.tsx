@@ -1,5 +1,7 @@
-import { feedbackIntegration } from '@sentry/react'
-import React, { useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useLayoutEffect } from 'react'
+
+import { SentryUserFeedback } from 'sentry'
 
 import Button from 'ui/Button'
 import { Dropdown } from 'ui/Dropdown/Dropdown'
@@ -12,13 +14,17 @@ type DropdownItem = {
   children: React.ReactNode
 }
 
-const removeSentryForm = () => {
-  document.body.style.overflow = ''
-  document.querySelector('#help-dropdown-widget')?.remove()
-}
-
 function HelpDropdown() {
-  useEffect(() => removeSentryForm, [])
+  const { data: form } = useQuery({
+    queryKey: ['HelpDropdownForm'],
+    queryFn: () => SentryUserFeedback.createForm(),
+  })
+
+  useLayoutEffect(() => {
+    if (!form) return
+    form.appendToDom()
+    return form.removeFromDom
+  }, [form])
 
   const items: DropdownItem[] = [
     {
@@ -30,23 +36,7 @@ function HelpDropdown() {
       children: 'Support center',
     },
     {
-      onClick: async () => {
-        const sentryFeedback = feedbackIntegration({
-          showBranding: false,
-          colorScheme: 'light',
-          formTitle: 'Give Feedback',
-          buttonLabel: 'Give Feedback',
-          submitButtonLabel: 'Send Feedback',
-          nameLabel: 'Username',
-          isEmailRequired: true,
-          autoInject: false,
-          id: 'help-dropdown-widget',
-          onFormClose: removeSentryForm,
-        })
-        const form = await sentryFeedback.createForm()
-        form.appendToDom()
-        form.open()
-      },
+      onClick: form?.open,
       hook: 'open-modal',
       children: 'Share feedback',
     },

@@ -59,6 +59,7 @@ const checkForBlockedUserAgents = () => {
   )
 }
 
+// Bug report user feedback form in user onboarding
 export const SentryBugReporter = Sentry.feedbackIntegration({
   colorScheme: 'light',
   showBranding: false,
@@ -68,6 +69,19 @@ export const SentryBugReporter = Sentry.feedbackIntegration({
   nameLabel: 'Username',
   isEmailRequired: true,
   autoInject: false,
+})
+
+// Help dropdown user feedback form
+export const SentryUserFeedback = Sentry.feedbackIntegration({
+  showBranding: false,
+  colorScheme: 'light',
+  formTitle: 'Give Feedback',
+  buttonLabel: 'Give Feedback',
+  submitButtonLabel: 'Send Feedback',
+  nameLabel: 'Username',
+  isEmailRequired: true,
+  autoInject: false,
+  id: 'help-dropdown-widget',
 })
 
 export const setupSentry = ({

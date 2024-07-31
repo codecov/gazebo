@@ -597,6 +597,7 @@ describe('TermsOfService', () => {
       })
     }
   )
+
   describe('sentry user feedback widget', () => {
     describe('when SENTRY_DSN is not defined', () => {
       it('does not render', async () => {
