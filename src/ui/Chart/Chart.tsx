@@ -4,7 +4,8 @@ import * as RechartsPrimitive from 'recharts'
 import { cn } from 'shared/utils/cn'
 
 /**
- * Copied from https://ui.shadcn.com/charts
+ * Copied from: https://ui.shadcn.com/charts
+ * Which are built on top of: https://recharts.org/en-US/
  *
  * Small tweaks to styling to fit our custom class names.
  */
