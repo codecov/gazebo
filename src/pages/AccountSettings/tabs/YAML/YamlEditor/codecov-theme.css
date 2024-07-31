@@ -36,5 +36,5 @@
 
 /* this is to better indicate that the user cannot edit and is read-only */
 .useReadOnlyCursor .ace_cursor {
-  opacity: 0.2;
+  opacity: 0;
 }
