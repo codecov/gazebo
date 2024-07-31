@@ -12,6 +12,7 @@ import { CodeSnippet } from 'ui/CodeSnippet'
 import { InstructionBox } from './TerminalInstructions'
 
 import ExampleBlurb from '../ExampleBlurb'
+import LearnMoreBlurb from '../LearnMoreBlurb'
 
 interface URLParams {
   provider: string
@@ -46,6 +47,7 @@ function OtherCI() {
       <Step3 uploadCommand={uploadCommand} />
       <Step4 />
       <FeedbackCTA />
+      <LearnMoreBlurb />
     </div>
   )
 }

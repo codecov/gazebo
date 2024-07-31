@@ -238,7 +238,7 @@ describe('OtherCI', () => {
     })
   })
 
-  describe('ending', () => {
+  describe('feedback CTA', () => {
     it('renders feedback link', async () => {
       setup({})
       render(<OtherCI />, { wrapper })
@@ -250,6 +250,23 @@ describe('OtherCI', () => {
       expect(bodyLink).toHaveAttribute(
         'href',
         'https://github.com/codecov/Codecov-user-feedback/issues/18'
+      )
+    })
+  })
+
+  describe('learn more blurb', () => {
+    it('renders body', async () => {
+      setup({})
+      render(<OtherCI />, { wrapper })
+
+      const body = await screen.findByText(/Visit our guide to/)
+      expect(body).toBeInTheDocument()
+
+      const link = await screen.findByRole('link', { name: /learn more/ })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/quick-start'
       )
     })
   })

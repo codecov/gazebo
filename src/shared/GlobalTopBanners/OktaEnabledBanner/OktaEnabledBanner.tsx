@@ -27,10 +27,9 @@ const OktaEnabledBanner = () => {
       <TopBanner.End>
         <Button
           to={{
-            pageName: 'signIn',
-            options: { provider: 'okta' },
+            pageName: 'oktaLogin',
           }}
-          hook=""
+          hook="authenticate-via-okta"
           disabled={false}
           variant="primary"
         >

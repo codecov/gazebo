@@ -1,4 +1,3 @@
-import Cookie from 'js-cookie'
 import qs from 'qs'
 import { useParams } from 'react-router-dom'
 
@@ -17,11 +16,6 @@ export function useNavLinks() {
     path: pa,
   } = useParams()
 
-  const utmCookie = Cookie.get('utmParams')
-  const utmCookieObj = qs.parse(utmCookie, {
-    ignoreQueryPrefix: true,
-  })
-
   return {
     signOut: {
       text: 'Sign Out',
@@ -33,24 +27,20 @@ export function useNavLinks() {
     signIn: {
       text: 'Log in',
       path: ({ provider = p, to } = { provider: p }) => {
-        const query = qs.stringify(
-          {
-            to,
-            ...utmCookieObj,
-          },
-          { addQueryPrefix: true }
-        )
+        const query = qs.stringify({ to }, { addQueryPrefix: true })
         return `${config.API_URL}/login/${provider}${query}`
       },
       isExternalLink: true,
     },
     signUp: {
       text: 'Sign Up',
-      path: () => {
-        const params = qs.stringify(utmCookieObj, {
-          addQueryPrefix: true,
-        })
-        return `${config.MARKETING_BASE_URL}/sign-up/${params}`
+      path: () => `${config.MARKETING_BASE_URL}/sign-up/`,
+      isExternalLink: true,
+    },
+    oktaLogin: {
+      text: 'Authenticate with Okta',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) => {
+        return `${config.API_URL}/login/okta/${provider}/${owner}`
       },
       isExternalLink: true,
     },
@@ -439,47 +429,37 @@ export function useNavLinks() {
       },
       text: 'Files changed',
     },
-    settings: {
+    configuration: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/settings`,
-      text: 'Settings',
+      ) => `/${provider}/${owner}/${repo}/config`,
+      text: 'Configuration',
     },
-    settingsGeneral: {
+    configGeneral: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/settings`,
+      ) => `/${provider}/${owner}/${repo}/config/general`,
       text: 'General',
     },
-    settingsConfiguration: {
+    configYaml: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/settings/config`,
-      text: 'Configuration Manager',
-    },
-    settingsYaml: {
-      path: (
-        { provider = p, owner = o, repo = r } = {
-          provider: p,
-          owner: o,
-          repo: r,
-        }
-      ) => `/${provider}/${owner}/${repo}/settings/yaml`,
+      ) => `/${provider}/${owner}/${repo}/config/yaml`,
       text: 'Yaml',
     },
-    settingsBadge: {
+    configBadge: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
@@ -487,7 +467,7 @@ export function useNavLinks() {
 
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/settings/badge`,
+      ) => `/${provider}/${owner}/${repo}/config/badge`,
       text: 'Badges & Graphs',
     },
     prevLink: {
@@ -688,7 +668,7 @@ export function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `https://github.com/${owner}/${repo}/settings/secrets/actions/new`,
+      ) => `https://github.com/${owner}/${repo}/config/secrets/actions/new`,
       isExternalLink: true,
       openNewTab: true,
     },

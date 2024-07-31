@@ -16,6 +16,7 @@ jest.mock(
   './FailedTestsTable/FailedTestsTable.tsx',
   () => () => 'Failed Tests Table'
 )
+jest.mock('./FailedTestsTable/BranchSelector', () => () => 'Branch Selector')
 
 jest.mock('shared/useRedirect')
 const mockedUseRedirect = useRedirect as jest.Mock
@@ -117,14 +118,6 @@ describe('FailedTestsTab', () => {
 
     const intro = screen.getByText('Test Analytics')
     expect(intro).toBeInTheDocument()
-  })
-
-  it('renders onboarding failed tests img', () => {
-    setup({})
-    render(<FailedTestsTab />, { wrapper: wrapper() })
-
-    const img = screen.getByAltText('failed-tests-onboarding')
-    expect(img).toBeInTheDocument()
   })
 
   describe('Setup Options', () => {
@@ -233,6 +226,15 @@ describe('FailedTestsTab', () => {
         wrapper: wrapper('/gh/codecov/cool-repo/tests'),
       })
       const content = await screen.findByText(/Failed Tests Table/)
+      expect(content).toBeInTheDocument()
+    })
+
+    it('renders Branch Selector', async () => {
+      setup({ testEnabled: true })
+      render(<FailedTestsTab />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/tests'),
+      })
+      const content = await screen.findByText(/Branch Selector/)
       expect(content).toBeInTheDocument()
     })
   })

@@ -1,12 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
-import { useFlags } from 'shared/featureFlags'
 
 import CommitPage from './CommitDetailPage'
 
@@ -14,12 +13,6 @@ jest.mock('ui/TruncatedMessage/hooks')
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./CommitCoverage', () => () => 'CommitCoverage')
 jest.mock('./CommitBundleAnalysis', () => () => 'CommitBundleAnalysis')
-
-// temp, for new header work
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  newHeader: boolean
-}>
 
 const mockNotFoundCommit = {
   owner: {
@@ -151,10 +144,6 @@ describe('CommitDetailPage', () => {
       bundleAnalysisEnabled: false,
     }
   ) {
-    mockedUseFlags.mockReturnValue({
-      newHeader: false,
-    })
-
     server.use(
       graphql.query('CommitPageData', (req, res, ctx) => {
         if (notFoundCommit) {
@@ -184,49 +173,6 @@ describe('CommitDetailPage', () => {
   }
 
   describe('commit is found, and user is part of org', () => {
-    describe('renders the breadcrumb', () => {
-      it('renders owner crumb', async () => {
-        setup()
-        render(<CommitPage />, { wrapper: wrapper() })
-
-        const ownerCrumb = await screen.findByRole('link', { name: 'test-org' })
-        expect(ownerCrumb).toBeInTheDocument()
-        expect(ownerCrumb).toHaveAttribute('href', '/gh/test-org')
-      })
-
-      it('renders repo crumb', async () => {
-        setup()
-        render(<CommitPage />, { wrapper: wrapper() })
-
-        const repoCrumb = await screen.findByRole('link', { name: 'test-repo' })
-        expect(repoCrumb).toBeInTheDocument()
-        expect(repoCrumb).toHaveAttribute('href', '/gh/test-org/test-repo')
-      })
-
-      it('renders commits crumb', async () => {
-        setup()
-        render(<CommitPage />, { wrapper: wrapper() })
-
-        const commitsCrumb = await screen.findByRole('link', {
-          name: 'commits',
-        })
-        expect(commitsCrumb).toBeInTheDocument()
-        expect(commitsCrumb).toHaveAttribute(
-          'href',
-          '/gh/test-org/test-repo/commits'
-        )
-      })
-
-      it('renders commit sha crumb', async () => {
-        setup()
-        render(<CommitPage />, { wrapper: wrapper() })
-
-        const shortSha = 'e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed'.slice(0, 7)
-        const commitShaCrumb = await screen.findByText(shortSha)
-        expect(commitShaCrumb).toBeInTheDocument()
-      })
-    })
-
     it('renders the header component', async () => {
       setup()
       render(<CommitPage />, { wrapper: wrapper() })
@@ -308,36 +254,6 @@ describe('CommitDetailPage', () => {
           await screen.findByText(/CommitBundleAnalysis/)
         expect(CommitBundleAnalysis).toBeInTheDocument()
       })
-    })
-  })
-
-  describe('header feature flagging', () => {
-    it('renders breadcrumb when flag is false', async () => {
-      setup({})
-      render(<CommitPage />, { wrapper: wrapper() })
-
-      const breadcrumb = await screen.findByText(/test-repo/)
-      expect(breadcrumb).toBeInTheDocument()
-    })
-
-    it('does not render breadcrumb when flag is true', async () => {
-      setup({})
-      mockedUseFlags.mockReturnValue({
-        newHeader: true,
-      })
-      render(<CommitPage />, { wrapper: wrapper() })
-
-      await waitFor(() =>
-        expect(mockedUseFlags).toHaveReturnedWith(
-          expect.objectContaining({ newHeader: true })
-        )
-      )
-
-      const CommitCoverage = await screen.findByText(/CommitCoverage/)
-      expect(CommitCoverage).toBeInTheDocument()
-
-      const breadcrumb = screen.queryByText(/test-repo/)
-      expect(breadcrumb).not.toBeInTheDocument()
     })
   })
 })

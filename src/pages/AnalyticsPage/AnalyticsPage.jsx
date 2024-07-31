@@ -5,14 +5,11 @@ import NotFound from 'pages/NotFound'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos'
 import { useOwner } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 import ReposTable from 'shared/ListRepo/ReposTable'
-import { cn } from 'shared/utils/cn'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import ChartSelectors from './ChartSelectors'
 import './analytics.css'
-import Header from './Header'
 import Tabs from './Tabs'
 
 const Chart = lazy(() => import('./Chart'))
@@ -39,10 +36,6 @@ function AnalyticsPage() {
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
-  const { newHeader } = useFlags({
-    newHeader: false,
-  })
-
   const orderOptions = orderingOptions
 
   const sortItem =
@@ -57,25 +50,22 @@ function AnalyticsPage() {
   }
 
   return (
-    <div className={cn({ 'mt-2': !newHeader })}>
-      {newHeader ? null : <Header />}
-      <div className="flex flex-col gap-4">
-        {ownerData?.isCurrentUserPartOfOrg ? <Tabs /> : null}
-        <ChartSelectors
-          params={params}
-          updateParams={updateParams}
-          active={true}
-          sortItem={sortItem}
-        />
-        <Suspense fallback={<SuspenseFallback />}>
-          <Chart params={params} />
-        </Suspense>
-        <ReposTable
-          owner={owner}
-          searchValue={params?.search}
-          filterValues={params?.repositories}
-        />
-      </div>
+    <div className="flex flex-col gap-4">
+      {ownerData?.isCurrentUserPartOfOrg ? <Tabs /> : null}
+      <ChartSelectors
+        params={params}
+        updateParams={updateParams}
+        active={true}
+        sortItem={sortItem}
+      />
+      <Suspense fallback={<SuspenseFallback />}>
+        <Chart params={params} />
+      </Suspense>
+      <ReposTable
+        owner={owner}
+        searchValue={params?.search}
+        filterValues={params?.repositories}
+      />
     </div>
   )
 }

@@ -46,6 +46,6 @@ describe('OktaEnabledBanner', () => {
 
     const link = screen.getByRole('link', { name: /Authenticate/ })
     expect(link).toBeInTheDocument()
-    expect(link).toHaveAttribute('href', '/login/okta')
+    expect(link).toHaveAttribute('href', '/login/okta/gh/codecov')
   })
 })

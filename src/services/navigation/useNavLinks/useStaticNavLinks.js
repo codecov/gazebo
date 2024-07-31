@@ -88,6 +88,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    aboutCodeCoverage: {
+      text: 'About Code Coverage',
+      path: () => 'https://docs.codecov.com/docs/about-code-coverage',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     oauthTroubleshoot: {
       text: 'OAuth Troubleshoot',
       path: () =>
@@ -252,6 +258,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    statusChecks: {
+      text: 'Status Checks',
+      path: () => 'https://docs.codecov.com/docs/commit-status',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     ciProviderWorkflow: {
       text: 'CI provider workflow',
       path: () => 'https://circleci.com/blog/what-is-continuous-integration',
@@ -396,6 +408,18 @@ export function useStaticNavLinks() {
       text: 'VSCode Yaml Validator Extension',
       path: () =>
         `https://marketplace.visualstudio.com/items?itemName=Codecov.codecov#:~:text=Codecov's%20official%20validator%20extension%20for,and%20configuration%20of%20new%20repositories.&text=Launch%20VS%20Code%20Quick%20Open,following%20command%2C%20and%20press%20enter.&text=Create%2C%20manage%2C%20and%20validate%20the,Code%20with%20our%20latest%20extension.`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    codecovBrowserExtension: {
+      text: 'Codecov Browser Extension',
+      path: () => 'https://docs.codecov.com/docs/the-codecov-browser-extension',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    codecovSlackApp: {
+      text: 'Codecov Slack App',
+      path: () => 'https://notifications.codecov.io/slack/install',
       isExternalLink: true,
       openNewTab: true,
     },

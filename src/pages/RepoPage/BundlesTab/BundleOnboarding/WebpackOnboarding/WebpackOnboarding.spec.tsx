@@ -566,4 +566,21 @@ describe('WebpackOnboarding', () => {
       )
     })
   })
+
+  describe('learn more blurb', () => {
+    it('renders body', async () => {
+      setup(null)
+      render(<WebpackOnboarding />, { wrapper })
+
+      const body = await screen.findByText(/Visit our guide to/)
+      expect(body).toBeInTheDocument()
+
+      const link = await screen.findByRole('link', { name: /learn more/ })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/javascript-bundle-analysis'
+      )
+    })
+  })
 })

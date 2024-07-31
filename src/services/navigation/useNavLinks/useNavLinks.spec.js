@@ -1,8 +1,5 @@
 import { renderHook } from '@testing-library/react'
-import Cookie from 'js-cookie'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import config from 'config'
 
 import { useNavLinks } from './useNavLinks'
 
@@ -90,27 +87,6 @@ describe('useNavLinks', () => {
       expect(path).toBe(
         '/login/gl?to=https%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov'
       )
-    })
-
-    it('forwards the utm tags', () => {
-      Cookie.set(
-        'utmParams',
-        'utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
-      )
-
-      const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/doggo/squirrel-locator'),
-      })
-
-      const path = result.current.signIn.path({
-        to: 'https://app.codecov.io/gh/codecov',
-      })
-
-      expect(path).toBe(
-        '/login/gh?to=https%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov&utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
-      )
-
-      Cookie.remove('utmParams')
     })
   })
 
@@ -1016,14 +992,14 @@ describe('useNavLinks', () => {
     })
   })
 
-  describe('repo settings link', () => {
+  describe('repo config link', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings'),
+        wrapper: wrapper('/gh/codecov/test/config'),
       })
 
-      const path = result.current.settings.path()
-      expect(path).toBe('/gh/codecov/test/settings')
+      const path = result.current.configuration.path()
+      expect(path).toBe('/gh/codecov/test/config')
     })
 
     it('can override the params', () => {
@@ -1031,12 +1007,12 @@ describe('useNavLinks', () => {
         wrapper: wrapper('/gh/codecov/test/pulls'),
       })
 
-      const path = result.current.settings.path({
+      const path = result.current.configuration.path({
         provider: 'bb',
         owner: 'test-owner',
         repo: 'test-repo',
       })
-      expect(path).toBe('/bb/test-owner/test-repo/settings')
+      expect(path).toBe('/bb/test-owner/test-repo/config')
     })
   })
 
@@ -1113,102 +1089,75 @@ describe('useNavLinks', () => {
     })
   })
 
-  describe('general repo settings link', () => {
+  describe('general repo configuration link', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings'),
+        wrapper: wrapper('/gh/codecov/test/config'),
       })
 
-      const path = result.current.settingsGeneral.path()
-      expect(path).toBe('/gh/codecov/test/settings')
+      const path = result.current.configGeneral.path()
+      expect(path).toBe('/gh/codecov/test/config/general')
     })
 
     it('can override the params', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings'),
+        wrapper: wrapper('/gh/codecov/test/config'),
       })
 
-      const path = result.current.settingsGeneral.path({
+      const path = result.current.configGeneral.path({
         provider: 'bb',
         owner: 'test-owner',
         repo: 'test-repo',
       })
-      expect(path).toBe('/bb/test-owner/test-repo/settings')
+      expect(path).toBe('/bb/test-owner/test-repo/config/general')
     })
   })
 
   describe('repo yaml link', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings/yaml'),
+        wrapper: wrapper('/gh/codecov/test/config/yaml'),
       })
 
-      const path = result.current.settingsYaml.path()
-      expect(path).toBe('/gh/codecov/test/settings/yaml')
+      const path = result.current.configYaml.path()
+      expect(path).toBe('/gh/codecov/test/config/yaml')
     })
 
     it('can override the params', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings/yaml'),
+        wrapper: wrapper('/gh/codecov/test/config/yaml'),
       })
 
-      const path = result.current.settingsYaml.path({
+      const path = result.current.configYaml.path({
         provider: 'bb',
         owner: 'test-owner',
         repo: 'test-repo',
       })
-      expect(path).toBe('/bb/test-owner/test-repo/settings/yaml')
+      expect(path).toBe('/bb/test-owner/test-repo/config/yaml')
     })
   })
 
-  describe('badge repo settings link', () => {
+  describe('badge repo configuration link', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings/badge'),
+        wrapper: wrapper('/gh/codecov/test/config/badge'),
       })
 
-      const path = result.current.settingsBadge.path()
-      expect(path).toBe('/gh/codecov/test/settings/badge')
+      const path = result.current.configBadge.path()
+      expect(path).toBe('/gh/codecov/test/config/badge')
     })
 
     it('can override the params', () => {
       const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/test/settings/badge'),
+        wrapper: wrapper('/gh/codecov/test/config/badge'),
       })
 
-      const path = result.current.settingsBadge.path({
+      const path = result.current.configBadge.path({
         provider: 'bb',
         owner: 'test-owner',
         repo: 'test-repo',
       })
-      expect(path).toBe('/bb/test-owner/test-repo/settings/badge')
-    })
-  })
-
-  describe('signup forward the marketing link', () => {
-    beforeEach(() => {
-      Cookie.set(
-        'utmParams',
-        'utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
-      )
-    })
-
-    afterEach(() => {
-      Cookie.remove('utmParams')
-    })
-
-    it('returns the correct url', () => {
-      const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper(
-          '/gh?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e&not=f'
-        ),
-      })
-
-      const path = result.current.signUp.path({ pathname: 'random/path/name' })
-      expect(path).toBe(
-        config.MARKETING_BASE_URL +
-          '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
-      )
+      expect(path).toBe('/bb/test-owner/test-repo/config/badge')
     })
   })
 
@@ -1653,7 +1602,7 @@ describe('useNavLinks', () => {
 
       const path = result.current.githubRepoSecrets.path()
       expect(path).toBe(
-        'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
+        'https://github.com/codecov/cool-repo/config/secrets/actions/new'
       )
     })
 
@@ -1667,7 +1616,7 @@ describe('useNavLinks', () => {
         repo: 'test-repo',
       })
       expect(path).toBe(
-        'https://github.com/test-owner/test-repo/settings/secrets/actions/new'
+        'https://github.com/test-owner/test-repo/config/secrets/actions/new'
       )
     })
   })
@@ -2026,6 +1975,29 @@ describe('useNavLinks', () => {
         repo: 'test-repo',
       })
       expect(path).toBe('/bb/test-owner/test-repo/tests/new/codecov-cli')
+    })
+  })
+
+  describe('okta login', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/test-owner'),
+      })
+
+      const path = result.current.oktaLogin.path()
+      expect(path).toBe('/login/okta/gh/test-owner')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/bb/test-owner'),
+      })
+
+      const path = result.current.oktaLogin.path({
+        provider: 'bb',
+        owner: 'test-owner',
+      })
+      expect(path).toBe('/login/okta/bb/test-owner')
     })
   })
 })

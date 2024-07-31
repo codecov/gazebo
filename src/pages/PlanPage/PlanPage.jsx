@@ -8,12 +8,9 @@ import config from 'config'
 import { SentryRoute } from 'sentry'
 
 import { usePlanPageData } from 'pages/PlanPage/hooks'
-import { useFlags } from 'shared/featureFlags'
-import { cn } from 'shared/utils/cn'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { PlanProvider } from './context'
-import Header from './Header'
 import PlanBreadcrumb from './PlanBreadcrumb'
 import Tabs from './Tabs'
 
@@ -38,17 +35,12 @@ function PlanPage() {
   const { owner, provider } = useParams()
   const { data: ownerData } = usePlanPageData({ owner, provider })
 
-  const { newHeader } = useFlags({
-    newHeader: false,
-  })
-
   if (config.IS_SELF_HOSTED || !ownerData?.isCurrentUserPartOfOrg) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
 
   return (
-    <div className={cn('flex flex-col gap-4', { 'mt-2': !newHeader })}>
-      {newHeader ? null : <Header />}
+    <div className="flex flex-col gap-4">
       <Tabs />
       <Elements stripe={stripePromise}>
         <PlanProvider>

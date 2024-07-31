@@ -12,7 +12,6 @@ import LoadingLogo from 'ui/LoadingLogo'
 import ActivationAlert from './ActivationAlert'
 import { useCrumbs } from './context'
 import DeactivatedRepo from './DeactivatedRepo'
-import RepoBreadcrumb from './RepoBreadcrumb'
 import RepoPageTabs from './RepoPageTabs'
 
 const BundlesTab = lazy(() => import('./BundlesTab'))
@@ -21,7 +20,7 @@ const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./CoverageOnboarding'))
 const PullsTab = lazy(() => import('./PullsTab'))
-const SettingsTab = lazy(() => import('./SettingsTab'))
+const ConfigTab = lazy(() => import('./ConfigTab'))
 const FailedTestsTab = lazy(() => import('./FailedTestsTab'))
 
 const path = '/:provider/:owner/:repo'
@@ -156,8 +155,8 @@ function Routes({
         {productEnabled && userAuthorizedtoViewRepo ? (
           <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
         ) : null}
-        <SentryRoute path={`${path}/settings`}>
-          <SettingsTab />
+        <SentryRoute path={`${path}/config`}>
+          <ConfigTab />
         </SentryRoute>
         {/* need to do these individual returns as the redirects won't work with a react fragment */}
         {!bundleAnalysisEnabled && jsOrTsPresent ? (
@@ -185,8 +184,8 @@ function Routes({
   if (isRepoActive) {
     return (
       <Switch>
-        <SentryRoute path={`${path}/settings`}>
-          <SettingsTab />
+        <SentryRoute path={`${path}/config`}>
+          <ConfigTab />
         </SentryRoute>
         <SentryRoute path={[path, `${path}/bundles`]}>
           <DeactivatedRepo />
@@ -228,8 +227,8 @@ function Routes({
           <BundleOnboarding />
         </SentryRoute>
       ) : null}
-      <SentryRoute path={`${path}/settings`}>
-        <SettingsTab />
+      <SentryRoute path={`${path}/config`}>
+        <ConfigTab />
       </SentryRoute>
       <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
       <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
@@ -291,7 +290,6 @@ function RepoPage() {
 
   return (
     <div>
-      <RepoBreadcrumb />
       <RepoPageTabs refetchEnabled={refetchEnabled} />
       <Suspense fallback={<Loader />}>
         <Routes
