@@ -1,8 +1,8 @@
-{/* Table.mdx */}
+{/_ Table.mdx _/}
 import { Meta } from '@storybook/blocks';
 import \* as TableStories from './Table.stories'
 
-{/* Attach this MDX file to the Button component */}
+{/_ Attach this MDX file to the Button component _/}
 
 <Meta of={TableStories} />
 
