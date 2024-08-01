@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
+// import { BUNDLE_LOAD_TYPE_ITEMS } from 'pages/RepoPage/BundlesTab/BundleContent/constants'
 import { MissingHeadReportSchema } from 'services/comparison'
 import {
   RepoNotFoundErrorSchema,
@@ -137,6 +138,8 @@ interface UseBundleTrendDataArgs {
   after: Date | null
   filters: {
     assetTypes: Array<(typeof BUNDLE_TREND_REPORT_TYPES)[number]>
+    // temp removing while we don't have filtering by types implemented
+    // loadTypes: Array<(typeof BUNDLE_LOAD_TYPE_ITEMS)[number]>
   }
   enabled?: boolean
   suspense?: boolean

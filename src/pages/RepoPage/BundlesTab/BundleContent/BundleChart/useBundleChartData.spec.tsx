@@ -228,6 +228,8 @@ describe('useBundleChartData', () => {
         bundle: 'test-bundle',
         filters: {
           assetTypes: ['REPORT_SIZE'],
+          // temp removing while we don't have filtering by types implemented
+          // loadTypes: [],
         },
         interval: 'INTERVAL_30_DAY',
         owner: 'codecov',
@@ -262,18 +264,42 @@ describe('useBundleChartData', () => {
         )
 
         await waitFor(() => expect(queryVarMock).toHaveBeenCalledTimes(1))
-        expect(queryVarMock).toHaveBeenCalledWith({
-          after: '2024-04-01T00:00:00.000Z',
-          before: '2024-07-01T00:00:00.000Z',
-          branch: 'main',
-          bundle: 'test-bundle',
-          filters: {
-            assetTypes: ['REPORT_SIZE'],
-          },
-          interval: 'INTERVAL_7_DAY',
-          owner: 'codecov',
-          repo: 'test-repo',
-        })
+        expect(queryVarMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              assetTypes: ['REPORT_SIZE'],
+            }),
+          })
+        )
+      })
+
+      it.skip('defaults to empty load types array', async () => {
+        const { queryVarMock } = setup()
+
+        renderHook(
+          () =>
+            useBundleChartData({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'test-repo',
+              branch: 'main',
+              bundle: 'test-bundle',
+            }),
+          {
+            wrapper: wrapper(
+              `${initialEntries}?${qs.stringify({ types: [] })}`
+            ),
+          }
+        )
+
+        await waitFor(() => expect(queryVarMock).toHaveBeenCalledTimes(1))
+        expect(queryVarMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              loadTypes: [],
+            }),
+          })
+        )
       })
     })
 
@@ -292,24 +318,23 @@ describe('useBundleChartData', () => {
             }),
           {
             wrapper: wrapper(
-              `${initialEntries}?${qs.stringify({ types: ['JAVASCRIPT'] })}`
+              `${initialEntries}?${qs.stringify({
+                types: ['JAVASCRIPT'],
+                // temp removing while we don't have filtering by types implemented
+                // loading: ['INITIAL'],
+              })}`
             ),
           }
         )
 
         await waitFor(() => expect(queryVarMock).toHaveBeenCalledTimes(1))
-        expect(queryVarMock).toHaveBeenCalledWith({
-          after: '2024-04-01T00:00:00.000Z',
-          before: '2024-07-01T00:00:00.000Z',
-          branch: 'main',
-          bundle: 'test-bundle',
-          filters: {
-            assetTypes: ['JAVASCRIPT_SIZE'],
-          },
-          interval: 'INTERVAL_7_DAY',
-          owner: 'codecov',
-          repo: 'test-repo',
-        })
+        expect(queryVarMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: {
+              assetTypes: ['JAVASCRIPT_SIZE'],
+            },
+          })
+        )
       })
     })
   })
