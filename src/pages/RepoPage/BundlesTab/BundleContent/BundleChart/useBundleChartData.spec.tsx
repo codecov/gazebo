@@ -228,7 +228,8 @@ describe('useBundleChartData', () => {
         bundle: 'test-bundle',
         filters: {
           assetTypes: ['REPORT_SIZE'],
-          loadTypes: [],
+          // temp removing while we don't have filtering by types implemented
+          // loadTypes: [],
         },
         interval: 'INTERVAL_30_DAY',
         owner: 'codecov',
@@ -272,7 +273,7 @@ describe('useBundleChartData', () => {
         )
       })
 
-      it('defaults to empty load types array', async () => {
+      it.skip('defaults to empty load types array', async () => {
         const { queryVarMock } = setup()
 
         renderHook(
@@ -319,7 +320,8 @@ describe('useBundleChartData', () => {
             wrapper: wrapper(
               `${initialEntries}?${qs.stringify({
                 types: ['JAVASCRIPT'],
-                loading: ['INITIAL'],
+                // temp removing while we don't have filtering by types implemented
+                // loading: ['INITIAL'],
               })}`
             ),
           }
@@ -330,7 +332,6 @@ describe('useBundleChartData', () => {
           expect.objectContaining({
             filters: {
               assetTypes: ['JAVASCRIPT_SIZE'],
-              loadTypes: ['INITIAL'],
             },
           })
         )

@@ -168,7 +168,6 @@ describe('useBundleTrendData', () => {
             before: new Date('2024-06-20T03:00:00.000Z'),
             filters: {
               assetTypes: ['REPORT_SIZE'],
-              loadTypes: [],
             },
           }),
         { wrapper }
@@ -228,7 +227,6 @@ describe('useBundleTrendData', () => {
             before: new Date('2024-06-20T03:00:00.000Z'),
             filters: {
               assetTypes: ['REPORT_SIZE'],
-              loadTypes: [],
             },
           }),
         { wrapper }
@@ -264,7 +262,6 @@ describe('useBundleTrendData', () => {
             before: new Date('2024-06-20T03:00:00.000Z'),
             filters: {
               assetTypes: ['REPORT_SIZE'],
-              loadTypes: [],
             },
           }),
         { wrapper }
@@ -307,7 +304,6 @@ describe('useBundleTrendData', () => {
             before: new Date('2024-06-20T03:00:00.000Z'),
             filters: {
               assetTypes: ['REPORT_SIZE'],
-              loadTypes: [],
             },
           }),
         { wrapper }
@@ -350,7 +346,6 @@ describe('useBundleTrendData', () => {
             before: new Date('2024-06-20T03:00:00.000Z'),
             filters: {
               assetTypes: ['REPORT_SIZE'],
-              loadTypes: [],
             },
           }),
         { wrapper }

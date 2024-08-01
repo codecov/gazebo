@@ -49,8 +49,9 @@ export function useBundleChartData({
 
   // @ts-expect-error - useLocationParams needs fixing
   const types: BundleReportTypeEnums[] = params?.types ?? []
-  // @ts-expect-error - useLocationParams needs fixing
-  const loadTypes = params?.loading ?? []
+
+  // temp removing while we don't have filtering by types implemented
+  // const loadTypes = params?.loading ?? []
 
   const assetTypes: Array<(typeof BUNDLE_TREND_REPORT_TYPES)[number]> =
     types.length > 0
@@ -69,7 +70,8 @@ export function useBundleChartData({
     // this will be replaced once we have filtering by types implemented
     filters: {
       assetTypes: assetTypes,
-      loadTypes: loadTypes,
+      // temp removing while we don't have filtering by types implemented
+      // loadTypes: loadTypes,
     },
     enabled: !!overview?.oldestCommitAt,
     suspense: false,
