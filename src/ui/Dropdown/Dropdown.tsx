@@ -55,12 +55,29 @@ const Trigger = React.forwardRef<
 >(({ children, className, ...props }, forwardedRef) => {
   const { isOpen } = React.useContext(DropdownContext)
 
+  // handles default behavior on safari + firefox where
+  // the focus outline lingers after dropdown is closed
+  const ref = React.useRef<HTMLButtonElement | null>(null)
+  const [wasJustClosed, setWasJustClosed] = React.useState(false)
+  React.useEffect(() => {
+    if (!isOpen) {
+      setWasJustClosed(true)
+      // eslint-disable-next-line max-nested-callbacks
+      setTimeout(() => {
+        ref.current?.blur()
+        setWasJustClosed(false)
+      }, 1000)
+    }
+  }, [isOpen])
+
   return (
     <DropdownMenuPrimitive.Trigger
       className={cn(
         trigger({ className }),
-        'flex flex-1 items-center gap-1 whitespace-nowrap text-left focus:outline-1'
+        'flex flex-1 items-center gap-1 whitespace-nowrap text-left focus:outline-1',
+        wasJustClosed && 'focus:outline-none'
       )}
+      ref={ref}
       {...props}
     >
       {children}

@@ -81,7 +81,11 @@ function UserDropdown() {
           data-marketing="user profile menu"
           data-testid="user-dropdown-trigger"
         >
-          <Avatar user={currentUser?.user} border="dark" />
+          <Avatar
+            user={currentUser?.user}
+            border="dark"
+            className="select-none"
+          />
         </Dropdown.Trigger>
 
         <Dropdown.Content

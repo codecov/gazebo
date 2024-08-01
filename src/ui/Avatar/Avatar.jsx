@@ -12,8 +12,8 @@ const borderClasses = {
   dark: 'border-ds-gray-octonary border-2',
 }
 
-function Avatar({ user, border = 'none', ariaLabel }) {
-  const classes = cn(baseClasses, borderClasses[border])
+function Avatar({ user, border = 'none', ariaLabel, className = '' }) {
+  const classes = cn(baseClasses, borderClasses[border], className)
 
   const { src, error, isLoading } = useImage({
     src: user?.avatarUrl,
