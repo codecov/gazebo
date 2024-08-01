@@ -1,7 +1,5 @@
-import { useLayoutEffect } from 'react'
 import { Redirect } from 'react-router-dom'
 
-import { useCrumbs } from 'pages/RepoPage/context'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
@@ -14,7 +12,6 @@ const YAML_STATE = Object.freeze({
 })
 
 const SummaryTeamPlan = () => {
-  const { setBreadcrumbs } = useCrumbs()
   const { setNewPath, redirectState } = useCoverageRedirect()
 
   const {
@@ -28,21 +25,6 @@ const SummaryTeamPlan = () => {
     branchListFetchNextPage,
     setBranchSearchTerm,
   } = useSummary()
-
-  useLayoutEffect(() => {
-    setBreadcrumbs([
-      {
-        pageName: '',
-        readOnly: true,
-        children: (
-          <span className="inline-flex items-center gap-1">
-            <Icon name="branch" variant="developer" size="sm" />
-            {currentBranchSelected?.name}
-          </span>
-        ),
-      },
-    ])
-  }, [currentBranchSelected?.name, setBreadcrumbs])
 
   const onChangeHandler = ({ name }: { name: string }) => {
     setNewPath(name)
