@@ -55,19 +55,18 @@ const coverageData = {
 let testLocation: ReturnType<typeof useLocation>
 const wrapper =
   (initialEntry = '/'): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntry]}>
-        <Route path="/">{children}</Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <Route path="/">{children}</Route>
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation = location
+          return null
+        }}
+      />
+    </MemoryRouter>
+  )
 
 describe('VirtualFileRenderer', () => {
   function setup() {

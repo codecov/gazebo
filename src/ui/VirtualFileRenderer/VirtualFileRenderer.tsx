@@ -122,14 +122,14 @@ const CodeBody = forwardRef<HTMLDivElement, CodeBodyProps>(
                 }px)`,
               }}
               className={cn(
-                `absolute top-0 left-0 w-full border-r border-ds-gray-tertiary px-4 hover:cursor-pointer text-ds-gray-quaternary hover:text-black text-right bg-white`,
+                `absolute left-0 top-0 w-full border-r border-ds-gray-tertiary bg-white px-4 text-right text-ds-gray-quaternary hover:cursor-pointer hover:text-black`,
                 location.hash === `#L${item.index}` &&
-                  'text-ds-gray-quinary font-semibold',
+                  'font-semibold text-ds-gray-quinary',
                 coverage[item.index] === 'H' && 'bg-ds-coverage-covered',
                 coverage[item.index] === 'M' &&
-                  'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-ds-primary-red after:border-r-2',
+                  'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
                 coverage[item.index] === 'P' &&
-                  'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-ds-primary-yellow after:border-dotted after:border-r-2'
+                  'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow'
               )}
               onClick={() => {
                 if (location.hash === `#L${item.index}`) {
