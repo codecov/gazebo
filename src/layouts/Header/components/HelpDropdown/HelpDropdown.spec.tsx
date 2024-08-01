@@ -31,11 +31,11 @@ describe('HelpDropdown', () => {
   })
 
   describe('when not clicked', () => {
-    it('does not render dropdown', async () => {
+    it('does not render dropdown contents', async () => {
       setup()
       render(<HelpDropdown />, { wrapper })
 
-      const dropdown = await screen.findByRole('combobox')
+      const dropdown = await screen.findByTestId('help-dropdown')
       expect(dropdown).toBeInTheDocument()
 
       const docs = screen.queryByText('Developer docs')
@@ -48,7 +48,7 @@ describe('HelpDropdown', () => {
       const { user } = setup()
       render(<HelpDropdown />, { wrapper })
 
-      const dropdown = await screen.findByRole('combobox')
+      const dropdown = await screen.findByTestId('help-dropdown-trigger')
       expect(dropdown).toBeInTheDocument()
 
       await user.click(dropdown)
@@ -92,7 +92,7 @@ describe('HelpDropdown', () => {
 
       render(<HelpDropdown />, { wrapper })
 
-      const dropdown = await screen.findByRole('combobox')
+      const dropdown = await screen.findByTestId('help-dropdown-trigger')
       expect(dropdown).toBeInTheDocument()
 
       await user.click(dropdown)
@@ -133,7 +133,7 @@ describe('HelpDropdown', () => {
 
         const { unmount } = render(<HelpDropdown />, { wrapper })
 
-        const dropdown = await screen.findByRole('combobox')
+        const dropdown = await screen.findByTestId('help-dropdown-trigger')
         expect(dropdown).toBeInTheDocument()
 
         await user.click(dropdown)

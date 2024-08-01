@@ -65,15 +65,17 @@ function HelpDropdown() {
       <label className="sr-only">Help menu dropdown</label>
 
       <Dropdown>
-        <span data-marketing="help menu">
-          <Dropdown.Trigger>
-            <Icon variant="outline" name="questionMarkCircle" />
-          </Dropdown.Trigger>
-        </span>
+        <Dropdown.Trigger
+          data-marketing="help menu"
+          data-testid="help-dropdown-trigger"
+        >
+          <Icon variant="outline" name="questionMarkCircle" />
+        </Dropdown.Trigger>
 
         <Dropdown.Content
           align="end"
           className="w-[15.5rem] min-w-fit rounded border-ds-gray-tertiary shadow-none"
+          aria-label="help menu items"
         >
           {items.map((item, index) => (
             <Dropdown.Item

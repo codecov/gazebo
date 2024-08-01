@@ -71,33 +71,33 @@ function UserDropdown() {
   return (
     <div
       className="relative"
-      data-testid="dropdown"
+      data-testid="user-dropdown"
       data-cy="auth-user-dropdown"
     >
       <label className="sr-only">Logged in user sub navigation</label>
 
       <Dropdown>
-        <span data-marketing="user profile menu">
-          <Dropdown.Trigger>
-            <Avatar user={currentUser?.user} border="dark" />
-          </Dropdown.Trigger>
-        </span>
+        <Dropdown.Trigger
+          data-marketing="user profile menu"
+          data-testid="user-dropdown-trigger"
+        >
+          <Avatar user={currentUser?.user} border="dark" />
+        </Dropdown.Trigger>
 
         <Dropdown.Content
           align="end"
           className="w-[15.5rem] min-w-fit rounded border-ds-gray-tertiary shadow-none"
+          aria-label="user profile menu items"
         >
-          <span aria-label="user profile menu items">
-            {items.map((item, index) => (
-              <Dropdown.Item
-                key={`main-dropdown-${index}`}
-                className="grid p-0 first:pt-2 last:pb-2"
-              >
-                {/* @ts-expect-error props might be overloaded with stuff */}
-                <Button variant="listbox" {...item} />
-              </Dropdown.Item>
-            ))}
-          </span>
+          {items.map((item, index) => (
+            <Dropdown.Item
+              key={`main-dropdown-${index}`}
+              className="grid p-0 first:pt-2 last:pb-2"
+            >
+              {/* @ts-expect-error props might be overloaded with stuff */}
+              <Button variant="listbox" {...item} />
+            </Dropdown.Item>
+          ))}
         </Dropdown.Content>
       </Dropdown>
     </div>

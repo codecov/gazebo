@@ -66,6 +66,7 @@ const Trigger = React.forwardRef<
       {children}
       <span
         aria-hidden="true"
+        data-testid="dropdown-trigger-chevron"
         className={cn('transition-transform', {
           'rotate-180': isOpen,
           'rotate-0': !isOpen,
