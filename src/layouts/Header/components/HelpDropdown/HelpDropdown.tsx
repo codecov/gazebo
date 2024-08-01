@@ -15,16 +15,17 @@ type DropdownItem = {
 }
 
 function HelpDropdown() {
-  const { data: form } = useQuery({
+  const { data: form, isSuccess: isFormSuccess } = useQuery({
     queryKey: ['HelpDropdownForm'],
     queryFn: () => SentryUserFeedback.createForm(),
+    suspense: false,
   })
 
   useLayoutEffect(() => {
-    if (!form) return
+    if (!isFormSuccess) return
     form.appendToDom()
     return form.removeFromDom
-  }, [form])
+  }, [form, isFormSuccess])
 
   const items: DropdownItem[] = [
     {
@@ -36,7 +37,7 @@ function HelpDropdown() {
       children: 'Support center',
     },
     {
-      onClick: form?.open,
+      onClick: isFormSuccess ? form.open : () => {},
       hook: 'open-modal',
       children: 'Share feedback',
     },
