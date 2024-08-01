@@ -85,6 +85,15 @@
     --widget-accent-background: rgb(var(--color-ds-blue-darker));
     --widget-background-hover: rgb(var(--color-ds-blue-quinary));
     --widget-font-family: 'Poppins', sans-serif;
+
+    /* chart color styles */
+    --chart-area-coverage: var(--color-ds-gray-senary);
+    --chart-area-bundle-tab: 205, 100%, 38%;
+    --chart-1: 205, 100%, 50%;
+    --chart-2: 205, 99%, 30%;
+    --chart-3: 41, 91%, 53%;
+    --chart-4: 286, 61%, 52%;
+    --chart-5: 0, 100%, 80%;
   }
 }
 
