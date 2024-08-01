@@ -55,8 +55,8 @@ const Trigger = React.forwardRef<
 >(({ children, className, ...props }, forwardedRef) => {
   const { isOpen } = React.useContext(DropdownContext)
 
-  // handles default behavior on safari + firefox where
-  // the focus outline lingers after dropdown is closed
+  // below removes stray lingering outline after dropdown is closed
+  // exhibited in safari + firefox (appears native to radix component)
   const ref = React.useRef<HTMLButtonElement | null>(null)
   const [wasJustClosed, setWasJustClosed] = React.useState(false)
   React.useEffect(() => {

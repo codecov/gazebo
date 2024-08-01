@@ -72,6 +72,8 @@ export const BundleDetails: React.FC = () => {
 
   // @ts-expect-error - useLocationParams needs fixing
   const types = params?.types ?? []
+  // @ts-expect-error - useLocationParams needs fixing
+  const loadTypes = params?.loading ?? []
 
   const { data: summaryData } = useBundleSummary({
     provider,
@@ -81,6 +83,7 @@ export const BundleDetails: React.FC = () => {
     bundle,
     filters: {
       reportGroups: types,
+      loadTypes: loadTypes,
     },
     opts: { enabled: bundle !== '' },
   })
