@@ -17,7 +17,7 @@ const AccountSchema = z.object({
 })
 
 const OwnerSchema = z.object({
-  isUserOktaAuthenticated: z.boolean(),
+  isUserOktaAuthenticated: z.boolean().nullable(),
   account: AccountSchema.nullable(),
 })
 
