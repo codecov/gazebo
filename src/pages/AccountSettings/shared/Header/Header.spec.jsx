@@ -5,14 +5,10 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 import Header from './Header'
 
 jest.mock('config')
 
-// temp, for new header work
-jest.mock('shared/featureFlags')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
 const queryClient = new QueryClient()
@@ -44,9 +40,6 @@ describe('Header', () => {
       isSelfHosted: false,
     }
   ) {
-    useFlags.mockReturnValue({
-      newHeader: false,
-    })
     config.IS_SELF_HOSTED = isSelfHosted
   }
 
@@ -128,27 +121,6 @@ describe('Header', () => {
           name: /plan/i,
         })
       ).not.toBeInTheDocument()
-    })
-  })
-
-  describe('header feature flagging', () => {
-    it('renders header when flag is false', async () => {
-      setup()
-      render(<Header />, { wrapper })
-
-      const header = await screen.findByText('MyContextSwitcher')
-      expect(header).toBeInTheDocument()
-    })
-
-    it('does not render header when flag is true', async () => {
-      setup()
-      useFlags.mockReturnValue({
-        newHeader: true,
-      })
-      render(<Header />, { wrapper })
-
-      const header = screen.queryByText('MyContextSwitcher')
-      expect(header).not.toBeInTheDocument()
     })
   })
 })

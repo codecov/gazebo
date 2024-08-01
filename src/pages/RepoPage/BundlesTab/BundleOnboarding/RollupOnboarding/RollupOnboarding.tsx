@@ -7,6 +7,7 @@ import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 
+import LearnMoreBlurb from '../LearnMoreBlurb'
 import {
   copiedBuildCommandMetric,
   copiedCommitMetric,
@@ -266,6 +267,7 @@ const RollupOnboarding: React.FC = () => {
       <StepFour />
       <StepFive />
       <FeedbackCTA />
+      <LearnMoreBlurb />
     </div>
   )
 }

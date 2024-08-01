@@ -19,7 +19,7 @@ jest.mock('./CommitsTab', () => () => 'CommitsTab')
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
 jest.mock('./CoverageOnboarding', () => () => 'CoverageOnboarding')
 jest.mock('./PullsTab', () => () => 'PullsTab')
-jest.mock('./SettingsTab', () => () => 'SettingsTab')
+jest.mock('./ConfigTab', () => () => 'ConfigurationTab')
 jest.mock('shared/featureFlags')
 jest.mock('./ActivationAlert', () => () => 'ActivationAlert')
 jest.mock('./FailedTestsTab', () => () => 'FailedTestsTab')
@@ -28,7 +28,6 @@ jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   componentTab: boolean
   onboardingFailedTests: boolean
-  newHeader: boolean
 }>
 
 const mockGetRepo = ({
@@ -112,7 +111,7 @@ const wrapper =
               '/:provider/:owner/:repo/components',
               '/:provider/:owner/:repo/new',
               '/:provider/:owner/:repo/pulls',
-              '/:provider/:owner/:repo/settings',
+              '/:provider/:owner/:repo/config',
               '/:provider/:owner/:repo/tree/:branch',
               '/:provider/:owner/:repo/tree/:branch/:path+',
               '/:provider/:owner/:repo',
@@ -193,7 +192,6 @@ describe('RepoPage', () => {
     mockedUseFlags.mockReturnValue({
       componentTab: true,
       onboardingFailedTests,
-      newHeader: false,
     })
 
     const user = userEvent.setup()
@@ -619,18 +617,18 @@ describe('RepoPage', () => {
         })
       })
 
-      describe('testing settings path', () => {
-        it('renders settings tab', async () => {
+      describe('testing config path', () => {
+        it('renders config tab', async () => {
           const { queryClient } = setup()
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/settings',
+              initialEntries: '/gh/codecov/cool-repo/config',
             }),
           })
 
-          const settings = await screen.findByText('SettingsTab')
-          expect(settings).toBeInTheDocument()
+          const config = await screen.findByText('ConfigurationTab')
+          expect(config).toBeInTheDocument()
         })
       })
 
@@ -782,8 +780,8 @@ describe('RepoPage', () => {
         })
       })
 
-      describe('testing settings path', () => {
-        it('renders settings tab', async () => {
+      describe('testing config path', () => {
+        it('renders config tab', async () => {
           const { queryClient } = setup({
             isRepoActive: false,
             hasRepoData: true,
@@ -792,12 +790,12 @@ describe('RepoPage', () => {
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/settings',
+              initialEntries: '/gh/codecov/cool-repo/config',
             }),
           })
 
-          const settingsTab = await screen.findByText('SettingsTab')
-          expect(settingsTab).toBeInTheDocument()
+          const config = await screen.findByText('ConfigurationTab')
+          expect(config).toBeInTheDocument()
         })
       })
     })
@@ -817,25 +815,6 @@ describe('RepoPage', () => {
     })
   })
 
-  describe('testing breadcrumb', () => {
-    it('renders org breadcrumb', async () => {
-      const { queryClient } = setup({ hasRepoData: true, isRepoActive: true })
-      render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
-
-      const orgCrumb = await screen.findByRole('link', { name: 'codecov' })
-      expect(orgCrumb).toBeInTheDocument()
-      expect(orgCrumb).toHaveAttribute('href', '/gh/codecov')
-    })
-
-    it('renders repo breadcrumb', async () => {
-      const { queryClient } = setup({ hasRepoData: true, isRepoActive: true })
-      render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
-
-      const repoCrumb = await screen.findByText('cool-repo')
-      expect(repoCrumb).toBeInTheDocument()
-    })
-  })
-
   describe('user is not activated and repo is private', () => {
     describe('user does not have coverage enabled', () => {
       it('renders coverage setup tabs', async () => {
@@ -848,8 +827,6 @@ describe('RepoPage', () => {
           language: 'javascript',
         })
         render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
-        const repoCrumb = await screen.findByText('cool-repo')
-        expect(repoCrumb).toBeInTheDocument()
         const coverageOnboarding = await screen.findByText('CoverageOnboarding')
         expect(coverageOnboarding).toBeInTheDocument()
         const error = screen.queryByText(/ActivationAlert/)
@@ -865,9 +842,6 @@ describe('RepoPage', () => {
           isRepoPrivate: true,
         })
         render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
-        const repoCrumb = await screen.findByText('cool-repo')
-        expect(repoCrumb).toBeInTheDocument()
-
         const error = await screen.findByText('ActivationAlert')
         expect(error).toBeInTheDocument()
       })
@@ -884,8 +858,6 @@ describe('RepoPage', () => {
           language: 'javascript',
         })
         render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
-        const repoCrumb = await screen.findByText('cool-repo')
-        expect(repoCrumb).toBeInTheDocument()
         const bundlesTab = await screen.findByText('Bundles')
         expect(bundlesTab).toBeInTheDocument()
         await user.click(bundlesTab)
@@ -904,43 +876,12 @@ describe('RepoPage', () => {
           isRepoPrivate: true,
         })
         render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
-        const repoCrumb = await screen.findByText('cool-repo')
-        expect(repoCrumb).toBeInTheDocument()
         const bundlesTab = await screen.findByText('Bundles')
         expect(bundlesTab).toBeInTheDocument()
         await user.click(bundlesTab)
         const error = await screen.findByText('ActivationAlert')
         expect(error).toBeInTheDocument()
       })
-    })
-  })
-
-  describe('header feature flagging', () => {
-    it('renders header when flag is false', async () => {
-      const { queryClient } = setup({ hasRepoData: true, isRepoActive: true })
-      render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
-
-      const repoCrumb = await screen.findByText('cool-repo')
-      expect(repoCrumb).toBeInTheDocument()
-    })
-
-    it('does not render header when flag is true', async () => {
-      const { queryClient } = setup({ hasRepoData: true, isRepoActive: true })
-      mockedUseFlags.mockReturnValue({
-        componentTab: true,
-        onboardingFailedTests: false,
-        newHeader: true,
-      })
-      render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
-
-      await waitFor(() =>
-        expect(mockedUseFlags).toHaveReturnedWith(
-          expect.objectContaining({ newHeader: true })
-        )
-      )
-
-      const repoCrumb = screen.queryByText('cool-repo')
-      expect(repoCrumb).not.toBeInTheDocument()
     })
   })
 })

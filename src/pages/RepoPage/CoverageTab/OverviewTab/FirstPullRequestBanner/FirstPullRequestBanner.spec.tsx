@@ -21,6 +21,6 @@ describe('FirstPullRequestBanner', () => {
   it('renders the correct link', () => {
     render(<FirstPullRequestBanner />, { wrapper })
     const link = screen.getByRole('link', { name: 'edit default branch' })
-    expect(link).toHaveAttribute('href', '/gh/codecov/gazebo/settings')
+    expect(link).toHaveAttribute('href', '/gh/codecov/gazebo/config')
   })
 })

@@ -150,8 +150,15 @@ describe('NewRepoTab', () => {
     setup({})
     render(<NewRepoTab />, { wrapper: wrapper() })
 
-    const intro = await screen.findByTestId('intro-blurb')
-    expect(intro).toBeInTheDocument()
+    const heading = await screen.findByRole('heading', {
+      name: 'Coverage Analytics',
+    })
+    expect(heading).toBeInTheDocument()
+
+    const blurb = await screen.findByText(
+      /Before integrating with Codecov, ensure your project generates coverage reports,/
+    )
+    expect(blurb).toBeInTheDocument()
   })
 
   describe('CISelector', () => {

@@ -19,8 +19,8 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/gazebo/settings']}>
-    <Route path="/:provider/:owner/:repo/settings">
+  <MemoryRouter initialEntries={['/gh/codecov/gazebo/config']}>
+    <Route path="/:provider/:owner/:repo/config">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </Route>
   </MemoryRouter>

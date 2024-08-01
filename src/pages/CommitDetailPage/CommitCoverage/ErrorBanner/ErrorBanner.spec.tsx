@@ -69,7 +69,7 @@ describe('ErrorBanner Card', () => {
       )
 
       const errorMsg = screen.getByText(
-        'Unable to compare commits because the head commit of the commit is not found.'
+        'Unable to compare commits because the head commit is not found.'
       )
       expect(errorMsg).toBeInTheDocument()
     })
