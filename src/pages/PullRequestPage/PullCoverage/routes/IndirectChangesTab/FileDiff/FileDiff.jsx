@@ -84,7 +84,6 @@ function FileDiff({ path }) {
                   lineContent={line}
                   edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
                   path={data?.hashedPath}
-                  hitCount={segment?.lines?.[i]?.coverageInfo?.hitCount}
                   stickyPadding={stickyPadding}
                   {...props}
                   {...segment.lines[i]}
