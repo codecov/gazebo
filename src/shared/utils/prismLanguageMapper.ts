@@ -6,7 +6,7 @@
 
 import { type Language } from 'prism-react-renderer'
 
-const prismSupportedLanguages = new Map([
+const prismSupportedLanguages = new Map<string, Language>([
   ['html', 'markup'],
   ['xml', 'markup'],
   ['svg', 'markup'],
@@ -46,6 +46,5 @@ export function prismLanguageMapper(fileName: string): Language {
   const fileExtension = fileName.split('.').pop() ?? ''
 
   // we have to return something or else TS will complain
-  const lang = prismSupportedLanguages.get(fileExtension) ?? 'markup'
-  return lang as Language
+  return prismSupportedLanguages.get(fileExtension) ?? 'markup'
 }
