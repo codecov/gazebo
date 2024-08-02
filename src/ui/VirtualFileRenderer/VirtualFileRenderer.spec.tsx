@@ -182,42 +182,7 @@ describe('VirtualFileRenderer', () => {
       jest.clearAllMocks()
     })
 
-    it('disables pointer events on scroll', async () => {
-      dateNowSpy
-        .mockImplementationOnce(() => 1000)
-        .mockImplementationOnce(() => 2000)
-      requestAnimationFrameSpy.mockImplementation((cb) => {
-        setTimeout(() => {
-          cb()
-        }, 50)
-        return 1
-      })
-
-      render(
-        <VirtualFileRenderer
-          code={code}
-          coverage={coverageData}
-          fileName="tsx"
-        />,
-        {
-          wrapper: wrapper(),
-        }
-      )
-
-      const lines = await screen.findAllByText(
-        /{ pageName: 'repo', text: repo },/
-      )
-      expect(lines[0]).toBeInTheDocument()
-
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
-
-      const codeRenderer = screen.getByTestId('virtual-file-renderer')
-      await waitFor(() =>
-        expect(codeRenderer).toHaveStyle('pointer-events: none')
-      )
-    })
-
-    it('reset pointer events after scroll', async () => {
+    it('disables pointer events on scroll and resets after timeout', async () => {
       dateNowSpy
         .mockImplementationOnce(() => 1000)
         .mockImplementationOnce(() => 2000)
