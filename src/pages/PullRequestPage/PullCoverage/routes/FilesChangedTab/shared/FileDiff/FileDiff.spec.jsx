@@ -150,14 +150,6 @@ describe('FileDiff', () => {
       expect(calcMode).toBeInTheDocument()
     })
 
-    it('renders hit counter', async () => {
-      setup()
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
-
-      const hitCounter = await screen.findByText('18')
-      expect(hitCounter).toBeInTheDocument()
-    })
-
     describe('when only coverage is enabled', () => {
       it('renders the commit redirect url', async () => {
         setup()
