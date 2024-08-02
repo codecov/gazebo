@@ -89,10 +89,6 @@ const mockResponse = {
                       baseCoverage: 'M',
                       headCoverage: 'H',
                       content: 'content',
-                      coverageInfo: {
-                        hitCount: 0,
-                        hitUploadIds: [0],
-                      },
                     },
                   ],
                 },
