@@ -10,7 +10,7 @@ export const RequestSchema = z
       .object({
         owner: z
           .object({
-            isGithubRateLimited: z.boolean(),
+            isGithubRateLimited: z.boolean().nullable(),
           })
           .nullable(),
       })
