@@ -76,18 +76,32 @@ describe('VirtualFileRenderer', () => {
   }
 
   it('renders the code', () => {
-    render(<VirtualFileRenderer code={code} coverage={coverageData} />, {
-      wrapper: wrapper(),
-    })
+    render(
+      <VirtualFileRenderer
+        code={code}
+        coverage={coverageData}
+        fileName="tsx"
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
 
     const codeBlock = screen.getByText(/<Breadcrumb/)
     expect(codeBlock).toBeInTheDocument()
   })
 
   it('renders line numbers', () => {
-    render(<VirtualFileRenderer code={code} coverage={coverageData} />, {
-      wrapper: wrapper(),
-    })
+    render(
+      <VirtualFileRenderer
+        code={code}
+        coverage={coverageData}
+        fileName="tsx"
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
 
     const lineNumbers = screen.getAllByText(/\d+/)
     expect(lineNumbers).toHaveLength(8)
@@ -95,9 +109,16 @@ describe('VirtualFileRenderer', () => {
 
   describe('covered lines', () => {
     it('uses the correct color', () => {
-      render(<VirtualFileRenderer code={code} coverage={coverageData} />, {
-        wrapper: wrapper(),
-      })
+      render(
+        <VirtualFileRenderer
+          code={code}
+          coverage={coverageData}
+          fileName="tsx"
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       const coveredLine = screen.getByText(0)
       expect(coveredLine).toBeInTheDocument()
@@ -107,9 +128,16 @@ describe('VirtualFileRenderer', () => {
 
   describe('uncovered lines', () => {
     it('uses the correct color', () => {
-      render(<VirtualFileRenderer code={code} coverage={coverageData} />, {
-        wrapper: wrapper(),
-      })
+      render(
+        <VirtualFileRenderer
+          code={code}
+          coverage={coverageData}
+          fileName="tsx"
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       const uncoveredLine = screen.getByText(1)
       expect(uncoveredLine).toBeInTheDocument()
@@ -119,9 +147,16 @@ describe('VirtualFileRenderer', () => {
 
   describe('partial lines', () => {
     it('uses the correct color', () => {
-      render(<VirtualFileRenderer code={code} coverage={coverageData} />, {
-        wrapper: wrapper(),
-      })
+      render(
+        <VirtualFileRenderer
+          code={code}
+          coverage={coverageData}
+          fileName="tsx"
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       const partialLine = screen.getByText(2)
       expect(partialLine).toBeInTheDocument()
@@ -158,9 +193,16 @@ describe('VirtualFileRenderer', () => {
         return 1
       })
 
-      render(<VirtualFileRenderer code={code} coverage={coverageData} />, {
-        wrapper: wrapper(),
-      })
+      render(
+        <VirtualFileRenderer
+          code={code}
+          coverage={coverageData}
+          fileName="tsx"
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       const lines = await screen.findAllByText(
         /{ pageName: 'repo', text: repo },/
@@ -186,9 +228,16 @@ describe('VirtualFileRenderer', () => {
         return 1
       })
 
-      render(<VirtualFileRenderer code={code} coverage={coverageData} />, {
-        wrapper: wrapper(),
-      })
+      render(
+        <VirtualFileRenderer
+          code={code}
+          coverage={coverageData}
+          fileName="tsx"
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       const lines = await screen.findAllByText(
         /{ pageName: 'repo', text: repo },/
@@ -218,7 +267,11 @@ describe('VirtualFileRenderer', () => {
       })
 
       const { container } = render(
-        <VirtualFileRenderer code={code} coverage={coverageData} />,
+        <VirtualFileRenderer
+          code={code}
+          coverage={coverageData}
+          fileName="tsx"
+        />,
         {
           wrapper: wrapper(),
         }
@@ -244,9 +297,16 @@ describe('VirtualFileRenderer', () => {
     describe('user clicks on line number', () => {
       it('updates the URL', async () => {
         const { user } = setup()
-        render(<VirtualFileRenderer code={code} coverage={coverageData} />, {
-          wrapper: wrapper(),
-        })
+        render(
+          <VirtualFileRenderer
+            code={code}
+            coverage={coverageData}
+            fileName="tsx"
+          />,
+          {
+            wrapper: wrapper(),
+          }
+        )
 
         const line = screen.getByText(0)
         await user.click(line)
@@ -256,9 +316,16 @@ describe('VirtualFileRenderer', () => {
 
       it('highlights the line', async () => {
         const { user } = setup()
-        render(<VirtualFileRenderer code={code} coverage={coverageData} />, {
-          wrapper: wrapper(),
-        })
+        render(
+          <VirtualFileRenderer
+            code={code}
+            coverage={coverageData}
+            fileName="tsx"
+          />,
+          {
+            wrapper: wrapper(),
+          }
+        )
 
         const line = screen.getByText(0)
         await user.click(line)
@@ -271,9 +338,16 @@ describe('VirtualFileRenderer', () => {
       describe('user clicks the line again', () => {
         it('clears the line', async () => {
           const { user } = setup()
-          render(<VirtualFileRenderer code={code} coverage={coverageData} />, {
-            wrapper: wrapper(),
-          })
+          render(
+            <VirtualFileRenderer
+              code={code}
+              coverage={coverageData}
+              fileName="tsx"
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
 
           const line = screen.getByText(0)
           await user.click(line)

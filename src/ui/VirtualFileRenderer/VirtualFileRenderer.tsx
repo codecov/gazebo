@@ -2,7 +2,7 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual'
 // eslint-disable-next-line no-restricted-imports
 import type { Dictionary } from 'lodash'
 import Highlight, { defaultProps } from 'prism-react-renderer'
-import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
@@ -66,148 +66,153 @@ interface CodeBodyProps {
   getLineProps: Highlight['getLineProps']
   getTokenProps: Highlight['getTokenProps']
   coverage: Dictionary<'H' | 'M' | 'P'>
+  codeDisplayOverlayRef: React.RefObject<HTMLDivElement>
 }
 
-const CodeBody = forwardRef<HTMLDivElement, CodeBodyProps>(
-  ({ tokens, getLineProps, getTokenProps, coverage }, ref) => {
-    const history = useHistory()
-    const location = useLocation()
+const CodeBody = ({
+  tokens,
+  getLineProps,
+  getTokenProps,
+  coverage,
+  codeDisplayOverlayRef,
+}: CodeBodyProps) => {
+  const history = useHistory()
+  const location = useLocation()
 
-    const initialRender = useRef(true)
-    const wrapperRef = useRef<HTMLDivElement>(null)
+  const initialRender = useRef(true)
+  const wrapperRef = useRef<HTMLDivElement>(null)
 
-    // virtualize code lines
-    const virtualizer = useWindowVirtualizer({
-      count: tokens.length,
-      estimateSize: () => 18,
-      overscan: 75,
-      // @ts-ignore
-      scrollMargin: ref.current?.offsetTop ?? 0,
-    })
+  // virtualize code lines
+  const virtualizer = useWindowVirtualizer({
+    count: tokens.length,
+    estimateSize: () => 18,
+    overscan: 75,
+    scrollMargin: codeDisplayOverlayRef.current?.offsetTop ?? 0,
+  })
 
-    // @ts-ignore
-    const div = ref.current
-    if (div) {
-      // set the parent div height to the total size of the virtualizer
-      div.style.height = `${virtualizer.getTotalSize()}px`
-      div.style.position = 'relative'
+  const div = codeDisplayOverlayRef.current
+  if (div) {
+    // set the parent div height to the total size of the virtualizer
+    div.style.height = `${virtualizer.getTotalSize()}px`
+    div.style.position = 'relative'
+  }
+
+  // TODO - finalize this logic
+  // scroll to line on the initial render
+  useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false
+      const index = parseInt(location.hash.slice(2), 10)
+      virtualizer.scrollToIndex(index)
     }
+  }, [location.hash, virtualizer])
 
-    // TODO - finalize this logic
-    // scroll to line on the initial render
-    useEffect(() => {
-      if (initialRender.current) {
-        initialRender.current = false
-        const index = parseInt(location.hash.slice(2), 10)
-        virtualizer.scrollToIndex(index)
-      }
-    }, [location.hash, virtualizer])
+  return (
+    <div className="flex flex-1" ref={wrapperRef}>
+      {/* this div contains the line numbers */}
+      <div
+        className="z-[2] h-full w-[82px] min-w-[82px] pr-[10px]"
+        style={{ position: 'relative' }}
+      >
+        {virtualizer.getVirtualItems().map((item) => (
+          <div
+            ref={virtualizer.measureElement}
+            key={item.index}
+            data-index={item.index}
+            style={{
+              height: `${item.size}px`,
+              transform: `translateY(${
+                item.start - virtualizer.options.scrollMargin
+              }px)`,
+            }}
+            className={cn(
+              `absolute left-0 top-0 w-full border-r border-ds-gray-tertiary bg-white px-4 text-right text-ds-gray-quaternary hover:cursor-pointer hover:text-black`,
+              location.hash === `#L${item.index}` &&
+                'font-semibold text-ds-gray-quinary',
+              coverage[item.index] === 'H' && 'bg-ds-coverage-covered',
+              coverage[item.index] === 'M' &&
+                'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
+              coverage[item.index] === 'P' &&
+                'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow'
+            )}
+            onClick={() => {
+              if (location.hash === `#L${item.index}`) {
+                location.hash = ''
+              } else {
+                location.hash = `#L${item.index}`
+              }
+              history.push(location)
+            }}
+          >
+            {location.hash === `#L${item.index}` ? '#' : null}
+            {item.index}
+          </div>
+        ))}
+      </div>
+      {/* this div contains the actual code lines */}
+      <div
+        // TODO - Update inert when inert is available in React 19
+        // @ts-ignore
+        inert=""
+        className="pointer-events-none size-full"
+      >
+        {virtualizer.getVirtualItems().map((item) => {
+          // get any specific things from code highlighting library for this given line
+          const { style: lineStyle } = getLineProps({
+            // casting this cause it is guaranteed to be present in the array
+            line: tokens[item.index] as Token[],
+            key: item.index,
+          })
 
-    return (
-      <div className="flex flex-1" ref={wrapperRef}>
-        {/* this div contains the line numbers */}
-        <div
-          className="z-[2] h-full w-[82px] min-w-[82px] pr-[10px]"
-          style={{ position: 'relative' }}
-        >
-          {virtualizer.getVirtualItems().map((item) => (
+          return (
             <div
               ref={virtualizer.measureElement}
               key={item.index}
               data-index={item.index}
               style={{
+                width: wrapperRef?.current
+                  ? wrapperRef.current.clientWidth
+                  : '100%',
                 height: `${item.size}px`,
                 transform: `translateY(${
                   item.start - virtualizer.options.scrollMargin
                 }px)`,
               }}
-              className={cn(
-                `absolute left-0 top-0 w-full border-r border-ds-gray-tertiary bg-white px-4 text-right text-ds-gray-quaternary hover:cursor-pointer hover:text-black`,
-                location.hash === `#L${item.index}` &&
-                  'font-semibold text-ds-gray-quinary',
-                coverage[item.index] === 'H' && 'bg-ds-coverage-covered',
-                coverage[item.index] === 'M' &&
-                  'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
-                coverage[item.index] === 'P' &&
-                  'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow'
-              )}
-              onClick={() => {
-                if (location.hash === `#L${item.index}`) {
-                  location.hash = ''
-                } else {
-                  location.hash = `#L${item.index}`
-                }
-                history.push(location)
-              }}
+              className="absolute left-0 top-0 pl-[92px]"
             >
-              {location.hash === `#L${item.index}` ? '#' : null}
-              {item.index}
-            </div>
-          ))}
-        </div>
-        {/* this div contains the actual code lines */}
-        <div
-          // TODO - Update inert when inert is available in React 19
-          // @ts-ignore
-          inert=""
-          className="pointer-events-none size-full"
-        >
-          {virtualizer.getVirtualItems().map((item) => {
-            // get any specific things from code highlighting library for this given line
-            const { style: lineStyle } = getLineProps({
-              // casting this cause it is guaranteed to be present in the array
-              line: tokens[item.index] as Token[],
-              key: item.index,
-            })
-
-            return (
-              <div
-                ref={virtualizer.measureElement}
-                key={item.index}
-                data-index={item.index}
-                style={{
-                  width: wrapperRef?.current
-                    ? wrapperRef.current.clientWidth
-                    : '100%',
-                  height: `${item.size}px`,
-                  transform: `translateY(${
-                    item.start - virtualizer.options.scrollMargin
-                  }px)`,
-                }}
-                className="absolute left-0 top-0 pl-[92px]"
-              >
-                <ColorBar
-                  lineNumber={item.index}
-                  locationHash={location.hash}
-                  coverage={coverage[item.index]}
-                />
-                <div className="h-[18px] w-full" style={{ ...lineStyle }}>
-                  {tokens[item.index]?.map((token: any, key: any) => (
-                    <span {...getTokenProps({ token, key })} key={key} />
-                  ))}
-                </div>
+              <ColorBar
+                lineNumber={item.index}
+                locationHash={location.hash}
+                coverage={coverage[item.index]}
+              />
+              <div className="h-[18px] w-full" style={{ ...lineStyle }}>
+                {tokens[item.index]?.map((token: any, key: any) => (
+                  <span {...getTokenProps({ token, key })} key={key} />
+                ))}
               </div>
-            )
-          })}
-        </div>
+            </div>
+          )
+        })}
       </div>
-    )
-  }
-)
+    </div>
+  )
+}
 
 CodeBody.displayName = 'CodeBody'
 
 interface VirtualFileRendererProps {
   code: string
   coverage: Dictionary<'H' | 'M' | 'P'>
+  fileName: string
 }
 
 export function VirtualFileRenderer({
   code,
   coverage,
+  fileName: fileType,
 }: VirtualFileRendererProps) {
   const widthDivRef = useRef<HTMLDivElement>(null)
-  const codeDisplayElementRef = useRef<HTMLDivElement>(null)
+  const codeDisplayOverlayRef = useRef<HTMLDivElement>(null)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const virtualCodeRendererRef = useRef<HTMLDivElement>(null)
 
@@ -256,14 +261,14 @@ export function VirtualFileRenderer({
   // this effect syncs the scroll position of the text area with the parent div
   useLayoutEffect(() => {
     // if the text area or code display element ref is not available, return
-    if (!textAreaRef.current || !codeDisplayElementRef.current) return
+    if (!textAreaRef.current || !codeDisplayOverlayRef.current) return
     // copy the ref into a variable so we can use it in the cleanup function
     const clonedTextAreaRef = textAreaRef.current
 
     // sync the scroll position of the text area with the code highlight div
     const onScroll = () => {
-      if (!clonedTextAreaRef || !codeDisplayElementRef.current) return
-      codeDisplayElementRef.current.scrollLeft = clonedTextAreaRef?.scrollLeft
+      if (!clonedTextAreaRef || !codeDisplayOverlayRef.current) return
+      codeDisplayOverlayRef.current.scrollLeft = clonedTextAreaRef?.scrollLeft
     }
 
     // add the scroll event listener
@@ -330,7 +335,7 @@ export function VirtualFileRenderer({
         readOnly={true}
       />
       <div
-        ref={codeDisplayElementRef}
+        ref={codeDisplayOverlayRef}
         className="overflow-y-hidden whitespace-pre font-mono"
         style={{
           // @ts-ignore
@@ -341,18 +346,17 @@ export function VirtualFileRenderer({
           {/* @ts-ignore */}
           <Highlight
             {...defaultProps}
-            // @ts-ignore
             code={code}
-            language={prismLanguageMapper('js')}
             theme={undefined}
+            language={prismLanguageMapper(fileType)}
           >
             {({ tokens, getLineProps, getTokenProps }) => (
               <CodeBody
-                ref={codeDisplayElementRef}
                 tokens={tokens}
+                coverage={coverage}
                 getLineProps={getLineProps}
                 getTokenProps={getTokenProps}
-                coverage={coverage}
+                codeDisplayOverlayRef={codeDisplayOverlayRef}
               />
             )}
           </Highlight>
