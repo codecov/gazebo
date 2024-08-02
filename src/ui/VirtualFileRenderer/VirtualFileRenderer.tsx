@@ -11,7 +11,7 @@ import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
 
 import { ColorBar } from './ColorBar'
 
-// copied from prism-react-renderer
+// copied from prism-react-renderer since they don't export it
 type Token = {
   types: string[]
   content: string
@@ -67,10 +67,7 @@ const CodeBody = ({
   return (
     <div className="flex flex-1" ref={wrapperRef}>
       {/* this div contains the line numbers */}
-      <div
-        className="z-[2] h-full w-[82px] min-w-[82px] pr-[10px]"
-        style={{ position: 'relative' }}
-      >
+      <div className="relative z-[2] h-full w-[82px] min-w-[82px] pr-[10px]">
         {virtualizer.getVirtualItems().map((item) => (
           <div
             ref={virtualizer.measureElement}
@@ -108,8 +105,7 @@ const CodeBody = ({
       </div>
       {/* this div contains the actual code lines */}
       <div
-        // TODO - Update inert when inert is available in React 19
-        // @ts-ignore
+        // @ts-expect-error - TODO - Update inert when inert is available in React 19
         inert=""
         className="pointer-events-none size-full"
       >
@@ -279,6 +275,11 @@ export function VirtualFileRenderer({
           overscrollBehaviorX: 'none',
         }}
         className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[92px] pt-px font-mono leading-[18px] text-transparent outline-none"
+        // Directly setting the value of the text area to the code content
+        // @ts-ignore
+        value={code}
+        // need to set to true since we're setting a value without an onChange handler
+        readOnly={true}
         // disable all the things for text area's so it doesn't interfere with the code display element
         autoCapitalize="false"
         autoCorrect="false"
@@ -288,19 +289,17 @@ export function VirtualFileRenderer({
         tabIndex={0}
         aria-multiline="true"
         aria-haspopup="false"
-        value={code}
-        readOnly={true}
       />
       <div
         ref={codeDisplayOverlayRef}
         className="overflow-y-hidden whitespace-pre font-mono"
         style={{
-          // @ts-ignore
+          // @ts-expect-error - it is a legacy value that is still valid
+          // you can read more about it here: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-x#values
           overflowX: 'overlay',
         }}
       >
         <div ref={widthDivRef} className="w-full">
-          {/* @ts-ignore */}
           <Highlight
             {...defaultProps}
             code={code}
