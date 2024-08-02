@@ -279,7 +279,7 @@ describe('VirtualFileRenderer', () => {
         await waitFor(() => expect(testLocation.hash).toBe('#L0'))
       })
 
-      it('highlights the line', async () => {
+      it('highlights the line on click', async () => {
         const { user } = setup()
         render(
           <VirtualFileRenderer
@@ -300,26 +300,24 @@ describe('VirtualFileRenderer', () => {
         expect(bar).toHaveClass('bg-ds-coverage-covered')
       })
 
-      describe('user clicks the line again', () => {
-        it('clears the line', async () => {
-          const { user } = setup()
-          render(
-            <VirtualFileRenderer
-              code={code}
-              coverage={coverageData}
-              fileName="tsx"
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
+      it('removes highlighting when clicking on highlighted line', async () => {
+        const { user } = setup()
+        render(
+          <VirtualFileRenderer
+            code={code}
+            coverage={coverageData}
+            fileName="tsx"
+          />,
+          {
+            wrapper: wrapper(),
+          }
+        )
 
-          const line = screen.getByText(0)
-          await user.click(line)
-          await waitFor(() => expect(testLocation.hash).toBe('#L0'))
-          await user.click(line)
-          await waitFor(() => expect(testLocation.hash).toBe(''))
-        })
+        const line = screen.getByText(0)
+        await user.click(line)
+        await waitFor(() => expect(testLocation.hash).toBe('#L0'))
+        await user.click(line)
+        await waitFor(() => expect(testLocation.hash).toBe(''))
       })
     })
   })
