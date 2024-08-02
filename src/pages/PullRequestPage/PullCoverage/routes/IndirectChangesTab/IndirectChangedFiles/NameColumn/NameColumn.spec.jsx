@@ -48,10 +48,6 @@ const mockSingularImpactedFilesData = {
                       baseCoverage: null,
                       headCoverage: 'H',
                       content: 'export default class Calculator {',
-                      coverageInfo: {
-                        hitCount: null,
-                        hitUploadIds: [],
-                      },
                     },
                   ],
                 },
@@ -156,10 +152,6 @@ describe('NameColumn', () => {
                   content: 'export default class Calculator {',
                   headCoverage: 'H',
                   headNumber: '1',
-                  coverageInfo: {
-                    hitCount: null,
-                    hitUploadIds: [],
-                  },
                 },
               ],
             },
