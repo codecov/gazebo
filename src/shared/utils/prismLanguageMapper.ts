@@ -1,7 +1,7 @@
 /*
  * Maps file extension names to prism supported languages.
- * The full list can be found in the prism-react-renderer package, just cmd +
- * click on the import string.
+ * The full list can be found in the prism-react-renderer package:
+ * https://github.com/FormidableLabs/prism-react-renderer/blob/v1.3.5/src/vendor/prism/includeLangs.js
  */
 
 import { type Language } from 'prism-react-renderer'
