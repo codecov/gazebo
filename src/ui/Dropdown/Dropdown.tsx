@@ -9,12 +9,38 @@ import Icon from 'ui/Icon'
 // Check out https://www.radix-ui.com/primitives/docs/components/dropdown-menu to see what other functionality
 // can be incorporated if needed.
 
+const DropdownContext = React.createContext({ isOpen: false })
+
 interface DropdownProps
   extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root> {}
 
-const Root = ({ ...props }: DropdownProps) => (
-  <DropdownMenuPrimitive.Root {...props} />
-)
+const Root = ({ ...props }: DropdownProps) => {
+  const { defaultOpen = false } = props
+  const [isOpen, setIsOpen] = React.useState(defaultOpen)
+  const handleOpenChange = React.useCallback(
+    (isOpen: boolean) => setIsOpen(isOpen),
+    []
+  )
+
+  React.useEffect(() => {
+    const handleBlur = () => setIsOpen(false)
+    window.addEventListener('blur', handleBlur)
+
+    return () => {
+      window.removeEventListener('blur', handleBlur)
+    }
+  })
+
+  return (
+    <DropdownContext.Provider value={{ isOpen }}>
+      <DropdownMenuPrimitive.Root
+        {...props}
+        open={isOpen}
+        onOpenChange={handleOpenChange}
+      />
+    </DropdownContext.Provider>
+  )
+}
 Root.displayName = 'Dropdown'
 
 const trigger = cva('flex items-center gap-1')
@@ -26,22 +52,48 @@ interface TriggerProps
 const Trigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
   TriggerProps
->(({ children, className, ...props }, forwardedRef) => (
-  <DropdownMenuPrimitive.Trigger
-    className={cn(trigger({ className }))}
-    {...props}
-  >
-    {children}
-    <span className="text-ds-gray-quinary">
-      <Icon
-        variant="solid"
-        size="sm"
-        name="chevronDown"
-        className="text-ds-gray-octonary"
-      />
-    </span>
-  </DropdownMenuPrimitive.Trigger>
-))
+>(({ children, className, ...props }, forwardedRef) => {
+  const { isOpen } = React.useContext(DropdownContext)
+
+  // below removes stray lingering outline after dropdown is closed
+  // exhibited in safari + firefox (appears native to radix component)
+  const ref = React.useRef<HTMLButtonElement | null>(null)
+  const [wasJustClosed, setWasJustClosed] = React.useState(false)
+  React.useEffect(() => {
+    if (!isOpen) {
+      setWasJustClosed(true)
+      // eslint-disable-next-line max-nested-callbacks
+      setTimeout(() => {
+        ref.current?.blur()
+        setWasJustClosed(false)
+      }, 1000)
+    }
+  }, [isOpen])
+
+  return (
+    <DropdownMenuPrimitive.Trigger
+      className={cn(
+        trigger({ className }),
+        'flex flex-1 items-center gap-1 whitespace-nowrap text-left focus:outline-1',
+        wasJustClosed && 'focus:outline-none'
+      )}
+      ref={ref}
+      {...props}
+    >
+      {children}
+      <span
+        aria-hidden="true"
+        data-testid="dropdown-trigger-chevron"
+        className={cn('transition-transform', {
+          'rotate-180': isOpen,
+          'rotate-0': !isOpen,
+        })}
+      >
+        <Icon variant="solid" size="sm" name="chevronDown" />
+      </span>
+    </DropdownMenuPrimitive.Trigger>
+  )
+})
 Trigger.displayName = 'Dropdown.Trigger'
 
 const content = cva(

@@ -146,7 +146,7 @@ describe('UserDropdown', () => {
 
         expect(screen.queryByText('Settings')).not.toBeInTheDocument()
 
-        const openSelect = screen.getByRole('combobox')
+        const openSelect = await screen.findByTestId('user-dropdown-trigger')
         await user.click(openSelect)
 
         const link = screen.getByText('Settings')
@@ -162,7 +162,7 @@ describe('UserDropdown', () => {
 
         expect(screen.queryByText('Sign Out')).not.toBeInTheDocument()
 
-        const openSelect = screen.getByRole('combobox')
+        const openSelect = await screen.findByTestId('user-dropdown-trigger')
         await user.click(openSelect)
 
         const link = screen.getByText('Sign Out')
@@ -177,7 +177,7 @@ describe('UserDropdown', () => {
           wrapper: wrapper(),
         })
 
-        const openSelect = screen.getByRole('combobox')
+        const openSelect = await screen.findByTestId('user-dropdown-trigger')
         await user.click(openSelect)
 
         const button = screen.getByText('Sign Out')
@@ -197,7 +197,7 @@ describe('UserDropdown', () => {
           screen.queryByText('Install Codecov app')
         ).not.toBeInTheDocument()
 
-        const openSelect = screen.getByRole('combobox')
+        const openSelect = await screen.findByTestId('user-dropdown-trigger')
         await user.click(openSelect)
 
         const link = screen.getByText('Install Codecov app')
@@ -219,7 +219,7 @@ describe('UserDropdown', () => {
 
         expect(screen.queryByText('Settings')).not.toBeInTheDocument()
 
-        const openSelect = screen.getByRole('combobox')
+        const openSelect = await screen.findByTestId('user-dropdown-trigger')
         await user.click(openSelect)
 
         const link = screen.getByText('Settings')
@@ -235,7 +235,7 @@ describe('UserDropdown', () => {
 
         expect(screen.queryByText('Sign Out')).not.toBeInTheDocument()
 
-        const openSelect = screen.getByRole('combobox')
+        const openSelect = await screen.findByTestId('user-dropdown-trigger')
         await user.click(openSelect)
 
         const link = screen.getByText('Sign Out')
@@ -250,7 +250,7 @@ describe('UserDropdown', () => {
           wrapper: wrapper(),
         })
 
-        const openSelect = screen.getByRole('combobox')
+        const openSelect = await screen.findByTestId('user-dropdown-trigger')
         await user.click(openSelect)
 
         const button = screen.getByText('Sign Out')
@@ -270,7 +270,7 @@ describe('UserDropdown', () => {
           screen.queryByText('Install Codecov app')
         ).not.toBeInTheDocument()
 
-        const openSelect = screen.getByRole('combobox')
+        const openSelect = await screen.findByTestId('user-dropdown-trigger')
         await user.click(openSelect)
 
         expect(

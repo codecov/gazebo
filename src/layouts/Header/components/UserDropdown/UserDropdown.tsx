@@ -1,23 +1,22 @@
-import { useSelect } from 'downshift'
 import { useHistory, useParams } from 'react-router-dom'
 
 import config from 'config'
 
 import { useUser } from 'services/user'
-import { cn } from 'shared/utils/cn'
 import { providerToName } from 'shared/utils/provider'
 import Avatar from 'ui/Avatar'
 import Button from 'ui/Button'
-import Icon from 'ui/Icon'
+import { Dropdown } from 'ui/Dropdown/Dropdown'
 
 interface URLParams {
   provider: string
 }
 
-type itemProps = {
+type DropdownItem = {
   to?: toProps
   hook?: string
   onClick?: () => void
+  children: React.ReactNode
 }
 
 type toProps = {
@@ -40,9 +39,9 @@ function UserDropdown() {
     !config.IS_SELF_HOSTED && isGh
       ? [
           {
-            props: { to: { pageName: 'codecovAppInstallation' } } as itemProps,
+            to: { pageName: 'codecovAppInstallation' },
             children: 'Install Codecov app',
-          },
+          } as DropdownItem,
         ]
       : []
 
@@ -56,81 +55,55 @@ function UserDropdown() {
 
   items.push(
     {
-      props: {
-        to: {
-          pageName: 'account',
-          options: { owner: currentUser?.user?.username },
-        },
+      to: {
+        pageName: 'account',
+        options: { owner: currentUser?.user?.username },
       },
       children: 'Settings',
     },
     {
-      props: {
-        onClick: handleSignOut,
-        hook: 'header-dropdown-sign-out',
-      },
+      onClick: handleSignOut,
+      hook: 'header-dropdown-sign-out',
       children: 'Sign Out',
     }
   )
 
-  const {
-    isOpen,
-    getToggleButtonProps,
-    getItemProps,
-    getLabelProps,
-    getMenuProps,
-  } = useSelect({
-    items,
-  })
-
   return (
     <div
       className="relative"
-      data-testid="dropdown"
+      data-testid="user-dropdown"
       data-cy="auth-user-dropdown"
     >
-      <label className="sr-only" {...getLabelProps()}>
-        Logged in user sub navigation
-      </label>
-      <button
-        className="flex flex-1 items-center gap-1 whitespace-nowrap text-left focus:outline-1"
-        data-marketing="user profile menu"
-        type="button"
-        {...getToggleButtonProps()}
-      >
-        <Avatar user={currentUser?.user} border="dark" />
-        <span
-          aria-hidden="true"
-          className={cn('transition-transform', {
-            'rotate-180': isOpen,
-            'rotate-0': !isOpen,
-          })}
+      <label className="sr-only">Logged in user sub navigation</label>
+
+      <Dropdown>
+        <Dropdown.Trigger
+          data-marketing="user profile menu"
+          data-testid="user-dropdown-trigger"
         >
-          <Icon variant="solid" name="chevronDown" size="sm" />
-        </span>
-      </button>
-      <ul
-        className={cn(
-          'absolute right-0 top-8 z-50 w-[15.5rem] min-w-fit overflow-hidden rounded border border-ds-gray-tertiary bg-white text-gray-900',
-          { hidden: !isOpen }
-        )}
-        aria-label="user profile menu items"
-        {...getMenuProps()}
-      >
-        {isOpen &&
-          items.map((item, index) => (
-            <li
+          <Avatar
+            user={currentUser?.user}
+            border="dark"
+            className="select-none"
+          />
+        </Dropdown.Trigger>
+
+        <Dropdown.Content
+          align="end"
+          className="w-[15.5rem] min-w-fit rounded border-ds-gray-tertiary shadow-none"
+          aria-label="user profile menu items"
+        >
+          {items.map((item, index) => (
+            <Dropdown.Item
               key={`main-dropdown-${index}`}
-              className="grid cursor-pointer text-sm first:pt-2 last:pb-2 hover:bg-ds-gray-secondary"
-              {...getItemProps({ item, index })}
+              className="grid p-0 first:pt-2 last:pb-2"
             >
               {/* @ts-expect-error props might be overloaded with stuff */}
-              <Button variant="listbox" {...item.props}>
-                {item.children}
-              </Button>
-            </li>
+              <Button variant="listbox" {...item} />
+            </Dropdown.Item>
           ))}
-      </ul>
+        </Dropdown.Content>
+      </Dropdown>
     </div>
   )
 }
