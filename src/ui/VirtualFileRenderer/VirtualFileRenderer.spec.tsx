@@ -15,7 +15,7 @@ window.cancelAnimationFrame = () => {}
 const scrollToMock = jest.fn()
 window.scrollTo = scrollToMock
 
-class ResizeObserver {
+class ResizeObserverMock {
   callback = (x: any) => null
 
   constructor(callback: any) {
@@ -32,7 +32,7 @@ class ResizeObserver {
     // do nothing
   }
 }
-global.window.ResizeObserver = ResizeObserver
+global.window.ResizeObserver = ResizeObserverMock
 
 const code = `<Breadcrumb
     paths={[
