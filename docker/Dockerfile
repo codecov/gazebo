@@ -1,8 +1,8 @@
 # syntax = docker/dockerfile:1.3
 FROM node:20-alpine3.17 as npm
 RUN apk -U add git 
-RUN corepack enable && corepack prepare yarn@stable --activate
 RUN mkdir /home/workspace
+RUN corepack enable
 COPY package.json /home/workspace
 WORKDIR /home/workspace
 RUN yarn install
@@ -50,11 +50,11 @@ ENV REACT_APP_ENV=$REACT_APP_ENV_ARG
 ENV REACT_APP_CODECOV_VERSION=$REACT_APP_CODECOV_VERSION
 ENV GENERATE_SOURCEMAP=false
 RUN mkdir /home/workspace
-COPY --from=npm /home/workspace/node_modules /home/workspace/node_modules
+# COPY --from=npm /home/workspace/node_modules /home/workspace/node_modules
 WORKDIR /home/workspace
 RUN apk -U add git
-RUN corepack enable && corepack prepare yarn@stable --activate
 COPY . /home/workspace
+RUN corepack enable
 RUN yarn install
 RUN yarn build && rm -f build/mockServiceWorker.js
 
