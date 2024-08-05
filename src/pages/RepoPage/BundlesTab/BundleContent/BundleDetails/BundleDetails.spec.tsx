@@ -242,7 +242,9 @@ describe('BundleDetails', () => {
 
     await waitFor(() =>
       expect(queryVars).toHaveBeenCalledWith(
-        expect.objectContaining({ filters: { reportGroups: ['JAVASCRIPT'] } })
+        expect.objectContaining({
+          filters: { loadTypes: [], reportGroups: ['JAVASCRIPT'] },
+        })
       )
     )
   })

@@ -34,3 +34,25 @@ export function findBundleReportAssetEnum(item: string) {
     return BUNDLE_REPORT_MEASUREMENT_SIZE_MAPPING
   }
 }
+
+export type BundleLoadTypes = (typeof BUNDLE_LOAD_TYPE_ITEMS)[number]
+
+const BUNDLE_ENTRY_LOAD_TYPE = 'ENTRY' as const
+const BUNDLE_INITIAL_LOAD_TYPE = 'INITIAL' as const
+const BUNDLE_LAZY_LOAD_TYPE = 'LAZY' as const
+
+export const BUNDLE_LOAD_TYPE_ITEMS = [
+  BUNDLE_ENTRY_LOAD_TYPE,
+  BUNDLE_INITIAL_LOAD_TYPE,
+  BUNDLE_LAZY_LOAD_TYPE,
+] as const
+
+export function findBundleTypeEnum(item: BundleLoadTypes) {
+  if (item === BUNDLE_ENTRY_LOAD_TYPE) {
+    return 'Entry files'
+  } else if (item === BUNDLE_INITIAL_LOAD_TYPE) {
+    return 'Initial files'
+  } else if (item === BUNDLE_LAZY_LOAD_TYPE) {
+    return 'Lazy loading files'
+  }
+}

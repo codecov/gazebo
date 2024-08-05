@@ -10,7 +10,7 @@ import {
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  isGithubRateLimited: z.boolean(),
+  isGithubRateLimited: z.boolean().nullable(),
 })
 
 const RequestSchema = z.object({

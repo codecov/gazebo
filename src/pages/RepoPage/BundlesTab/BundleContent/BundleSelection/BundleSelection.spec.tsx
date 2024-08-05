@@ -180,6 +180,16 @@ describe('BundleSelection', () => {
     expect(typeSelector).toBeInTheDocument()
   })
 
+  it('renders loading selector', async () => {
+    setup()
+    render(<BundleSelection />, { wrapper: wrapper() })
+
+    const loadSelector = await screen.findByRole('button', {
+      name: 'bundle tab loading selector',
+    })
+    expect(loadSelector).toBeInTheDocument()
+  })
+
   describe('user interacts with branch and bundle selectors', () => {
     describe('user selects a branch', () => {
       it('resets the bundle selector to the first available bundle', async () => {
@@ -237,6 +247,40 @@ describe('BundleSelection', () => {
         })
         await waitFor(() =>
           expect(updatedTypeSelector).toHaveTextContent('All types')
+        )
+      })
+
+      it('resets the loading selector', async () => {
+        const { user } = setup()
+        render(<BundleSelection />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/main/bundle1'),
+        })
+
+        const loadingSelector = await screen.findByRole('button', {
+          name: 'bundle tab loading selector',
+        })
+        await user.click(loadingSelector)
+
+        const type = await screen.findByRole('option', {
+          name: 'Initial files',
+        })
+        await user.click(type)
+
+        const bundleSelector = await screen.findByRole('button', {
+          name: 'bundle tab bundle selector',
+        })
+        await user.click(bundleSelector)
+
+        const bundle2 = await screen.findByRole('option', {
+          name: 'bundle2',
+        })
+        await user.click(bundle2)
+
+        const updatedLoadingSelector = await screen.findByRole('button', {
+          name: 'bundle tab loading selector',
+        })
+        await waitFor(() =>
+          expect(updatedLoadingSelector).toHaveTextContent('All load types')
         )
       })
     })

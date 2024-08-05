@@ -249,7 +249,32 @@ describe('useBundleAssetsTable', () => {
       await waitFor(() =>
         expect(queryVarMock).toHaveBeenCalledWith(
           expect.objectContaining({
-            filters: { reportGroups: ['JAVASCRIPT'] },
+            filters: { loadTypes: [], reportGroups: ['JAVASCRIPT'] },
+          })
+        )
+      )
+    })
+
+    it('uses the load type filters from the search params', async () => {
+      const { queryVarMock } = setup()
+
+      const url = `${initialEntry}?${qs.stringify({ loading: ['INITIAL'] })}`
+      renderHook(
+        () =>
+          useBundleAssetsTable({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'test-repo',
+            branch: 'test-branch',
+            bundle: 'test-bundle',
+          }),
+        { wrapper: wrapper(url) }
+      )
+
+      await waitFor(() =>
+        expect(queryVarMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: { loadTypes: ['INITIAL'], reportGroups: [] },
           })
         )
       )
