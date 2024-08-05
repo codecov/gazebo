@@ -171,7 +171,7 @@ function ContextSwitcher({
           <li className="flex justify-between border-b border-ds-gray-secondary px-4 py-3">
             <A to={{ pageName: 'codecovAppInstallation' }}>
               <Icon name="plus-circle" />
-              Add GitHub organization
+              Install Codecov GitHub app
             </A>
           </li>
         ) : (
