@@ -27,7 +27,7 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-const PullFileDiff = lazy(() => import('../../shared/FileDiff'))
+const PullFileDiff = lazy(() => import('../FileDiff'))
 
 const columnHelper = createColumnHelper<ImpactedFile>()
 

@@ -10,7 +10,7 @@ import { OrderingDirection, OrderingParameter } from 'services/pull/usePull'
 
 import FilesChangedTable, { getFilter } from './FilesChangedTable'
 
-jest.mock('../../shared/FileDiff', () => () => 'FileDiff')
+jest.mock('../FileDiff', () => () => 'FileDiff')
 
 const mockImpactedFiles = [
   {
