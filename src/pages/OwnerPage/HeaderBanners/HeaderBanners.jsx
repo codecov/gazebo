@@ -14,11 +14,19 @@ const useUploadsInfo = () => {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwnerPageData({ username: owner })
   const numberOfUploads = ownerData?.numberOfUploads
-  const { data: planData } = usePlanData({
+  const {
+    data: planData,
+    isLoading,
+    error,
+  } = usePlanData({
     provider,
     owner,
     opts: { suspense: false },
   })
+
+  if (isLoading || error) {
+    return { isUploadLimitExceeded: false, isApproachingUploadLimit: false }
+  }
 
   // If monthlyUploadLimit is not defined, we consider the account can have an
   // unlimited amount of uploads
@@ -58,13 +66,21 @@ AlertBanners.propTypes = {
 export default function HeaderBanners() {
   const { owner, provider } = useParams()
   // TODO: refactor this to add a gql field for the integration id used to determine if the org has a GH app
-  const { data: accountDetails } = useAccountDetails({
+  const {
+    data: accountDetails,
+    isLoading,
+    error,
+  } = useAccountDetails({
     provider,
     owner,
     opts: { suspense: false },
   })
 
   const { isUploadLimitExceeded, isApproachingUploadLimit } = useUploadsInfo()
+
+  if (isLoading || error) {
+    return null
+  }
 
   const hasGhApp = !!accountDetails?.integrationId
 

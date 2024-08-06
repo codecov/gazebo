@@ -49,7 +49,7 @@ const TrialBanner: React.FC = () => {
     username: owner,
     opts: { enabled: enableQuery },
   })
-  const { data: planData } = usePlanData({
+  const { data: planData, error } = usePlanData({
     provider: providerString,
     owner: owner || '',
     opts: {
@@ -57,6 +57,10 @@ const TrialBanner: React.FC = () => {
       suspense: false,
     },
   })
+
+  if (error) {
+    return null
+  }
 
   const planValue = planData?.plan?.value
   const trialStatus = planData?.plan?.trialStatus
