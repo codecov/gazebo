@@ -9,7 +9,7 @@ import { OrderingDirection, OrderingParameter } from 'services/pull/usePullTeam'
 
 import TableTeam, { getFilter } from './TableTeam'
 
-jest.mock('../../shared/FileDiff', () => () => 'FileDiff')
+jest.mock('../FileDiff', () => () => 'FileDiff')
 
 const mockComparisonTeamData = {
   owner: {

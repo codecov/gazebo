@@ -89,6 +89,7 @@ function PullRequestPage() {
         text: pullId,
       },
     ])
+    return () => setBreadcrumbs([])
   }, [setBreadcrumbs, pullId, setBaseCrumbs, owner, repo, overview])
 
   if (!isLoading && !data?.pull) {
