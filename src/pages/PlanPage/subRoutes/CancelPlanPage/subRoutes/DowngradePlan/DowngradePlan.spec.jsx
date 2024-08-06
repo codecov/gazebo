@@ -65,45 +65,48 @@ describe('DowngradePlan', () => {
     it('renders title', async () => {
       render(<DowngradePlan />, { wrapper: wrapper() })
 
-      const title = await screen.findByText('Downgrading to basic')
+      const title = await screen.findByText('Plan cancellation')
       expect(title).toBeInTheDocument()
     })
 
     it('renders first body', async () => {
       render(<DowngradePlan />, { wrapper: wrapper() })
 
-      const body = await screen.findByText(/Note that, when downgrading/)
+      const body = await screen.findByText(/Canceling your paid plan means/)
       expect(body).toBeInTheDocument()
     })
 
     it('renders list', async () => {
       render(<DowngradePlan />, { wrapper: wrapper() })
 
-      const numberOfUsers = await screen.findByText('Configurable # of users')
+      const numberOfUsers = await screen.findByText(
+        'Configurable number of users'
+      )
       expect(numberOfUsers).toBeInTheDocument()
 
       const techSupport = await screen.findByText('Technical support')
       expect(techSupport).toBeInTheDocument()
 
-      const carryFlags = await screen.findByText('Carry-forward flags')
-      expect(carryFlags).toBeInTheDocument()
-
-      const uploads = await screen.findByText('Unlimited private uploads')
+      const uploads = await screen.findByText('Unlimited private repo uploads')
       expect(uploads).toBeInTheDocument()
     })
 
     it('renders second body', async () => {
       render(<DowngradePlan />, { wrapper: wrapper() })
 
-      const body = await screen.findByText(/You currently have 2 active users/)
-      expect(body).toBeInTheDocument()
+      const bodyText1 = await screen.findByText(/You currently have/)
+      const bodyText2 = await screen.findByText(/2/)
+      const bodyText3 = await screen.findByText(/active users. On downgrade,/)
+      expect(bodyText1).toBeInTheDocument()
+      expect(bodyText2).toBeInTheDocument()
+      expect(bodyText3).toBeInTheDocument()
     })
 
     it('renders downgrade button', async () => {
       render(<DowngradePlan />, { wrapper: wrapper() })
 
       const button = await screen.findByRole('button', {
-        name: 'Downgrade to basic',
+        name: 'Cancel your plan',
       })
       expect(button).toBeInTheDocument()
     })
