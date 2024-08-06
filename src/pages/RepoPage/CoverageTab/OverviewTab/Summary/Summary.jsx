@@ -1,7 +1,5 @@
-import { useLayoutEffect } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
-import { useCrumbs } from 'pages/RepoPage/context'
 import { useRepoConfig } from 'services/repo/useRepoConfig'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import A from 'ui/A'
@@ -20,7 +18,6 @@ const YAML_STATE = Object.freeze({
 
 const Summary = () => {
   const { provider, owner, repo } = useParams()
-  const { setBreadcrumbs } = useCrumbs()
   const { setNewPath, redirectState } = useCoverageRedirect()
   const { data: repoConfigData } = useRepoConfig({ provider, owner, repo })
 
@@ -35,21 +32,6 @@ const Summary = () => {
     branchListFetchNextPage,
     setBranchSearchTerm,
   } = useSummary()
-
-  useLayoutEffect(() => {
-    setBreadcrumbs([
-      {
-        pageName: '',
-        readOnly: true,
-        children: (
-          <span className="inline-flex items-center gap-1">
-            <Icon name="branch" variant="developer" size="sm" />
-            {currentBranchSelected?.name}
-          </span>
-        ),
-      },
-    ])
-  }, [currentBranchSelected?.name, setBreadcrumbs])
 
   const onChangeHandler = ({ name }) => {
     setNewPath(name)

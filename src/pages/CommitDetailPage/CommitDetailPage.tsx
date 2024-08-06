@@ -82,6 +82,7 @@ const CommitDetailPage: React.FC = () => {
         text: shortSHA,
       },
     ])
+    return () => setBreadcrumbs([])
   }, [
     setBreadcrumbs,
     commitSha,
