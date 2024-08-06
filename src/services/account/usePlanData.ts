@@ -56,6 +56,7 @@ export interface UsePlanDataArgs {
   owner: string
   opts?: {
     enabled?: boolean
+    suspense?: boolean
   }
 }
 

@@ -17,6 +17,7 @@ const useUploadsInfo = () => {
   const { data: planData } = usePlanData({
     provider,
     owner,
+    opts: { suspense: false },
   })
 
   // If monthlyUploadLimit is not defined, we consider the account can have an
@@ -60,6 +61,7 @@ export default function HeaderBanners() {
   const { data: accountDetails } = useAccountDetails({
     provider,
     owner,
+    opts: { suspense: false },
   })
 
   const { isUploadLimitExceeded, isApproachingUploadLimit } = useUploadsInfo()

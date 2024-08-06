@@ -52,7 +52,10 @@ const TrialBanner: React.FC = () => {
   const { data: planData } = usePlanData({
     provider: providerString,
     owner: owner || '',
-    opts: { enabled: ownerData?.isCurrentUserPartOfOrg },
+    opts: {
+      enabled: ownerData?.isCurrentUserPartOfOrg,
+      suspense: false,
+    },
   })
 
   const planValue = planData?.plan?.value
