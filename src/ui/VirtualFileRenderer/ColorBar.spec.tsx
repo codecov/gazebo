@@ -1,6 +1,15 @@
+import * as Sentry from '@sentry/react'
 import { render, screen } from '@testing-library/react'
 
-import { ColorBar } from './ColorBar'
+import { ColorBar, findCoverage } from './ColorBar'
+
+jest.mock('@sentry/react', () => {
+  const originalModule = jest.requireActual('@sentry/react')
+  return {
+    ...originalModule,
+    captureMessage: jest.fn(),
+  }
+})
 
 describe('ColorBar', () => {
   describe('when there is no coverage data', () => {
@@ -50,5 +59,39 @@ describe('ColorBar', () => {
       expect(bar).toBeInTheDocument()
       expect(bar).toHaveClass('bg-ds-blue-medium')
     })
+  })
+
+  describe('invalid coverage value', () => {
+    it('renders empty body', () => {
+      const { container } = render(
+        // @ts-expect-error - testing invalid value
+        <ColorBar coverage={'X'} locationHash="" lineNumber={0} />
+      )
+      expect(container).toBeEmptyDOMElement()
+    })
+  })
+})
+
+describe('findCoverage', () => {
+  const testCases = [
+    { type: 'H', expected: 'H' },
+    { type: 'M', expected: 'M' },
+    { type: 'P', expected: 'P' },
+    { type: undefined, expected: undefined },
+  ] as const
+
+  it.each(testCases)(
+    'returns `$expected` when coverage type is `$type`',
+    ({ expected, type }) => {
+      expect(findCoverage(type)).toBe(expected)
+    }
+  )
+
+  it('captures an error via Sentry when the coverage type is invalid', () => {
+    // @ts-expect-error - testing invalid type
+    findCoverage('X')
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(
+      'Invalid coverage value: X'
+    )
   })
 })
