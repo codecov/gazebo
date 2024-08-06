@@ -1,8 +1,9 @@
 import { useWindowVirtualizer } from '@tanstack/react-virtual'
 // eslint-disable-next-line no-restricted-imports
 import type { Dictionary } from 'lodash'
+import isNumber from 'lodash/isNumber'
 import Highlight, { defaultProps } from 'prism-react-renderer'
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
@@ -35,34 +36,51 @@ const CodeBody = ({
 }: CodeBodyProps) => {
   const history = useHistory()
   const location = useLocation()
+  const [wrapperWidth, setWrapperWidth] = useState<number | '100%'>('100%')
 
   const initialRender = useRef(true)
   const wrapperRef = useRef<HTMLDivElement>(null)
 
-  // virtualize code lines
   const virtualizer = useWindowVirtualizer({
     count: tokens.length,
-    estimateSize: () => 18,
+    estimateSize: () => 18, // line row height
     overscan: 75,
     scrollMargin: codeDisplayOverlayRef.current?.offsetTop ?? 0,
   })
 
-  const div = codeDisplayOverlayRef.current
-  if (div) {
+  const codeDisplayOverlayElement = codeDisplayOverlayRef.current
+  if (codeDisplayOverlayElement) {
     // set the parent div height to the total size of the virtualizer
-    div.style.height = `${virtualizer.getTotalSize()}px`
-    div.style.position = 'relative'
+    codeDisplayOverlayElement.style.height = `${virtualizer.getTotalSize()}px`
+    codeDisplayOverlayElement.style.position = 'relative'
   }
 
-  // TODO - finalize this logic
-  // scroll to line on the initial render
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (!wrapperRef.current) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries?.[0]
+      if (entry) {
+        setWrapperWidth(entry.contentRect.width)
+      }
+    })
+
+    resizeObserver.observe(wrapperRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
+
+  useLayoutEffect(() => {
     if (initialRender.current) {
       initialRender.current = false
       const index = parseInt(location.hash.slice(2), 10)
-      virtualizer.scrollToIndex(index)
+      if (isNumber(index) && index > 0 && index < tokens.length) {
+        virtualizer.scrollToIndex(index, { align: 'start' })
+      }
     }
-  }, [location.hash, virtualizer])
+  }, [location.hash, tokens.length, virtualizer])
 
   return (
     <div className="flex flex-1" ref={wrapperRef}>
@@ -81,20 +99,18 @@ const CodeBody = ({
             }}
             className={cn(
               `absolute left-0 top-0 w-full border-r border-ds-gray-tertiary bg-white px-4 text-right text-ds-gray-quaternary hover:cursor-pointer hover:text-black`,
-              location.hash === `#L${item.index}` &&
-                'font-semibold text-ds-gray-quinary',
               coverage[item.index] === 'H' && 'bg-ds-coverage-covered',
               coverage[item.index] === 'M' &&
                 'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
               coverage[item.index] === 'P' &&
-                'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow'
+                'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow',
+              // this needs to come last as it overrides the coverage colors
+              location.hash === `#L${item.index}` &&
+                'bg-ds-blue-medium/25 font-semibold text-ds-gray-quinary'
             )}
             onClick={() => {
-              if (location.hash === `#L${item.index}`) {
-                location.hash = ''
-              } else {
-                location.hash = `#L${item.index}`
-              }
+              location.hash =
+                location.hash === `#L${item.index}` ? '' : `#L${item.index}`
               history.push(location)
             }}
           >
@@ -113,7 +129,7 @@ const CodeBody = ({
           // get any specific things from code highlighting library for this given line
           const { style: lineStyle } = getLineProps({
             // casting this cause it is guaranteed to be present in the array
-            line: tokens[item.index] as Token[],
+            line: tokens[item.index]!,
             key: item.index,
           })
 
@@ -123,9 +139,7 @@ const CodeBody = ({
               key={item.index}
               data-index={item.index}
               style={{
-                width: wrapperRef?.current
-                  ? wrapperRef.current.clientWidth
-                  : '100%',
+                width: wrapperWidth,
                 height: `${item.size}px`,
                 transform: `translateY(${
                   item.start - virtualizer.options.scrollMargin
@@ -270,6 +284,7 @@ export function VirtualFileRenderer({
        */}
       <textarea
         ref={textAreaRef}
+        data-testid="virtual-file-renderer-text-area"
         style={{
           tabSize: '8',
           overscrollBehaviorX: 'none',
@@ -292,6 +307,7 @@ export function VirtualFileRenderer({
       />
       <div
         ref={codeDisplayOverlayRef}
+        data-testid="virtual-file-renderer-overlay"
         className="overflow-y-hidden whitespace-pre font-mono"
         style={{
           // @ts-expect-error - it is a legacy value that is still valid

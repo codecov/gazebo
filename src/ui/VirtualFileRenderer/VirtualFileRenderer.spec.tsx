@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 // eslint-disable-next-line no-restricted-imports
 import { type Dictionary } from 'lodash'
@@ -23,7 +29,14 @@ class ResizeObserverMock {
   }
 
   observe() {
-    this.callback([{ target: { getAttribute: () => ({ scrollWidth: 100 }) } }])
+    this.callback([
+      {
+        contentRect: { width: 100 },
+        target: {
+          getAttribute: () => ({ scrollWidth: 100 }),
+        },
+      },
+    ])
   }
   unobserve() {
     // do nothing
@@ -75,7 +88,7 @@ describe('VirtualFileRenderer', () => {
     return { user }
   }
 
-  it('renders the code', () => {
+  it('renders the text-area', () => {
     render(
       <VirtualFileRenderer
         code={code}
@@ -87,7 +100,29 @@ describe('VirtualFileRenderer', () => {
       }
     )
 
-    const codeBlock = screen.getByText(/<Breadcrumb/)
+    const textArea = screen.getByTestId('virtual-file-renderer')
+    expect(textArea).toBeInTheDocument()
+
+    const codeBlock = within(textArea).getByText(/<Breadcrumb/)
+    expect(codeBlock).toBeInTheDocument()
+  })
+
+  it('renders code in virtualized list', () => {
+    render(
+      <VirtualFileRenderer
+        code={code}
+        coverage={coverageData}
+        fileName="tsx"
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
+
+    const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
+    expect(virtualOverlay).toBeInTheDocument()
+
+    const codeBlock = within(virtualOverlay).getByText(/Breadcrumb/)
     expect(codeBlock).toBeInTheDocument()
   })
 
@@ -108,7 +143,7 @@ describe('VirtualFileRenderer', () => {
   })
 
   describe('covered lines', () => {
-    it('uses the correct color', () => {
+    it('applies coverage background', () => {
       render(
         <VirtualFileRenderer
           code={code}
@@ -121,13 +156,12 @@ describe('VirtualFileRenderer', () => {
       )
 
       const coveredLine = screen.getByText(0)
-      expect(coveredLine).toBeInTheDocument()
       expect(coveredLine).toHaveClass('bg-ds-coverage-covered')
     })
   })
 
   describe('uncovered lines', () => {
-    it('uses the correct color', () => {
+    it('applies missing coverage background', () => {
       render(
         <VirtualFileRenderer
           code={code}
@@ -140,13 +174,12 @@ describe('VirtualFileRenderer', () => {
       )
 
       const uncoveredLine = screen.getByText(1)
-      expect(uncoveredLine).toBeInTheDocument()
       expect(uncoveredLine).toHaveClass('bg-ds-coverage-uncovered')
     })
   })
 
   describe('partial lines', () => {
-    it('uses the correct color', () => {
+    it('applies partial coverage background', () => {
       render(
         <VirtualFileRenderer
           code={code}
@@ -159,7 +192,6 @@ describe('VirtualFileRenderer', () => {
       )
 
       const partialLine = screen.getByText(2)
-      expect(partialLine).toBeInTheDocument()
       expect(partialLine).toHaveClass('bg-ds-coverage-partial')
     })
   })
