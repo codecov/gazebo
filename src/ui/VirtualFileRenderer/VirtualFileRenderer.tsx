@@ -75,7 +75,7 @@ const CodeBody = ({
 
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries?.[0]
-      if (entry) {
+      if (entry && wrapperWidth !== entry.contentRect.width) {
         setWrapperWidth(entry.contentRect.width)
       }
     })
@@ -85,7 +85,7 @@ const CodeBody = ({
     return () => {
       resizeObserver.disconnect()
     }
-  }, [wrapperRef])
+  }, [wrapperRef, wrapperWidth])
 
   useLayoutEffect(() => {
     if (initialRender.current) {
