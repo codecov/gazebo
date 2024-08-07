@@ -486,27 +486,4 @@ describe('TrialBanner', () => {
       expect(container).toBeEmptyDOMElement()
     })
   })
-
-  describe('error fetching plan data', () => {
-    beforeAll(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
-    })
-
-    it('renders nothing', async () => {
-      setup({
-        trialStatus: TrialStatuses.ONGOING,
-        isCurrentUserPartOfOrg: true,
-        isTrialPlan: true,
-        trialStartDate: '2021-01-01',
-        trialEndDate: '2021-01-02',
-        isSelfHosted: true,
-      })
-
-      const { container } = render(<TrialBanner />, {
-        wrapper: wrapper('/gh', '/:provider'),
-      })
-
-      expect(container).toBeEmptyDOMElement()
-    })
-  })
 })

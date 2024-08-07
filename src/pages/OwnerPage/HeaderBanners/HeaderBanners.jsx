@@ -14,19 +14,10 @@ const useUploadsInfo = () => {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwnerPageData({ username: owner })
   const numberOfUploads = ownerData?.numberOfUploads
-  const {
-    data: planData,
-    isLoading,
-    error,
-  } = usePlanData({
+  const { data: planData } = usePlanData({
     provider,
     owner,
-    opts: { suspense: false },
   })
-
-  if (isLoading || error) {
-    return { isUploadLimitExceeded: false, isApproachingUploadLimit: false }
-  }
 
   // If monthlyUploadLimit is not defined, we consider the account can have an
   // unlimited amount of uploads
