@@ -1,4 +1,14 @@
+import * as Sentry from '@sentry/react'
+
 import { prismLanguageMapper } from './prismLanguageMapper'
+
+jest.mock('@sentry/react', () => {
+  const originalModule = jest.requireActual('@sentry/react')
+  return {
+    ...originalModule,
+    captureMessage: jest.fn(),
+  }
+})
 
 describe('prismLanguageMapper', () => {
   describe('when called with a file with a valid extension', () => {
@@ -47,7 +57,17 @@ describe('prismLanguageMapper', () => {
   })
 
   describe('when called with a file with an invalid extension', () => {
-    it('defaults to markup', () => {
+    it('sends a message to Sentry', () => {
+      prismLanguageMapper('file.omgwhatisdis')
+
+      expect(Sentry.captureMessage).toHaveBeenCalled()
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        'Unsupported language type for filename file.omgwhatisdis',
+        { fingerprint: ['unsupported-prism-language'] }
+      )
+    })
+
+    it('defaults to the default language type', () => {
       expect(prismLanguageMapper('file.omgwhatisdis')).toBe('markup')
     })
   })
