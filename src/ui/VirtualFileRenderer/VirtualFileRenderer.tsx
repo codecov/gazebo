@@ -210,25 +210,31 @@ export function VirtualFileRenderer({
   useLayoutEffect(() => {
     const onScroll = (_event: Event) => {
       /**
-       * We want to disable pointer events on the table while scrolling because
-       * as the user is scrolling the page, the browser needs to also check to
-       * see if the user if the pointer is over any interactive elements (like
-       * the line number indicators) during the repaint. By disabling these
-       * events, we can reduce the amount of work the browser needs to do
-       * during the repaint, as it does not need to check these events.
+       * We want to disable pointer events on the virtual file renderer while
+       * scrolling because as the user is scrolling the page, the browser needs
+       * to also check to see if the user if the pointer is over any
+       * interactive elements (like the line number indicators) during the
+       * repaint. By disabling these events, we can reduce the amount of work
+       * the browser needs to do during the repaint, as it does not need to
+       * check these events.
        */
       if (!pointerEventsRaf.current && virtualCodeRendererRef.current) {
         virtualCodeRendererRef.current.style.pointerEvents = 'none'
       }
 
       /**
-       * We then re-enable pointer events after the scroll event has finished so
-       * the user can continue interacting with the line number indicators.
+       * If there is a requestAnimationFrame already scheduled, we cancel it
+       * and schedule a new one. This is to prevent the pointer events from
+       * being re-enabled while the user is still scrolling.
        */
       if (pointerEventsRaf.current) {
         window.cancelAnimationFrame(pointerEventsRaf.current.id)
       }
 
+      /**
+       * We then re-enable pointer events after the scroll event has finished so
+       * the user can continue interacting with the line number indicators.
+       */
       pointerEventsRaf.current = requestAnimationTimeout(() => {
         if (virtualCodeRendererRef.current) {
           virtualCodeRendererRef.current.style.pointerEvents = 'auto'
