@@ -12,12 +12,6 @@
  * + f to search for text in the code. We also use the width of the textarea to
  * set the width of the code display element so the code display element can
  * scroll horizontally in sync with the text area.
- *
- * The VirtualFileRenderer contains logic as well that enables pointer-events
- * to be disabled when ever the user scrolls and then after an allotted amount
- * of time they're turned back on. This is to reduce the amount of work the
- * browser needs to do during the repaint, as it does not need to check these
- * events.
  */
 import { useWindowVirtualizer } from '@tanstack/react-virtual'
 // eslint-disable-next-line no-restricted-imports
@@ -60,12 +54,12 @@ const CodeBody = ({
   const [wrapperWidth, setWrapperWidth] = useState<number | '100%'>('100%')
 
   const initialRender = useRef(true)
-  const wrapperRef = useRef<HTMLDivElement>(null)
+  const [wrapperRef, setWrapperRef] = useState<HTMLDivElement | null>(null)
 
   const virtualizer = useWindowVirtualizer({
     count: tokens.length,
     estimateSize: () => 18, // line row height
-    overscan: 25,
+    overscan: 45,
     scrollMargin: codeDisplayOverlayRef.current?.offsetTop ?? 0,
   })
 
@@ -77,7 +71,7 @@ const CodeBody = ({
   }
 
   useLayoutEffect(() => {
-    if (!wrapperRef.current) return
+    if (!wrapperRef) return
 
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries?.[0]
@@ -86,25 +80,25 @@ const CodeBody = ({
       }
     })
 
-    resizeObserver.observe(wrapperRef.current)
+    resizeObserver.observe(wrapperRef)
 
     return () => {
       resizeObserver.disconnect()
     }
-  }, [])
+  }, [wrapperRef])
 
   useLayoutEffect(() => {
     if (initialRender.current) {
       initialRender.current = false
       const index = parseInt(location.hash.slice(2), 10)
-      if (isNumber(index) && index > 0 && index < tokens.length) {
+      if (isNumber(index) && index > 0 && index <= tokens.length) {
         virtualizer.scrollToIndex(index, { align: 'start' })
       }
     }
   }, [location.hash, tokens.length, virtualizer])
 
   return (
-    <div className="flex flex-1" ref={wrapperRef}>
+    <div className="flex flex-1" ref={(ref) => setWrapperRef(ref)}>
       {/* this div contains the line numbers */}
       <div className="relative z-[2] h-full w-[82px] min-w-[82px] pr-[10px]">
         {virtualizer.getVirtualItems().map((item) => (
@@ -173,7 +167,7 @@ const CodeBody = ({
                 locationHash={location.hash}
                 coverage={coverage[item.index]}
               />
-              <div className="h-[18px] w-full" style={{ ...lineStyle }}>
+              <div className="h-[18px] w-full" style={lineStyle}>
                 {tokens[item.index]?.map((token: Token, key: React.Key) => (
                   <span {...getTokenProps({ token, key })} key={key} />
                 ))}
