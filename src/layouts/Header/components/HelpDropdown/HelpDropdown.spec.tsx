@@ -1,22 +1,36 @@
-import Sentry from '@sentry/react'
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import { SentryUserFeedback } from 'sentry'
+
 import HelpDropdown from './HelpDropdown'
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov']}>
-    <Switch>
-      <Route path="/:provider/:repo" exact>
-        {children}
-      </Route>
-    </Switch>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov']}>
+      <Switch>
+        <Route path="/:provider/:repo" exact>
+          {children}
+        </Route>
+      </Switch>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
+
+afterEach(() => queryClient.clear())
 
 describe('HelpDropdown', () => {
   function setup() {
+    SentryUserFeedback.createForm = jest.fn().mockResolvedValue({
+      appendToDom: jest.fn(),
+      removeFromDom: jest.fn(),
+      open: jest.fn(),
+    })
     return {
       user: userEvent.setup(),
     }
@@ -71,40 +85,34 @@ describe('HelpDropdown', () => {
     it('opens the sentry user feedback modal', async () => {
       console.error = () => {}
       const { user } = setup()
-      const open = jest.fn()
       const appendToDom = jest.fn()
       const removeFromDom = jest.fn()
-      const createForm = jest.fn().mockReturnValue({
-        open,
+      const open = jest.fn()
+      const createForm = jest.fn().mockResolvedValue({
         appendToDom,
         removeFromDom,
+        open,
       })
-
-      const mockedFeedbackIntegration = jest
-        .spyOn(Sentry, 'feedbackIntegration')
-        .mockImplementation(() => ({
-          createForm,
-          name: 'asdf',
-          attachTo: jest.fn(),
-          createWidget: jest.fn(),
-          remove: jest.fn(),
-        }))
+      SentryUserFeedback.createForm = createForm
 
       render(<HelpDropdown />, { wrapper })
 
       const dropdown = await screen.findByTestId('help-dropdown-trigger')
       expect(dropdown).toBeInTheDocument()
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+      expect(createForm).toHaveBeenCalled()
+      expect(appendToDom).toHaveBeenCalled()
+      expect(open).not.toHaveBeenCalled()
 
       await user.click(dropdown)
 
       const feedback = await screen.findByText('Share feedback')
       expect(feedback).toBeInTheDocument()
+      expect(open).not.toHaveBeenCalled()
 
       await user.click(feedback)
 
-      expect(mockedFeedbackIntegration).toHaveBeenCalled()
-      expect(createForm).toHaveBeenCalled()
-      expect(appendToDom).toHaveBeenCalled()
       expect(open).toHaveBeenCalled()
     })
   })
@@ -114,44 +122,39 @@ describe('HelpDropdown', () => {
       it('calls removeSentryForm cleanup function', async () => {
         console.error = () => {}
         const { user } = setup()
-        const open = jest.fn()
         const appendToDom = jest.fn()
-        const createForm = jest.fn().mockReturnValue({
-          open,
+        const removeFromDom = jest.fn()
+        const open = jest.fn()
+        const createForm = jest.fn().mockResolvedValue({
           appendToDom,
+          removeFromDom,
+          open,
         })
-
-        const mockedFeedbackIntegration = jest
-          .spyOn(Sentry, 'feedbackIntegration')
-          .mockImplementation(() => ({
-            createForm,
-            name: 'asdf',
-            attachTo: jest.fn(),
-            createWidget: jest.fn(),
-            remove: jest.fn(),
-          }))
+        SentryUserFeedback.createForm = createForm
 
         const { unmount } = render(<HelpDropdown />, { wrapper })
 
         const dropdown = await screen.findByTestId('help-dropdown-trigger')
         expect(dropdown).toBeInTheDocument()
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+        expect(createForm).toHaveBeenCalled()
+        expect(appendToDom).toHaveBeenCalled()
+        expect(open).not.toHaveBeenCalled()
 
         await user.click(dropdown)
 
         const feedback = await screen.findByText('Share feedback')
         expect(feedback).toBeInTheDocument()
+        expect(open).not.toHaveBeenCalled()
 
         await user.click(feedback)
-        document.body.style.overflow = 'hidden'
-
-        expect(mockedFeedbackIntegration).toHaveBeenCalled()
-        expect(createForm).toHaveBeenCalled()
-        expect(appendToDom).toHaveBeenCalled()
         expect(open).toHaveBeenCalled()
+        expect(removeFromDom).not.toHaveBeenCalled()
 
         unmount()
 
-        expect(document.body.style.overflow).toEqual('')
+        expect(removeFromDom).toHaveBeenCalled()
       })
     })
   })

@@ -1,8 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Redirect, useHistory, useParams } from 'react-router-dom'
 import { z } from 'zod'
+
+import config from 'config'
+
+import { SentryBugReporter } from 'sentry'
 
 import { TrialStatuses, usePlanData } from 'services/account'
 import { useStoreCodecovEventMetric } from 'services/codecovEventMetrics'
@@ -99,6 +103,14 @@ function DefaultOrgSelector() {
       ]
     },
   })
+
+  useLayoutEffect(() => {
+    if (!config.SENTRY_DSN) {
+      return
+    }
+    const widget = SentryBugReporter.createWidget()
+    return widget.removeFromDom
+  }, [])
 
   const onSubmit = () => {
     updateDefaultOrg({ username: selectedOrg })

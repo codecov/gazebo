@@ -1,7 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
+
+import config from 'config'
+
+import { SentryBugReporter } from 'sentry'
 
 import umbrellaSvg from 'assets/svg/umbrella.svg'
 import { CustomerIntent, useInternalUser } from 'services/user'
@@ -82,6 +86,14 @@ export default function TermsOfService() {
     onError: (error) => setError('apiError', error),
   })
   const { data: currentUser, isLoading: userIsLoading } = useInternalUser({})
+
+  useLayoutEffect(() => {
+    if (!config.SENTRY_DSN) {
+      return
+    }
+    const widget = SentryBugReporter.createWidget()
+    return widget.removeFromDom
+  }, [])
 
   interface FormValues {
     marketingEmail?: string

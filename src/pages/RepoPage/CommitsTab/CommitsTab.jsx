@@ -1,11 +1,4 @@
-import {
-  lazy,
-  Suspense,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useBranchHasCommits } from 'services/branches'
@@ -19,8 +12,6 @@ import Spinner from 'ui/Spinner'
 
 import { filterItems, statusEnum } from './enums'
 import { useCommitsTabBranchSelector } from './hooks'
-
-import { useCrumbs } from '../context'
 
 const ALL_BRANCHES = 'All branches'
 const CommitsTable = lazy(() => import('./CommitsTable'))
@@ -86,7 +77,6 @@ const useControlParams = ({ defaultBranch }) => {
 }
 
 function CommitsTab() {
-  const { setBreadcrumbs } = useCrumbs()
   const { provider, owner, repo } = useParams()
 
   const { data: overview } = useRepoOverview({
@@ -107,7 +97,6 @@ function CommitsTab() {
   const {
     branchList,
     branchSelectorProps,
-    currentBranchSelected,
     branchesFetchNextPage,
     branchListIsFetching,
     branchListHasNextPage,
@@ -119,21 +108,6 @@ function CommitsTab() {
     defaultBranch: overview?.defaultBranch,
     isAllCommits: selectedBranch === ALL_BRANCHES,
   })
-
-  useLayoutEffect(() => {
-    setBreadcrumbs([
-      {
-        pageName: '',
-        readOnly: true,
-        children: (
-          <span className="inline-flex items-center gap-1">
-            <Icon name="branch" variant="developer" size="sm" />
-            {currentBranchSelected}
-          </span>
-        ),
-      },
-    ])
-  }, [currentBranchSelected, setBreadcrumbs])
 
   const newBranches = [...(isSearching ? [] : [ALL_BRANCHES]), ...branchList]
 
