@@ -13,7 +13,7 @@ import { useStoreCodecovEventMetric } from 'services/codecovEventMetrics'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useStaticNavLinks } from 'services/navigation'
 import { useStartTrial } from 'services/trial'
-import { useUser } from 'services/user'
+import { CustomerIntent, useUser } from 'services/user'
 import { isBasicPlan } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import { providerToName } from 'shared/utils/provider'
@@ -32,6 +32,14 @@ const FormSchema = z.object({
 
 const renderItem = ({ item }) => {
   if (!item) return null
+
+  if (item?.isDisabled) {
+    return (
+      <div className="flex h-8 items-center gap-2 text-ds-gray-quaternary">
+        No organizations found
+      </div>
+    )
+  }
 
   if (item?.isProvider) {
     return (
@@ -79,7 +87,6 @@ function DefaultOrgSelector() {
   const { mutate: fireTrial } = useStartTrial()
 
   const isNewTrial = planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED
-
   const {
     data: myOrganizations,
     hasNextPage,
@@ -103,6 +110,9 @@ function DefaultOrgSelector() {
       ]
     },
   })
+
+  const isBusinessIntent =
+    currentUser?.user?.customerIntent === CustomerIntent.BUSINESS
 
   useLayoutEffect(() => {
     if (!config.SENTRY_DSN) {
@@ -134,6 +144,14 @@ function DefaultOrgSelector() {
   if (userIsLoading) return null
   if (!userIsLoading && !currentUser) return <Redirect to="/login" />
 
+  console.log('current user:', currentUser?.user?.username)
+  const filteredOrganizations =
+    isBusinessIntent &&
+    myOrganizations[0]?.org?.username === currentUser?.user?.username
+      ? myOrganizations.slice(1)
+      : myOrganizations
+  console.log('myOrgs:', filteredOrganizations)
+
   return (
     <div className="mx-auto w-full max-w-[38rem]">
       <h1 className="pb-3 pt-20 text-2xl font-semibold">
@@ -151,7 +169,9 @@ function DefaultOrgSelector() {
                 required
                 placeholder="Select organization"
                 items={[
-                  ...myOrganizations,
+                  ...(filteredOrganizations.length > 0
+                    ? filteredOrganizations
+                    : [{ org: {}, isDisabled: true }]),
                   ...(isGh ? [{ org: {}, isProvider: true }] : []),
                 ]}
                 renderItem={(item) => renderItem({ item })}
