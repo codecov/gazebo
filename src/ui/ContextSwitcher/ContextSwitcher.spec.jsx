@@ -279,7 +279,7 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      const installCopy = await screen.findByText(/Install Codecov GitHub app/)
+      const installCopy = await screen.findByText(/Add GitHub organization/)
       expect(installCopy).toBeInTheDocument()
       expect(installCopy).toHaveAttribute(
         'href',
@@ -487,7 +487,7 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      const addGhOrgText = screen.queryByText(/Install Codecov GitHub app/)
+      const addGhOrgText = screen.queryByText(/Add GitHub organization/)
       expect(addGhOrgText).not.toBeInTheDocument()
     })
   })
