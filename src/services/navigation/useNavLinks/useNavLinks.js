@@ -668,7 +668,7 @@ export function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `https://github.com/${owner}/${repo}/config/secrets/actions/new`,
+      ) => `https://github.com/${owner}/${repo}/settings/secrets/actions/new`,
       isExternalLink: true,
       openNewTab: true,
     },

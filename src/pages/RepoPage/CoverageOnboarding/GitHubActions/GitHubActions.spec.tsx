@@ -118,7 +118,7 @@ describe('GitHubActions', () => {
       expect(repositorySecretLink).toBeInTheDocument()
       expect(repositorySecretLink).toHaveAttribute(
         'href',
-        'https://github.com/codecov/cool-repo/config/secrets/actions/new'
+        'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
       )
     })
 
