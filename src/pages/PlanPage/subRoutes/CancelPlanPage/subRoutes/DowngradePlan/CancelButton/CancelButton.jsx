@@ -1,12 +1,14 @@
 import PropType from 'prop-types'
 import { useState } from 'react'
 
-import Modal from 'old_ui/Modal'
 import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
+import Modal from 'ui/Modal'
 
 import { useCancel } from './hooks'
 import { cleanupBaremetrics, getEndPeriod } from './utils'
+
+const FALLBACK_PERIOD_TEXT = 'the end of the period'
 
 function CancelButton({
   customerId,
@@ -48,42 +50,53 @@ function CancelButton({
         onClick={() => setIsModalOpen(true)}
         disabled={isDisabled}
       >
-        {isAlreadyFreeUser ? 'Already free user' : 'Downgrade to basic'}
+        {isAlreadyFreeUser ? 'Already free user' : 'Cancel your plan'}
       </Button>
       <Modal
+        customHeaderClassname="text-base"
         isOpen={isModalOpen}
         onClose={handleOnClose}
-        title="Are you sure you want to cancel your plan?"
-      >
-        <p className="text-sm">Cancelling your subscription will:</p>
-        <ul className="mt-4 list-disc pl-4 text-sm">
-          <li>Keep your subscription active until {periodEnd}</li>
-          <li>Ensure you are not charged again.</li>
-          <li>
-            Place your organization on the Free Per User Billing tier after{' '}
-            {periodEnd}
-          </li>
-        </ul>
-        <div className="mt-6 flex justify-between">
-          <Button
-            hook="close-button"
-            variant="plain"
-            onClick={handleOnClose}
-            disabled={isDisabled}
-          >
-            Close
-          </Button>
-          <Button
-            id="barecancel-trigger"
-            variant="danger"
-            hook="continue-cancellation-button"
-            disabled={isDisabled}
-            onClick={completeCancelation}
-          >
-            Continue Cancellation
-          </Button>
-        </div>
-      </Modal>
+        title="Review plan cancellation"
+        body={
+          <div>
+            <br></br>
+            <p className="text-sm">Once you cancel your subscription:</p>
+            <ul className="mt-4 list-disc pl-4 text-sm">
+              <li>
+                Your paid plan will remain active until{' '}
+                {periodEnd || `${FALLBACK_PERIOD_TEXT}.`}
+              </li>
+              <li>
+                Your organization will be placed on the Developer plan after{' '}
+                {periodEnd || `${FALLBACK_PERIOD_TEXT}.`}
+              </li>
+              <li>You will not be charged again.</li>
+            </ul>
+            <br></br>
+          </div>
+        }
+        footer={
+          <div className="flex justify-end gap-3">
+            <Button
+              hook="close-button"
+              variant="default"
+              onClick={handleOnClose}
+              disabled={isDisabled}
+            >
+              Cancel
+            </Button>
+            <Button
+              id="barecancel-trigger"
+              variant="danger"
+              hook="continue-cancellation-button"
+              disabled={isDisabled}
+              onClick={completeCancelation}
+            >
+              Confirm Cancellation
+            </Button>
+          </div>
+        }
+      />
     </div>
   )
 }

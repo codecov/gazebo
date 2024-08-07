@@ -78,7 +78,7 @@ describe('CancelButton', () => {
 
       const downgradeButton = screen.getByTestId('downgrade-button')
       expect(downgradeButton).toBeInTheDocument()
-      expect(downgradeButton).toHaveTextContent('Downgrade to basic')
+      expect(downgradeButton).toHaveTextContent('Cancel your plan')
     })
   })
 
@@ -97,9 +97,7 @@ describe('CancelButton', () => {
 
       await user.click(screen.getByTestId('downgrade-button'))
 
-      expect(
-        screen.getByText(/Are you sure you want to cancel your plan?/)
-      ).toBeInTheDocument()
+      expect(screen.getByText(/Review plan cancellation/)).toBeInTheDocument()
     })
 
     describe('when clicking cancel', () => {
@@ -119,7 +117,7 @@ describe('CancelButton', () => {
         await user.click(screen.getByTestId('close-button'))
 
         expect(
-          screen.queryByText(/Are you sure you want to cancel your plan?/)
+          screen.queryByText(/Review plan cancellation/)
         ).not.toBeInTheDocument()
       })
     })
@@ -138,10 +136,10 @@ describe('CancelButton', () => {
         )
 
         await user.click(screen.getByTestId('downgrade-button'))
-        await user.click(screen.queryAllByRole('button', { name: /Close/ })[0])
+        await user.click(screen.getByLabelText('Close'))
 
         expect(
-          screen.queryByText(/Are you sure you want to cancel your plan?/)
+          screen.queryByText(/Review plan cancellation/)
         ).not.toBeInTheDocument()
       })
     })

@@ -1,28 +1,33 @@
 import React, { ReactElement } from 'react'
 
+import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 
 interface BaseModalProps {
+  body: ReactElement | string
+  customHeaderClassname?: string
+  footer?: ReactElement
   hasCloseButton?: boolean
   onClose: () => void
-  title: ReactElement | string
   subtitle?: ReactElement | string
-  body: ReactElement | string
-  footer?: ReactElement
+  title: ReactElement | string
 }
 
 const BaseModal: React.FC<BaseModalProps> = ({
-  onClose,
   body,
+  customHeaderClassname,
   footer,
-  title,
-  subtitle,
   hasCloseButton = true,
+  onClose,
+  subtitle,
+  title,
 }) => {
   return (
     <div className="rounded bg-white">
       <header className="flex items-center justify-between px-4 pt-4">
-        <h2 className="text-3xl font-semibold">{title}</h2>
+        <h2 className={cn('text-3xl font-semibold', customHeaderClassname)}>
+          {title}
+        </h2>
         {hasCloseButton && (
           <span
             className="cursor-pointer fill-current text-ds-gray-octonary"
