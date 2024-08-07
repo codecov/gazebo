@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -246,8 +246,10 @@ describe('HeaderBanners', () => {
         { wrapper }
       )
 
-      const banner = screen.getByText(/Codecov's GitHub app/)
-      expect(banner).toBeInTheDocument()
+      await waitFor(() => {
+        const banner = screen.getByText("Codecov's GitHub app")
+        return expect(banner).toBeInTheDocument()
+      })
     })
   })
 
@@ -268,6 +270,27 @@ describe('HeaderBanners', () => {
       )
 
       expect(container).toBeEmptyDOMElement()
+    })
+  })
+
+  describe('error in api response', () => {
+    server.use(
+      rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) =>
+        res(ctx.status(404))
+      )
+    )
+
+    it('does not display github app config banner', async () => {
+      render(
+        <HeaderBanners
+          provider="gh"
+          owner={{ username: 'codecov', isCurrentUserPartOfOrg: true }}
+        />,
+        { wrapper }
+      )
+
+      const banner = screen.queryByText("Codecov's GitHub app")
+      expect(banner).not.toBeInTheDocument()
     })
   })
 })
