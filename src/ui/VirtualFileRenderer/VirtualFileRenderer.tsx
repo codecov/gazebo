@@ -1,3 +1,24 @@
+/**
+ * The VirtualFileRenderer component is used to render code files in a
+ * virtualized way that enables us to render large files without performance
+ * issues. This component uses TanStack Virtual to handle the virtualization of
+ * the code blocks we want to render. There are a few tricks hidden within
+ * these components to enable features to provide a better UX.
+ *
+ * We use a textarea element that is "transparent" from the user but still
+ * accessible to the browser. This textarea element is used to store the code
+ * content and is used to sync the scroll position of the code display element,
+ * highlight/select code for copy pasting, and also to enable users to cmd/ctrl
+ * + f to search for text in the code. We also use the width of the textarea to
+ * set the width of the code display element so the code display element can
+ * scroll horizontally in sync with the text area.
+ *
+ * The VirtualFileRenderer contains logic as well that enables pointer-events
+ * to be disabled when ever the user scrolls and then after an allotted amount
+ * of time they're turned back on. This is to reduce the amount of work the
+ * browser needs to do during the repaint, as it does not need to check these
+ * events.
+ */
 import { useWindowVirtualizer } from '@tanstack/react-virtual'
 // eslint-disable-next-line no-restricted-imports
 import type { Dictionary } from 'lodash'
@@ -44,7 +65,7 @@ const CodeBody = ({
   const virtualizer = useWindowVirtualizer({
     count: tokens.length,
     estimateSize: () => 18, // line row height
-    overscan: 75,
+    overscan: 25,
     scrollMargin: codeDisplayOverlayRef.current?.offsetTop ?? 0,
   })
 
@@ -98,7 +119,7 @@ const CodeBody = ({
               }px)`,
             }}
             className={cn(
-              `absolute left-0 top-0 w-full border-r border-ds-gray-tertiary bg-white px-4 text-right text-ds-gray-quaternary hover:cursor-pointer hover:text-black`,
+              'absolute left-0 top-0 w-full border-r border-ds-gray-tertiary bg-white px-4 text-right text-ds-gray-quaternary hover:cursor-pointer hover:text-black',
               coverage[item.index] === 'H' && 'bg-ds-coverage-covered',
               coverage[item.index] === 'M' &&
                 'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
@@ -153,7 +174,7 @@ const CodeBody = ({
                 coverage={coverage[item.index]}
               />
               <div className="h-[18px] w-full" style={{ ...lineStyle }}>
-                {tokens[item.index]?.map((token: any, key: any) => (
+                {tokens[item.index]?.map((token: Token, key: React.Key) => (
                   <span {...getTokenProps({ token, key })} key={key} />
                 ))}
               </div>
@@ -291,7 +312,6 @@ export function VirtualFileRenderer({
         }}
         className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[92px] pt-px font-mono leading-[18px] text-transparent outline-none"
         // Directly setting the value of the text area to the code content
-        // @ts-ignore
         value={code}
         // need to set to true since we're setting a value without an onChange handler
         readOnly={true}
