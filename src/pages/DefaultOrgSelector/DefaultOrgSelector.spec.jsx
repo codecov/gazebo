@@ -379,7 +379,7 @@ describe('DefaultOrgSelector', () => {
       expect(selfOrg).not.toBeInTheDocument()
 
       const addNewOrg = screen.getByRole('option', {
-        name: 'plus-circle.svg Add GitHub organization',
+        name: 'plus-circle.svg Install Codecov GitHub app',
       })
       expect(addNewOrg).toBeInTheDocument()
     })
@@ -418,7 +418,7 @@ describe('DefaultOrgSelector', () => {
       expect(noOrgsFound).toBeInTheDocument()
 
       const addNewOrg = screen.getByRole('option', {
-        name: 'plus-circle.svg Add GitHub organization',
+        name: 'plus-circle.svg Install Codecov GitHub app',
       })
       expect(addNewOrg).toBeInTheDocument()
     })
