@@ -59,6 +59,7 @@ function CancelButton({
         title="Review plan cancellation"
         body={
           <div>
+            <br></br>
             <p className="text-sm">Once you cancel your subscription:</p>
             <ul className="mt-4 list-disc pl-4 text-sm">
               <li>
@@ -71,6 +72,7 @@ function CancelButton({
               </li>
               <li>You will not be charged again.</li>
             </ul>
+            <br></br>
           </div>
         }
         footer={
@@ -94,36 +96,7 @@ function CancelButton({
             </Button>
           </div>
         }
-      >
-        <p className="text-sm">Once you cancel your subscription:</p>
-        <ul className="mt-4 list-disc pl-4 text-sm">
-          <li>Your paid plan will remain active until {periodEnd}</li>
-          <li>
-            Your organization will be placed on the Developer plan after{' '}
-            {periodEnd}
-          </li>
-          <li>You will not be charged again.</li>
-        </ul>
-        <div className="mt-6 flex justify-between">
-          <Button
-            hook="close-button"
-            variant="plain"
-            onClick={handleOnClose}
-            disabled={isDisabled}
-          >
-            Cancel
-          </Button>
-          <Button
-            id="barecancel-trigger"
-            variant="danger"
-            hook="continue-cancellation-button"
-            disabled={isDisabled}
-            onClick={completeCancelation}
-          >
-            Confirm Cancellation
-          </Button>
-        </div>
-      </Modal>
+      />
     </div>
   )
 }
