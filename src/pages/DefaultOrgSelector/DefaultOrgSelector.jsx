@@ -1,12 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useLayoutEffect, useState } from 'react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Redirect, useHistory, useParams } from 'react-router-dom'
 import { z } from 'zod'
-
-import config from 'config'
-
-import { SentryBugReporter } from 'sentry'
 
 import { TrialStatuses, usePlanData } from 'services/account'
 import { useStoreCodecovEventMetric } from 'services/codecovEventMetrics'
@@ -38,7 +34,7 @@ const renderItem = ({ item }) => {
       <div className="flex h-8 items-center gap-2">
         <A pathname={{ pageName: 'codecovAppInstallation' }}>
           <Icon name="plus-circle" />
-          <span>Install Codecov GitHub app</span>
+          <span>Add GitHub organization</span>
         </A>
       </div>
     )
@@ -103,14 +99,6 @@ function DefaultOrgSelector() {
       ]
     },
   })
-
-  useLayoutEffect(() => {
-    if (!config.SENTRY_DSN) {
-      return
-    }
-    const widget = SentryBugReporter.createWidget()
-    return widget.removeFromDom
-  }, [])
 
   const onSubmit = () => {
     updateDefaultOrg({ username: selectedOrg })

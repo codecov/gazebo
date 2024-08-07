@@ -7,15 +7,10 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { useIntersection } from 'react-use'
 
-import config from 'config'
-
-import { SentryBugReporter } from 'sentry'
-
 import DefaultOrgSelector from './DefaultOrgSelector'
 
 jest.mock('react-use/lib/useIntersection')
 jest.mock('./GitHubHelpBanner', () => () => 'GitHubHelpBanner')
-jest.mock('config')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -132,7 +127,6 @@ describe('DefaultOrgSelector', () => {
     const mockWindow = jest.fn()
     window.open = mockWindow
     const fetchNextPage = jest.fn()
-    config.SENTRY_DSN = undefined
     const user = userEvent.setup()
 
     server.use(
@@ -287,7 +281,7 @@ describe('DefaultOrgSelector', () => {
       expect(selfOrg).toBeInTheDocument()
 
       const addNewOrg = screen.getByRole('option', {
-        name: 'plus-circle.svg Install Codecov GitHub app',
+        name: 'plus-circle.svg Add GitHub organization',
       })
       expect(addNewOrg).toBeInTheDocument()
     })
@@ -328,7 +322,7 @@ describe('DefaultOrgSelector', () => {
       expect(orgInList).toBeInTheDocument()
 
       const addNewOrg = screen.queryByRole('option', {
-        name: 'plus-circle.svg Install Codecov GitHub app',
+        name: 'plus-circle.svg Add GitHub organization',
       })
       expect(addNewOrg).not.toBeInTheDocument()
     })
@@ -366,7 +360,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(selectOrg)
 
       const addNewOrg = screen.getByRole('option', {
-        name: 'plus-circle.svg Install Codecov GitHub app',
+        name: 'plus-circle.svg Add GitHub organization',
       })
 
       await user.click(addNewOrg)
@@ -1231,104 +1225,6 @@ describe('DefaultOrgSelector', () => {
       await waitFor(() =>
         expect(mockMetricMutationVariables).toHaveBeenCalled()
       )
-    })
-  })
-
-  describe('sentry user feedback widget', () => {
-    describe('when SENTRY_DSN is not defined', () => {
-      it('does not render', async () => {
-        setup({
-          useUserData: mockUserData,
-          myOrganizationsData: {
-            me: {
-              myOrganizations: {
-                edges: [],
-                pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
-              },
-            },
-          },
-        })
-        const removeFromDom = jest.fn()
-        const createWidget = jest.fn().mockReturnValue({
-          removeFromDom,
-        })
-        SentryBugReporter.createWidget = createWidget
-        render(<DefaultOrgSelector />, { wrapper: wrapper() })
-
-        const selectLabel = await screen.findByText(
-          /Which organization are you working with today?/
-        )
-        expect(selectLabel).toBeInTheDocument()
-
-        expect(createWidget).not.toHaveBeenCalled()
-        expect(removeFromDom).not.toHaveBeenCalled()
-      })
-    })
-
-    describe('when SENTRY_DSN is defined', () => {
-      it('renders', async () => {
-        setup({
-          useUserData: mockUserData,
-          myOrganizationsData: {
-            me: {
-              myOrganizations: {
-                edges: [],
-                pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
-              },
-            },
-          },
-        })
-        config.SENTRY_DSN = 'dsn'
-        const removeFromDom = jest.fn()
-        const createWidget = jest.fn().mockReturnValue({
-          removeFromDom,
-        })
-        SentryBugReporter.createWidget = createWidget
-        render(<DefaultOrgSelector />, { wrapper: wrapper() })
-
-        const selectLabel = await screen.findByText(
-          /Which organization are you working with today?/
-        )
-        expect(selectLabel).toBeInTheDocument()
-
-        expect(createWidget).toHaveBeenCalled()
-        expect(removeFromDom).not.toHaveBeenCalled()
-      })
-
-      describe('and component unmounts', () => {
-        it('removes the widget from the dom', async () => {
-          setup({
-            useUserData: mockUserData,
-            myOrganizationsData: {
-              me: {
-                myOrganizations: {
-                  edges: [],
-                  pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
-                },
-              },
-            },
-          })
-          config.SENTRY_DSN = 'dsn'
-          const removeFromDom = jest.fn()
-          const createWidget = jest.fn().mockReturnValue({
-            removeFromDom,
-          })
-          SentryBugReporter.createWidget = createWidget
-          const view = render(<DefaultOrgSelector />, { wrapper: wrapper() })
-
-          const selectLabel = await screen.findByText(
-            /Which organization are you working with today?/
-          )
-          expect(selectLabel).toBeInTheDocument()
-
-          expect(createWidget).toHaveBeenCalled()
-          expect(removeFromDom).not.toHaveBeenCalled()
-
-          view.unmount()
-
-          expect(removeFromDom).toHaveBeenCalled()
-        })
-      })
     })
   })
 })
