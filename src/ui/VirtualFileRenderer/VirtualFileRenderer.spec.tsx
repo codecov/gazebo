@@ -155,7 +155,14 @@ describe('VirtualFileRenderer', () => {
         }
       )
 
-      const coveredLine = screen.getByText(0)
+      const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
+      expect(virtualOverlay).toBeInTheDocument()
+
+      // We're testing like this so our tests are more resilient to changes in the code
+      // eslint-disable-next-line testing-library/no-node-access
+      const coveredLine = virtualOverlay.querySelector(
+        '.bg-ds-coverage-covered'
+      )
       expect(coveredLine).toHaveClass('bg-ds-coverage-covered')
     })
   })
@@ -173,8 +180,15 @@ describe('VirtualFileRenderer', () => {
         }
       )
 
-      const uncoveredLine = screen.getByText(1)
-      expect(uncoveredLine).toHaveClass('bg-ds-coverage-uncovered')
+      const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
+      expect(virtualOverlay).toBeInTheDocument()
+
+      // We're testing like this so our tests are more resilient to changes in the code
+      // eslint-disable-next-line testing-library/no-node-access
+      const uncovered = virtualOverlay.querySelector(
+        '.bg-ds-coverage-uncovered'
+      )
+      expect(uncovered).toHaveClass('bg-ds-coverage-uncovered')
     })
   })
 
@@ -191,8 +205,13 @@ describe('VirtualFileRenderer', () => {
         }
       )
 
-      const partialLine = screen.getByText(2)
-      expect(partialLine).toHaveClass('bg-ds-coverage-partial')
+      const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
+      expect(virtualOverlay).toBeInTheDocument()
+
+      // We're testing like this so our tests are more resilient to changes in the code
+      // eslint-disable-next-line testing-library/no-node-access
+      const partial = virtualOverlay.querySelector('.bg-ds-coverage-partial')
+      expect(partial).toHaveClass('bg-ds-coverage-partial')
     })
   })
 
