@@ -38,7 +38,7 @@ const renderItem = ({ item }) => {
       <div className="flex h-8 items-center gap-2">
         <A pathname={{ pageName: 'codecovAppInstallation' }}>
           <Icon name="plus-circle" />
-          <span>Add GitHub organization</span>
+          <span>Install Codecov GitHub app</span>
         </A>
       </div>
     )
