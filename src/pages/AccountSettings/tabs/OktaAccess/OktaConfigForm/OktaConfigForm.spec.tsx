@@ -346,7 +346,7 @@ describe('OktaConfigForm', () => {
     await waitFor(() => {
       expect(mutate).toHaveBeenCalledWith({
         input: {
-          clientId: 'New client ID',
+          clientId: 'New client ID INCORRECT',
           clientSecret: 'New client secret',
           url: 'http://localhost:3000',
           orgUsername: 'codecov',
