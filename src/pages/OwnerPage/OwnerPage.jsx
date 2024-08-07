@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useLayoutEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
+import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
 import { useSentryToken } from 'services/account'
@@ -68,7 +69,9 @@ function OwnerPage() {
   return (
     <div>
       <Suspense fallback={null}>
-        <HeaderBanners />
+        <SilentNetworkErrorWrapper>
+          <HeaderBanners />
+        </SilentNetworkErrorWrapper>
       </Suspense>
       <div>
         {ownerData?.isCurrentUserPartOfOrg && (
