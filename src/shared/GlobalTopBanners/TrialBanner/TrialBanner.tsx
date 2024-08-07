@@ -49,18 +49,13 @@ const TrialBanner: React.FC = () => {
     username: owner,
     opts: { enabled: enableQuery },
   })
-  const { data: planData, error } = usePlanData({
+  const { data: planData } = usePlanData({
     provider: providerString,
     owner: owner || '',
     opts: {
       enabled: ownerData?.isCurrentUserPartOfOrg,
-      suspense: false,
     },
   })
-
-  if (error) {
-    return null
-  }
 
   const planValue = planData?.plan?.value
   const trialStatus = planData?.plan?.trialStatus
