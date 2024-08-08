@@ -27,7 +27,9 @@ import { cn } from 'shared/utils/cn'
 import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
 
 import { ColorBar } from './ColorBar'
+
 import './VirtualFileRenderer.css'
+import 'shared/utils/prismTheme.css'
 
 const LINE_ROW_HEIGHT = 18 as const
 
