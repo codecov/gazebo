@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import {
   fireEvent,
   render,
@@ -11,6 +12,14 @@ import { type Dictionary } from 'lodash'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import { VirtualFileRenderer } from './VirtualFileRenderer'
+
+jest.mock('@sentry/react', () => {
+  const originalModule = jest.requireActual('@sentry/react')
+  return {
+    ...originalModule,
+    captureMessage: jest.fn(),
+  }
+})
 
 window.requestAnimationFrame = (cb) => {
   cb(1)
@@ -369,6 +378,43 @@ describe('VirtualFileRenderer', () => {
         await waitFor(() => expect(testLocation.hash).toBe('#L0'))
         await user.click(line)
         await waitFor(() => expect(testLocation.hash).toBe(''))
+      })
+    })
+  })
+
+  describe('scroll to line', () => {
+    describe('valid line number', () => {
+      it('calls scrollTo', async () => {
+        render(
+          <VirtualFileRenderer
+            code={code}
+            coverage={coverageData}
+            fileName="tsx"
+          />,
+          { wrapper: wrapper('/#L4') }
+        )
+
+        await waitFor(() => expect(scrollToMock).toHaveBeenCalled())
+      })
+    })
+
+    describe('invalid line number', () => {
+      it('captures message to sentry', async () => {
+        render(
+          <VirtualFileRenderer
+            code={code}
+            coverage={coverageData}
+            fileName="tsx"
+          />,
+          { wrapper: wrapper('/#RandomNumber') }
+        )
+
+        await waitFor(() => {
+          expect(Sentry.captureMessage).toHaveBeenCalledWith(
+            'Invalid line number in file renderer hash: #RandomNumber',
+            { fingerprint: ['file-renderer-invalid-line-number'] }
+          )
+        })
       })
     })
   })
