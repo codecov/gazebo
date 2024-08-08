@@ -20,7 +20,7 @@ function FeatureItem({
   children,
 }: FeatureItemProps) {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-4">
       <div className="flex-1">
         {nameLink ? (
           <A
@@ -34,27 +34,25 @@ function FeatureItem({
         ) : (
           <h4 className="font-semibold">{name}</h4>
         )}
-        <div className="flex items-end gap-1">
-          {children}
-          {docsLink ? (
-            <A
-              to={{ pageName: docsLink }}
-              hook="configuration-docs"
-              isExternal={false}
-              showExternalIcon={false}
-              variant="medium"
-            >
-              <span className="flex items-center text-xs leading-[18px]">
-                docs
-                <Icon
-                  className="left-0 [&_path]:stroke-[3px]"
-                  name="documentText"
-                  size="sm"
-                />
-              </span>
-            </A>
-          ) : null}
-        </div>
+        <span className="pr-1">{children}</span>
+        {docsLink ? (
+          <A
+            to={{ pageName: docsLink }}
+            hook="configuration-docs"
+            isExternal={false}
+            showExternalIcon={false}
+            variant="medium"
+          >
+            <span className="flex h-full items-center text-xs leading-[18px]">
+              docs
+              <Icon
+                className="left-0 [&_path]:stroke-[3px]"
+                name="documentText"
+                size="sm"
+              />
+            </span>
+          </A>
+        ) : null}
       </div>
       {hiddenStatus ? null : (
         <ConfiguredStatus
@@ -82,21 +80,22 @@ const ConfiguredStatus = ({
       </ul>
     )
   }
-  return (
-    <p className="flex items-baseline gap-1 font-medium">
-      <span className="text-ds-gray-quinary">not enabled</span>
-      {getStartedLink ? (
-        <A
-          to={{ pageName: getStartedLink }}
-          hook="configuration-get-started"
-          isExternal={false}
-          showExternalIcon={false}
-        >
-          <span className="text-xs leading-4">get started</span>
-        </A>
-      ) : null}
-    </p>
-  )
+
+  if (getStartedLink) {
+    return (
+      <A
+        to={{ pageName: getStartedLink }}
+        hook="configuration-get-started"
+        isExternal={false}
+        showExternalIcon={false}
+        data-testid="FeatureItem-get-started"
+      >
+        <span className="font-medium">Get Started</span>
+      </A>
+    )
+  }
+
+  return null
 }
 
 export default FeatureItem
