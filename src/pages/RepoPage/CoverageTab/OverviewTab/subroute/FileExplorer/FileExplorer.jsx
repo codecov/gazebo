@@ -23,7 +23,7 @@ function FileExplorer() {
 
   return (
     <>
-      <div className="sticky top-[4.5rem] z-10 flex justify-between gap-2 bg-white pt-2">
+      <div className="sticky top-0 z-10 flex justify-between gap-2 bg-white pt-2">
         <div className="flex flex-1 items-center gap-4">
           <DisplayTypeButton
             dataLength={branchData?.length}
