@@ -234,7 +234,7 @@ jobs:
             <code>.json</code>, and <code>.txt</code> report formats.
           </p>
 
-          <div className="max-w-64" data-testid="framework-selector">
+          <div className="max-w-64">
             <Select
               // @ts-expect-error - Select has some TS issues because it's still written in JS
               items={Object.keys(frameworkInstructions)}
