@@ -69,9 +69,6 @@ const coverageData = {
   0: 'H',
   1: 'M',
   2: 'P',
-  3: 'H',
-  4: 'M',
-  5: 'P',
 } as unknown as Dictionary<'H' | 'M' | 'P'>
 
 let testLocation: ReturnType<typeof useLocation>
@@ -333,10 +330,10 @@ describe('VirtualFileRenderer', () => {
           }
         )
 
-        const line = screen.getByText(0)
+        const line = screen.getByText(1)
         await user.click(line)
 
-        await waitFor(() => expect(testLocation.hash).toBe('#L0'))
+        await waitFor(() => expect(testLocation.hash).toBe('#L1'))
       })
 
       it('highlights the line on click', async () => {
@@ -352,12 +349,12 @@ describe('VirtualFileRenderer', () => {
           }
         )
 
-        const line = screen.getByText(0)
+        const line = screen.getByText(1)
         await user.click(line)
 
-        const bar = await screen.findByTestId('covered-bar')
+        const bar = await screen.findByTestId('highlighted-bar')
         expect(bar).toBeInTheDocument()
-        expect(bar).toHaveClass('bg-ds-coverage-covered')
+        await waitFor(() => expect(bar).toHaveClass('bg-ds-blue-medium'))
       })
 
       it('removes highlighting when clicking on highlighted line', async () => {
@@ -373,9 +370,9 @@ describe('VirtualFileRenderer', () => {
           }
         )
 
-        const line = screen.getByText(0)
+        const line = screen.getByText(1)
         await user.click(line)
-        await waitFor(() => expect(testLocation.hash).toBe('#L0'))
+        await waitFor(() => expect(testLocation.hash).toBe('#L1'))
         await user.click(line)
         await waitFor(() => expect(testLocation.hash).toBe(''))
       })

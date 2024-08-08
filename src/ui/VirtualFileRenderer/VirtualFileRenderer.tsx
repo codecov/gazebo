@@ -27,6 +27,7 @@ import { cn } from 'shared/utils/cn'
 import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
 
 import { ColorBar } from './ColorBar'
+import './VirtualFileRenderer.css'
 
 const LINE_ROW_HEIGHT = 18 as const
 
@@ -95,7 +96,8 @@ const CodeBody = ({
     const index = parseInt(location.hash.slice(2), 10)
     // need to check !isNaN because parseInt return NaN if the string is not a number which is still a valid number.
     if (!isNaN(index) && index > 0 && index <= tokens.length) {
-      virtualizer.scrollToIndex(index, { align: 'start' })
+      const adjustedLineNumber = index - 1
+      virtualizer.scrollToIndex(adjustedLineNumber, { align: 'start' })
     } else {
       Sentry.captureMessage(
         `Invalid line number in file renderer hash: ${location.hash}`,
@@ -108,38 +110,41 @@ const CodeBody = ({
     <div className="flex flex-1" ref={(ref) => setWrapperRef(ref)}>
       {/* this div contains the line numbers */}
       <div className="relative z-[2] h-full w-[82px] min-w-[82px] pr-[10px]">
-        {virtualizer.getVirtualItems().map((item) => (
-          <div
-            ref={virtualizer.measureElement}
-            key={item.index}
-            data-index={item.index}
-            style={{
-              height: `${item.size}px`,
-              transform: `translateY(${
-                item.start - virtualizer.options.scrollMargin
-              }px)`,
-            }}
-            className={cn(
-              'absolute left-0 top-0 w-full border-r border-ds-gray-tertiary bg-white px-4 text-right text-ds-gray-quaternary hover:cursor-pointer hover:text-black',
-              coverage[item.index] === 'H' && 'bg-ds-coverage-covered',
-              coverage[item.index] === 'M' &&
-                'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
-              coverage[item.index] === 'P' &&
-                'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow',
-              // this needs to come last as it overrides the coverage colors
-              location.hash === `#L${item.index}` &&
-                'bg-ds-blue-medium/25 font-semibold text-ds-gray-quinary'
-            )}
-            onClick={() => {
-              location.hash =
-                location.hash === `#L${item.index}` ? '' : `#L${item.index}`
-              history.push(location)
-            }}
-          >
-            {location.hash === `#L${item.index}` ? '#' : null}
-            {item.index}
-          </div>
-        ))}
+        {virtualizer.getVirtualItems().map((item) => {
+          const lineNumber = item.index + 1
+          return (
+            <div
+              ref={virtualizer.measureElement}
+              key={item.index}
+              data-index={item.index}
+              style={{
+                height: `${item.size}px`,
+                transform: `translateY(${
+                  item.start - virtualizer.options.scrollMargin
+                }px)`,
+              }}
+              className={cn(
+                'absolute left-0 top-0 w-full border-r border-ds-gray-tertiary bg-white px-4 text-right text-ds-gray-quaternary hover:cursor-pointer hover:text-black',
+                coverage[item.index] === 'H' && 'bg-ds-coverage-covered',
+                coverage[item.index] === 'M' &&
+                  'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
+                coverage[item.index] === 'P' &&
+                  'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow',
+                // this needs to come last as it overrides the coverage colors
+                location.hash === `#L${lineNumber}` &&
+                  'bg-ds-blue-medium/25 font-semibold text-ds-gray-quinary'
+              )}
+              onClick={() => {
+                location.hash =
+                  location.hash === `#L${lineNumber}` ? '' : `#L${lineNumber}`
+                history.push(location)
+              }}
+            >
+              {location.hash === `#L${lineNumber}` ? '#' : null}
+              {lineNumber}
+            </div>
+          )
+        })}
       </div>
       {/* this div contains the actual code lines */}
       <div
@@ -148,6 +153,7 @@ const CodeBody = ({
         className="pointer-events-none size-full"
       >
         {virtualizer.getVirtualItems().map((item) => {
+          const lineNumber = item.index + 1
           // get any specific things from code highlighting library for this given line
           const { style: lineStyle } = getLineProps({
             // casting this cause it is guaranteed to be present in the array
@@ -170,7 +176,7 @@ const CodeBody = ({
               className="absolute left-0 top-0 pl-[92px]"
             >
               <ColorBar
-                lineNumber={item.index}
+                lineNumber={lineNumber}
                 locationHash={location.hash}
                 coverage={coverage[item.index]}
               />
