@@ -121,14 +121,12 @@ export function useRepo({ provider, owner, repo, opts = {} }: UseRepoArgs) {
           }
         }
 
-        return (
-          {
-            isAdmin: data?.owner?.isAdmin,
-            repository: data?.owner?.repository,
-            isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg,
-            isCurrentUserActivated: data?.owner?.isCurrentUserActivated,
-          } ?? null
-        )
+        return {
+          isAdmin: data?.owner?.isAdmin,
+          repository: data?.owner?.repository,
+          isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg,
+          isCurrentUserActivated: data?.owner?.isCurrentUserActivated,
+        }
       }),
     ...opts,
   })
