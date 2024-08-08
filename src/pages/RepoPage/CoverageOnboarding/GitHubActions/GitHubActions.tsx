@@ -57,7 +57,7 @@ function Step1({ orgUploadToken, owner, repo }: Step1Props) {
     Jest: {
       install: 'npm install --save-dev jest',
       run: 'npx jest --coverage',
-      workflow: `name: Run test and upload coverage
+      workflow: `name: Run tests and upload coverage
 
 on: 
   push
@@ -95,7 +95,7 @@ jobs:
     Vitest: {
       install: 'npm install --save-dev vitest @vitest/coverage-v8',
       run: 'npx vitest run --coverage',
-      workflow: `name: Run test and upload coverage
+      workflow: `name: Run tests and upload coverage
 
 on: 
   push
@@ -133,7 +133,7 @@ jobs:
     Pytest: {
       install: 'pip install pytest pytest-cov',
       run: 'pytest --cov',
-      workflow: `name: Run test and upload coverage
+      workflow: `name: Run tests and upload coverage
 
 on: 
   push
@@ -171,7 +171,7 @@ jobs:
     Go: {
       install: undefined,
       run: 'go test -coverprofile=coverage.txt',
-      workflow: `name: Run test and upload coverage
+      workflow: `name: Run tests and upload coverage
 
 on: 
   push
@@ -234,7 +234,7 @@ jobs:
             <code>.json</code>, and <code>.txt</code> report formats.
           </p>
 
-          <div className="max-w-64">
+          <div className="max-w-64" data-testid="framework-selector">
             <Select
               // @ts-expect-error - Select has some TS issues because it's still written in JS
               items={Object.keys(frameworkInstructions)}
