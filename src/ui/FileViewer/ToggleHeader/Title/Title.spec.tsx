@@ -173,7 +173,7 @@ describe('Title', () => {
       const rootDiv = screen.getByTestId('title-wrapper-div')
       expect(rootDiv).toHaveClass('z-10')
       expect(rootDiv).toHaveClass('sticky')
-      expect(rootDiv).toHaveClass('top-[4.5rem]')
+      expect(rootDiv).toHaveClass('top-0')
     })
   })
 })
