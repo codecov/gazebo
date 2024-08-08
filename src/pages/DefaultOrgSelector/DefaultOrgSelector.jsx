@@ -144,13 +144,11 @@ function DefaultOrgSelector() {
   if (userIsLoading) return null
   if (!userIsLoading && !currentUser) return <Redirect to="/login" />
 
-  console.log('current user:', currentUser?.user?.username)
   const filteredOrganizations =
     isBusinessIntent &&
     myOrganizations[0]?.org?.username === currentUser?.user?.username
       ? myOrganizations.slice(1)
       : myOrganizations
-  console.log('myOrgs:', filteredOrganizations)
 
   return (
     <div className="mx-auto w-full max-w-[38rem]">
