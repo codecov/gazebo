@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -101,10 +101,148 @@ describe('GitHubActions', () => {
         return res(ctx.status(200), ctx.data({ storeEventMetric: null }))
       })
     )
-    return { mockMetricMutationVariables }
+    const user = userEvent.setup()
+
+    return { mockMetricMutationVariables, user }
   }
 
   describe('step one', () => {
+    it('renders header', async () => {
+      setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const header = await screen.findByRole('heading', { name: /Step 2/ })
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders framework blurb', async () => {
+      setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const blurb = await screen.findByText(
+        /Select your testing framework below/
+      )
+      expect(blurb).toBeInTheDocument()
+    })
+
+    it('renders framework selector', async () => {
+      setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const selector = await screen.findByTestId('framework-selector')
+      expect(selector).toBeInTheDocument()
+    })
+
+    it('renders install step', async () => {
+      setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const text = await screen.findByText(
+        'Install requirements in your terminal:'
+      )
+      expect(text).toBeInTheDocument()
+
+      const command = await screen.findByText('npm install --save-dev jest')
+      expect(command).toBeInTheDocument()
+    })
+
+    it('renders run step', async () => {
+      setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const text = await screen.findByText(
+        'In a GitHub Action, run tests and generate a coverage report:'
+      )
+      expect(text).toBeInTheDocument()
+
+      const command = await screen.findByText('npx jest --coverage')
+      expect(command).toBeInTheDocument()
+    })
+
+    it('renders example collapsible', async () => {
+      setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const trigger = await screen.findByText((content) =>
+        content.startsWith('Your final GitHub Actions workflow')
+      )
+      expect(trigger).toBeInTheDocument()
+    })
+
+    describe('when collapsible is open', () => {
+      it('renders example GHA yaml', async () => {
+        const { user } = setup({})
+        render(<GitHubActions />, { wrapper })
+
+        const trigger = await screen.findByText((content) =>
+          content.startsWith('Your final GitHub Actions workflow')
+        )
+        expect(trigger).toBeInTheDocument()
+
+        let example = screen.queryByText(/name: Run tests and upload coverage/)
+        expect(example).not.toBeInTheDocument()
+
+        await user.click(trigger)
+
+        example = await screen.findByText(/name: Run tests and upload coverage/)
+        expect(example).toBeInTheDocument()
+      })
+
+      describe('if using repo token', () => {
+        it('does not show repo slug in yaml', async () => {
+          const { user } = setup({})
+          render(<GitHubActions />, { wrapper })
+
+          const trigger = await screen.findByText((content) =>
+            content.startsWith('Your final GitHub Actions workflow')
+          )
+          expect(trigger).toBeInTheDocument()
+
+          await user.click(trigger)
+
+          const slug = screen.queryByText(/slug: codecov\/cool-repo/)
+          expect(slug).not.toBeInTheDocument()
+        })
+      })
+
+      describe('if using org token', () => {
+        it('shows repo slug in yaml', async () => {
+          const { user } = setup({ hasOrgUploadToken: true })
+          render(<GitHubActions />, { wrapper })
+
+          const trigger = await screen.findByText((content) =>
+            content.startsWith('Your final GitHub Actions workflow')
+          )
+          expect(trigger).toBeInTheDocument()
+
+          await user.click(trigger)
+
+          const slug = await screen.findByText(/slug: codecov\/cool-repo/)
+          expect(slug).toBeInTheDocument()
+        })
+      })
+
+      it('renders learn more blurb', async () => {
+        const { user } = setup({})
+        render(<GitHubActions />, { wrapper })
+
+        const trigger = await screen.findByText((content) =>
+          content.startsWith('Your final GitHub Actions workflow')
+        )
+        expect(trigger).toBeInTheDocument()
+
+        let blurb = screen.queryByText(/about generating coverage reports/)
+        expect(blurb).not.toBeInTheDocument()
+
+        await user.click(trigger)
+
+        blurb = await screen.findByText(/about generating coverage reports/)
+        expect(blurb).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('step two', () => {
     it('renders header', async () => {
       setup({})
       render(<GitHubActions />, { wrapper })
@@ -177,74 +315,6 @@ describe('GitHubActions', () => {
     })
   })
 
-  describe('step two', () => {
-    it('renders header', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
-
-      const header = await screen.findByRole('heading', { name: /Step 2/ })
-      expect(header).toBeInTheDocument()
-
-      const GitHubActionsWorkflowLink = await screen.findByRole('link', {
-        name: /GitHub Actions workflow/,
-      })
-      expect(GitHubActionsWorkflowLink).toBeInTheDocument()
-      expect(GitHubActionsWorkflowLink).toHaveAttribute(
-        'href',
-        'https://github.com/codecov/cool-repo/tree/main/.github/workflows'
-      )
-    })
-
-    it('renders yaml section', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
-
-      const yamlBox = await screen.findByText(
-        /Upload coverage reports to Codecov/
-      )
-      expect(yamlBox).toBeInTheDocument()
-    })
-
-    it('renders the correct ci version', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
-
-      const version = await screen.findByText(/v4.0.1/)
-      expect(version).toBeInTheDocument()
-    })
-
-    describe('if using repo token', () => {
-      it('does not show repo slug in yaml', async () => {
-        setup({ hasOrgUploadToken: true })
-        render(<GitHubActions />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
-        const slug = screen.queryByText(/slug: codecov\/cool-repo/)
-        expect(slug).not.toBeInTheDocument()
-      })
-    })
-
-    describe('if using org token', () => {
-      it('shows repo slug in yaml', async () => {
-        setup({ hasOrgUploadToken: true })
-        render(<GitHubActions />, { wrapper })
-
-        const slug = await screen.findByText(/slug: codecov\/cool-repo/)
-        expect(slug).toBeInTheDocument()
-      })
-    })
-
-    it('renders example blurb', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
-
-      const blurb = await screen.findByTestId('example-blurb')
-      expect(blurb).toBeInTheDocument()
-    })
-  })
-
   describe('step three', () => {
     beforeEach(() => setup({}))
     it('renders body', async () => {
@@ -299,14 +369,13 @@ describe('GitHubActions', () => {
       const copyCommands = await screen.findAllByTestId(
         'clipboard-code-snippet'
       )
-      expect(copyCommands.length).toEqual(3)
+      expect(copyCommands.length).toEqual(4)
 
-      await user.click(copyCommands[1] as HTMLElement)
+      const promises: Promise<void>[] = []
+      copyCommands.forEach((copy) => promises.push(user.click(copy)))
+      await Promise.all(promises)
 
-      await user.click(copyCommands[2] as HTMLElement)
-      await waitFor(() =>
-        expect(mockMetricMutationVariables).toHaveBeenCalledTimes(2)
-      )
+      expect(mockMetricMutationVariables).toHaveBeenCalledTimes(3)
     })
   })
 })
