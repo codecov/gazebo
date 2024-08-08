@@ -13,10 +13,11 @@
  * set the width of the code display element so the code display element can
  * scroll horizontally in sync with the text area.
  */
+import * as Sentry from '@sentry/react'
 import { useWindowVirtualizer } from '@tanstack/react-virtual'
 // eslint-disable-next-line no-restricted-imports
-import type { Dictionary } from 'lodash'
-import isNumber from 'lodash/isNumber'
+import { Dictionary } from 'lodash'
+import isNaN from 'lodash/isNaN'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -26,6 +27,8 @@ import { cn } from 'shared/utils/cn'
 import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
 
 import { ColorBar } from './ColorBar'
+
+const LINE_ROW_HEIGHT = 18 as const
 
 // copied from prism-react-renderer since they don't export it
 type Token = {
@@ -53,13 +56,13 @@ const CodeBody = ({
   const location = useLocation()
   const [wrapperWidth, setWrapperWidth] = useState<number | '100%'>('100%')
 
-  const initialRender = useRef(true)
+  const initializeRender = useRef(true)
   const [wrapperRef, setWrapperRef] = useState<HTMLDivElement | null>(null)
 
   const virtualizer = useWindowVirtualizer({
     count: tokens.length,
-    estimateSize: () => 18, // line row height
-    overscan: 45,
+    estimateSize: () => LINE_ROW_HEIGHT,
+    overscan: 45, // update to be based off of the height of the window
     scrollMargin: codeDisplayOverlayRef.current?.offsetTop ?? 0,
   })
 
@@ -75,7 +78,7 @@ const CodeBody = ({
 
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries?.[0]
-      if (entry && wrapperWidth !== entry.contentRect.width) {
+      if (entry) {
         setWrapperWidth(entry.contentRect.width)
       }
     })
@@ -85,17 +88,21 @@ const CodeBody = ({
     return () => {
       resizeObserver.disconnect()
     }
-  }, [wrapperRef, wrapperWidth])
+  }, [wrapperRef])
 
-  useLayoutEffect(() => {
-    if (initialRender.current) {
-      initialRender.current = false
-      const index = parseInt(location.hash.slice(2), 10)
-      if (isNumber(index) && index > 0 && index <= tokens.length) {
-        virtualizer.scrollToIndex(index, { align: 'start' })
-      }
+  if (initializeRender.current && virtualizer.getVirtualItems().length > 0) {
+    initializeRender.current = false
+    const index = parseInt(location.hash.slice(2), 10)
+    // need to check !isNaN because parseInt return NaN if the string is not a number which is still a valid number.
+    if (!isNaN(index) && index > 0 && index <= tokens.length) {
+      virtualizer.scrollToIndex(index, { align: 'start' })
+    } else {
+      Sentry.captureMessage(
+        `Invalid line number in file renderer hash: ${location.hash}`,
+        { fingerprint: ['file-renderer-invalid-line-number'] }
+      )
     }
-  }, [location.hash, tokens.length, virtualizer])
+  }
 
   return (
     <div className="flex flex-1" ref={(ref) => setWrapperRef(ref)}>
@@ -167,7 +174,10 @@ const CodeBody = ({
                 locationHash={location.hash}
                 coverage={coverage[item.index]}
               />
-              <div className="h-[18px] w-full" style={lineStyle}>
+              <div
+                className="w-full"
+                style={{ ...lineStyle, height: `${LINE_ROW_HEIGHT}px` }}
+              >
                 {tokens[item.index]?.map((token: Token, key: React.Key) => (
                   <span {...getTokenProps({ token, key })} key={key} />
                 ))}
@@ -309,8 +319,9 @@ export function VirtualFileRenderer({
         style={{
           tabSize: '8',
           overscrollBehaviorX: 'none',
+          lineHeight: `${LINE_ROW_HEIGHT}px`,
         }}
-        className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[92px] pt-px font-mono leading-[18px] text-transparent outline-none"
+        className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[92px] pt-px font-mono text-transparent outline-none"
         // Directly setting the value of the text area to the code content
         value={code}
         // need to set to true since we're setting a value without an onChange handler
