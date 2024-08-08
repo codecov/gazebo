@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import testsPRComment from 'assets/svg/onboardingTests/testsPRComment.svg'
 import testsRunning from 'assets/svg/onboardingTests/testsRunning.svg'
 import A from 'ui/A'
@@ -78,8 +76,6 @@ const JobsScript = `jobs:
           token: \${{ secrets.CODECOV_TOKEN }}`
 
 function Step2() {
-  const [isExpanded, setIsExpanded] = useState(false)
-
   return (
     <div>
       <Card>
@@ -105,11 +101,8 @@ function Step2() {
         </Card.Content>
       </Card>
       <ExpandableSection className="-mt-px">
-        <ExpandableSection.Trigger
-          isExpanded={isExpanded}
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <p className="font-normal">
+        <ExpandableSection.Trigger>
+          <p>
             Your final <span className="text-codecov-code">ci.yaml</span> file
             for a project using{' '}
             <span className="text-codecov-code">pytest</span> could look
@@ -125,8 +118,6 @@ function Step2() {
 }
 
 function Step3() {
-  const [isExpanded, setIsExpanded] = useState(false)
-
   return (
     <div>
       <Card>
@@ -146,11 +137,8 @@ function Step3() {
         </Card.Content>
       </Card>
       <ExpandableSection className="-mt-px">
-        <ExpandableSection.Trigger
-          isExpanded={isExpanded}
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <p className="font-normal">
+        <ExpandableSection.Trigger>
+          <p>
             Here are examples of failed test reports in PR comments. Comment
             generation may take time.
           </p>
