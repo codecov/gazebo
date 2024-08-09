@@ -1,0 +1,8 @@
+/* copied from CodeRenderer.css */
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  @apply bg-transparent;
+}
