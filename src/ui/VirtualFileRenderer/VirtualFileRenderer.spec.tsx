@@ -113,23 +113,52 @@ describe('VirtualFileRenderer', () => {
     expect(codeBlock).toBeInTheDocument()
   })
 
-  it('renders code in virtualized list', () => {
-    render(
-      <VirtualFileRenderer
-        code={code}
-        coverage={coverageData}
-        fileName="tsx"
-      />,
-      {
-        wrapper: wrapper(),
-      }
-    )
+  describe('virtualized list', () => {
+    describe('valid language', () => {
+      it('renders code in virtualized list', () => {
+        render(
+          <VirtualFileRenderer
+            code={code}
+            coverage={coverageData}
+            fileName="tsx"
+          />,
+          {
+            wrapper: wrapper(),
+          }
+        )
 
-    const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
-    expect(virtualOverlay).toBeInTheDocument()
+        const virtualOverlay = screen.getByTestId(
+          'virtual-file-renderer-overlay'
+        )
+        expect(virtualOverlay).toBeInTheDocument()
 
-    const codeBlock = within(virtualOverlay).getByText(/Breadcrumb/)
-    expect(codeBlock).toBeInTheDocument()
+        const codeBlock = within(virtualOverlay).getByText(/Breadcrumb/)
+        expect(codeBlock).toBeInTheDocument()
+      })
+    })
+
+    describe('invalid language', () => {
+      it('renders code in virtualized list', () => {
+        render(
+          <VirtualFileRenderer
+            code={code}
+            coverage={coverageData}
+            fileName="random-file-type"
+          />,
+          {
+            wrapper: wrapper(),
+          }
+        )
+
+        const virtualOverlay = screen.getByTestId(
+          'virtual-file-renderer-overlay'
+        )
+        expect(virtualOverlay).toBeInTheDocument()
+
+        const codeBlock = within(virtualOverlay).getByText(/Breadcrumb/)
+        expect(codeBlock).toBeInTheDocument()
+      })
+    })
   })
 
   it('renders line numbers', () => {
