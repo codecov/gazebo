@@ -2,10 +2,10 @@ import { useParams } from 'react-router-dom'
 
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
+import RawFileViewer from 'shared/RawFileViewer'
 import { useTreePaths } from 'shared/treePaths'
 import { STICKY_PADDING_SIZES } from 'shared/utils/fileviewer'
 import Breadcrumb from 'ui/Breadcrumb'
-import RawFileViewer from 'ui/RawFileViewer'
 
 function FileView() {
   const { treePaths } = useTreePaths()
