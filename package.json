@@ -144,7 +144,6 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-storybook": "^0.8.0",
     "eslint-plugin-tailwindcss": "^3.17.4",
-    "faker": "^5.5.3",
     "http-proxy-middleware": "^2.0.6",
     "husky": "^9.1.4",
     "jest-junit": "^13.0.0",
