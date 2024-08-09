@@ -8,6 +8,10 @@ import { orderingOptions } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
 import { ActiveContext } from 'shared/context'
 import { useFlags } from 'shared/featureFlags'
+import Banner from 'ui/Banner'
+import BannerContent from 'ui/Banner/BannerContent'
+import BannerHeading from 'ui/Banner/BannerHeading'
+import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
 import OrgControlTable from './OrgControlTable'
@@ -51,6 +55,9 @@ function ListRepo({ canRefetch }) {
     </div>
   )
 
+  // if it's the first time you've seen it
+  const shouldShowBanner = true
+
   return (
     <>
       <OrgControlTable
@@ -66,6 +73,22 @@ function ListRepo({ canRefetch }) {
         }}
         canRefetch={canRefetch}
       />
+
+      {shouldShowBanner && (
+        <Banner variant="blue">
+          <BannerHeading>
+            <h3 className="flex justify-center gap-2 font-semibold">
+              <Icon name="sparkles" className="stroke-blue-500"></Icon>
+              <span className="mt-0.5">Welcome to Codecov!</span>
+            </h3>
+          </BannerHeading>
+          <BannerContent>
+            {`We've added you to our Codecov repo to show you a real-world
+            coverage example. You can now see how we use the tool.`}
+          </BannerContent>
+        </Banner>
+      )}
+
       <Suspense fallback={loadingState}>
         {showTeamRepos ? (
           <ReposTableTeam searchValue={params.search} />

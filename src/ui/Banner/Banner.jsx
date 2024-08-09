@@ -7,6 +7,7 @@ const variantClasses = {
   default: `border-l-4 border-ds-blue-quinary`,
   plain: `border-none`,
   warning: `border-l-4 border-orange-500 bg-orange-100`,
+  blue: `border-l-4 border-blue-500 bg-blue-50`,
 }
 
 function Banner({ children, variant = 'default' }) {

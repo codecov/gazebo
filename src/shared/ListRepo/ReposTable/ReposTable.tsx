@@ -14,6 +14,7 @@ import { useParams } from 'react-router-dom'
 import { OrderingDirection, useRepos } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner } from 'services/user'
+import AppLink from 'shared/AppLink'
 import { ActiveContext } from 'shared/context'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -162,6 +163,9 @@ const ReposTable = ({
     return <NoReposBlock searchValue={searchValue} />
   }
 
+  // is on repo page, is not enterprise, is my page, is "new sign up"
+  const shouldShowDemoRow = true
+
   return (
     <>
       <div className="tableui">
@@ -204,6 +208,33 @@ const ReposTable = ({
             ))}
           </thead>
           <tbody>
+            {/* custom demo row */}
+            {shouldShowDemoRow ? (
+              <tr>
+                <td>
+                  <div className="flex items-center">
+                    <AppLink
+                      pageName="codecovDemoRepo"
+                      className="flex items-center text-ds-gray-quinary hover:underline"
+                    >
+                      <Icon size="sm" variant="solid" name="globeAlt" />
+                      <span className="ml-2.5 mr-1 text-sm font-semibold text-black">
+                        Codecov demo
+                      </span>
+                    </AppLink>
+                    <span
+                      className={cs(
+                        'text-xs ml-3.5 px-1.5 py-1 border-solid border border-gray-300 rounded border-box inline-block'
+                      )}
+                    >
+                      System generated
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            ) : null}
+
+            {/* data rows */}
             {isLoading ? (
               <tr>
                 <td colSpan={table.getAllColumns().length}>
