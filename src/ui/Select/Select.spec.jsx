@@ -491,4 +491,37 @@ describe('Select', () => {
       expect(selectRef.resetSelected).toBeDefined()
     })
   })
+
+  describe('when an item is marked as isDisabled', () => {
+    it('is not an option', async () => {
+      const { user } = setup()
+      const onChange = jest.fn()
+      const onSearch = jest.fn()
+      render(
+        <Select
+          ariaName="select test"
+          dataMarketing="select test"
+          items={[{ value: 'test val', isDisabled: true }]}
+          onChange={onChange}
+          onSearch={onSearch}
+          renderItem={(item) => {
+            if (item?.isDisabled) {
+              return 'Is Disabled'
+            }
+            return item?.value
+          }}
+          resourceName="item"
+        />
+      )
+
+      const button = screen.getByText('Select')
+      await user.click(button)
+
+      const item = screen.getByText('Is Disabled')
+      expect(item).toBeInTheDocument()
+
+      const option = screen.queryByRole('option', { name: 'Is Disabled' })
+      expect(option).not.toBeInTheDocument()
+    })
+  })
 })
