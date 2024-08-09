@@ -444,4 +444,27 @@ describe('VirtualFileRenderer', () => {
       })
     })
   })
+
+  describe('horizontal scroll', () => {
+    it('syncs code display with text area scroll', async () => {
+      render(
+        <VirtualFileRenderer
+          code={code}
+          coverage={coverageData}
+          fileName="tsx"
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      const textArea = screen.getByTestId('virtual-file-renderer-text-area')
+      await fireEvent.scroll(textArea, {
+        target: { scrollLeft: 100 },
+      })
+
+      const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
+      await waitFor(() => expect(virtualOverlay.scrollLeft).toBe(100))
+    })
+  })
 })
