@@ -82,6 +82,50 @@ const mockUserData = {
   },
 }
 
+const mockBusinessUserData = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
+    user: {
+      name: 'Jane Doe',
+      username: 'janedoe',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+      customerIntent: 'BUSINESS',
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: 'users-basic',
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
+    },
+  },
+}
+
 let testLocation
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo']) =>
@@ -285,6 +329,93 @@ describe('DefaultOrgSelector', () => {
 
       const selfOrg = screen.getByRole('option', { name: 'Rula' })
       expect(selfOrg).toBeInTheDocument()
+
+      const addNewOrg = screen.getByRole('option', {
+        name: 'plus-circle.svg Install Codecov GitHub app',
+      })
+      expect(addNewOrg).toBeInTheDocument()
+    })
+
+    it('renders without personal organization if user selected business use', async () => {
+      const { user } = setup({
+        useUserData: mockBusinessUserData,
+        myOrganizationsData: {
+          me: {
+            owner: {
+              username: 'janedoe',
+              avatarUrl:
+                'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+              ownerid: 9,
+            },
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+
+      const selectOrg = await screen.findByRole('button', {
+        name: 'Select an organization',
+      })
+
+      await user.click(selectOrg)
+
+      const orgInList = screen.getByRole('option', { name: 'criticalRole' })
+      expect(orgInList).toBeInTheDocument()
+
+      const selfOrg = screen.queryByRole('option', { name: 'janedoe' })
+      expect(selfOrg).not.toBeInTheDocument()
+
+      const addNewOrg = screen.getByRole('option', {
+        name: 'plus-circle.svg Install Codecov GitHub app',
+      })
+      expect(addNewOrg).toBeInTheDocument()
+    })
+
+    it('renders with no organizations found if only personal org if user selected business use', async () => {
+      const { user } = setup({
+        useUserData: mockBusinessUserData,
+        myOrganizationsData: {
+          me: {
+            owner: {
+              username: 'janedoe',
+              avatarUrl:
+                'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+              ownerid: 9,
+            },
+            myOrganizations: {
+              edges: [],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+
+      const selectOrg = await screen.findByRole('button', {
+        name: 'Select an organization',
+      })
+
+      await user.click(selectOrg)
+
+      const selfOrg = screen.queryByRole('option', { name: 'janedoe' })
+      expect(selfOrg).not.toBeInTheDocument()
+
+      const noOrgsFound = screen.getByText(/No organizations found/)
+      expect(noOrgsFound).toBeInTheDocument()
 
       const addNewOrg = screen.getByRole('option', {
         name: 'plus-circle.svg Install Codecov GitHub app',
