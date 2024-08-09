@@ -332,6 +332,53 @@ describe('NetworkErrorBoundary', () => {
     })
   })
 
+  describe('when the children component has a 429 error', () => {
+    it('renders a Rate limit exceeded error', async () => {
+      const { user } = setup()
+      render(<App status={429} />, {
+        wrapper: wrapper(),
+      })
+
+      const textBox = await screen.findByRole('textbox')
+      await user.type(textBox, 'fail')
+
+      const tooManyRequestsError =
+        await screen.findByText(/Rate limit exceeded/)
+      expect(tooManyRequestsError).toBeInTheDocument()
+    })
+
+    it('renders return to previous page button', async () => {
+      const { user } = setup()
+      render(<App status={429} />, {
+        wrapper: wrapper(),
+      })
+
+      const textBox = await screen.findByRole('textbox')
+      await user.type(textBox, 'fail')
+
+      const button = await screen.findByText('Return to previous page')
+      expect(button).toBeInTheDocument()
+    })
+
+    it('sends metric to sentry', async () => {
+      const { user } = setup()
+      render(<App status={429} detail="rate throttled" />, {
+        wrapper: wrapper(),
+      })
+
+      const textBox = await screen.findByRole('textbox')
+      await user.type(textBox, 'fail')
+
+      await waitFor(() =>
+        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          'network_errors.network_status.429',
+          1,
+          undefined
+        )
+      )
+    })
+  })
+
   describe('when the children component has a 500 error', () => {
     describe('when not running in self-hosted mode', () => {
       it('renders a Server error', async () => {
