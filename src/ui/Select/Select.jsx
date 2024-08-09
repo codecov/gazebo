@@ -138,6 +138,17 @@ const Select = forwardRef(
     }
 
     function _renderItem(item, index) {
+      if (item?.isDisabled) {
+        return (
+          <li
+            className="block px-3 py-1 text-sm font-normal"
+            key={`${item}${index}`}
+          >
+            {renderItem(item)}
+          </li>
+        )
+      }
+
       const isHover = highlightedIndex === index
       const isSelected = selectedItem === item
       return (
