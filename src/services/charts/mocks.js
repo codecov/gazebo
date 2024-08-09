@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import faker from 'faker'
 import { rest } from 'msw'
 
 const repoUri = '/internal/charts/:provider/:owner/coverage/repository'
@@ -22,49 +21,6 @@ export const orgCoverageHandler = rest.get(orgUri, (req, res, ctx) => {
   } else if (query.get('grouping_unit') === 'quarterly') {
     return res(ctx.status(200), ctx.json(exampleQuarterRes))
   }
-})
-
-const createCoverage = () => ({
-  date: faker.date.between('2020-01-01', '2020-12-30'),
-  total_hits: faker.datatype.number({ min: 0, max: 100 }),
-  total_misses: faker.datatype.number({ min: 0, max: 100 }),
-  total_partials: faker.datatype.number({ min: 0, max: 100 }),
-  total_lines: faker.datatype.number({ min: 0, max: 100 }),
-  coverage: faker.datatype.float({ min: 0, max: 100 }),
-})
-
-export const randomOrgCoverageHandler = rest.get(orgUri, (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.json({
-      coverage: [
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-        createCoverage(),
-      ],
-    })
-  )
 })
 
 export const exampleQuarterRes = {
