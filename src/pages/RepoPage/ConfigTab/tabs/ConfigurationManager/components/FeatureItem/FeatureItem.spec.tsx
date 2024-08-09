@@ -117,8 +117,19 @@ describe('FeatureItem', () => {
       { wrapper }
     )
 
-    const unconfigured = await screen.findByText('not enabled')
+    const unconfigured = await screen.findByRole('link', {
+      name: 'Get Started',
+    })
     expect(unconfigured).toBeInTheDocument()
+  })
+
+  describe('when getStartedLink is undefinted', () => {
+    it('does not render any configuration status', async () => {
+      render(<FeatureItem name="Name" hiddenStatus={false} />, { wrapper })
+
+      const unconfigured = screen.queryByRole('link', { name: 'Get Started' })
+      expect(unconfigured).not.toBeInTheDocument()
+    })
   })
 
   it('renders name link', async () => {

@@ -43,6 +43,6 @@ describe('UnauthorizedRepoDisplay', () => {
 
     const img = screen.getByAltText('Forbidden')
     expect(img).toBeInTheDocument()
-    expect(img).toHaveAttribute('src', 'error-403.svg')
+    expect(img).toHaveAttribute('src', 'error-upsidedown-umbrella.svg')
   })
 })

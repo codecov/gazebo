@@ -124,7 +124,7 @@ describe('Configuration Manager', () => {
         })
         render(<ConfigurationManager />, { wrapper })
 
-        const button = await screen.findByRole('link', { name: 'Get Started' })
+        const button = await screen.findByTestId('FeatureGroup-get-started')
         expect(button).toBeInTheDocument()
         expect(button).toHaveAttribute('href', '/gh/codecov/cool-repo')
       })
@@ -158,7 +158,9 @@ describe('Configuration Manager', () => {
         setup({ repoConfig: mockRepoConfig({ coverage: true }) })
         render(<ConfigurationManager />, { wrapper })
 
-        const notEnabledStatus = await screen.findAllByText('not enabled')
+        const notEnabledStatus = await screen.findAllByTestId(
+          'FeatureItem-get-started'
+        )
         expect(notEnabledStatus).toHaveLength(4)
       })
     })
@@ -255,7 +257,9 @@ describe('Configuration Manager', () => {
         })
         render(<ConfigurationManager />, { wrapper })
 
-        const unconfiguredStatus = await screen.findAllByText('not enabled')
+        const unconfiguredStatus = await screen.findAllByTestId(
+          'FeatureItem-get-started'
+        )
         expect(unconfiguredStatus).toHaveLength(1)
       })
     })
@@ -317,7 +321,7 @@ describe('Configuration Manager', () => {
         await waitFor(() =>
           screen.findByRole('heading', { name: 'Bundle analysis' })
         )
-        const button = await screen.findByRole('link', { name: 'Get Started' })
+        const button = await screen.findByTestId('FeatureGroup-get-started')
         expect(button).toBeInTheDocument()
         expect(button).toHaveAttribute(
           'href',
@@ -394,7 +398,7 @@ describe('Configuration Manager', () => {
         })
         render(<ConfigurationManager />, { wrapper })
 
-        const button = await screen.findByRole('link', { name: 'Get Started' })
+        const button = await screen.findByTestId('FeatureGroup-get-started')
         expect(button).toBeInTheDocument()
         expect(button).toHaveAttribute(
           'href',

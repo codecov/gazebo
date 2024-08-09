@@ -123,7 +123,7 @@ const Sparkline: React.FC<SparklineProps> = ({
               key={uniqueId(dataTemplate + description)}
             >
               <td
-                className="line absolute inset-0 flex flex-1 p-0 before:absolute before:inset-0 before:bg-ds-gray-senary before:content-[''] after:absolute after:inset-0 after:bg-gradient-to-b after:from-ds-blue-darker after:to-white after:opacity-40 after:content-['']"
+                className="line absolute inset-0 flex flex-1 p-0 before:absolute before:inset-0 before:bg-ds-gray-senary before:content-[''] after:absolute after:inset-0 after:bg-ds-blue-darker/10 after:content-['']"
                 style={properties as TableCustomCSSProperties}
                 data-mode={mode}
               >

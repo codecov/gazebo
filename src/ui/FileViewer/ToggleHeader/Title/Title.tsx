@@ -22,7 +22,7 @@ function Title({ title, children, sticky = false }: TitleProps) {
       data-testid="title-wrapper-div"
       className={cn(
         'flex w-full flex-1 flex-col flex-wrap items-start justify-between gap-4 bg-white px-0 sm:flex-row sm:items-center md:mb-1 lg:w-auto lg:flex-none',
-        { 'z-10 sticky top-[4.5rem]': sticky }
+        { 'z-10 sticky top-0': sticky }
       )}
     >
       {title ? (
