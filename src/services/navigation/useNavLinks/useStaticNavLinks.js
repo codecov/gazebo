@@ -463,5 +463,11 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    codecovDemoRepo: {
+      text: 'Codecov demo',
+      path: () => '/github/codecov/gazebo',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
