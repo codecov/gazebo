@@ -23,7 +23,6 @@ export default function ErrorBoundary({
   errorComponent = DefaultUI,
   children,
 }) {
-  console.log('testing this')
   return (
     <Sentry.ErrorBoundary
       beforeCapture={(scope) =>
