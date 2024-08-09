@@ -217,8 +217,8 @@ class NetworkErrorBoundary extends Component {
           src={illustration}
         />
         <h1 className="mt-6 text-2xl">{title}</h1>
-        {description && <p className="mt-2">{description(data)}</p>}
-        {showDocs && <NetworkErrorMessage />}
+        {description ? <p className="mt-2">{description(data)}</p> : null}
+        {showDocs ? <NetworkErrorMessage /> : null}
         <p>
           <strong>Error {status}</strong>
         </p>
