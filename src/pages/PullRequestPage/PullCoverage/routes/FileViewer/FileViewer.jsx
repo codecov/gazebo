@@ -1,10 +1,10 @@
 import { useParams } from 'react-router-dom'
 
 import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
-import RawFileViewer from 'shared/RawFileViewer'
 import { usePullTreePaths } from 'shared/treePaths'
 import { STICKY_PADDING_SIZES } from 'shared/utils/fileviewer'
 import Breadcrumb from 'ui/Breadcrumb'
+import RawFileViewer from 'ui/RawFileViewer'
 
 import { usePullPageData } from '../../../hooks'
 
