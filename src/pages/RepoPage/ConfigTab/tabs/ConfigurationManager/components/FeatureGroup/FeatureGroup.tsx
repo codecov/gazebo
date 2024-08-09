@@ -26,6 +26,7 @@ function FeatureGroup({
             disabled={false}
             variant="primary"
             hook="configuration-get-started"
+            data-testid="FeatureGroup-get-started"
           >
             Get Started
           </Button>
