@@ -37,13 +37,6 @@ const ColorMap = Object.freeze({
   danger: 'rgb(var(--color-ds-primary-red))',
 })
 
-const GradientColorMap = Object.freeze({
-  default: 'rgb(var(--color-ds-gray-secondary))',
-  primary: 'rgb(var(--color-ds-primary-green))',
-  warning: 'rgb(var(--color-ds-primary-yellow))',
-  danger: 'rgb(var(--color-ds-primary-red))',
-})
-
 const VictoryVoronoiContainer = createContainer('voronoi')
 
 function Chart({
@@ -96,8 +89,10 @@ function Chart({
             </feComponentTransfer>
           </filter>
           <linearGradient id="myGradient" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor={GradientColorMap[color]} />
-            <stop offset="100%" stopColor="white" />
+            <stop
+              offset="0%"
+              stopColor="rgb(var(--color-ds-blue-darker), 0.1)"
+            />
           </linearGradient>
         </defs>
       </svg>

@@ -1,6 +1,6 @@
 import { metrics } from 'shared/utils/metrics'
 
-type SupportNetworkStatusCodes = 401 | 403 | 404 | 500
+type SupportNetworkStatusCodes = 401 | 403 | 404 | 429 | 500
 
 export const sendNetworkErrorMetrics = (status: SupportNetworkStatusCodes) => {
   metrics.increment(`network_errors.network_status.${status}`, 1)

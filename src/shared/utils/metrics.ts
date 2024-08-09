@@ -72,6 +72,7 @@ type IncrementKeys = {
       '401': string
       '403': string
       '404': string
+      '429': string
       '500': string
     }
     graphql: {
