@@ -25,16 +25,22 @@ const FullPageLoader = () => (
   </div>
 )
 
-const OnboardingOrChildren = ({ children }) => {
-  const {
-    isFullExperience,
-    showAgreeToTerms,
-    showDefaultOrgSelector,
-    redirectToSyncPage,
-  } = useUserAccessGate()
+interface OnboardingOrChildrenProps extends React.PropsWithChildren {
+  isImpersonating: boolean
+  isFullExperience: boolean
+  showAgreeToTerms: boolean
+  redirectToSyncPage: boolean
+  showDefaultOrgSelector: boolean
+}
 
-  const { isImpersonating } = useImpersonate()
-
+function OnboardingOrChildren({
+  children,
+  isImpersonating,
+  isFullExperience,
+  showAgreeToTerms,
+  redirectToSyncPage,
+  showDefaultOrgSelector,
+}: OnboardingOrChildrenProps) {
   if (showAgreeToTerms && !isFullExperience) {
     return (
       <Suspense fallback={null}>
@@ -55,13 +61,19 @@ const OnboardingOrChildren = ({ children }) => {
     )
   }
 
-  return children
+  return <>{children}</>
 }
 
-function BaseLayout({ children }) {
-  const { isFullExperience, showDefaultOrgSelector, isLoading } =
-    useUserAccessGate()
+function BaseLayout({ children }: React.PropsWithChildren) {
+  const {
+    isFullExperience,
+    showAgreeToTerms,
+    showDefaultOrgSelector,
+    redirectToSyncPage,
+    isLoading,
+  } = useUserAccessGate()
   useTracking()
+  const { isImpersonating } = useImpersonate()
 
   // Pause rendering of a page till we know if the user is logged in or not
   if (isLoading) return <FullPageLoader />
@@ -70,7 +82,7 @@ function BaseLayout({ children }) {
     <>
       <Suspense fallback={<FullPageLoader />}>
         <RepoBreadcrumbProvider>
-          {isFullExperience ? (
+          {isFullExperience || isImpersonating ? (
             <>
               <GlobalTopBanners />
               <Header />
@@ -84,7 +96,15 @@ function BaseLayout({ children }) {
             <NetworkErrorBoundary>
               <main className="container mb-8 flex grow flex-col gap-2 md:p-0">
                 <GlobalBanners />
-                <OnboardingOrChildren>{children}</OnboardingOrChildren>
+                <OnboardingOrChildren
+                  isFullExperience={isFullExperience}
+                  showAgreeToTerms={showAgreeToTerms}
+                  showDefaultOrgSelector={showDefaultOrgSelector}
+                  redirectToSyncPage={redirectToSyncPage}
+                  isImpersonating={isImpersonating}
+                >
+                  {children}
+                </OnboardingOrChildren>
               </main>
             </NetworkErrorBoundary>
           </ErrorBoundary>
