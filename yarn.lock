@@ -10207,13 +10207,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"faker@npm:^5.5.3":
-  version: 5.5.3
-  resolution: "faker@npm:5.5.3"
-  checksum: 10c0/55ee2fb6425df717253f237b4e952c94efe33da23a5826ca41c6ecb31ccfb49d06c5de64b82b6994ca9c76c05eab4dbf779cea047455fff6e62cc9d585c7d460
-  languageName: node
-  linkType: hard
-
 "fast-deep-equal@npm:^2.0.1":
   version: 2.0.1
   resolution: "fast-deep-equal@npm:2.0.1"
@@ -10811,7 +10804,6 @@ __metadata:
     eslint-plugin-import: "npm:^2.25.4"
     eslint-plugin-storybook: "npm:^0.8.0"
     eslint-plugin-tailwindcss: "npm:^3.17.4"
-    faker: "npm:^5.5.3"
     http-proxy-middleware: "npm:^2.0.6"
     husky: "npm:^7.0.4"
     jest-junit: "npm:^13.0.0"
