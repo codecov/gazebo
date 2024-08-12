@@ -4,21 +4,73 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
 import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
-import RawFileviewer from './RawFileviewer'
+import RawFileViewer from './RawFileViewer'
+
+jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{ virtualFileRenderer: boolean }>
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
-window.requestAnimationFrame = (cb) => cb()
+const mockedScrollToLine = useScrollToLine as jest.Mock
+
+window.requestAnimationFrame = (cb) => {
+  cb(1)
+  return 1
+}
 window.cancelAnimationFrame = () => {}
 jest.mock(
   'ui/FileViewer/ToggleHeader/ToggleHeader',
-  () => () => 'The FileViewer Toggle Header'
+  () => () => 'The FileViewer'
 )
 jest.mock(
   'ui/CodeRenderer/CodeRendererProgressHeader',
   () => () => 'The Progress Header for CodeRenderer'
 )
+
+jest.mock('@sentry/react', () => {
+  const originalModule = jest.requireActual('@sentry/react')
+  return {
+    ...originalModule,
+    captureMessage: jest.fn(),
+  }
+})
+
+window.requestAnimationFrame = (cb) => {
+  cb(1)
+  return 1
+}
+window.cancelAnimationFrame = () => {}
+
+const scrollToMock = jest.fn()
+window.scrollTo = scrollToMock
+
+class ResizeObserverMock {
+  callback = (x: any) => null
+
+  constructor(callback: any) {
+    this.callback = callback
+  }
+
+  observe() {
+    this.callback([
+      {
+        contentRect: { width: 100 },
+        target: {
+          getAttribute: () => ({ scrollWidth: 100 }),
+        },
+      },
+    ])
+  }
+  unobserve() {
+    // do nothing
+  }
+  disconnect() {
+    // do nothing
+  }
+}
+global.window.ResizeObserver = ResizeObserverMock
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -26,7 +78,9 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const wrapper =
-  (initialEntries = ['/gh/codecov/cool-repo/blob/branch-name/a/file.js']) =>
+  (
+    initialEntries = ['/gh/codecov/cool-repo/blob/branch-name/a/file.js']
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
     <MemoryRouter initialEntries={initialEntries}>
       <Route
@@ -53,9 +107,18 @@ afterAll(() => {
   server.close()
 })
 
-describe('RawFileviewer', () => {
-  function setup({ content, owner, coverage, isCriticalFile }) {
-    useScrollToLine.mockImplementation(() => ({
+interface SetupArgs {
+  content?: string | null
+  owner?: {} | null
+  coverage?: {} | null
+  isCriticalFile?: boolean
+}
+
+describe('RawFileViewer', () => {
+  function setup({ content, owner, coverage, isCriticalFile }: SetupArgs) {
+    mockedUseFlags.mockReturnValue({ virtualFileRenderer: true })
+
+    mockedScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: jest.fn(),
       targeted: false,
@@ -121,15 +184,18 @@ describe('RawFileviewer', () => {
     })
 
     describe('getting data from ref', () => {
-      it('renders the FileViewer Header, CodeRenderer Header, and CodeRenderer', async () => {
-        render(<RawFileviewer />, { wrapper: wrapper() })
+      it('renders the FileViewer Header, CodeRenderer Header, and VirtualFileRenderer', async () => {
+        render(
+          <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
+          {
+            wrapper: wrapper(),
+          }
+        )
 
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => !queryClient.isFetching)
 
-        const toggleHeader = await screen.findByText(
-          /The FileViewer Toggle Header/
-        )
+        const toggleHeader = await screen.findByText(/The FileViewer/)
         expect(toggleHeader).toBeInTheDocument()
 
         const progressHeader = await screen.findByText(
@@ -145,21 +211,24 @@ describe('RawFileviewer', () => {
           ).not.toBeInTheDocument()
         )
 
-        const allTestIds = await screen.findAllByTestId('fv-single-line')
-        expect(allTestIds.length).toEqual(21)
+        const virtualFileRenderer = await screen.findByTestId(
+          'virtual-file-renderer'
+        )
+        expect(virtualFileRenderer).toBeInTheDocument()
       })
     })
 
     describe('getting data from commit', () => {
-      it('renders the FileViewer Header, CodeRenderer Header, and CodeRenderer', async () => {
-        render(<RawFileviewer />, { wrapper: wrapper() })
+      it('renders the FileViewer Header, CodeRenderer Header, and VirtualFileRenderer', async () => {
+        render(
+          <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
+          { wrapper: wrapper() }
+        )
 
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => !queryClient.isFetching)
 
-        const toggleHeader = await screen.findByText(
-          /The FileViewer Toggle Header/
-        )
+        const toggleHeader = await screen.findByText(/The FileViewer/)
         expect(toggleHeader).toBeInTheDocument()
 
         const progressHeader = await screen.findByText(
@@ -175,8 +244,10 @@ describe('RawFileviewer', () => {
           ).not.toBeInTheDocument()
         )
 
-        const allTestIds = await screen.findAllByTestId('fv-single-line')
-        expect(allTestIds.length).toEqual(21)
+        const virtualFileRenderer = await screen.findByTestId(
+          'virtual-file-renderer'
+        )
+        expect(virtualFileRenderer).toBeInTheDocument()
       })
     })
   })
@@ -207,15 +278,16 @@ describe('RawFileviewer', () => {
       setup({ content, owner, coverage, isCriticalFile })
     })
 
-    it('renders the FileViewer Header, CriticalFileLabel, CodeRenderer Header, and CodeRenderer', async () => {
-      render(<RawFileviewer />, { wrapper: wrapper() })
+    it('renders the FileViewer Header, CriticalFileLabel, CodeRenderer Header, and VirtualFileRenderer', async () => {
+      render(
+        <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
+        { wrapper: wrapper() }
+      )
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
 
-      const toggleHeader = await screen.findByText(
-        /The FileViewer Toggle Header/
-      )
+      const toggleHeader = await screen.findByText(/The FileViewer/)
       expect(toggleHeader).toBeInTheDocument()
 
       const criticalFile = await screen.findByText(/critical file/i)
@@ -234,8 +306,10 @@ describe('RawFileviewer', () => {
         ).not.toBeInTheDocument()
       )
 
-      const allTestIds = await screen.findAllByTestId('fv-single-line')
-      expect(allTestIds.length).toEqual(21)
+      const virtualFileRenderer = await screen.findByTestId(
+        'virtual-file-renderer'
+      )
+      expect(virtualFileRenderer).toBeInTheDocument()
     })
   })
 
@@ -252,15 +326,16 @@ describe('RawFileviewer', () => {
       setup({ content, owner, coverage, isCriticalFile })
     })
 
-    it('renders the Fileviewer Header, CodeRenderer Header, and CodeRenderer', async () => {
-      render(<RawFileviewer />, { wrapper: wrapper() })
+    it('renders the Fileviewer Header, CodeRenderer Header, and VirtualFileRenderer', async () => {
+      render(
+        <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
+        { wrapper: wrapper() }
+      )
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
 
-      const toggleHeader = await screen.findByText(
-        /The FileViewer Toggle Header/
-      )
+      const toggleHeader = await screen.findByText(/The FileViewer/)
       expect(toggleHeader).toBeInTheDocument()
 
       const progressHeader = await screen.findByText(
@@ -276,8 +351,10 @@ describe('RawFileviewer', () => {
         ).not.toBeInTheDocument()
       )
 
-      const allTestIds = await screen.findAllByTestId('fv-single-line')
-      expect(allTestIds.length).toEqual(21)
+      const virtualFileRenderer = await screen.findByTestId(
+        'virtual-file-renderer'
+      )
+      expect(virtualFileRenderer).toBeInTheDocument()
     })
   })
 
@@ -289,7 +366,10 @@ describe('RawFileviewer', () => {
     })
 
     it('renders the 404 message', async () => {
-      render(<RawFileviewer />, { wrapper: wrapper() })
+      render(
+        <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
+        { wrapper: wrapper() }
+      )
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -311,15 +391,16 @@ describe('RawFileviewer', () => {
       setup({ content: null, owner, coverage: null })
     })
 
-    it('renders the Fileviewer Header, CodeRenderer Header, and error message', async () => {
-      render(<RawFileviewer />, { wrapper: wrapper() })
+    it('renders the FileViewer Header, CodeRenderer Header, and error message', async () => {
+      render(
+        <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
+        { wrapper: wrapper() }
+      )
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
 
-      const toggleHeader = await screen.findByText(
-        /The FileViewer Toggle Header/
-      )
+      const toggleHeader = await screen.findByText(/The FileViewer/)
       expect(toggleHeader).toBeInTheDocument()
 
       const progressHeader = await screen.findByText(
@@ -338,48 +419,6 @@ describe('RawFileviewer', () => {
     })
   })
 
-  describe('user passes false to showTopBorder prop', () => {
-    beforeEach(() => {
-      const owner = {
-        username: 'cool-user',
-        isCurrentUserPartOfOrg: true,
-      }
-      setup({ content: null, owner, coverage: null })
-    })
-
-    it('does not apply the border class', async () => {
-      render(<RawFileviewer showTopBorder={false} />, { wrapper: wrapper() })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      const fileViewer = await screen.findByTestId('file-viewer-wrapper')
-      expect(fileViewer).toHaveClass('flex')
-      expect(fileViewer).not.toHaveClass('border-t')
-    })
-  })
-
-  describe('user passes false to addTopPadding prop', () => {
-    beforeEach(() => {
-      const owner = {
-        username: 'cool-user',
-        isCurrentUserPartOfOrg: true,
-      }
-      setup({ content: null, owner, coverage: null })
-    })
-
-    it('does not apply the border class', async () => {
-      render(<RawFileviewer addTopPadding={false} />, { wrapper: wrapper() })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      const fileViewer = await screen.findByTestId('file-viewer-wrapper')
-      expect(fileViewer).toHaveClass('flex')
-      expect(fileViewer).not.toHaveClass('pt-6')
-    })
-  })
-
   describe('displaying unsupported file', () => {
     beforeEach(() => {
       const owner = {
@@ -390,9 +429,14 @@ describe('RawFileviewer', () => {
     })
 
     it('shows the unsupported view component', async () => {
-      render(<RawFileviewer />, {
-        wrapper: wrapper(['/gh/codecov/cool-repo/blob/branch-name/a/file.png']),
-      })
+      render(
+        <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
+        {
+          wrapper: wrapper([
+            '/gh/codecov/cool-repo/blob/branch-name/a/file.png',
+          ]),
+        }
+      )
 
       const binaryFileText = await screen.findByText(
         'Unable to display contents of binary file included in coverage reports.'

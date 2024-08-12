@@ -6,7 +6,7 @@ export const formatPathPrefix = (pathname: string) =>
     : pathname
 
 export function getFilenameFromFilePath(path: string) {
-  return path.split('/').pop()
+  return path.split('/').pop() ?? ''
 }
 
 export function getFilePathParts(path: string) {
