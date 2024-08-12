@@ -1,10 +1,13 @@
-import PropTypes from 'prop-types'
+// need to import from root lodash for this type
+// eslint-disable-next-line no-restricted-imports
+import { type Dictionary } from 'lodash'
 import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import { useOwner } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsMapper'
 import { getFilenameFromFilePath } from 'shared/utils/url'
@@ -14,6 +17,7 @@ import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import SingleLine from 'ui/CodeRenderer/SingleLine'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Title from 'ui/FileViewer/ToggleHeader/Title'
+import { VirtualFileRenderer } from 'ui/VirtualFileRenderer'
 
 function ErrorDisplayMessage() {
   return (
@@ -26,20 +30,26 @@ function ErrorDisplayMessage() {
   )
 }
 
+interface FileTitleProps {
+  title: string | React.ReactNode
+  sticky: boolean
+  withKey: boolean
+  showFlagsSelect: boolean
+  showComponentsSelect: boolean
+}
+
 function FileTitle({
   title,
   sticky,
   withKey,
-  coverageIsLoading,
   showFlagsSelect,
   showComponentsSelect,
-}) {
+}: FileTitleProps) {
   if (withKey) {
     return (
       <ToggleHeader
         title={title}
         sticky={sticky}
-        coverageIsLoading={coverageIsLoading}
         showFlagsSelect={showFlagsSelect}
         showComponentsSelect={showComponentsSelect}
       />
@@ -48,13 +58,12 @@ function FileTitle({
   return <Title title={title} sticky={sticky} />
 }
 
-FileTitle.propTypes = {
-  title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  sticky: PropTypes.bool,
-  withKey: PropTypes.bool,
-  coverageIsLoading: PropTypes.bool,
-  showFlagsSelect: PropTypes.bool,
-  showComponentsSelect: PropTypes.bool,
+interface CodeRendererContentProps {
+  isUnsupportedFileType: boolean
+  content?: string | null
+  path: string
+  coverageData?: Dictionary<'H' | 'M' | 'P'>
+  stickyPadding: number
 }
 
 function CodeRendererContent({
@@ -63,7 +72,11 @@ function CodeRendererContent({
   path,
   coverageData,
   stickyPadding,
-}) {
+}: CodeRendererContentProps) {
+  const { virtualFileRenderer } = useFlags({
+    virtualFileRenderer: false,
+  })
+
   if (isUnsupportedFileType) {
     return (
       <div className="border border-solid border-ds-gray-tertiary p-2">
@@ -73,6 +86,16 @@ function CodeRendererContent({
   }
 
   if (content) {
+    if (virtualFileRenderer) {
+      return (
+        <VirtualFileRenderer
+          code={content}
+          coverage={coverageData}
+          fileName={getFilenameFromFilePath(path)}
+        />
+      )
+    }
+
     return (
       <CodeRenderer
         code={content}
@@ -96,12 +119,21 @@ function CodeRendererContent({
   return <ErrorDisplayMessage />
 }
 
-CodeRendererContent.propTypes = {
-  isUnsupportedFileType: PropTypes.bool,
-  content: PropTypes.string,
-  path: PropTypes.string,
-  coverageData: PropTypes.object,
-  stickyPadding: PropTypes.number,
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+  path: string
+}
+
+interface RawFileViewerProps {
+  title: string | React.ReactNode
+  sticky?: boolean
+  withKey?: boolean
+  stickyPadding?: number
+  commit: string
+  showFlagsSelect?: boolean
+  showComponentsSelect?: boolean
 }
 
 // Note: This component is both used in the standalone file viewer page and in the overview page. Changing this
@@ -112,10 +144,10 @@ function RawFileViewer({
   withKey = true,
   stickyPadding,
   commit,
-  showFlagsSelect,
+  showFlagsSelect = false,
   showComponentsSelect = false,
-}) {
-  const { owner, repo, provider, path: urlPath } = useParams()
+}: RawFileViewerProps) {
+  const { owner, repo, provider, path: urlPath } = useParams<URLParams>()
   const location = useLocation()
   const path = decodeURIComponent(urlPath)
   const { data: ownerData } = useOwner({ username: owner })
@@ -124,8 +156,9 @@ function RawFileViewer({
     ignoreQueryPrefix: true,
     depth: 1,
   })
-  const flags = params?.flags ?? []
-  const components = params?.components ?? []
+  // with our move to TS router we will be able remove these casts
+  const flags = (params?.flags as string[]) ?? []
+  const components = (params?.components as string[]) ?? []
 
   const isUnsupportedFileType = unsupportedExtensionsMapper({ path })
 
@@ -169,21 +202,12 @@ function RawFileViewer({
           content={content}
           path={path}
           coverageData={coverageData}
-          stickyPadding={stickyPadding}
+          // just adding a fallback value here, as we'll be removing it with the move to the virtual file renderer
+          stickyPadding={stickyPadding ?? 0}
         />
       </div>
     </div>
   )
-}
-
-RawFileViewer.propTypes = {
-  title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  sticky: PropTypes.bool,
-  withKey: PropTypes.bool,
-  stickyPadding: PropTypes.number,
-  commit: PropTypes.string,
-  showFlagsSelect: PropTypes.bool,
-  showComponentsSelect: PropTypes.bool,
 }
 
 export default RawFileViewer

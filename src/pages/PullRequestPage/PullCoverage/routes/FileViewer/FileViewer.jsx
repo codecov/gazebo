@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
-import RawFileviewer from 'shared/RawFileviewer'
+import RawFileViewer from 'shared/RawFileViewer'
 import { usePullTreePaths } from 'shared/treePaths'
 import { STICKY_PADDING_SIZES } from 'shared/utils/fileviewer'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -16,7 +16,7 @@ function FileViewer() {
   return (
     <>
       <ToggleHeader />
-      <RawFileviewer
+      <RawFileViewer
         title={
           <div className="text-sm font-normal">
             <Breadcrumb paths={treePaths} />
