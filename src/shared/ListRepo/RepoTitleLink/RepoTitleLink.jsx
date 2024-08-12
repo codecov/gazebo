@@ -61,7 +61,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
       </AppLink>
       {isRepoPrivate && <Badge>Private</Badge>}
       {active && !activated && <Badge>Deactivated</Badge>}
-      {repo?.isDemo && <Badge>System Generated</Badge>}
+      {repo?.isDemo && <Badge>System generated</Badge>}
     </div>
   )
 }

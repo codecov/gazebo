@@ -712,7 +712,7 @@ describe('DefaultOrgSelector', () => {
         })
       )
 
-      expect(testLocation.pathname).toBe('/gh/janedoe')
+      expect(testLocation.pathname).toBe('/gh/janedoe?source=onboarding')
     })
 
     it('does not fire start trial mutation', async () => {

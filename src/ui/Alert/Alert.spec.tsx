@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react'
 
+import Icon from 'ui/Icon'
+
 import { Alert, AlertOptions } from './Alert'
 
 describe('Alert', () => {
@@ -81,6 +83,27 @@ describe('Alert', () => {
       render(<Alert variant={AlertOptions.SUCCESS}>Blah</Alert>)
       const icon = screen.getByText('check-circle.svg')
       expect(icon).toBeInTheDocument()
+    })
+  })
+
+  describe('Custom Icons', () => {
+    const alert = (
+      <Alert
+        variant={AlertOptions.INFO}
+        customIcon={<Icon name="sparkles"></Icon>}
+      >
+        Some alert here
+      </Alert>
+    )
+    it('renders the custom icon', async () => {
+      render(alert)
+      const icon = screen.queryByText('sparkles.svg')
+      expect(icon).toBeInTheDocument()
+    })
+    it('does not render the default icon', async () => {
+      render(alert)
+      const icon = screen.queryByText('information-circle.svg')
+      expect(icon).not.toBeInTheDocument()
     })
   })
 })

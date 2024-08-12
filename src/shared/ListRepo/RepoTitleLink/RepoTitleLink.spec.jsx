@@ -228,4 +228,23 @@ describe('RepoTitleLink', () => {
       expect(screen.queryByText(/owner1/)).not.toBeInTheDocument()
     })
   })
+
+  describe('when the repo is a demo repo', () => {
+    beforeEach(() => {
+      repo.setup({
+        repo: {
+          ...repo,
+          isDemo: true,
+        },
+      })
+    })
+
+    it('renders a System generated tag', () => {
+      expect(screen.getByText('System generated')).toBeInTheDocument()
+    })
+
+    it('is titled Codecov demo', () => {
+      expect(screen.getByText('Codecov demo')).toBeInTheDocument()
+    })
+  })
 })
