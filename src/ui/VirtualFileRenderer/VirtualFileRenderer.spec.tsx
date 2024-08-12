@@ -225,6 +225,22 @@ describe('VirtualFileRenderer', () => {
       )
       expect(uncovered).toHaveClass('bg-ds-coverage-uncovered')
     })
+
+    it('renders missing coverage icon', async () => {
+      render(
+        <VirtualFileRenderer
+          code={code}
+          coverage={coverageData}
+          fileName="tsx"
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      const icon = await screen.findByTestId('missing-coverage-icon')
+      expect(icon).toBeInTheDocument()
+    })
   })
 
   describe('partial lines', () => {
@@ -247,6 +263,22 @@ describe('VirtualFileRenderer', () => {
       // eslint-disable-next-line testing-library/no-node-access
       const partial = virtualOverlay.querySelector('.bg-ds-coverage-partial')
       expect(partial).toHaveClass('bg-ds-coverage-partial')
+    })
+
+    it('renders partial coverage icon', async () => {
+      render(
+        <VirtualFileRenderer
+          code={code}
+          coverage={coverageData}
+          fileName="tsx"
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      const icon = await screen.findByTestId('partial-coverage-icon')
+      expect(icon).toBeInTheDocument()
     })
   })
 
