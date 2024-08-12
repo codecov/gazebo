@@ -156,11 +156,11 @@ const CodeBody = ({
               <div className="flex items-center justify-between">
                 <span
                   className={cn({
-                    'text-ds-primary-red': coverage[item.index] === 'M',
-                    'text-ds-primary-yellow pl-1': coverage[item.index] === 'P',
+                    'text-ds-primary-red': coverageValue === 'M',
+                    'text-ds-primary-yellow pl-1': coverageValue === 'P',
                   })}
                 >
-                  {coverage[item.index] === 'M' ? (
+                  {coverageValue === 'M' ? (
                     <Icon
                       name="exclamationTriangle"
                       size="sm"
@@ -168,7 +168,7 @@ const CodeBody = ({
                       className="inline"
                       label="missing-coverage-icon"
                     />
-                  ) : coverage[item.index] === 'P' ? (
+                  ) : coverageValue === 'P' ? (
                     <span data-testid="partial-coverage-icon">!</span>
                   ) : null}
                 </span>
