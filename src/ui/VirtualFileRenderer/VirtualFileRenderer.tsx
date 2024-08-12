@@ -109,7 +109,8 @@ const CodeBody = ({
   }
 
   return (
-    <div className="flex flex-1" ref={(ref) => setWrapperRef(ref)}>
+    // setting this function handler to this directly seems to solve the re-render issues.
+    <div className="flex flex-1" ref={setWrapperRef}>
       {/* this div contains the line numbers */}
       <div className="relative z-[2] h-full w-[82px] min-w-[82px] pr-[10px]">
         {virtualizer.getVirtualItems().map((item) => {
@@ -186,7 +187,11 @@ const CodeBody = ({
               />
               <div
                 className="w-full"
-                style={{ ...lineStyle, height: `${LINE_ROW_HEIGHT}px` }}
+                style={{
+                  ...lineStyle,
+                  height: `${LINE_ROW_HEIGHT}px`,
+                  lineHeight: `${LINE_ROW_HEIGHT}px`,
+                }}
               >
                 {tokens[item.index]?.map((token: Token, key: React.Key) => (
                   <span {...getTokenProps({ token, key })} key={key} />
