@@ -466,7 +466,7 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     demoRepo: {
-      text: 'Codecov demo',
+      text: DEMO_REPO.displayName,
       path: () => `/${DEMO_REPO.provider}/${DEMO_REPO.owner}/${DEMO_REPO.repo}`,
       isExternalLink: true,
       openNewTab: true,

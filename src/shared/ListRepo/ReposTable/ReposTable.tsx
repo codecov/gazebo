@@ -147,7 +147,6 @@ const ReposTable = ({
     provider: DEMO_REPO.provider,
     owner: DEMO_REPO.owner,
     activated,
-    term: searchValue,
     repoNames: [DEMO_REPO.repo],
   })
 
@@ -166,11 +165,20 @@ const ReposTable = ({
       ? (demoReposData?.pages ?? [])
           .flatMap((page) => page.repos)
           .filter(notNull)
-          .map((repo) => ({ ...repo, isDemo: true, name: 'Codecov demo' }))
+          .map((repo) => ({
+            ...repo,
+            isDemo: true,
+            name: DEMO_REPO.displayName,
+          }))
+          .filter((repo) =>
+            searchValue
+              ? repo.name.toLowerCase().includes(searchValue.toLowerCase())
+              : repo
+          )
       : []
 
     return [...demoRepos, ...repos]
-  }, [reposData?.pages, demoReposData?.pages, includeDemo])
+  }, [reposData?.pages, demoReposData?.pages, includeDemo, searchValue])
 
   useEffect(() => {
     if (inView && hasNextPage) {

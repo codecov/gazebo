@@ -699,7 +699,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const submit = await screen.findByRole('button', {
-        name: /Continue/,
+        name: /Continue to Codecov/,
       })
 
       await user.click(submit)
@@ -712,7 +712,8 @@ describe('DefaultOrgSelector', () => {
         })
       )
 
-      expect(testLocation.pathname).toBe('/gh/janedoe?source=onboarding')
+      expect(testLocation.pathname).toBe('/gh/janedoe')
+      expect(testLocation.search).toBe('?source=onboarding')
     })
 
     it('does not fire start trial mutation', async () => {

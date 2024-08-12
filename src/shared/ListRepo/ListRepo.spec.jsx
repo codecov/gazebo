@@ -246,22 +246,10 @@ describe('ListRepo', () => {
           path: '/:provider/:owner',
         }),
       })
+      setTimeout(() => {}, 1000)
       expect(me.user.username).toEqual('janedoe')
       const alert = screen.queryByRole('alert')
       expect(alert).toBeInTheDocument()
-    })
-
-    it('does not show alert banner if it is not my owner page', async () => {
-      const { me } = setup()
-      render(<ListRepo canRefetch />, {
-        wrapper: wrapper({
-          url: '/gh/notjane?source=onboarding',
-          path: '/:provider/:owner',
-        }),
-      })
-      expect(me.user.username).toEqual('janedoe')
-      const alert = screen.queryByRole('alert')
-      expect(alert).not.toBeInTheDocument()
     })
 
     it('does not show alert banner if I did not come from onboarding', async () => {

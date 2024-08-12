@@ -146,4 +146,28 @@ describe('AnalyticsPage', () => {
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
     })
   })
+
+  describe('for the repos table', () => {
+    beforeEach(() => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+        },
+        params: {
+          ordering: 'NAME',
+          direction: 'ASC',
+        },
+      })
+    })
+
+    it('renders a table displaying repository list', () => {
+      render(<AnalyticsPage />, { wrapper })
+      expect(screen.getByText(/Repos/)).toBeInTheDocument()
+    })
+    it('does not include a demo row', () => {
+      render(<AnalyticsPage />, { wrapper })
+      expect(screen.queryByText(/Codecov demo/)).not.toBeInTheDocument()
+    })
+  })
 })
