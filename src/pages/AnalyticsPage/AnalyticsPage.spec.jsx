@@ -154,10 +154,6 @@ describe('AnalyticsPage', () => {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
         },
-        params: {
-          ordering: 'NAME',
-          direction: 'ASC',
-        },
       })
     })
 

@@ -246,7 +246,6 @@ describe('ListRepo', () => {
           path: '/:provider/:owner',
         }),
       })
-      setTimeout(() => {}, 1000)
       expect(me.user.username).toEqual('janedoe')
       const alert = screen.queryByRole('alert')
       expect(alert).toBeInTheDocument()

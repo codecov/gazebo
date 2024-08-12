@@ -125,6 +125,16 @@ const wrapper =
     </QueryClientProvider>
   )
 
+const wrapperOwnerPage =
+  (provider: string, owner: string): React.FC<React.PropsWithChildren> =>
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[`/${provider}/${owner}`]}>
+        <Route path="/:provider/:owner">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
+
 interface SetupArgs {
   edges?: any[]
   isCurrentUserPartOfOrg?: boolean
@@ -215,6 +225,16 @@ describe('ReposTable', () => {
       }),
       graphql.query('RepoConfig', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoConfig))
+      }),
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            me: {
+              username: 'owner1',
+            },
+          })
+        )
       })
     )
     return { myReposMock, reposForOwnerMock }
@@ -799,6 +819,122 @@ describe('ReposTable', () => {
       expect(await screen.findByText(/Deactivated/)).toBeTruthy()
       const label = screen.getByText(/Deactivated/)
       expect(label).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with demo repo', () => {
+    beforeEach(() => {
+      setup({})
+      server.use(
+        graphql.query('ReposForOwner', async (req, res, ctx) => {
+          const demoRepo = [
+            {
+              node: {
+                private: false,
+                activated: true,
+                author: {
+                  username: 'codecov',
+                },
+                name: 'gazebo',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverage: 0,
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                lines: 123,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+              },
+            },
+          ]
+
+          const myRepos = [
+            {
+              node: {
+                private: false,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 1',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverage: 0,
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                lines: 123,
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
+              },
+            },
+            {
+              node: {
+                private: true,
+                activated: true,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 2',
+                latestCommitAt: subDays(new Date(), 2).toISOString(),
+                coverage: 100,
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                lines: 123,
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
+              },
+            },
+            {
+              node: {
+                private: true,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 3',
+                latestCommitAt: subDays(new Date(), 5).toISOString(),
+                coverage: null,
+                active: false,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                lines: 123,
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
+              },
+            },
+          ]
+
+          let reposToReturn = myRepos
+
+          if (req.variables.owner === 'codecov') {
+            reposToReturn = demoRepo
+          }
+
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: {
+                repositories: {
+                  edges: reposToReturn,
+                  pageInfo: {
+                    hasNextPage: false,
+                  },
+                },
+              },
+            })
+          )
+        })
+      )
+    })
+
+    it('renders all owner repos', async () => {
+      render(
+        <ReposTable searchValue="" owner="owner1" mayIncludeDemo={true} />,
+        {
+          wrapper: wrapperOwnerPage('github', 'owner1'),
+        }
+      )
     })
   })
 })

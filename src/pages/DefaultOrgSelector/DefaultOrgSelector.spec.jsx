@@ -604,7 +604,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(orgInList)
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to Codecov/,
+        name: /Continue/,
       })
 
       await user.click(submit)
