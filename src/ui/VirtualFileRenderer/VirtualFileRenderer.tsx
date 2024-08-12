@@ -137,7 +137,7 @@ const CodeBody = ({
                 }px)`,
               }}
               className={cn(
-                'absolute left-0 top-0 w-full select-none border-r border-ds-gray-tertiary bg-white px-4 text-right text-black hover:cursor-pointer',
+                'absolute left-0 top-0 w-full select-none border-r border-ds-gray-tertiary bg-white px-4 text-right text-ds-gray-senary hover:cursor-pointer hover:text-black',
                 coverageValue === 'H' && 'bg-ds-coverage-covered',
                 coverageValue === 'M' &&
                   'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
