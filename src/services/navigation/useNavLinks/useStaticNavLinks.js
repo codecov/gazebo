@@ -1,5 +1,7 @@
 import config from 'config'
 
+import { DEMO_REPO } from 'shared/utils/demo'
+
 // Links that aren't tied to the route or runtime variables.
 export function useStaticNavLinks() {
   return {
@@ -463,9 +465,9 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
-    codecovDemoRepo: {
+    demoRepo: {
       text: 'Codecov demo',
-      path: () => '/github/codecov/gazebo',
+      path: () => `/${DEMO_REPO.provider}/${DEMO_REPO.owner}/${DEMO_REPO.repo}`,
       isExternalLink: true,
       openNewTab: true,
     },

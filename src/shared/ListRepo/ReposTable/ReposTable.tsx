@@ -11,11 +11,13 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { OrderingDirection, useRepos } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
-import { useOwner } from 'services/user'
-import AppLink from 'shared/AppLink'
+import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
+import { DEMO_REPO } from 'shared/utils/demo'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
@@ -32,6 +34,7 @@ interface ReposTableProps {
   searchValue: string
   owner: string
   filterValues?: string[]
+  mayIncludeDemo?: boolean
 }
 
 function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
@@ -86,6 +89,7 @@ const ReposTable = ({
   searchValue,
   owner,
   filterValues = [],
+  mayIncludeDemo = false,
 }: ReposTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([
     {
@@ -97,6 +101,12 @@ const ReposTable = ({
   const { ref, inView } = useInView()
 
   const { provider } = useParams<URLParams>()
+
+  const { data: currentUser } = useUser({
+    options: {
+      suspense: false,
+    },
+  })
 
   const { data: ownerData } = useOwner({
     username: owner,
@@ -121,7 +131,7 @@ const ReposTable = ({
     data: reposData,
     fetchNextPage,
     hasNextPage,
-    isLoading,
+    isLoading: isReposLoading,
     isFetchingNextPage,
   } = useRepos({
     provider,
@@ -133,10 +143,34 @@ const ReposTable = ({
     isPublic: shouldDisplayPublicReposOnly,
   })
 
+  const { data: demoReposData } = useRepos({
+    provider: DEMO_REPO.provider,
+    owner: DEMO_REPO.owner,
+    activated,
+    term: searchValue,
+    repoNames: [DEMO_REPO.repo],
+  })
+
+  const isMyOwnerPage = currentUser?.user?.username === owner
+  const includeDemo = mayIncludeDemo && !config.IS_SELF_HOSTED && isMyOwnerPage
+
   const tableData = useMemo(() => {
-    const data = reposData?.pages?.map((page) => page?.repos).flat()
-    return data ?? []
-  }, [reposData?.pages])
+    function notNull<T>(x: T): x is NonNullable<T> {
+      return x != null
+    }
+
+    const repos =
+      reposData?.pages?.flatMap((page) => page?.repos).filter(notNull) ?? []
+
+    const demoRepos = includeDemo
+      ? (demoReposData?.pages ?? [])
+          .flatMap((page) => page.repos)
+          .filter(notNull)
+          .map((repo) => ({ ...repo, isDemo: true, name: 'Codecov demo' }))
+      : []
+
+    return [...demoRepos, ...repos]
+  }, [reposData?.pages, demoReposData?.pages, includeDemo])
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -159,12 +193,9 @@ const ReposTable = ({
     getSortedRowModel: getSortedRowModel(),
   })
 
-  if (!isLoading && isEmpty(tableData)) {
+  if (!isReposLoading && isEmpty(tableData)) {
     return <NoReposBlock searchValue={searchValue} />
   }
-
-  // is on repo page, is not enterprise, is my page, is "new sign up"
-  const shouldShowDemoRow = true
 
   return (
     <>
@@ -208,34 +239,7 @@ const ReposTable = ({
             ))}
           </thead>
           <tbody>
-            {/* custom demo row */}
-            {shouldShowDemoRow ? (
-              <tr>
-                <td>
-                  <div className="flex items-center">
-                    <AppLink
-                      pageName="codecovDemoRepo"
-                      className="flex items-center text-ds-gray-quinary hover:underline"
-                    >
-                      <Icon size="sm" variant="solid" name="globeAlt" />
-                      <span className="ml-2.5 mr-1 text-sm font-semibold text-black">
-                        Codecov demo
-                      </span>
-                    </AppLink>
-                    <span
-                      className={cs(
-                        'text-xs ml-3.5 px-1.5 py-1 border-solid border border-gray-300 rounded border-box inline-block'
-                      )}
-                    >
-                      System generated
-                    </span>
-                  </div>
-                </td>
-              </tr>
-            ) : null}
-
-            {/* data rows */}
-            {isLoading ? (
+            {isReposLoading ? (
               <tr>
                 <td colSpan={table.getAllColumns().length}>
                   <Loader />

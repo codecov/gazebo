@@ -6,11 +6,10 @@ import { useParams } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
+import { useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import { useFlags } from 'shared/featureFlags'
-import Banner from 'ui/Banner'
-import BannerContent from 'ui/Banner/BannerContent'
-import BannerHeading from 'ui/Banner/BannerHeading'
+import { Alert } from 'ui/Alert'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
@@ -38,6 +37,11 @@ function ListRepo({ canRefetch }) {
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
+  const { data: currentUser } = useUser({
+    options: {
+      suspense: false,
+    },
+  })
 
   const showTeamRepos = tierData === TierNames.TEAM && multipleTiers
 
@@ -55,8 +59,9 @@ function ListRepo({ canRefetch }) {
     </div>
   )
 
-  // if it's the first time you've seen it
-  const shouldShowBanner = true
+  const cameFromOnboarding = params['source'] === 'onboarding'
+  const isMyOwnerPage = currentUser?.user?.username === owner
+  const showDemoAlert = cameFromOnboarding && isMyOwnerPage
 
   return (
     <>
@@ -74,20 +79,24 @@ function ListRepo({ canRefetch }) {
         canRefetch={canRefetch}
       />
 
-      {shouldShowBanner && (
-        <Banner variant="blue">
-          <BannerHeading>
-            <h3 className="flex justify-center gap-2 font-semibold">
-              <Icon name="sparkles" className="stroke-blue-500"></Icon>
-              <span className="mt-0.5">Welcome to Codecov!</span>
-            </h3>
-          </BannerHeading>
-          <BannerContent>
-            {`We've added you to our Codecov repo to show you a real-world
+      {showDemoAlert ? (
+        <div className="mb-6">
+          <Alert
+            customIcon={
+              <Icon
+                name="sparkles"
+                className="float-left -mt-0.5 mr-2 stroke-blue-500 align-middle"
+              ></Icon>
+            }
+          >
+            <Alert.Title>Welcome to Codecov!</Alert.Title>
+            <Alert.Description>
+              {`We've added you to our Codecov repo to show you a real-world
             coverage example. You can now see how we use the tool.`}
-          </BannerContent>
-        </Banner>
-      )}
+            </Alert.Description>
+          </Alert>
+        </div>
+      ) : null}
 
       <Suspense fallback={loadingState}>
         {showTeamRepos ? (
@@ -97,6 +106,7 @@ function ListRepo({ canRefetch }) {
             sortItem={sortItem}
             owner={owner}
             searchValue={params.search}
+            mayIncludeDemo={true}
           />
         )}
       </Suspense>

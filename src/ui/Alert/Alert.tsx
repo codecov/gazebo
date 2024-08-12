@@ -89,17 +89,19 @@ export function variantToIcon(variant?: string | null) {
 
 interface RootProps
   extends React.HTMLAttributes<HTMLHeadingElement>,
-    VariantProps<typeof alertVariants> {}
+    VariantProps<typeof alertVariants> {
+  customIcon?: React.ReactNode
+}
 
 const AlertRoot = React.forwardRef<HTMLDivElement, RootProps>(
-  ({ className, variant, ...props }, ref) => (
+  ({ className, variant, customIcon, ...props }, ref) => (
     <div
       ref={ref}
       role="alert"
       className={cn(alertVariants({ variant }), className)}
       {...props}
     >
-      {variantToIcon(variant)}
+      {customIcon ? customIcon : variantToIcon(variant)}
       {props.children}
     </div>
   )
