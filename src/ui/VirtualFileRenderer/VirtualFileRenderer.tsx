@@ -25,6 +25,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
 import { cn } from 'shared/utils/cn'
 import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
+import Icon from 'ui/Icon'
 
 import { ColorBar } from './ColorBar'
 
@@ -70,11 +71,6 @@ const CodeBody = ({
   })
 
   const codeDisplayOverlayElement = codeDisplayOverlayRef.current
-  if (codeDisplayOverlayElement) {
-    // set the parent div height to the total size of the virtualizer
-    codeDisplayOverlayElement.style.height = `${virtualizer.getTotalSize()}px`
-    codeDisplayOverlayElement.style.position = 'relative'
-  }
 
   useLayoutEffect(() => {
     if (!wrapperRef) return
@@ -93,11 +89,23 @@ const CodeBody = ({
     }
   }, [wrapperRef])
 
-  if (initializeRender.current && virtualizer.getVirtualItems().length > 0) {
+  useLayoutEffect(() => {
+    if (!codeDisplayOverlayElement) {
+      return
+    }
+    if (!initializeRender.current) {
+      return
+    }
     initializeRender.current = false
+
+    // set the parent div height to the total size of the virtualizer
+    codeDisplayOverlayElement.style.height = `${virtualizer.getTotalSize()}px`
+    codeDisplayOverlayElement.style.position = 'relative'
+
     const index = parseInt(location.hash.slice(2), 10)
     // need to check !isNaN because parseInt return NaN if the string is not a number which is still a valid number.
     if (!isNaN(index) && index > 0 && index <= tokens.length) {
+      // need to adjust from line number back to index
       const adjustedLineNumber = index - 1
       virtualizer.scrollToIndex(adjustedLineNumber, { align: 'start' })
     } else {
@@ -106,13 +114,13 @@ const CodeBody = ({
         { fingerprint: ['file-renderer-invalid-line-number'] }
       )
     }
-  }
+  })
 
   return (
     // setting this function handler to this directly seems to solve the re-render issues.
     <div className="flex flex-1" ref={setWrapperRef}>
       {/* this div contains the line numbers */}
-      <div className="relative z-[2] h-full w-[82px] min-w-[82px] pr-[10px]">
+      <div className="relative z-[2] h-full w-[86px] min-w-[86px] pr-[10px]">
         {virtualizer.getVirtualItems().map((item) => {
           const lineNumber = item.index + 1
           const coverageValue = coverage?.[item.index]
@@ -129,7 +137,7 @@ const CodeBody = ({
                 }px)`,
               }}
               className={cn(
-                'absolute left-0 top-0 w-full border-r border-ds-gray-tertiary bg-white px-4 text-right text-ds-gray-quaternary hover:cursor-pointer hover:text-black',
+                'absolute left-0 top-0 w-full select-none border-r border-ds-gray-tertiary bg-white px-4 text-right text-black hover:cursor-pointer',
                 coverageValue === 'H' && 'bg-ds-coverage-covered',
                 coverageValue === 'M' &&
                   'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
@@ -137,7 +145,7 @@ const CodeBody = ({
                   'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow',
                 // this needs to come last as it overrides the coverage colors
                 location.hash === `#L${lineNumber}` &&
-                  'bg-ds-blue-medium/25 font-semibold text-ds-gray-quinary'
+                  'bg-ds-blue-medium/25 font-semibold'
               )}
               onClick={() => {
                 location.hash =
@@ -145,8 +153,30 @@ const CodeBody = ({
                 history.push(location)
               }}
             >
-              {location.hash === `#L${lineNumber}` ? '#' : null}
-              {lineNumber}
+              <div className="flex items-center justify-between">
+                <span
+                  className={cn({
+                    'text-ds-primary-red': coverage[item.index] === 'M',
+                    'text-ds-primary-yellow pl-1': coverage[item.index] === 'P',
+                  })}
+                >
+                  {coverage[item.index] === 'M' ? (
+                    <Icon
+                      name="exclamationTriangle"
+                      size="sm"
+                      variant="outline"
+                      className="inline"
+                      label="missing-coverage-icon"
+                    />
+                  ) : coverage[item.index] === 'P' ? (
+                    <span data-testid="partial-coverage-icon">!</span>
+                  ) : null}
+                </span>
+                <span>
+                  {location.hash === `#L${lineNumber}` ? '#' : null}
+                  {lineNumber}
+                </span>
+              </div>
             </div>
           )
         })}
@@ -178,7 +208,7 @@ const CodeBody = ({
                   item.start - virtualizer.options.scrollMargin
                 }px)`,
               }}
-              className="absolute left-0 top-0 pl-[92px]"
+              className="absolute left-0 top-0 pl-[94px]"
             >
               <ColorBar
                 lineNumber={lineNumber}
@@ -336,7 +366,7 @@ export function VirtualFileRenderer({
           overscrollBehaviorX: 'none',
           lineHeight: `${LINE_ROW_HEIGHT}px`,
         }}
-        className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[92px] pt-px font-mono text-transparent outline-none"
+        className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[94px] pt-px font-mono text-transparent outline-none"
         // Directly setting the value of the text area to the code content
         value={code}
         // need to set to true since we're setting a value without an onChange handler
