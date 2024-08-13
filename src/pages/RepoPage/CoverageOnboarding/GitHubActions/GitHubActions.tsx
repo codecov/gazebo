@@ -45,6 +45,8 @@ function GitHubActions() {
   )
 }
 
+type Framework = 'Jest' | 'Vitest' | 'Pytest' | 'Go'
+
 interface Step1Props {
   orgUploadToken: string | null | undefined
   owner: string
@@ -52,7 +54,6 @@ interface Step1Props {
 }
 
 function Step1({ orgUploadToken, owner, repo }: Step1Props) {
-  type Framework = 'Jest' | 'Vitest' | 'Pytest' | 'Go'
   const frameworkInstructions = {
     Jest: {
       install: 'npm install --save-dev jest',
@@ -278,9 +279,9 @@ jobs:
       </Card>
       <ExpandableSection className="-mt-px">
         <ExpandableSection.Trigger>
-          <p>
+          <p className="font-normal">
             Your final GitHub Actions workflow for a project using 
-            <span className="text-[#A67F59]">{framework}</span>
+            <span className="text-codecov-code">{framework}</span>
              could look something like this:
           </p>
         </ExpandableSection.Trigger>
