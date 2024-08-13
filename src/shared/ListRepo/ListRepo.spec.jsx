@@ -54,6 +54,7 @@ const wrapper =
               testLocation = location
               return null
             }}
+            exact
           />
         </ActiveContext.Provider>
       </MemoryRouter>
@@ -61,12 +62,15 @@ const wrapper =
   )
 
 const mockUser = {
-  owner: {
-    defaultOrgUsername: 'codecov',
-  },
-  email: 'jane.doe@codecov.io',
-  user: {
-    username: 'janedoe',
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    user: {
+      username: 'janedoe',
+    },
+    trackingMetadata: {},
   },
 }
 
@@ -246,7 +250,7 @@ describe('ListRepo', () => {
           path: '/:provider/:owner',
         }),
       })
-      expect(me.user.username).toEqual('janedoe')
+      expect(me.me.user.username).toEqual('janedoe')
       const alert = screen.queryByRole('alert')
       expect(alert).toBeInTheDocument()
     })
@@ -259,7 +263,7 @@ describe('ListRepo', () => {
           path: '/:provider/:owner',
         }),
       })
-      expect(me.user.username).toEqual('janedoe')
+      expect(me.me.user.username).toEqual('janedoe')
       const alert = screen.queryByRole('alert')
       expect(alert).not.toBeInTheDocument()
     })

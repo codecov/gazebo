@@ -201,6 +201,9 @@ const ReposTable = ({
     getSortedRowModel: getSortedRowModel(),
   })
 
+  console.log({ currentUser })
+  console.log({ demoReposData })
+
   if (!isReposLoading && isEmpty(tableData)) {
     return <NoReposBlock searchValue={searchValue} />
   }

@@ -151,6 +151,7 @@ export function useUser({ options }: UseUserArgs = {}) {
         const parsedRes = UserSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
+          console.log(parsedRes.error)
           return Promise.reject({
             status: 404,
             data: {},
