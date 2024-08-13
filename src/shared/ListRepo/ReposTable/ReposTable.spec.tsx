@@ -936,7 +936,11 @@ describe('ReposTable', () => {
             },
           ]
 
-          let reposToReturn = myRepos
+          let reposToReturn = myRepos.filter(
+            (repo) =>
+              !req.variables.filters.term ||
+              repo.node.name.includes(req.variables.filters.term)
+          )
 
           if (req.variables.owner === 'codecov') {
             reposToReturn = demoRepo
@@ -969,6 +973,19 @@ describe('ReposTable', () => {
       )
       const links = await screen.findAllByText(/Repo name/)
       expect(links.length).toBe(3)
+      const demoLink = await screen.findAllByText(/Codecov demo/)
+      expect(demoLink.length).toBe(1)
+    })
+
+    it('shows demo repo when search term includes it', async () => {
+      render(
+        <ReposTable searchValue="dem" owner="owner1" mayIncludeDemo={true} />,
+        {
+          wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
+        }
+      )
+      const repo = screen.queryByText(/Repo name/)
+      expect(repo).not.toBeInTheDocument()
       const demoLink = await screen.findAllByText(/Codecov demo/)
       expect(demoLink.length).toBe(1)
     })

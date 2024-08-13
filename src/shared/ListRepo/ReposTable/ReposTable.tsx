@@ -170,10 +170,10 @@ const ReposTable = ({
             isDemo: true,
             name: DEMO_REPO.displayName,
           }))
-          .filter((repo) =>
-            searchValue
-              ? repo.name.toLowerCase().includes(searchValue.toLowerCase())
-              : repo
+          .filter(
+            (repo) =>
+              !searchValue ||
+              repo.name.toLowerCase().includes(searchValue.toLowerCase())
           )
       : []
 
@@ -201,12 +201,11 @@ const ReposTable = ({
     getSortedRowModel: getSortedRowModel(),
   })
 
-  console.log({ currentUser })
-  console.log({ demoReposData })
-
   if (!isReposLoading && isEmpty(tableData)) {
     return <NoReposBlock searchValue={searchValue} />
   }
+
+  console.log({ tableData })
 
   return (
     <>
