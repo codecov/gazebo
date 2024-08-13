@@ -60,27 +60,27 @@ const mockUserNoTermsAgreement = {
   termsAgreement: false,
 }
 
-const mockTrackingMetadata = {
-  service: 'github',
-  ownerid: 123,
-  serviceId: '123',
-  plan: 'users-basic',
-  staff: false,
-  hasYaml: false,
-  bot: null,
-  delinquent: null,
-  didTrial: null,
-  planProvider: null,
-  planUserCount: 1,
-  createdAt: 'timestamp',
-  updatedAt: 'timestamp',
-  profile: {
-    createdAt: 'timestamp',
-    otherGoal: null,
-    typeProjects: [],
-    goals: [],
-  },
-}
+// const mockTrackingMetadata = {
+//   service: 'github',
+//   ownerid: 123,
+//   serviceId: '123',
+//   plan: 'users-basic',
+//   staff: false,
+//   hasYaml: false,
+//   bot: null,
+//   delinquent: null,
+//   didTrial: null,
+//   planProvider: null,
+//   planUserCount: 1,
+//   createdAt: 'timestamp',
+//   updatedAt: 'timestamp',
+//   profile: {
+//     createdAt: 'timestamp',
+//     otherGoal: null,
+//     typeProjects: [],
+//     goals: [],
+//   },
+// }
 
 const mockMe = {
   owner: {
@@ -92,7 +92,7 @@ const mockMe = {
   businessEmail: 'jane.doe@codecov.io',
   termsAgreement: true,
   user: mockUser,
-  trackingMetadata: mockTrackingMetadata,
+  // trackingMetadata: mockTrackingMetadata,
 }
 
 const userNoTermsAgreement = {
