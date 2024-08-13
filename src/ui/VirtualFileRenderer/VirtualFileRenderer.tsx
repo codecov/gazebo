@@ -44,7 +44,7 @@ interface CodeBodyProps {
   tokens: Token[][]
   getLineProps: Highlight['getLineProps']
   getTokenProps: Highlight['getTokenProps']
-  coverage: Dictionary<'H' | 'M' | 'P'>
+  coverage?: Dictionary<'H' | 'M' | 'P'>
   codeDisplayOverlayRef: React.RefObject<HTMLDivElement>
 }
 
@@ -109,11 +109,14 @@ const CodeBody = ({
   }
 
   return (
-    <div className="flex flex-1" ref={(ref) => setWrapperRef(ref)}>
+    // setting this function handler to this directly seems to solve the re-render issues.
+    <div className="flex flex-1" ref={setWrapperRef}>
       {/* this div contains the line numbers */}
       <div className="relative z-[2] h-full w-[82px] min-w-[82px] pr-[10px]">
         {virtualizer.getVirtualItems().map((item) => {
           const lineNumber = item.index + 1
+          const coverageValue = coverage?.[item.index]
+
           return (
             <div
               ref={virtualizer.measureElement}
@@ -127,10 +130,10 @@ const CodeBody = ({
               }}
               className={cn(
                 'absolute left-0 top-0 w-full border-r border-ds-gray-tertiary bg-white px-4 text-right text-ds-gray-quaternary hover:cursor-pointer hover:text-black',
-                coverage[item.index] === 'H' && 'bg-ds-coverage-covered',
-                coverage[item.index] === 'M' &&
+                coverageValue === 'H' && 'bg-ds-coverage-covered',
+                coverageValue === 'M' &&
                   'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
-                coverage[item.index] === 'P' &&
+                coverageValue === 'P' &&
                   'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow',
                 // this needs to come last as it overrides the coverage colors
                 location.hash === `#L${lineNumber}` &&
@@ -180,11 +183,15 @@ const CodeBody = ({
               <ColorBar
                 lineNumber={lineNumber}
                 locationHash={location.hash}
-                coverage={coverage[item.index]}
+                coverage={coverage?.[item.index]}
               />
               <div
                 className="w-full"
-                style={{ ...lineStyle, height: `${LINE_ROW_HEIGHT}px` }}
+                style={{
+                  ...lineStyle,
+                  height: `${LINE_ROW_HEIGHT}px`,
+                  lineHeight: `${LINE_ROW_HEIGHT}px`,
+                }}
               >
                 {tokens[item.index]?.map((token: Token, key: React.Key) => (
                   <span {...getTokenProps({ token, key })} key={key} />
@@ -202,7 +209,7 @@ CodeBody.displayName = 'CodeBody'
 
 interface VirtualFileRendererProps {
   code: string
-  coverage: Dictionary<'H' | 'M' | 'P'>
+  coverage?: Dictionary<'H' | 'M' | 'P'>
   fileName: string
 }
 
