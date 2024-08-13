@@ -54,7 +54,6 @@ const wrapper =
               testLocation = location
               return null
             }}
-            exact
           />
         </ActiveContext.Provider>
       </MemoryRouter>

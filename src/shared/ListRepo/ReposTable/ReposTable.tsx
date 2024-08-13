@@ -205,8 +205,6 @@ const ReposTable = ({
     return <NoReposBlock searchValue={searchValue} />
   }
 
-  console.log({ tableData })
-
   return (
     <>
       <div className="tableui">
