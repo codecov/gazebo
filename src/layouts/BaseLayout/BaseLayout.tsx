@@ -82,18 +82,18 @@ function BaseLayout({ children }: React.PropsWithChildren) {
     <>
       <Suspense fallback={<FullPageLoader />}>
         <RepoBreadcrumbProvider>
-          {isFullExperience || isImpersonating ? (
-            <>
-              <GlobalTopBanners />
-              <Header />
-            </>
-          ) : (
-            <Suspense fallback={null}>
-              {showDefaultOrgSelector && <InstallationHelpBanner />}
-            </Suspense>
-          )}
           <ErrorBoundary sentryScopes={[['layout', 'base']]}>
             <NetworkErrorBoundary>
+              {isFullExperience || isImpersonating ? (
+                <>
+                  <GlobalTopBanners />
+                  <Header />
+                </>
+              ) : (
+                <Suspense fallback={null}>
+                  {showDefaultOrgSelector && <InstallationHelpBanner />}
+                </Suspense>
+              )}
               <main className="container mb-8 flex grow flex-col gap-2 md:p-0">
                 <GlobalBanners />
                 <OnboardingOrChildren
