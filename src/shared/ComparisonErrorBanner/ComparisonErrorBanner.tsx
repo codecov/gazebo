@@ -22,7 +22,7 @@ const BannerContent: React.FC<ComparisonErrorBannerProps> = ({
         <Alert.Description>
           <span className="flex flex-wrap gap-1">
             <span>
-              Unable to compare commit because no base commit was found.
+              Unable to compare commits because no base commit was found.
             </span>
             <A
               hook="compare errors"

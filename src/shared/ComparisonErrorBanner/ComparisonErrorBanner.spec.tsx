@@ -36,7 +36,7 @@ describe('ComparisonErrorBanner', () => {
     const title = await screen.findByText('Missing Base Commit')
     expect(title).toBeInTheDocument()
     const description = await screen.findByText(
-      'Unable to compare commit because no base commit was found.'
+      'Unable to compare commits because no base commit was found.'
     )
     expect(description).toBeInTheDocument()
   })
