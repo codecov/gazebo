@@ -45,7 +45,14 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: true,
-      retry: 3,
+      retry: (failureCount: number, res: any) => {
+        // Do not retry if the response status is 429
+        if (res?.status === 429) {
+          return false
+        }
+        // Otherwise, retry up to 3 times
+        return failureCount < 3
+      },
       refetchOnWindowFocus: false,
     },
   },

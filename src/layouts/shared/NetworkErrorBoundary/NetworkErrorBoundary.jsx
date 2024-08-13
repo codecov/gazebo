@@ -63,6 +63,10 @@ const graphQLErrorToUI = {
     illustration: upsideDownUmbrella,
     title: 'Not found',
   },
+  RateLimitError: {
+    illustration: upsideDownUmbrella,
+    title: 'Rate limit exceeded',
+  },
 }
 
 export const NetworkErrorMessage = () => {
