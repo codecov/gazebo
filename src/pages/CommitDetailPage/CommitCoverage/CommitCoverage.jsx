@@ -57,7 +57,7 @@ function CommitRoutes() {
   const ErrorBannerComponent = (
     <ComparisonErrorBanner
       errorType={compareTypeName}
-      reportTyp={ReportUploadType.COVERAGE}
+      reportType={ReportUploadType.COVERAGE}
     />
   )
   if (

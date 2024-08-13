@@ -59,7 +59,7 @@ const BannerContent: React.FC<ComparisonErrorBannerProps> = ({
     )
   }
 
-  if (errorType === 'MissingComparison') {
+  if (errorType === ComparisonReturnType.MISSING_COMPARISON) {
     return (
       <>
         <Alert.Title>Missing Comparison</Alert.Title>
