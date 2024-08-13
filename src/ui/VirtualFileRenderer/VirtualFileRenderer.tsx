@@ -65,12 +65,11 @@ const CodeBody = ({
 
   const virtualizer = useWindowVirtualizer({
     count: tokens.length,
+    // this is the height of each line in the code block based off of not having any line wrapping, if we add line wrapping this will need to be updated to dynamically measure the height of each line.
     estimateSize: () => LINE_ROW_HEIGHT,
     overscan: 45, // update to be based off of the height of the window
     scrollMargin: codeDisplayOverlayRef.current?.offsetTop ?? 0,
   })
-
-  const codeDisplayOverlayElement = codeDisplayOverlayRef.current
 
   useLayoutEffect(() => {
     if (!wrapperRef) return
@@ -90,30 +89,35 @@ const CodeBody = ({
   }, [wrapperRef])
 
   useLayoutEffect(() => {
-    if (!codeDisplayOverlayElement) {
+    if (!initializeRender.current) {
       return
     }
-    if (!initializeRender.current) {
+    if (!codeDisplayOverlayRef.current) {
       return
     }
     initializeRender.current = false
 
     // set the parent div height to the total size of the virtualizer
-    codeDisplayOverlayElement.style.height = `${virtualizer.getTotalSize()}px`
-    codeDisplayOverlayElement.style.position = 'relative'
+    codeDisplayOverlayRef.current.style.height = `${virtualizer.getTotalSize()}px`
+    codeDisplayOverlayRef.current.style.position = 'relative'
 
     const index = parseInt(location.hash.slice(2), 10)
     // need to check !isNaN because parseInt return NaN if the string is not a number which is still a valid number.
     if (!isNaN(index) && index > 0 && index <= tokens.length) {
-      // need to adjust from line number back to index
-      const adjustedLineNumber = index - 1
-      virtualizer.scrollToIndex(adjustedLineNumber, { align: 'start' })
+      // need to adjust from line number back to array index
+      virtualizer.scrollToIndex(index - 1, { align: 'start' })
     } else {
       Sentry.captureMessage(
         `Invalid line number in file renderer hash: ${location.hash}`,
         { fingerprint: ['file-renderer-invalid-line-number'] }
       )
     }
+    /**
+     * we're not using a dep array here, because there aren't any deps that
+     * cause a state update and in turn trigger the effect to run again. We do
+     * have early checks at the beginning of the effect to prevent any
+     * unnecessary work.
+     */
   })
 
   return (
