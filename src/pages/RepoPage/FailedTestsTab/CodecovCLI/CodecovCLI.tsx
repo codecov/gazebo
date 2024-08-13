@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import testsPRComment from 'assets/svg/onboardingTests/testsPRComment.svg'
 import testsRunning from 'assets/svg/onboardingTests/testsRunning.svg'
 import A from 'ui/A'
@@ -139,8 +137,6 @@ function Step4() {
 }
 
 function Step5() {
-  const [isExpanded, setIsExpanded] = useState(false)
-
   return (
     <div>
       <Card>
@@ -160,11 +156,8 @@ function Step5() {
         </Card.Content>
       </Card>
       <ExpandableSection className="-mt-px">
-        <ExpandableSection.Trigger
-          isExpanded={isExpanded}
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <p className="font-normal">
+        <ExpandableSection.Trigger>
+          <p>
             Here are examples of failed test reports in PR comments. Comment
             generation may take time.
           </p>
