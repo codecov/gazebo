@@ -9,7 +9,9 @@ import { useCommitErrors } from 'services/commitErrors'
 import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner } from 'services/user'
+import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
+import { ReportUploadType } from 'shared/utils/comparison'
 import { extractUploads } from 'shared/utils/extractUploads'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
@@ -17,7 +19,6 @@ import Spinner from 'ui/Spinner'
 import BotErrorBanner from './BotErrorBanner'
 import CommitCoverageSummarySkeleton from './CommitCoverageSummary/CommitCoverageSummarySkeleton'
 import CommitCoverageTabs from './CommitCoverageTabs'
-import ErrorBanner from './ErrorBanner'
 import ErroredUploads from './ErroredUploads'
 import FirstPullBanner from './FirstPullBanner'
 import YamlErrorBanner from './YamlErrorBanner'
@@ -53,7 +54,12 @@ function CommitRoutes() {
   })
 
   const compareTypeName = commitPageData?.commit?.compareWithParent?.__typename
-  const ErrorBannerComponent = <ErrorBanner errorType={compareTypeName} />
+  const ErrorBannerComponent = (
+    <ComparisonErrorBanner
+      errorType={compareTypeName}
+      reportTyp={ReportUploadType.COVERAGE}
+    />
+  )
   if (
     compareTypeName !== 'Comparison' &&
     compareTypeName !== 'FirstPullRequest' &&
