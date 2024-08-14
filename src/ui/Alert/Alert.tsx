@@ -3,6 +3,7 @@ import * as React from 'react'
 
 import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
+import { OutlineIconCollection } from 'ui/Icon/Icon'
 
 export const AlertOptions = {
   ERROR: 'error',
@@ -31,7 +32,10 @@ const alertVariants = cva('relative w-full border-l-4 p-4', {
   },
 })
 
-export function variantToIcon(variant?: string | null) {
+export function variantToIcon(
+  variant?: string | null,
+  customIconName?: keyof OutlineIconCollection | null
+) {
   let classname = 'float-left -mt-1 mr-2 align-middle'
   switch (variant) {
     case AlertOptions.ERROR:
@@ -39,7 +43,7 @@ export function variantToIcon(variant?: string | null) {
         <Icon
           variant="outline"
           size="md"
-          name="xCircle"
+          name={customIconName ?? 'xCircle'}
           data-testid="error"
           className={`stroke-ds-primary-red ${classname}`}
         />
@@ -49,7 +53,7 @@ export function variantToIcon(variant?: string | null) {
         <Icon
           variant="outline"
           size="md"
-          name="informationCircle"
+          name={customIconName ?? 'informationCircle'}
           data-testid="info"
           className={`stroke-ds-blue-darker ${classname}`}
         />
@@ -59,7 +63,7 @@ export function variantToIcon(variant?: string | null) {
         <Icon
           variant="outline"
           size="md"
-          name="checkCircle"
+          name={customIconName ?? 'checkCircle'}
           data-testid="success"
           className={`stroke-green-500 ${classname}`}
         />
@@ -69,7 +73,7 @@ export function variantToIcon(variant?: string | null) {
         <Icon
           variant="outline"
           size="md"
-          name="exclamationTriangle"
+          name={customIconName ?? 'exclamationTriangle'}
           data-testid="warn"
           className={`stroke-orange-500 ${classname}`}
         />
@@ -79,7 +83,7 @@ export function variantToIcon(variant?: string | null) {
         <Icon
           variant="outline"
           size="md"
-          name="informationCircle"
+          name={customIconName ?? 'informationCircle'}
           data-testid="default"
           className={`stroke-ds-blue-darker ${classname}`}
         />
@@ -90,18 +94,18 @@ export function variantToIcon(variant?: string | null) {
 interface RootProps
   extends React.HTMLAttributes<HTMLHeadingElement>,
     VariantProps<typeof alertVariants> {
-  customIcon?: React.ReactNode
+  customIconName?: keyof OutlineIconCollection
 }
 
 const AlertRoot = React.forwardRef<HTMLDivElement, RootProps>(
-  ({ className, variant, customIcon, ...props }, ref) => (
+  ({ className, variant, customIconName, ...props }, ref) => (
     <div
       ref={ref}
       role="alert"
       className={cn(alertVariants({ variant }), className)}
       {...props}
     >
-      {customIcon ? customIcon : variantToIcon(variant)}
+      {variantToIcon(variant, customIconName)}
       {props.children}
     </div>
   )

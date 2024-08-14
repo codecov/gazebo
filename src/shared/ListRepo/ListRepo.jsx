@@ -10,7 +10,6 @@ import { useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import { useFlags } from 'shared/featureFlags'
 import { Alert } from 'ui/Alert'
-import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
 import OrgControlTable from './OrgControlTable'
@@ -81,14 +80,7 @@ function ListRepo({ canRefetch }) {
 
       {showDemoAlert ? (
         <div className="mb-6">
-          <Alert
-            customIcon={
-              <Icon
-                name="sparkles"
-                className="float-left -mt-0.5 mr-2 stroke-blue-500 align-middle"
-              ></Icon>
-            }
-          >
+          <Alert variant="info" customIconName="sparkles">
             <Alert.Title>Welcome to Codecov!</Alert.Title>
             <Alert.Description>
               {`We've added you to our Codecov repo to show you a real-world

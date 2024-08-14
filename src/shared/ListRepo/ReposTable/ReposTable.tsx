@@ -17,7 +17,7 @@ import { OrderingDirection, useRepos } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
-import { DEMO_REPO } from 'shared/utils/demo'
+import { DEMO_REPO, formatDemoRepos, isNotNull } from 'shared/utils/demo'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
@@ -127,6 +127,7 @@ const ReposTable = ({
         .toUpperCase() as keyof typeof repoDisplayOptions
     ]?.status
 
+  // fetch owner repos
   const {
     data: reposData,
     fetchNextPage,
@@ -143,6 +144,7 @@ const ReposTable = ({
     isPublic: shouldDisplayPublicReposOnly,
   })
 
+  // fetch demo repo(s)
   const { data: demoReposData } = useRepos({
     provider: DEMO_REPO.provider,
     owner: DEMO_REPO.owner,
@@ -154,31 +156,15 @@ const ReposTable = ({
   const includeDemo = mayIncludeDemo && !config.IS_SELF_HOSTED && isMyOwnerPage
 
   const tableData = useMemo(() => {
-    function notNull<T>(x: T): x is NonNullable<T> {
-      return x != null
-    }
-
     const repos =
-      reposData?.pages?.flatMap((page) => page?.repos).filter(notNull) ?? []
+      reposData?.pages.flatMap((page) => page?.repos).filter(isNotNull) ?? []
 
     const demoRepos = includeDemo
-      ? (demoReposData?.pages ?? [])
-          .flatMap((page) => page.repos)
-          .filter(notNull)
-          .map((repo) => ({
-            ...repo,
-            isDemo: true,
-            name: DEMO_REPO.displayName,
-          }))
-          .filter(
-            (repo) =>
-              !searchValue ||
-              repo.name.toLowerCase().includes(searchValue.toLowerCase())
-          )
+      ? formatDemoRepos(demoReposData, searchValue)
       : []
 
     return [...demoRepos, ...repos]
-  }, [reposData?.pages, demoReposData?.pages, includeDemo, searchValue])
+  }, [reposData?.pages, demoReposData, includeDemo, searchValue])
 
   useEffect(() => {
     if (inView && hasNextPage) {

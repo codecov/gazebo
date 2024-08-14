@@ -965,12 +965,9 @@ describe('ReposTable', () => {
     })
 
     it('shows demo repo and your repos when on your owner page', async () => {
-      render(
-        <ReposTable searchValue="" owner="owner1" mayIncludeDemo={true} />,
-        {
-          wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
-        }
-      )
+      render(<ReposTable searchValue="" owner="owner1" mayIncludeDemo />, {
+        wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
+      })
       const links = await screen.findAllByText(/Repo name/)
       expect(links.length).toBe(3)
       const demoLink = await screen.findAllByText(/Codecov demo/)
@@ -978,12 +975,9 @@ describe('ReposTable', () => {
     })
 
     it('shows demo repo when search term includes it', async () => {
-      render(
-        <ReposTable searchValue="dem" owner="owner1" mayIncludeDemo={true} />,
-        {
-          wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
-        }
-      )
+      render(<ReposTable searchValue="dem" owner="owner1" mayIncludeDemo />, {
+        wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
+      })
       const repo = screen.queryByText(/Repo name/)
       expect(repo).not.toBeInTheDocument()
       const demoLink = await screen.findAllByText(/Codecov demo/)

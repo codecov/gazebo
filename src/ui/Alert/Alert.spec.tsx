@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react'
 
-import Icon from 'ui/Icon'
-
 import { Alert, AlertOptions } from './Alert'
 
 describe('Alert', () => {
@@ -88,10 +86,7 @@ describe('Alert', () => {
 
   describe('Custom Icons', () => {
     const alert = (
-      <Alert
-        variant={AlertOptions.INFO}
-        customIcon={<Icon name="sparkles"></Icon>}
-      >
+      <Alert variant={AlertOptions.INFO} customIconName="sparkles">
         Some alert here
       </Alert>
     )
