@@ -18,7 +18,9 @@ export const getReposColumnsHelper = ({
   isCurrentUserPartOfOrg: boolean
   owner: string
 }) => {
-  const columnHelper = createColumnHelper<RepositoryResult>()
+  const columnHelper = createColumnHelper<
+    RepositoryResult & { isDemo?: boolean }
+  >()
   const nameColumn = columnHelper.accessor('name', {
     header: 'Name',
     id: 'name',
@@ -26,7 +28,9 @@ export const getReposColumnsHelper = ({
       const repo = info.row.original
 
       let pageName = 'new'
-      if (!!repo?.coverageEnabled) {
+      if (!!repo?.isDemo) {
+        pageName = 'demoRepo'
+      } else if (!!repo?.coverageEnabled) {
         pageName = 'repo'
       } else if (!!repo?.bundleAnalysisEnabled) {
         pageName = 'bundles'

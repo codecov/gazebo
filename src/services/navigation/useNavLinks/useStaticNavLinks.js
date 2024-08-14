@@ -1,5 +1,7 @@
 import config from 'config'
 
+import { DEMO_REPO } from 'shared/utils/demo'
+
 // Links that aren't tied to the route or runtime variables.
 export function useStaticNavLinks() {
   return {
@@ -460,6 +462,12 @@ export function useStaticNavLinks() {
       text: 'Unusable Reports',
       path: () =>
         'https://docs.codecov.com/docs/error-reference#unusable-reports',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    demoRepo: {
+      text: DEMO_REPO.displayName,
+      path: () => `/${DEMO_REPO.provider}/${DEMO_REPO.owner}/${DEMO_REPO.repo}`,
       isExternalLink: true,
       openNewTab: true,
     },

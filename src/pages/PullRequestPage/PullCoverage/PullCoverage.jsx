@@ -6,13 +6,13 @@ import { SentryRoute } from 'sentry'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
+import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import { useFlags } from 'shared/featureFlags'
 import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
-import { ComparisonReturnType } from 'shared/utils/comparison'
+import { ComparisonReturnType, ReportUploadType } from 'shared/utils/comparison'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
-import ErrorBanner from './ErrorBanner'
 import PullCoverageTabs from './PullCoverageTabs'
 import CompareSummarySkeleton from './Summary/CompareSummary/CompareSummarySkeleton'
 
@@ -68,7 +68,10 @@ function PullCoverageContent() {
     <Suspense fallback={<Loader />}>
       {resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON &&
       resultType !== ComparisonReturnType.FIRST_PULL_REQUEST ? (
-        <ErrorBanner errorType={resultType} />
+        <ComparisonErrorBanner
+          errorType={resultType}
+          reportType={ReportUploadType.COVERAGE}
+        />
       ) : null}
       <Switch>
         <SentryRoute
