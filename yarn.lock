@@ -5594,6 +5594,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/prismjs@npm:^1":
+  version: 1.26.4
+  resolution: "@types/prismjs@npm:1.26.4"
+  checksum: 10c0/996be7d119779c4cbe66e58342115a12d35a02226dae3aaa4a744c9652d5a3939c93c26182e18156965ac4f93575ebb309c3469c36f52e60ee5c0f8f27e874df
+  languageName: node
+  linkType: hard
+
 "@types/prop-types@npm:*, @types/prop-types@npm:15.7.12":
   version: 15.7.12
   resolution: "@types/prop-types@npm:15.7.12"
@@ -10539,6 +10546,7 @@ __metadata:
     "@types/js-cookie": "npm:3.0.6"
     "@types/lodash": "npm:4.17.6"
     "@types/node": "npm:^20.5.7"
+    "@types/prismjs": "npm:^1"
     "@types/prop-types": "npm:15.7.12"
     "@types/qs": "npm:6.9.15"
     "@types/react": "npm:^18.3.1"
@@ -10580,6 +10588,7 @@ __metadata:
     postcss: "npm:^8.4.31"
     prettier: "npm:^3.3.3"
     prism-react-renderer: "npm:^1.3.1"
+    prismjs: "npm:^1.29.0"
     prop-types: "npm:^15.8.1"
     qs: "npm:^6.11.1"
     react: "npm:^18.3.1"
@@ -16176,6 +16185,13 @@ __metadata:
   peerDependencies:
     react: ">=0.14.9"
   checksum: 10c0/9caada97fa7325fc99484cff409a84ed947a061615851bd0aedf4fcfd4b3496e2eff4b252dbfd4465dd6ea7310134ed67d737cabf0c78b192969c3c7da383237
+  languageName: node
+  linkType: hard
+
+"prismjs@npm:^1.29.0":
+  version: 1.29.0
+  resolution: "prismjs@npm:1.29.0"
+  checksum: 10c0/d906c4c4d01b446db549b4f57f72d5d7e6ccaca04ecc670fb85cea4d4b1acc1283e945a9cbc3d81819084a699b382f970e02f9d1378e14af9808d366d9ed7ec6
   languageName: node
   linkType: hard
 
