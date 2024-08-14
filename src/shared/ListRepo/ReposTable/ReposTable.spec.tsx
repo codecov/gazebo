@@ -101,6 +101,50 @@ const mockRepoConfig = {
   },
 }
 
+const mockUser = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
+    user: {
+      name: 'Jane Doe',
+      username: 'owner1',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+      customerIntent: 'PERSONAL',
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: 'users-basic',
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
+    },
+  },
+}
+
 beforeAll(() => {
   server.listen()
   console.error = () => {}
@@ -112,11 +156,15 @@ afterEach(() => {
 afterAll(() => server.close)
 
 const wrapper =
-  (repoDisplay: string): React.FC<React.PropsWithChildren> =>
+  (
+    repoDisplay: string,
+    url: string = '/gl',
+    path: string = '/:provider'
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={['/gl']}>
-        <Route path="/:provider">
+      <MemoryRouter initialEntries={[url]}>
+        <Route path={path}>
           <ActiveContext.Provider value={repoDisplay}>
             {children}
           </ActiveContext.Provider>
@@ -215,6 +263,9 @@ describe('ReposTable', () => {
       }),
       graphql.query('RepoConfig', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoConfig))
+      }),
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockUser))
       })
     )
     return { myReposMock, reposForOwnerMock }
@@ -799,6 +850,138 @@ describe('ReposTable', () => {
       expect(await screen.findByText(/Deactivated/)).toBeTruthy()
       const label = screen.getByText(/Deactivated/)
       expect(label).toBeInTheDocument()
+    })
+  })
+
+  describe('handles demo repo', () => {
+    beforeEach(() => {
+      setup({})
+      server.use(
+        graphql.query('ReposForOwner', async (req, res, ctx) => {
+          const demoRepo = [
+            {
+              node: {
+                private: false,
+                activated: true,
+                author: {
+                  username: 'codecov',
+                },
+                name: 'gazebo',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverage: 0,
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                lines: 123,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+              },
+            },
+          ]
+
+          const myRepos = [
+            {
+              node: {
+                private: false,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 1',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverage: 0,
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                lines: 123,
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
+              },
+            },
+            {
+              node: {
+                private: true,
+                activated: true,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 2',
+                latestCommitAt: subDays(new Date(), 2).toISOString(),
+                coverage: 100,
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                lines: 123,
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
+              },
+            },
+            {
+              node: {
+                private: true,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 3',
+                latestCommitAt: subDays(new Date(), 5).toISOString(),
+                coverage: null,
+                active: false,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                lines: 123,
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
+              },
+            },
+          ]
+
+          let reposToReturn = myRepos.filter(
+            (repo) =>
+              !req.variables.filters.term ||
+              repo.node.name.includes(req.variables.filters.term)
+          )
+
+          if (req.variables.owner === 'codecov') {
+            reposToReturn = demoRepo
+          }
+
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: {
+                repositories: {
+                  edges: reposToReturn,
+                  pageInfo: {
+                    hasNextPage: false,
+                    endCursor: '3',
+                  },
+                },
+              },
+            })
+          )
+        })
+      )
+    })
+
+    it('shows demo repo and your repos when on your owner page', async () => {
+      render(<ReposTable searchValue="" owner="owner1" mayIncludeDemo />, {
+        wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
+      })
+      const links = await screen.findAllByText(/Repo name/)
+      expect(links.length).toBe(3)
+      const demoLink = await screen.findAllByText(/Codecov demo/)
+      expect(demoLink.length).toBe(1)
+    })
+
+    it('shows demo repo when search term includes it', async () => {
+      render(<ReposTable searchValue="dem" owner="owner1" mayIncludeDemo />, {
+        wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
+      })
+      const repo = screen.queryByText(/Repo name/)
+      expect(repo).not.toBeInTheDocument()
+      const demoLink = await screen.findAllByText(/Codecov demo/)
+      expect(demoLink.length).toBe(1)
     })
   })
 })

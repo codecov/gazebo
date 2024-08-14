@@ -138,7 +138,7 @@ function DefaultOrgSelector() {
       fireTrial({ owner: selectedOrg })
     }
 
-    return history.push(`/${provider}/${selectedOrg}`)
+    return history.push(`/${provider}/${selectedOrg}?source=onboarding`)
   }
 
   if (userIsLoading) return null
