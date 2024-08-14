@@ -98,7 +98,7 @@ function ListRepo({ canRefetch }) {
             sortItem={sortItem}
             owner={owner}
             searchValue={params.search}
-            mayIncludeDemo={true}
+            mayIncludeDemo
           />
         )}
       </Suspense>
