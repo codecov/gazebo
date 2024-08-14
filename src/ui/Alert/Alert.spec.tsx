@@ -83,4 +83,22 @@ describe('Alert', () => {
       expect(icon).toBeInTheDocument()
     })
   })
+
+  describe('Custom Icons', () => {
+    const alert = (
+      <Alert variant={AlertOptions.INFO} customIconName="sparkles">
+        Some alert here
+      </Alert>
+    )
+    it('renders the custom icon', async () => {
+      render(alert)
+      const icon = screen.queryByText('sparkles.svg')
+      expect(icon).toBeInTheDocument()
+    })
+    it('does not render the default icon', async () => {
+      render(alert)
+      const icon = screen.queryByText('information-circle.svg')
+      expect(icon).not.toBeInTheDocument()
+    })
+  })
 })

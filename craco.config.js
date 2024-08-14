@@ -5,6 +5,7 @@ const WebpackBar = require('webpackbar')
 const { resolve } = require('path')
 
 const SentryPlugin = sentryWebpackPlugin({
+  applicationKey: 'gazebo',
   org: process.env.SENTRY_ORG || 'codecov',
   project: process.env.REACT_APP_SENTRY_PROJECT || 'gazebo',
   authToken: process.env.SENTRY_AUTH_TOKEN,
