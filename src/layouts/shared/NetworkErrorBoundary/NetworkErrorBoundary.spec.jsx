@@ -347,7 +347,7 @@ describe('NetworkErrorBoundary', () => {
       expect(tooManyRequestsError).toBeInTheDocument()
     })
 
-    it('renders return to previous page button', async () => {
+    it('renders return to login button', async () => {
       const { user } = setup()
       render(<App status={429} />, {
         wrapper: wrapper(),
@@ -356,7 +356,7 @@ describe('NetworkErrorBoundary', () => {
       const textBox = await screen.findByRole('textbox')
       await user.type(textBox, 'fail')
 
-      const button = await screen.findByText('Return to previous page')
+      const button = await screen.findByText('Return to login')
       expect(button).toBeInTheDocument()
     })
 
