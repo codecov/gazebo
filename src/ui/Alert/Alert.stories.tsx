@@ -18,6 +18,9 @@ const meta = {
       ],
       defaultValue: AlertOptions.INFO,
     },
+    customIconName: {
+      description: 'Optionally overrides the icon on the Alert',
+    },
   },
 } as Meta
 export default meta
@@ -85,6 +88,20 @@ export const AlertWarning: Story = {
       <Alert.Title>Missing uploads on HEAD</Alert.Title>
       <Alert.Description>
         Try adding an upload manually or using the CLI commands from the docs.
+      </Alert.Description>
+    </Alert>
+  ),
+}
+
+export const AlertInfoWithCustomIcon: Story = {
+  args: {
+    variant: AlertOptions.INFO,
+  },
+  render: (args) => (
+    <Alert variant={args.variant} customIconName="sparkles">
+      <Alert.Title>Sample Alert Title</Alert.Title>
+      <Alert.Description>
+        This is what a sample alert description looks like
       </Alert.Description>
     </Alert>
   ),

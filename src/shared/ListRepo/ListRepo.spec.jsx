@@ -60,8 +60,24 @@ const wrapper =
     </QueryClientProvider>
   )
 
+const mockUser = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    user: {
+      username: 'janedoe',
+    },
+    trackingMetadata: {},
+  },
+}
+
 describe('ListRepo', () => {
-  function setup({ tierValue = TierNames.PRO } = { tierValue: TierNames.PRO }) {
+  function setup(
+    { tierValue = TierNames.PRO } = { tierValue: TierNames.PRO },
+    me = mockUser
+  ) {
     const user = userEvent.setup()
 
     useFlags.mockReturnValue({
@@ -77,7 +93,13 @@ describe('ListRepo', () => {
       })
     )
 
-    return { user }
+    server.use(
+      graphql.query('CurrentUser', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(me))
+      )
+    )
+
+    return { user, me }
   }
 
   describe('renders', () => {
@@ -215,6 +237,34 @@ describe('ListRepo', () => {
       })
       const table = await screen.findByText(/ReposTableTeam/)
       expect(table).toBeInTheDocument()
+    })
+  })
+
+  describe('welcome demo alert banner', () => {
+    it('shows alert banner if it is my owner page and I came from onboarding', async () => {
+      const { me } = setup()
+      render(<ListRepo canRefetch />, {
+        wrapper: wrapper({
+          url: '/gh/janedoe?source=onboarding',
+          path: '/:provider/:owner',
+        }),
+      })
+      expect(me.me.user.username).toEqual('janedoe')
+      const alert = screen.queryByRole('alert')
+      expect(alert).toBeInTheDocument()
+    })
+
+    it('does not show alert banner if I did not come from onboarding', async () => {
+      const { me } = setup()
+      render(<ListRepo canRefetch />, {
+        wrapper: wrapper({
+          url: '/gh/janedoe',
+          path: '/:provider/:owner',
+        }),
+      })
+      expect(me.me.user.username).toEqual('janedoe')
+      const alert = screen.queryByRole('alert')
+      expect(alert).not.toBeInTheDocument()
     })
   })
 })
