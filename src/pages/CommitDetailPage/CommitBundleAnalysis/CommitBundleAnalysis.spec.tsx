@@ -319,7 +319,7 @@ describe('CommitBundleAnalysis', () => {
         render(<CommitBundleAnalysis />, { wrapper })
 
         const message = await screen.findByText(
-          'Unable to compare commits because the head commit is not found.'
+          'Unable to compare commits because the head commit was not found.'
         )
         expect(message).toBeInTheDocument()
       })
@@ -496,7 +496,7 @@ describe('CommitBundleAnalysis', () => {
           render(<CommitBundleAnalysis />, { wrapper })
 
           const message = await screen.findByText(
-            'Unable to compare commits because the head commit is not found.'
+            'Unable to compare commits because the head commit was not found.'
           )
           expect(message).toBeInTheDocument()
         })
