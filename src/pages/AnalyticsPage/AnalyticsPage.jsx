@@ -65,6 +65,7 @@ function AnalyticsPage() {
         owner={owner}
         searchValue={params?.search}
         filterValues={params?.repositories}
+        mayIncludeDemo={false}
       />
     </div>
   )

@@ -2,6 +2,8 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { DEMO_REPO } from 'shared/utils/demo'
+
 import RepoTitleLink from './RepoTitleLink'
 
 describe('RepoTitleLink', () => {
@@ -226,6 +228,29 @@ describe('RepoTitleLink', () => {
 
     it('desont render the org name', () => {
       expect(screen.queryByText(/owner1/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the repo is a demo repo', () => {
+    beforeEach(() => {
+      setup({
+        repo: {
+          ...repo,
+          isDemo: true,
+          name: DEMO_REPO.displayName,
+        },
+        showRepoOwner: false,
+        pageName: 'demoRepo',
+        disabledLink: false,
+      })
+    })
+
+    it('renders a System generated tag', () => {
+      expect(screen.getByText(/System generated/)).toBeInTheDocument()
+    })
+
+    it('is titled Codecov demo', () => {
+      expect(screen.getByText(/Codecov demo/)).toBeInTheDocument()
     })
   })
 })
