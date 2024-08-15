@@ -19,7 +19,7 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual'
 import { Dictionary } from 'lodash'
 import isNaN from 'lodash/isNaN'
 import Highlight, { defaultProps } from 'prism-react-renderer'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { memo, useLayoutEffect, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
@@ -239,7 +239,40 @@ const CodeBody = ({
   )
 }
 
-CodeBody.displayName = 'CodeBody'
+interface MemoedHighlightProps {
+  code: string
+  fileType: string
+  coverage?: Dictionary<'H' | 'M' | 'P'>
+  codeDisplayOverlayRef: React.RefObject<HTMLDivElement>
+}
+
+const MemoedHighlight = memo(
+  ({
+    code,
+    coverage,
+    fileType,
+    codeDisplayOverlayRef,
+  }: MemoedHighlightProps) => (
+    <Highlight
+      {...defaultProps}
+      code={code}
+      theme={undefined}
+      language={prismLanguageMapper(fileType)}
+    >
+      {({ tokens, getLineProps, getTokenProps }) => (
+        <CodeBody
+          tokens={tokens}
+          coverage={coverage}
+          getLineProps={getLineProps}
+          getTokenProps={getTokenProps}
+          codeDisplayOverlayRef={codeDisplayOverlayRef}
+        />
+      )}
+    </Highlight>
+  )
+)
+
+MemoedHighlight.displayName = 'MemoedHighlight'
 
 interface VirtualFileRendererProps {
   code: string
@@ -396,22 +429,12 @@ export function VirtualFileRenderer({
         }}
       >
         <div ref={widthDivRef} className="w-full">
-          <Highlight
-            {...defaultProps}
+          <MemoedHighlight
             code={code}
-            theme={undefined}
-            language={prismLanguageMapper(fileType)}
-          >
-            {({ tokens, getLineProps, getTokenProps }) => (
-              <CodeBody
-                tokens={tokens}
-                coverage={coverage}
-                getLineProps={getLineProps}
-                getTokenProps={getTokenProps}
-                codeDisplayOverlayRef={codeDisplayOverlayRef}
-              />
-            )}
-          </Highlight>
+            fileType={fileType}
+            coverage={coverage}
+            codeDisplayOverlayRef={codeDisplayOverlayRef}
+          />
         </div>
       </div>
     </div>
