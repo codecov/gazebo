@@ -6,13 +6,13 @@ import { SentryRoute } from 'sentry'
 import { useBranchBundleSummary } from 'services/bundleAnalysis'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
+import { ToggleElement } from 'ui/ToggleElement'
 
 import AssetsTable from './AssetsTable'
 import { BundleChart } from './BundleChart'
 import { BundleDetails, NoDetails } from './BundleDetails'
 import BundleSelection from './BundleSelection'
 import InfoBanner from './InfoBanner'
-import { ToggleElement } from './ToggleElement'
 import { TrendDropdown } from './TrendDropdown'
 
 const AssetEmptyTable = lazy(() => import('./AssetsTable/EmptyTable'))
