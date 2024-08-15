@@ -186,26 +186,6 @@ describe('App', () => {
   const cloudFullRouterCases = [
     [
       {
-        testLabel: 'LoginPage',
-        pathname: '/login',
-        expected: {
-          page: /LoginPage/i,
-          location: '/login',
-        },
-      },
-    ],
-    [
-      {
-        testLabel: 'LoginPage',
-        pathname: '/login/bb',
-        expected: {
-          page: /LoginPage/i,
-          location: '/login/bb',
-        },
-      },
-    ],
-    [
-      {
         testLabel: 'AccountSettings',
         pathname: '/account/gh/codecov',
         expected: {
@@ -326,6 +306,16 @@ describe('App', () => {
     ],
     [
       {
+        testLabel: 'SyncProviderPage',
+        pathname: '/sync',
+        expected: {
+          page: /SyncProviderPage/i,
+          location: '/sync',
+        },
+      },
+    ],
+    [
+      {
         testLabel: 'LoginPage',
         pathname: '/',
         expected: {
@@ -336,11 +326,21 @@ describe('App', () => {
     ],
     [
       {
-        testLabel: 'SyncProviderPage',
-        pathname: '/sync',
+        testLabel: 'LoginPage',
+        pathname: '/login',
         expected: {
-          page: /SyncProviderPage/i,
-          location: '/sync',
+          page: /LoginPage/i,
+          location: '/login',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'LoginPage',
+        pathname: '/login/bb',
+        expected: {
+          page: /LoginPage/i,
+          location: '/login/bb',
         },
       },
     ],
@@ -354,30 +354,16 @@ describe('App', () => {
         setup({ hasLoggedInUser: true, hasSession: true })
       })
 
-      // mysteriously flaky test, skip for now, see https://github.com/codecov/engineering-team/issues/2270
-      if (testLabel === 'AccountSettings') {
-        it.skip(`renders the ${testLabel} page`, async () => {
-          render(<App />, { wrapper: wrapper([pathname]) })
+      it(`renders the ${testLabel} page`, async () => {
+        render(<App />, { wrapper: wrapper([pathname]) })
 
-          await waitFor(() =>
-            expect(testLocation.pathname).toBe(expected.location)
-          )
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(expected.location)
+        )
 
-          const page = await screen.findByText(expected.page)
-          expect(page).toBeInTheDocument()
-        })
-      } else {
-        it(`renders the ${testLabel} page`, async () => {
-          render(<App />, { wrapper: wrapper([pathname]) })
-
-          await waitFor(() =>
-            expect(testLocation.pathname).toBe(expected.location)
-          )
-
-          const page = await screen.findByText(expected.page)
-          expect(page).toBeInTheDocument()
-        })
-      }
+        const page = await screen.findByText(expected.page)
+        expect(page).toBeInTheDocument()
+      })
     }
   )
 
