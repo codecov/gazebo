@@ -177,6 +177,18 @@ describe('App', () => {
       graphql.query('HasAdmins', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({}))
       }),
+      graphql.query('owner', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({ owner: { isAdmin: true } }))
+      }),
+      graphql.query('MyContexts', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetOktaConfig', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('OwnerPageData', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
       graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({}))
       })
@@ -349,8 +361,10 @@ describe('App', () => {
   describe.each(cloudFullRouterCases)(
     'cloud routing',
     ({ testLabel, pathname, expected }) => {
-      beforeEach(() => {
+      beforeAll(() => {
         config.IS_SELF_HOSTED = false
+      })
+      beforeEach(() => {
         setup({ hasLoggedInUser: true, hasSession: true })
       })
 
