@@ -72,12 +72,15 @@ const CodeBody = ({
     scrollMargin: scrollMargin ?? 0,
   })
 
+  // TODO-remove
+  console.debug(scrollMargin)
+
   useLayoutEffect(() => {
     if (!codeDisplayOverlayRef.current) return
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries?.[0]
       if (entry) {
-        setScrollMargin(entry.target.getBoundingClientRect().top)
+        setScrollMargin(Math.abs(entry.contentRect.y))
       }
     })
 
