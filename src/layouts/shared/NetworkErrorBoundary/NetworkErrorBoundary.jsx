@@ -130,6 +130,8 @@ function ResetHandler({ logoutUser = false, reset }) {
   }, [history, queryClient, reset])
 
   const handleSignOut = async () => {
+    queryClient.clear()
+    reset()
     await fetch(`${config.API_URL}/logout`, {
       method: 'POST',
       credentials: 'include',
