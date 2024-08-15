@@ -58,6 +58,7 @@ function GitHubHelpBanner() {
               hook="help finding an org"
               to={{ pageName: 'codecovGithubAppSelectTarget' }}
               isExternal={true}
+              showExternalIcon={false}
             >
               GitHub App is required
               <Icon name="chevronRight" size="sm" variant="solid" />
