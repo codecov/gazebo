@@ -354,6 +354,7 @@ describe('App', () => {
         setup({ hasLoggedInUser: true, hasSession: true })
       })
 
+      // mysteriously flaky test, skip for now, see https://github.com/codecov/engineering-team/issues/2270
       if (testLabel === 'AccountSettings') {
         it.skip(`renders the ${testLabel} page`, async () => {
           render(<App />, { wrapper: wrapper([pathname]) })
