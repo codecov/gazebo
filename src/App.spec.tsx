@@ -361,9 +361,6 @@ describe('App', () => {
   describe.each(cloudFullRouterCases)(
     'cloud routing',
     ({ testLabel, pathname, expected }) => {
-      beforeAll(() => {
-        config.IS_SELF_HOSTED = false
-      })
       beforeEach(() => {
         setup({ hasLoggedInUser: true, hasSession: true })
       })
