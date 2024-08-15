@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import React from 'react'
+import React, { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import config from 'config'
@@ -109,14 +109,16 @@ const wrapper =
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={initialEntries}>
-        {children}
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
+        <Suspense fallback={<p>Loading</p>}>
+          {children}
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </Suspense>
       </MemoryRouter>
     </QueryClientProvider>
   )
