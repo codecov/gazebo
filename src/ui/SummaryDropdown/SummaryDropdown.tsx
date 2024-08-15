@@ -70,7 +70,7 @@ const SummaryTrigger = forwardRef<
 SummaryTrigger.displayName = 'SummaryTrigger'
 
 const content = cva(
-  'overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown'
+  'data-[state=closed]:overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown'
 )
 
 interface ContentProps
