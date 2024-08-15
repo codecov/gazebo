@@ -385,7 +385,7 @@ describe('SolidStartOnboarding', () => {
       render(<SolidStartOnboarding />, { wrapper })
 
       const bodyText = await screen.findByText(
-        'The plugin requires at least one commit to be made to properly upload bundle analysis information up to Codecov.'
+        'The plugin requires at least one commit to be made to properly upload bundle analysis information to Codecov.'
       )
       expect(bodyText).toBeInTheDocument()
     })

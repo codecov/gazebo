@@ -220,7 +220,6 @@ function Routes({
         </SentryRoute>
       ) : null}
       {jsOrTsPresent ? (
-        // TODO
         <SentryRoute
           path={[
             `${path}/bundles/new`,
