@@ -129,7 +129,7 @@ describe('GitHubHelpBanner', () => {
         wrapper: wrapper(),
       })
 
-      const reSync = screen.getByText(/Resync/)
+      const reSync = screen.getByText(/resync/)
       expect(reSync).toBeInTheDocument()
 
       await user.click(reSync)
@@ -138,6 +138,78 @@ describe('GitHubHelpBanner', () => {
 
       const syncing = await screen.findByText(/Syncing your organizations.../)
       expect(syncing).toBeInTheDocument()
+    })
+  })
+
+  describe('when user clicks on share request', () => {
+    it('renders the AppInstallModal', async () => {
+      const { user } = setup()
+
+      render(<GitHubHelpBanner />, {
+        wrapper: wrapper(),
+      })
+
+      const share = await screen.findByText(/share request/)
+      expect(share).toBeInTheDocument()
+      let modal = screen.queryByText('Share GitHub app installation')
+      expect(modal).not.toBeInTheDocument()
+
+      await user.click(share)
+
+      modal = await screen.findByText('Share GitHub app installation')
+      expect(modal).toBeInTheDocument()
+    })
+
+    describe('and then clicks close in the modal', () => {
+      it('hides the AppInstallModal', async () => {
+        const { user } = setup()
+
+        render(<GitHubHelpBanner />, {
+          wrapper: wrapper(),
+        })
+
+        const share = await screen.findByText(/share request/)
+        expect(share).toBeInTheDocument()
+        let modal = screen.queryByText('Share GitHub app installation')
+        expect(modal).not.toBeInTheDocument()
+
+        await user.click(share)
+
+        modal = await screen.findByText('Share GitHub app installation')
+        expect(modal).toBeInTheDocument()
+
+        const close = await screen.findByTestId('modal-close-icon')
+
+        await user.click(close)
+
+        expect(modal).not.toBeInTheDocument()
+      })
+    })
+
+    describe('and then clicks done in the modal', () => {
+      it('hides the AppInstallModal', async () => {
+        const { user } = setup()
+
+        render(<GitHubHelpBanner />, {
+          wrapper: wrapper(),
+        })
+
+        const share = await screen.findByText(/share request/)
+        expect(share).toBeInTheDocument()
+        let modal = screen.queryByText('Share GitHub app installation')
+        expect(modal).not.toBeInTheDocument()
+
+        await user.click(share)
+
+        modal = await screen.findByText('Share GitHub app installation')
+        expect(modal).toBeInTheDocument()
+
+        const done = await screen.findByTestId('close-modal')
+
+        await user.click(done)
+
+        expect(modal).not.toBeInTheDocument()
+      })
     })
   })
 })
