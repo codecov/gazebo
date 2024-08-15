@@ -16,11 +16,15 @@ import Prism from 'prism-react-renderer/prism'
  * Docs: https://github.com/FormidableLabs/prism-react-renderer/tree/v1.3.5?tab=readme-ov-file#faq
  */
 require('prismjs/components/prism-csharp')
+require('prismjs/components/prism-dart')
 require('prismjs/components/prism-java')
+require('prismjs/components/prism-julia')
 require('prismjs/components/prism-kotlin')
 require('prismjs/components/prism-php')
+require('prismjs/components/prism-r')
 require('prismjs/components/prism-ruby')
 require('prismjs/components/prism-rust')
+require('prismjs/components/prism-scala')
 require('prismjs/components/prism-zig')
 
 const prismSupportedLanguages = new Map<string, string>([
@@ -38,7 +42,9 @@ const prismSupportedLanguages = new Map<string, string>([
   ['cpp', 'cpp'],
   ['cs', 'csharp'],
   ['css', 'css'],
+  ['dart', 'dart'],
   ['java', 'java'],
+  ['jl', 'julia'],
   ['js', 'javascript'],
   ['cjs', 'javascript'],
   ['mjs', 'javascript'],
@@ -54,10 +60,13 @@ const prismSupportedLanguages = new Map<string, string>([
   ['ocaml', 'ocaml'],
   ['php', 'php'],
   ['py', 'python'],
+  ['R', 'r'],
+  ['r', 'r'],
   ['rb', 'ruby'],
   ['reason', 'reason'],
   ['rs', 'rust'],
   ['sass', 'sass'],
+  ['scala', 'scala'],
   ['scss', 'scss'],
   ['sql', 'sql'],
   ['ts', 'typescript'],
@@ -78,6 +87,9 @@ export function prismLanguageMapper(fileName: string): Language {
 
   Sentry.captureMessage(`Unsupported language type for filename ${fileName}`, {
     fingerprint: ['unsupported-prism-language'],
+    tags: {
+      'file.extension': fileExtension,
+    },
   })
   return DEFAULT_LANGUAGE_TYPE
 }
