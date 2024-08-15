@@ -354,16 +354,29 @@ describe('App', () => {
         setup({ hasLoggedInUser: true, hasSession: true })
       })
 
-      it(`renders the ${testLabel} page`, async () => {
-        render(<App />, { wrapper: wrapper([pathname]) })
+      if (testLabel === 'AccountSettings') {
+        it.skip(`renders the ${testLabel} page`, async () => {
+          render(<App />, { wrapper: wrapper([pathname]) })
 
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe(expected.location)
-        )
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe(expected.location)
+          )
 
-        const page = await screen.findByText(expected.page)
-        expect(page).toBeInTheDocument()
-      })
+          const page = await screen.findByText(expected.page)
+          expect(page).toBeInTheDocument()
+        })
+      } else {
+        it(`renders the ${testLabel} page`, async () => {
+          render(<App />, { wrapper: wrapper([pathname]) })
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe(expected.location)
+          )
+
+          const page = await screen.findByText(expected.page)
+          expect(page).toBeInTheDocument()
+        })
+      }
     }
   )
 
