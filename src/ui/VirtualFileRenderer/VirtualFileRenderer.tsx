@@ -64,7 +64,6 @@ const CodeBody = ({
   const initializeRender = useRef(true)
   const [wrapperRef, setWrapperRef] = useState<HTMLDivElement | null>(null)
 
-  console.debug(scrollMargin)
   const virtualizer = useWindowVirtualizer({
     count: tokens.length,
     // this is the height of each line in the code block based off of not having any line wrapping, if we add line wrapping this will need to be updated to dynamically measure the height of each line.
@@ -72,6 +71,22 @@ const CodeBody = ({
     overscan: 45, // update to be based off of the height of the window
     scrollMargin: scrollMargin ?? 0,
   })
+
+  useLayoutEffect(() => {
+    if (!codeDisplayOverlayRef.current) return
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries?.[0]
+      if (entry) {
+        setScrollMargin(entry.target.getBoundingClientRect().top)
+      }
+    })
+
+    resizeObserver.observe(codeDisplayOverlayRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [codeDisplayOverlayRef, scrollMargin])
 
   useLayoutEffect(() => {
     if (!wrapperRef) return
@@ -104,9 +119,6 @@ const CodeBody = ({
     // set the parent div height to the total size of the virtualizer
     codeDisplayOverlayRef.current.style.height = `${virtualizer.getTotalSize()}px`
     codeDisplayOverlayRef.current.style.position = 'relative'
-
-    // set the scroll margin so the virtualizer knows how much to set the scroll offset by
-    setScrollMargin(codeDisplayOverlayRef.current.getBoundingClientRect().top)
 
     const index = parseInt(location.hash.slice(2), 10)
     // need to check !isNaN because parseInt return NaN if the string is not a number which is still a valid number.
