@@ -347,17 +347,37 @@ describe('NetworkErrorBoundary', () => {
       expect(tooManyRequestsError).toBeInTheDocument()
     })
 
-    it('renders return to previous page button', async () => {
+    it('renders return to login button', async () => {
       const { user } = setup()
       render(<App status={429} />, {
         wrapper: wrapper(),
       })
 
+      // Mock the global fetch function
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({}),
+        })
+      )
+
       const textBox = await screen.findByRole('textbox')
       await user.type(textBox, 'fail')
 
-      const button = await screen.findByText('Return to previous page')
+      const button = await screen.findByText('Return to login')
       expect(button).toBeInTheDocument()
+
+      await user.click(button)
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(`${config.API_URL}/logout`, {
+          method: 'POST',
+          credentials: 'include',
+        })
+      })
+
+      // Clean up the mock
+      global.fetch.mockRestore()
     })
 
     it('sends metric to sentry', async () => {
