@@ -59,6 +59,8 @@ const getInitialBundler = (path: string, urls: BundlerOptionUrls) => {
     return BUNDLER_OPTIONS.SvelteKit
   } else if (path === urls.SolidStart) {
     return BUNDLER_OPTIONS.SolidStart
+  } else {
+    return BUNDLER_OPTIONS.Vite
   }
 }
 
