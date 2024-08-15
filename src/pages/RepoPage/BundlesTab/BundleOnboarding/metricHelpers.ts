@@ -1,7 +1,14 @@
 /* eslint-disable camelcase */
 import { metrics } from 'shared/utils/metrics'
 
-type Bundlers = 'rollup' | 'vite' | 'webpack'
+type Bundlers =
+  | 'rollup'
+  | 'vite'
+  | 'webpack'
+  | 'remix'
+  | 'nuxt'
+  | 'sveltekit'
+  | 'solidstart'
 type PackageManagers = 'npm' | 'yarn' | 'pnpm'
 
 export const copiedInstallCommandMetric = (
