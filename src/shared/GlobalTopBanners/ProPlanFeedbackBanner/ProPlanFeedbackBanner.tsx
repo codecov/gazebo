@@ -18,7 +18,6 @@ const ProPlanFeedbackBanner = () => {
   const { data: trialData } = usePlanData({ provider, owner })
   const isProPlan = tierData === TierNames.PRO
   const isTrialing = trialData?.plan?.trialStatus === TrialStatuses.ONGOING
-  console.log('asdf', isProPlan, isTrialing)
 
   if (!isProPlan || isTrialing) {
     return null
