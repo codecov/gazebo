@@ -18,8 +18,8 @@ import { isProvider } from 'shared/api/helpers'
 import 'ui/Table/Table.css'
 import 'ui/FileList/FileList.css'
 
-const AccountSettings = lazy(() => import('./pages/AccountSettings'))
-const AdminSettings = lazy(() => import('./pages/AdminSettings'))
+import AccountSettings from './pages/AccountSettings'
+import AdminSettings from './pages/AdminSettings'
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CommitDetailPage = lazy(() => import('./pages/CommitDetailPage'))
 const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))

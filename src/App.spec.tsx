@@ -180,7 +180,10 @@ describe('App', () => {
         return res(ctx.status(200), ctx.data({}))
       }),
       graphql.query('owner', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ owner: { isAdmin: true } }))
+        return res(
+          ctx.status(200),
+          ctx.data({ me: { owner: { isAdmin: true } } })
+        )
       }),
       graphql.query('MyContexts', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({}))
