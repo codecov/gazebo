@@ -70,7 +70,7 @@ const wrapper =
     </QueryClientProvider>
   )
 
-describe('TeamPlanFeedbackBanner', () => {
+describe('ProPlanFeedbackBanner', () => {
   function setup() {
     const user = userEvent.setup()
     const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
