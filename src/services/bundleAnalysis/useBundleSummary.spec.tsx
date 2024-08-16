@@ -7,6 +7,7 @@ import { useBundleSummary } from './useBundleSummary'
 
 const mockRepoOverview = {
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,

@@ -19,7 +19,6 @@ import RepoPageTabs, { useRepoTabs } from './RepoPageTabs'
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   componentTab?: boolean
-  onboardingFailedTests?: boolean
 }>
 
 const mockRepoOverview = ({
@@ -36,6 +35,7 @@ const mockRepoOverview = ({
 
   return {
     owner: {
+      isCurrentUserActivated: true,
       repository: {
         __typename: 'Repository',
         private: isRepoPrivate,
@@ -128,7 +128,6 @@ interface SetupArgs {
   tierName?: TTierNames
   isCurrentUserPartOfOrg?: boolean
   componentTab?: boolean
-  onboardingFailedTests?: boolean
   testAnalyticsEnabled?: boolean
 }
 
@@ -141,12 +140,10 @@ describe('RepoPageTabs', () => {
     tierName = TierNames.PRO,
     isCurrentUserPartOfOrg = true,
     componentTab = true,
-    onboardingFailedTests = false,
     testAnalyticsEnabled = false,
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       componentTab,
-      onboardingFailedTests,
     })
 
     server.use(
@@ -237,8 +234,8 @@ describe('RepoPageTabs', () => {
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
 
-        const betaBadge = await screen.findByText('beta')
-        expect(betaBadge).toBeInTheDocument()
+        const betaBadges = await screen.findAllByText('beta')
+        expect(betaBadges).toHaveLength(2)
       })
     })
 
@@ -254,8 +251,8 @@ describe('RepoPageTabs', () => {
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
 
-        const betaBadge = await screen.findByText('beta')
-        expect(betaBadge).toBeInTheDocument()
+        const betaBadges = await screen.findAllByText('beta')
+        expect(betaBadges).toHaveLength(2)
       })
     })
 
@@ -400,10 +397,9 @@ describe('RepoPageTabs', () => {
   })
 
   describe('Failed tests tab', () => {
-    it('renders the failed tests onboarding when flag enabled and onboarding failed tests', async () => {
+    it('renders the failed tests onboarding when test analytics is not enabled', async () => {
       setup({
         coverageEnabled: false,
-        onboardingFailedTests: true,
         testAnalyticsEnabled: false,
       })
       render(<RepoPageTabs refetchEnabled={false} />, {
@@ -416,10 +412,9 @@ describe('RepoPageTabs', () => {
       expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/tests/new')
     })
 
-    it('renders the failed tests page when flag enabled and test analytics enabled', async () => {
+    it('renders the failed tests page when test analytics enabled', async () => {
       setup({
         coverageEnabled: false,
-        onboardingFailedTests: true,
         testAnalyticsEnabled: true,
       })
       render(<RepoPageTabs refetchEnabled={false} />, {
@@ -435,7 +430,6 @@ describe('RepoPageTabs', () => {
     it('renders beta badge', async () => {
       setup({
         coverageEnabled: false,
-        onboardingFailedTests: true,
       })
       render(<RepoPageTabs refetchEnabled={false} />, {
         wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
@@ -444,23 +438,22 @@ describe('RepoPageTabs', () => {
       const betaBadge = await screen.findByText('beta')
       expect(betaBadge).toBeInTheDocument()
     })
+  })
 
-    it('does not render failed tests tab if feature flag off', async () => {
-      setup({
-        coverageEnabled: false,
-        onboardingFailedTests: false,
-        testAnalyticsEnabled: true,
-      })
-      render(<RepoPageTabs refetchEnabled={false} />, {
-        wrapper: wrapper('/gh/codecov/test-repo/tests'),
-      })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      const tab = screen.queryByText('Tests')
-      expect(tab).not.toBeInTheDocument()
+  it('does not render the tab when isCurrentUserPartOfOrg is set to false', async () => {
+    setup({
+      isCurrentUserPartOfOrg: false,
     })
+
+    render(<RepoPageTabs refetchEnabled={false} />, {
+      wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
+    })
+
+    const loading = await screen.findByText('Loading')
+    await waitForElementToBeRemoved(loading)
+
+    const tab = screen.queryByText('Tests')
+    expect(tab).not.toBeInTheDocument()
   })
 })
 

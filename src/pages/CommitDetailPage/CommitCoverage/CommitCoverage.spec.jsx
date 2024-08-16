@@ -307,6 +307,7 @@ const mockRepoOverview = ({
   isPrivate = false,
 }) => ({
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: isPrivate,

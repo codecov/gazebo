@@ -116,6 +116,7 @@ const mockTreeData = {
 
 const mockOverview = {
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,

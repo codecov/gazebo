@@ -7,6 +7,7 @@ import { useBranchBundlesNames } from './useBranchBundlesNames'
 
 const mockRepoOverview = {
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,

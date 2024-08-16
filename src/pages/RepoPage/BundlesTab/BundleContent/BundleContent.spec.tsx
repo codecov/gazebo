@@ -12,6 +12,7 @@ jest.mock('./BundleSelection', () => () => <div>BundleSelection</div>)
 
 const mockRepoOverview = {
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,

@@ -123,7 +123,12 @@ describe('BundleSelection', () => {
       graphql.query('GetRepoOverview', (req, res, ctx) =>
         res(
           ctx.status(200),
-          ctx.data({ owner: { repository: mockRepoOverview } })
+          ctx.data({
+            owner: {
+              isCurrentUserActivated: true,
+              repository: mockRepoOverview,
+            },
+          })
         )
       ),
       graphql.query('GetBranch', (req, res, ctx) => {

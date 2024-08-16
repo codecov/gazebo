@@ -13,6 +13,7 @@ jest.mock('shared/featureFlags')
 
 const mockOverview = (privateRepo = false) => ({
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: privateRepo,

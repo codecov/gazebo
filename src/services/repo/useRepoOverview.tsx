@@ -3,10 +3,7 @@ import { z } from 'zod'
 
 import Api from 'shared/api'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from './schemas'
+import { RepoNotFoundErrorSchema } from './schemas'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
@@ -22,10 +19,10 @@ const RepositorySchema = z.object({
 const RequestSchema = z.object({
   owner: z
     .object({
+      isCurrentUserActivated: z.boolean().nullable(),
       repository: z.discriminatedUnion('__typename', [
         RepositorySchema,
         RepoNotFoundErrorSchema,
-        RepoOwnerNotActivatedErrorSchema,
       ]),
     })
     .nullable(),
@@ -33,6 +30,7 @@ const RequestSchema = z.object({
 
 const query = `query GetRepoOverview($owner: String!, $repo: String!) {
   owner(username: $owner) {
+    isCurrentUserActivated
     repository(name: $repo) {
       __typename
       ... on Repository {
@@ -45,9 +43,6 @@ const query = `query GetRepoOverview($owner: String!, $repo: String!) {
         languages
       }
       ... on NotFoundError {
-        message
-      }
-      ... on OwnerNotActivatedError {
         message
       }
     }
@@ -104,10 +99,6 @@ export function useRepoOverview({
           })
         }
 
-        if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return null
-        }
-
         if (!data?.owner?.repository) {
           return null
         }
@@ -135,6 +126,7 @@ export function useRepoOverview({
           bundleAnalysisEnabled,
           jsOrTsPresent,
           testAnalyticsEnabled,
+          isCurrentUserActivated: data.owner.isCurrentUserActivated,
         }
       })
     },

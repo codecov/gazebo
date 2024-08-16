@@ -320,6 +320,7 @@ describe('FileExplorer', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              isCurrentUserActivated: true,
               repository: {
                 __typename: 'Repository',
                 private: false,
@@ -329,6 +330,7 @@ describe('FileExplorer', () => {
                 bundleAnalysisEnabled: true,
                 languages: [],
                 testAnalyticsEnabled: true,
+                isCurrentUserActivated: true,
               },
             },
           })
