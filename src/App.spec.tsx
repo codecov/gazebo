@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import React from 'react'
+import React, { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import config from 'config'
@@ -109,14 +109,16 @@ const wrapper =
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={initialEntries}>
-        {children}
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
+        <Suspense fallback={<p>Loading</p>}>
+          {children}
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </Suspense>
       </MemoryRouter>
     </QueryClientProvider>
   )
@@ -177,6 +179,21 @@ describe('App', () => {
       graphql.query('HasAdmins', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({}))
       }),
+      graphql.query('owner', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ me: { owner: { isAdmin: true } } })
+        )
+      }),
+      graphql.query('MyContexts', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetOktaConfig', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('OwnerPageData', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
       graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({}))
       })
@@ -184,26 +201,6 @@ describe('App', () => {
   }
 
   const cloudFullRouterCases = [
-    [
-      {
-        testLabel: 'LoginPage',
-        pathname: '/login',
-        expected: {
-          page: /LoginPage/i,
-          location: '/login',
-        },
-      },
-    ],
-    [
-      {
-        testLabel: 'LoginPage',
-        pathname: '/login/bb',
-        expected: {
-          page: /LoginPage/i,
-          location: '/login/bb',
-        },
-      },
-    ],
     [
       {
         testLabel: 'AccountSettings',
@@ -326,6 +323,16 @@ describe('App', () => {
     ],
     [
       {
+        testLabel: 'SyncProviderPage',
+        pathname: '/sync',
+        expected: {
+          page: /SyncProviderPage/i,
+          location: '/sync',
+        },
+      },
+    ],
+    [
+      {
         testLabel: 'LoginPage',
         pathname: '/',
         expected: {
@@ -336,11 +343,21 @@ describe('App', () => {
     ],
     [
       {
-        testLabel: 'SyncProviderPage',
-        pathname: '/sync',
+        testLabel: 'LoginPage',
+        pathname: '/login',
         expected: {
-          page: /SyncProviderPage/i,
-          location: '/sync',
+          page: /LoginPage/i,
+          location: '/login',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'LoginPage',
+        pathname: '/login/bb',
+        expected: {
+          page: /LoginPage/i,
+          location: '/login/bb',
         },
       },
     ],
@@ -350,34 +367,19 @@ describe('App', () => {
     'cloud routing',
     ({ testLabel, pathname, expected }) => {
       beforeEach(() => {
-        config.IS_SELF_HOSTED = false
         setup({ hasLoggedInUser: true, hasSession: true })
       })
 
-      // mysteriously flaky test, skip for now, see https://github.com/codecov/engineering-team/issues/2270
-      if (testLabel === 'AccountSettings') {
-        it.skip(`renders the ${testLabel} page`, async () => {
-          render(<App />, { wrapper: wrapper([pathname]) })
+      it(`renders the ${testLabel} page`, async () => {
+        render(<App />, { wrapper: wrapper([pathname]) })
 
-          await waitFor(() =>
-            expect(testLocation.pathname).toBe(expected.location)
-          )
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(expected.location)
+        )
 
-          const page = await screen.findByText(expected.page)
-          expect(page).toBeInTheDocument()
-        })
-      } else {
-        it(`renders the ${testLabel} page`, async () => {
-          render(<App />, { wrapper: wrapper([pathname]) })
-
-          await waitFor(() =>
-            expect(testLocation.pathname).toBe(expected.location)
-          )
-
-          const page = await screen.findByText(expected.page)
-          expect(page).toBeInTheDocument()
-        })
-      }
+        const page = await screen.findByText(expected.page)
+        expect(page).toBeInTheDocument()
+      })
     }
   )
 
