@@ -24,27 +24,25 @@ const ProPlanFeedbackBanner = () => {
   }
 
   return (
-    <>
-      <TopBanner localStorageKey={PRO_PLAN_FEEDBACK_BANNER_KEY}>
-        <TopBanner.Start>
-          <p className="items-center gap-1 md:flex">
-            &#127775; We&apos;d love your thoughts and feedback in this
-            <A
-              to={{ pageName: 'proPlanFeedbackSurvey' }}
-              isExternal
-              hook="pro-plan-feedback-link"
-            >
-              1 minute survey.
-            </A>
-          </p>
-        </TopBanner.Start>
-        <TopBanner.End>
-          <TopBanner.DismissButton>
-            <span className="opacity-100"> Dismiss </span>
-          </TopBanner.DismissButton>
-        </TopBanner.End>
-      </TopBanner>
-    </>
+    <TopBanner localStorageKey={PRO_PLAN_FEEDBACK_BANNER_KEY}>
+      <TopBanner.Start>
+        <p className="items-center gap-1 md:flex">
+          &#127775; We&apos;d love your thoughts and feedback in this
+          <A
+            to={{ pageName: 'proPlanFeedbackSurvey' }}
+            isExternal
+            hook="pro-plan-feedback-link"
+          >
+            1 minute survey.
+          </A>
+        </p>
+      </TopBanner.Start>
+      <TopBanner.End>
+        <TopBanner.DismissButton>
+          <span className="opacity-100"> Dismiss </span>
+        </TopBanner.DismissButton>
+      </TopBanner.End>
+    </TopBanner>
   )
 }
 
