@@ -63,7 +63,12 @@ describe('prismLanguageMapper', () => {
       expect(Sentry.captureMessage).toHaveBeenCalled()
       expect(Sentry.captureMessage).toHaveBeenCalledWith(
         'Unsupported language type for filename file.omgwhatisdis',
-        { fingerprint: ['unsupported-prism-language'] }
+        {
+          fingerprint: ['unsupported-prism-language'],
+          tags: {
+            'file.extension': 'omgwhatisdis',
+          },
+        }
       )
     })
 
