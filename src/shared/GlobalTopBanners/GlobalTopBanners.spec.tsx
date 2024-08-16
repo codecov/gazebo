@@ -6,6 +6,7 @@ jest.mock('./RequestInstallBanner', () => () => 'RequestInstallBanner')
 jest.mock('./TrialBanner', () => () => 'TrialBanner')
 jest.mock('./TeamPlanFeedbackBanner', () => () => 'TeamPlanFeedbackBanner')
 jest.mock('./ProPlanFeedbackBanner', () => () => 'ProPlanFeedbackBanner')
+jest.mock('./BundleFeedbackBanner', () => () => 'BundleFeedbackBanner')
 jest.mock('./OktaBanners', () => () => 'OktaBanners')
 
 describe('GlobalTopBanners', () => {
@@ -31,6 +32,13 @@ describe('GlobalTopBanners', () => {
   })
 
   it('renders pro plan feedback banner', async () => {
+    render(<GlobalTopBanners />)
+
+    const banner = await screen.findByText(/ProPlanFeedbackBanner/)
+    expect(banner).toBeInTheDocument()
+  })
+
+  it('renders bundle feedback banner', async () => {
     render(<GlobalTopBanners />)
 
     const banner = await screen.findByText(/ProPlanFeedbackBanner/)

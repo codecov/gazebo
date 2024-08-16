@@ -482,5 +482,10 @@ export function useStaticNavLinks() {
       text: 'Pro plan feedback survey',
       isExternalLink: true,
     },
+    bundleFeedbackSurvey: {
+      path: () => `https://forms.gle/8fzZrwWEaBRz4ufD9`,
+      text: 'Bundle analysis feedback survey',
+      isExternalLink: true,
+    },
   }
 }
