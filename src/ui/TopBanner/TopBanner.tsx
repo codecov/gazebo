@@ -146,14 +146,16 @@ const TopBannerRoot: React.FC<React.PropsWithChildren<TopBannerProps>> = ({
     <TopBannerContext.Provider
       value={{ variant, localStorageKey, setHideBanner }}
     >
-      <div
-        data-testid="top-banner-root"
-        className={cs(
-          'h-fit w-full px-4 py-2 lg:inline-flex lg:min-h-[38px]',
-          variants[variant].bgColor
-        )}
-      >
-        {children}
+      <div>
+        <div
+          data-testid="top-banner-root"
+          className={cs(
+            'h-fit w-full px-4 py-2 lg:inline-flex lg:min-h-[38px]',
+            variants[variant].bgColor
+          )}
+        >
+          {children}
+        </div>
       </div>
     </TopBannerContext.Provider>
   )

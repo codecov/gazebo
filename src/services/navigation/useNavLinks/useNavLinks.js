@@ -765,17 +765,6 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/bundles/new/webpack`,
       text: 'Webpack',
     },
-    teamPlanFeedbackSurvey: {
-      path: () =>
-        `https://docs.google.com/forms/d/e/1FAIpQLSeoMHPyECewV7X3UaT-uUxZCmYy1T6hEX_aecCD2ppPHGSvUw/viewform`,
-      text: 'Team plan feedback survey',
-      isExternalLink: true,
-    },
-    proPlanFeedbackSurvey: {
-      path: () => `https://forms.gle/nf37sRAtyQeXVTdr8`,
-      text: 'Pro plan feedback survey',
-      isExternalLink: true,
-    },
     failedTests: {
       path: (
         { provider = p, owner = o, repo = r, branch = undefined } = {
