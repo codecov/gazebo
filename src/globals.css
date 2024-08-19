@@ -118,7 +118,7 @@
       --color-ds-blue-nonary: 0, 113, 194;
 
       --color-ds-gray-default: 14, 27, 41;
-      --color-ds-gray-primary: 255, 255, 255;
+      --color-ds-gray-primary: 47, 51, 60;
       --color-ds-gray-secondary: 234, 235, 239;
       --color-ds-gray-tertiary: 216, 220, 226;
       --color-ds-gray-quaternary: 153, 159, 167;
@@ -138,7 +138,7 @@
       --color-ds-primary-red: 245, 32, 32;
       --color-ds-primary-purple: 172, 57, 207;
       --color-ds-primary-yellow: 244, 176, 27;
-      --color-ds-primary-base: 14, 27, 41;
+      --color-ds-primary-base: 47, 51, 60;
 
       --color-ds-coverage-partial: 255, 249, 216;
 
