@@ -100,64 +100,64 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --color-ds-pink-default: 145, 32, 172;
-      --color-ds-pink-secondary: 213, 94, 199;
-      --color-ds-pink-tertiary: 177, 45, 150;
+      --color-ds-pink-default: 240, 31, 122;
+      --color-ds-pink-secondary: 255, 74, 137;
+      --color-ds-pink-tertiary: 209, 13, 98;
 
-      --color-ds-blue-default: 12, 104, 186;
-      --color-ds-blue-light: 113, 201, 238;
-      --color-ds-blue-medium: 19, 132, 214;
-      --color-ds-blue-darker: 7, 91, 168;
-      --color-ds-blue-quinary: 3, 68, 122;
-      --color-ds-blue-senary: 2, 34, 64;
-      --color-ds-blue-selected: 214, 235, 252;
-      --color-ds-blue-septenary: 22, 39, 56;
-      --color-ds-blue-nonary: 237, 246, 252;
+      --color-ds-blue-default: 0, 136, 233;
+      --color-ds-blue-light: 82, 183, 255;
+      --color-ds-blue-medium: 0, 149, 255;
+      --color-ds-blue-darker: 0, 113, 194;
+      --color-ds-blue-quinary: 1, 88, 150;
+      --color-ds-blue-senary: 0, 45, 77;
+      --color-ds-blue-selected: 230, 241, 255;
+      --color-ds-blue-septenary: 34, 47, 61;
+      --color-ds-blue-nonary: 242, 248, 253;
 
-      --color-ds-gray-default: 25, 33, 44;
-      --color-ds-gray-primary: 244, 245, 250;
-      --color-ds-gray-secondary: 229, 232, 237;
-      --color-ds-gray-tertiary: 211, 217, 224;
-      --color-ds-gray-quaternary: 160, 165, 175;
-      --color-ds-gray-quinary: 116, 124, 136;
-      --color-ds-gray-senary: 69, 80, 93;
-      --color-ds-gray-octonary: 25, 33, 44;
+      --color-ds-gray-default: 14, 27, 41;
+      --color-ds-gray-primary: 247, 248, 251;
+      --color-ds-gray-secondary: 234, 235, 239;
+      --color-ds-gray-tertiary: 216, 220, 226;
+      --color-ds-gray-quaternary: 153, 159, 167;
+      --color-ds-gray-quinary: 104, 115, 126;
+      --color-ds-gray-senary: 57, 71, 84;
+      --color-ds-gray-octonary: 14, 27, 41;
 
-      --color-gray-300: 184, 191, 198;
+      --color-gray-300: 199, 203, 209;
 
-      --color-orange-100: 255, 241, 223;
-      --color-orange-500: 239, 123, 33;
+      --color-orange-100: 255, 248, 233;
+      --color-orange-500: 249, 115, 22;
 
-      --color-green-100: 235, 250, 240;
-      --color-green-500: 76, 171, 84;
+      --color-green-100: 242, 252, 243;
+      --color-green-500: 66, 159, 73;
 
-      --color-ds-primary-green: 161, 47, 194;
-      --color-ds-primary-red: 230, 29, 31;
-      --color-ds-primary-purple: 27, 168, 110;
-      --color-ds-primary-yellow: 237, 164, 25;
-      --color-ds-primary-base: 25, 33, 44;
+      --color-ds-primary-green: 33, 181, 119;
+      --color-ds-primary-red: 245, 32, 32;
+      --color-ds-primary-purple: 172, 57, 207;
+      --color-ds-primary-yellow: 244, 176, 27;
+      --color-ds-primary-base: 14, 27, 41;
 
-      --color-ds-coverage-partial: 251, 245, 214;
+      --color-ds-coverage-partial: 255, 249, 216;
 
-      --color-ds-error-quinary: 255, 130, 130;
-      --color-ds-error-nonary: 75, 12, 12;
+      --color-ds-error-quinary: 255, 155, 155;
+      --color-ds-error-nonary: 89, 8, 8;
 
-      --color-codecov-red: 184, 38, 32;
-      --color-codecov-orange: 250, 179, 110;
-      --color-codecov-footer: 13, 23, 35;
-      --color-codecov-code: 156, 118, 85;
+      --color-codecov-red: 206, 32, 25;
+      --color-codecov-orange: 255, 194, 115;
+      --color-codecov-footer: 7, 17, 27;
+      --color-codecov-code: 166, 127, 89;
 
-      --color-warning-100: 255, 229, 199;
-      --color-warning-900: 80, 60, 23;
+      --color-warning-100: 255, 235, 210;
+      --color-warning-900: 71, 54, 16;
 
-      --color-success-500: 106, 255, 149;
-      --color-success-100: 215, 255, 227;
+      --color-success-500: 115, 255, 158;
+      --color-success-100: 222, 255, 232;
 
-      --color-error-100: 255, 240, 240;
+      --color-error-100: 255, 247, 247;
 
-      --color-info-100: 214, 237, 252;
-      --color-info-500: 147, 208, 255;
-      --color-info-900: 15, 71, 125;
+      --color-info-100: 223, 242, 255;
+      --color-info-500: 163, 217, 255;
+      --color-info-900: 1, 59, 101;
 
       --color-github: 45, 45, 45;
       --color-gitlab: 242, 98, 42;
