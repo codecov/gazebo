@@ -15,7 +15,7 @@
     @apply flex flex-col h-full;
   }
 
-  :root {
+  .lightMode {
     --color-ds-pink-default: 240, 31, 122;
     --color-ds-pink-secondary: 255, 74, 137;
     --color-ds-pink-tertiary: 209, 13, 98;
@@ -101,77 +101,97 @@
     --chart-5: 0, 100%, 80%;
   }
 
+  .darkMode {
+    --color-ds-pink-default: 240, 31, 122;
+    --color-ds-pink-secondary: 255, 74, 137;
+    --color-ds-pink-tertiary: 209, 13, 98;
+
+    --color-ds-blue-default: 0, 136, 233;
+    --color-ds-blue-light: 82, 183, 255;
+    --color-ds-blue-medium: 0, 149, 255;
+    --color-ds-blue-darker: 96, 165, 250;
+    --color-ds-blue-quinary: 1, 88, 150;
+    --color-ds-blue-senary: 0, 45, 77;
+    --color-ds-blue-selected: 230, 241, 255;
+    --color-ds-blue-septenary: 34, 47, 61;
+    --color-ds-blue-nonary: 0, 113, 194;
+
+    --color-ds-gray-default: 14, 27, 41;
+    --color-ds-gray-primary: 255, 255, 255;
+    --color-ds-gray-secondary: 234, 235, 239;
+    --color-ds-gray-tertiary: 216, 220, 226;
+    --color-ds-gray-quaternary: 153, 159, 167;
+    --color-ds-gray-quinary: 210, 212, 215;
+    --color-ds-gray-senary: 210, 212, 215;
+    --color-ds-gray-octonary: 14, 27, 41;
+
+    --color-gray-300: 199, 203, 209;
+
+    --color-orange-100: 249, 115, 22;
+    --color-orange-500: 249, 115, 22;
+
+    --color-green-100: 66, 159, 73;
+    --color-green-500: 66, 159, 73;
+
+    --color-ds-primary-green: 33, 181, 119;
+    --color-ds-primary-red: 245, 32, 32;
+    --color-ds-primary-purple: 172, 57, 207;
+    --color-ds-primary-yellow: 244, 176, 27;
+    --color-ds-primary-base: 47, 51, 60;
+
+    --color-ds-coverage-partial: 255, 249, 216;
+
+    --color-ds-error-quinary: 255, 155, 155;
+    --color-ds-error-nonary: 89, 8, 8;
+
+    --color-codecov-red: 206, 32, 25;
+    --color-codecov-orange: 255, 194, 115;
+    --color-codecov-footer: 7, 17, 27;
+    --color-codecov-code: 166, 127, 89;
+
+    --color-warning-100: 255, 235, 210;
+    --color-warning-900: 71, 54, 16;
+
+    --color-success-500: 115, 255, 158;
+    --color-success-100: 222, 255, 232;
+
+    --color-error-100: 245, 32, 32;
+
+    --color-info-100: 223, 242, 255;
+    --color-info-500: 163, 217, 255;
+    --color-info-900: 1, 59, 101;
+
+    --color-github: 45, 45, 45;
+    --color-gitlab: 242, 98, 42;
+    --color-bitbucket: 2, 75, 186;
+    --color-okta: 31, 31, 31;
+
+    --color-app-background: 27, 30, 36;
+    --color-app-container: 22, 24, 29;
+    --color-app-primary-text: 173, 179, 194;
+    --color-app-secondary-text: 210, 212, 215;
+  }
+
+  body {
+    @apply lightMode;
+  }
+
+  body.dark {
+    @apply darkMode;
+  }
+
+  /* new body theme can be applied here */
+
   @media (prefers-color-scheme: dark) {
-    :root {
-      --color-ds-pink-default: 240, 31, 122;
-      --color-ds-pink-secondary: 255, 74, 137;
-      --color-ds-pink-tertiary: 209, 13, 98;
-
-      --color-ds-blue-default: 0, 136, 233;
-      --color-ds-blue-light: 82, 183, 255;
-      --color-ds-blue-medium: 0, 149, 255;
-      --color-ds-blue-darker: 96, 165, 250;
-      --color-ds-blue-quinary: 1, 88, 150;
-      --color-ds-blue-senary: 0, 45, 77;
-      --color-ds-blue-selected: 230, 241, 255;
-      --color-ds-blue-septenary: 34, 47, 61;
-      --color-ds-blue-nonary: 0, 113, 194;
-
-      --color-ds-gray-default: 14, 27, 41;
-      --color-ds-gray-primary: 255, 255, 255;
-      --color-ds-gray-secondary: 234, 235, 239;
-      --color-ds-gray-tertiary: 216, 220, 226;
-      --color-ds-gray-quaternary: 153, 159, 167;
-      --color-ds-gray-quinary: 210, 212, 215;
-      --color-ds-gray-senary: 210, 212, 215;
-      --color-ds-gray-octonary: 14, 27, 41;
-
-      --color-gray-300: 199, 203, 209;
-
-      --color-orange-100: 249, 115, 22;
-      --color-orange-500: 249, 115, 22;
-
-      --color-green-100: 66, 159, 73;
-      --color-green-500: 66, 159, 73;
-
-      --color-ds-primary-green: 33, 181, 119;
-      --color-ds-primary-red: 245, 32, 32;
-      --color-ds-primary-purple: 172, 57, 207;
-      --color-ds-primary-yellow: 244, 176, 27;
-      --color-ds-primary-base: 47, 51, 60;
-
-      --color-ds-coverage-partial: 255, 249, 216;
-
-      --color-ds-error-quinary: 255, 155, 155;
-      --color-ds-error-nonary: 89, 8, 8;
-
-      --color-codecov-red: 206, 32, 25;
-      --color-codecov-orange: 255, 194, 115;
-      --color-codecov-footer: 7, 17, 27;
-      --color-codecov-code: 166, 127, 89;
-
-      --color-warning-100: 255, 235, 210;
-      --color-warning-900: 71, 54, 16;
-
-      --color-success-500: 115, 255, 158;
-      --color-success-100: 222, 255, 232;
-
-      --color-error-100: 245, 32, 32;
-
-      --color-info-100: 223, 242, 255;
-      --color-info-500: 163, 217, 255;
-      --color-info-900: 1, 59, 101;
-
-      --color-github: 45, 45, 45;
-      --color-gitlab: 242, 98, 42;
-      --color-bitbucket: 2, 75, 186;
-      --color-okta: 31, 31, 31;
-
-      --color-app-background: 27, 30, 36;
-      --color-app-container: 22, 24, 29;
-      --color-app-primary-text: 173, 179, 194;
-      --color-app-secondary-text: 210, 212, 215;
+    body {
+      @apply darkMode;
     }
+
+    body.light {
+      @apply lightMode;
+    }
+
+    /* new body theme added above should be applied here as well to cover specificity */
   }
 }
 

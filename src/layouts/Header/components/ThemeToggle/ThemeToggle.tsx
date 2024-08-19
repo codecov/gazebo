@@ -7,17 +7,13 @@ enum Theme {
 }
 
 const ThemeToggle: React.FC = () => {
-  const [theme, setTheme] = useState<Theme>(() => {
+  const [theme, setTheme] = useState<Theme | null>(() => {
     const storedTheme = localStorage.getItem('theme') as Theme
     if (storedTheme) {
       return storedTheme
     }
 
-    const systemPrefersDark = window.matchMedia(
-      '(prefers-color-scheme: dark)'
-    ).matches
-
-    return systemPrefersDark ? Theme.DARK : Theme.LIGHT
+    return null
   })
 
   useEffect(() => {
@@ -26,19 +22,33 @@ const ThemeToggle: React.FC = () => {
     if (theme) {
       document.body.classList.add(theme)
     }
-
-    localStorage.setItem('theme', theme)
   }, [theme])
 
   const toggleTheme = () => {
-    setTheme((prevTheme) =>
-      prevTheme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT
-    )
+    const systemPrefersDark = window.matchMedia(
+      '(prefers-color-scheme: dark)'
+    ).matches
+
+    setTheme((prevTheme) => {
+      const newTheme = prevTheme
+        ? prevTheme === Theme.LIGHT
+          ? Theme.DARK
+          : Theme.LIGHT
+        : systemPrefersDark
+          ? Theme.LIGHT
+          : Theme.DARK
+      localStorage.setItem('theme', newTheme)
+      return newTheme
+    })
   }
+
+  const systemPrefersDark = window.matchMedia(
+    '(prefers-color-scheme: dark)'
+  ).matches
 
   return (
     <button onClick={toggleTheme} style={{ margin: '8px' }}>
-      {theme === Theme.LIGHT ? (
+      {theme === Theme.LIGHT || (!theme && !systemPrefersDark) ? (
         <Icon variant="outline" name="moon" />
       ) : (
         <Icon variant="outline" name="sun" />
