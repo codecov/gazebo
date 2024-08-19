@@ -58,12 +58,10 @@ const CodeBody = ({
 }: CodeBodyProps) => {
   const history = useHistory()
   const location = useLocation()
-  const [wrapperWidth, setWrapperWidth] = useState<number | '100%'>('100%')
-  const [scrollMargin, setScrollMargin] = useState<number>(0)
 
-  const initializeRender = useRef(true)
-  const [wrapperRef, setWrapperRef] = useState<HTMLDivElement | null>(null)
-
+  const [scrollMargin, setScrollMargin] = useState<number | undefined>(
+    undefined
+  )
   const virtualizer = useWindowVirtualizer({
     count: tokens.length,
     // this is the height of each line in the code block based off of not having any line wrapping, if we add line wrapping this will need to be updated to dynamically measure the height of each line.
@@ -72,15 +70,23 @@ const CodeBody = ({
     scrollMargin: scrollMargin ?? 0,
   })
 
-  // TODO-remove
-  console.debug(scrollMargin)
-
+  /**
+   * This effect is used to update the scroll margin of the virtualizer when the
+   * code display overlay is resized. This is needed because the virtualizer
+   * needs to know the offset of the code display overlay from the top of the
+   * window to correctly calculate the scroll position of the virtual items.
+   * We do the calculation to account for the scroll position of the window
+   * incase the user has scrolled down the page, and resizes the window
+   * afterwards.
+   */
   useLayoutEffect(() => {
     if (!codeDisplayOverlayRef.current) return
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries?.[0]
       if (entry) {
-        setScrollMargin(Math.abs(entry.contentRect.y))
+        setScrollMargin(
+          entry.target.getBoundingClientRect().top + window.scrollY
+        )
       }
     })
 
@@ -89,8 +95,10 @@ const CodeBody = ({
     return () => {
       resizeObserver.disconnect()
     }
-  }, [codeDisplayOverlayRef, scrollMargin])
+  }, [codeDisplayOverlayRef])
 
+  const [wrapperRef, setWrapperRef] = useState<HTMLDivElement | null>(null)
+  const [wrapperWidth, setWrapperWidth] = useState<number | '100%'>('100%')
   useLayoutEffect(() => {
     if (!wrapperRef) return
 
@@ -108,8 +116,15 @@ const CodeBody = ({
     }
   }, [wrapperRef])
 
-  // we're disabling this rule here because we need this effect to run on every render until the initializeRender flag is set to false
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const initializeRender = useRef(true)
+  /**
+   * we're disabling this rule here because we need this effect to run on every
+   * render until the initializeRender flag is set to false. Adding in a dep
+   * array with the recommended deps with the lint rule will work while in dev
+   * mode. However, that's only because effects are run twice in dev mode while
+   * in production they aren't so it does not work as expected.
+   * eslint-disable-next-line react-hooks/exhaustive-deps
+   */
   useLayoutEffect(() => {
     if (!initializeRender.current) {
       return
