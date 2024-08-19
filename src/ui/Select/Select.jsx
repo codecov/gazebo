@@ -15,8 +15,8 @@ const SelectClasses = {
   root: 'relative',
   item: 'block cursor-pointer py-1 px-3 text-sm font-normal',
   button:
-    'flex justify-between items-center w-full rounded bg-white text-left whitespace-nowrap disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
-  ul: 'overflow-hidden rounded-bl rounded-br bg-white border-ds-gray-tertiary absolute w-full z-20 max-h-80 min-w-fit',
+    'flex justify-between items-center w-full rounded bg-ds-background text-left whitespace-nowrap disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
+  ul: 'overflow-hidden rounded-bl rounded-br bg-ds-background border-ds-gray-tertiary absolute w-full z-20 max-h-80 min-w-fit',
   loadMoreTrigger: 'relative top-[-65px] invisible block leading-[0]',
 }
 
@@ -28,10 +28,10 @@ const UlVariantClass = {
 }
 
 const ButtonVariantClass = {
-  default: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
-  gray: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-gray-primary`,
+  default: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-ds-background disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
+  gray: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-ds-background disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-gray-primary`,
   text: `flex-init text-ds-blue`,
-  defaultOrgSelector: `w-full h-12 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
+  defaultOrgSelector: `w-full h-12 px-3 border border-ds-gray-tertiary rounded-md bg-ds-background disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
 }
 
 function getSearchPlaceholder(resourceName) {

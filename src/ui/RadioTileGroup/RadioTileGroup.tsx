@@ -120,7 +120,7 @@ function RadioButtonCircle({ selected = false }: { selected?: boolean }) {
   return selected ? (
     <div className="flex size-4 items-center justify-center rounded-full bg-ds-blue-darker">
       <div
-        className="size-1 rounded-full bg-white"
+        className="size-1 rounded-full bg-ds-container"
         data-testid="radio-button-circle-selected"
       />
     </div>
