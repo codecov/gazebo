@@ -4,7 +4,7 @@ import { Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
-import { useOwner } from 'services/user'
+import { useOwner, useUser } from 'services/user'
 import LoadingLogo from 'ui/LoadingLogo'
 import Sidemenu from 'ui/Sidemenu'
 
@@ -29,6 +29,9 @@ interface URLParams {
 function ConfigTab() {
   const { owner } = useParams<URLParams>()
   const { data: currentOwner } = useOwner({ username: owner })
+  const { data: currentUser } = useUser()
+  const isPersonalSettings =
+    currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
   if (!currentOwner?.isCurrentUserPartOfOrg) return <NotFound />
 
@@ -43,7 +46,7 @@ function ConfigTab() {
     },
     { pageName: 'configYaml' },
     { pageName: 'configBadge' },
-    { pageName: 'achievements' },
+    ...(!isPersonalSettings ? [{ pageName: 'achievements' }] : []),
   ]
 
   return (
@@ -63,12 +66,14 @@ function ConfigTab() {
             <SentryRoute path="/:provider/:owner/:repo/config/badge" exact>
               <BadgesAndGraphsTab />
             </SentryRoute>
-            <SentryRoute
-              path="/:provider/:owner/:repo/config/achievements"
-              exact
-            >
-              <AchievementsTab />
-            </SentryRoute>
+            {!isPersonalSettings ? (
+              <SentryRoute
+                path="/:provider/:owner/:repo/config/achievements"
+                exact
+              >
+                <AchievementsTab />
+              </SentryRoute>
+            ) : null}
             <SentryRoute path="/:provider/:owner/:repo/config/*">
               <NotFound />
             </SentryRoute>
