@@ -37,6 +37,7 @@ describe('TokensTeam', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              isCurrentUserActivated: true,
               repository: {
                 __typename: 'Repository',
                 activated: true,

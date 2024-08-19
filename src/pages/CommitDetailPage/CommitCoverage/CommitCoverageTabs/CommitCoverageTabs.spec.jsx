@@ -12,6 +12,7 @@ import CommitCoverageTabs from './CommitCoverageTabs'
 
 const mockRepoSettings = (isPrivate) => ({
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       defaultBranch: 'main',

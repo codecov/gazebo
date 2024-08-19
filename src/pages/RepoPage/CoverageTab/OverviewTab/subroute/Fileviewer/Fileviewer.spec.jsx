@@ -13,6 +13,7 @@ jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
 const mockRepoSettings = (isPrivate) => ({
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       activated: true,

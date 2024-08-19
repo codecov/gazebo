@@ -12,6 +12,7 @@ import CoverageTab from './CoverageTab'
 
 const mockRepoSettingsTeam = {
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       defaultBranch: 'master',

@@ -31,6 +31,7 @@ afterAll(() => server.close())
 
 const mockNotFoundError = {
   owner: {
+    isCurrentUserActivated: null,
     repository: {
       __typename: 'NotFoundError',
       message: 'repo not found',
@@ -38,17 +39,9 @@ const mockNotFoundError = {
   },
 }
 
-const mockOwnerNotActivatedError = {
-  owner: {
-    repository: {
-      __typename: 'OwnerNotActivatedError',
-      message: 'owner not activated',
-    },
-  },
-}
-
 const mockIncorrectResponse = {
   owner: {
+    isCurrentUserActivated: false,
     repository: {
       invalid: 'invalid',
     },
@@ -57,6 +50,7 @@ const mockIncorrectResponse = {
 
 const mockResponse = {
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       defaultBranch: 'master',
@@ -75,15 +69,12 @@ const mockResponse = {
 describe('useRepoSettingsTeam', () => {
   function setup({
     isNotFoundError = false,
-    isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
   }) {
     server.use(
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
-        } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
         } else if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockIncorrectResponse))
         }
@@ -109,6 +100,7 @@ describe('useRepoSettingsTeam', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
+            isCurrentUserActivated: true,
             repository: {
               __typename: 'Repository',
               defaultBranch: 'master',
@@ -157,23 +149,6 @@ describe('useRepoSettingsTeam', () => {
           expect.objectContaining({
             status: 404,
             data: {},
-          })
-        )
-      )
-    })
-  })
-
-  describe('when owner is not activated', () => {
-    it('returns an owner not activated error', async () => {
-      setup({ isOwnerNotActivatedError: true })
-      const { result } = renderHook(() => useRepoSettingsTeam(), {
-        wrapper,
-      })
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-      await waitFor(() =>
-        expect(result.current.error).toEqual(
-          expect.objectContaining({
-            status: 403,
           })
         )
       )

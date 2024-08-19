@@ -66,7 +66,14 @@ function ComponentsTab() {
           })
         }
       >
-        <BackfillBanners />
+        {repoSettings?.isCurrentUserActivated ? (
+          <BackfillBanners />
+        ) : (
+          <div className="mt-3">
+            <hr />
+            <p className="p-3">No data to display</p>
+          </div>
+        )}
       </Header>
       <div className="flex flex-1 flex-col gap-4">
         {showComponentsTable({
