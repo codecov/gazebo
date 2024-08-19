@@ -35,9 +35,9 @@ const ThemeToggle: React.FC = () => {
   return (
     <button onClick={toggleTheme} style={{ margin: '8px' }}>
       {theme === Theme.LIGHT ? (
-        <Icon variant="outline" name="sun" />
-      ) : (
         <Icon variant="outline" name="moon" />
+      ) : (
+        <Icon variant="outline" name="sun" />
       )}
     </button>
   )
