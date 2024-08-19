@@ -81,10 +81,10 @@
     /* --color-okta: 0, 41, 122; */
     --color-okta: 25, 25, 25;
 
-    --color-app-background: white;
-    --color-app-container: white;
+    --color-app-background: 255, 255, 255;
+    --color-app-container: 255, 255, 255;
     --color-app-primary-text: 14, 27, 41;
-    --color-app-secondary-text: black;
+    --color-app-secondary-text: 0, 0, 0;
 
     /* Sentry User Feedback widget styles */
     --widget-accent-background: rgb(var(--color-ds-blue-darker));
@@ -169,8 +169,8 @@
 
       --color-app-background: 27, 30, 36;
       --color-app-container: 22, 24, 29;
-      --color-app-primary-text: white;
-      --color-app-secondary-text: white;
+      --color-app-primary-text: 255, 255, 255;
+      --color-app-secondary-text: 255, 255, 255;
     }
   }
 }

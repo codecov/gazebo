@@ -135,7 +135,7 @@ function ContextSwitcher({
       <button
         type="button"
         className={cs(
-          '"relative flex gap-1 items-center text-xl font-semibold w-full rounded-md bg-ds-container py-1.5 text-left text-gray-900 focus:outline-none"',
+          '"relative flex gap-1 items-center text-xl font-semibold w-full rounded-md py-1.5 text-left text-gray-900 focus:outline-none"',
           {
             [buttonVariant.outlined]:
               'ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 shadow-sm',
