@@ -81,6 +81,8 @@
     /* --color-okta: 0, 41, 122; */
     --color-okta: 25, 25, 25;
 
+    --color-app-background: white;
+
     /* Sentry User Feedback widget styles */
     --widget-accent-background: rgb(var(--color-ds-blue-darker));
     --widget-background-hover: rgb(var(--color-ds-blue-quinary));
@@ -161,6 +163,8 @@
       --color-gitlab: 242, 98, 42;
       --color-bitbucket: 2, 75, 186;
       --color-okta: 31, 31, 31;
+
+      --color-app-background: 27, 30, 36;
     }
   }
 }

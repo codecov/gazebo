@@ -22,7 +22,7 @@ const ThemeToggle: React.FC = () => {
   })
 
   useEffect(() => {
-    document.body.className = theme
+    // document.body.className = theme
     localStorage.setItem('theme', theme)
   }, [theme])
 

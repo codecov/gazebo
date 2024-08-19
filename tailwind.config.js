@@ -29,6 +29,7 @@ module.exports = {
       colors: {
         transparent: `transparent`,
         ds: {
+          background: withOpacity('--color-app-background'),
           pink: {
             DEFAULT: withOpacity('--color-ds-pink-default'),
             secondary: withOpacity('--color-ds-pink-secondary'),
