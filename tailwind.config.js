@@ -33,6 +33,7 @@ module.exports = {
           container: withOpacity('--color-app-container'),
           defaultText: withOpacity('--color-app-primary-text'),
           secondaryText: withOpacity('--color-app-secondary-text'),
+          borderLine: withOpacity('--color-app-border-line'),
           pink: {
             DEFAULT: withOpacity('--color-ds-pink-default'),
             secondary: withOpacity('--color-ds-pink-secondary'),

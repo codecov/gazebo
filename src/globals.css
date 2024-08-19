@@ -116,14 +116,14 @@
     --color-ds-blue-septenary: 34, 47, 61;
     --color-ds-blue-nonary: 0, 113, 194;
 
-    --color-ds-gray-default: 14, 27, 41;
-    --color-ds-gray-primary: 255, 255, 255;
+    --color-ds-gray-default: 234, 235, 239;
+    --color-ds-gray-primary: 47, 51, 60;
     --color-ds-gray-secondary: 234, 235, 239;
     --color-ds-gray-tertiary: 216, 220, 226;
     --color-ds-gray-quaternary: 153, 159, 167;
-    --color-ds-gray-quinary: 210, 212, 215;
-    --color-ds-gray-senary: 210, 212, 215;
-    --color-ds-gray-octonary: 14, 27, 41;
+    --color-ds-gray-quinary: 104, 115, 126;
+    --color-ds-gray-senary: 57, 71, 84;
+    --color-ds-gray-octonary: 234, 235, 239;
 
     --color-gray-300: 199, 203, 209;
 
@@ -168,8 +168,8 @@
 
     --color-app-background: 27, 30, 36;
     --color-app-container: 22, 24, 29;
-    --color-app-primary-text: 173, 179, 194;
-    --color-app-secondary-text: 210, 212, 215;
+    --color-app-primary-text: 210, 212, 215;
+    --color-app-secondary-text: 173, 179, 194;
   }
 
   body {
