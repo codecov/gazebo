@@ -25,7 +25,7 @@ export default function DateRangePicker({
     <div>
       <Popover.Root>
         <Popover.Trigger asChild>
-          <button className="flex h-8 w-52 items-center justify-between whitespace-nowrap rounded-md border border-ds-gray-tertiary bg-white px-3 text-center focus:outline-1 disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary disabled:text-ds-gray-quaternary">
+          <button className="flex h-8 w-52 items-center justify-between whitespace-nowrap rounded-md border border-ds-gray-tertiary bg-ds-container px-3 text-center focus:outline-1 disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary disabled:text-ds-gray-quaternary">
             {date?.from ? (
               date.to ? (
                 <>
@@ -43,7 +43,7 @@ export default function DateRangePicker({
         <Popover.Portal>
           <Popover.Content
             align="start"
-            className="w-auto rounded-md border border-ds-gray-tertiary bg-white px-1 py-0"
+            className="w-auto rounded-md border border-ds-gray-tertiary bg-ds-container px-1 py-0"
           >
             <div className="flex flex-row-reverse">
               <Popover.Close className="p-1">
@@ -80,8 +80,8 @@ export default function DateRangePicker({
                 day_selected:
                   'bg-ds-pink text-white hover:bg-ds-pink-secondary hover:text-white focus:bg-ds-pink focus:white',
                 day_today: 'bg-ds-pink-tertiary text-white',
-                day_outside: 'text-black opacity-50',
-                day_disabled: 'text-black opacity-50',
+                day_outside: 'text-ds-secondaryText opacity-50',
+                day_disabled: 'text-ds-secondaryText opacity-50',
                 day_range_middle:
                   'aria-selected:bg-ds-pink-secondary aria-selected:text-white aria-selected:hover:bg-ds-pink',
                 day_hidden: 'invisible',

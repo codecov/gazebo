@@ -83,7 +83,8 @@
 
     --color-app-background: white;
     --color-app-container: white;
-    --color-app-text: 14, 27, 41;
+    --color-app-primary-text: 14, 27, 41;
+    --color-app-secondary-text: black;
 
     /* Sentry User Feedback widget styles */
     --widget-accent-background: rgb(var(--color-ds-blue-darker));
@@ -168,7 +169,8 @@
 
       --color-app-background: 27, 30, 36;
       --color-app-container: 22, 24, 29;
-      --color-app-text: white;
+      --color-app-primary-text: white;
+      --color-app-secondary-text: white;
     }
   }
 }

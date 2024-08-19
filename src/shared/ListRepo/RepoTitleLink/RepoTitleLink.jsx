@@ -31,7 +31,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
             variant="solid"
             name={getRepoIconName({ activated, isRepoPrivate, active })}
           />
-          <span className="ml-2.5 text-sm text-black">
+          <span className="ml-2.5 text-sm text-ds-secondaryText">
             {showRepoOwner && `${repo?.author?.username} / `}
             <span className="font-semibold">{repo.name}</span>
           </span>
@@ -54,7 +54,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
           variant="solid"
           name={getRepoIconName({ activated, isRepoPrivate, active })}
         />
-        <span className="ml-2.5 mr-1.5 text-sm text-black">
+        <span className="ml-2.5 mr-1.5 text-sm text-ds-secondaryText">
           {showRepoOwner && `${repo?.author?.username} / `}
           <span className="font-semibold">{repo.name}</span>
         </span>

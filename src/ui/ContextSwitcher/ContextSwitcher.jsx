@@ -135,7 +135,7 @@ function ContextSwitcher({
       <button
         type="button"
         className={cs(
-          '"relative flex gap-1 items-center text-xl font-semibold w-full rounded-md bg-white py-1.5 text-left text-gray-900 focus:outline-none"',
+          '"relative flex gap-1 items-center text-xl font-semibold w-full rounded-md bg-ds-container py-1.5 text-left text-gray-900 focus:outline-none"',
           {
             [buttonVariant.outlined]:
               'ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 shadow-sm',
@@ -160,7 +160,7 @@ function ContextSwitcher({
       </button>
       <ul
         className={cs(
-          'absolute z-10 max-h-64 w-full overflow-y-auto rounded-md bg-white shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none',
+          'absolute z-10 max-h-64 w-full overflow-y-auto rounded-md bg-ds-background shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none',
           { hidden: !toggle }
         )}
         tabIndex="-1"

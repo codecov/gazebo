@@ -12,7 +12,7 @@ const variantClasses = {
   large: 'border border-ds-gray-secondary rounded p-12',
   upgradeForm: 'border border-ds-gray-secondary rounded p-12',
   cancel: 'border border-codecov-red px-12 py-10',
-  old: 'border border-ds-gray-secondary bg-white rounded-md',
+  old: 'border border-ds-gray-secondary bg-ds-container rounded-md',
 }
 
 // TODO: enhance as per https://github.com/codecov/gazebo/pull/1433#discussion_r918864691

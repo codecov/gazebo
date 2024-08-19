@@ -34,7 +34,7 @@ function ToggleHeader({ showHitCount = false, noBottomBorder = false }) {
 
   return (
     <div
-      className={`flex w-full flex-1 flex-wrap items-start gap-2 bg-white sm:flex-row sm:items-center md:mb-1 lg:w-auto lg:flex-none ${noBottomBorderStyle} border-ds-gray-tertiary`}
+      className={`flex w-full flex-1 flex-wrap items-start gap-2 bg-ds-container sm:flex-row sm:items-center md:mb-1 lg:w-auto lg:flex-none ${noBottomBorderStyle} border-ds-gray-tertiary`}
     >
       <div className="flex gap-2 pt-2">
         <TitleHitCount showHitCount={showHitCount} />

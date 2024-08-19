@@ -23,7 +23,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
   title,
 }) => {
   return (
-    <div className="rounded bg-white">
+    <div className="rounded bg-ds-container">
       <header className="flex items-center justify-between px-4 pt-4">
         <h2 className={cn('text-3xl font-semibold', customHeaderClassname)}>
           {title}

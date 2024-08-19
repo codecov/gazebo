@@ -59,28 +59,28 @@ const variantClasses = {
   github: `
     justify-center font-semibold
     border border-solid border-github
-    bg-github hover:bg-white
+    bg-github hover:bg-ds-container
     text-white hover:text-github
     transition-colors duration-75 ease-in
   `,
   gitlab: `
     justify-center font-semibold
     border border-solid border-gitlab
-    bg-gitlab hover:bg-white
+    bg-gitlab hover:bg-ds-container
     text-white hover:text-gitlab
     transition-colors duration-75 ease-in
   `,
   bitbucket: `
     justify-center font-semibold
     border border-solid border-bitbucket
-    bg-bitbucket hover:bg-white
+    bg-bitbucket hover:bg-ds-container
     text-white hover:text-bitbucket
     transition-colors duration-75 ease-in
   `,
   okta: `
     justify-center font-semibold
     border border-solid border-okta
-    bg-okta hover:bg-white
+    bg-okta hover:bg-ds-container
     text-white hover:text-okta
     transition-colors duration-75 ease-in
   `,

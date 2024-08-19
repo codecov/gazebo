@@ -41,14 +41,14 @@ const Title = ({
       <div className="flex flex-col">
         {/* @ts-ignore */}
         <A to={{ pageName: 'commit', options: { commit: commitid, flags } }}>
-          <h2 className="text-sm font-semibold text-black">
+          <h2 className="text-sm font-semibold text-ds-secondaryText">
             {commitMessage()}
           </h2>
         </A>
         <p className="text-xs">
           {/* @ts-ignore */}
           <A to={{ pageName: 'owner' }}>
-            <span className="text-black">{author?.username}</span>
+            <span className="text-ds-secondaryText">{author?.username}</span>
           </A>
           {createdAt && (
             <span className="text-ds-gray-quinary">
