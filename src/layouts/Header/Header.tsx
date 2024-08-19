@@ -10,6 +10,7 @@ import GuestHeader from './components/GuestHeader'
 import HelpDropdown from './components/HelpDropdown'
 import Navigator from './components/Navigator'
 import SeatDetails from './components/SeatDetails'
+import ThemeToggle from './components/ThemeToggle'
 import UserDropdown from './components/UserDropdown'
 
 function Header() {
@@ -38,6 +39,7 @@ function Header() {
                 </Suspense>
               </div>
             ) : null}
+            <ThemeToggle />
             <HelpDropdown />
             <UserDropdown />
           </div>
