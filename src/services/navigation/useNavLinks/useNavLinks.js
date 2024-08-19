@@ -819,5 +819,18 @@ export function useNavLinks() {
       text: 'Okta access',
       isExternalLink: false,
     },
+    achievements: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        return `/${provider}/${owner}/${repo}/config/achievements`
+      },
+      text: 'Achievements',
+      isExternalLink: false,
+    },
   }
 }

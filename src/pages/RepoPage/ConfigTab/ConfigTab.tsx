@@ -14,6 +14,7 @@ const NotFound = lazy(() => import('../../NotFound'))
 const GeneralTab = lazy(() => import('./tabs/GeneralTab'))
 const YamlTab = lazy(() => import('./tabs/YamlTab'))
 const BadgesAndGraphsTab = lazy(() => import('./tabs/BadgesAndGraphsTab'))
+const AchievementsTab = lazy(() => import('./tabs/AchievementsTab'))
 
 const tabLoading = (
   <div className="flex size-full items-center justify-center">
@@ -42,6 +43,7 @@ function ConfigTab() {
     },
     { pageName: 'configYaml' },
     { pageName: 'configBadge' },
+    { pageName: 'achievements' },
   ]
 
   return (
@@ -60,6 +62,12 @@ function ConfigTab() {
             </SentryRoute>
             <SentryRoute path="/:provider/:owner/:repo/config/badge" exact>
               <BadgesAndGraphsTab />
+            </SentryRoute>
+            <SentryRoute
+              path="/:provider/:owner/:repo/config/achievements"
+              exact
+            >
+              <AchievementsTab />
             </SentryRoute>
             <SentryRoute path="/:provider/:owner/:repo/config/*">
               <NotFound />
