@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
 import Icon from 'ui/Icon'
-
 enum Theme {
   LIGHT = 'light',
   DARK = 'dark',
@@ -22,7 +21,12 @@ const ThemeToggle: React.FC = () => {
   })
 
   useEffect(() => {
-    // document.body.className = theme
+    document.body.classList.remove(Theme.LIGHT, Theme.DARK)
+
+    if (theme) {
+      document.body.classList.add(theme)
+    }
+
     localStorage.setItem('theme', theme)
   }, [theme])
 
