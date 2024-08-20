@@ -59,6 +59,7 @@ module.exports = {
             quinary: withOpacity('--color-ds-gray-quinary'),
             senary: withOpacity('--color-ds-gray-senary'),
             octonary: withOpacity('--color-ds-gray-octonary'),
+            summaryContainer: withOpacity('--color-ds-summary-dropdown'),
           },
           primary: {
             green: withOpacity('--color-ds-primary-green'),
@@ -140,6 +141,10 @@ module.exports = {
         bitbucket: withOpacity('--color-bitbucket'),
         okta: withOpacity('--color-okta'),
         oktaText: withOpacity('--color-okta-text'),
+        modal: {
+          header: withOpacity('--color-modal-header'),
+          footer: withOpacity('--color-modal-footer'),
+        },
       },
       screens: {
         print: { raw: 'print' },
