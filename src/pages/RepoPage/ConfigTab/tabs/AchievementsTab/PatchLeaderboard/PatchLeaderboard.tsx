@@ -101,8 +101,8 @@ const PatchLeaderboard = () => {
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <p>
-          Awarded for maintaining an average patch coverage above [95%] across
-          all PRs in the repo over the last 30 days.
+          Awarded for maintaining an average patch coverage across all PRs in
+          the repo over the last 30 days.
         </p>
         <table className="tableui border">
           <colgroup>
