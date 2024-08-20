@@ -17,6 +17,7 @@ module.exports = {
     './public/*.html',
   ],
   mode: 'jit',
+  darkMode: 'selector',
   theme: {
     container: {
       center: true,
