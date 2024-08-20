@@ -90,12 +90,15 @@ const prismSupportedLanguages = new Map<string, string>([
   ['sol', 'solidity'],
   ['sql', 'sql'],
   ['swift', 'swift'],
+  // svelte does not have full support yet - may look into this third party
+  // https://github.com/PrismJS/prism/issues/2090
+  ['svelte', 'markup'],
   ['ts', 'typescript'],
   ['tsx', 'tsx'],
   ['vb', 'visual-basic'],
   ['vba', 'visual-basic'],
   ['vbs', 'visual-basic'],
-  // does not have full support yet
+  // vue does not have full support yet
   // https://github.com/PrismJS/prism/issues/1665
   ['vue', 'markup'],
   ['wasm', 'wasm'],
