@@ -75,7 +75,6 @@ const prismSupportedLanguages = new Map<string, string>([
   ['ocaml', 'ocaml'],
   ['php', 'php'],
   ['py', 'python'],
-  ['R', 'r'],
   ['r', 'r'],
   ['ps1', 'powershell'],
   ['psm1', 'powershell'],
