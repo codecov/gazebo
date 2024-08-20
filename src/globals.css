@@ -76,10 +76,12 @@
     --color-info-900: 1, 59, 101;
 
     --color-github: 51, 51, 51;
+    --color-github-text: 255, 255, 255;
     --color-gitlab: 252, 109, 38;
     --color-bitbucket: 0, 82, 204;
     /* --color-okta: 0, 41, 122; */
     --color-okta: 25, 25, 25;
+    --color-okta-text: 255, 255, 255;
 
     --color-app-background: 255, 255, 255;
     --color-app-container: 255, 255, 255;
@@ -161,10 +163,12 @@
     --color-info-500: 163, 217, 255;
     --color-info-900: 1, 59, 101;
 
-    --color-github: 45, 45, 45;
+    --color-github: 255, 255, 255;
+    --color-github-text: 14, 27, 41;
     --color-gitlab: 242, 98, 42;
     --color-bitbucket: 2, 75, 186;
-    --color-okta: 31, 31, 31;
+    --color-okta: 255, 255, 255;
+    --color-okta-text: 14, 27, 41;
 
     --color-app-background: 27, 30, 36;
     --color-app-container: 22, 24, 29;

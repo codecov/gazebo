@@ -138,9 +138,11 @@ module.exports = {
           900: withOpacity('--color-info-900'),
         },
         github: withOpacity('--color-github'),
+        githubText: withOpacity('--color-github-text'),
         gitlab: withOpacity('--color-gitlab'),
         bitbucket: withOpacity('--color-bitbucket'),
         okta: withOpacity('--color-okta'),
+        oktaText: withOpacity('--color-okta-text'),
       },
       screens: {
         print: { raw: 'print' },
