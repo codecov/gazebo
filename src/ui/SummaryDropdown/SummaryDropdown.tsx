@@ -43,7 +43,7 @@ const SummaryItem = forwardRef<
 SummaryItem.displayName = 'SummaryItem'
 
 const trigger = cva(
-  'flex w-full items-center gap-2 bg-ds-gray-primary px-2 py-4 [&[data-state=open]>span:first-child]:rotate-90'
+  'flex w-full items-center gap-2 bg-ds-gray-summaryContainer px-2 py-4 [&[data-state=open]>span:first-child]:rotate-90'
 )
 
 interface TriggerProps

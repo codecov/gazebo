@@ -102,6 +102,9 @@
     --chart-3: 41, 91%, 53%;
     --chart-4: 286, 61%, 52%;
     --chart-5: 0, 100%, 80%;
+
+    /* summary dropdown */
+    --color-ds-summary-dropdown: 247, 248, 251;
   }
 
   .darkMode {
@@ -176,6 +179,9 @@
     --color-app-text-primary: 210, 212, 215;
     --color-app-text-secondary: 173, 179, 194;
     --color-app-border-line: 47, 51, 60;
+
+    /* summary dropdown */
+    --color-ds-summary-dropdown: 22, 24, 29;
   }
 
   body {

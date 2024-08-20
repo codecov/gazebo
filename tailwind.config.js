@@ -59,6 +59,7 @@ module.exports = {
             quinary: withOpacity('--color-ds-gray-quinary'),
             senary: withOpacity('--color-ds-gray-senary'),
             octonary: withOpacity('--color-ds-gray-octonary'),
+            summaryContainer: withOpacity('--color-ds-summary-dropdown'),
           },
           primary: {
             green: withOpacity('--color-ds-primary-green'),
