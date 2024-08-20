@@ -70,7 +70,7 @@ module.exports = {
             base: withOpacity('--color-ds-primary-base'),
           },
           coverage: {
-            covered: withOpacity('--color-success-100'),
+            covered: withOpacity('--color-ds-coverage-covered'),
             uncovered: withOpacity('--color-error-100'),
             partial: withOpacity('--color-ds-coverage-partial'),
           },

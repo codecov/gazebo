@@ -10,13 +10,13 @@ const coverageSelect = cva(
     variants: {
       coverage: {
         [LINE_STATE.COVERED]: [
-          'font-regular border-ds-primary-green bg-ds-coverage-covered dark:bg-opacity-20',
+          'font-regular border-ds-primary-green bg-ds-coverage-covered',
         ],
         [LINE_STATE.UNCOVERED]: [
           'border-r-2 border-ds-primary-red bg-ds-coverage-uncovered font-bold dark:bg-opacity-20',
         ],
         [LINE_STATE.PARTIAL]: [
-          'border-r-2 border-dotted border-ds-primary-yellow bg-ds-coverage-partial font-bold dark:bg-opacity-20',
+          'border-r-2 border-dotted border-ds-primary-yellow bg-ds-coverage-partial font-bold',
         ],
       },
     },

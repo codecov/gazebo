@@ -54,6 +54,7 @@
     --color-ds-primary-base: 14, 27, 41;
 
     --color-ds-coverage-partial: 255, 249, 216;
+    --color-ds-coverage-covered: 222, 255, 232;
 
     --color-ds-error-quinary: 255, 155, 155;
     --color-ds-error-nonary: 89, 8, 8;
@@ -148,7 +149,8 @@
     --color-ds-primary-yellow: 244, 176, 27;
     --color-ds-primary-base: 47, 51, 60;
 
-    --color-ds-coverage-partial: 255, 249, 216;
+    --color-ds-coverage-partial: 128, 108, 4;
+    --color-ds-coverage-covered: 0, 64, 37;
 
     --color-ds-error-quinary: 255, 155, 155;
     --color-ds-error-nonary: 89, 8, 8;
