@@ -1,1 +1,1 @@
-export { PatchLeaderboard } from './PatchLeaderboard'
+export { default } from './PatchLeaderboard'

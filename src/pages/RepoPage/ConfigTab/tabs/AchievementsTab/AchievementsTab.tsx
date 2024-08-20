@@ -1,10 +1,14 @@
+import { lazy } from 'react'
 import { useParams } from 'react-router-dom'
 
 import badges from 'assets/svg/badges.svg'
 import A from 'ui/A'
 
 import { useAchievements } from './hooks/useAchievements'
-import { PatchLeaderboard } from './PatchLeaderboard'
+
+const CoverageLeaderboard = lazy(() => import('./CoverageLeaderboard'))
+const PatchLeaderboard = lazy(() => import('./PatchLeaderboard'))
+const PullsLeaderboard = lazy(() => import('./PullsLeaderboard'))
 
 interface URLParams {
   provider: string
@@ -62,6 +66,8 @@ function AchievementsTab() {
       </p>
       <hr />
       <PatchLeaderboard />
+      <CoverageLeaderboard />
+      <PullsLeaderboard />
     </div>
   )
 }

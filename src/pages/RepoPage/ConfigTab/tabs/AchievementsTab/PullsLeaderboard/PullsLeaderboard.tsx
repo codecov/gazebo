@@ -24,13 +24,13 @@ type Contributor = {
   avatarUrl?: string
 }
 
-type PatchLeaderboardTableColumn = {
+type PullsLeaderboardTableColumn = {
   rank: number
   contributor: Contributor
   value: string
 }
 
-const columnHelper = createColumnHelper<PatchLeaderboardTableColumn>()
+const columnHelper = createColumnHelper<PullsLeaderboardTableColumn>()
 const columns = [
   columnHelper.accessor('rank', {
     header: 'Rank',
@@ -49,7 +49,7 @@ const columns = [
     },
   }),
   columnHelper.accessor('value', {
-    header: 'Patch Coverage %',
+    header: 'PRs merged',
     cell: (cell) => cell.renderValue(),
   }),
 ]
@@ -60,7 +60,7 @@ const Loader = () => (
   </div>
 )
 
-const PatchLeaderboard = () => {
+const PullsLeaderboard = () => {
   const { provider, owner, repo } = useParams<URLParams>()
 
   const { data, isLoading } = useAchievements({
@@ -74,7 +74,7 @@ const PatchLeaderboard = () => {
       return []
     }
     const leaderboard = data.leaderboards.find(
-      (achievement) => achievement?.name === 'PATCH_COVERAGE_AVERAGE'
+      (achievement) => achievement?.name === 'PR_COUNT'
     )
     if (!leaderboard) {
       return []
@@ -84,31 +84,31 @@ const PatchLeaderboard = () => {
       id: index,
       rank: index + 1,
       contributor: entry?.author,
-      value: `${entry?.value?.toFixed(2)}%`,
+      value: entry?.value.toString(),
     }))
   }, [data])
 
   const table = useReactTable({
     columns,
     data: tableData,
-    getCoreRowModel: getCoreRowModel<PatchLeaderboardTableColumn>(),
+    getCoreRowModel: getCoreRowModel<PullsLeaderboardTableColumn>(),
   })
 
   return (
     <Card>
       <Card.Header>
-        <Card.Title size="base">Top 5 Patch Perfectionists</Card.Title>
+        <Card.Title size="base">Top 5 PR Powerhouse</Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <p>
-          Awarded for maintaining an average patch coverage above [95%] across
-          all PRs in the repo over the last 30 days.
+          Awarded for cracking most PRs across all PRs in the repo over the last
+          30 days.
         </p>
         <table className="tableui border">
           <colgroup>
             <col />
             <col />
-            <col className="sm:w-1/6" />
+            <col className="sm:w-1/12" />
           </colgroup>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -161,4 +161,4 @@ const PatchLeaderboard = () => {
   )
 }
 
-export default PatchLeaderboard
+export default PullsLeaderboard
