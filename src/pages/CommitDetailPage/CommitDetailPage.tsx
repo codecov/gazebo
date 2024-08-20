@@ -125,7 +125,7 @@ const CommitDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4 px-3 sm:px-0">
+    <div className="flex flex-col px-3 sm:px-0">
       <Header />
       {displayMode === DISPLAY_MODE.BOTH ? (
         <SummaryDropdown type="multiple" defaultValue={defaultDropdown}>

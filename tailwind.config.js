@@ -10,7 +10,6 @@ function withOpacity(variableName) {
 }
 
 module.exports = {
-  darkMode: ['selector'],
   content: [
     './src/**/*.{css,js,jsx,ts,tsx}',
     './src/*.{css,js,jsx,ts,tsx}',
@@ -72,7 +71,7 @@ module.exports = {
           },
           coverage: {
             covered: withOpacity('--color-ds-coverage-covered'),
-            uncovered: withOpacity('--color-error-100'),
+            uncovered: withOpacity('--color-ds-coverage-uncovered'),
             partial: withOpacity('--color-ds-coverage-partial'),
           },
           error: {
