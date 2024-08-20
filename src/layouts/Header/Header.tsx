@@ -4,6 +4,7 @@ import config from 'config'
 
 import { useImpersonate } from 'services/impersonate'
 import { useUser } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
 
 import AdminLink from './components/AdminLink'
 import GuestHeader from './components/GuestHeader'
@@ -16,6 +17,12 @@ import UserDropdown from './components/UserDropdown'
 function Header() {
   const { isImpersonating } = useImpersonate()
   const { data: currentUser } = useUser()
+
+  const { darkMode } = useFlags({
+    darkMode: false,
+  })
+
+  console.log(darkMode)
 
   return (
     <header>
@@ -39,7 +46,7 @@ function Header() {
                 </Suspense>
               </div>
             ) : null}
-            <ThemeToggle />
+            {darkMode && <ThemeToggle />}
             <HelpDropdown />
             <UserDropdown />
           </div>
