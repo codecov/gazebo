@@ -70,6 +70,27 @@ const CodeBody = ({
     scrollMargin: scrollMargin ?? 0,
   })
 
+  const [wrapperRefState, setWrapperRefState] = useState<HTMLDivElement | null>(
+    null
+  )
+  const [wrapperWidth, setWrapperWidth] = useState<number | '100%'>('100%')
+  useLayoutEffect(() => {
+    if (!wrapperRefState) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries?.[0]
+      if (entry) {
+        setWrapperWidth(entry.contentRect.width)
+      }
+    })
+
+    resizeObserver.observe(wrapperRefState)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [wrapperRefState])
+
   /**
    * This effect is used to update the scroll margin of the virtualizer when the
    * code display overlay is resized. This is needed because the virtualizer
@@ -81,6 +102,7 @@ const CodeBody = ({
    */
   useEffect(() => {
     if (!codeDisplayOverlayRef.current) return
+
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries?.[0]
       if (entry) {
@@ -97,35 +119,8 @@ const CodeBody = ({
     }
   }, [codeDisplayOverlayRef])
 
-  const [wrapperRef, setWrapperRef] = useState<HTMLDivElement | null>(null)
-  const [wrapperWidth, setWrapperWidth] = useState<number | '100%'>('100%')
-  useLayoutEffect(() => {
-    if (!wrapperRef) return
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      const entry = entries?.[0]
-      if (entry) {
-        setWrapperWidth(entry.contentRect.width)
-      }
-    })
-
-    resizeObserver.observe(wrapperRef)
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [wrapperRef])
-
   const initializeRender = useRef(true)
-  /**
-   * we're disabling this rule here because we need this effect to run on every
-   * render until the initializeRender flag is set to false. Adding in a dep
-   * array with the recommended deps with the lint rule will work while in dev
-   * mode. However, that's only because effects are run twice in dev mode while
-   * in production they aren't so it does not work as expected.
-   * eslint-disable-next-line react-hooks/exhaustive-deps
-   */
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!initializeRender.current) {
       return
     }
@@ -149,17 +144,11 @@ const CodeBody = ({
         { fingerprint: ['file-renderer-invalid-line-number'] }
       )
     }
-    /**
-     * we're not using a dep array here, because there aren't any deps that
-     * cause a state update and in turn trigger the effect to run again. We do
-     * have early checks at the beginning of the effect to prevent any
-     * unnecessary work.
-     */
-  })
+  }, [codeDisplayOverlayRef, location.hash, tokens.length, virtualizer])
 
   return (
     // setting this function handler to this directly seems to solve the re-render issues.
-    <div className="flex flex-1" ref={setWrapperRef}>
+    <div className="flex flex-1" ref={setWrapperRefState}>
       {/* this div contains the line numbers */}
       <div className="relative z-[2] h-full w-[86px] min-w-[86px] pr-[10px]">
         {virtualizer.getVirtualItems().map((item) => {
