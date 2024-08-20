@@ -4,6 +4,7 @@ import badges from 'assets/svg/badges.svg'
 import A from 'ui/A'
 
 import { useAchievements } from './hooks/useAchievements'
+import { PatchLeaderboard } from './PatchLeaderboard'
 
 interface URLParams {
   provider: string
@@ -51,9 +52,16 @@ function AchievementsTab() {
   }
 
   return (
-    <div>
-      <h1 className="text-xl font-bold">Leaderboards</h1>
-      <p className="text-sm text-gray-500">Coming soon...</p>
+    <div className="flex flex-col gap-3">
+      <h1 className="text-xl font-semibold">Leaderboards</h1>
+      <p>
+        This leaderboard highlights the top performers in maintaining high code
+        coverage, increasing the number of covered lines, and actively reviewing
+        and merging PRs over the last 30 days. It recognizes teammates who
+        consistently contribute to code quality and collaboration.
+      </p>
+      <hr />
+      <PatchLeaderboard />
     </div>
   )
 }
