@@ -19,7 +19,7 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual'
 import { Dictionary } from 'lodash'
 import isNaN from 'lodash/isNaN'
 import Highlight, { defaultProps } from 'prism-react-renderer'
-import { memo, useLayoutEffect, useRef, useState } from 'react'
+import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
@@ -79,7 +79,7 @@ const CodeBody = ({
    * incase the user has scrolled down the page, and resizes the window
    * afterwards.
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!codeDisplayOverlayRef.current) return
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries?.[0]
