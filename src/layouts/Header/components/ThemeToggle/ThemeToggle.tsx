@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 
+import { metrics } from 'shared/utils/metrics'
 import Icon from 'ui/Icon'
+
 enum Theme {
   LIGHT = 'light',
   DARK = 'dark',
@@ -38,6 +40,13 @@ const ThemeToggle: React.FC = () => {
           ? Theme.LIGHT
           : Theme.DARK
       localStorage.setItem('theme', newTheme)
+
+      if (newTheme === Theme.DARK) {
+        metrics.increment('theme.chose_dark', 1)
+      } else if (newTheme === Theme.LIGHT) {
+        metrics.increment('theme.chose_light', 1)
+      }
+
       return newTheme
     })
   }
