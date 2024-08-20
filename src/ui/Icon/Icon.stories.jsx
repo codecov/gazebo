@@ -15,7 +15,7 @@ function Description() {
           href="https://heroicons.com/"
           target="_blank"
           rel="noreferrer"
-          className="text-ds-blue"
+          className="text-ds-blue-default"
         >
           https://heroicons.com/
         </a>{' '}
@@ -24,7 +24,7 @@ function Description() {
           href="https://gitlab-org.gitlab.io/gitlab-svgs/"
           target="_blank"
           rel="noreferrer"
-          className="text-ds-blue"
+          className="text-ds-blue-default"
         >
           https://gitlab-org.gitlab.io/gitlab-svgs/
         </a>

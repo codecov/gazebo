@@ -10,7 +10,7 @@ const Template = (args) => (
 )
 
 const TemplateInherits = (args) => (
-  <div className="text-ds-blue">
+  <div className="text-ds-blue-default">
     <p>
       Default inherits the current css color making it extremely flexible. The
       subtle variant will not.

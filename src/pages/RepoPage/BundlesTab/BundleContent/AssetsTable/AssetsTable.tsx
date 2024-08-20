@@ -93,7 +93,7 @@ const createColumns = (totalBundleSize: number | null) => [
             className={cs(
               'inline-flex items-center justify-items-center gap-1 font-sans hover:underline focus:ring-2',
               {
-                'text-ds-blue': row.getIsExpanded(),
+                'text-ds-blue-default': row.getIsExpanded(),
               }
             )}
             onClick={() => row.toggleExpanded()}
