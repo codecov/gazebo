@@ -22,8 +22,6 @@ function Header() {
     darkMode: false,
   })
 
-  console.log(darkMode)
-
   return (
     <header>
       {!currentUser ? <GuestHeader /> : null}
