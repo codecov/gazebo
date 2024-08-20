@@ -10,6 +10,7 @@ function withOpacity(variableName) {
 }
 
 module.exports = {
+  darkMode: ['selector'],
   content: [
     './src/**/*.{css,js,jsx,ts,tsx}',
     './src/*.{css,js,jsx,ts,tsx}',
