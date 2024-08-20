@@ -6,7 +6,7 @@ const baseClasses =
 
 const labelClasses = {
   default: 'border-current',
-  subtle: 'border-ds-gray-secondary text-ds-gray-senary bg-ds-gray-primary',
+  subtle: 'border-ds-borderLine text-ds-gray-senary bg-ds-gray-primary',
 }
 
 function Label({ children, variant = 'default' }) {

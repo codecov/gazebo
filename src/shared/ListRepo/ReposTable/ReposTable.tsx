@@ -241,7 +241,7 @@ const ReposTable = ({
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className={'border-ds-borderLine'}>
+                <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}

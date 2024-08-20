@@ -31,14 +31,14 @@ module.exports = {
         ds: {
           background: withOpacity('--color-app-background'),
           container: withOpacity('--color-app-container'),
-          defaultText: withOpacity('--color-app-primary-text'),
-          secondaryText: withOpacity('--color-app-secondary-text'),
+          defaultText: withOpacity('--color-app-text-primary'),
+          secondaryText: withOpacity('--color-app-text-secondary'),
           borderLine: withOpacity('--color-app-border-line'),
           pink: {
             DEFAULT: withOpacity('--color-ds-pink-default'),
             secondary: withOpacity('--color-ds-pink-secondary'),
             tertiary: withOpacity('--color-ds-pink-tertiary'),
-            quinary: withOpacity('--color-ds-pink-default'),
+            // quinary: withOpacity('--color-ds-pink-default'),
           },
           blue: {
             DEFAULT: withOpacity('--color-ds-blue-darker'),
