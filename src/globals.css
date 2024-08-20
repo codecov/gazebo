@@ -82,6 +82,9 @@
     /* --color-okta: 0, 41, 122; */
     --color-okta: 25, 25, 25;
     --color-okta-text: 255, 255, 255;
+    /* modal colors */
+    --color-modal-header: 255, 255, 255;
+    --color-modal-footer: 247, 248, 251;
 
     --color-app-background: 255, 255, 255;
     --color-app-container: 255, 255, 255;
@@ -173,6 +176,9 @@
     --color-bitbucket: 2, 75, 186;
     --color-okta: 255, 255, 255;
     --color-okta-text: 14, 27, 41;
+    /* modal colors */
+    --color-modal-header: 47, 51, 62;
+    --color-modal-footer: 47, 51, 62;
 
     --color-app-background: 27, 30, 36;
     --color-app-container: 22, 24, 29;

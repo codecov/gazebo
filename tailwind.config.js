@@ -141,6 +141,10 @@ module.exports = {
         bitbucket: withOpacity('--color-bitbucket'),
         okta: withOpacity('--color-okta'),
         oktaText: withOpacity('--color-okta-text'),
+        modal: {
+          header: withOpacity('--color-modal-header'),
+          footer: withOpacity('--color-modal-footer'),
+        },
       },
       screens: {
         print: { raw: 'print' },
