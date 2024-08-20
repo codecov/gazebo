@@ -5,7 +5,7 @@ import Icon from 'ui/Icon'
 
 function Badge({ children }) {
   return (
-    <span className="ml-2 h-min rounded border border-ds-gray-tertiary px-1 py-0.5 text-xs text-ds-gray-senary">
+    <span className="ml-2 h-min rounded border border-ds-gray-tertiary px-1 py-0.5 text-xs text-ds-gray-senary dark:bg-ds-gray-tertiary dark:text-ds-secondaryText">
       {children}
     </span>
   )
