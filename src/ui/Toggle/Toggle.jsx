@@ -9,7 +9,7 @@ const ToggleClasses = {
   button:
     'relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-50',
   circle:
-    'pointer-events-none translate-x-0 inline-block h-5 w-5 rounded-full bg-ds-container shadow transform ring-0 transition ease-in-out duration-200',
+    'pointer-events-none translate-x-0 inline-block h-5 w-5 rounded-full bg-ds-container dark:bg-white shadow transform ring-0 transition ease-in-out duration-200',
 }
 
 function Toggle({
@@ -39,9 +39,9 @@ function Toggle({
       <button
         id={ID}
         className={cs(ToggleClasses.button, {
-          'bg-ds-primary-base': value,
-          'bg-ds-gray-quinary': !value && !disabled,
-          'bg-ds-gray-quaternary': disabled,
+          'bg-toggle-active': value,
+          'bg-toggle-inactive': !value && !disabled,
+          'bg-toggle-disabled': disabled,
           'cursor-not-allowed': disabled,
         })}
         aria-pressed="false"
@@ -59,9 +59,9 @@ function Toggle({
         >
           <div
             className={cs({
-              'text-ds-primary-base': value,
-              'text-ds-gray-quinary': !value && !disabled,
-              'text-ds-gray-quaternary': disabled,
+              'text-toggle-active': value,
+              'text-toggle-inactive': !value && !disabled,
+              'text-toggle-disabled': disabled,
             })}
           >
             <Icon name={value ? 'check' : 'x'} variant="solid" size="flex" />

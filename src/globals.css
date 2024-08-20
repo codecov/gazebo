@@ -94,6 +94,10 @@
     --color-app-text-secondary: 0, 0, 0;
     --color-app-border-line: 216, 220, 226;
 
+    --color-toggle-active: var(--color-ds-primary-base);
+    --color-toggle-inactive: var(--color-ds-gray-quinary);
+    --color-toggle-disabled: var(--color-ds-gray-quaternary);
+
     /* Sentry User Feedback widget styles */
     --widget-accent-background: rgb(var(--color-ds-blue-darker));
     --widget-background-hover: rgb(var(--color-ds-blue-quinary));
@@ -189,6 +193,10 @@
     --color-app-text-primary: 210, 212, 215;
     --color-app-text-secondary: 173, 179, 194;
     --color-app-border-line: 47, 51, 60;
+
+    --color-toggle-active: var(--color-ds-blue-darker);
+    --color-toggle-inactive: var(--color-ds-gray-quinary);
+    --color-toggle-disabled: var(--color-ds-gray-quaternary);
 
     /* summary dropdown */
     --color-ds-summary-dropdown: 22, 24, 29;

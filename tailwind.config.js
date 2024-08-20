@@ -146,6 +146,11 @@ module.exports = {
           header: withOpacity('--color-modal-header'),
           footer: withOpacity('--color-modal-footer'),
         },
+        toggle: {
+          active: withOpacity('--color-toggle-active'),
+          inactive: withOpacity('--color-toggle-inactive'),
+          disabled: withOpacity('--color-toggle-disabled'),
+        },
       },
       screens: {
         print: { raw: 'print' },
