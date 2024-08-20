@@ -27,7 +27,7 @@
 }
 
 .ace_meta {
-  @apply text-ds-pink;
+  @apply text-ds-pink-default;
 }
 
 .ace_scroller[style] {

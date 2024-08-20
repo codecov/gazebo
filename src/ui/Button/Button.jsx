@@ -42,7 +42,7 @@ const variantClasses = {
   `,
   secondary: `
     justify-center font-semibold
-    text-white bg-ds-pink border-ds-pink-tertiary
+    text-white bg-ds-pink-default border-ds-pink-tertiary
     border-solid border shadow
     hover:bg-ds-pink-tertiary
   `,
@@ -90,7 +90,7 @@ const loadingVariantClasses = {
   default: `disabled:bg-ds-gray-secondary disabled:text-ds-gray-octonary disabled:border-ds-gray-quaternary`,
   primary: `justify-center border border-solid font-semibold text-white shadow disabled:border-ds-blue-quinary disabled:bg-ds-blue-quinary`,
   danger: `disabled:text-white disabled:border-ds-primary-red disabled:bg-ds-primary-red`,
-  secondary: `disabled:text-white disabled:border-ds-pink-tertiary disabled:bg-ds-pink`,
+  secondary: `disabled:text-white disabled:border-ds-pink-tertiary disabled:bg-ds-pink-default`,
 }
 
 function pickVariant(variant, loading) {

@@ -23,7 +23,7 @@ const variantClasses = {
   cardLink: `text-ds-grey-octinary font-semibold truncate`,
   greyOctinary: `text-ds-gray-octinary`,
   grayQuinary: `text-ds-gray-quinary`,
-  headerHighlight: `font-semibold text-ds-pink`,
+  headerHighlight: `font-semibold text-ds-pink-default`,
   upDirectory: `flex flex-grow text-ds-blue hover:no-underline focus:ring-0 w-full`,
   black: `text-ds-secondaryText`,
   blueSeptenary: `text-ds-blue-septenary`,

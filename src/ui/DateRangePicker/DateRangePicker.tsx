@@ -78,12 +78,12 @@ export default function DateRangePicker({
                 cell: 'text-center text-sm p-0 relative [&:has([aria-selected])]:bg-ds-pink-secondary first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
                 day: 'h-8 w-8 p-0 font-normal aria-selected:opacity-100 hover:bg-ds-pink-secondary hover:text-white',
                 day_selected:
-                  'bg-ds-pink text-white hover:bg-ds-pink-secondary hover:text-white focus:bg-ds-pink focus:white',
+                  'bg-ds-pink-default text-white hover:bg-ds-pink-secondary hover:text-white focus:bg-ds-pink-default focus:white',
                 day_today: 'bg-ds-pink-tertiary text-white',
                 day_outside: 'text-ds-secondaryText opacity-50',
                 day_disabled: 'text-ds-secondaryText opacity-50',
                 day_range_middle:
-                  'aria-selected:bg-ds-pink-secondary aria-selected:text-white aria-selected:hover:bg-ds-pink',
+                  'aria-selected:bg-ds-pink-secondary aria-selected:text-white aria-selected:hover:bg-ds-pink-default',
                 day_hidden: 'invisible',
               }}
             />

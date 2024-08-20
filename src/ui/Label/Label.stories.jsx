@@ -4,7 +4,7 @@ const Template = (args) => (
   <div className="flex gap-2">
     <Label {...args}>Some label 🤠</Label>
     <Label {...args}>
-      <span className="text-ds-pink">Dynamic</span> Content
+      <span className="text-ds-pink-default">Dynamic</span> Content
     </Label>
   </div>
 )

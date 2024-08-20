@@ -186,7 +186,7 @@
     @apply darkMode;
   }
 
-  /* new body theme can be applied here */
+  /* new body theme can be applied here
 
   @media (prefers-color-scheme: dark) {
     body {
@@ -197,8 +197,8 @@
       @apply lightMode;
     }
 
-    /* new body theme added above should be applied here as well to cover specificity */
-  }
+     new body theme added above should be applied here as well to cover specificity
+  } */
 }
 
 #sentry-feedback {
