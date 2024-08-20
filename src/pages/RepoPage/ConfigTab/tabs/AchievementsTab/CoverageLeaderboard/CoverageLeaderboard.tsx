@@ -101,8 +101,8 @@ const CoverageLeaderboard = () => {
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <p>
-          Awarded for highest increase in number of lines covered across all PRs
-          in the repo over the last 30 days.
+          For highest increase in number of lines covered across all PRs in the
+          repo over the last 30 days.
         </p>
         <table className="tableui border">
           <colgroup>

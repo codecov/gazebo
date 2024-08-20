@@ -101,8 +101,8 @@ const PullsLeaderboard = () => {
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <p>
-          Awarded for cracking most PRs across all PRs in the repo over the last
-          30 days.
+          For cracking most PRs across all PRs in the repo over the last 30
+          days.
         </p>
         <table className="tableui border">
           <colgroup>
