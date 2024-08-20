@@ -27,7 +27,7 @@ const variantClasses = {
   upDirectory: `flex flex-grow text-ds-blue-default hover:no-underline focus:ring-0 w-full`,
   black: `text-ds-secondaryText`,
   blueSeptenary: `text-ds-blue-septenary`,
-  configure: `rounded bg-ds-blue-default px-4 py-1 font-semibold text-ds-gray-primary`,
+  configure: `rounded bg-ds-blue-default px-4 py-1 font-semibold text-ds-gray-primary dark:text-white`,
 }
 
 const getHostnameFromRegex = (url) => {
