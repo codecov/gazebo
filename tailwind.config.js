@@ -35,13 +35,12 @@ module.exports = {
           secondaryText: withOpacity('--color-app-text-secondary'),
           borderLine: withOpacity('--color-app-border-line'),
           pink: {
-            DEFAULT: withOpacity('--color-ds-pink-default'),
+            default: withOpacity('--color-ds-pink-default'),
             secondary: withOpacity('--color-ds-pink-secondary'),
             tertiary: withOpacity('--color-ds-pink-tertiary'),
-            // quinary: withOpacity('--color-ds-pink-default'),
           },
           blue: {
-            DEFAULT: withOpacity('--color-ds-blue-darker'),
+            default: withOpacity('--color-ds-blue-default'),
             light: withOpacity('--color-ds-blue-light'),
             medium: withOpacity('--color-ds-blue-medium'),
             darker: withOpacity('--color-ds-blue-darker'),
@@ -52,7 +51,7 @@ module.exports = {
             nonary: withOpacity('--color-ds-blue-nonary'),
           },
           gray: {
-            DEFAULT: withOpacity('--color-ds-gray-default'),
+            default: withOpacity('--color-ds-gray-default'),
             primary: withOpacity('--color-ds-gray-primary'),
             secondary: withOpacity('--color-ds-gray-secondary'),
             tertiary: withOpacity('--color-ds-gray-tertiary'),
@@ -60,7 +59,6 @@ module.exports = {
             quinary: withOpacity('--color-ds-gray-quinary'),
             senary: withOpacity('--color-ds-gray-senary'),
             octonary: withOpacity('--color-ds-gray-octonary'),
-            nonary: withOpacity('--color-ds-gray-default'),
           },
           primary: {
             green: withOpacity('--color-ds-primary-green'),
@@ -80,7 +78,6 @@ module.exports = {
           },
         },
         codecov: {
-          red: withOpacity('--color-ds-primary-red'),
           orange: withOpacity('--color-codecov-orange'),
           footer: withOpacity('--color-codecov-footer'),
           code: withOpacity('--color-codecov-code'),

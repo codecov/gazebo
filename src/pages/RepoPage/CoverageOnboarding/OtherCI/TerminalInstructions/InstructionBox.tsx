@@ -51,8 +51,8 @@ export function InstructionBox() {
         {systems.map((system, idx) => (
           <button
             className={cs('self-center py-2 px-4 outline-none', {
-              'bg-gray-100': system === curSystem,
-              'bg-gray-200 hover:bg-gray-300': system !== curSystem,
+              'bg-ds-gray-primary': system === curSystem,
+              'bg-ds-gray-secondary hover:bg-gray-300': system !== curSystem,
             })}
             onClick={handleInstructionClick}
             name={system}

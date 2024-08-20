@@ -81,7 +81,7 @@ function NameEmailCard({ currentUser, provider }) {
               {...register('name', { required: true })}
             />
             {formState?.errors.name && (
-              <p className="mt-1 text-error-900">
+              <p className="mt-1 text-ds-error-nonary">
                 {formState?.errors.name?.message}
               </p>
             )}
@@ -98,7 +98,7 @@ function NameEmailCard({ currentUser, provider }) {
               {...register('email', { required: true })}
             />
             {formState.errors.email && (
-              <p className="mt-1 text-error-900">
+              <p className="mt-1 text-ds-error-nonary">
                 {formState.errors.email?.message}
               </p>
             )}

@@ -72,7 +72,7 @@ function InvoiceDetail() {
     <>
       <div
         className={cs(
-          'bg-ds-container  border-pink-500 border-t-2',
+          'bg-ds-container  border-ds-pink-default border-t-2',
           printClassnames
         )}
       >

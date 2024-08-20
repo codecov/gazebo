@@ -72,7 +72,7 @@ export const NetworkErrorMessage = () => {
         Please see{' '}
         <A
           rel="noreferrer"
-          className="text-blue-400"
+          className="text-ds-blue-default"
           href="https://docs.codecov.io/"
           isExternal={true}
           hook="docs"
@@ -89,7 +89,7 @@ export const NetworkErrorMessage = () => {
       Check on{' '}
       <A
         rel="noreferrer"
-        className="text-blue-400"
+        className="text-ds-blue-default"
         href="https://status.codecov.io/"
         isExternal={true}
         hook="status"
@@ -99,7 +99,7 @@ export const NetworkErrorMessage = () => {
       or see{' '}
       <A
         rel="noreferrer"
-        className="text-blue-400"
+        className="text-ds-blue-default"
         href="https://docs.codecov.io/"
         isExternal={true}
         hook="docs"

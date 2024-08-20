@@ -63,7 +63,7 @@ function EmailInput({
           dataMarketing="Email to receive updates"
         />
         {marketingEmailMessage && (
-          <p className="mt-1 text-codecov-red">{marketingEmailMessage}</p>
+          <p className="mt-1 text-ds-primary-red">{marketingEmailMessage}</p>
         )}
       </div>
     </div>
@@ -233,14 +233,14 @@ export default function TermsOfService() {
               </label>
             </div>
             {formState.errors?.tos && (
-              <p className="text-codecov-red">
+              <p className="text-ds-primary-red">
                 You must accept Terms and Conditions.
               </p>
             )}
           </div>
         </div>
         {formState?.errors?.apiError && (
-          <p className="mb-3 text-codecov-red">
+          <p className="mb-3 text-ds-primary-red">
             We&apos;re sorry for the inconvenience, there was an error with our
             servers. Please try again later or{' '}
             <A to={{ pageName: 'support' }} hook="support-link" isExternal>
