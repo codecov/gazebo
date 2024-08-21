@@ -160,7 +160,7 @@ function ContextSwitcher({
       </button>
       <ul
         className={cs(
-          'absolute z-10 max-h-64 w-full overflow-y-auto rounded-md bg-ds-background shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none',
+          'absolute z-10 max-h-64 w-full overflow-y-auto rounded-md bg-ds-background shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-ds-background-dark dark:shadow-lg dark:ring-1 dark:ring-gray-700',
           { hidden: !toggle }
         )}
         tabIndex="-1"
