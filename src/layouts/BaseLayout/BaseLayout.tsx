@@ -22,9 +22,7 @@ const TermsOfService = lazy(() => import('pages/TermsOfService'))
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
-    <div className="hidden">
-      <ThemeToggle />
-    </div>
+    <ThemeToggle hidden></ThemeToggle>
     <LoadingLogo />
   </div>
 )

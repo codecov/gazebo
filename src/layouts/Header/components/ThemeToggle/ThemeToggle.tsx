@@ -8,7 +8,7 @@ enum Theme {
   DARK = 'dark',
 }
 
-const ThemeToggle: React.FC = () => {
+const ThemeToggle: React.FC<{ hidden?: boolean }> = ({ hidden = false }) => {
   const [theme, setTheme] = useState<Theme | null>(() => {
     const storedTheme = localStorage.getItem('theme') as Theme
     if (storedTheme) {
@@ -55,7 +55,7 @@ const ThemeToggle: React.FC = () => {
     '(prefers-color-scheme: dark)'
   ).matches
 
-  return (
+  return hidden ? null : (
     <button onClick={toggleTheme} style={{ margin: '8px' }}>
       {theme === Theme.LIGHT || (!theme && !systemPrefersDark) ? (
         <Icon variant="outline" name="moon" />
