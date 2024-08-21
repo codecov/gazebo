@@ -24,8 +24,16 @@ const defaultStyles = {
     left: 0,
     right: 15,
   },
-  coverageAxisLabels: { fontSize: 4, padding: 1 },
-  dateAxisLabels: { fontSize: 4, padding: 0 },
+  coverageAxisLabels: {
+    fontSize: 4,
+    padding: 1,
+    fill: 'rgb(var(--color-app-text-secondary))',
+  },
+  dateAxisLabels: {
+    fontSize: 4,
+    padding: 0,
+    fill: 'rgb(var(--color-app-text-secondary))',
+  },
 }
 
 // These theme accessors shouldn't be functions but something in the
