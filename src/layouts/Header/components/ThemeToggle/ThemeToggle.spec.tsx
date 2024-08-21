@@ -17,6 +17,13 @@ describe('ThemeToggle', () => {
     mockSetItem.mockClear()
     mockGetItem.mockClear()
     localStorage.clear()
+    window.matchMedia = jest
+      .fn()
+      .mockReturnValue({ matches: false } as MediaQueryList)
+  })
+
+  afterAll(() => {
+    jest.clearAllMocks()
   })
 
   it('displays the correct icon and update localStorage when toggling theme', async () => {
