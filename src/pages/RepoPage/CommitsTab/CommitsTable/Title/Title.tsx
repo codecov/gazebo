@@ -1,9 +1,22 @@
 import PropTypes from 'prop-types'
+import { z } from 'zod'
 
+import {
+  BadgeTierSchema,
+  GamificationMetricSchema,
+} from 'services/commits/useCommits'
 import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
+import AuthorBadges from './AuthorBadges'
+
+const BadgeEnum = z.object({
+  name: GamificationMetricSchema,
+  tier: BadgeTierSchema,
+})
+
+type BadgeProps = z.infer<typeof BadgeEnum>
 interface TitleProps {
   message?: string | null
   author?: {
@@ -12,6 +25,7 @@ interface TitleProps {
   } | null
   commitid?: string
   createdAt?: string
+  badges?: BadgeProps[]
   flags?: string[]
 }
 const Title = ({
@@ -20,6 +34,7 @@ const Title = ({
   commitid,
   createdAt,
   flags = [],
+  badges,
 }: TitleProps) => {
   const user = {
     avatarUrl: author?.avatarUrl || DefaultAuthor.AVATAR_URL,
@@ -45,7 +60,7 @@ const Title = ({
             {commitMessage()}
           </h2>
         </A>
-        <p className="text-xs">
+        <p className="flex gap-1 text-xs">
           {/* @ts-ignore */}
           <A to={{ pageName: 'owner' }}>
             <span className="text-black">{author?.username}</span>
@@ -56,6 +71,7 @@ const Title = ({
               opened {formatTimeToNow(createdAt)}
             </span>
           )}
+          <AuthorBadges badges={badges || []} />
         </p>
       </div>
     </div>

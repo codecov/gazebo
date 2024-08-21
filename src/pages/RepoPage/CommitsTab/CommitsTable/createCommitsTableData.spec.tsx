@@ -44,6 +44,7 @@ describe('createCommitsTableData', () => {
         author: {
           username: 'cool-user',
           avatarUrl: 'http://127.0.0.1/avatar-url',
+          badges: null,
         },
         bundleStatus: 'COMPLETED',
         coverageStatus: 'COMPLETED',

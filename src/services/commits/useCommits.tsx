@@ -25,9 +25,24 @@ export const COMMIT_STATUS_COMPLETED = 'COMPLETED'
 export const COMMIT_STATUS_ERROR = 'ERROR'
 export const COMMIT_STATUS_PENDING = 'PENDING'
 
+export const BadgeTierSchema = z.enum(['BRONZE', 'SILVER', 'GOLD'])
+export const GamificationMetricSchema = z.enum([
+  'PATCH_COVERAGE_AVERAGE',
+  'CHANGE_COVERAGE_COUNT',
+  'PR_COUNT',
+])
+
 const AuthorSchema = z.object({
   username: z.string().nullable(),
   avatarUrl: z.string(),
+  badges: z
+    .array(
+      z.object({
+        name: GamificationMetricSchema,
+        tier: BadgeTierSchema,
+      })
+    )
+    .nullable(),
 })
 
 const CommitStatusSchema = z.union([
@@ -144,6 +159,10 @@ query GetCommits(
               author {
                 username
                 avatarUrl
+                badges(organization: $owner, repository: $repo) {
+                    name
+                    tier
+                }
               }
               bundleAnalysisCompareWithParent {
                 __typename

@@ -84,6 +84,7 @@ export const createCommitsTableData = ({ pages }: CommitsTableData) => {
           author={commit?.author}
           commitid={commit?.commitid}
           createdAt={commit?.createdAt}
+          badges={commit?.author?.badges || []}
         />
       ),
       patch,
