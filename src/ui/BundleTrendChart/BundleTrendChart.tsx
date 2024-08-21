@@ -227,7 +227,7 @@ export const BundleTrendChart = memo(function ({
             data: {
               fill: '#0071C220',
               cursor: 'pointer',
-              stroke: 'rgb(var(--color-ds-gray-octonary))',
+              stroke: 'rgb(var(--color-chart-area-stroke))',
               strokeWidth: '0.25px',
             },
           }}

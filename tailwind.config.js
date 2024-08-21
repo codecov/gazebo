@@ -35,6 +35,7 @@ module.exports = {
           defaultText: withOpacity('--color-app-text-primary'),
           secondaryText: withOpacity('--color-app-text-secondary'),
           borderLine: withOpacity('--color-app-border-line'),
+          chartAreaStroke: withOpacity('--color-chart-area-stroke'),
           pink: {
             default: withOpacity('--color-ds-pink-default'),
             secondary: withOpacity('--color-ds-pink-secondary'),

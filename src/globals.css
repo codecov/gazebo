@@ -111,6 +111,7 @@
     --chart-3: 41, 91%, 53%;
     --chart-4: 286, 61%, 52%;
     --chart-5: 0, 100%, 80%;
+    --color-chart-area-stroke: var(--color-ds-gray-senary);
 
     /* summary dropdown */
     --color-ds-summary-dropdown: 247, 248, 251;
@@ -135,7 +136,7 @@
     --color-ds-blue-default: 59, 130, 246;
     --color-ds-blue-light: 82, 183, 255;
     --color-ds-blue-medium: 0, 149, 255;
-    --color-ds-blue-darker: 96, 165, 250;
+    --color-ds-blue-darker: 59, 130, 246;
     --color-ds-blue-quinary: 1, 88, 150;
     --color-ds-blue-senary: 0, 45, 77;
     --color-ds-blue-selected: 230, 241, 255;
@@ -208,6 +209,21 @@
     --color-toggle-active: var(--color-ds-blue-darker);
     --color-toggle-inactive: var(--color-ds-gray-quinary);
     --color-toggle-disabled: var(--color-ds-gray-quaternary);
+
+    /* Sentry User Feedback widget styles */
+    --widget-accent-background: rgb(var(--color-ds-blue-darker));
+    --widget-background-hover: rgb(var(--color-ds-blue-quinary));
+    --widget-font-family: 'Poppins', sans-serif;
+
+    /* chart color styles */
+    --chart-area-coverage: var(--color-ds-gray-senary);
+    --chart-area-bundle-tab: 205, 100%, 38%;
+    --chart-1: 205, 100%, 50%;
+    --chart-2: 205, 99%, 30%;
+    --chart-3: 41, 91%, 53%;
+    --chart-4: 286, 61%, 52%;
+    --chart-5: 0, 100%, 80%;
+    --color-chart-area-stroke: 20, 157, 255;
 
     /* summary dropdown */
     --color-ds-summary-dropdown: 22, 24, 29;
