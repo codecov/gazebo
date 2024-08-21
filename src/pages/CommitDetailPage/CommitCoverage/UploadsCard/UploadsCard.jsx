@@ -28,7 +28,7 @@ function UploadsCard() {
         </div>
         {/* dark:bg-opacity-20 passes linting in TSX files but triggers a warning in JSX. Once this file is converted to TSX, the linter should pass without issues. */}
         {/* eslint-disable-next-line tailwindcss/migration-from-tailwind-2*/}
-        <div className="flex max-h-64 min-w-96 flex-1 flex-col divide-y divide-solid divide-ds-gray-secondary overflow-auto bg-ds-gray-primary dark:bg-ds-blue-default dark:bg-opacity-20">
+        <div className="flex max-h-64 min-w-96 flex-1 flex-col divide-y divide-solid divide-ds-gray-secondary overflow-auto bg-ds-gray-primary dark:bg-ds-blue-default dark:bg-opacity-5">
           {uploadsProviderList.map((title) => (
             <Fragment key={title}>
               {title !== NULL && (

@@ -9,9 +9,10 @@ import {
 function LoginButton({ provider }) {
   const { signIn } = useNavLinks()
 
+  const isDarkMode = document.body.classList.contains('dark')
   const to = `${window.location.protocol}//${window.location.host}/${provider}`
   const providerName = loginProviderToName(provider)
-  const providerImage = loginProviderImage(provider)
+  const providerImage = loginProviderImage(provider, isDarkMode)
 
   return (
     <a

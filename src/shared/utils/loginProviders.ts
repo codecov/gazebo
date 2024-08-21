@@ -1,9 +1,11 @@
 /* eslint-disable camelcase */
 
 import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
+import githubLogoWhite from 'assets/providers/github-icon-white.svg'
 import githubLogo from 'assets/providers/github-icon.svg'
 import gitlabLogo from 'assets/providers/gitlab-icon.svg'
 import oktaLogo from 'assets/providers/okta-icon.svg'
+import sentryLogoWhite from 'assets/providers/sentry-icon-white.svg'
 import sentryLogo from 'assets/providers/sentry-icon.svg'
 
 export const LoginProvidersEnum = {
@@ -105,13 +107,33 @@ export const LOGIN_PROVIDER_IMAGES = {
   Okta: oktaLogo,
 } as const
 
-export function loginProviderImage(loginProvider?: string) {
+export const LOGIN_PROVIDER_DARK_MODE_IMAGES = {
+  Github: githubLogoWhite,
+  Gitlab: gitlabLogo,
+  BitBucket: bitbucketLogo,
+  'Github Enterprise': githubLogoWhite,
+  'Gitlab Enterprise': gitlabLogo,
+  'BitBucket Server': bitbucketLogo,
+  Sentry: sentryLogoWhite,
+  Okta: oktaLogo,
+} as const
+
+export function loginProviderImage(
+  loginProvider?: string,
+  isDarkMode?: boolean
+) {
   if (!loginProvider) {
     return undefined
   }
 
+  let imagesToUse = LOGIN_PROVIDER_IMAGES
+
+  if (isDarkMode) {
+    imagesToUse = LOGIN_PROVIDER_DARK_MODE_IMAGES
+  }
+
   const providerName = loginProviderToName(
     loginProvider
-  ) as keyof typeof LOGIN_PROVIDER_IMAGES
-  return LOGIN_PROVIDER_IMAGES[providerName] ?? undefined
+  ) as keyof typeof imagesToUse
+  return imagesToUse[providerName] ?? undefined
 }

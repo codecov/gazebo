@@ -72,7 +72,10 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ provider, providers }) => {
     isInternalProvider = providers.includes(provider.selfHosted)
   }
 
-  const logo = loginProviderImage(provider.provider) as string | undefined
+  const isDarkMode = document.body.classList.contains('dark')
+  const logo = loginProviderImage(provider.provider, isDarkMode) as
+    | string
+    | undefined
 
   return (
     <div className="flex flex-col items-center">
