@@ -33,18 +33,18 @@ export function OktaConfigForm() {
     provider,
     username: owner,
   })
+  const oktaConfig = data?.owner?.account?.oktaConfig
 
   const { register, handleSubmit, formState, reset } = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
     defaultValues: {
-      clientId: data?.owner?.account?.oktaConfig?.clientId,
-      clientSecret: data?.owner?.account?.oktaConfig?.clientSecret,
-      redirectUri: data?.owner?.account?.oktaConfig?.url,
+      clientId: oktaConfig?.clientId,
+      clientSecret: oktaConfig?.clientSecret,
+      redirectUri: oktaConfig?.url,
     },
   })
   const { isDirty, isValid } = formState
-  const oktaConfig = data?.owner?.account?.oktaConfig
   const { mutate } = useUpdateOktaConfig({ provider, owner })
 
   const [oktaEnabled, setOktaEnabled] = useState(oktaConfig?.enabled)
