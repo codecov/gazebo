@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import isString from 'lodash/isString'
 
 import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
 import githubLogo from 'assets/providers/github-icon.svg'
@@ -59,22 +58,13 @@ export const LOGIN_PROVIDER_SHORT_NAMES = {
 } as const
 
 export function loginProviderToShortName(loginProvider?: string) {
-  if (!isString(loginProvider)) {
+  if (!loginProvider) {
     return undefined
   }
 
-  const providerName = loginProvider.toLowerCase()
-  const keys = Object.keys(LOGIN_PROVIDER_SHORT_NAMES) as Array<
-    keyof typeof LOGIN_PROVIDER_SHORT_NAMES
-  >
-
-  for (const key of keys) {
-    if (key === providerName) {
-      return LOGIN_PROVIDER_SHORT_NAMES[providerName]
-    }
-  }
-
-  return undefined
+  const providerName =
+    loginProvider.toLowerCase() as keyof typeof LOGIN_PROVIDER_SHORT_NAMES
+  return LOGIN_PROVIDER_SHORT_NAMES[providerName] ?? undefined
 }
 
 export const LOGIN_PROVIDER_NAMES = {
@@ -95,22 +85,13 @@ export const LOGIN_PROVIDER_NAMES = {
 } as const
 
 export function loginProviderToName(loginProvider?: string) {
-  if (!isString(loginProvider)) {
+  if (!loginProvider) {
     return undefined
   }
 
-  const providerName = loginProvider.toLowerCase()
-  const keys = Object.keys(LOGIN_PROVIDER_NAMES) as Array<
-    keyof typeof LOGIN_PROVIDER_NAMES
-  >
-
-  for (const key of keys) {
-    if (key === providerName) {
-      return LOGIN_PROVIDER_NAMES[providerName]
-    }
-  }
-
-  return undefined
+  const providerName =
+    loginProvider.toLowerCase() as keyof typeof LOGIN_PROVIDER_NAMES
+  return LOGIN_PROVIDER_NAMES[providerName] ?? undefined
 }
 
 export const LOGIN_PROVIDER_IMAGES = {
@@ -125,20 +106,12 @@ export const LOGIN_PROVIDER_IMAGES = {
 } as const
 
 export function loginProviderImage(loginProvider?: string) {
-  if (!isString(loginProvider)) {
+  if (!loginProvider) {
     return undefined
   }
 
-  const providerName = loginProviderToName(loginProvider)
-  const keys = Object.keys(LOGIN_PROVIDER_IMAGES) as Array<
-    keyof typeof LOGIN_PROVIDER_IMAGES
-  >
-
-  for (const key of keys) {
-    if (key === providerName) {
-      return LOGIN_PROVIDER_IMAGES[providerName]
-    }
-  }
-
-  return undefined
+  const providerName = loginProviderToName(
+    loginProvider
+  ) as keyof typeof LOGIN_PROVIDER_IMAGES
+  return LOGIN_PROVIDER_IMAGES[providerName] ?? undefined
 }

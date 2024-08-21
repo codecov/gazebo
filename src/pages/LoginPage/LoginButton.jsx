@@ -15,12 +15,12 @@ function LoginButton({ provider }) {
 
   return (
     <a
-      className="flex h-14 items-center rounded-sm border border-ds-gray-quaternary bg-ds-gray-primary font-semibold shadow hover:bg-ds-gray-secondary"
+      className="flex h-14 items-center rounded-sm border border-ds-gray-quaternary bg-ds-gray-primary font-semibold shadow hover:bg-ds-gray-secondary dark:hover:bg-ds-gray-quaternary"
       href={signIn.path({ to, provider })}
       data-cy={'login-button'}
     >
       <img
-        alt={`Logo of ${providerName}`}
+        alt={`${providerName} logo`}
         className="mx-4 w-6"
         src={providerImage}
       />
