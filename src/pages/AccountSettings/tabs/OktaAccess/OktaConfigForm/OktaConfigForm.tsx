@@ -36,7 +36,7 @@ export function OktaConfigForm() {
 
   const { register, handleSubmit, formState, reset } = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
-    mode: 'onSubmit',
+    mode: 'onChange',
     defaultValues: {
       clientId: data?.owner?.account?.oktaConfig?.clientId,
       clientSecret: data?.owner?.account?.oktaConfig?.clientSecret,
@@ -98,6 +98,7 @@ export function OktaConfigForm() {
                 type="text"
                 id="clientId"
                 placeholder="Enter Client ID"
+                defaultValue={oktaConfig?.clientId}
               />
               {formState.errors.clientId ? (
                 <p className="mt-1 text-codecov-red">
@@ -115,6 +116,7 @@ export function OktaConfigForm() {
                   type={showPassword ? 'text' : 'password'}
                   id="clientSecret"
                   placeholder="Enter Client Secret"
+                  defaultValue={oktaConfig?.clientSecret}
                 />
                 <button
                   type="button"
@@ -143,6 +145,7 @@ export function OktaConfigForm() {
                 type="text"
                 id="redirectUri"
                 placeholder="Enter Redirect URI"
+                defaultValue={oktaConfig?.url}
               />
               {formState.errors.redirectUri ? (
                 <p className="mt-1 text-codecov-red">
