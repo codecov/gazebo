@@ -92,13 +92,13 @@ export function OktaConfigForm() {
                 Client ID
               </label>
               <TextInput
+                defaultValue={oktaConfig?.clientId}
                 {...register('clientId', {
                   required: true,
                 })}
                 type="text"
                 id="clientId"
                 placeholder="Enter Client ID"
-                defaultValue={oktaConfig?.clientId}
               />
               {formState.errors.clientId ? (
                 <p className="mt-1 text-codecov-red">
@@ -112,11 +112,11 @@ export function OktaConfigForm() {
               </label>
               <div className="relative">
                 <TextInput
+                  defaultValue={oktaConfig?.clientSecret}
                   {...register('clientSecret', { required: true })}
                   type={showPassword ? 'text' : 'password'}
                   id="clientSecret"
                   placeholder="Enter Client Secret"
-                  defaultValue={oktaConfig?.clientSecret}
                 />
                 <button
                   type="button"
@@ -141,11 +141,11 @@ export function OktaConfigForm() {
                 Redirect URI
               </label>
               <TextInput
+                defaultValue={oktaConfig?.url}
                 {...register('redirectUri', { required: true })}
                 type="text"
                 id="redirectUri"
                 placeholder="Enter Redirect URI"
-                defaultValue={oktaConfig?.url}
               />
               {formState.errors.redirectUri ? (
                 <p className="mt-1 text-codecov-red">
