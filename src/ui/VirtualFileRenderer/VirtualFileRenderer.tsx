@@ -153,7 +153,7 @@ const CodeBody = ({
       <div className="relative z-[2] h-full w-[86px] min-w-[86px] pr-[10px]">
         {virtualizer.getVirtualItems().map((item) => {
           const lineNumber = item.index + 1
-          const coverageValue = coverage?.[item.index]
+          const coverageValue = coverage?.[lineNumber]
 
           return (
             <div
