@@ -27,17 +27,23 @@ interface URLParams {
 }
 
 export function OktaConfigForm() {
-  const { register, handleSubmit, formState, reset } = useForm<FormValues>({
-    resolver: zodResolver(FormSchema),
-    mode: 'onChange',
-  })
-
   const { provider, owner } = useParams<URLParams>()
 
   const { data } = useOktaConfig({
     provider,
     username: owner,
   })
+
+  const { register, handleSubmit, formState, reset } = useForm<FormValues>({
+    resolver: zodResolver(FormSchema),
+    mode: 'onSubmit',
+    defaultValues: {
+      clientId: data?.owner?.account?.oktaConfig?.clientId,
+      clientSecret: data?.owner?.account?.oktaConfig?.clientSecret,
+      redirectUri: data?.owner?.account?.oktaConfig?.url,
+    },
+  })
+  const { isDirty, isValid } = formState
   const oktaConfig = data?.owner?.account?.oktaConfig
   const { mutate } = useUpdateOktaConfig({ provider, owner })
 
@@ -86,7 +92,6 @@ export function OktaConfigForm() {
                 Client ID
               </label>
               <TextInput
-                defaultValue={oktaConfig?.clientId}
                 {...register('clientId', {
                   required: true,
                 })}
@@ -106,7 +111,6 @@ export function OktaConfigForm() {
               </label>
               <div className="relative">
                 <TextInput
-                  defaultValue={oktaConfig?.clientSecret}
                   {...register('clientSecret', { required: true })}
                   type={showPassword ? 'text' : 'password'}
                   id="clientSecret"
@@ -135,7 +139,6 @@ export function OktaConfigForm() {
                 Redirect URI
               </label>
               <TextInput
-                defaultValue={oktaConfig?.url}
                 {...register('redirectUri', { required: true })}
                 type="text"
                 id="redirectUri"
@@ -150,9 +153,7 @@ export function OktaConfigForm() {
             <div>
               <Button
                 type="submit"
-                disabled={
-                  !formState.isValid || !formState.isDirty || isSubmitting
-                }
+                disabled={!isValid || !isDirty || isSubmitting}
                 to={undefined}
                 hook="save okta form changes"
               >
