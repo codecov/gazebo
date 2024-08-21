@@ -306,7 +306,7 @@ interface VirtualFileRendererProps {
   fileName: string
 }
 
-export function VirtualFileRenderer({
+function VirtualFileRendererComponent({
   code,
   coverage,
   fileName: fileType,
@@ -466,3 +466,10 @@ export function VirtualFileRenderer({
     </div>
   )
 }
+
+export const VirtualFileRenderer = Sentry.withProfiler(
+  VirtualFileRendererComponent,
+  {
+    name: 'VirtualFileRenderer',
+  }
+)
