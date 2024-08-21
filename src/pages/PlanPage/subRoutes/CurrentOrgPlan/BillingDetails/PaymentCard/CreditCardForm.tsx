@@ -1,6 +1,6 @@
 import { CardElement, useElements } from '@stripe/react-stripe-js'
 import cs from 'classnames'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useUpdateCard } from 'services/account'
 import Button from 'ui/Button'
@@ -13,6 +13,38 @@ interface CreditCardFormProps {
 
 function CreditCardForm({ closeForm, provider, owner }: CreditCardFormProps) {
   const [errorState, setErrorState] = useState('')
+  const [isDarkMode, setIsDarkMode] = useState(
+    document.body.classList.contains('dark')
+  )
+
+  // Function to update the style based on the dark mode status
+  const getStyle = () => {
+    return {
+      base: {
+        borderColor: isDarkMode ? 'rgb(47,51,60)' : 'rgb(216,220,226)', // Same values as --color-ds-gray-tertiary.
+        color: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
+      },
+    }
+  }
+
+  // MutationObserver to track the dark mode class change
+  useEffect(() => {
+    const updateAppearance = () => {
+      setIsDarkMode(document.body.classList.contains('dark'))
+    }
+
+    const observer = new MutationObserver(updateAppearance)
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+
+    // Initial check on mount
+    updateAppearance()
+
+    // Cleanup the observer on component unmount
+    return () => observer.disconnect()
+  }, [])
 
   const elements = useElements()
   const {
@@ -49,11 +81,15 @@ function CreditCardForm({ closeForm, provider, owner }: CreditCardFormProps) {
               disableLink: true,
               hidePostalCode: true,
               classes: {
-                empty: 'rounded border-ds-gray-tertiary border-2',
-                focus: 'rounded !border-ds-blue-darker border-4',
-                base: 'px-4 py-3',
-                invalid: 'rounded !border-ds-primary-red border-4',
+                empty:
+                  'rounded border-ds-gray-tertiary border-2 bg-ds-container',
+                focus:
+                  'rounded !border-ds-blue-darker border-4 bg-ds-container',
+                base: 'px-4 py-3 bg-ds-container',
+                invalid:
+                  'rounded !border-ds-primary-red border-4 bg-ds-container',
               },
+              style: getStyle(),
             }}
           />
           <p className="mt-1 text-ds-primary-red">
