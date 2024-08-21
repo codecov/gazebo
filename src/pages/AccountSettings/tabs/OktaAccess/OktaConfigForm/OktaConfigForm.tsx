@@ -27,11 +27,6 @@ interface URLParams {
 }
 
 export function OktaConfigForm() {
-  const { register, handleSubmit, formState, reset } = useForm<FormValues>({
-    resolver: zodResolver(FormSchema),
-    mode: 'onChange',
-  })
-
   const { provider, owner } = useParams<URLParams>()
 
   const { data } = useOktaConfig({
@@ -39,6 +34,17 @@ export function OktaConfigForm() {
     username: owner,
   })
   const oktaConfig = data?.owner?.account?.oktaConfig
+
+  const { register, handleSubmit, formState, reset } = useForm<FormValues>({
+    resolver: zodResolver(FormSchema),
+    mode: 'onChange',
+    defaultValues: {
+      clientId: oktaConfig?.clientId,
+      clientSecret: oktaConfig?.clientSecret,
+      redirectUri: oktaConfig?.url,
+    },
+  })
+  const { isDirty, isValid } = formState
   const { mutate } = useUpdateOktaConfig({ provider, owner })
 
   const [oktaEnabled, setOktaEnabled] = useState(oktaConfig?.enabled)
@@ -150,9 +156,7 @@ export function OktaConfigForm() {
             <div>
               <Button
                 type="submit"
-                disabled={
-                  !formState.isValid || !formState.isDirty || isSubmitting
-                }
+                disabled={!isValid || !isDirty || isSubmitting}
                 to={undefined}
                 hook="save okta form changes"
               >

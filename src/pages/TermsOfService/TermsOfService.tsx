@@ -71,11 +71,17 @@ function EmailInput({
 }
 
 export default function TermsOfService() {
-  const { register, handleSubmit, formState, setError, watch, unregister } =
-    useForm({
-      resolver: zodResolver(FormSchema),
-      mode: 'onChange',
-    })
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty, isValid, errors: formErrors },
+    setError,
+    watch,
+    unregister,
+  } = useForm({
+    resolver: zodResolver(FormSchema),
+    mode: 'onChange',
+  })
   const { mutate, isLoading: isMutationLoading } = useSaveTermsAgreement({
     onSuccess: ({ data }) => {
       if (data?.saveTermsAgreement?.error) {
@@ -192,7 +198,7 @@ export default function TermsOfService() {
             <EmailInput
               register={register}
               // @ts-expect-error
-              marketingEmailMessage={formState.errors?.marketingEmail?.message}
+              marketingEmailMessage={formErrors?.marketingEmail?.message}
               showEmailRequired={
                 watch('marketingConsent') && !currentUser?.email
               }
@@ -232,14 +238,14 @@ export default function TermsOfService() {
                 <small className="text-xs">required</small>
               </label>
             </div>
-            {formState.errors?.tos && (
+            {formErrors?.tos && (
               <p className="text-ds-primary-red">
                 You must accept Terms and Conditions.
               </p>
             )}
           </div>
         </div>
-        {formState?.errors?.apiError && (
+        {formErrors?.apiError && (
           <p className="mb-3 text-ds-primary-red">
             We&apos;re sorry for the inconvenience, there was an error with our
             servers. Please try again later or{' '}
@@ -260,8 +266,8 @@ export default function TermsOfService() {
           </Button>
           <Button
             disabled={isDisabled({
-              isValid: formState.isValid,
-              isDirty: formState.isDirty,
+              isValid,
+              isDirty,
               isMutationLoading,
             })}
             type="submit"

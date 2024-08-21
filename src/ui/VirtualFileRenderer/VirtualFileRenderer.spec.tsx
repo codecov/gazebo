@@ -29,6 +29,7 @@ window.cancelAnimationFrame = () => {}
 
 const scrollToMock = jest.fn()
 window.scrollTo = scrollToMock
+window.scrollY = 100
 
 class ResizeObserverMock {
   callback = (x: any) => null
@@ -43,6 +44,7 @@ class ResizeObserverMock {
         contentRect: { width: 100 },
         target: {
           getAttribute: () => ({ scrollWidth: 100 }),
+          getBoundingClientRect: () => ({ top: 100 }),
         },
       },
     ])

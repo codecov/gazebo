@@ -16,7 +16,18 @@ function YAML({ owner }) {
   const { mutateAsync } = useUpdateYaml({
     username: owner,
   })
-  const { control, handleSubmit, formState, setError, reset } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: {
+      isDirty,
+      isSubmitSuccessful,
+      isSubmitting,
+      errors: formErrors,
+    },
+    setError,
+    reset,
+  } = useForm({
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     defaultValues: { editor: yamlConfig },
@@ -47,7 +58,7 @@ function YAML({ owner }) {
     <div className="lg:w-3/4">
       <form onSubmit={onSubmit}>
         <SuccessModal
-          isOpen={formState.isSubmitSuccessful}
+          isOpen={isSubmitSuccessful}
           closeModal={() => reset({}, { keepValues: true })}
           owner={owner}
         />
@@ -67,9 +78,9 @@ function YAML({ owner }) {
           </p>
         </div>
         <div>
-          {formState.errors.editor && (
+          {formErrors.editor && (
             <div className="my-4 rounded border border-ds-primary-red bg-ds-coverage-uncovered p-2 text-ds-primary-red">
-              <p>{formState.errors.editor.message}</p>
+              <p>{formErrors.editor.message}</p>
             </div>
           )}
           <Controller
@@ -86,8 +97,8 @@ function YAML({ owner }) {
           <div className="float-right mt-4">
             <Button
               hook="save-yaml"
-              disabled={!formState.isDirty}
-              isLoading={formState.isSubmitting}
+              disabled={!isDirty}
+              isLoading={isSubmitting}
               variant="primary"
             >
               Save Changes

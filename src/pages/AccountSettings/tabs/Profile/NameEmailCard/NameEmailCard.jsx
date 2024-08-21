@@ -21,7 +21,12 @@ function getSchema() {
 
 function NameEmailCard({ currentUser, provider }) {
   const addToast = useAddNotification()
-  const { register, handleSubmit, formState, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty, errors: formErrors },
+    reset,
+  } = useForm({
     resolver: zodResolver(getSchema()),
     defaultValues: {
       email: currentUser?.email,
@@ -31,7 +36,7 @@ function NameEmailCard({ currentUser, provider }) {
 
   const { mutate, isLoading } = useUpdateProfile({ provider })
 
-  const isButtonDisabled = !formState.isDirty || isLoading
+  const isButtonDisabled = !isDirty || isLoading
 
   function submit(formData) {
     mutate(formData, {
@@ -80,9 +85,9 @@ function NameEmailCard({ currentUser, provider }) {
               disabled={isLoading}
               {...register('name', { required: true })}
             />
-            {formState?.errors.name && (
+            {formErrors.name && (
               <p className="mt-1 text-ds-error-nonary">
-                {formState?.errors.name?.message}
+                {formErrors.name.message}
               </p>
             )}
           </div>
@@ -97,9 +102,9 @@ function NameEmailCard({ currentUser, provider }) {
               disabled={isLoading}
               {...register('email', { required: true })}
             />
-            {formState.errors.email && (
+            {formErrors.email && (
               <p className="mt-1 text-ds-error-nonary">
-                {formState.errors.email?.message}
+                {formErrors.email.message}
               </p>
             )}
           </div>
