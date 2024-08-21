@@ -40,6 +40,7 @@ const node1 = {
   author: {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
+    badges: null,
   },
   bundleStatus: 'PENDING',
   coverageStatus: 'PENDING',
@@ -63,6 +64,7 @@ const node2 = {
   author: {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
+    badges: null,
   },
   bundleStatus: 'PENDING',
   coverageStatus: 'PENDING',
@@ -86,6 +88,7 @@ const node3 = {
   author: {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
+    badges: null,
   },
   bundleStatus: 'PENDING',
   coverageStatus: 'PENDING',

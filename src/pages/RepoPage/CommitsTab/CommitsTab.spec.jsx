@@ -77,6 +77,7 @@ const mockCommits = {
               author: {
                 username: 'codecov-user',
                 avatarUrl: 'http://127.0.0.1/cool-user-avatar',
+                badges: null,
               },
               bundleStatus: 'COMPLETED',
               coverageStatus: 'COMPLETED',

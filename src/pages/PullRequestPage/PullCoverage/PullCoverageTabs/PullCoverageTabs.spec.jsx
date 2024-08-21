@@ -42,6 +42,7 @@ const mockCommits = {
               author: {
                 username: 'user-1',
                 avatarUrl: 'http://127.0.0.1/avatar-url',
+                badges: null,
               },
               totals: {
                 coverage: 100,
