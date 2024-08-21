@@ -21,11 +21,8 @@ const ThemeToggle: React.FC = () => {
   useEffect(() => {
     document.body.classList.remove(Theme.LIGHT, Theme.DARK)
 
-    console.log('REMOVED THEME')
-
     if (theme) {
       document.body.classList.add(theme)
-      console.log('ADDED THEME', theme)
     }
   }, [theme])
 
