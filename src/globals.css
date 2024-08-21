@@ -114,6 +114,17 @@
 
     /* summary dropdown */
     --color-ds-summary-dropdown: 247, 248, 251;
+
+    /* code viewer */
+    --color-code-key: 1, 88, 150;
+    --color-code-keyword: var(--color-ds-blue-quinary);
+    --color-code-line-number: var(--color-ds-gray-octonary);
+    --color-code-default: var(--color-ds-gray-default);
+    --color-code-comment: var(--color-ds-gray-quaternary);
+    --color-code-punctuation: 153, 153, 153;
+    --color-code-function: var(--color-ds-gray-senary);
+    --color-code-property: var(--color-ds-gray-quinary);
+    --color-code-operator: 166, 127, 89;
   }
 
   .darkMode {
@@ -200,6 +211,16 @@
 
     /* summary dropdown */
     --color-ds-summary-dropdown: 22, 24, 29;
+
+    /* code viewer */
+    --color-code-default: 210, 212, 215;
+    --color-code-keyword: 93, 230, 255;
+    --color-code-line-number: var(--color-ds-gray-quinary);
+    --color-code-comment: 225, 232, 248;
+    --color-code-punctuation: 145, 113, 248;
+    --color-code-function: 234, 235, 239;
+    --color-code-property: 218, 143, 255;
+    --color-code-operator: 219 178, 89;
   }
 
   body {
