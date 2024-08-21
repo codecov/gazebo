@@ -116,6 +116,9 @@ export const setupSentry = ({
       // Adds Sentry Replay
       Sentry.replayIntegration(),
 
+      // Adds Sentry browser profiling
+      Sentry.browserProfilingIntegration(),
+
       // Adds routing instrumentation
       Sentry.reactRouterV5BrowserTracingIntegration({
         history,
@@ -134,6 +137,8 @@ export const setupSentry = ({
     replaysSessionSampleRate: config?.SENTRY_SESSION_SAMPLE_RATE,
     // Of the remaining x% of sessions, if an error happens start capturing
     replaysOnErrorSampleRate: config?.SENTRY_ERROR_SAMPLE_RATE,
+    // profiling sample rate
+    profilesSampleRate: config?.SENTRY_PROFILING_SAMPLE_RATE,
     beforeSend: (event, _hint) => {
       if (checkForBlockedUserAgents()) {
         return null

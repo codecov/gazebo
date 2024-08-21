@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 import { useLayoutEffect, useRef } from 'react'
 
@@ -103,4 +104,6 @@ function CodeRenderer({
   )
 }
 
-export default CodeRenderer
+export default Sentry.withProfiler(CodeRenderer, {
+  name: 'CodeRenderer',
+})

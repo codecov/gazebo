@@ -33,6 +33,7 @@ jest.mock('@sentry/react', () => {
   const originalModule = jest.requireActual('@sentry/react')
   return {
     ...originalModule,
+    withProfiler: (component: any) => component,
     captureMessage: jest.fn(),
   }
 })
