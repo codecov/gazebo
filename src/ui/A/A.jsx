@@ -12,7 +12,7 @@ const baseClass = `
   focus:ring-2
 `
 const variantClasses = {
-  default: `text-ds-blue`,
+  default: `text-ds-blue-default`,
   header: `font-semibold`,
   headerDeprecated: `font-semibold text-ds-gray-secondary`,
   guestHeader: `font-semibold text-ds-gray-senary`,

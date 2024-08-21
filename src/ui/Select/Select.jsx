@@ -30,7 +30,7 @@ const UlVariantClass = {
 const ButtonVariantClass = {
   default: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-ds-background disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
   gray: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-ds-background disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-gray-primary`,
-  text: `flex-init text-ds-blue`,
+  text: `flex-init text-ds-blue-default`,
   defaultOrgSelector: `w-full h-12 px-3 border border-ds-gray-tertiary rounded-md bg-ds-background disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
 }
 
