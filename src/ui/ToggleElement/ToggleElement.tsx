@@ -28,7 +28,7 @@ export function ToggleElement({
         <button
           data-cy="toggle-chart"
           data-marketing="toggle-chart"
-          className="flex cursor-pointer items-center text-ds-primary-base hover:underline [&[data-state=open]>span:first-child]:rotate-90"
+          className="flex cursor-pointer items-center text-ds-secondaryText hover:underline [&[data-state=open]>span:first-child]:rotate-90"
           data-state={isHidden ? 'closed' : 'open'}
           onClick={() => {
             setIsHidden(!isHidden)
