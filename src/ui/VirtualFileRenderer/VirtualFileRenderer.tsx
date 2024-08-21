@@ -243,7 +243,7 @@ const CodeBody = ({
               <ColorBar
                 lineNumber={lineNumber}
                 locationHash={location.hash}
-                coverage={coverage?.[item.index]}
+                coverage={coverage?.[lineNumber]}
               />
               <div
                 className="w-full"
