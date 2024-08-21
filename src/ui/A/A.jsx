@@ -15,7 +15,7 @@ const variantClasses = {
   default: `text-ds-blue-default`,
   header: `font-semibold`,
   headerDeprecated: `font-semibold text-ds-gray-secondary`,
-  guestHeader: `font-semibold text-ds-gray-senary`,
+  guestHeader: `font-semibold text-ds-gray-senary dark:text-ds-defaultText`,
   link: `text-ds-blue-darker`,
   semibold: 'text-ds-blue-darker font-semibold',
   medium: 'text-ds-blue-darker font-medium',
