@@ -53,7 +53,7 @@
     --color-ds-primary-yellow: 244, 176, 27;
     --color-ds-primary-base: 14, 27, 41;
 
-    --color-ds-coverage-uncovered: 245, 32, 32;
+    --color-ds-coverage-uncovered: 255, 247, 247;
     --color-ds-coverage-partial: 255, 249, 216;
     --color-ds-coverage-covered: 222, 255, 232;
 
