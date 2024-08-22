@@ -26,7 +26,7 @@ afterEach(() => queryClient.clear())
 
 describe('HelpDropdown', () => {
   function setup() {
-    SentryUserFeedback.createForm = jest.fn().mockResolvedValue({
+    SentryUserFeedback(false).createForm = jest.fn().mockResolvedValue({
       appendToDom: jest.fn(),
       removeFromDom: jest.fn(),
       open: jest.fn(),
@@ -93,7 +93,7 @@ describe('HelpDropdown', () => {
         removeFromDom,
         open,
       })
-      SentryUserFeedback.createForm = createForm
+      SentryUserFeedback(false).createForm = createForm
 
       render(<HelpDropdown />, { wrapper })
 
@@ -130,7 +130,7 @@ describe('HelpDropdown', () => {
           removeFromDom,
           open,
         })
-        SentryUserFeedback.createForm = createForm
+        SentryUserFeedback(false).createForm = createForm
 
         const { unmount } = render(<HelpDropdown />, { wrapper })
 
