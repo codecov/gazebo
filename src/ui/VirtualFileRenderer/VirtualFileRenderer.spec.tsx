@@ -17,6 +17,7 @@ jest.mock('@sentry/react', () => {
   const originalModule = jest.requireActual('@sentry/react')
   return {
     ...originalModule,
+    withProfiler: (component: any) => component,
     captureMessage: jest.fn(),
   }
 })
@@ -68,9 +69,9 @@ const code = `<Breadcrumb
 />`
 
 const coverageData = {
-  0: 'H',
-  1: 'M',
-  2: 'P',
+  1: 'H',
+  2: 'M',
+  3: 'P',
 } as unknown as Dictionary<'H' | 'M' | 'P'>
 
 let testLocation: ReturnType<typeof useLocation>

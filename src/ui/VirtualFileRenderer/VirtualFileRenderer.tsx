@@ -153,7 +153,7 @@ const CodeBody = ({
       <div className="relative z-[2] h-full w-[86px] min-w-[86px] pr-[10px]">
         {virtualizer.getVirtualItems().map((item) => {
           const lineNumber = item.index + 1
-          const coverageValue = coverage?.[item.index]
+          const coverageValue = coverage?.[lineNumber]
 
           return (
             <div
@@ -243,7 +243,7 @@ const CodeBody = ({
               <ColorBar
                 lineNumber={lineNumber}
                 locationHash={location.hash}
-                coverage={coverage?.[item.index]}
+                coverage={coverage?.[lineNumber]}
               />
               <div
                 className="w-full"
@@ -306,7 +306,7 @@ interface VirtualFileRendererProps {
   fileName: string
 }
 
-export function VirtualFileRenderer({
+function VirtualFileRendererComponent({
   code,
   coverage,
   fileName: fileType,
@@ -466,3 +466,10 @@ export function VirtualFileRenderer({
     </div>
   )
 }
+
+export const VirtualFileRenderer = Sentry.withProfiler(
+  VirtualFileRendererComponent,
+  {
+    name: 'VirtualFileRenderer',
+  }
+)
