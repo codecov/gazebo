@@ -29,6 +29,13 @@ describe('loginProviderImage', () => {
       })
     })
   })
+
+  describe('is dark mode', () => {
+    it('uses dark mode image', () => {
+      const data = loginProviderImage(LOGIN_PROVIDER_NAMES.gh, true)
+      expect(data).toBe('github-icon-white.svg')
+    })
+  })
 })
 
 describe('loginProviderToName', () => {
