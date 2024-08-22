@@ -82,7 +82,7 @@ type Badge = {
 function AuthorBadges({ badges }: { badges: Badge[] }) {
   return (
     <Tooltip.Provider delayDuration={0} skipDelayDuration={500}>
-      <div className="flex flex-row gap-2">
+      <div className="flex flex-row gap-1">
         {badges.map(({ name, tier }) => (
           <Tooltip key={name}>
             <Tooltip.Trigger>
