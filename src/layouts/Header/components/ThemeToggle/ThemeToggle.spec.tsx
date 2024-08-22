@@ -2,6 +2,8 @@ import * as Sentry from '@sentry/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { ThemeContextProvider } from 'shared/ThemeContext'
+
 import ThemeToggle from './ThemeToggle'
 
 const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
@@ -37,7 +39,11 @@ describe('ThemeToggle', () => {
       }
       return null
     })
-    render(<ThemeToggle />)
+    render(
+      <ThemeContextProvider>
+        <ThemeToggle />
+      </ThemeContextProvider>
+    )
     expect(screen.getByRole('button')).toHaveTextContent('moon')
 
     // toggle to dark mode
@@ -49,7 +55,7 @@ describe('ThemeToggle', () => {
       expect(screen.getByRole('button')).toHaveTextContent('sun')
     })
     expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-      'theme.chose_dark',
+      'button_clicked.theme.dark',
       1,
       undefined
     )
@@ -64,7 +70,7 @@ describe('ThemeToggle', () => {
     })
     await waitFor(() => {
       expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-        'theme.chose_light',
+        'button_clicked.theme.light',
         1,
         undefined
       )
@@ -74,38 +80,11 @@ describe('ThemeToggle', () => {
   it('assumes light mode when there is no theme in local storage', () => {
     setup({ isMediaPrefersDark: false })
     mockGetItem.mockImplementation((key) => null)
-    render(<ThemeToggle />)
+    render(
+      <ThemeContextProvider>
+        <ThemeToggle />
+      </ThemeContextProvider>
+    )
     expect(screen.getByRole('button')).toHaveTextContent('moon')
-  })
-
-  // it('honors the system media prefers-color-scheme dark', async () => {
-  //   setup({ isMediaPrefersDark: true })
-  //   mockGetItem.mockImplementation((key) => null)
-  //   render(<ThemeToggle />)
-  //   expect(screen.getByRole('button')).toHaveTextContent('sun')
-
-  //   userEvent.click(screen.getByRole('button'))
-  //   await waitFor(() => {
-  //     expect(mockSetItem).toHaveBeenCalledWith('theme', 'light')
-  //   })
-  // })
-
-  // it('honors the system media prefers-color-scheme light', async () => {
-  //   setup({ isMediaPrefersDark: false })
-  //   mockGetItem.mockImplementation((key) => null)
-  //   render(<ThemeToggle />)
-  //   expect(screen.getByRole('button')).toHaveTextContent('moon')
-
-  //   userEvent.click(screen.getByRole('button'))
-  //   await waitFor(() => {
-  //     expect(mockSetItem).toHaveBeenCalledWith('theme', 'dark')
-  //   })
-  // })
-
-  it('honors the "hidden" prop', async () => {
-    setup({ isMediaPrefersDark: false })
-    mockGetItem.mockImplementation((key) => null)
-    render(<ThemeToggle hidden />)
-    expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 })

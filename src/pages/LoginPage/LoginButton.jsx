@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
+import { useContext } from 'react'
 
 import { useNavLinks } from 'services/navigation'
+import { Theme, ThemeContext } from 'shared/ThemeContext'
 import {
   loginProviderImage,
   loginProviderToName,
@@ -8,8 +10,9 @@ import {
 
 function LoginButton({ provider }) {
   const { signIn } = useNavLinks()
+  const { theme } = useContext(ThemeContext)
 
-  const isDarkMode = document.body.classList.contains('dark')
+  const isDarkMode = theme === Theme.DARK
   const to = `${window.location.protocol}//${window.location.host}/${provider}`
   const providerName = loginProviderToName(provider)
   const providerImage = loginProviderImage(provider, isDarkMode)

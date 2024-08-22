@@ -97,9 +97,11 @@ type IncrementKeys = {
   old_session_expiry: {
     cleanup: string
   }
-  theme: {
-    chose_dark: string
-    chose_light: string
+  button_clicked: {
+    theme: {
+      light: string
+      dark: string
+    }
   }
 }
 

@@ -3,7 +3,6 @@ import { Redirect } from 'react-router-dom'
 
 import Footer from 'layouts/Footer'
 import Header from 'layouts/Header'
-import ThemeToggle from 'layouts/Header/components/ThemeToggle'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
@@ -22,7 +21,6 @@ const TermsOfService = lazy(() => import('pages/TermsOfService'))
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
-    <ThemeToggle hidden></ThemeToggle>
     <LoadingLogo />
   </div>
 )
