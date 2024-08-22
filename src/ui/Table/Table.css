@@ -68,3 +68,18 @@
 .tableui [data-expanded='false'] {
   @apply hidden;
 }
+
+/* Scrollbar styling */
+.tableui::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.tableui::-webkit-scrollbar-track {
+  @apply bg-ds-gray-primary dark:bg-ds-gray-primary;
+}
+.tableui::-webkit-scrollbar-thumb {
+  @apply rounded-lg bg-ds-gray-secondary dark:bg-ds-gray-senary;
+}
+.tableui::-webkit-scrollbar-thumb:hover {
+  @apply bg-ds-gray-tertiary dark:bg-ds-gray-quinary;
+}
