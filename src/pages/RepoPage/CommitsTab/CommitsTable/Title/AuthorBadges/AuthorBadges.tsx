@@ -93,7 +93,7 @@ function AuthorBadges({ badges }: { badges: Badge[] }) {
               />
             </Tooltip.Trigger>
             <Tooltip.Content
-              side="top"
+              side="right"
               className="w-[300px] bg-ds-gray-primary p-4 text-black"
             >
               <div className="flex flex-col gap-2">
