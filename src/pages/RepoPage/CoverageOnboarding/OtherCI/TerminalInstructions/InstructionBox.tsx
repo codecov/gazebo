@@ -44,15 +44,16 @@ export function InstructionBox() {
 
   return (
     <div
-      className="w-auto rounded border border-ds-gray-secondary bg-ds-gray-primary"
+      className="w-auto rounded border border-ds-borderLine bg-ds-gray-primary"
       data-testid="instruction-box"
     >
-      <div className="flex w-full flex-row overflow-auto rounded-t bg-ds-gray-secondary">
+      <div className="flex w-full flex-row overflow-auto rounded-t bg-ds-subBackground">
         {systems.map((system, idx) => (
           <button
             className={cs('self-center py-2 px-4 outline-none', {
               'bg-ds-gray-primary': system === curSystem,
-              'bg-ds-gray-secondary hover:bg-gray-300': system !== curSystem,
+              'bg-ds-subBackground hover:bg-ds-subHoverBackground':
+                system !== curSystem,
             })}
             onClick={handleInstructionClick}
             name={system}

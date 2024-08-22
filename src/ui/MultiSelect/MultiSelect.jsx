@@ -100,7 +100,7 @@ function DropdownList({
           {listItems.map((item, index) => (
             <li
               className={cs(SelectClasses.listItem, {
-                'px-2 font-bold border-l-4 border-l-black':
+                'px-2 font-bold border-l-4 border-l-ds-secondaryText':
                   isItemSelected(item, selectedItems) ||
                   (isAllButton(item) && selectedItems.length === 0),
                 'bg-ds-gray-secondary': highlightedIndex === index,

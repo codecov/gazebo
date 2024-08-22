@@ -93,6 +93,8 @@
     --color-app-text-primary: 14, 27, 41;
     --color-app-text-secondary: 0, 0, 0;
     --color-app-border-line: 216, 220, 226;
+    --color-app-sub-background: 234, 235, 239;
+    --color-app-sub-hover-background: 199, 203, 209;
 
     --color-toggle-active: var(--color-ds-primary-base);
     --color-toggle-inactive: var(--color-ds-gray-quinary);
@@ -205,6 +207,8 @@
     --color-app-text-primary: 210, 212, 215;
     --color-app-text-secondary: 173, 179, 194;
     --color-app-border-line: 47, 51, 60;
+    --color-app-sub-background: 22, 24, 29;
+    --color-app-sub-hover-background: 153, 161, 179;
 
     --color-toggle-active: var(--color-ds-blue-darker);
     --color-toggle-inactive: var(--color-ds-gray-quinary);
