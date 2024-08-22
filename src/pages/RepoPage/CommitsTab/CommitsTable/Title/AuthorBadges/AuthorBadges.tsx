@@ -101,7 +101,7 @@ function AuthorBadges({ badges }: { badges: Badge[] }) {
                   <img
                     src={BadgesToImages[name][tier].src}
                     alt={name}
-                    className="size-4"
+                    className="size-5"
                   />
                   <span>{BadgesToImages[name][tier].title}</span>
                 </div>
