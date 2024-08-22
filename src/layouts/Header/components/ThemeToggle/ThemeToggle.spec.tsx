@@ -78,29 +78,29 @@ describe('ThemeToggle', () => {
     expect(screen.getByRole('button')).toHaveTextContent('moon')
   })
 
-  it('honors the system media prefers-color-scheme dark', async () => {
-    setup({ isMediaPrefersDark: true })
-    mockGetItem.mockImplementation((key) => null)
-    render(<ThemeToggle />)
-    expect(screen.getByRole('button')).toHaveTextContent('sun')
+  // it('honors the system media prefers-color-scheme dark', async () => {
+  //   setup({ isMediaPrefersDark: true })
+  //   mockGetItem.mockImplementation((key) => null)
+  //   render(<ThemeToggle />)
+  //   expect(screen.getByRole('button')).toHaveTextContent('sun')
 
-    userEvent.click(screen.getByRole('button'))
-    await waitFor(() => {
-      expect(mockSetItem).toHaveBeenCalledWith('theme', 'light')
-    })
-  })
+  //   userEvent.click(screen.getByRole('button'))
+  //   await waitFor(() => {
+  //     expect(mockSetItem).toHaveBeenCalledWith('theme', 'light')
+  //   })
+  // })
 
-  it('honors the system media prefers-color-scheme light', async () => {
-    setup({ isMediaPrefersDark: false })
-    mockGetItem.mockImplementation((key) => null)
-    render(<ThemeToggle />)
-    expect(screen.getByRole('button')).toHaveTextContent('moon')
+  // it('honors the system media prefers-color-scheme light', async () => {
+  //   setup({ isMediaPrefersDark: false })
+  //   mockGetItem.mockImplementation((key) => null)
+  //   render(<ThemeToggle />)
+  //   expect(screen.getByRole('button')).toHaveTextContent('moon')
 
-    userEvent.click(screen.getByRole('button'))
-    await waitFor(() => {
-      expect(mockSetItem).toHaveBeenCalledWith('theme', 'dark')
-    })
-  })
+  //   userEvent.click(screen.getByRole('button'))
+  //   await waitFor(() => {
+  //     expect(mockSetItem).toHaveBeenCalledWith('theme', 'dark')
+  //   })
+  // })
 
   it('honors the "hidden" prop', async () => {
     setup({ isMediaPrefersDark: false })

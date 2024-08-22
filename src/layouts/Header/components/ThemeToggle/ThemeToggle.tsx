@@ -27,18 +27,19 @@ const ThemeToggle: React.FC<{ hidden?: boolean }> = ({ hidden = false }) => {
   }, [theme])
 
   const toggleTheme = () => {
-    const systemPrefersDark = window.matchMedia(
-      '(prefers-color-scheme: dark)'
-    ).matches
+    // const systemPrefersDark = window.matchMedia(
+    //   '(prefers-color-scheme: dark)'
+    // ).matches
 
     setTheme((prevTheme) => {
       const newTheme = prevTheme
         ? prevTheme === Theme.LIGHT
           ? Theme.DARK
           : Theme.LIGHT
-        : systemPrefersDark
-          ? Theme.LIGHT
-          : Theme.DARK
+        : Theme.DARK
+      // systemPrefersDark
+      //   ? Theme.LIGHT
+      //   : Theme.DARK
       localStorage.setItem('theme', newTheme)
 
       if (newTheme === Theme.DARK) {
@@ -51,13 +52,14 @@ const ThemeToggle: React.FC<{ hidden?: boolean }> = ({ hidden = false }) => {
     })
   }
 
-  const systemPrefersDark = window.matchMedia(
-    '(prefers-color-scheme: dark)'
-  ).matches
+  // const systemPrefersDark = window.matchMedia(
+  //   '(prefers-color-scheme: dark)'
+  // ).matches
 
   return hidden ? null : (
     <button onClick={toggleTheme} style={{ margin: '8px' }}>
-      {theme === Theme.LIGHT || (!theme && !systemPrefersDark) ? (
+      {/* {theme === Theme.LIGHT || (!theme && !systemPrefersDark) ? ( */}
+      {theme === Theme.LIGHT || !theme ? (
         <Icon variant="outline" name="moon" />
       ) : (
         <Icon variant="outline" name="sun" />
