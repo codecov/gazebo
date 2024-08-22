@@ -429,7 +429,7 @@ function VirtualFileRendererComponent({
           overscrollBehaviorX: 'none',
           lineHeight: `${LINE_ROW_HEIGHT}px`,
         }}
-        className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[94px] pt-px font-mono text-transparent outline-none dark:text-ds-gray-quaternary"
+        className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[94px] pt-px font-mono text-transparent outline-none"
         // Directly setting the value of the text area to the code content
         value={code}
         // need to set to true since we're setting a value without an onChange handler
