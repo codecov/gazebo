@@ -4,7 +4,6 @@ import config from 'config'
 
 import { usePlanData } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 import { isEnterprisePlan } from 'shared/utils/billing'
 import Sidemenu from 'ui/Sidemenu'
 
@@ -67,10 +66,7 @@ function AccountSettingsSideMenu() {
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
   const { data } = usePlanData({ provider, owner })
-  const { oktaSettings } = useFlags({
-    oktaSettings: false,
-  })
-  const viewOktaAccess = oktaSettings && isEnterprisePlan(data?.plan?.value)
+  const viewOktaAccess = isEnterprisePlan(data?.plan?.value)
 
   const links = generateLinks({
     isAdmin,
