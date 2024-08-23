@@ -19,7 +19,7 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual'
 import { Dictionary } from 'lodash'
 import isNaN from 'lodash/isNaN'
 import Highlight, { defaultProps } from 'prism-react-renderer'
-import { memo, useLayoutEffect, useRef, useState } from 'react'
+import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
@@ -58,21 +58,24 @@ const CodeBody = ({
 }: CodeBodyProps) => {
   const history = useHistory()
   const location = useLocation()
-  const [wrapperWidth, setWrapperWidth] = useState<number | '100%'>('100%')
 
-  const initializeRender = useRef(true)
-  const [wrapperRef, setWrapperRef] = useState<HTMLDivElement | null>(null)
-
+  const [scrollMargin, setScrollMargin] = useState<number | undefined>(
+    undefined
+  )
   const virtualizer = useWindowVirtualizer({
     count: tokens.length,
     // this is the height of each line in the code block based off of not having any line wrapping, if we add line wrapping this will need to be updated to dynamically measure the height of each line.
     estimateSize: () => LINE_ROW_HEIGHT,
     overscan: 45, // update to be based off of the height of the window
-    scrollMargin: codeDisplayOverlayRef.current?.offsetTop ?? 0,
+    scrollMargin: scrollMargin ?? 0,
   })
 
+  const [wrapperRefState, setWrapperRefState] = useState<HTMLDivElement | null>(
+    null
+  )
+  const [wrapperWidth, setWrapperWidth] = useState<number | '100%'>('100%')
   useLayoutEffect(() => {
-    if (!wrapperRef) return
+    if (!wrapperRefState) return
 
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries?.[0]
@@ -81,14 +84,43 @@ const CodeBody = ({
       }
     })
 
-    resizeObserver.observe(wrapperRef)
+    resizeObserver.observe(wrapperRefState)
 
     return () => {
       resizeObserver.disconnect()
     }
-  }, [wrapperRef])
+  }, [wrapperRefState])
 
-  useLayoutEffect(() => {
+  /**
+   * This effect is used to update the scroll margin of the virtualizer when the
+   * code display overlay is resized. This is needed because the virtualizer
+   * needs to know the offset of the code display overlay from the top of the
+   * window to correctly calculate the scroll position of the virtual items.
+   * We do the calculation to account for the scroll position of the window
+   * incase the user has scrolled down the page, and resizes the window
+   * afterwards.
+   */
+  useEffect(() => {
+    if (!codeDisplayOverlayRef.current) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries?.[0]
+      if (entry) {
+        setScrollMargin(
+          entry.target.getBoundingClientRect().top + window.scrollY
+        )
+      }
+    })
+
+    resizeObserver.observe(codeDisplayOverlayRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [codeDisplayOverlayRef])
+
+  const initializeRender = useRef(true)
+  useEffect(() => {
     if (!initializeRender.current) {
       return
     }
@@ -112,22 +144,16 @@ const CodeBody = ({
         { fingerprint: ['file-renderer-invalid-line-number'] }
       )
     }
-    /**
-     * we're not using a dep array here, because there aren't any deps that
-     * cause a state update and in turn trigger the effect to run again. We do
-     * have early checks at the beginning of the effect to prevent any
-     * unnecessary work.
-     */
-  })
+  }, [codeDisplayOverlayRef, location.hash, tokens.length, virtualizer])
 
   return (
     // setting this function handler to this directly seems to solve the re-render issues.
-    <div className="flex flex-1" ref={setWrapperRef}>
+    <div className="flex flex-1" ref={setWrapperRefState}>
       {/* this div contains the line numbers */}
       <div className="relative z-[2] h-full w-[86px] min-w-[86px] pr-[10px]">
         {virtualizer.getVirtualItems().map((item) => {
           const lineNumber = item.index + 1
-          const coverageValue = coverage?.[item.index]
+          const coverageValue = coverage?.[lineNumber]
 
           return (
             <div
@@ -217,7 +243,7 @@ const CodeBody = ({
               <ColorBar
                 lineNumber={lineNumber}
                 locationHash={location.hash}
-                coverage={coverage?.[item.index]}
+                coverage={coverage?.[lineNumber]}
               />
               <div
                 className="w-full"
@@ -280,7 +306,7 @@ interface VirtualFileRendererProps {
   fileName: string
 }
 
-export function VirtualFileRenderer({
+function VirtualFileRendererComponent({
   code,
   coverage,
   fileName: fileType,
@@ -440,3 +466,10 @@ export function VirtualFileRenderer({
     </div>
   )
 }
+
+export const VirtualFileRenderer = Sentry.withProfiler(
+  VirtualFileRendererComponent,
+  {
+    name: 'VirtualFileRenderer',
+  }
+)

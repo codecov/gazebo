@@ -2,6 +2,15 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import CodeRenderer from './CodeRenderer'
 
+jest.mock('@sentry/react', () => {
+  const originalModule = jest.requireActual('@sentry/react')
+  return {
+    ...originalModule,
+    withProfiler: (component: any) => component,
+    captureMessage: jest.fn(),
+  }
+})
+
 window.requestAnimationFrame = (cb) => {
   cb(1)
   return 1
