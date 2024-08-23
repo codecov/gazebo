@@ -66,6 +66,10 @@ const wrapper =
             '/:provider/:owner/:repo/bundles/new',
             '/:provider/:owner/:repo/bundles/new/rollup',
             '/:provider/:owner/:repo/bundles/new/webpack',
+            '/:provider/:owner/:repo/bundles/new/remix',
+            '/:provider/:owner/:repo/bundles/new/sveltekit',
+            '/:provider/:owner/:repo/bundles/new/solidstart',
+            '/:provider/:owner/:repo/bundles/new/nuxt',
             '/:provider',
           ]}
         >
@@ -207,6 +211,86 @@ describe('BundleOnboarding', () => {
         )
       })
     })
+
+    describe('when Remix (Vite) is selected', () => {
+      it('should navigate to /new/remix-vite', async () => {
+        const { user } = setup({})
+        render(<BundleOnboarding />, { wrapper: wrapper() })
+
+        const remix = await screen.findByTestId('remix-radio')
+        expect(remix).toBeInTheDocument()
+        expect(remix).toHaveAttribute('data-state', 'unchecked')
+
+        await user.click(remix)
+
+        expect(remix).toBeInTheDocument()
+        expect(remix).toHaveAttribute('data-state', 'checked')
+
+        expect(testLocation.pathname).toBe(
+          '/gh/codecov/test-repo/bundles/new/remix-vite'
+        )
+      })
+    })
+
+    describe('when SvelteKit is selected', () => {
+      it('should navigate to /new/sveltekit', async () => {
+        const { user } = setup({})
+        render(<BundleOnboarding />, { wrapper: wrapper() })
+
+        const sveltekit = await screen.findByTestId('sveltekit-radio')
+        expect(sveltekit).toBeInTheDocument()
+        expect(sveltekit).toHaveAttribute('data-state', 'unchecked')
+
+        await user.click(sveltekit)
+
+        expect(sveltekit).toBeInTheDocument()
+        expect(sveltekit).toHaveAttribute('data-state', 'checked')
+
+        expect(testLocation.pathname).toBe(
+          '/gh/codecov/test-repo/bundles/new/sveltekit'
+        )
+      })
+    })
+
+    describe('when SolidStart is selected', () => {
+      it('should navigate to /new/solidstart', async () => {
+        const { user } = setup({})
+        render(<BundleOnboarding />, { wrapper: wrapper() })
+
+        const solidstart = await screen.findByTestId('solidstart-radio')
+        expect(solidstart).toBeInTheDocument()
+        expect(solidstart).toHaveAttribute('data-state', 'unchecked')
+
+        await user.click(solidstart)
+
+        expect(solidstart).toBeInTheDocument()
+        expect(solidstart).toHaveAttribute('data-state', 'checked')
+
+        expect(testLocation.pathname).toBe(
+          '/gh/codecov/test-repo/bundles/new/solidstart'
+        )
+      })
+    })
+
+    describe('when Nuxt is selected', () => {
+      it('should navigate to /new/nuxt', async () => {
+        const { user } = setup({})
+        render(<BundleOnboarding />, { wrapper: wrapper() })
+
+        const nuxt = await screen.findByTestId('nuxt-radio')
+        expect(nuxt).toBeInTheDocument()
+        expect(nuxt).toHaveAttribute('data-state', 'unchecked')
+
+        await user.click(nuxt)
+
+        expect(nuxt).toBeInTheDocument()
+        expect(nuxt).toHaveAttribute('data-state', 'checked')
+
+        expect(testLocation.pathname).toBe(
+          '/gh/codecov/test-repo/bundles/new/nuxt'
+        )
+      })
+    })
   })
 
   describe('on /new route', () => {
@@ -236,6 +320,42 @@ describe('BundleOnboarding', () => {
         const webpackTab = await screen.findByTestId('webpack-radio')
         expect(webpackTab).toBeInTheDocument()
         expect(webpackTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders remix tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, { wrapper: wrapper() })
+
+        const remixTab = await screen.findByTestId('remix-radio')
+        expect(remixTab).toBeInTheDocument()
+        expect(remixTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders nuxt tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, { wrapper: wrapper() })
+
+        const nuxtTab = await screen.findByTestId('nuxt-radio')
+        expect(nuxtTab).toBeInTheDocument()
+        expect(nuxtTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders solidstart tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, { wrapper: wrapper() })
+
+        const solidstartTab = await screen.findByTestId('solidstart-radio')
+        expect(solidstartTab).toBeInTheDocument()
+        expect(solidstartTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders sveltekit tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, { wrapper: wrapper() })
+
+        const sveltekitTab = await screen.findByTestId('sveltekit-radio')
+        expect(sveltekitTab).toBeInTheDocument()
+        expect(sveltekitTab).toHaveAttribute('data-state', 'unchecked')
       })
     })
 
@@ -285,6 +405,50 @@ describe('BundleOnboarding', () => {
         const webpackTab = await screen.findByTestId('webpack-radio')
         expect(webpackTab).toBeInTheDocument()
         expect(webpackTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders remix tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
+        })
+
+        const remixTab = await screen.findByTestId('remix-radio')
+        expect(remixTab).toBeInTheDocument()
+        expect(remixTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders nuxt tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
+        })
+
+        const nuxtTab = await screen.findByTestId('nuxt-radio')
+        expect(nuxtTab).toBeInTheDocument()
+        expect(nuxtTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders solidstart tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
+        })
+
+        const solidstartTab = await screen.findByTestId('solidstart-radio')
+        expect(solidstartTab).toBeInTheDocument()
+        expect(solidstartTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders sveltekit tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
+        })
+
+        const sveltekitTab = await screen.findByTestId('sveltekit-radio')
+        expect(sveltekitTab).toBeInTheDocument()
+        expect(sveltekitTab).toHaveAttribute('data-state', 'unchecked')
       })
     })
 
@@ -337,6 +501,50 @@ describe('BundleOnboarding', () => {
         expect(webpackTab).toBeInTheDocument()
         expect(webpackTab).toHaveAttribute('data-state', 'checked')
       })
+
+      it('renders remix tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
+        })
+
+        const remixTab = await screen.findByTestId('remix-radio')
+        expect(remixTab).toBeInTheDocument()
+        expect(remixTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders nuxt tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
+        })
+
+        const nuxtTab = await screen.findByTestId('nuxt-radio')
+        expect(nuxtTab).toBeInTheDocument()
+        expect(nuxtTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders solidstart tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
+        })
+
+        const solidstartTab = await screen.findByTestId('solidstart-radio')
+        expect(solidstartTab).toBeInTheDocument()
+        expect(solidstartTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders sveltekit tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
+        })
+
+        const sveltekitTab = await screen.findByTestId('sveltekit-radio')
+        expect(sveltekitTab).toBeInTheDocument()
+        expect(sveltekitTab).toHaveAttribute('data-state', 'unchecked')
+      })
     })
 
     describe('rendering body', () => {
@@ -348,6 +556,386 @@ describe('BundleOnboarding', () => {
 
         const webpackOnboarding = await screen.findByText(
           /Install the Codecov Webpack Plugin/
+        )
+        expect(webpackOnboarding).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('on /new/remix-vite route', () => {
+    describe('rendering tabs', () => {
+      it('renders vite tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/remix-vite'),
+        })
+
+        const viteTab = await screen.findByTestId('vite-radio')
+        expect(viteTab).toBeInTheDocument()
+        expect(viteTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders rollup tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/remix-vite'),
+        })
+
+        const rollupTab = await screen.findByTestId('rollup-radio')
+        expect(rollupTab).toBeInTheDocument()
+        expect(rollupTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders webpack tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/remix-vite'),
+        })
+
+        const webpackTab = await screen.findByTestId('webpack-radio')
+        expect(webpackTab).toBeInTheDocument()
+        expect(webpackTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders selected remix tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/remix-vite'),
+        })
+
+        const remixTab = await screen.findByTestId('remix-radio')
+        expect(remixTab).toBeInTheDocument()
+        expect(remixTab).toHaveAttribute('data-state', 'checked')
+      })
+
+      it('renders nuxt tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/remix-vite'),
+        })
+
+        const nuxtTab = await screen.findByTestId('nuxt-radio')
+        expect(nuxtTab).toBeInTheDocument()
+        expect(nuxtTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders solidstart tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/remix-vite'),
+        })
+
+        const solidstartTab = await screen.findByTestId('solidstart-radio')
+        expect(solidstartTab).toBeInTheDocument()
+        expect(solidstartTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders sveltekit tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/remix-vite'),
+        })
+
+        const sveltekitTab = await screen.findByTestId('sveltekit-radio')
+        expect(sveltekitTab).toBeInTheDocument()
+        expect(sveltekitTab).toHaveAttribute('data-state', 'unchecked')
+      })
+    })
+
+    describe('rendering body', () => {
+      it('renders webpack onboarding', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/remix-vite'),
+        })
+
+        const webpackOnboarding = await screen.findByText(
+          /Install the Codecov Remix (Vite) Plugin/
+        )
+        expect(webpackOnboarding).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('on /new/nuxt route', () => {
+    describe('rendering tabs', () => {
+      it('renders vite tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/nuxt'),
+        })
+
+        const viteTab = await screen.findByTestId('vite-radio')
+        expect(viteTab).toBeInTheDocument()
+        expect(viteTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders rollup tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/nuxt'),
+        })
+
+        const rollupTab = await screen.findByTestId('rollup-radio')
+        expect(rollupTab).toBeInTheDocument()
+        expect(rollupTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders webpack tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/nuxt'),
+        })
+
+        const webpackTab = await screen.findByTestId('webpack-radio')
+        expect(webpackTab).toBeInTheDocument()
+        expect(webpackTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders remix tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/nuxt'),
+        })
+
+        const remixTab = await screen.findByTestId('remix-radio')
+        expect(remixTab).toBeInTheDocument()
+        expect(remixTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders selected nuxt tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/nuxt'),
+        })
+
+        const nuxtTab = await screen.findByTestId('nuxt-radio')
+        expect(nuxtTab).toBeInTheDocument()
+        expect(nuxtTab).toHaveAttribute('data-state', 'checked')
+      })
+
+      it('renders solidstart tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/nuxt'),
+        })
+
+        const solidstartTab = await screen.findByTestId('solidstart-radio')
+        expect(solidstartTab).toBeInTheDocument()
+        expect(solidstartTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders sveltekit tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/nuxt'),
+        })
+
+        const sveltekitTab = await screen.findByTestId('sveltekit-radio')
+        expect(sveltekitTab).toBeInTheDocument()
+        expect(sveltekitTab).toHaveAttribute('data-state', 'unchecked')
+      })
+    })
+
+    describe('rendering body', () => {
+      it('renders webpack onboarding', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/nuxt'),
+        })
+
+        const webpackOnboarding = await screen.findByText(
+          /Install the Codecov Nuxt Plugin/
+        )
+        expect(webpackOnboarding).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('on /new/sveltekit route', () => {
+    describe('rendering tabs', () => {
+      it('renders vite tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/sveltekit'),
+        })
+
+        const viteTab = await screen.findByTestId('vite-radio')
+        expect(viteTab).toBeInTheDocument()
+        expect(viteTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders rollup tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/sveltekit'),
+        })
+
+        const rollupTab = await screen.findByTestId('rollup-radio')
+        expect(rollupTab).toBeInTheDocument()
+        expect(rollupTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders webpack tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/sveltekit'),
+        })
+
+        const webpackTab = await screen.findByTestId('webpack-radio')
+        expect(webpackTab).toBeInTheDocument()
+        expect(webpackTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders remix tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/sveltekit'),
+        })
+
+        const remixTab = await screen.findByTestId('remix-radio')
+        expect(remixTab).toBeInTheDocument()
+        expect(remixTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders nuxt tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/sveltekit'),
+        })
+
+        const nuxtTab = await screen.findByTestId('nuxt-radio')
+        expect(nuxtTab).toBeInTheDocument()
+        expect(nuxtTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders solidstart tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/sveltekit'),
+        })
+
+        const solidstartTab = await screen.findByTestId('solidstart-radio')
+        expect(solidstartTab).toBeInTheDocument()
+        expect(solidstartTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders selected sveltekit tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/sveltekit'),
+        })
+
+        const sveltekitTab = await screen.findByTestId('sveltekit-radio')
+        expect(sveltekitTab).toBeInTheDocument()
+        expect(sveltekitTab).toHaveAttribute('data-state', 'checked')
+      })
+    })
+
+    describe('rendering body', () => {
+      it('renders webpack onboarding', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/sveltekit'),
+        })
+
+        const webpackOnboarding = await screen.findByText(
+          /Install the Codecov SvelteKit Plugin/
+        )
+        expect(webpackOnboarding).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('on /new/solidstart route', () => {
+    describe('rendering tabs', () => {
+      it('renders vite tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/solidstart'),
+        })
+
+        const viteTab = await screen.findByTestId('vite-radio')
+        expect(viteTab).toBeInTheDocument()
+        expect(viteTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders rollup tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/solidstart'),
+        })
+
+        const rollupTab = await screen.findByTestId('rollup-radio')
+        expect(rollupTab).toBeInTheDocument()
+        expect(rollupTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders webpack tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/solidstart'),
+        })
+
+        const webpackTab = await screen.findByTestId('webpack-radio')
+        expect(webpackTab).toBeInTheDocument()
+        expect(webpackTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders remix tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/solidstart'),
+        })
+
+        const remixTab = await screen.findByTestId('remix-radio')
+        expect(remixTab).toBeInTheDocument()
+        expect(remixTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders nuxt tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/solidstart'),
+        })
+
+        const nuxtTab = await screen.findByTestId('nuxt-radio')
+        expect(nuxtTab).toBeInTheDocument()
+        expect(nuxtTab).toHaveAttribute('data-state', 'unchecked')
+      })
+
+      it('renders selected solidstart tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/solidstart'),
+        })
+
+        const solidstartTab = await screen.findByTestId('solidstart-radio')
+        expect(solidstartTab).toBeInTheDocument()
+        expect(solidstartTab).toHaveAttribute('data-state', 'checked')
+      })
+
+      it('renders sveltekit tab', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/solidstart'),
+        })
+
+        const sveltekitTab = await screen.findByTestId('sveltekit-radio')
+        expect(sveltekitTab).toBeInTheDocument()
+        expect(sveltekitTab).toHaveAttribute('data-state', 'unchecked')
+      })
+    })
+
+    describe('rendering body', () => {
+      it('renders webpack onboarding', async () => {
+        setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/solidstart'),
+        })
+
+        const webpackOnboarding = await screen.findByText(
+          /Install the Codecov SolidStart Plugin/
         )
         expect(webpackOnboarding).toBeInTheDocument()
       })

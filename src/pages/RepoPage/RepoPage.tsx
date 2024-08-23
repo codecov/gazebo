@@ -123,6 +123,10 @@ function Routes({
               `${path}/bundles/new`,
               `${path}/bundles/new/rollup`,
               `${path}/bundles/new/webpack`,
+              `${path}/bundles/new/remix-vite`,
+              `${path}/bundles/new/nuxt`,
+              `${path}/bundles/new/sveltekit`,
+              `${path}/bundles/new/solidstart`,
             ]}
             exact
           >
@@ -221,6 +225,10 @@ function Routes({
             `${path}/bundles/new`,
             `${path}/bundles/new/rollup`,
             `${path}/bundles/new/webpack`,
+            `${path}/bundles/new/remix-vite`,
+            `${path}/bundles/new/nuxt`,
+            `${path}/bundles/new/sveltekit`,
+            `${path}/bundles/new/solidstart`,
           ]}
           exact
         >

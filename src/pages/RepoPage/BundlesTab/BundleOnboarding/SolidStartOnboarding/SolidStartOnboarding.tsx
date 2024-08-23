@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
@@ -17,23 +17,27 @@ import {
   visitedOnboardingMetric,
 } from '../metricHelpers'
 
-const npmInstall = `npm install @codecov/rollup-plugin --save-dev`
-const yarnInstall = `yarn add @codecov/rollup-plugin --dev`
-const pnpmInstall = `pnpm add @codecov/rollup-plugin --save-dev`
+const npmInstall = `npm install @codecov/solidstart-plugin --save-dev`
+const yarnInstall = `yarn add @codecov/solidstart-plugin --dev`
+const pnpmInstall = `pnpm add @codecov/solidstart-plugin --save-dev`
 
-const pluginConfig = `// rollup.config.js
-import { defineConfig } from "rollup";
-import { codecovRollupPlugin } from "@codecov/rollup-plugin";
+const pluginConfig = `// app.config.ts
+import { defineConfig } from "@solidjs/start/config";
+import solidPlugin from "vite-plugin-solid";
+import { codecovSolidStartPlugin } from "@codecov/solidstart-plugin";
 
 export default defineConfig({
-  plugins: [
-    // Put the Codecov rollup plugin after all other plugins
-    codecovRollupPlugin({
-      enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
-      bundleName: "<bundle project name>",
-      uploadToken: process.env.CODECOV_TOKEN,
-    }),
-  ],
+  vite: {
+    plugins: [
+      // Put the Codecov SolidStart plugin after all other plugins
+      solidPlugin(),
+      codecovSolidStartPlugin({
+        enableBundleAnalysis: true,
+        bundleName: "example-solidstart-bundle",
+        uploadToken: process.env.CODECOV_TOKEN,
+      }),
+    ],
+  },
 });`
 
 const commitString = `git add -A && git commit -m "Add Codecov bundler plugin" && git push`
@@ -47,41 +51,41 @@ const StepOne: React.FC = () => {
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 1: Install the Codecov Rollup Plugin
+          Step 1: Install the Codecov SolidStart Plugin
         </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <p>
           To install the{' '}
           <span className="bg-ds-gray-primary px-1 font-mono">
-            @codecov/rollup-plugin
+            @codecov/solidstart-plugin
           </span>{' '}
           to your project, use one of the following commands.
         </p>
         <CodeSnippet
           clipboard={npmInstall}
           clipboardOnClick={() => {
-            copiedInstallCommandMetric('npm', 'rollup')
+            copiedInstallCommandMetric('npm', 'solidstart')
           }}
-          data-testid="rollup-npm-install"
+          data-testid="solidstart-npm-install"
         >
           {npmInstall}
         </CodeSnippet>
         <CodeSnippet
           clipboard={yarnInstall}
           clipboardOnClick={() => {
-            copiedInstallCommandMetric('yarn', 'rollup')
+            copiedInstallCommandMetric('yarn', 'solidstart')
           }}
-          data-testid="rollup-yarn-install"
+          data-testid="solidstart-yarn-install"
         >
           {yarnInstall}
         </CodeSnippet>
         <CodeSnippet
           clipboard={pnpmInstall}
           clipboardOnClick={() => {
-            copiedInstallCommandMetric('pnpm', 'rollup')
+            copiedInstallCommandMetric('pnpm', 'solidstart')
           }}
-          data-testid="rollup-pnpm-install"
+          data-testid="solidstart-pnpm-install"
         >
           {pnpmInstall}
         </CodeSnippet>
@@ -109,9 +113,9 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
             className="basis-2/3"
             clipboard={uploadToken}
             clipboardOnClick={() => {
-              copiedTokenMetric('rollup')
+              copiedTokenMetric('solidstart')
             }}
-            data-testid="rollup-upload-token"
+            data-testid="solidstart-upload-token"
           >
             {uploadToken}
           </CodeSnippet>
@@ -131,19 +135,18 @@ const StepThree: React.FC = () => {
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <p>
-          Import the bundler plugin, and add it to the end of your plugin array
-          found inside your{' '}
+          Add the plugin to the end of your modules array found inside your{' '}
           <span className="bg-ds-gray-primary px-1 font-mono">
-            rollup.config.js
+            app.config.ts
           </span>{' '}
-          file.
+          file, and pass your configuration.
         </p>
         <CodeSnippet
           clipboard={pluginConfig}
           clipboardOnClick={() => {
-            copiedConfigMetric('rollup')
+            copiedConfigMetric('solidstart')
           }}
-          data-testid="rollup-plugin-config"
+          data-testid="solidstart-plugin-config"
         >
           {pluginConfig}
         </CodeSnippet>
@@ -168,9 +171,9 @@ const StepFour: React.FC = () => {
         <CodeSnippet
           clipboard={commitString}
           clipboardOnClick={() => {
-            copiedCommitMetric('rollup')
+            copiedCommitMetric('solidstart')
           }}
-          data-testid="rollup-commit-command"
+          data-testid="solidstart-commit-command"
         >
           {commitString}
         </CodeSnippet>
@@ -193,27 +196,27 @@ const StepFive: React.FC = () => {
         <CodeSnippet
           clipboard={npmBuild}
           clipboardOnClick={() => {
-            copiedBuildCommandMetric('npm', 'rollup')
+            copiedBuildCommandMetric('npm', 'solidstart')
           }}
-          data-testid="rollup-npm-build"
+          data-testid="solidstart-npm-build"
         >
           {npmBuild}
         </CodeSnippet>
         <CodeSnippet
           clipboard={yarnBuild}
           clipboardOnClick={() => {
-            copiedBuildCommandMetric('yarn', 'rollup')
+            copiedBuildCommandMetric('yarn', 'solidstart')
           }}
-          data-testid="rollup-yarn-build"
+          data-testid="solidstart-yarn-build"
         >
           {yarnBuild}
         </CodeSnippet>
         <CodeSnippet
           clipboard={pnpmBuild}
           clipboardOnClick={() => {
-            copiedBuildCommandMetric('pnpm', 'rollup')
+            copiedBuildCommandMetric('pnpm', 'solidstart')
           }}
-          data-testid="rollup-pnpm-build"
+          data-testid="solidstart-pnpm-build"
         >
           {pnpmBuild}
         </CodeSnippet>
@@ -248,7 +251,7 @@ interface URLParams {
   repo: string
 }
 
-const RollupOnboarding: React.FC = () => {
+const SolidStartOnboarding: React.FC = () => {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data: repoData } = useRepo({ provider, owner, repo })
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
@@ -256,7 +259,7 @@ const RollupOnboarding: React.FC = () => {
   const uploadToken = orgUploadToken ?? repoData?.repository?.uploadToken ?? ''
 
   useEffect(() => {
-    visitedOnboardingMetric('rollup')
+    visitedOnboardingMetric('solidstart')
   }, [])
 
   return (
@@ -272,4 +275,4 @@ const RollupOnboarding: React.FC = () => {
   )
 }
 
-export default RollupOnboarding
+export default SolidStartOnboarding

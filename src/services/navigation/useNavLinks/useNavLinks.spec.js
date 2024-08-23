@@ -1894,6 +1894,102 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('nuxt onboarding', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleNuxtOnboarding.path()
+      expect(path).toBe('/gh/codecov/cool-repo/bundles/new/nuxt')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleNuxtOnboarding.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/bundles/new/nuxt')
+    })
+  })
+
+  describe('remix vite onboarding', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleRemixOnboarding.path()
+      expect(path).toBe('/gh/codecov/cool-repo/bundles/new/remix-vite')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleRemixOnboarding.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/bundles/new/remix-vite')
+    })
+  })
+
+  describe('sveltekit onboarding', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleSvelteKitOnboarding.path()
+      expect(path).toBe('/gh/codecov/cool-repo/bundles/new/sveltekit')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleSvelteKitOnboarding.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/bundles/new/sveltekit')
+    })
+  })
+
+  describe('solidstart onboarding', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleSolidStartOnboarding.path()
+      expect(path).toBe('/gh/codecov/cool-repo/bundles/new/solidstart')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleSolidStartOnboarding.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/bundles/new/solidstart')
+    })
+  })
+
   describe('Failed tests tab', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {

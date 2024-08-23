@@ -6,7 +6,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import RollupOnboarding from './RollupOnboarding'
+import NuxtOnboarding from './NuxtOnboarding'
 
 const mockGetRepo = {
   owner: {
@@ -67,7 +67,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('RollupOnboarding', () => {
+describe('NuxtOnboarding', () => {
   function setup(hasOrgUploadToken: boolean | null) {
     // mock out to clear error
     window.prompt = jest.fn()
@@ -89,15 +89,15 @@ describe('RollupOnboarding', () => {
   }
 
   describe('rendering onboarding', () => {
-    it('sends rollup onboarding metric', async () => {
+    it('sends nuxt onboarding metric', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       await waitFor(() =>
         expect(Sentry.metrics.increment).toHaveBeenCalledWith(
           'bundles_tab.onboarding.visited_page',
           1,
-          { tags: { bundler: 'rollup' } }
+          { tags: { bundler: 'nuxt' } }
         )
       )
     })
@@ -106,25 +106,25 @@ describe('RollupOnboarding', () => {
   describe('step 1', () => {
     it('renders header', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const stepText = await screen.findByText(/Step 1:/)
       expect(stepText).toBeInTheDocument()
 
       const headerText = await screen.findByText(
-        /Install the Codecov Rollup Plugin/
+        /Install the Codecov Nuxt Plugin/
       )
       expect(headerText).toBeInTheDocument()
     })
 
     it('renders body', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const bodyText = await screen.findByText(/To install the/)
       expect(bodyText).toBeInTheDocument()
 
-      const pluginName = await screen.findByText('@codecov/rollup-plugin')
+      const pluginName = await screen.findByText('@codecov/nuxt-plugin')
       expect(pluginName).toBeInTheDocument()
     })
 
@@ -132,10 +132,10 @@ describe('RollupOnboarding', () => {
       describe('npm', () => {
         it('renders npm install', async () => {
           setup(null)
-          render(<RollupOnboarding />, { wrapper })
+          render(<NuxtOnboarding />, { wrapper })
 
           const npmInstallCommand = await screen.findByText(
-            'npm install @codecov/rollup-plugin --save-dev'
+            'npm install @codecov/nuxt-plugin --save-dev'
           )
           expect(npmInstallCommand).toBeInTheDocument()
         })
@@ -143,9 +143,9 @@ describe('RollupOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(null)
-            render(<RollupOnboarding />, { wrapper })
+            render(<NuxtOnboarding />, { wrapper })
 
-            const npmInstall = await screen.findByTestId('rollup-npm-install')
+            const npmInstall = await screen.findByTestId('nuxt-npm-install')
             const npmInstallCopy = await within(npmInstall).findByTestId(
               'clipboard-code-snippet'
             )
@@ -156,7 +156,7 @@ describe('RollupOnboarding', () => {
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.install_command',
                 1,
-                { tags: { package_manager: 'npm', bundler: 'rollup' } }
+                { tags: { package_manager: 'npm', bundler: 'nuxt' } }
               )
             )
           })
@@ -166,10 +166,10 @@ describe('RollupOnboarding', () => {
       describe('yarn', () => {
         it('renders yarn install', async () => {
           setup(null)
-          render(<RollupOnboarding />, { wrapper })
+          render(<NuxtOnboarding />, { wrapper })
 
           const yarnInstallCommand = await screen.findByText(
-            'yarn add @codecov/rollup-plugin --dev'
+            'yarn add @codecov/nuxt-plugin --dev'
           )
           expect(yarnInstallCommand).toBeInTheDocument()
         })
@@ -177,9 +177,9 @@ describe('RollupOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(null)
-            render(<RollupOnboarding />, { wrapper })
+            render(<NuxtOnboarding />, { wrapper })
 
-            const yarnInstall = await screen.findByTestId('rollup-yarn-install')
+            const yarnInstall = await screen.findByTestId('nuxt-yarn-install')
             const yarnInstallCopy = await within(yarnInstall).findByTestId(
               'clipboard-code-snippet'
             )
@@ -190,7 +190,7 @@ describe('RollupOnboarding', () => {
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.install_command',
                 1,
-                { tags: { package_manager: 'yarn', bundler: 'rollup' } }
+                { tags: { package_manager: 'yarn', bundler: 'nuxt' } }
               )
             )
           })
@@ -200,10 +200,10 @@ describe('RollupOnboarding', () => {
       describe('pnpm', () => {
         it('renders pnpm install', async () => {
           setup(null)
-          render(<RollupOnboarding />, { wrapper })
+          render(<NuxtOnboarding />, { wrapper })
 
           const pnpmInstallCommand = await screen.findByText(
-            'pnpm add @codecov/rollup-plugin --save-dev'
+            'pnpm add @codecov/nuxt-plugin --save-dev'
           )
           expect(pnpmInstallCommand).toBeInTheDocument()
         })
@@ -211,9 +211,9 @@ describe('RollupOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(null)
-            render(<RollupOnboarding />, { wrapper })
+            render(<NuxtOnboarding />, { wrapper })
 
-            const pnpmInstall = await screen.findByTestId('rollup-pnpm-install')
+            const pnpmInstall = await screen.findByTestId('nuxt-pnpm-install')
             const pnpmInstallCopy = await within(pnpmInstall).findByTestId(
               'clipboard-code-snippet'
             )
@@ -224,7 +224,7 @@ describe('RollupOnboarding', () => {
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.install_command',
                 1,
-                { tags: { package_manager: 'pnpm', bundler: 'rollup' } }
+                { tags: { package_manager: 'pnpm', bundler: 'nuxt' } }
               )
             )
           })
@@ -236,7 +236,7 @@ describe('RollupOnboarding', () => {
   describe('step 2', () => {
     it('renders header', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const stepText = await screen.findByText(/Step 2:/)
       expect(stepText).toBeInTheDocument()
@@ -247,7 +247,7 @@ describe('RollupOnboarding', () => {
 
     it('renders body', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const bodyText = await screen.findByText(
         /Set an environment variable in your build environment with the following upload token./
@@ -258,7 +258,7 @@ describe('RollupOnboarding', () => {
     describe('there is an org token', () => {
       it('renders code block with org token', async () => {
         setup(true)
-        render(<RollupOnboarding />, { wrapper })
+        render(<NuxtOnboarding />, { wrapper })
 
         const token = await screen.findByText(
           /9e6a6189-20f1-482d-ab62-ecfaa2629290/
@@ -270,7 +270,7 @@ describe('RollupOnboarding', () => {
     describe('there is no org token', () => {
       it('renders code block with repo token', async () => {
         setup(false)
-        render(<RollupOnboarding />, { wrapper })
+        render(<NuxtOnboarding />, { wrapper })
 
         const token = await screen.findByText(
           /9e6a6189-20f1-482d-ab62-ecfaa2629295/
@@ -282,9 +282,9 @@ describe('RollupOnboarding', () => {
     describe('user clicks copy button', () => {
       it('sends metric to sentry', async () => {
         const { user } = setup(true)
-        render(<RollupOnboarding />, { wrapper })
+        render(<NuxtOnboarding />, { wrapper })
 
-        const uploadToken = await screen.findByTestId('rollup-upload-token')
+        const uploadToken = await screen.findByTestId('nuxt-upload-token')
         const uploadTokenCopy = await within(uploadToken).findByTestId(
           'clipboard-code-snippet'
         )
@@ -295,7 +295,7 @@ describe('RollupOnboarding', () => {
           expect(Sentry.metrics.increment).toHaveBeenCalledWith(
             'bundles_tab.onboarding.copied.token',
             1,
-            { tags: { bundler: 'rollup' } }
+            { tags: { bundler: 'nuxt' } }
           )
         )
       })
@@ -305,7 +305,7 @@ describe('RollupOnboarding', () => {
   describe('step 3', () => {
     it('renders header', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const stepText = await screen.findByText(/Step 3:/)
       expect(stepText).toBeInTheDocument()
@@ -316,31 +316,31 @@ describe('RollupOnboarding', () => {
 
     it('renders body', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const bodyText = await screen.findByText(
-        /Import the bundler plugin, and add it to the end of your plugin array found inside your/
+        /Add the plugin to the end of your modules array found inside your/
       )
       expect(bodyText).toBeInTheDocument()
 
-      const rollupConfig = await screen.findByText('rollup.config.js')
-      expect(rollupConfig).toBeInTheDocument()
+      const nuxtConfig = await screen.findByText('nuxt.config.js')
+      expect(nuxtConfig).toBeInTheDocument()
     })
 
     it('renders plugin config', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
-      const pluginText = await screen.findByText(/\/\/ rollup.config.js/)
+      const pluginText = await screen.findByText(/\/\/ nuxt.config.js/)
       expect(pluginText).toBeInTheDocument()
     })
 
     describe('user clicks copy button', () => {
       it('sends metric to sentry', async () => {
         const { user } = setup(true)
-        render(<RollupOnboarding />, { wrapper })
+        render(<NuxtOnboarding />, { wrapper })
 
-        const pluginConfig = await screen.findByTestId('rollup-plugin-config')
+        const pluginConfig = await screen.findByTestId('nuxt-plugin-config')
         const pluginConfigCopy = await within(pluginConfig).findByTestId(
           'clipboard-code-snippet'
         )
@@ -351,7 +351,7 @@ describe('RollupOnboarding', () => {
           expect(Sentry.metrics.increment).toHaveBeenCalledWith(
             'bundles_tab.onboarding.copied.config',
             1,
-            { tags: { bundler: 'rollup' } }
+            { tags: { bundler: 'nuxt' } }
           )
         )
       })
@@ -361,7 +361,7 @@ describe('RollupOnboarding', () => {
   describe('step 4', () => {
     it('renders header', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const stepText = await screen.findByText(/Step 4:/)
       expect(stepText).toBeInTheDocument()
@@ -374,7 +374,7 @@ describe('RollupOnboarding', () => {
 
     it('renders body', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const bodyText = await screen.findByText(
         'The plugin requires at least one commit to be made to properly upload bundle analysis information to Codecov.'
@@ -384,7 +384,7 @@ describe('RollupOnboarding', () => {
 
     it('renders git commit', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const gitCommit = await screen.findByText(
         'git add -A && git commit -m "Add Codecov bundler plugin" && git push'
@@ -395,9 +395,9 @@ describe('RollupOnboarding', () => {
     describe('user clicks copy button', () => {
       it('sends metric to sentry', async () => {
         const { user } = setup(true)
-        render(<RollupOnboarding />, { wrapper })
+        render(<NuxtOnboarding />, { wrapper })
 
-        const commitCommand = await screen.findByTestId('rollup-commit-command')
+        const commitCommand = await screen.findByTestId('nuxt-commit-command')
         const commitCommandCopy = await within(commitCommand).findByTestId(
           'clipboard-code-snippet'
         )
@@ -408,7 +408,7 @@ describe('RollupOnboarding', () => {
           expect(Sentry.metrics.increment).toHaveBeenCalledWith(
             'bundles_tab.onboarding.copied.commit',
             1,
-            { tags: { bundler: 'rollup' } }
+            { tags: { bundler: 'nuxt' } }
           )
         )
       })
@@ -418,7 +418,7 @@ describe('RollupOnboarding', () => {
   describe('step 5', () => {
     it('renders header', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const stepText = await screen.findByText(/Step 5:/)
       expect(stepText).toBeInTheDocument()
@@ -429,7 +429,7 @@ describe('RollupOnboarding', () => {
 
     it('renders body', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const bodyText = await screen.findByText(
         'When building your application the plugin will automatically upload the stats information to Codecov.'
@@ -441,7 +441,7 @@ describe('RollupOnboarding', () => {
       describe('npm', () => {
         it('renders npm build', async () => {
           setup(null)
-          render(<RollupOnboarding />, { wrapper })
+          render(<NuxtOnboarding />, { wrapper })
 
           const npmBuild = await screen.findByText('npm run build')
           expect(npmBuild).toBeInTheDocument()
@@ -450,9 +450,9 @@ describe('RollupOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(true)
-            render(<RollupOnboarding />, { wrapper })
+            render(<NuxtOnboarding />, { wrapper })
 
-            const buildCommand = await screen.findByTestId('rollup-npm-build')
+            const buildCommand = await screen.findByTestId('nuxt-npm-build')
             const buildCommandCopy = await within(buildCommand).findByTestId(
               'clipboard-code-snippet'
             )
@@ -463,7 +463,7 @@ describe('RollupOnboarding', () => {
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.build_command',
                 1,
-                { tags: { package_manager: 'npm', bundler: 'rollup' } }
+                { tags: { package_manager: 'npm', bundler: 'nuxt' } }
               )
             )
           })
@@ -473,7 +473,7 @@ describe('RollupOnboarding', () => {
       describe('yarn', () => {
         it('renders yarn build', async () => {
           setup(null)
-          render(<RollupOnboarding />, { wrapper })
+          render(<NuxtOnboarding />, { wrapper })
 
           const yarnBuild = await screen.findByText('yarn run build')
           expect(yarnBuild).toBeInTheDocument()
@@ -482,9 +482,9 @@ describe('RollupOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(true)
-            render(<RollupOnboarding />, { wrapper })
+            render(<NuxtOnboarding />, { wrapper })
 
-            const buildCommand = await screen.findByTestId('rollup-yarn-build')
+            const buildCommand = await screen.findByTestId('nuxt-yarn-build')
             const buildCommandCopy = await within(buildCommand).findByTestId(
               'clipboard-code-snippet'
             )
@@ -495,7 +495,7 @@ describe('RollupOnboarding', () => {
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.build_command',
                 1,
-                { tags: { package_manager: 'yarn', bundler: 'rollup' } }
+                { tags: { package_manager: 'yarn', bundler: 'nuxt' } }
               )
             )
           })
@@ -505,7 +505,7 @@ describe('RollupOnboarding', () => {
       describe('pnpm', () => {
         it('renders pnpm build', async () => {
           setup(null)
-          render(<RollupOnboarding />, { wrapper })
+          render(<NuxtOnboarding />, { wrapper })
 
           const pnpmBuild = await screen.findByText('pnpm run build')
           expect(pnpmBuild).toBeInTheDocument()
@@ -514,9 +514,9 @@ describe('RollupOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(true)
-            render(<RollupOnboarding />, { wrapper })
+            render(<NuxtOnboarding />, { wrapper })
 
-            const buildCommand = await screen.findByTestId('rollup-pnpm-build')
+            const buildCommand = await screen.findByTestId('nuxt-pnpm-build')
             const buildCommandCopy = await within(buildCommand).findByTestId(
               'clipboard-code-snippet'
             )
@@ -527,7 +527,7 @@ describe('RollupOnboarding', () => {
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.build_command',
                 1,
-                { tags: { package_manager: 'pnpm', bundler: 'rollup' } }
+                { tags: { package_manager: 'pnpm', bundler: 'nuxt' } }
               )
             )
           })
@@ -539,7 +539,7 @@ describe('RollupOnboarding', () => {
   describe('linking out to setup feedback', () => {
     it('renders correct preview text', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const text = await screen.findByText(/How was your setup experience\?/)
       expect(text).toBeInTheDocument()
@@ -550,7 +550,7 @@ describe('RollupOnboarding', () => {
 
     it('renders link', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const link = await screen.findByText('this issue')
       expect(link).toBeInTheDocument()
@@ -564,7 +564,7 @@ describe('RollupOnboarding', () => {
   describe('learn more blurb', () => {
     it('renders body', async () => {
       setup(null)
-      render(<RollupOnboarding />, { wrapper })
+      render(<NuxtOnboarding />, { wrapper })
 
       const body = await screen.findByText(/Visit our guide to/)
       expect(body).toBeInTheDocument()
