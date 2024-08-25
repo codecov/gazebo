@@ -176,15 +176,13 @@ const MainAppRoutes = () => (
 
 function App() {
   return (
-    <>
-      <ThemeContextProvider>
-        <ToastNotificationProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-          <MainAppRoutes />
-        </ToastNotificationProvider>
-        <Toaster />
-      </ThemeContextProvider>
-    </>
+    <ThemeContextProvider>
+      <ToastNotificationProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+        <MainAppRoutes />
+      </ToastNotificationProvider>
+      <Toaster />
+    </ThemeContextProvider>
   )
 }
 

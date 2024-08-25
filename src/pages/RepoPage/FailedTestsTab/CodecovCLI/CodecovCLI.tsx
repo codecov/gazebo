@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 
 import testsPRComment from 'assets/svg/onboardingTests/testsPRComment.svg'
-import testsPRCommentDark from 'assets/svg/onboardingTests/testsPRCommentDark.png'
+import testsPRCommentDark from 'assets/svg/onboardingTests/testsPRCommentDark.svg'
 import testsRunning from 'assets/svg/onboardingTests/testsRunning.svg'
 import { Theme, ThemeContext } from 'shared/ThemeContext'
 import A from 'ui/A'
