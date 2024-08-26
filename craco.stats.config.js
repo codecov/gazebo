@@ -26,20 +26,21 @@ module.exports = {
       sentry: resolve(__dirname, 'src/sentry'),
     },
     plugins: [
-      ...(process.env.CODECOV_ORG_TOKEN && process.env.CODECOV_API_URL
+      ...((() => {
+          console.error('running codecovWebpackPlugin')
+          if (process.env?.GITHUB_HEAD_REF) {
+            console.error(`\ngithub head ref: ${process.env.GITHUB_HEAD_REF}\n`)
+          }
+        return process.env.CODECOV_ORG_TOKEN && process.env.CODECOV_API_URL
         ? [
-           (() => {
-            if (process.env?.GITHUB_HEAD_REF) {
-              console.error(`\ngithub head ref: ${process.env.GITHUB_HEAD_REF}\n`)
-            }
-            return codecovWebpackPlugin({
+            codecovWebpackPlugin({
               enableBundleAnalysis: true,
               bundleName: process.env.CODECOV_BUNDLE_NAME,
               apiUrl: process.env.CODECOV_API_URL,
               uploadToken: process.env.CODECOV_ORG_TOKEN,
-            })})(),
+            }),
           ]
-        : []),
+        : []})()),
     ],
   },
   jest: {
