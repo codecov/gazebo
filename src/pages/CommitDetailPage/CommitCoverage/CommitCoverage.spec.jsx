@@ -165,7 +165,7 @@ const mockErroredUploads = {
 
 const mockRepoSettingsTeamData = (isPrivate = false) => ({
   owner: {
-    isCurrentUserActivated: null,
+    isCurrentUserPartOfOrg: null,
     repository: {
       __typename: 'Repository',
       defaultBranch: 'master',

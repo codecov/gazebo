@@ -31,7 +31,7 @@ afterAll(() => server.close())
 
 const mockNotFoundError = {
   owner: {
-    isCurrentUserActivated: null,
+    isCurrentUserPartOfOrg: null,
     repository: {
       __typename: 'NotFoundError',
       message: 'repo not found',
@@ -41,7 +41,7 @@ const mockNotFoundError = {
 
 const mockIncorrectResponse = {
   owner: {
-    isCurrentUserActivated: false,
+    isCurrentUserPartOfOrg: false,
     repository: {
       invalid: 'invalid',
     },
@@ -50,7 +50,7 @@ const mockIncorrectResponse = {
 
 const mockResponse = {
   owner: {
-    isCurrentUserActivated: true,
+    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
       defaultBranch: 'master',
@@ -100,7 +100,7 @@ describe('useRepoSettingsTeam', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
-            isCurrentUserActivated: true,
+            isCurrentUserPartOfOrg: true,
             repository: {
               __typename: 'Repository',
               defaultBranch: 'master',

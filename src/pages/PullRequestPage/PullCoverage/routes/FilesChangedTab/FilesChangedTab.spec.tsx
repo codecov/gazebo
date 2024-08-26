@@ -128,7 +128,7 @@ describe('FilesChangedTab', () => {
           ctx.status(200),
           ctx.data({
             owner: {
-              isCurrentUserActivated: true,
+              isCurrentUserPartOfOrg: true,
               repository: {
                 __typename: 'Repository',
                 activated: true,

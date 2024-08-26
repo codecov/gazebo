@@ -137,7 +137,7 @@ const mockBranch = (branchName) => ({
 
 const mockRepoSettings = (isPrivate = false) => ({
   owner: {
-    isCurrentUserActivated: true,
+    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
       activated: true,

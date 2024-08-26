@@ -30,10 +30,10 @@ jest.mock('./Header', () => ({ children }: { children: React.ReactNode }) => (
 
 const mockRepoSettings = (
   isPrivate = false,
-  isCurrentUserActivated = true
+  isCurrentUserPartOfOrg = true
 ) => ({
   owner: {
-    isCurrentUserActivated,
+    isCurrentUserPartOfOrg,
     repository: {
       __typename: 'Repository',
       activated: true,
@@ -158,13 +158,13 @@ describe('Components Tab', () => {
     flags = [nextPageFlagData, initialFlagData],
     tierValue = TierNames.PRO,
     isPrivate = false,
-    isCurrentUserActivated = true,
+    isCurrentUserPartOfOrg = true,
   }: {
     data?: object
     flags?: any[]
     tierValue?: TTierNames
     isPrivate?: boolean
-    isCurrentUserActivated?: boolean
+    isCurrentUserPartOfOrg?: boolean
   }) {
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
@@ -182,7 +182,7 @@ describe('Components Tab', () => {
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data(mockRepoSettings(isPrivate, isCurrentUserActivated))
+          ctx.data(mockRepoSettings(isPrivate, isCurrentUserPartOfOrg))
         )
       }),
       graphql.query('BackfillComponentMemberships', (req, res, ctx) =>
@@ -338,7 +338,7 @@ describe('Components Tab', () => {
     })
   })
 
-  describe('when current user is not activated and data is not enabled', () => {
+  describe('when current user is not part of org and data is not enabled', () => {
     beforeEach(() => {
       setup({
         data: {
@@ -353,13 +353,15 @@ describe('Components Tab', () => {
             },
           },
         },
-        isCurrentUserActivated: false,
+        isCurrentUserPartOfOrg: false,
       })
     })
 
     it('renders empty state message', async () => {
       render(<ComponentsTab />, { wrapper })
-      const componentsText = await screen.findByText(/No data to display/)
+      const componentsText = await screen.findByText(
+        /Component analytics is disabled./
+      )
       expect(componentsText).toBeInTheDocument()
     })
   })

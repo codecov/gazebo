@@ -38,10 +38,10 @@ const flagsData = [
 
 const mockRepoSettings = (
   isPrivate = false,
-  isCurrentUserActivated = true
+  isCurrentUserPartOfOrg = true
 ) => ({
   owner: {
-    isCurrentUserActivated,
+    isCurrentUserPartOfOrg,
     repository: {
       __typename: 'Repository',
       activated: true,
@@ -98,7 +98,7 @@ describe('Flags Tab', () => {
     flags = flagsData,
     tierValue = TierNames.PRO,
     isPrivate = false,
-    isCurrentUserActivated = true,
+    isCurrentUserPartOfOrg = true,
   }) {
     useRepoFlagsSelect.mockReturnValue({ data: flags })
     useRepoBackfilled.mockReturnValue(data)
@@ -119,7 +119,7 @@ describe('Flags Tab', () => {
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data(mockRepoSettings(isPrivate, isCurrentUserActivated))
+          ctx.data(mockRepoSettings(isPrivate, isCurrentUserPartOfOrg))
         )
       })
     )
@@ -330,7 +330,7 @@ describe('Flags Tab', () => {
     })
   })
 
-  describe('when current user is not activated and data is not enabled', () => {
+  describe('when current user is not part of org and data is not enabled', () => {
     beforeEach(() => {
       setup({
         data: {
@@ -348,13 +348,13 @@ describe('Flags Tab', () => {
             name: 'flag2',
           },
         ],
-        isCurrentUserActivated: false,
+        isCurrentUserPartOfOrg: false,
       })
     })
 
     it('renders empty state message', async () => {
       render(<FlagsTab />, { wrapper })
-      const flagsText = await screen.findByText(/No data to display/)
+      const flagsText = await screen.findByText(/Flag analytics is disabled./)
       expect(flagsText).toBeInTheDocument()
     })
   })

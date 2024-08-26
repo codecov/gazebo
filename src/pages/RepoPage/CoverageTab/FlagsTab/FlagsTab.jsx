@@ -61,12 +61,12 @@ function FlagsTab() {
           isRepoBackfilling,
         })}
       >
-        {repoSettings?.isCurrentUserActivated ? (
+        {repoSettings?.isCurrentUserPartOfOrg ? (
           <BackfillBanners />
         ) : (
           <div className="mt-3 text-center">
             <hr />
-            <p className="mt-4 p-3">No data to display</p>
+            <p className="mt-4 p-3">Flag analytics is disabled.</p>
           </div>
         )}
       </Header>

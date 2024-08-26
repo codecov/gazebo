@@ -19,7 +19,7 @@ jest.mock('./subroute/Fileviewer', () => () => 'FileViewer')
 
 const mockRepoSettings = (isPrivate = false) => ({
   owner: {
-    isCurrentUserActivated: true,
+    isCurrentUserPartOfOrg: true,
     repository: {
       defaultBranch: 'master',
       private: isPrivate,

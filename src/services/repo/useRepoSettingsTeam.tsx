@@ -32,7 +32,7 @@ interface FetchRepoSettingsTeamArgs {
 const RequestSchema = z.object({
   owner: z
     .object({
-      isCurrentUserActivated: z.boolean().nullable(),
+      isCurrentUserPartOfOrg: z.boolean().nullable(),
       repository: z
         .discriminatedUnion('__typename', [
           RepositorySchema,
@@ -46,7 +46,7 @@ const RequestSchema = z.object({
 const query = `
 query GetRepoSettingsTeam($name: String!, $repo: String!) {
   owner(username:$name) {
-    isCurrentUserActivated
+    isCurrentUserPartOfOrg
     repository(name:$repo) {
       __typename
       ... on Repository {
@@ -106,7 +106,7 @@ function fetchRepoSettingsDetails({
 
     return {
       repository,
-      isCurrentUserActivated: data?.owner?.isCurrentUserActivated,
+      isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg,
     }
   })
 }
