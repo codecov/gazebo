@@ -36,8 +36,12 @@ const flagsData = [
   },
 ]
 
-const mockRepoSettings = (isPrivate = false) => ({
+const mockRepoSettings = (
+  isPrivate = false,
+  isCurrentUserPartOfOrg = true
+) => ({
   owner: {
+    isCurrentUserPartOfOrg,
     repository: {
       __typename: 'Repository',
       activated: true,
@@ -94,6 +98,7 @@ describe('Flags Tab', () => {
     flags = flagsData,
     tierValue = TierNames.PRO,
     isPrivate = false,
+    isCurrentUserPartOfOrg = true,
   }) {
     useRepoFlagsSelect.mockReturnValue({ data: flags })
     useRepoBackfilled.mockReturnValue(data)
@@ -112,7 +117,10 @@ describe('Flags Tab', () => {
         )
       }),
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+        return res(
+          ctx.status(200),
+          ctx.data(mockRepoSettings(isPrivate, isCurrentUserPartOfOrg))
+        )
       })
     )
   }
@@ -319,6 +327,35 @@ describe('Flags Tab', () => {
         /enable flags in your infrastructure today/
       )
       expect(enableText).toBeInTheDocument()
+    })
+  })
+
+  describe('when current user is not part of org and data is not enabled', () => {
+    beforeEach(() => {
+      setup({
+        data: {
+          data: {
+            flagsMeasurementsActive: true,
+            flagsMeasurementsBackfilled: true,
+            isTimescaleEnabled: true,
+          },
+        },
+        flags: [
+          {
+            name: 'flag1',
+          },
+          {
+            name: 'flag2',
+          },
+        ],
+        isCurrentUserPartOfOrg: false,
+      })
+    })
+
+    it('renders empty state message', async () => {
+      render(<FlagsTab />, { wrapper })
+      const flagsText = await screen.findByText(/Flag analytics is disabled./)
+      expect(flagsText).toBeInTheDocument()
     })
   })
 })
