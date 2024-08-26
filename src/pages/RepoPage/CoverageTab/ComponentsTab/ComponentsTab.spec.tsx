@@ -28,9 +28,12 @@ jest.mock('./Header', () => ({ children }: { children: React.ReactNode }) => (
   <p>Components Header Component {children}</p>
 ))
 
-const mockRepoSettings = (isPrivate = false) => ({
+const mockRepoSettings = (
+  isPrivate = false,
+  isCurrentUserActivated = true
+) => ({
   owner: {
-    isCurrentUserActivated: true,
+    isCurrentUserActivated,
     repository: {
       __typename: 'Repository',
       activated: true,
@@ -155,11 +158,13 @@ describe('Components Tab', () => {
     flags = [nextPageFlagData, initialFlagData],
     tierValue = TierNames.PRO,
     isPrivate = false,
+    isCurrentUserActivated = true,
   }: {
     data?: object
     flags?: any[]
     tierValue?: TTierNames
     isPrivate?: boolean
+    isCurrentUserActivated?: boolean
   }) {
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
@@ -175,7 +180,10 @@ describe('Components Tab', () => {
         )
       }),
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+        return res(
+          ctx.status(200),
+          ctx.data(mockRepoSettings(isPrivate, isCurrentUserActivated))
+        )
       }),
       graphql.query('BackfillComponentMemberships', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(data))
@@ -327,6 +335,32 @@ describe('Components Tab', () => {
         /enable components in your infrastructure today/
       )
       expect(enableText).toBeInTheDocument()
+    })
+  })
+
+  describe('when current user is not activated and data is not enabled', () => {
+    beforeEach(() => {
+      setup({
+        data: {
+          config: {
+            isTimescaleEnabled: true,
+          },
+          owner: {
+            repository: {
+              __typename: 'Repository',
+              componentsMeasurementsActive: false,
+              componentsMeasurementsBackfilled: false,
+            },
+          },
+        },
+        isCurrentUserActivated: false,
+      })
+    })
+
+    it('renders empty state message', async () => {
+      render(<ComponentsTab />, { wrapper })
+      const componentsText = await screen.findByText(/No data to display/)
+      expect(componentsText).toBeInTheDocument()
     })
   })
 })

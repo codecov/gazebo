@@ -69,9 +69,9 @@ function ComponentsTab() {
         {repoSettings?.isCurrentUserActivated ? (
           <BackfillBanners />
         ) : (
-          <div className="mt-3">
+          <div className="mt-3 text-center">
             <hr />
-            <p className="p-3">No data to display</p>
+            <p className="mt-4 p-3">No data to display</p>
           </div>
         )}
       </Header>

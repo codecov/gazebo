@@ -36,9 +36,12 @@ const flagsData = [
   },
 ]
 
-const mockRepoSettings = (isPrivate = false) => ({
+const mockRepoSettings = (
+  isPrivate = false,
+  isCurrentUserActivated = true
+) => ({
   owner: {
-    isCurrentUserActivated: true,
+    isCurrentUserActivated,
     repository: {
       __typename: 'Repository',
       activated: true,
@@ -95,6 +98,7 @@ describe('Flags Tab', () => {
     flags = flagsData,
     tierValue = TierNames.PRO,
     isPrivate = false,
+    isCurrentUserActivated = true,
   }) {
     useRepoFlagsSelect.mockReturnValue({ data: flags })
     useRepoBackfilled.mockReturnValue(data)
@@ -113,7 +117,10 @@ describe('Flags Tab', () => {
         )
       }),
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+        return res(
+          ctx.status(200),
+          ctx.data(mockRepoSettings(isPrivate, isCurrentUserActivated))
+        )
       })
     )
   }
@@ -320,6 +327,35 @@ describe('Flags Tab', () => {
         /enable flags in your infrastructure today/
       )
       expect(enableText).toBeInTheDocument()
+    })
+  })
+
+  describe('when current user is not activated and data is not enabled', () => {
+    beforeEach(() => {
+      setup({
+        data: {
+          data: {
+            flagsMeasurementsActive: true,
+            flagsMeasurementsBackfilled: true,
+            isTimescaleEnabled: true,
+          },
+        },
+        flags: [
+          {
+            name: 'flag1',
+          },
+          {
+            name: 'flag2',
+          },
+        ],
+        isCurrentUserActivated: false,
+      })
+    })
+
+    it('renders empty state message', async () => {
+      render(<FlagsTab />, { wrapper })
+      const flagsText = await screen.findByText(/No data to display/)
+      expect(flagsText).toBeInTheDocument()
     })
   })
 })
