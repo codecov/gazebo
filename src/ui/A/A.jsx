@@ -17,9 +17,9 @@ const variantClasses = {
   headerDeprecated: `font-semibold text-ds-gray-secondary`,
   guestHeader: `font-semibold text-ds-gray-senary dark:text-ds-defaultText`,
   link: `text-ds-blue-darker`,
-  semibold: 'text-ds-blue-darker font-semibold',
-  medium: 'text-ds-blue-darker font-medium',
-  code: `font-mono text-ds-blue-darker`,
+  semibold: 'text-ds-blue-darker font-semibold dark:text-ds-blue-default',
+  medium: 'text-ds-blue-darker font-medium dark:text-ds-blue-default',
+  code: `font-mono text-ds-blue-default`,
   cardLink: `text-ds-grey-octinary font-semibold truncate`,
   greyOctinary: `text-ds-gray-octinary`,
   grayQuinary: `text-ds-gray-quinary`,
@@ -27,7 +27,7 @@ const variantClasses = {
   upDirectory: `flex flex-grow text-ds-blue-default hover:no-underline focus:ring-0 w-full`,
   black: `text-ds-secondaryText`,
   blueSeptenary: `text-ds-blue-septenary`,
-  configure: `rounded bg-ds-blue-default px-4 py-1 font-semibold text-ds-gray-primary dark:text-white`,
+  configure: `rounded bg-ds-blue-default px-4 py-1 font-semibold text-ds-gray-primary dark:text-white dark:bg-ds-blue-nonary`,
 }
 
 const getHostnameFromRegex = (url) => {
