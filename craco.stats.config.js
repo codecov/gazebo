@@ -30,7 +30,7 @@ module.exports = {
         ? [
            (() => {
             if (process.env?.GITHUB_HEAD_REF) {
-              console.debug(`\ngithub head ref: ${process.env.GITHUB_HEAD_REF}\n`)
+              console.error(`\ngithub head ref: ${process.env.GITHUB_HEAD_REF}\n`)
             }
             return codecovWebpackPlugin({
               enableBundleAnalysis: true,
