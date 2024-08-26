@@ -78,11 +78,7 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   ) {
     tabs.push({
       pageName: 'bundles',
-      children: (
-        <>
-          Bundles <Badge>beta</Badge>
-        </>
-      ),
+      children: 'Bundles',
     })
   }
 
