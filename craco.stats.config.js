@@ -28,12 +28,16 @@ module.exports = {
     plugins: [
       ...(process.env.CODECOV_ORG_TOKEN && process.env.CODECOV_API_URL
         ? [
-            codecovWebpackPlugin({
+           (() => {
+            if (process.env?.GITHUB_HEAD_REF) {
+              console.debug(`\ngithub head ref: ${process.env.GITHUB_HEAD_REF}\n`)
+            }
+            return codecovWebpackPlugin({
               enableBundleAnalysis: true,
               bundleName: process.env.CODECOV_BUNDLE_NAME,
               apiUrl: process.env.CODECOV_API_URL,
               uploadToken: process.env.CODECOV_ORG_TOKEN,
-            }),
+            })})(),
           ]
         : []),
     ],
