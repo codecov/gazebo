@@ -71,7 +71,7 @@ function GuestHeader() {
           )}
         </div>
         <div className="flex items-center gap-4 md:mx-4">
-          {darkMode && <ThemeToggle />}
+          {darkMode ? <ThemeToggle /> : null}
           {isSelfHosted ? (
             <Button
               to={{ pageName: 'login' }}

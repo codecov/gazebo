@@ -5,9 +5,12 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useFlags } from 'shared/featureFlags'
+
 import GuestHeader from './GuestHeader'
 
 jest.mock('config')
+jest.mock('shared/featureFlags')
 
 // silence console errors
 console.error = () => {}
@@ -26,8 +29,11 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   </QueryClientProvider>
 )
 
+const mockedUseFlags = useFlags as jest.Mock
+
 beforeEach(() => {
   queryClient.clear()
+  mockedUseFlags.mockReturnValue({ darkMode: false })
 })
 
 describe('GuestHeader', () => {
@@ -103,6 +109,19 @@ describe('GuestHeader', () => {
           'https://about.codecov.io/codecov-free-trial'
         )
       })
+    })
+    it('has toggle for light/dark mode when flag on', async () => {
+      mockedUseFlags.mockReturnValueOnce({ darkMode: true })
+      render(<GuestHeader />, { wrapper })
+
+      const toggle = await screen.findByTestId('theme-toggle')
+      expect(toggle).toBeInTheDocument()
+    })
+    it('has no toggle for light/dark mode when flag off', () => {
+      render(<GuestHeader />, { wrapper })
+
+      const toggle = screen.queryAllByTestId('theme-toggle')
+      expect(toggle).toEqual([])
     })
   })
 

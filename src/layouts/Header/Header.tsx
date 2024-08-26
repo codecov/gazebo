@@ -22,6 +22,8 @@ function Header() {
     darkMode: false,
   })
 
+  console.log(darkMode)
+
   return (
     <header>
       {!currentUser ? <GuestHeader /> : null}
@@ -44,7 +46,7 @@ function Header() {
                 </Suspense>
               </div>
             ) : null}
-            {darkMode && <ThemeToggle />}
+            {darkMode ? <ThemeToggle /> : null}
             <HelpDropdown />
             <UserDropdown />
           </div>

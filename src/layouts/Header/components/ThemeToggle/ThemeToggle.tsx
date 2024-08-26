@@ -20,7 +20,11 @@ const ThemeToggle = () => {
   }
 
   return (
-    <button onClick={toggleTheme} style={{ margin: '8px' }}>
+    <button
+      onClick={toggleTheme}
+      style={{ margin: '8px' }}
+      data-testid="theme-toggle"
+    >
       {theme === Theme.LIGHT ? (
         <Icon variant="outline" name="moon" />
       ) : (
