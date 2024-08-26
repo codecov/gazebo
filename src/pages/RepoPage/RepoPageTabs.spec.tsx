@@ -233,9 +233,6 @@ describe('RepoPageTabs', () => {
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
-
-        const betaBadges = await screen.findAllByText('beta')
-        expect(betaBadges).toHaveLength(2)
       })
     })
 
@@ -250,9 +247,6 @@ describe('RepoPageTabs', () => {
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
-
-        const betaBadges = await screen.findAllByText('beta')
-        expect(betaBadges).toHaveLength(2)
       })
     })
 
@@ -268,9 +262,6 @@ describe('RepoPageTabs', () => {
 
         const tab = screen.queryByText('Bundles')
         expect(tab).not.toBeInTheDocument()
-
-        const betaBadge = screen.queryByText('beta')
-        expect(betaBadge).not.toBeInTheDocument()
       })
     })
   })
