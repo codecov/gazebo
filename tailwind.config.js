@@ -38,6 +38,7 @@ module.exports = {
           chartAreaStroke: withOpacity('--color-chart-area-stroke'),
           subBackground: withOpacity('--color-app-sub-background'),
           subHoverBackground: withOpacity('--color-app-sub-hover-background'),
+          summaryContainer: withOpacity('--color-ds-summary-dropdown'),
           pink: {
             default: withOpacity('--color-ds-pink-default'),
             secondary: withOpacity('--color-ds-pink-secondary'),
@@ -63,7 +64,6 @@ module.exports = {
             quinary: withOpacity('--color-ds-gray-quinary'),
             senary: withOpacity('--color-ds-gray-senary'),
             octonary: withOpacity('--color-ds-gray-octonary'),
-            summaryContainer: withOpacity('--color-ds-summary-dropdown'),
           },
           primary: {
             green: withOpacity('--color-ds-primary-green'),
