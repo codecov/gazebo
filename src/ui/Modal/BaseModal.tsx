@@ -40,7 +40,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
       </header>
       {subtitle && <p className="px-4 text-lg">{subtitle}</p>}
       {body && (
-        <div className="max-h-96 w-full overflow-y-auto border-t border-[rgb(234,235,239)] bg-ds-container p-4 text-sm text-ds-gray-octonary">
+        <div className="max-h-96 w-full overflow-y-auto border-t border-ds-subBackground bg-ds-container p-4 text-sm text-ds-gray-octonary">
           {body}
         </div>
       )}
