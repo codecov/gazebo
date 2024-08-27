@@ -4,6 +4,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import { ThemeContextProvider } from 'shared/ThemeContext'
+
 import HelpDropdown from './HelpDropdown'
 
 const queryClient = new QueryClient({
@@ -11,13 +13,15 @@ const queryClient = new QueryClient({
 })
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov']}>
-      <Switch>
-        <Route path="/:provider/:repo" exact>
-          {children}
-        </Route>
-      </Switch>
-    </MemoryRouter>
+    <ThemeContextProvider>
+      <MemoryRouter initialEntries={['/gh/codecov']}>
+        <Switch>
+          <Route path="/:provider/:repo" exact>
+            {children}
+          </Route>
+        </Switch>
+      </MemoryRouter>
+    </ThemeContextProvider>
   </QueryClientProvider>
 )
 

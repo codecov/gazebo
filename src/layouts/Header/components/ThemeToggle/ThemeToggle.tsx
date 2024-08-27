@@ -1,11 +1,9 @@
-import { useContext } from 'react'
-
-import { Theme, ThemeContext } from 'shared/ThemeContext'
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import { metrics } from 'shared/utils/metrics'
 import Icon from 'ui/Icon'
 
 const ThemeToggle = () => {
-  const { theme, setTheme } = useContext(ThemeContext)
+  const { theme, setTheme } = useThemeContext()
 
   const toggleTheme = () => {
     const newTheme = theme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT

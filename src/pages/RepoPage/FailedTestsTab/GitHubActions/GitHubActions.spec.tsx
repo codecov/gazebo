@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { ThemeContextProvider } from 'shared/ThemeContext'
+
 import GitHubActions from './GitHubActions'
 
 jest.mock('./FrameworkTabs', () => ({
@@ -13,9 +15,11 @@ jest.mock('./FrameworkTabs', () => ({
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo/tests') =>
   ({ children }) => (
-    <MemoryRouter initialEntries={[initialEntries]}>
-      <Route path={['/:provider/:owner/:repo/tests']}>{children}</Route>
-    </MemoryRouter>
+    <ThemeContextProvider>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path={['/:provider/:owner/:repo/tests']}>{children}</Route>
+      </MemoryRouter>
+    </ThemeContextProvider>
   )
 
 describe('GitHubActions', () => {

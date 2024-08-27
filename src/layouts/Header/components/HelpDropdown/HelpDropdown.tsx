@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { useContext, useLayoutEffect } from 'react'
+import { useLayoutEffect } from 'react'
 
 import { SentryUserFeedback } from 'sentry'
 
-import { Theme, ThemeContext } from 'shared/ThemeContext'
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import Button from 'ui/Button'
 import { Dropdown } from 'ui/Dropdown/Dropdown'
 import Icon from 'ui/Icon'
@@ -16,7 +16,7 @@ type DropdownItem = {
 }
 
 function HelpDropdown() {
-  const { theme } = useContext(ThemeContext)
+  const { theme } = useThemeContext()
   const { data: form, isSuccess: isFormSuccess } = useQuery({
     queryKey: ['HelpDropdownForm', theme],
     queryFn: () => SentryUserFeedback(theme === Theme.DARK).createForm(),

@@ -6,6 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import config from 'config'
 
 import { useFlags } from 'shared/featureFlags'
+import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import GuestHeader from './GuestHeader'
 
@@ -21,11 +22,13 @@ const queryClient = new QueryClient({
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh']}>
-      <Route path={'/:provider'} exact>
-        {children}
-      </Route>
-    </MemoryRouter>
+    <ThemeContextProvider>
+      <MemoryRouter initialEntries={['/gh']}>
+        <Route path={'/:provider'} exact>
+          {children}
+        </Route>
+      </MemoryRouter>
+    </ThemeContextProvider>
   </QueryClientProvider>
 )
 

@@ -1,4 +1,11 @@
-import React, { createContext, FC, ReactNode, useEffect, useState } from 'react'
+import {
+  createContext,
+  FC,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 export enum Theme {
   LIGHT = 'light',
@@ -10,13 +17,9 @@ interface ThemeContextProps {
   setTheme: (theme: Theme) => void
 }
 
-const defaultThemeContext: ThemeContextProps = {
-  theme: Theme.LIGHT,
-  setTheme: () => {},
-}
-
-export const ThemeContext =
-  createContext<ThemeContextProps>(defaultThemeContext)
+export const ThemeContext = createContext<ThemeContextProps | undefined>(
+  undefined
+)
 
 interface ThemeContextProviderProps {
   children: ReactNode
@@ -29,19 +32,27 @@ export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
   const [theme, setTheme] = useState<Theme>(currentTheme)
 
   useEffect(() => {
-    document.body.classList.remove(Theme.LIGHT, Theme.DARK)
-    document.body.classList.add(theme)
+    document.body?.classList.remove(Theme.LIGHT, Theme.DARK)
+    document.body?.classList.add(theme)
 
     localStorage.setItem('theme', theme)
   }, [theme])
 
-  const handleSetTheme = (newTheme: Theme) => {
-    setTheme(newTheme)
-  }
-
   return (
-    <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   )
+}
+
+export const useThemeContext = (): ThemeContextProps => {
+  const context = useContext(ThemeContext)
+
+  if (context === undefined) {
+    throw new Error(
+      'useThemeContext must be used within a ThemeContextProvider'
+    )
+  }
+
+  return context
 }
