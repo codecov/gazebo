@@ -33,6 +33,7 @@ const mockProTier = {
 
 const mockRepoSettings = (isPrivate: boolean) => ({
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
       defaultBranch: 'master',

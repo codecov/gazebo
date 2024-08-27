@@ -81,6 +81,7 @@ describe('Summary', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              isCurrentUserPartOfOrg: true,
               repository: {
                 __typename: 'Repository',
                 defaultBranch: 'master',

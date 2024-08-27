@@ -17,6 +17,7 @@ const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
 
 const mockRepoSettings = (isPrivate = false) => ({
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
       defaultBranch: 'master',

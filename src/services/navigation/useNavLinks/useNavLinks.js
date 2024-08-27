@@ -765,6 +765,46 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/bundles/new/webpack`,
       text: 'Webpack',
     },
+    bundleRemixOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/remix-vite`,
+      text: 'Remix (Vite)',
+    },
+    bundleNuxtOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/nuxt`,
+      text: 'Nuxt',
+    },
+    bundleSvelteKitOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/sveltekit`,
+      text: 'SvelteKit',
+    },
+    bundleSolidStartOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/solidstart`,
+      text: 'SolidStart',
+    },
     failedTests: {
       path: (
         { provider = p, owner = o, repo = r, branch = undefined } = {

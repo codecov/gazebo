@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
@@ -17,20 +17,24 @@ import {
   visitedOnboardingMetric,
 } from '../metricHelpers'
 
-const npmInstall = `npm install @codecov/rollup-plugin --save-dev`
-const yarnInstall = `yarn add @codecov/rollup-plugin --dev`
-const pnpmInstall = `pnpm add @codecov/rollup-plugin --save-dev`
+const npmInstall = `npm install @codecov/remix-vite-plugin --save-dev`
+const yarnInstall = `yarn add @codecov/remix-vite-plugin --dev`
+const pnpmInstall = `pnpm add @codecov/remix-vite-plugin --save-dev`
 
-const pluginConfig = `// rollup.config.js
-import { defineConfig } from "rollup";
-import { codecovRollupPlugin } from "@codecov/rollup-plugin";
+const pluginConfig = `// vite.config.ts
+import { vitePlugin as remix } from "@remix-run/dev";
+import { defineConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
+import { codecovRemixVitePlugin } from "@codecov/remix-vite-plugin";
 
 export default defineConfig({
   plugins: [
-    // Put the Codecov rollup plugin after all other plugins
-    codecovRollupPlugin({
-      enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
-      bundleName: "<bundle project name>",
+    remix(),
+    tsconfigPaths()
+    // Put the Codecov Remix Vite plugin after all other plugins
+    codecovRemixVitePlugin({
+      enableBundleAnalysis: true,
+      bundleName: "example-remix-bundle",
       uploadToken: process.env.CODECOV_TOKEN,
     }),
   ],
@@ -47,41 +51,41 @@ const StepOne: React.FC = () => {
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 1: Install the Codecov Rollup Plugin
+          Step 1: Install the Codecov Remix Vite Plugin
         </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <p>
           To install the{' '}
           <span className="bg-ds-gray-primary px-1 font-mono">
-            @codecov/rollup-plugin
+            @codecov/remix-vite-plugin
           </span>{' '}
           to your project, use one of the following commands.
         </p>
         <CodeSnippet
           clipboard={npmInstall}
           clipboardOnClick={() => {
-            copiedInstallCommandMetric('npm', 'rollup')
+            copiedInstallCommandMetric('npm', 'remix')
           }}
-          data-testid="rollup-npm-install"
+          data-testid="remix-npm-install"
         >
           {npmInstall}
         </CodeSnippet>
         <CodeSnippet
           clipboard={yarnInstall}
           clipboardOnClick={() => {
-            copiedInstallCommandMetric('yarn', 'rollup')
+            copiedInstallCommandMetric('yarn', 'remix')
           }}
-          data-testid="rollup-yarn-install"
+          data-testid="remix-yarn-install"
         >
           {yarnInstall}
         </CodeSnippet>
         <CodeSnippet
           clipboard={pnpmInstall}
           clipboardOnClick={() => {
-            copiedInstallCommandMetric('pnpm', 'rollup')
+            copiedInstallCommandMetric('pnpm', 'remix')
           }}
-          data-testid="rollup-pnpm-install"
+          data-testid="remix-pnpm-install"
         >
           {pnpmInstall}
         </CodeSnippet>
@@ -109,9 +113,9 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
             className="basis-2/3"
             clipboard={uploadToken}
             clipboardOnClick={() => {
-              copiedTokenMetric('rollup')
+              copiedTokenMetric('remix')
             }}
-            data-testid="rollup-upload-token"
+            data-testid="remix-upload-token"
           >
             {uploadToken}
           </CodeSnippet>
@@ -131,19 +135,18 @@ const StepThree: React.FC = () => {
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <p>
-          Import the bundler plugin, and add it to the end of your plugin array
-          found inside your{' '}
+          Add the plugin to the end of your modules array found inside your{' '}
           <span className="bg-ds-gray-primary px-1 font-mono">
-            rollup.config.js
+            vite.config.ts
           </span>{' '}
-          file.
+          file, and pass your configuration.
         </p>
         <CodeSnippet
           clipboard={pluginConfig}
           clipboardOnClick={() => {
-            copiedConfigMetric('rollup')
+            copiedConfigMetric('remix')
           }}
-          data-testid="rollup-plugin-config"
+          data-testid="remix-plugin-config"
         >
           {pluginConfig}
         </CodeSnippet>
@@ -168,9 +171,9 @@ const StepFour: React.FC = () => {
         <CodeSnippet
           clipboard={commitString}
           clipboardOnClick={() => {
-            copiedCommitMetric('rollup')
+            copiedCommitMetric('remix')
           }}
-          data-testid="rollup-commit-command"
+          data-testid="remix-commit-command"
         >
           {commitString}
         </CodeSnippet>
@@ -193,27 +196,27 @@ const StepFive: React.FC = () => {
         <CodeSnippet
           clipboard={npmBuild}
           clipboardOnClick={() => {
-            copiedBuildCommandMetric('npm', 'rollup')
+            copiedBuildCommandMetric('npm', 'remix')
           }}
-          data-testid="rollup-npm-build"
+          data-testid="remix-npm-build"
         >
           {npmBuild}
         </CodeSnippet>
         <CodeSnippet
           clipboard={yarnBuild}
           clipboardOnClick={() => {
-            copiedBuildCommandMetric('yarn', 'rollup')
+            copiedBuildCommandMetric('yarn', 'remix')
           }}
-          data-testid="rollup-yarn-build"
+          data-testid="remix-yarn-build"
         >
           {yarnBuild}
         </CodeSnippet>
         <CodeSnippet
           clipboard={pnpmBuild}
           clipboardOnClick={() => {
-            copiedBuildCommandMetric('pnpm', 'rollup')
+            copiedBuildCommandMetric('pnpm', 'remix')
           }}
-          data-testid="rollup-pnpm-build"
+          data-testid="remix-pnpm-build"
         >
           {pnpmBuild}
         </CodeSnippet>
@@ -248,7 +251,7 @@ interface URLParams {
   repo: string
 }
 
-const RollupOnboarding: React.FC = () => {
+const RemixOnboarding: React.FC = () => {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data: repoData } = useRepo({ provider, owner, repo })
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
@@ -256,7 +259,7 @@ const RollupOnboarding: React.FC = () => {
   const uploadToken = orgUploadToken ?? repoData?.repository?.uploadToken ?? ''
 
   useEffect(() => {
-    visitedOnboardingMetric('rollup')
+    visitedOnboardingMetric('remix')
   }, [])
 
   return (
@@ -272,4 +275,4 @@ const RollupOnboarding: React.FC = () => {
   )
 }
 
-export default RollupOnboarding
+export default RemixOnboarding

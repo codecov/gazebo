@@ -5,17 +5,10 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import OktaBanners from './OktaBanners'
 
 jest.mock('../OktaEnabledBanner', () => () => 'OktaEnabledBanner')
 jest.mock('../OktaEnforcedBanner', () => () => 'OktaEnforcedBanner')
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  oktaSettings: boolean
-}>
 
 const wrapper =
   (initialEntries = ['/gh/owner']): React.FC<React.PropsWithChildren> =>
@@ -43,10 +36,6 @@ afterAll(() => server.close())
 
 describe('OktaBanners', () => {
   function setup(data = {}) {
-    mockedUseFlags.mockReturnValue({
-      oktaSettings: true,
-    })
-
     server.use(
       graphql.query('GetOktaConfig', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(data))
