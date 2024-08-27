@@ -28,7 +28,7 @@ const variantClasses = {
   `,
   primary: `
     justify-center font-semibold
-    text-white bg-ds-blue-darker border-ds-blue-quinary
+    text-white bg-ds-blue-darker dark:bg-ds-blue-nonary border-ds-blue-quinary
     border-solid border shadow
 
     hover:bg-ds-blue-quinary

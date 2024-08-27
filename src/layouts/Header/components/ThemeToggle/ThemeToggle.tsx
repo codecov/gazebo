@@ -18,7 +18,12 @@ const ThemeToggle = () => {
   }
 
   return (
-    <button onClick={toggleTheme} className="m-2" data-testid="theme-toggle">
+    <button
+      aria-label="theme toggle"
+      onClick={toggleTheme}
+      className="m-2"
+      data-testid="theme-toggle"
+    >
       {theme === Theme.LIGHT ? (
         <Icon variant="outline" name="moon" />
       ) : (

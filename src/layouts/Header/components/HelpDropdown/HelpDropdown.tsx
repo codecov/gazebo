@@ -59,6 +59,7 @@ function HelpDropdown() {
 
       <Dropdown>
         <Dropdown.Trigger
+          aria-label="help menu"
           data-marketing="help menu"
           data-testid="help-dropdown-trigger"
         >
