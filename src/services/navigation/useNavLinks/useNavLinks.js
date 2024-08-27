@@ -765,11 +765,45 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/bundles/new/webpack`,
       text: 'Webpack',
     },
-    teamPlanFeedbackSurvey: {
-      path: () =>
-        `https://docs.google.com/forms/d/e/1FAIpQLSeoMHPyECewV7X3UaT-uUxZCmYy1T6hEX_aecCD2ppPHGSvUw/viewform`,
-      text: 'Team plan feedback survey',
-      isExternalLink: true,
+    bundleRemixOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/remix-vite`,
+      text: 'Remix (Vite)',
+    },
+    bundleNuxtOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/nuxt`,
+      text: 'Nuxt',
+    },
+    bundleSvelteKitOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/sveltekit`,
+      text: 'SvelteKit',
+    },
+    bundleSolidStartOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/solidstart`,
+      text: 'SolidStart',
     },
     failedTests: {
       path: (

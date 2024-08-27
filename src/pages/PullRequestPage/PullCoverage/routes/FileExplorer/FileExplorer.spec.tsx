@@ -159,6 +159,7 @@ const mockTreeData = {
 
 const mockRepoSettings = {
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
       activated: true,

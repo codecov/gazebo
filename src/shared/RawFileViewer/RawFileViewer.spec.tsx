@@ -33,6 +33,7 @@ jest.mock('@sentry/react', () => {
   const originalModule = jest.requireActual('@sentry/react')
   return {
     ...originalModule,
+    withProfiler: (component: any) => component,
     captureMessage: jest.fn(),
   }
 })
@@ -45,6 +46,7 @@ window.cancelAnimationFrame = () => {}
 
 const scrollToMock = jest.fn()
 window.scrollTo = scrollToMock
+window.scrollX = 100
 
 class ResizeObserverMock {
   callback = (x: any) => null
@@ -59,6 +61,7 @@ class ResizeObserverMock {
         contentRect: { width: 100 },
         target: {
           getAttribute: () => ({ scrollWidth: 100 }),
+          getBoundingClientRect: () => ({ top: 100 }),
         },
       },
     ])

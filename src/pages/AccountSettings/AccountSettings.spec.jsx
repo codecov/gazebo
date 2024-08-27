@@ -7,12 +7,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 import AccountSettings from './AccountSettings'
 
 jest.mock('config')
-jest.mock('shared/featureFlags')
 
 jest.mock('./shared/Header', () => () => 'Header')
 jest.mock('./AccountSettingsSideMenu', () => () => 'AccountSettingsSideMenu')
@@ -143,7 +140,6 @@ describe('AccountSettings', () => {
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
     config.HIDE_ACCESS_TAB = hideAccessTab
-    useFlags.mockReturnValue({ oktaSettings: true })
 
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {

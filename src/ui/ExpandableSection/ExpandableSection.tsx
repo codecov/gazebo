@@ -21,28 +21,31 @@ ExpandableSectionRoot.displayName = 'ExpandableSectionRoot'
 
 interface ExpandableSectionTriggerProps
   extends React.ComponentPropsWithoutRef<typeof Collapsible.Trigger> {
-  isExpanded: boolean
+  isExpanded?: boolean
   children: ReactNode
 }
 
 const ExpandableSectionTrigger = forwardRef<
   React.ElementRef<typeof Collapsible.Trigger>,
   ExpandableSectionTriggerProps
->(({ isExpanded, className, children, ...props }, ref) => (
-  <Collapsible.Trigger asChild>
-    <button
+>(({ className, children, ...props }, ref) => {
+  return (
+    <Collapsible.Trigger
       className={cn(
-        'flex w-full items-center justify-between p-4 text-left font-semibold hover:bg-gray-100',
+        'flex w-full items-center justify-between p-4 text-left hover:bg-gray-100',
+        '[&_#expandable-icon]:data-[state=open]:rotate-180',
         className
       )}
       {...props}
       ref={ref}
     >
       <span>{children}</span>
-      <Icon name={isExpanded ? 'chevronUp' : 'chevronDown'} size="sm" />
-    </button>
-  </Collapsible.Trigger>
-))
+      <span id="expandable-icon" className="rotate-0 transition-transform">
+        <Icon name="chevronUp" size="sm" />
+      </span>
+    </Collapsible.Trigger>
+  )
+})
 
 ExpandableSectionTrigger.displayName = 'ExpandableSectionTrigger'
 

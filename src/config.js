@@ -5,6 +5,7 @@ const defaultConfig = {
   STRIPE_KEY: '',
   SENTRY_ENVIRONMENT: 'staging',
   SENTRY_TRACING_SAMPLE_RATE: 1.0,
+  SENTRY_PROFILING_SAMPLE_RATE: 0.1,
   SENTRY_SESSION_SAMPLE_RATE: 0.1,
   SENTRY_ERROR_SAMPLE_RATE: 1.0,
   GH_APP: 'codecov',
@@ -37,6 +38,12 @@ export function removeReactAppPrefix(obj) {
   if ('SENTRY_TRACING_SAMPLE_RATE' in keys) {
     keys['SENTRY_TRACING_SAMPLE_RATE'] = parseFloat(
       keys['SENTRY_TRACING_SAMPLE_RATE']
+    )
+  }
+
+  if ('SENTRY_PROFILING_SAMPLE_RATE' in keys) {
+    keys['SENTRY_PROFILING_SAMPLE_RATE'] = parseFloat(
+      keys['SENTRY_PROFILING_SAMPLE_RATE']
     )
   }
 

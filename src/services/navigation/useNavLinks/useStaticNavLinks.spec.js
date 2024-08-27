@@ -85,6 +85,10 @@ describe('useStaticNavLinks', () => {
       ${links.testsAnalytics}                | ${'https://docs.codecov.com/docs/test-result-ingestion-beta#failed-test-reporting'}
       ${links.expiredReports}                | ${'https://docs.codecov.com/docs/codecov-yaml#section-expired-reports'}
       ${links.unusableReports}               | ${'https://docs.codecov.com/docs/error-reference#unusable-reports'}
+      ${links.demoRepo}                      | ${'/github/codecov/gazebo'}
+      ${links.teamPlanFeedbackSurvey}        | ${'https://docs.google.com/forms/d/e/1FAIpQLSeoMHPyECewV7X3UaT-uUxZCmYy1T6hEX_aecCD2ppPHGSvUw/viewform'}
+      ${links.proPlanFeedbackSurvey}         | ${'https://forms.gle/nf37sRAtyQeXVTdr8'}
+      ${links.bundleFeedbackSurvey}          | ${'https://forms.gle/8fzZrwWEaBRz4ufD9'}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)

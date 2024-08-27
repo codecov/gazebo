@@ -1,5 +1,7 @@
 import config from 'config'
 
+import { DEMO_REPO } from 'shared/utils/demo'
+
 // Links that aren't tied to the route or runtime variables.
 export function useStaticNavLinks() {
   return {
@@ -462,6 +464,28 @@ export function useStaticNavLinks() {
         'https://docs.codecov.com/docs/error-reference#unusable-reports',
       isExternalLink: true,
       openNewTab: true,
+    },
+    demoRepo: {
+      text: DEMO_REPO.displayName,
+      path: () => `/${DEMO_REPO.provider}/${DEMO_REPO.owner}/${DEMO_REPO.repo}`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    teamPlanFeedbackSurvey: {
+      path: () =>
+        `https://docs.google.com/forms/d/e/1FAIpQLSeoMHPyECewV7X3UaT-uUxZCmYy1T6hEX_aecCD2ppPHGSvUw/viewform`,
+      text: 'Team plan feedback survey',
+      isExternalLink: true,
+    },
+    proPlanFeedbackSurvey: {
+      path: () => `https://forms.gle/nf37sRAtyQeXVTdr8`,
+      text: 'Pro plan feedback survey',
+      isExternalLink: true,
+    },
+    bundleFeedbackSurvey: {
+      path: () => `https://forms.gle/8fzZrwWEaBRz4ufD9`,
+      text: 'Bundle analysis feedback survey',
+      isExternalLink: true,
     },
   }
 }

@@ -66,7 +66,14 @@ function ComponentsTab() {
           })
         }
       >
-        <BackfillBanners />
+        {repoSettings?.isCurrentUserPartOfOrg ? (
+          <BackfillBanners />
+        ) : (
+          <div className="mt-3 text-center">
+            <hr />
+            <p className="mt-4 p-3">Component analytics is disabled.</p>
+          </div>
+        )}
       </Header>
       <div className="flex flex-1 flex-col gap-4">
         {showComponentsTable({

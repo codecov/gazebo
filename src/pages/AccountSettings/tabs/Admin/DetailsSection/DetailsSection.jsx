@@ -18,7 +18,12 @@ const detailsSchema = z.object({
 function DetailsSection({ email, name }) {
   const { provider } = useParams()
   const addToast = useAddNotification()
-  const { register, handleSubmit, formState, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty, errors: formErrors },
+    reset,
+  } = useForm({
     resolver: zodResolver(detailsSchema),
     defaultValues: {
       email,
@@ -30,7 +35,7 @@ function DetailsSection({ email, name }) {
   const { mutate, isLoading } = useUpdateProfile({ provider })
   const queryClient = useQueryClient()
 
-  const isButtonDisabled = !formState.isDirty || isLoading
+  const isButtonDisabled = !isDirty || isLoading
 
   function submit(formData) {
     mutate(formData, {
@@ -69,10 +74,8 @@ function DetailsSection({ email, name }) {
           {...register('name', { required: true })}
           label="Name"
         />
-        {formState?.errors.name && (
-          <p className="text-ds-error-nonary">
-            {formState?.errors.name?.message}
-          </p>
+        {formErrors.name && (
+          <p className="text-ds-error-nonary">{formErrors.name?.message}</p>
         )}
       </div>
       <div className="flex flex-col gap-1 md:w-1/2">
@@ -85,10 +88,8 @@ function DetailsSection({ email, name }) {
           {...register('email', { required: true })}
           label="Email"
         />
-        {formState.errors.email && (
-          <p className="text-ds-error-nonary">
-            {formState.errors.email?.message}
-          </p>
+        {formErrors.email && (
+          <p className="text-ds-error-nonary">{formErrors.email?.message}</p>
         )}
       </div>
       <div>

@@ -98,14 +98,6 @@ export const setupSentry = ({
     return
   }
 
-  // configure sentry product integrations
-  const replay = Sentry.replayIntegration()
-  const tracing = Sentry.reactRouterV5BrowserTracingIntegration({
-    history,
-  })
-
-  const integrations = [replay, tracing]
-
   const tracePropagationTargets = ['api.codecov.io', 'stage-api.codecov.dev']
   // wrapped in a silent try/catch incase the URL is invalid
   try {
@@ -120,13 +112,33 @@ export const setupSentry = ({
     dsn: config.SENTRY_DSN,
     debug: config.NODE_ENV !== 'production',
     environment: config.SENTRY_ENVIRONMENT,
-    integrations,
+    integrations: [
+      // Adds Sentry Replay
+      Sentry.replayIntegration(),
+
+      // Adds Sentry browser profiling
+      Sentry.browserProfilingIntegration(),
+
+      // Adds routing instrumentation
+      Sentry.reactRouterV5BrowserTracingIntegration({
+        history,
+      }),
+
+      // Applies a `third_party_code: true` tag to all events that contain code that was not bundled with gazebo.
+      // Allows for filtering of browser extension and random browser errors.
+      Sentry.thirdPartyErrorFilterIntegration({
+        filterKeys: ['gazebo'],
+        behaviour: 'apply-tag-if-contains-third-party-frames',
+      }),
+    ],
     tracePropagationTargets,
     tracesSampleRate: config?.SENTRY_TRACING_SAMPLE_RATE,
     // Capture n% of all sessions
     replaysSessionSampleRate: config?.SENTRY_SESSION_SAMPLE_RATE,
     // Of the remaining x% of sessions, if an error happens start capturing
     replaysOnErrorSampleRate: config?.SENTRY_ERROR_SAMPLE_RATE,
+    // profiling sample rate
+    profilesSampleRate: config?.SENTRY_PROFILING_SAMPLE_RATE,
     beforeSend: (event, _hint) => {
       if (checkForBlockedUserAgents()) {
         return null

@@ -54,13 +54,14 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
           variant="solid"
           name={getRepoIconName({ activated, isRepoPrivate, active })}
         />
-        <span className="ml-2.5 text-sm text-black">
+        <span className="ml-2.5 mr-1.5 text-sm text-black">
           {showRepoOwner && `${repo?.author?.username} / `}
           <span className="font-semibold">{repo.name}</span>
         </span>
       </AppLink>
       {isRepoPrivate && <Badge>Private</Badge>}
       {active && !activated && <Badge>Deactivated</Badge>}
+      {repo?.isDemo && <Badge>System generated</Badge>}
     </div>
   )
 }
@@ -74,6 +75,7 @@ RepoTitleLink.propTypes = {
       username: PropTypes.string,
     }),
     name: PropTypes.string,
+    isDemo: PropTypes.bool,
   }),
   showRepoOwner: PropTypes.bool.isRequired,
   pageName: PropTypes.string.isRequired,

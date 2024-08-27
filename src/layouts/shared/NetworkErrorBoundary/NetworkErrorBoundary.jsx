@@ -111,7 +111,7 @@ export const NetworkErrorMessage = () => {
   )
 }
 
-function ResetHandler({ reset }) {
+function ResetHandler({ logoutUser = false, reset }) {
   const queryClient = useQueryClient()
   const history = useHistory()
 
@@ -129,16 +129,26 @@ function ResetHandler({ reset }) {
     }
   }, [history, queryClient, reset])
 
+  const handleSignOut = async () => {
+    queryClient.clear()
+    reset()
+    await fetch(`${config.API_URL}/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+    history.replace('/login')
+  }
+
+  const handleReset = () => {
+    queryClient.clear()
+    history.goBack()
+    reset()
+  }
+
   return (
     <div className="my-4">
-      <Button
-        onClick={() => {
-          queryClient.clear()
-          history.goBack()
-          reset()
-        }}
-      >
-        Return to previous page
+      <Button onClick={logoutUser ? handleSignOut : handleReset}>
+        {logoutUser ? 'Return to login' : 'Return to previous page'}
       </Button>
     </div>
   )
@@ -146,6 +156,7 @@ function ResetHandler({ reset }) {
 
 ResetHandler.propTypes = {
   reset: PropTypes.func,
+  logoutUser: PropTypes.bool,
 }
 
 class NetworkErrorBoundary extends Component {
@@ -222,7 +233,10 @@ class NetworkErrorBoundary extends Component {
         <p>
           <strong>Error {status}</strong>
         </p>
-        <ResetHandler reset={this.resetErrorBoundary} />
+        <ResetHandler
+          logoutUser={status === 429}
+          reset={this.resetErrorBoundary}
+        />
       </article>
     )
   }
