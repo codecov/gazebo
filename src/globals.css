@@ -215,7 +215,7 @@
     --color-toggle-disabled: var(--color-ds-gray-quaternary);
 
     /* Sentry User Feedback widget styles */
-    --widget-accent-background: rgb(var(--color-ds-blue-darker));
+    --widget-accent-background: rgb(var(--color-ds-blue-quinary));
     --widget-background-hover: rgb(var(--color-ds-blue-quinary));
     --widget-font-family: 'Poppins', sans-serif;
 
