@@ -2,8 +2,9 @@ import {
   createContext,
   FC,
   ReactNode,
+  useCallback,
   useContext,
-  useEffect,
+  useRef,
   useState,
 } from 'react'
 
@@ -30,16 +31,25 @@ export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
 }) => {
   const currentTheme = (localStorage.getItem('theme') as Theme) || Theme.LIGHT
   const [theme, setTheme] = useState<Theme>(currentTheme)
+  const initialRender = useRef(true)
 
-  useEffect(() => {
-    document.body?.classList.remove(Theme.LIGHT, Theme.DARK)
-    document.body?.classList.add(theme)
+  if (initialRender.current) {
+    document.body.classList.remove(Theme.LIGHT, Theme.DARK)
+    document.body.classList.add(theme)
 
     localStorage.setItem('theme', theme)
-  }, [theme])
+    initialRender.current = false
+  }
+
+  const handleTheme = useCallback((theme: Theme) => {
+    document.body.classList.remove(Theme.LIGHT, Theme.DARK)
+    document.body.classList.add(theme)
+    localStorage.setItem('theme', theme)
+    setTheme(theme)
+  }, [])
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme: handleTheme }}>
       {children}
     </ThemeContext.Provider>
   )
