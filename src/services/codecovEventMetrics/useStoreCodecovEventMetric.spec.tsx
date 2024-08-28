@@ -4,7 +4,10 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useStoreCodecovEventMetric } from './useStoreCodecovEventMetric'
+import {
+  EVENT_METRICS,
+  useStoreCodecovEventMetric,
+} from './useStoreCodecovEventMetric'
 
 const server = setupServer()
 
@@ -69,7 +72,7 @@ describe('useStoreCodecovEventMetric', () => {
 
         result.current.mutate({
           owner: 'codecov',
-          event: 'CLICKED_BUTTON',
+          event: EVENT_METRICS.CLICKED_BUTTON,
           jsonPayload: {},
         })
 
@@ -90,7 +93,7 @@ describe('useStoreCodecovEventMetric', () => {
 
         result.current.mutate({
           owner: 'codecov',
-          event: 'CLICKED_BUTTON',
+          event: EVENT_METRICS.CLICKED_BUTTON,
           jsonPayload: {},
         })
 
@@ -114,7 +117,7 @@ describe('useStoreCodecovEventMetric', () => {
 
         const metric = {
           owner: 'codecov',
-          event: 'CLICKED_BUTTON',
+          event: EVENT_METRICS.CLICKED_BUTTON,
           jsonPayload: {},
         }
         mockGetItem.mockReturnValue(JSON.stringify(metric))
@@ -140,7 +143,7 @@ describe('useStoreCodecovEventMetric', () => {
 
         const newMetric = {
           owner: 'codecov',
-          event: 'NEW_EVENT',
+          event: EVENT_METRICS.CLICKED_BUTTON,
           jsonPayload: {},
         }
 
@@ -150,7 +153,7 @@ describe('useStoreCodecovEventMetric', () => {
         await waitFor(() => {
           const updatedMetrics = [
             ...mockMetrics.slice(1),
-            'codecov|NEW_EVENT|{}',
+            'codecov|CLICKED_BUTTON|{}',
           ]
           expect(mockSetItem).toHaveBeenCalledWith(
             'UserOnboardingMetricsStored',

@@ -4,7 +4,10 @@ import { Switch, useHistory, useLocation, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
-import { useStoreCodecovEventMetric } from 'services/codecovEventMetrics'
+import {
+  EVENT_METRICS,
+  useStoreCodecovEventMetric,
+} from 'services/codecovEventMetrics'
 import { useNavLinks } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useRedirect } from 'shared/useRedirect'
@@ -135,7 +138,7 @@ function NewRepoTab() {
   useEffect(() => {
     storeEventMetric({
       owner,
-      event: 'VISITED_PAGE',
+      event: EVENT_METRICS.VISITED_PAGE,
       jsonPayload: { page: 'Coverage Onboarding' },
     })
   }, [storeEventMetric, owner])

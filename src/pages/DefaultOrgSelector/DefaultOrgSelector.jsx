@@ -9,7 +9,10 @@ import config from 'config'
 import { SentryBugReporter } from 'sentry'
 
 import { TrialStatuses, usePlanData } from 'services/account'
-import { useStoreCodecovEventMetric } from 'services/codecovEventMetrics'
+import {
+  EVENT_METRICS,
+  useStoreCodecovEventMetric,
+} from 'services/codecovEventMetrics'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useStaticNavLinks } from 'services/navigation'
 import { useStartTrial } from 'services/trial'
@@ -126,7 +129,7 @@ function DefaultOrgSelector() {
     updateDefaultOrg({ username: selectedOrg })
     storeEventMetric({
       owner: selectedOrg,
-      event: 'CLICKED_BUTTON',
+      event: EVENT_METRICS.CLICKED_BUTTON,
       jsonPayload: { action: 'Selected Default Org' },
     })
     if (
