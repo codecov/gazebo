@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 import { AddressSchema } from 'services/account'
 import { useUpdateBillingAddress } from 'services/account/useUpdateBillingAddress'
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import Button from 'ui/Button'
 
 interface AddressFormProps {
@@ -22,10 +23,12 @@ function AddressForm({
   provider,
   owner,
 }: AddressFormProps) {
+  const { theme } = useThemeContext()
   const elements = useElements()
+
   useEffect(() => {
     const updateAppearance = () => {
-      const isDarkMode = document.body.classList.contains('dark')
+      const isDarkMode = theme === Theme.DARK
 
       elements?.update({
         appearance: {
@@ -64,7 +67,7 @@ function AddressForm({
     return () => {
       observer.disconnect()
     }
-  }, [elements]) // Depend on elements to re-run if they change
+  }, [elements, theme]) // Depend on elements to re-run if they change
 
   const {
     mutate: updateAddress,

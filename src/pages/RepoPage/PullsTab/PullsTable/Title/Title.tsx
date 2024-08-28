@@ -44,12 +44,12 @@ const Title: React.FC<TitleProps> = ({
             options: { pullId },
           }}
         >
-          <h2 className="text-sm font-semibold text-ds-secondaryText">
+          <h2 className="text-sm font-semibold text-ds-secondary-text">
             {title}
           </h2>
         </A>
         <p className="text-xs">
-          <span className="text-ds-secondaryText">{author?.username}</span>
+          <span className="text-ds-secondary-text">{author?.username}</span>
           {updatestamp && (
             <span className="text-ds-gray-quinary">
               {' '}

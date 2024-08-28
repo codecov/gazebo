@@ -168,14 +168,14 @@ function ContextSwitcher({
         aria-labelledby="listbox-label"
       >
         {isGh ? (
-          <li className="flex justify-between border-b border-ds-borderLine px-4 py-3">
+          <li className="flex justify-between border-b border-ds-border-line px-4 py-3">
             <A to={{ pageName: 'codecovAppInstallation' }}>
               <Icon name="plus-circle" />
               Install Codecov GitHub app
             </A>
           </li>
         ) : (
-          <li className="flex justify-between border-b border-ds-borderLine px-4 py-3 text-xs font-semibold">
+          <li className="flex justify-between border-b border-ds-border-line px-4 py-3 text-xs font-semibold">
             <span>Switch context</span>
           </li>
         )}

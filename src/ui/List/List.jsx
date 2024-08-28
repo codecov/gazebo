@@ -17,7 +17,7 @@ function List({ items, onItemSelect, noBorder }) {
         className={cs(
           'w-full text-ds-gray-octonary divide-y divide-solid divide-ds-gray-secondary',
           {
-            'border border-ds-borderLine': !noBorder,
+            'border border-ds-border-line': !noBorder,
           }
         )}
       >

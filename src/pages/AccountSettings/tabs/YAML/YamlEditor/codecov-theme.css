@@ -35,7 +35,7 @@
 }
 
 .ace-github .ace_cursor {
-  @apply border-ds-secondaryText;
+  @apply border-ds-secondary-text;
 }
 
 /* this is to better indicate that the user cannot edit and is read-only */

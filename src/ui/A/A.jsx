@@ -15,7 +15,7 @@ const variantClasses = {
   default: `text-ds-blue-default`,
   header: `font-semibold`,
   headerDeprecated: `font-semibold text-ds-gray-secondary`,
-  guestHeader: `font-semibold text-ds-gray-senary dark:text-ds-defaultText`,
+  guestHeader: `font-semibold text-ds-gray-senary dark:text-ds-default-text`,
   link: `text-ds-blue-darker`,
   semibold: 'text-ds-blue-darker font-semibold dark:text-ds-blue-default',
   medium: 'text-ds-blue-darker font-medium dark:text-ds-blue-default',
@@ -25,7 +25,7 @@ const variantClasses = {
   grayQuinary: `text-ds-gray-quinary`,
   headerHighlight: `font-semibold text-ds-pink-default`,
   upDirectory: `flex flex-grow text-ds-blue-default hover:no-underline focus:ring-0 w-full`,
-  black: `text-ds-secondaryText`,
+  black: `text-ds-secondary-text`,
   blueSeptenary: `text-ds-blue-septenary`,
   configure: `rounded bg-ds-blue-default px-4 py-1 font-semibold text-ds-gray-primary dark:text-white dark:bg-ds-blue-nonary`,
 }

@@ -3,7 +3,7 @@
 }
 
 .tableui table {
-  @apply min-w-full divide-y divide-ds-gray-tertiary border-t border-ds-borderLine;
+  @apply min-w-full divide-y divide-ds-gray-tertiary border-t border-ds-border-line;
 }
 
 .tableui thead {
@@ -15,7 +15,7 @@
 }
 
 .tableui tr {
-  @apply text-left border-b border-ds-borderLine last:border-b-0;
+  @apply text-left border-b border-ds-border-line last:border-b-0;
 }
 
 .tableui th {

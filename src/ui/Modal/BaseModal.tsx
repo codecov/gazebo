@@ -40,12 +40,12 @@ const BaseModal: React.FC<BaseModalProps> = ({
       </header>
       {subtitle && <p className="px-4 text-lg">{subtitle}</p>}
       {body && (
-        <div className="max-h-96 w-full overflow-y-auto border-t border-ds-subBackground bg-ds-container p-4 text-sm text-ds-gray-octonary">
+        <div className="max-h-96 w-full overflow-y-auto border-t border-ds-sub-background bg-ds-container p-4 text-sm text-ds-gray-octonary">
           {body}
         </div>
       )}
       {footer && (
-        <footer className="mt-4 flex justify-end rounded-b border-t border-ds-borderLine bg-ds-gray-primary p-4">
+        <footer className="mt-4 flex justify-end rounded-b border-t border-ds-border-line bg-ds-gray-primary p-4">
           {footer}
         </footer>
       )}

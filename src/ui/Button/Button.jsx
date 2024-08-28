@@ -61,7 +61,7 @@ const variantClasses = {
     justify-center font-semibold
     border border-solid border-github
     bg-github hover:bg-ds-container dark:border-[rgb(153,159,167)]
-    text-githubText hover:text-github dark:text-app-primary-text
+    text-github-text hover:text-github dark:text-app-primary-text
     transition-colors duration-75 ease-in
   `,
   gitlab: `
@@ -82,7 +82,7 @@ const variantClasses = {
     justify-center font-semibold
     border border-solid border-okta
     bg-okta hover:bg-ds-container dark:border-[rgb(153,159,167)]
-    text-oktaText hover:text-okta
+    text-okta-text hover:text-okta
     transition-colors duration-75 ease-in
   `,
 }

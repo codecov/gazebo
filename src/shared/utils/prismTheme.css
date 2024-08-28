@@ -7,7 +7,7 @@
 
 pre[class*='language-'],
 code[class*='language-'] {
-  @apply text-codeDefault;
+  @apply text-code-default;
   font-size: 0.75rem;
   text-shadow: none;
   font-family: 'Source Code Pro', monospace;
@@ -69,11 +69,11 @@ pre[class*='language-'] {
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  @apply text-codeComment;
+  @apply text-code-comment;
 }
 
 .token.punctuation {
-  @apply text-codePunctuation;
+  @apply text-code-punctuation;
 }
 
 .token.property,
@@ -83,7 +83,7 @@ pre[class*='language-'] {
 .token.constant,
 .token.symbol,
 .token.deleted {
-  @apply text-codeProperty;
+  @apply text-code-property;
 }
 
 .token.selector,
@@ -92,7 +92,7 @@ pre[class*='language-'] {
 .token.char,
 .token.builtin,
 .token.inserted {
-  @apply text-codeFunction;
+  @apply text-code-function;
 }
 
 .token.operator,
@@ -100,24 +100,24 @@ pre[class*='language-'] {
 .token.url,
 .language-css .token.string,
 .style .token.string {
-  @apply text-codeOperator;
+  @apply text-code-operator;
   background: #ffffff;
 }
 
 .token.atrule,
 .token.attr-value,
 .token.keyword {
-  @apply text-codeKeyword;
+  @apply text-code-keyword;
 }
 
 .token.function {
-  @apply text-codeFunction;
+  @apply text-code-function;
 }
 
 .token.regex,
 .token.important,
 .token.variable {
-  @apply text-codeDefault;
+  @apply text-code-default;
 }
 
 .token.important,
@@ -161,5 +161,5 @@ pre[class*='language-'] > code[class*='language-'] {
 }
 
 .line-number {
-  @apply text-codeLineNumber;
+  @apply text-code-line-number;
 }
