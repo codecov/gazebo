@@ -4,8 +4,8 @@ import { useLayoutEffect, useRef } from 'react'
 
 import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
-import 'shared/utils/prismTheme.css'
-import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
+import 'shared/utils/prism/prismTheme.css'
+import { prismLanguageMapper } from 'shared/utils/prism/prismLanguageMapper'
 
 import './CodeRenderer.css'
 
