@@ -25,7 +25,7 @@ export default function DateRangePicker({
     <div>
       <Popover.Root>
         <Popover.Trigger asChild>
-          <button className="flex h-8 w-52 items-center justify-between whitespace-nowrap rounded-md border border-ds-gray-tertiary bg-ds-container px-3 text-center focus:outline-1 disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary disabled:text-ds-gray-quaternary dark:text-white">
+          <button className="flex h-8 w-52 items-center justify-between whitespace-nowrap rounded-md border border-ds-gray-tertiary bg-ds-container px-3 text-center focus:outline-1 disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary disabled:text-ds-gray-quaternary">
             {date?.from ? (
               date.to ? (
                 <>

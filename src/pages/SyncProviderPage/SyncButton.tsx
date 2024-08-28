@@ -12,7 +12,7 @@ const SyncButton: React.FC<SyncButtonProps> = ({ provider }) => {
   return (
     <div className="flex h-14 items-center rounded-sm border border-ds-gray-quaternary bg-ds-gray-primary text-left shadow">
       <a
-        className="flex h-full grow items-center font-semibold hover:bg-ds-gray-secondary"
+        className="flex h-full grow items-center font-semibold hover:bg-ds-gray-secondary dark:hover:bg-ds-gray-quaternary"
         href={signIn.path({ to, provider })}
         data-cy={'login-button'}
       >
