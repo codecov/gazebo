@@ -7,6 +7,7 @@ import { usePullBundleHeadList } from './usePullBundleHeadList'
 
 const mockRepoOverview = {
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,

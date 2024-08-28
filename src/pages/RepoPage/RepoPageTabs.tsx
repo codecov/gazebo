@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
 import { useRepo, useRepoOverview } from 'services/repo'
-import { useFlags } from 'shared/featureFlags'
 import Badge from 'ui/Badge'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -40,10 +39,6 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     opts: {
       refetchOnWindowFocus: refetchEnabled,
     },
-  })
-
-  const { onboardingFailedTests } = useFlags({
-    onboardingFailedTests: false,
   })
 
   const matchTree = useMatchTreePath()
@@ -91,7 +86,7 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     })
   }
 
-  if (onboardingFailedTests) {
+  if (isCurrentUserPartOfOrg) {
     tabs.push({
       pageName: repoOverview?.testAnalyticsEnabled
         ? 'failedTests'
@@ -108,7 +103,9 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     (repoData?.isCurrentUserActivated && repoOverview?.private) ||
     !repoOverview?.private
   if (
-    (repoOverview?.bundleAnalysisEnabled || repoOverview?.coverageEnabled) &&
+    (repoOverview?.bundleAnalysisEnabled ||
+      repoOverview?.coverageEnabled ||
+      repoOverview?.testAnalyticsEnabled) &&
     userAuthorizedtoViewRepo
   ) {
     tabs.push({ pageName: 'commits' }, { pageName: 'pulls' })

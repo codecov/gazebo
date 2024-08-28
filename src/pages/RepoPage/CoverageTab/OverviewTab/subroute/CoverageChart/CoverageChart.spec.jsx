@@ -38,6 +38,7 @@ afterAll(() => {
 
 const overviewMock = {
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,

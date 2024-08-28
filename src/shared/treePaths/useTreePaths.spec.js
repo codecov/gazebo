@@ -55,6 +55,7 @@ afterAll(() => {
 
 const overviewMock = {
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,
@@ -215,6 +216,7 @@ describe('useTreePaths', () => {
         setup({
           repoOverviewData: {
             owner: {
+              isCurrentUserActivated: true,
               repository: {
                 __typename: 'Repository',
                 private: false,

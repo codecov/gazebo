@@ -93,6 +93,7 @@ const mockImpactedFile = {
 const mockOverview = (bundleAnalysisEnabled = false) => {
   return {
     owner: {
+      isCurrentUserActivated: true,
       repository: {
         __typename: 'Repository',
         private: false,

@@ -164,7 +164,12 @@ describe('BranchSelector', () => {
 
         return res(
           ctx.status(200),
-          ctx.data({ owner: { repository: mockRepoOverview } })
+          ctx.data({
+            owner: {
+              isCurrentUserActivated: true,
+              repository: mockRepoOverview,
+            },
+          })
         )
       }),
       graphql.query('GetBranch', (req, res, ctx) => {

@@ -13,6 +13,7 @@ const mockOverview = (language?: string) => {
 
   return {
     owner: {
+      isCurrentUserActivated: true,
       repository: {
         __typename: 'Repository',
         private: false,
@@ -33,16 +34,6 @@ const mockNotFoundError = {
     repository: {
       __typename: 'NotFoundError',
       message: 'commit not found',
-    },
-  },
-}
-
-const mockOwnerNotActivatedError = {
-  owner: {
-    isCurrentUserPartOfOrg: true,
-    repository: {
-      __typename: 'OwnerNotActivatedError',
-      message: 'owner not activated',
     },
   },
 }
@@ -77,7 +68,6 @@ afterAll(() => {
 
 interface SetupArgs {
   isNotFoundError?: boolean
-  isOwnerNotActivatedError?: boolean
   isUnsuccessfulParseError?: boolean
   isNullOwner?: boolean
   language?: string
@@ -86,7 +76,6 @@ interface SetupArgs {
 describe('useRepoOverview', () => {
   function setup({
     isNotFoundError = false,
-    isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
     isNullOwner = false,
     language,
@@ -95,8 +84,6 @@ describe('useRepoOverview', () => {
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
-        } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
         } else if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
         } else if (isNullOwner) {
@@ -132,6 +119,7 @@ describe('useRepoOverview', () => {
             languages: [],
             jsOrTsPresent: false,
             testAnalyticsEnabled: true,
+            isCurrentUserActivated: true,
           })
         )
       })
@@ -160,6 +148,7 @@ describe('useRepoOverview', () => {
               languages: ['javascript'],
               jsOrTsPresent: true,
               testAnalyticsEnabled: true,
+              isCurrentUserActivated: true,
             })
           )
         })
@@ -189,6 +178,7 @@ describe('useRepoOverview', () => {
               languages: ['typescript'],
               jsOrTsPresent: true,
               testAnalyticsEnabled: true,
+              isCurrentUserActivated: true,
             })
           )
         })
@@ -244,33 +234,6 @@ describe('useRepoOverview', () => {
           })
         )
       )
-    })
-  })
-
-  describe('returns OwnerNotActivatedError __typename', () => {
-    let oldConsoleError = console.error
-
-    beforeEach(() => {
-      console.error = () => null
-    })
-
-    afterEach(() => {
-      console.error = oldConsoleError
-    })
-
-    it('returns null', async () => {
-      setup({ isOwnerNotActivatedError: true })
-      const { result } = renderHook(
-        () =>
-          useRepoOverview({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'cool-repo',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() => expect(result.current.data).toEqual(null))
     })
   })
 

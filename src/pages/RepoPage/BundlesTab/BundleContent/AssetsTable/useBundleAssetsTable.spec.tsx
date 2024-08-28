@@ -12,6 +12,7 @@ import { useBundleAssetsTable } from './useBundleAssetsTable'
 
 const mockRepoOverview = {
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,
