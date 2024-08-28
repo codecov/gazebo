@@ -5,9 +5,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import GitHubActions from './GitHubActions'
 
-jest.mock('./FrameworkTabs', () => ({
+jest.mock('../FrameworkTabsCard', () => ({
   __esModule: true,
-  FrameworkTabs: () => 'FrameworkTabs',
+  FrameworkTabsCard: () => 'FrameworkTabsCard',
 }))
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
@@ -25,28 +25,10 @@ describe('GitHubActions', () => {
   }
 
   describe('Step one', () => {
-    it('renders title of card', () => {
+    it('renders framework tabs card', () => {
       render(<GitHubActions />, { wrapper: wrapper() })
 
-      const title = screen.getByText(
-        'Step 1: Output a JUnit XML file in your CI'
-      )
-      expect(title).toBeInTheDocument()
-    })
-
-    it('renders content of card', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
-
-      const content = screen.getByText(
-        /Select the framework below to generate a JUnit XM/
-      )
-      expect(content).toBeInTheDocument()
-    })
-
-    it('renders framework tabs', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
-
-      const frameworkTabs = screen.getByText('FrameworkTabs')
+      const frameworkTabs = screen.getByText('FrameworkTabsCard')
       expect(frameworkTabs).toBeInTheDocument()
     })
   })

@@ -5,6 +5,8 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import { ExpandableSection } from 'ui/ExpandableSection/ExpandableSection'
 
+import { FrameworkTabsCard } from '../FrameworkTabsCard'
+
 function CodecovCLI() {
   return (
     <div className="flex flex-col gap-6">
@@ -21,50 +23,19 @@ function CodecovCLI() {
 
 const Step1Script = 'pip install codecov-cli'
 
-function Step1() {
-  return (
-    <Card>
-      <Card.Header>
-        <Card.Title size="base">
-          Step 1: Install Codecov&apos;s CLI in your CI
-        </Card.Title>
-      </Card.Header>
-      <Card.Content className="flex flex-col gap-4">
-        <p>Here&apos;s an example using pip</p>
-        <CodeSnippet clipboard={Step1Script}>{Step1Script}</CodeSnippet>
-      </Card.Content>
-    </Card>
-  )
-}
-
-const Step2Script = `pytest  <other_args> --junitxml=<report_name>.junit.xml
-
-pytest  --cov --junitxml=<report_name>.junit.xml`
+const Step1 = FrameworkTabsCard
 
 function Step2() {
   return (
     <Card>
       <Card.Header>
-        <Card.Title size="base">Step 2: Output a JUnit XML file</Card.Title>
+        <Card.Title size="base">
+          Step 2: Install Codecov&apos;s CLI in your CI
+        </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
-        <p>
-          Codecov will need the output of your test run. If you&apos;re building
-          on Python, simply do the following when you&apos;re calling pytest in
-          your CI.
-        </p>
-        <CodeSnippet clipboard={Step2Script}>{Step2Script}</CodeSnippet>
-        <p>
-          The above snippet instructs{' '}
-          <span className="text-codecov-code">pytest</span> to collect the
-          result of all tests that are executed in this run and store as{' '}
-          <span className="text-codecov-code">
-            &lt;report_name&gt;.junit.xml
-          </span>
-          . Be sure to replace{' '}
-          <span className="text-codecov-code">&lt;report_name&gt;</span> with
-          your own filename
-        </p>
+        <p>Here&apos;s an example using pip</p>
+        <CodeSnippet clipboard={Step1Script}>{Step1Script}</CodeSnippet>
       </Card.Content>
     </Card>
   )

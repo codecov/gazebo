@@ -16,7 +16,9 @@ describe('FrameworkTabs', () => {
     const pytestButton = screen.getByText('Pytest')
     expect(pytestButton).toBeInTheDocument()
 
-    const codeSnippet = screen.getByText('pytest --cov --junitxml=junit.xml')
+    const codeSnippet = screen.getByText(
+      'pytest --cov --junitxml=junit.xml -o junit_family=legacy'
+    )
     expect(codeSnippet).toBeInTheDocument()
   })
 
