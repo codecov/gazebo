@@ -94,6 +94,7 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
             setSelectedBranch(branch?.name)
             history.push(
               componentsTab.path({
+                // @ts-expect-error - branch is not typed
                 branch: branch?.name,
               })
             )
