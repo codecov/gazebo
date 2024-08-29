@@ -383,11 +383,11 @@ export function useNavLinks() {
     },
     componentsTab: {
       path: (
-        { provider = p, owner = o, repo = r, branch = b } = {
+        { provider = p, owner = o, repo = r, branch = undefined } = {
           provider: p,
           owner: o,
           repo: r,
-          branch: b,
+          branch: undefined,
         }
       ) => {
         if (branch) {
