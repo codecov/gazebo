@@ -5,7 +5,6 @@ import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
 import { useRepo, useRepoOverview } from 'services/repo'
-import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import LoadingLogo from 'ui/LoadingLogo'
 
@@ -45,6 +44,7 @@ interface RoutesProps {
   jsOrTsPresent?: boolean
   isRepoPrivate: boolean
   isCurrentUserActivated?: boolean | null
+  testAnalyticsEnabled?: boolean
 }
 
 function Routes({
@@ -55,13 +55,10 @@ function Routes({
   jsOrTsPresent,
   isRepoPrivate,
   isCurrentUserActivated,
+  testAnalyticsEnabled,
 }: RoutesProps) {
-  const { onboardingFailedTests } = useFlags({
-    bundleAnalysisPrAndCommitPages: false,
-    onboardingFailedTests: false,
-  })
-
-  const productEnabled = coverageEnabled || bundleAnalysisEnabled
+  const productEnabled =
+    coverageEnabled || bundleAnalysisEnabled || testAnalyticsEnabled
   const userAuthorizedtoViewRepo =
     (isRepoPrivate && isCurrentUserActivated) || !isRepoPrivate
   const showUnauthorizedMessageCoverage =
@@ -133,19 +130,17 @@ function Routes({
             <BundleOnboarding />
           </SentryRoute>
         ) : null}
-        {onboardingFailedTests ? (
-          <SentryRoute
-            path={[
-              `${path}/tests`,
-              `${path}/tests/new`,
-              `${path}/tests/new/codecov-cli`,
-              `${path}/tests/:branch`,
-            ]}
-            exact
-          >
-            <FailedTestsTab />
-          </SentryRoute>
-        ) : null}
+        <SentryRoute
+          path={[
+            `${path}/tests`,
+            `${path}/tests/new`,
+            `${path}/tests/new/codecov-cli`,
+            `${path}/tests/:branch`,
+          ]}
+          exact
+        >
+          <FailedTestsTab />
+        </SentryRoute>
         {productEnabled && userAuthorizedtoViewRepo ? (
           <SentryRoute path={`${path}/commits`} exact>
             <CommitsTab />
@@ -169,9 +164,7 @@ function Routes({
         {!bundleAnalysisEnabled && jsOrTsPresent ? (
           <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
         ) : null}
-        {onboardingFailedTests ? (
-          <Redirect from={`${path}/tests/new/*`} to={`${path}/tests/new`} />
-        ) : null}
+        <Redirect from={`${path}/tests/new/*`} to={`${path}/tests/new`} />
         {!coverageEnabled ? <Redirect from={path} to={`${path}/new`} /> : null}
         {!coverageEnabled ? (
           <Redirect from={`${path}/*`} to={`${path}/new`} />
@@ -206,19 +199,17 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
-      {onboardingFailedTests ? (
-        <SentryRoute
-          path={[
-            `${path}/tests`,
-            `${path}/tests/new`,
-            `${path}/tests/new/codecov-cli`,
-            `${path}/tests/:branch`,
-          ]}
-          exact
-        >
-          <FailedTestsTab />
-        </SentryRoute>
-      ) : null}
+      <SentryRoute
+        path={[
+          `${path}/tests`,
+          `${path}/tests/new`,
+          `${path}/tests/new/codecov-cli`,
+          `${path}/tests/:branch`,
+        ]}
+        exact
+      >
+        <FailedTestsTab />
+      </SentryRoute>
       {jsOrTsPresent ? (
         <SentryRoute
           path={[
@@ -308,6 +299,7 @@ function RepoPage() {
           jsOrTsPresent={jsOrTsPresent}
           isRepoPrivate={isRepoPrivate}
           isCurrentUserActivated={isCurrentUserActivated}
+          testAnalyticsEnabled={repoOverview?.testAnalyticsEnabled}
         />
       </Suspense>
     </div>

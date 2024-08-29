@@ -1,6 +1,9 @@
 import { useParams } from 'react-router-dom'
 
-import { useStoreCodecovEventMetric } from 'services/codecovEventMetrics'
+import {
+  EVENT_METRICS,
+  useStoreCodecovEventMetric,
+} from 'services/codecovEventMetrics'
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
@@ -100,7 +103,7 @@ function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {
             clipboardOnClick={() =>
               storeEventMetric({
                 owner,
-                event: 'COPIED_TEXT',
+                event: EVENT_METRICS.COPIED_TEXT,
                 jsonPayload: { text: 'Step 1 CircleCI' },
               })
             }
@@ -147,7 +150,7 @@ function Step2({ defaultBranch }: Step2Props) {
           clipboardOnClick={() =>
             storeEventMetric({
               owner,
-              event: 'COPIED_TEXT',
+              event: EVENT_METRICS.COPIED_TEXT,
               jsonPayload: { text: 'Step 2 CircleCI' },
             })
           }

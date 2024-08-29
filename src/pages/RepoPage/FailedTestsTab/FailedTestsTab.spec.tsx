@@ -17,6 +17,7 @@ jest.mock(
   () => () => 'Failed Tests Table'
 )
 jest.mock('./FailedTestsTable/BranchSelector', () => () => 'Branch Selector')
+jest.mock('../ActivationAlert', () => () => 'Activation Alert')
 
 jest.mock('shared/useRedirect')
 const mockedUseRedirect = useRedirect as jest.Mock
@@ -73,12 +74,17 @@ afterAll(() => {
   server.close()
 })
 
-const mockRepoOverview = ({ testAnalyticsEnabled = false }) => {
+const mockRepoOverview = ({
+  testAnalyticsEnabled = false,
+  isCurrentUserActivated = true,
+  isPrivate = false,
+}) => {
   return {
     owner: {
+      isCurrentUserActivated,
       repository: {
         __typename: 'Repository',
-        private: false,
+        private: isPrivate,
         defaultBranch: 'main',
         oldestCommitAt: '2022-10-10T11:59:59',
         coverageEnabled: true,
@@ -96,13 +102,27 @@ describe('FailedTestsTab', () => {
     hardRedirect: () => hardRedirect(data),
   }))
 
-  function setup({ testEnabled = false }: { testEnabled?: boolean }) {
+  function setup({
+    testEnabled = false,
+    isCurrentUserActivated = true,
+    isPrivate = false,
+  }: {
+    testEnabled?: boolean
+    isCurrentUserActivated?: boolean
+    isPrivate?: boolean
+  }) {
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         if (testEnabled) {
           return res(
             ctx.status(200),
-            ctx.data(mockRepoOverview({ testAnalyticsEnabled: true }))
+            ctx.data(
+              mockRepoOverview({
+                testAnalyticsEnabled: true,
+                isCurrentUserActivated,
+                isPrivate,
+              })
+            )
           )
         }
         return res(ctx.status(200), ctx.data(mockRepoOverview({})))
@@ -236,6 +256,36 @@ describe('FailedTestsTab', () => {
       })
       const content = await screen.findByText(/Branch Selector/)
       expect(content).toBeInTheDocument()
+    })
+  })
+
+  describe('when user is not activated', () => {
+    it('renders activation alert if private repo', async () => {
+      setup({
+        testEnabled: true,
+        isCurrentUserActivated: false,
+        isPrivate: true,
+      })
+      render(<FailedTestsTab />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/tests'),
+      })
+
+      const activationAlert = await screen.findByText(/Activation Alert/)
+      expect(activationAlert).toBeInTheDocument()
+    })
+
+    it('renders failed tests table if public repo', async () => {
+      setup({
+        testEnabled: true,
+        isCurrentUserActivated: false,
+        isPrivate: false,
+      })
+      render(<FailedTestsTab />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/tests'),
+      })
+
+      const activationAlert = await screen.findByText(/Failed Tests Table/)
+      expect(activationAlert).toBeInTheDocument()
     })
   })
 })

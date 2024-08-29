@@ -27,7 +27,6 @@ jest.mock('./FailedTestsTab', () => () => 'FailedTestsTab')
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   componentTab: boolean
-  onboardingFailedTests: boolean
 }>
 
 const mockGetRepo = ({
@@ -71,6 +70,7 @@ const mockRepoOverview = ({
 
   return {
     owner: {
+      isCurrentUserActivated: true,
       repository: {
         __typename: 'Repository',
         private: false,
@@ -156,7 +156,6 @@ interface SetupArgs {
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
   language?: string
-  onboardingFailedTests?: boolean
   testAnalyticsEnabled?: boolean
 }
 
@@ -173,7 +172,6 @@ describe('RepoPage', () => {
       isCurrentUserActivated = true,
       coverageEnabled = true,
       bundleAnalysisEnabled = true,
-      onboardingFailedTests = true,
       language,
       testAnalyticsEnabled = false,
     }: SetupArgs = {
@@ -191,7 +189,6 @@ describe('RepoPage', () => {
   ) {
     mockedUseFlags.mockReturnValue({
       componentTab: true,
-      onboardingFailedTests,
     })
 
     const user = userEvent.setup()
@@ -694,7 +691,6 @@ describe('RepoPage', () => {
             isRepoActive: true,
             hasRepoData: true,
             isRepoActivated: true,
-            onboardingFailedTests: true,
           })
           render(<RepoPage />, {
             wrapper: wrapper({
@@ -724,30 +720,11 @@ describe('RepoPage', () => {
           expect(coverageOnboarding).toBeInTheDocument()
         })
 
-        it('does not render failed tests tab when onboardingFailedTests is false', async () => {
-          const { queryClient } = setup({
-            isRepoActive: true,
-            hasRepoData: true,
-            isRepoActivated: true,
-            onboardingFailedTests: false,
-          })
-          render(<RepoPage />, {
-            wrapper: wrapper({
-              queryClient,
-              initialEntries: '/gh/codecov/cool-repo/tests/new',
-            }),
-          })
-
-          const coverage = await screen.findByText('CoverageTab')
-          expect(coverage).toBeInTheDocument()
-        })
-
-        it('does not render failed tests tab when onboardingFailedTests is false and repo is inactive', async () => {
+        it('does not render failed tests tab when repo is inactive', async () => {
           const { queryClient } = setup({
             isRepoActive: false,
             hasRepoData: true,
             isRepoActivated: false,
-            onboardingFailedTests: false,
           })
           render(<RepoPage />, {
             wrapper: wrapper({
@@ -756,9 +733,9 @@ describe('RepoPage', () => {
             }),
           })
 
-          const coverageOnboarding =
-            await screen.findByText('CoverageOnboarding')
-          expect(coverageOnboarding).toBeInTheDocument()
+          const onboardingFailedTests =
+            await screen.findByText('FailedTestsTab')
+          expect(onboardingFailedTests).toBeInTheDocument()
         })
 
         it('Renders tab when feature flag is on and test analytics is already enabled', async () => {

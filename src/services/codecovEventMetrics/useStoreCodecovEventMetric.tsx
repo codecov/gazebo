@@ -21,6 +21,17 @@ const mutationQuery = `
     }
   }
 `
+// Maintain parity with list of allowed metrics here
+// https://github.com/codecov/shared/blob/main/shared/django_apps/codecov_metrics/service/codecov_metrics.py
+export const EVENT_METRICS = {
+  VISITED_PAGE: 'VISITED_PAGE',
+  CLICKED_BUTTON: 'CLICKED_BUTTON',
+  COPIED_TEXT: 'COPIED_TEXT',
+  COMPLETED_UPLOAD: 'COMPLETED_UPLOAD',
+  INSTALLED_APP: 'INSTALLED_APP',
+} as const
+
+type EventMetric = (typeof EVENT_METRICS)[keyof typeof EVENT_METRICS]
 
 interface Params {
   provider: string
@@ -28,7 +39,7 @@ interface Params {
 
 interface StoreEventMetricMutationArgs {
   owner: string
-  event: string
+  event: EventMetric
   jsonPayload: object
 }
 
@@ -37,7 +48,7 @@ const MAX_ENTRIES = 30
 
 const generateMetricString = (
   owner: string,
-  event: string,
+  event: EventMetric,
   jsonPayload: string
 ) => {
   return `${owner}|${event}|${jsonPayload}`

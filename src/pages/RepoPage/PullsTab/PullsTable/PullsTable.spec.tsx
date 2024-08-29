@@ -13,6 +13,7 @@ import PullsTable from './PullsTable'
 
 const mockRepoOverview = (bundleAnalysisEnabled = false) => ({
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,

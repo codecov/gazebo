@@ -1,0 +1,1 @@
+export { FrameworkTabsCard } from './FrameworkTabsCard'

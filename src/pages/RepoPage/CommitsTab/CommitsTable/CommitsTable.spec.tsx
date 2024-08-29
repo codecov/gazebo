@@ -13,6 +13,7 @@ import CommitsTable from './CommitsTable'
 
 const mockRepoOverview = (bundleAnalysisEnabled = false) => ({
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,

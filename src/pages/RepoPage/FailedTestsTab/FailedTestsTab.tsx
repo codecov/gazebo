@@ -20,6 +20,8 @@ import BranchSelector from './FailedTestsTable/BranchSelector'
 import FailedTestsTable from './FailedTestsTable/FailedTestsTable'
 import GitHubActions from './GitHubActions'
 
+import ActivationAlert from '../ActivationAlert'
+
 const SETUP_OPTIONS = {
   GitHubActions: 'GitHubActions',
   CodecovCLI: 'CodecovCLI',
@@ -121,6 +123,9 @@ function FailedTestsTab() {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data: repoOverview } = useRepoOverview({ provider, owner, repo })
 
+  const showUnauthorizedMessage =
+    repoOverview?.private && !repoOverview.isCurrentUserActivated
+
   if (repoOverview?.testAnalyticsEnabled) {
     return (
       <Switch>
@@ -131,12 +136,16 @@ function FailedTestsTab() {
           ]}
           exact
         >
-          <Suspense fallback={<Loader />}>
-            <div className="flex flex-1 flex-col gap-4">
-              <BranchSelector />
-              <FailedTestsTable />
-            </div>
-          </Suspense>
+          {showUnauthorizedMessage ? (
+            <ActivationAlert />
+          ) : (
+            <Suspense fallback={<Loader />}>
+              <div className="flex flex-1 flex-col gap-4">
+                <BranchSelector />
+                <FailedTestsTable />
+              </div>
+            </Suspense>
+          )}
         </SentryRoute>
         <Redirect
           from={`/:provider/:owner/:repo/tests/:branch/*`}

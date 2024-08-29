@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useStoreCodecovEventMetric } from 'services/codecovEventMetrics'
+import {
+  EVENT_METRICS,
+  useStoreCodecovEventMetric,
+} from 'services/codecovEventMetrics'
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
@@ -252,7 +255,7 @@ jobs:
                 clipboardOnClick={() =>
                   storeEventMetric({
                     owner,
-                    event: 'COPIED_TEXT',
+                    event: EVENT_METRICS.COPIED_TEXT,
                     jsonPayload: { text: `coverage GHA ${framework} install` },
                   })
                 }
@@ -268,7 +271,7 @@ jobs:
             clipboardOnClick={() =>
               storeEventMetric({
                 owner,
-                event: 'COPIED_TEXT',
+                event: EVENT_METRICS.COPIED_TEXT,
                 jsonPayload: { text: `coverage GHA ${framework} run` },
               })
             }
@@ -291,7 +294,7 @@ jobs:
             clipboardOnClick={() =>
               storeEventMetric({
                 owner,
-                event: 'COPIED_TEXT',
+                event: EVENT_METRICS.COPIED_TEXT,
                 jsonPayload: { text: `coverage GHA ${framework} action` },
               })
             }
@@ -355,7 +358,7 @@ function Step2({ tokenCopy, uploadToken }: Step2Props) {
             clipboardOnClick={() =>
               storeEventMetric({
                 owner,
-                event: 'COPIED_TEXT',
+                event: EVENT_METRICS.COPIED_TEXT,
                 jsonPayload: { text: 'Step 2 GHA' },
               })
             }

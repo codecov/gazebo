@@ -10,6 +10,7 @@ import { useRepoCoverageTimeseries } from './useRepoCoverageTimeseries'
 
 const mockRepoOverview = {
   owner: {
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,

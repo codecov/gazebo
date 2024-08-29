@@ -7,7 +7,7 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import { ExpandableSection } from 'ui/ExpandableSection/ExpandableSection'
 
-import { FrameworkTabs } from './FrameworkTabs'
+import { FrameworkTabsCard } from '../FrameworkTabsCard'
 
 function GitHubActions() {
   return (
@@ -21,24 +21,7 @@ function GitHubActions() {
   )
 }
 
-function Step1() {
-  return (
-    <Card>
-      <Card.Header>
-        <Card.Title size="base">
-          Step 1: Output a JUnit XML file in your CI
-        </Card.Title>
-      </Card.Header>
-      <Card.Content className="flex flex-col gap-4">
-        <p>
-          Select the framework below to generate a JUnit XML file that contains
-          the results of your test run.
-        </p>
-        <FrameworkTabs />
-      </Card.Content>
-    </Card>
-  )
-}
+const Step1 = FrameworkTabsCard
 
 const Step2Script = `- name: Upload test results to Codecov
   if: \${{ !cancelled() }}
