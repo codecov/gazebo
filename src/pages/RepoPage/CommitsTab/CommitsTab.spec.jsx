@@ -434,7 +434,6 @@ describe('CommitsTab', () => {
           expect(selectedBranch).toBeInTheDocument()
 
           await waitFor(() => {
-            console.log('qwerty: ', testLocation)
             expect(testLocation?.pathname).toStrictEqual(
               '/gh/codecov/gazebo/commits/All branches'
             )
@@ -448,7 +447,6 @@ describe('CommitsTab', () => {
           expect(newSelectedBranch).toBeInTheDocument()
 
           await waitFor(() => {
-            console.log('qwerty: ', testLocation)
             expect(testLocation?.pathname).toStrictEqual(
               '/gh/codecov/gazebo/commits/main'
             )
