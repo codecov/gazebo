@@ -1,6 +1,5 @@
 import { AddressElement, useElements } from '@stripe/react-stripe-js'
 import cs from 'classnames'
-import { useEffect } from 'react'
 import { z } from 'zod'
 
 import { AddressSchema } from 'services/account'
@@ -23,51 +22,29 @@ function AddressForm({
   provider,
   owner,
 }: AddressFormProps) {
-  const { theme } = useThemeContext()
   const elements = useElements()
+  const { theme } = useThemeContext()
+  const isDarkMode = theme === Theme.DARK
 
-  useEffect(() => {
-    const updateAppearance = () => {
-      const isDarkMode = theme === Theme.DARK
-
-      elements?.update({
-        appearance: {
-          variables: {
-            fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
-          },
-          rules: {
-            '.Label': {
-              fontWeight: '600',
-              color: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
-            },
-            '.Input': {
-              backgroundColor: isDarkMode
-                ? 'rgb(22,24,29)'
-                : 'rgb(255,255,255)', // Same values as --color-app-container.
-              borderColor: isDarkMode ? 'rgb(47,51,60)' : 'rgb(216,220,226)', // Same values as --color-ds-gray-tertiary.
-              color: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
-            },
-          },
+  // Note: unfortunately seems Stripe doesn't let us reference like `var(--<var name>)` so rgbs are hardcoded in below
+  elements?.update({
+    appearance: {
+      variables: {
+        fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
+      },
+      rules: {
+        '.Label': {
+          fontWeight: '600',
+          color: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
         },
-      })
-    }
-
-    const observer = new MutationObserver(() => updateAppearance())
-
-    // Start observing the body element's class attribute for changes
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ['class'],
-    })
-
-    // Run on page load to set the correct appearance
-    updateAppearance()
-
-    // Clean up the observer on component unmount
-    return () => {
-      observer.disconnect()
-    }
-  }, [elements, theme]) // Depend on elements to re-run if they change
+        '.Input': {
+          backgroundColor: isDarkMode ? 'rgb(22,24,29)' : 'rgb(255,255,255)', // Same values as --color-app-container.
+          borderColor: isDarkMode ? 'rgb(47,51,60)' : 'rgb(216,220,226)', // Same values as --color-ds-gray-tertiary.
+          color: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
+        },
+      },
+    },
+  })
 
   const {
     mutate: updateAddress,
