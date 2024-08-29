@@ -15,6 +15,11 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
     </MemoryRouter>
   )
 
+jest.mock('../FrameworkTabsCard', () => ({
+  __esModule: true,
+  FrameworkTabsCard: () => 'FrameworkTabsCard',
+}))
+
 describe('CodecovCLI', () => {
   function setup() {
     const user = userEvent.setup()
@@ -22,10 +27,19 @@ describe('CodecovCLI', () => {
   }
 
   describe('Step one', () => {
+    it('renders framework tabs card', () => {
+      render(<CodecovCLI />, { wrapper: wrapper() })
+
+      const frameworkTabs = screen.getByText('FrameworkTabsCard')
+      expect(frameworkTabs).toBeInTheDocument()
+    })
+  })
+
+  describe('Step two', () => {
     it('renders title of card', () => {
       render(<CodecovCLI />, { wrapper: wrapper() })
 
-      const title = screen.getByText("Step 1: Install Codecov's CLI in your CI")
+      const title = screen.getByText("Step 2: Install Codecov's CLI in your CI")
       expect(title).toBeInTheDocument()
     })
 
@@ -40,29 +54,6 @@ describe('CodecovCLI', () => {
       render(<CodecovCLI />, { wrapper: wrapper() })
 
       const script = screen.getByText(/pip install codecov-cli/)
-      expect(script).toBeInTheDocument()
-    })
-  })
-
-  describe('Step two', () => {
-    it('renders title of card', () => {
-      render(<CodecovCLI />, { wrapper: wrapper() })
-
-      const title = screen.getByText(/Step 2: Output a JUnit XML file/)
-      expect(title).toBeInTheDocument()
-    })
-
-    it('renders content of card', () => {
-      render(<CodecovCLI />, { wrapper: wrapper() })
-
-      const content = screen.getByText(/If you're building on Python/)
-      expect(content).toBeInTheDocument()
-    })
-
-    it('renders script', () => {
-      render(<CodecovCLI />, { wrapper: wrapper() })
-
-      const script = screen.getByText(/pytest <other_args> --junitxml/)
       expect(script).toBeInTheDocument()
     })
   })

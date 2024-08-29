@@ -13,7 +13,8 @@ const Frameworks = {
 type FrameworkType = (typeof Frameworks)[keyof typeof Frameworks]
 
 const FrameworkCopy = {
-  [Frameworks.PYTEST]: 'pytest --cov --junitxml=junit.xml',
+  [Frameworks.PYTEST]:
+    'pytest --cov --junitxml=junit.xml -o junit_family=legacy',
   [Frameworks.VITEST]: 'vitest --reporter=junit',
   [Frameworks.JEST]:
     'npm i --save-dev jest-junit \njest --reporters=jest-junit',
