@@ -7,7 +7,6 @@ import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
-import { useFlags } from 'shared/featureFlags'
 import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
 import { ComparisonReturnType, ReportUploadType } from 'shared/utils/comparison'
 import { metrics } from 'shared/utils/metrics'
@@ -39,9 +38,6 @@ function PullCoverageContent() {
   const { owner, repo, pullId, provider } = useParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: tierData } = useTier({ provider, owner })
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
 
   useEffect(() => {
     if (overview?.bundleAnalysisEnabled && overview?.coverageEnabled) {
@@ -51,8 +47,7 @@ function PullCoverageContent() {
     }
   }, [overview?.bundleAnalysisEnabled, overview?.coverageEnabled])
 
-  const isTeamPlan =
-    multipleTiers && tierData === TierNames.TEAM && overview?.private
+  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
   const { data } = usePullPageData({
     provider,
@@ -138,9 +133,6 @@ function PullCoverageContent() {
 function PullCoverage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
   const { data: tierData } = useTier({ provider, owner })
   const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
   useEffect(() => {
@@ -151,8 +143,7 @@ function PullCoverage() {
     }
   }, [overview?.bundleAnalysisEnabled, overview?.coverageEnabled])
 
-  const isTeamPlan =
-    multipleTiers && tierData === TierNames.TEAM && overview?.private
+  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
   const { data } = usePullPageData({
     provider,

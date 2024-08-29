@@ -24,14 +24,12 @@ import { usePlanParams } from '../hooks/usePlanParams'
 import { UpgradeFormFields } from '../UpgradeForm'
 
 interface PlanTypeOptionsProps {
-  multipleTiers: boolean
   setFormValue: UseFormSetValue<UpgradeFormFields>
   setSelectedPlan: (x: IndividualPlan) => void
   newPlan: string
 }
 
 const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
-  multipleTiers,
   setFormValue,
   setSelectedPlan,
   newPlan,
@@ -66,7 +64,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   }
 
   const monthlyPlan = isMonthlyPlan(currentFormValue)
-  if (hasTeamPlans && multipleTiers) {
+  if (hasTeamPlans) {
     return (
       <div className="flex w-fit flex-col gap-2">
         <h3 className="font-semibold">Choose a plan</h3>

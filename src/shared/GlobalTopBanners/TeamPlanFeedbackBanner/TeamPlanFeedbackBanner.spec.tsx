@@ -7,17 +7,21 @@ import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import TeamPlanFeedbackBanner from './TeamPlanFeedbackBanner'
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
 
 const mockTeamTier = {
   owner: {
     plan: {
       tierName: TierNames.TEAM,
+    },
+  },
+}
+
+const mockProTier = {
+  owner: {
+    plan: {
+      tierName: TierNames.PRO,
     },
   },
 }
@@ -49,14 +53,16 @@ const wrapper =
   )
 
 describe('TeamPlanFeedbackBanner', () => {
-  function setup() {
+  function setup(isPro = false) {
     const user = userEvent.setup()
     const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
     const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
 
-    mockedUseFlags.mockReturnValue({ multipleTiers: true })
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
+        if (isPro) {
+          return res(ctx.status(200), ctx.data(mockProTier))
+        }
         return res(ctx.status(200), ctx.data(mockTeamTier))
       })
     )
@@ -127,7 +133,7 @@ describe('TeamPlanFeedbackBanner', () => {
 
   describe('user is not on team plan', () => {
     it('does not render banner', async () => {
-      mockedUseFlags.mockReturnValue({ multipleTiers: false })
+      setup(true)
       const { container } = render(<TeamPlanFeedbackBanner />, {
         wrapper: wrapper('/gh/codecov'),
       })

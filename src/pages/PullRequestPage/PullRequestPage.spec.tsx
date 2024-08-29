@@ -7,14 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
 import { TierNames, TTierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import PullRequestPage from './PullRequestPage'
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  multipleTiers: boolean
-}>
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./PullCoverage', () => () => 'PullCoverage')
@@ -189,10 +183,6 @@ describe('PullRequestPage', () => {
     coverageEnabled = true,
     bundleAnalysisEnabled = false,
   }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      multipleTiers: true,
-    })
-
     server.use(
       graphql.query('PullHeadData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullHeadData))

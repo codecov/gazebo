@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import TopBanner from 'ui/TopBanner'
 
@@ -14,11 +13,8 @@ interface URLParams {
 
 const TeamPlanFeedbackBanner = () => {
   const { provider, owner } = useParams<URLParams>()
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
   const { data: tierData } = useTier({ provider, owner })
-  const isTeamPlan = tierData === TierNames.TEAM && multipleTiers
+  const isTeamPlan = tierData === TierNames.TEAM
 
   if (!isTeamPlan) {
     return null
