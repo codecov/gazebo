@@ -6,7 +6,6 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import { ComparisonReturnType } from 'shared/utils/comparison'
 
 import PullRequestPageContent from './PullCoverage'
@@ -197,10 +196,6 @@ describe('PullRequestPageContent', () => {
       isGithubRateLimited: false,
     }
   ) {
-    useFlags.mockReturnValue({
-      multipleTiers: true,
-    })
-
     server.use(
       graphql.query('PullPageData', (req, res, ctx) => {
         if (req.variables.isTeamPlan) {

@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 import ComponentsMultiSelect from 'pages/PullRequestPage/PullCoverage/routes/ComponentsSelector'
 import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import { LINE_STATE } from 'shared/utils/fileviewer'
 import {
   TitleCoverage,
@@ -24,13 +23,9 @@ function ToggleHeader({ showHitCount = false, noBottomBorder = false }) {
     : 'border-b pb-2'
 
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
 
   const { data: tierData } = useTier({ provider, owner })
-  const isTeamPlan =
-    multipleTiers && tierData === TierNames.TEAM && overview?.private
+  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
   return (
     <div

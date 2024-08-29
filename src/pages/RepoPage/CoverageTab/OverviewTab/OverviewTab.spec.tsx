@@ -5,12 +5,8 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames, TTierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import CoverageOverviewTab from './OverviewTab'
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
 
 jest.mock('./Summary', () => () => 'Summary')
 jest.mock('./SummaryTeamPlan', () => () => 'SummaryTeamPlan')
@@ -350,10 +346,6 @@ describe('Coverage overview tab', () => {
     tierValue = TierNames.PRO,
     fileCount = 10,
   }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      multipleTiers: true,
-    })
-
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockRepo(isPrivate, isFirstPullRequest)))

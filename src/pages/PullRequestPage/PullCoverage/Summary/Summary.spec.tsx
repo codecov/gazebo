@@ -6,15 +6,8 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
-import { useFlags as useFlagsOriginal } from 'shared/featureFlags'
 
 import Summary from './Summary'
-
-const useFlags = useFlagsOriginal as jest.MockedFunction<
-  typeof useFlagsOriginal
->
-
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -48,25 +41,16 @@ afterAll(() => {
 })
 
 interface SetupOptions {
-  multipleTiers?: boolean
   tierValue?: (typeof TierNames)[keyof typeof TierNames]
   privateRepo?: boolean
 }
 describe('Summary', () => {
   function setup(
-    {
-      multipleTiers = false,
-      tierValue = TierNames.BASIC,
-      privateRepo = false,
-    }: SetupOptions = {
-      multipleTiers: false,
+    { tierValue = TierNames.BASIC, privateRepo = false }: SetupOptions = {
       tierValue: TierNames.BASIC,
       privateRepo: false,
     }
   ) {
-    useFlags.mockReturnValue({
-      multipleTiers,
-    })
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) =>
         res(
@@ -101,40 +85,32 @@ describe('Summary', () => {
     )
   }
   describe.each`
-    multipleTiers | tierValue          | privateRepo
-    ${true}       | ${TierNames.BASIC} | ${true}
-    ${true}       | ${TierNames.BASIC} | ${false}
-    ${true}       | ${TierNames.TEAM}  | ${false}
-    ${false}      | ${TierNames.BASIC} | ${true}
-    ${false}      | ${TierNames.BASIC} | ${false}
-    ${false}      | ${TierNames.TEAM}  | ${true}
-    ${false}      | ${TierNames.TEAM}  | ${false}
-  `(
-    'renders the normal summary',
-    ({ multipleTiers, tierValue, privateRepo }) => {
-      it(`multipleTiers: ${multipleTiers}, tierValue: ${tierValue}, privateRepo: ${privateRepo}`, async () => {
-        setup({ multipleTiers, tierValue, privateRepo })
-        render(<Summary />, { wrapper: wrapper() })
+    tierValue          | privateRepo
+    ${TierNames.BASIC} | ${true}
+    ${TierNames.BASIC} | ${false}
+    ${TierNames.TEAM}  | ${false}
+  `('renders the normal summary', ({ tierValue, privateRepo }) => {
+    it(`tierValue: ${tierValue}, privateRepo: ${privateRepo}`, async () => {
+      setup({ tierValue, privateRepo })
+      render(<Summary />, { wrapper: wrapper() })
 
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
 
-        const head = await screen.findByText('HEAD')
-        expect(head).toBeInTheDocument()
+      const head = await screen.findByText('HEAD')
+      expect(head).toBeInTheDocument()
 
-        const patch = await screen.findByText('Patch')
-        expect(patch).toBeInTheDocument()
+      const patch = await screen.findByText('Patch')
+      expect(patch).toBeInTheDocument()
 
-        const coverage = await screen.findByText('Coverage data is unknown')
-        expect(coverage).toBeInTheDocument()
-      })
-    }
-  )
+      const coverage = await screen.findByText('Coverage data is unknown')
+      expect(coverage).toBeInTheDocument()
+    })
+  })
 
   it('renders the team summary', async () => {
     setup({
-      multipleTiers: true,
       tierValue: TierNames.TEAM,
       privateRepo: true,
     })

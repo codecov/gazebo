@@ -12,11 +12,8 @@ import {
   compareTotalsEmpty,
 } from 'services/commit/mocks'
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import { useUploads } from './useUploads'
-
-jest.mock('shared/featureFlags')
 
 const mockOverview = {
   owner: {
@@ -62,10 +59,6 @@ afterAll(() => server.close())
 describe('useUploads', () => {
   function setup(query, tierValue = TierNames.PRO) {
     server.use(query, compareTotalsEmpty)
-
-    useFlags.mockReturnValue({
-      multipleTiers: true,
-    })
 
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {

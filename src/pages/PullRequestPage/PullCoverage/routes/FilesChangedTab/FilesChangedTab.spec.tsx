@@ -5,16 +5,12 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import FilesChangedTab from './FilesChangedTab'
 
 jest.mock('./FilesChanged', () => () => 'FilesChanged')
 jest.mock('./FilesChanged/TableTeam', () => () => 'TeamFilesChanged')
 jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
 
 const mockTeamTier = {
   owner: {
@@ -103,16 +99,11 @@ afterAll(() => {
 
 interface SetupArgs {
   planValue: (typeof TierNames)[keyof typeof TierNames]
-  multipleTiers: boolean
   privateRepo: boolean
 }
 
 describe('FilesChangedTab', () => {
-  function setup({ planValue, multipleTiers, privateRepo }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      multipleTiers: multipleTiers,
-    })
-
+  function setup({ planValue, privateRepo }: SetupArgs) {
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
         if (planValue === TierNames.TEAM) {
@@ -153,47 +144,36 @@ describe('FilesChangedTab', () => {
   }
 
   describe.each`
-    multipleTiers | planValue          | privateRepo
-    ${true}       | ${TierNames.BASIC} | ${true}
-    ${true}       | ${TierNames.BASIC} | ${false}
-    ${true}       | ${TierNames.TEAM}  | ${false}
-    ${false}      | ${TierNames.BASIC} | ${true}
-    ${false}      | ${TierNames.BASIC} | ${false}
-    ${false}      | ${TierNames.TEAM}  | ${true}
-    ${false}      | ${TierNames.TEAM}  | ${false}
-  `(
-    'renders the full files changed table',
-    ({ multipleTiers, planValue, privateRepo }) => {
-      it(`multipleTiers: ${multipleTiers}, planValue: ${planValue}, privateRepo: ${privateRepo}`, async () => {
-        setup({ multipleTiers, planValue, privateRepo })
-        render(<FilesChangedTab />, { wrapper })
+    planValue          | privateRepo
+    ${TierNames.BASIC} | ${true}
+    ${TierNames.BASIC} | ${false}
+    ${TierNames.TEAM}  | ${false}
+  `('renders the full files changed table', ({ planValue, privateRepo }) => {
+    it(`planValue: ${planValue}, privateRepo: ${privateRepo}`, async () => {
+      setup({ planValue, privateRepo })
+      render(<FilesChangedTab />, { wrapper })
 
-        const table = await screen.findByText('FilesChanged')
-        expect(table).toBeInTheDocument()
-      })
-    }
-  )
+      const table = await screen.findByText('FilesChanged')
+      expect(table).toBeInTheDocument()
+    })
+  })
 
   describe.each`
-    multipleTiers | planValue         | privateRepo
-    ${true}       | ${TierNames.TEAM} | ${true}
-  `(
-    'renders the team files changed table',
-    ({ multipleTiers, planValue, privateRepo }) => {
-      it(`multipleTiers: ${multipleTiers}, planValue: ${planValue}, privateRepo: ${privateRepo}`, async () => {
-        setup({ multipleTiers, planValue, privateRepo })
-        render(<FilesChangedTab />, { wrapper })
+    planValue         | privateRepo
+    ${TierNames.TEAM} | ${true}
+  `('renders the team files changed table', ({ planValue, privateRepo }) => {
+    it(`planValue: ${planValue}, privateRepo: ${privateRepo}`, async () => {
+      setup({ planValue, privateRepo })
+      render(<FilesChangedTab />, { wrapper })
 
-        const table = await screen.findByText('TeamFilesChanged')
-        expect(table).toBeInTheDocument()
-      })
-    }
-  )
+      const table = await screen.findByText('TeamFilesChanged')
+      expect(table).toBeInTheDocument()
+    })
+  })
 
   describe('when impacted files is rendered', () => {
     it('renders ComponentsSelector', async () => {
       setup({
-        multipleTiers: true,
         planValue: TierNames.BASIC,
         privateRepo: true,
       })

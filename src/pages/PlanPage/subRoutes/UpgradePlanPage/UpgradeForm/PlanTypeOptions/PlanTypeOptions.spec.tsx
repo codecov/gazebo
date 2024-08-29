@@ -241,7 +241,6 @@ describe('PlanTypeOptions', () => {
 
         render(
           <PlanTypeOptions
-            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
             newPlan={planValue}
@@ -274,7 +273,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -309,7 +307,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -348,7 +345,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -387,7 +383,6 @@ describe('PlanTypeOptions', () => {
 
         render(
           <PlanTypeOptions
-            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
             newPlan={planValue}
@@ -421,7 +416,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -460,7 +454,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -499,7 +492,6 @@ describe('PlanTypeOptions', () => {
 
         render(
           <PlanTypeOptions
-            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
             newPlan={planValue}
@@ -532,7 +524,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -567,7 +558,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -606,7 +596,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -635,41 +624,6 @@ describe('PlanTypeOptions', () => {
       })
     })
 
-    describe('when org does not have team plans available', () => {
-      it('renders custom sentry text for included seats', async () => {
-        const { mockSetFormValue, mockSetSelectedPlan, planValue } = setup({
-          planValue: Plans.USERS_SENTRYY,
-          hasSentryPlans: true,
-          hasTeamPlans: false,
-        })
-
-        render(
-          <PlanTypeOptions
-            multipleTiers={false}
-            setFormValue={mockSetFormValue}
-            setSelectedPlan={mockSetSelectedPlan}
-            newPlan={planValue}
-          />,
-          {
-            wrapper: wrapper(),
-          }
-        )
-
-        const planTitle = await screen.findByText(/Plan/)
-        expect(planTitle).toBeInTheDocument()
-
-        const planDescription = await screen.findByText(
-          /\$29 monthly includes 5 seats./
-        )
-        expect(planDescription).toBeInTheDocument()
-
-        const teamBtn = screen.queryByRole('button', {
-          name: 'Team',
-        })
-        expect(teamBtn).not.toBeInTheDocument()
-      })
-    })
-
     describe('when plan is trialing', () => {
       it('renders Pro button as "selected"', async () => {
         const { mockSetFormValue, mockSetSelectedPlan, planValue } = setup({
@@ -680,7 +634,6 @@ describe('PlanTypeOptions', () => {
 
         render(
           <PlanTypeOptions
-            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
             newPlan={planValue}
@@ -714,7 +667,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -753,7 +705,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -794,7 +745,6 @@ describe('PlanTypeOptions', () => {
 
         render(
           <PlanTypeOptions
-            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
             newPlan={planValue}
@@ -828,7 +778,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -867,7 +816,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -906,7 +854,6 @@ describe('PlanTypeOptions', () => {
 
         render(
           <PlanTypeOptions
-            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
             newPlan={planValue}
@@ -940,7 +887,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -979,7 +925,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -1018,7 +963,6 @@ describe('PlanTypeOptions', () => {
 
         render(
           <PlanTypeOptions
-            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
             newPlan={planValue}
@@ -1051,7 +995,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -1086,7 +1029,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -1125,7 +1067,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -1164,7 +1105,6 @@ describe('PlanTypeOptions', () => {
 
         render(
           <PlanTypeOptions
-            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
             newPlan={planValue}
@@ -1198,7 +1138,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -1237,7 +1176,6 @@ describe('PlanTypeOptions', () => {
 
           render(
             <PlanTypeOptions
-              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
               newPlan={planValue}
@@ -1276,7 +1214,6 @@ describe('PlanTypeOptions', () => {
 
       render(
         <PlanTypeOptions
-          multipleTiers={true}
           setFormValue={mockSetFormValue}
           setSelectedPlan={mockSetSelectedPlan}
           newPlan="users-teamm"

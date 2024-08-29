@@ -6,7 +6,6 @@ import { SentryRoute } from 'sentry'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import { useRepo } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import { cn } from 'shared/utils/cn'
 import Spinner from 'ui/Spinner'
 import { ToggleElement } from 'ui/ToggleElement'
@@ -42,9 +41,6 @@ function CoverageOverviewTab() {
     repo,
   })
 
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
   const { data: tierName } = useTier({ provider, owner })
 
   const { data } = useCoverageTabData({
@@ -61,9 +57,7 @@ function CoverageOverviewTab() {
   }
 
   const showTeamSummary =
-    tierName === TierNames.TEAM &&
-    repoData?.repository?.private &&
-    multipleTiers
+    tierName === TierNames.TEAM && repoData?.repository?.private
 
   return (
     <div className="mx-4 flex flex-col gap-4 divide-y border-solid border-ds-gray-secondary pt-4 sm:mx-0">

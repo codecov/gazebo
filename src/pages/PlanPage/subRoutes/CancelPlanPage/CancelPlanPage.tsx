@@ -9,7 +9,6 @@ import {
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 import {
   isEnterprisePlan,
   isMonthlyPlan,
@@ -41,9 +40,6 @@ function CancelPlanPage() {
     provider,
     owner,
   })
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
 
   const isOnTrial =
     isTrialPlan(planData?.plan?.value) &&
@@ -59,7 +55,6 @@ function CancelPlanPage() {
   const showSpecialOffer =
     discountNotApplied && isMonthlyPlan(accountDetailsData?.plan?.value)
   const showTeamSpecialOffer =
-    multipleTiers &&
     shouldDisplayTeamCard({ plans }) &&
     isProPlan(accountDetailsData?.plan?.value)
   const showCancelPage = showSpecialOffer || showTeamSpecialOffer

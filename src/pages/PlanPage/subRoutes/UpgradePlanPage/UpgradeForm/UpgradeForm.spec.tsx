@@ -9,18 +9,15 @@ import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 import { IndividualPlan, TrialStatuses } from 'services/account'
 import { accountDetailsParsedObj } from 'services/account/mocks'
 import { useAddNotification } from 'services/toastNotification'
-import { useFlags } from 'shared/featureFlags'
 import { Plans } from 'shared/utils/billing'
 
 import UpgradeForm from './UpgradeForm'
 
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
-jest.mock('shared/featureFlags')
 jest.mock('@sentry/react')
 
 const mockedUseAddNotification = useAddNotification as jest.Mock
-const mockedUseFlags = useFlags as jest.Mock
 
 const basicPlan = {
   marketingName: 'Basic',
@@ -270,7 +267,6 @@ type SetupArgs = {
   errorDetails?: string
   trialStatus?: keyof typeof TrialStatuses
   hasTeamPlans?: boolean
-  multipleTiers?: boolean
   hasSentryPlans?: boolean
   monthlyPlan?: boolean
 }
@@ -281,7 +277,6 @@ describe('UpgradeForm', () => {
     successfulPatchRequest = true,
     errorDetails = undefined,
     trialStatus = TrialStatuses.NOT_STARTED,
-    multipleTiers = false,
     hasTeamPlans = false,
     hasSentryPlans = false,
     monthlyPlan = true,
@@ -291,7 +286,6 @@ describe('UpgradeForm', () => {
     const patchRequest = jest.fn()
 
     mockedUseAddNotification.mockReturnValue(addNotification)
-    mockedUseFlags.mockReturnValue({ multipleTiers })
 
     server.use(
       rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
@@ -452,82 +446,60 @@ describe('UpgradeForm', () => {
       })
 
       describe('when the user has team plans available', () => {
-        describe('when the feature flag is off', () => {
-          it('does not renders the Pro and team buttons', () => {
-            setup({
-              planValue: Plans.USERS_BASIC,
-              hasTeamPlans: true,
-              multipleTiers: false,
-            })
-            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-            const proBtn = screen.queryByRole('button', { name: 'Pro' })
-            expect(proBtn).not.toBeInTheDocument()
-            const teamBtn = screen.queryByRole('button', { name: 'Team' })
-            expect(teamBtn).not.toBeInTheDocument()
+        it('renders the Pro button as "selected"', async () => {
+          setup({
+            planValue: Plans.USERS_BASIC,
+            hasTeamPlans: true,
           })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+          expect(optionBtn).toBeInTheDocument()
+          expect(optionBtn).toHaveClass('bg-ds-primary-base')
         })
 
-        describe('when the feature flag is on', () => {
-          it('renders the Pro button as "selected"', async () => {
-            setup({
-              planValue: Plans.USERS_BASIC,
-              hasTeamPlans: true,
-              multipleTiers: true,
-            })
-            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
-            expect(optionBtn).toBeInTheDocument()
-            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        it('renders team option button', async () => {
+          setup({
+            planValue: Plans.USERS_BASIC,
+            hasTeamPlans: true,
           })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          it('renders team option button', async () => {
-            setup({
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(optionBtn).toBeInTheDocument()
+        })
+
+        describe('when updating to a team plan', () => {
+          it('renders up to 10 seats text', async () => {
+            const { user } = setup({
               planValue: Plans.USERS_BASIC,
               hasTeamPlans: true,
-              multipleTiers: true,
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            const optionBtn = await screen.findByRole('button', {
+            const teamOption = await screen.findByRole('button', {
               name: 'Team',
             })
-            expect(optionBtn).toBeInTheDocument()
+            await user.click(teamOption)
+
+            const auxiliaryText = await screen.findByText(/Up to 10 users/)
+            expect(auxiliaryText).toBeInTheDocument()
           })
 
-          describe('when updating to a team plan', () => {
-            it('renders up to 10 seats text', async () => {
-              const { user } = setup({
-                planValue: Plans.USERS_BASIC,
-                hasTeamPlans: true,
-                multipleTiers: true,
-              })
-              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-              const teamOption = await screen.findByRole('button', {
-                name: 'Team',
-              })
-              await user.click(teamOption)
-
-              const auxiliaryText = await screen.findByText(/Up to 10 users/)
-              expect(auxiliaryText).toBeInTheDocument()
+          it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
+            const { user } = setup({
+              planValue: Plans.USERS_BASIC,
+              hasTeamPlans: true,
             })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
-              const { user } = setup({
-                planValue: Plans.USERS_BASIC,
-                hasTeamPlans: true,
-                multipleTiers: true,
-              })
-              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-              const teamOption = await screen.findByRole('button', {
-                name: 'Team',
-              })
-              await user.click(teamOption)
-              expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            const teamOption = await screen.findByRole('button', {
+              name: 'Team',
             })
+            await user.click(teamOption)
+            expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           })
         })
       })
@@ -816,82 +788,60 @@ describe('UpgradeForm', () => {
       })
 
       describe('when the user has team plans available', () => {
-        describe('when the feature flag is off', () => {
-          it('does not renders the Pro and team buttons', () => {
-            setup({
-              planValue: Plans.USERS_PR_INAPPM,
-              hasTeamPlans: true,
-              multipleTiers: false,
-            })
-            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-            const proBtn = screen.queryByRole('button', { name: 'Pro' })
-            expect(proBtn).not.toBeInTheDocument()
-            const teamBtn = screen.queryByRole('button', { name: 'Team' })
-            expect(teamBtn).not.toBeInTheDocument()
+        it('renders the Pro button as "selected"', async () => {
+          setup({
+            planValue: Plans.USERS_PR_INAPPM,
+            hasTeamPlans: true,
           })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+          expect(optionBtn).toBeInTheDocument()
+          expect(optionBtn).toHaveClass('bg-ds-primary-base')
         })
 
-        describe('when the feature flag is on', () => {
-          it('renders the Pro button as "selected"', async () => {
-            setup({
-              planValue: Plans.USERS_PR_INAPPM,
-              hasTeamPlans: true,
-              multipleTiers: true,
-            })
-            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
-            expect(optionBtn).toBeInTheDocument()
-            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        it('renders team option button', async () => {
+          setup({
+            planValue: Plans.USERS_PR_INAPPM,
+            hasTeamPlans: true,
           })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          it('renders team option button', async () => {
-            setup({
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(optionBtn).toBeInTheDocument()
+        })
+
+        describe('when updating to a team plan', () => {
+          it('renders up to 10 seats text', async () => {
+            const { user } = setup({
               planValue: Plans.USERS_PR_INAPPM,
               hasTeamPlans: true,
-              multipleTiers: true,
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            const optionBtn = await screen.findByRole('button', {
+            const teamOption = await screen.findByRole('button', {
               name: 'Team',
             })
-            expect(optionBtn).toBeInTheDocument()
+            await user.click(teamOption)
+
+            const auxiliaryText = await screen.findByText(/Up to 10 users/)
+            expect(auxiliaryText).toBeInTheDocument()
           })
 
-          describe('when updating to a team plan', () => {
-            it('renders up to 10 seats text', async () => {
-              const { user } = setup({
-                planValue: Plans.USERS_PR_INAPPM,
-                hasTeamPlans: true,
-                multipleTiers: true,
-              })
-              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-              const teamOption = await screen.findByRole('button', {
-                name: 'Team',
-              })
-              await user.click(teamOption)
-
-              const auxiliaryText = await screen.findByText(/Up to 10 users/)
-              expect(auxiliaryText).toBeInTheDocument()
+          it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
+            const { user } = setup({
+              planValue: Plans.USERS_BASIC,
+              hasTeamPlans: true,
             })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
-              const { user } = setup({
-                planValue: Plans.USERS_BASIC,
-                hasTeamPlans: true,
-                multipleTiers: true,
-              })
-              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-              const teamOption = await screen.findByRole('button', {
-                name: 'Team',
-              })
-              await user.click(teamOption)
-              expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            const teamOption = await screen.findByRole('button', {
+              name: 'Team',
             })
+            await user.click(teamOption)
+            expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           })
         })
       })
@@ -1141,82 +1091,60 @@ describe('UpgradeForm', () => {
       })
 
       describe('when the user has team plans available', () => {
-        describe('when the feature flag is off', () => {
-          it('does not renders the Pro and team buttons', () => {
-            setup({
-              planValue: Plans.USERS_PR_INAPPY,
-              hasTeamPlans: true,
-              multipleTiers: false,
-            })
-            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-            const proBtn = screen.queryByRole('button', { name: 'Pro' })
-            expect(proBtn).not.toBeInTheDocument()
-            const teamBtn = screen.queryByRole('button', { name: 'Team' })
-            expect(teamBtn).not.toBeInTheDocument()
+        it('renders the Pro button as "selected"', async () => {
+          setup({
+            planValue: Plans.USERS_PR_INAPPY,
+            hasTeamPlans: true,
           })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+          expect(optionBtn).toBeInTheDocument()
+          expect(optionBtn).toHaveClass('bg-ds-primary-base')
         })
 
-        describe('when the feature flag is on', () => {
-          it('renders the Pro button as "selected"', async () => {
-            setup({
-              planValue: Plans.USERS_PR_INAPPY,
-              hasTeamPlans: true,
-              multipleTiers: true,
-            })
-            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
-            expect(optionBtn).toBeInTheDocument()
-            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        it('renders team option button', async () => {
+          setup({
+            planValue: Plans.USERS_PR_INAPPY,
+            hasTeamPlans: true,
           })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          it('renders team option button', async () => {
-            setup({
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(optionBtn).toBeInTheDocument()
+        })
+
+        describe('when updating to a team plan', () => {
+          it('renders up to 10 seats text', async () => {
+            const { user } = setup({
               planValue: Plans.USERS_PR_INAPPY,
               hasTeamPlans: true,
-              multipleTiers: true,
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            const optionBtn = await screen.findByRole('button', {
+            const teamOption = await screen.findByRole('button', {
               name: 'Team',
             })
-            expect(optionBtn).toBeInTheDocument()
+            await user.click(teamOption)
+
+            const auxiliaryText = await screen.findByText(/Up to 10 users/)
+            expect(auxiliaryText).toBeInTheDocument()
           })
 
-          describe('when updating to a team plan', () => {
-            it('renders up to 10 seats text', async () => {
-              const { user } = setup({
-                planValue: Plans.USERS_PR_INAPPY,
-                hasTeamPlans: true,
-                multipleTiers: true,
-              })
-              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-              const teamOption = await screen.findByRole('button', {
-                name: 'Team',
-              })
-              await user.click(teamOption)
-
-              const auxiliaryText = await screen.findByText(/Up to 10 users/)
-              expect(auxiliaryText).toBeInTheDocument()
+          it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
+            const { user } = setup({
+              planValue: Plans.USERS_BASIC,
+              hasTeamPlans: true,
             })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
-              const { user } = setup({
-                planValue: Plans.USERS_BASIC,
-                hasTeamPlans: true,
-                multipleTiers: true,
-              })
-              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-              const teamOption = await screen.findByRole('button', {
-                name: 'Team',
-              })
-              await user.click(teamOption)
-              expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            const teamOption = await screen.findByRole('button', {
+              name: 'Team',
             })
+            await user.click(teamOption)
+            expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           })
         })
       })
@@ -1699,7 +1627,6 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
-          multipleTiers: true,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1713,7 +1640,6 @@ describe('UpgradeForm', () => {
         const { user } = setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
-          multipleTiers: true,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1730,7 +1656,6 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
-          multipleTiers: true,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1742,7 +1667,6 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
-          multipleTiers: true,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1754,7 +1678,6 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
-          multipleTiers: true,
           monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -1768,7 +1691,6 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
-          multipleTiers: true,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1780,7 +1702,6 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
-          multipleTiers: true,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1792,7 +1713,6 @@ describe('UpgradeForm', () => {
         const { user } = setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
-          multipleTiers: true,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1815,7 +1735,6 @@ describe('UpgradeForm', () => {
         const { user } = setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
-          multipleTiers: true,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1838,7 +1757,6 @@ describe('UpgradeForm', () => {
         const { user } = setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
-          multipleTiers: true,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1861,7 +1779,6 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
-          multipleTiers: true,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1876,7 +1793,6 @@ describe('UpgradeForm', () => {
           const { user } = setup({
             planValue: Plans.USERS_TEAMY,
             hasTeamPlans: true,
-            multipleTiers: true,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1895,7 +1811,6 @@ describe('UpgradeForm', () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
             hasTeamPlans: true,
-            multipleTiers: true,
             planValue: Plans.USERS_TEAMY,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -1928,7 +1843,6 @@ describe('UpgradeForm', () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
             hasTeamPlans: true,
-            multipleTiers: true,
             planValue: Plans.USERS_TEAMY,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -1961,7 +1875,6 @@ describe('UpgradeForm', () => {
           const { user } = setup({
             successfulPatchRequest: true,
             hasTeamPlans: true,
-            multipleTiers: true,
             planValue: Plans.USERS_TEAMY,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -1989,7 +1902,6 @@ describe('UpgradeForm', () => {
           const { addNotification, user } = setup({
             successfulPatchRequest: false,
             hasTeamPlans: true,
-            multipleTiers: true,
             errorDetails: 'Insufficient funds.',
             planValue: Plans.USERS_TEAMY,
           })
@@ -2022,7 +1934,6 @@ describe('UpgradeForm', () => {
           const { addNotification, user } = setup({
             successfulPatchRequest: false,
             hasTeamPlans: true,
-            multipleTiers: true,
             planValue: Plans.USERS_TEAMY,
           })
 

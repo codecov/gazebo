@@ -5,15 +5,11 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import Header from './Header'
 
 jest.mock('./HeaderDefault', () => () => 'Default Header')
 jest.mock('./HeaderTeam', () => () => 'Team Header')
-jest.mock('shared/featureFlags')
-
-const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
 
 const mockRepoSettings = (isPrivate = false) => ({
   owner: {
@@ -53,19 +49,15 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 interface SetupArgs {
-  multipleTiers: boolean
+  isTeam?: boolean
   isPrivate?: boolean
 }
 
 describe('Header', () => {
-  function setup({ multipleTiers = false, isPrivate = false }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      multipleTiers,
-    })
-
+  function setup({ isTeam = false, isPrivate = false }: SetupArgs) {
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (multipleTiers) {
+        if (isTeam) {
           return res(
             ctx.status(200),
             ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
@@ -84,7 +76,7 @@ describe('Header', () => {
 
   describe('when rendered and customer is not team tier', () => {
     beforeEach(() => {
-      setup({ multipleTiers: false })
+      setup({ isTeam: false })
     })
 
     it('renders the default header component', async () => {
@@ -101,7 +93,7 @@ describe('Header', () => {
   describe('when rendered and customer has team tier', () => {
     describe('when the repository is private', () => {
       beforeEach(() => {
-        setup({ multipleTiers: true, isPrivate: true })
+        setup({ isTeam: true, isPrivate: true })
       })
 
       it('renders the team header component', async () => {
@@ -117,7 +109,7 @@ describe('Header', () => {
 
     describe('when the repository is public', () => {
       beforeEach(() => {
-        setup({ multipleTiers: true, isPrivate: false })
+        setup({ isTeam: true, isPrivate: false })
       })
 
       it('renders the default team component', async () => {
