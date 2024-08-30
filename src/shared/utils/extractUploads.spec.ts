@@ -38,12 +38,12 @@ const mockUploads: Upload[] = [travisObject, circleciObject]
 
 describe('extractUploads', () => {
   describe('uploads', () => {
-    it('returns sortedUploads', () => {
-      const { sortedUploads } = extractUploads({
+    it('returns groupedUploads', () => {
+      const { groupedUploads } = extractUploads({
         unfilteredUploads: mockUploads,
       })
 
-      expect(sortedUploads).toStrictEqual({
+      expect(groupedUploads).toStrictEqual({
         travis: [travisObject],
         circleci: [circleciObject],
       })
@@ -152,8 +152,8 @@ describe('extractUploads', () => {
       },
     ]
 
-    const { sortedUploads } = extractUploads({ unfilteredUploads: uploads })
-    expect(sortedUploads).toStrictEqual({
+    const { groupedUploads } = extractUploads({ unfilteredUploads: uploads })
+    expect(groupedUploads).toStrictEqual({
       circleci: [
         {
           id: 5,

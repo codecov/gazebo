@@ -1,5 +1,3 @@
-import countBy from 'lodash/countBy'
-import groupBy from 'lodash/groupBy'
 import { z } from 'zod'
 
 import {
@@ -59,16 +57,48 @@ function deleteDuplicateCFFUploads({ uploads }: { uploads: Upload[] }) {
   )
 }
 
-const createUploadOverview = ({ uploads }: { uploads: Upload[] }) =>
-  Object.entries(countBy(uploads, (upload) => upload.state))
+const createUploadGroups = ({ uploads }: { uploads: Upload[] }) => {
+  const stateCounts: Record<string, number> = {}
+  const providerGroups: Record<string, Upload[]> = {}
+  const errorProviderGroups: Record<string, Upload[]> = {}
+
+  uploads.forEach((upload) => {
+    // Count the occurrences of each state
+    if (upload.state) {
+      stateCounts[upload.state] = (stateCounts[upload.state] || 0) + 1
+    }
+
+    if (upload.provider === null || upload.provider === undefined) {
+      upload.provider = 'none'
+    }
+
+    if (!providerGroups[upload.provider]) {
+      providerGroups[upload.provider] = [upload]
+    } else {
+      // @ts-ignore this key will always exist if we hit the else; just TS being weird
+      providerGroups[upload.provider].push(upload)
+    }
+
+    if (upload.state === UploadStateEnum.error) {
+      if (!errorProviderGroups[upload.provider]) {
+        errorProviderGroups[upload.provider] = [upload]
+      } else {
+        // @ts-ignore this key will always exist if we hit the else; just TS being weird
+        errorProviderGroups[upload.provider].push(upload)
+      }
+    }
+  })
+
+  const uploadsOverview = Object.entries(stateCounts)
     .map(([state, count]) => `${count} ${humanReadableOverview(state)}`)
     .join(', ')
 
-const findErroredUploads = ({ uploads }: { uploads: Upload[] }) =>
-  groupBy(
-    uploads?.filter((upload) => upload.state === UploadStateEnum.error),
-    'provider'
-  )
+  return {
+    uploadsOverview,
+    providerGroups,
+    errorProviderGroups,
+  }
+}
 
 export const extractUploads = ({
   unfilteredUploads,
@@ -77,7 +107,7 @@ export const extractUploads = ({
 }) => {
   if (!unfilteredUploads) {
     return {
-      sortedUploads: {},
+      groupedUploads: {},
       uploadsProviderList: [],
       uploadsOverview: '',
       erroredUploads: [],
@@ -86,15 +116,18 @@ export const extractUploads = ({
   }
 
   const uploads = deleteDuplicateCFFUploads({ uploads: unfilteredUploads })
-
-  const sortedUploads = groupBy(uploads, 'provider')
-  const uploadsProviderList = Object.keys(sortedUploads)
   const hasNoUploads = !uploads || uploads.length === 0
-  const uploadsOverview = createUploadOverview({ uploads })
-  const erroredUploads = findErroredUploads({ uploads })
+
+  const {
+    uploadsOverview,
+    providerGroups: groupedUploads,
+    errorProviderGroups: erroredUploads,
+  } = createUploadGroups({ uploads })
+
+  const uploadsProviderList = Object.keys(groupedUploads)
 
   return {
-    sortedUploads,
+    groupedUploads,
     uploadsProviderList,
     hasNoUploads,
     uploadsOverview,

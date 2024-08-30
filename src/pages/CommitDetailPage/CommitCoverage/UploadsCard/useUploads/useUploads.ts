@@ -28,16 +28,12 @@ export function useUploads() {
     isTeamPlan,
   })
 
-  console.time('extractUploadsTime')
-
-  const { uploadsOverview, sortedUploads, uploadsProviderList, hasNoUploads } =
+  const { uploadsOverview, groupedUploads, uploadsProviderList, hasNoUploads } =
     extractUploads({ unfilteredUploads: data?.commit?.uploads })
-
-  console.timeEnd('extractUploadsTime')
 
   return {
     uploadsOverview,
-    sortedUploads,
+    groupedUploads,
     uploadsProviderList,
     hasNoUploads,
   }

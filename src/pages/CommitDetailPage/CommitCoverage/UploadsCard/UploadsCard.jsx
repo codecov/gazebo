@@ -7,11 +7,11 @@ import { useUploads } from './useUploads'
 
 import YamlModal from '../YamlModal'
 
-const NULL = 'null'
+const NONE = 'none'
 
 function UploadsCard() {
   const [showYAMLModal, setShowYAMLModal] = useState(false)
-  const { uploadsProviderList, uploadsOverview, sortedUploads, hasNoUploads } =
+  const { uploadsProviderList, uploadsOverview, groupedUploads, hasNoUploads } =
     useUploads()
 
   return (
@@ -29,12 +29,12 @@ function UploadsCard() {
         <div className="flex max-h-64 min-w-96 flex-1 flex-col divide-y divide-solid divide-ds-gray-secondary overflow-auto bg-ds-gray-primary">
           {uploadsProviderList.map((title) => (
             <Fragment key={title}>
-              {title !== NULL && (
+              {title !== NONE && (
                 <span className="sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary px-4 py-1 text-sm font-semibold">
                   {title}
                 </span>
               )}
-              {sortedUploads[title].map(
+              {groupedUploads[title].map(
                 (
                   {
                     ciUrl,

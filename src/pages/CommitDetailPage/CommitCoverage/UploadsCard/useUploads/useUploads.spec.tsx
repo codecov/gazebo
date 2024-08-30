@@ -86,12 +86,12 @@ describe('useUploads', () => {
     })
 
     describe('when data is loaded', () => {
-      it('returns sortedUploads', () => {
+      it('returns groupedUploads', () => {
         const { result } = renderHook(() => useUploads(), {
           wrapper,
         })
 
-        expect(result.current.sortedUploads).toMatchObject({})
+        expect(result.current.groupedUploads).toMatchObject({})
       })
 
       it('returns a uploadsProviderList', () => {
@@ -138,20 +138,20 @@ describe('useUploads', () => {
         )
       })
 
-      it('returns sortedUploads', async () => {
+      it('returns groupedUploads', async () => {
         const { result } = renderHook(() => useUploads(), {
           wrapper,
         })
 
-        const initSortedUploads = result.current.sortedUploads
+        const initgroupedUploads = result.current.groupedUploads
 
         await waitFor(() =>
-          expect(initSortedUploads).not.toMatchObject(
-            result.current.sortedUploads
+          expect(initgroupedUploads).not.toMatchObject(
+            result.current.groupedUploads
           )
         )
 
-        expect(result.current.sortedUploads).toMatchObject({
+        expect(result.current.groupedUploads).toMatchObject({
           'github actions': [
             {
               buildCode: '1234',
@@ -350,7 +350,7 @@ describe('useUploads', () => {
         expect(initUploadsOverview).not.toBe(result.current.uploadsOverview)
       )
 
-      expect(result.current.sortedUploads).toHaveProperty('travisTeam')
+      expect(result.current.groupedUploads).toHaveProperty('travisTeam')
       expect(result.current.uploadsProviderList).toStrictEqual(['travisTeam'])
     })
   })
