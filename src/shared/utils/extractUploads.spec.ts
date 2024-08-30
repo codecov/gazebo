@@ -1,8 +1,12 @@
-import { UploadTypeEnum } from './commit'
-import { extractUploads } from './extractUploads'
+import { UploadStateEnum, UploadTypeEnum } from './commit'
+import { extractUploads, Upload } from './extractUploads'
 
 const travisObject = {
-  state: 'STARTED',
+  id: 2,
+  jobCode: 'blah',
+  buildCode: 'ok',
+  name: 'whatevs',
+  state: UploadStateEnum.started,
   provider: 'travis',
   createdAt: '2020-08-25T16:36:25.820340+00:00',
   updatedAt: '2020-08-25T16:36:25.859889+00:00',
@@ -10,11 +14,15 @@ const travisObject = {
   downloadUrl:
     '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/18b19f8d-5df6-48bd-90eb-50578ed8812f.txt',
   ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
-  uploadType: 'uploaded',
+  uploadType: UploadTypeEnum.UPLOADED,
   errors: [],
 }
 const circleciObject = {
-  state: 'ERROR',
+  id: 1,
+  jobCode: 'blah',
+  buildCode: 'ok',
+  name: 'whatevs',
+  state: UploadStateEnum.error,
   provider: 'circleci',
   createdAt: '2020-08-25T16:36:19.559474+00:00',
   updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -22,11 +30,11 @@ const circleciObject = {
   downloadUrl:
     '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
   ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
-  uploadType: 'uploaded',
+  uploadType: UploadTypeEnum.UPLOADED,
   errors: [],
 }
 
-const mockUploads = [travisObject, circleciObject]
+const mockUploads: Upload[] = [travisObject, circleciObject]
 
 describe('extractUploads', () => {
   describe('uploads', () => {
@@ -79,7 +87,10 @@ describe('extractUploads', () => {
   it('returns non-duplicate cff and regular uploads', () => {
     const uploads = [
       {
-        state: 'COMPLETE',
+        id: 3,
+        jobCode: 'blah',
+        buildCode: 'ok',
+        state: UploadStateEnum.complete,
         provider: 'circleci',
         createdAt: '2020-08-25T16:36:19.559474+00:00',
         updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -92,7 +103,10 @@ describe('extractUploads', () => {
         errors: [],
       },
       {
-        state: 'COMPLETE',
+        id: 4,
+        jobCode: 'blah',
+        buildCode: 'ok',
+        state: UploadStateEnum.complete,
         provider: 'circleci',
         createdAt: '2020-08-25T16:36:19.559474+00:00',
         updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -105,7 +119,10 @@ describe('extractUploads', () => {
         errors: [],
       },
       {
-        state: 'COMPLETE',
+        id: 5,
+        jobCode: 'blah',
+        buildCode: 'ok',
+        state: UploadStateEnum.complete,
         provider: 'circleci',
         createdAt: '2020-08-25T16:36:19.559474+00:00',
         updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -118,7 +135,10 @@ describe('extractUploads', () => {
         errors: [],
       },
       {
-        state: 'PROCESSED',
+        id: 6,
+        jobCode: 'blah',
+        buildCode: 'ok',
+        state: UploadStateEnum.processed,
         provider: 'circleci',
         createdAt: '2020-08-25T16:36:19.559474+00:00',
         updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -136,7 +156,10 @@ describe('extractUploads', () => {
     expect(sortedUploads).toStrictEqual({
       circleci: [
         {
-          state: 'COMPLETE',
+          id: 5,
+          jobCode: 'blah',
+          buildCode: 'ok',
+          state: UploadStateEnum.complete,
           provider: 'circleci',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -149,7 +172,10 @@ describe('extractUploads', () => {
           errors: [],
         },
         {
-          state: 'PROCESSED',
+          id: 6,
+          jobCode: 'blah',
+          buildCode: 'ok',
+          state: UploadStateEnum.processed,
           provider: 'circleci',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
