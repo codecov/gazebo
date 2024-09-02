@@ -7,52 +7,38 @@ import { Tooltip } from './Tooltip'
 global.ResizeObserver = ResizeObserver
 
 describe('Tooltip', () => {
-  it('throws an error if Tooltip is used without TooltipProvider', () => {
-    const consoleError = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {})
-    expect(() =>
-      render(
-        <Tooltip>
-          <Tooltip.Trigger>
-            <button>Hover me</button>
-          </Tooltip.Trigger>
-          <Tooltip.Content>Tooltip Content</Tooltip.Content>
-        </Tooltip>
-      )
-    ).toThrow('`Tooltip` must be used within `TooltipProvider`')
-
-    consoleError.mockRestore()
-  })
-
-  it('renders Tooltip correctly when wrapped with TooltipProvider', () => {
+  it('renders Tooltip correctly', () => {
     render(
-      <Tooltip.Provider>
-        <Tooltip>
+      <Tooltip>
+        <Tooltip.Root>
           <Tooltip.Trigger>
             <button>Hover me</button>
           </Tooltip.Trigger>
-          <Tooltip.Content>Tooltip Content</Tooltip.Content>
-        </Tooltip>
-      </Tooltip.Provider>
+          <Tooltip.Portal>
+            <Tooltip.Content>Tooltip Content</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip>
     )
 
     const triggerElement = screen.getByText('Hover me')
     expect(triggerElement).toBeInTheDocument()
   })
 
-  it('displays the Tooltip Content on hover when wrapped with TooltipProvider', async () => {
+  it('displays the Tooltip Content on hover', async () => {
     render(
-      <Tooltip.Provider>
-        <Tooltip>
+      <Tooltip>
+        <Tooltip.Root>
           <Tooltip.Trigger>
             <button>Hover me</button>
           </Tooltip.Trigger>
-          <Tooltip.Content data-state="instant-open">
-            Tooltip Content
-          </Tooltip.Content>
-        </Tooltip>
-      </Tooltip.Provider>
+          <Tooltip.Portal>
+            <Tooltip.Content data-state="instant-open">
+              Tooltip Content
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip>
     )
 
     const triggerElement = await screen.findByText('Hover me')
@@ -64,34 +50,38 @@ describe('Tooltip', () => {
     expect(contentElement).toBeInTheDocument()
   })
 
-  it('hides the Tooltip Content when not hovered when wrapped with TooltipProvider', async () => {
+  it('hides the Tooltip Content when not hovered', async () => {
     render(
-      <Tooltip.Provider>
-        <Tooltip>
+      <Tooltip>
+        <Tooltip.Root>
           <Tooltip.Trigger>
             <button>Hover me</button>
           </Tooltip.Trigger>
-          <Tooltip.Content>Tooltip Content</Tooltip.Content>
-        </Tooltip>
-      </Tooltip.Provider>
+          <Tooltip.Portal>
+            <Tooltip.Content>Tooltip Content</Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip>
     )
 
     const contentElement = screen.queryByText('Tooltip Content')
     expect(contentElement).not.toBeInTheDocument()
   })
 
-  it('applies custom className to Tooltip Content when wrapped with TooltipProvider', async () => {
+  it('applies custom className to Tooltip Content', async () => {
     render(
-      <Tooltip.Provider>
-        <Tooltip>
+      <Tooltip>
+        <Tooltip.Root>
           <Tooltip.Trigger>
             <button>Hover me</button>
           </Tooltip.Trigger>
-          <Tooltip.Content className="border-black" data-state="instant-open">
-            Tooltip Content
-          </Tooltip.Content>
-        </Tooltip>
-      </Tooltip.Provider>
+          <Tooltip.Portal>
+            <Tooltip.Content className="border-black" data-state="instant-open">
+              Tooltip Content
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip>
     )
 
     const triggerElement = await screen.findByText('Hover me')
@@ -103,19 +93,21 @@ describe('Tooltip', () => {
     expect(contentElement).toHaveClass('border-black')
   })
 
-  it('displays arrow element when Tooltip Content is displayed and wrapped with TooltipProvider', async () => {
+  it('displays arrow element when Tooltip Content is displayed', async () => {
     render(
-      <Tooltip.Provider>
-        <Tooltip>
+      <Tooltip>
+        <Tooltip.Root>
           <Tooltip.Trigger>
             <button>Hover me</button>
           </Tooltip.Trigger>
-          <Tooltip.Content data-state="instant-open">
-            Tooltip Content
-            <Tooltip.Arrow data-testid="tooltip-arrow" />
-          </Tooltip.Content>
-        </Tooltip>
-      </Tooltip.Provider>
+          <Tooltip.Portal>
+            <Tooltip.Content data-state="instant-open">
+              Tooltip Content
+              <Tooltip.Arrow data-testid="tooltip-arrow" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip>
     )
 
     const triggerElement = await screen.findByText('Hover me')

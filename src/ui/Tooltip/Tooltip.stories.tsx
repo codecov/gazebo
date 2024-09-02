@@ -14,64 +14,70 @@ export default meta
 type Story = StoryObj<typeof Tooltip>
 
 const DefaultStory: React.FC = () => (
-  <Tooltip.Provider delayDuration={0} skipDelayDuration={100}>
+  <Tooltip delayDuration={0} skipDelayDuration={100}>
     <div className="flex h-screen items-center justify-center">
-      <Tooltip>
+      <Tooltip.Root>
         <Tooltip.Trigger>
           <p>hover over me</p>
         </Tooltip.Trigger>
-        <Tooltip.Content side="top">
-          <p>This is the tooltip content with plain text.</p>
-          <Tooltip.Arrow />
-        </Tooltip.Content>
-      </Tooltip>
+        <Tooltip.Portal>
+          <Tooltip.Content side="top">
+            <p>This is the tooltip content with plain text.</p>
+            <Tooltip.Arrow />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
     </div>
-  </Tooltip.Provider>
+  </Tooltip>
 )
 
 const WithHtmlContentStory: React.FC = () => (
-  <Tooltip.Provider delayDuration={0} skipDelayDuration={500}>
+  <Tooltip delayDuration={0} skipDelayDuration={500}>
     <div className="flex h-screen items-center justify-center">
-      <Tooltip>
+      <Tooltip.Root>
         <Tooltip.Trigger>
-          <button className=" rounded border-2 border-red-700 p-4 text-red-700">
+          <button className="rounded border-2 border-red-700 p-4 text-red-700">
             <Icon name="informationCircle" size="lg" />
           </button>
         </Tooltip.Trigger>
-        <Tooltip.Content side="left" className="bg-gray-100 text-black">
-          <div>
-            <p>This is the tooltip content with HTML.</p>
-            <p>
-              It can contain HTML elements like <strong>bold text</strong> and{' '}
-              <em>italic text</em>.
-            </p>
-          </div>
-          <Tooltip.Arrow />
-        </Tooltip.Content>
-      </Tooltip>
+        <Tooltip.Portal>
+          <Tooltip.Content side="left" className="bg-gray-100 text-black">
+            <div>
+              <p>This is the tooltip content with HTML.</p>
+              <p>
+                It can contain HTML elements like <strong>bold text</strong> and{' '}
+                <em>italic text</em>.
+              </p>
+            </div>
+            <Tooltip.Arrow />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
     </div>
-  </Tooltip.Provider>
+  </Tooltip>
 )
 
 const BottomTooltipStory: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <Tooltip.Provider delayDuration={0} skipDelayDuration={500}>
+    <Tooltip delayDuration={0} skipDelayDuration={500}>
       <div className="flex h-screen items-center justify-center">
-        <Tooltip onOpenChange={setIsOpen} open={isOpen}>
+        <Tooltip.Root onOpenChange={setIsOpen} open={isOpen}>
           <Tooltip.Trigger>
             <button className="p-4 text-blue-700">
               <Icon name={isOpen ? 'eye' : 'eyeOff'} size="lg" />
             </button>
           </Tooltip.Trigger>
-          <Tooltip.Content side="bottom">
-            <p>This is the tooltip content with plain text.</p>
-            <Tooltip.Arrow />
-          </Tooltip.Content>
-        </Tooltip>
+          <Tooltip.Portal>
+            <Tooltip.Content side="bottom">
+              <p>This is the tooltip content with plain text.</p>
+              <Tooltip.Arrow className="fill-blue-700" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
       </div>
-    </Tooltip.Provider>
+    </Tooltip>
   )
 }
 

@@ -4,6 +4,13 @@ import React, { forwardRef } from 'react'
 
 import { cn } from 'shared/utils/cn'
 
+const TooltipProvider: React.FC<RadixTooltip.TooltipProviderProps> = ({
+  children,
+  ...props
+}) => <RadixTooltip.Provider {...props}>{children}</RadixTooltip.Provider>
+
+TooltipProvider.displayName = 'TooltipProvider'
+
 const TooltipRoot: React.FC<RadixTooltip.TooltipProps> = ({
   children,
   ...props
@@ -15,7 +22,7 @@ const TooltipTrigger = forwardRef<
   React.ElementRef<typeof RadixTooltip.Trigger>,
   React.ComponentPropsWithoutRef<typeof RadixTooltip.Trigger>
 >(({ children, className, ...props }, ref) => (
-  <RadixTooltip.Trigger ref={ref} {...props} className={cn(className)} asChild>
+  <RadixTooltip.Trigger ref={ref} {...props} className={className}>
     {children}
   </RadixTooltip.Trigger>
 ))
@@ -36,7 +43,7 @@ const TooltipContent = forwardRef<
     sideOffset={sideOffset}
     {...props}
     className={cn(
-      'rounded bg-gray-800 px-3 py-2 text-sm text-white shadow-md',
+      'bg-gray-800 px-3 py-2 text-sm text-white shadow-md',
       className
     )}
   >
@@ -49,13 +56,23 @@ TooltipContent.displayName = 'TooltipContent'
 const TooltipArrow = forwardRef<
   React.ElementRef<typeof RadixTooltip.Arrow>,
   React.ComponentPropsWithoutRef<typeof RadixTooltip.Arrow>
->(({ ...props }, ref) => <RadixTooltip.Arrow ref={ref} {...props} />)
+>(({ className, ...props }, ref) => (
+  <RadixTooltip.Arrow ref={ref} {...props} className={className} />
+))
 
 TooltipArrow.displayName = 'TooltipArrow'
 
-export const Tooltip = Object.assign(TooltipRoot, {
+const TooltipPortal: React.FC<RadixTooltip.TooltipPortalProps> = ({
+  children,
+  ...props
+}) => <RadixTooltip.Portal {...props}>{children}</RadixTooltip.Portal>
+
+TooltipPortal.displayName = 'TooltipPortal'
+
+export const Tooltip = Object.assign(TooltipProvider, {
+  Root: TooltipRoot,
   Trigger: TooltipTrigger,
   Content: TooltipContent,
   Arrow: TooltipArrow,
-  Provider: RadixTooltip.Provider,
+  Portal: TooltipPortal,
 })
