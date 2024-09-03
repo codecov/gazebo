@@ -6,7 +6,6 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 import { Plans } from 'shared/utils/billing'
 
 import CancelPlanPage from './CancelPlanPage'
@@ -17,8 +16,6 @@ jest.mock(
   './subRoutes/TeamPlanSpecialOffer',
   () => () => 'TeamPlanSpecialOffer'
 )
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
 
 const teamPlans = [
   {
@@ -129,7 +126,6 @@ interface SetupProps {
   hasDiscount?: boolean
   planValue?: string
   trialStatus?: string
-  multipleTiers?: boolean
   hasTeamPlans?: boolean
 }
 
@@ -138,11 +134,8 @@ describe('CancelPlanPage', () => {
     hasDiscount = false,
     planValue = Plans.USERS_PR_INAPPM,
     trialStatus = TrialStatuses.NOT_STARTED,
-    multipleTiers = false,
     hasTeamPlans = false,
   }: SetupProps = {}) {
-    mockedUseFlags.mockReturnValue({ multipleTiers })
-
     server.use(
       rest.get('internal/gh/codecov/account-details/', (req, res, ctx) =>
         res(
@@ -347,7 +340,7 @@ describe('CancelPlanPage', () => {
   })
 
   describe('user has team plans in available plans', () => {
-    beforeEach(() => setup({ hasTeamPlans: true, multipleTiers: true }))
+    beforeEach(() => setup({ hasTeamPlans: true }))
 
     it('renders team plan special offer', async () => {
       render(<CancelPlanPage />, {
@@ -360,7 +353,7 @@ describe('CancelPlanPage', () => {
   })
 
   describe('user does not have team plans in available plans', () => {
-    beforeEach(() => setup({ hasTeamPlans: false, multipleTiers: true }))
+    beforeEach(() => setup({ hasTeamPlans: false }))
 
     it('renders special offer', async () => {
       render(<CancelPlanPage />, {
@@ -376,7 +369,6 @@ describe('CancelPlanPage', () => {
     beforeEach(() =>
       setup({
         planValue: Plans.USERS_TEAMM,
-        multipleTiers: true,
         hasTeamPlans: true,
       })
     )

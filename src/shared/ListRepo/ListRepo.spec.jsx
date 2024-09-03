@@ -7,7 +7,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
 import { ActiveContext } from 'shared/context'
-import { useFlags } from 'shared/featureFlags'
 
 import ListRepo from './ListRepo'
 
@@ -79,10 +78,6 @@ describe('ListRepo', () => {
     me = mockUser
   ) {
     const user = userEvent.setup()
-
-    useFlags.mockReturnValue({
-      multipleTiers: true,
-    })
 
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {

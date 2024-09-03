@@ -52,9 +52,8 @@ afterAll(() => {
 
 describe('SpecialOffer', () => {
   function setup(
-    { unsuccessfulReq = false, multipleTiers } = {
+    { unsuccessfulReq = false } = {
       unsuccessfulReq: false,
-      multipleTiers: false,
     }
   ) {
     const user = userEvent.setup()

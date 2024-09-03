@@ -8,7 +8,6 @@ import { orderingOptions } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
 import { useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
-import { useFlags } from 'shared/featureFlags'
 import { Alert } from 'ui/Alert'
 import Spinner from 'ui/Spinner'
 
@@ -33,16 +32,13 @@ function ListRepo({ canRefetch }) {
   const { provider, owner } = useParams()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { data: tierData } = useTier({ provider, owner })
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
   const { data: currentUser } = useUser({
     options: {
       suspense: false,
     },
   })
 
-  const showTeamRepos = tierData === TierNames.TEAM && multipleTiers
+  const showTeamRepos = tierData === TierNames.TEAM
 
   const repoDisplay = useContext(ActiveContext)
 

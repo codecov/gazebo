@@ -5,15 +5,11 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import FilesChangedTab from './FilesChangedTab'
 
 jest.mock('./FilesChangedTable', () => () => 'FilesChangedTable')
 jest.mock('./FilesChangedTableTeam', () => () => 'FilesChangedTableTeam')
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
 
 const mockTeamTier = {
   owner: {
@@ -75,16 +71,11 @@ afterAll(() => {
 
 interface SetupArgs {
   planValue: 'team' | 'pro'
-  flagValue: boolean
   isPrivate?: boolean
 }
 
 describe('FilesChangedTab', () => {
-  function setup({ planValue, flagValue, isPrivate = false }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      multipleTiers: flagValue,
-    })
-
+  function setup({ planValue, isPrivate = false }: SetupArgs) {
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
         if (planValue === 'team') {
@@ -101,7 +92,7 @@ describe('FilesChangedTab', () => {
 
   describe('user has pro tier', () => {
     it('renders files changed table', async () => {
-      setup({ planValue: TierNames.PRO, flagValue: false })
+      setup({ planValue: TierNames.PRO })
       render(<FilesChangedTab />, { wrapper })
 
       const table = await screen.findByText('FilesChangedTable')
@@ -112,7 +103,7 @@ describe('FilesChangedTab', () => {
   describe('user has team tier', () => {
     describe('repo is private', () => {
       it('renders team files changed table', async () => {
-        setup({ planValue: TierNames.TEAM, flagValue: true, isPrivate: true })
+        setup({ planValue: TierNames.TEAM, isPrivate: true })
 
         render(<FilesChangedTab />, { wrapper })
 
@@ -123,7 +114,7 @@ describe('FilesChangedTab', () => {
 
     describe('repo is public', () => {
       it('renders files changed table', async () => {
-        setup({ planValue: TierNames.TEAM, flagValue: false, isPrivate: false })
+        setup({ planValue: TierNames.TEAM, isPrivate: false })
         render(<FilesChangedTab />, { wrapper })
 
         const table = await screen.findByText('FilesChangedTable')

@@ -6,7 +6,6 @@ import NotFound from 'pages/NotFound'
 import { useCrumbs } from 'pages/RepoPage/context'
 import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import SummaryDropdown from 'ui/SummaryDropdown'
@@ -43,15 +42,11 @@ const Loader = () => (
 function PullRequestPage() {
   const location = useLocation()
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
 
   const { data: overview } = useRepoOverview({ provider, owner, repo })
 
   const { data: tierData } = useTier({ provider, owner })
-  const isTeamPlan =
-    multipleTiers && tierData === TierNames.TEAM && overview?.private
+  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
   const { data, isLoading } = usePullPageData({
     provider,

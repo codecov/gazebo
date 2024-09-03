@@ -9,7 +9,6 @@ import {
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 import {
   canApplySentryUpgrade,
   getNextBillingDate,
@@ -51,9 +50,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
   const { upgradePlan } = useUpgradeControls()
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
   const isSentryUpgrade = canApplySentryUpgrade({
     plan: currentPlan?.value,
     plans,
@@ -108,7 +104,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
       </div>
       <PlanTypeOptions
         setFormValue={setFormValue}
-        multipleTiers={multipleTiers}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
       />

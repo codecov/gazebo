@@ -9,7 +9,6 @@ import {
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import {
@@ -32,9 +31,6 @@ function FreePlanCard({ plan, scheduledPhase }) {
     owner,
   })
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
 
   const uploadsNumber = ownerData?.numberOfUploads
   const trialOngoing =
@@ -92,7 +88,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
           </div>
         </div>
       </div>
-      {shouldDisplayTeamCard({ plans }) && multipleTiers && <PlanUpgradeTeam />}
+      {shouldDisplayTeamCard({ plans }) && <PlanUpgradeTeam />}
       <PlanUpgradePro
         isSentryUpgrade={canApplySentryUpgrade({ plan, plans })}
         plans={plans}
