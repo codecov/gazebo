@@ -3,7 +3,7 @@ import React from 'react'
 
 import { cn } from 'shared/utils/cn'
 
-const statCard = cva([
+const metricCard = cva([
   'flex',
   'flex-col',
   'gap-1',
@@ -14,16 +14,16 @@ const statCard = cva([
   'px-4',
 ])
 
-interface StatCardProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-const StatCardRoot = React.forwardRef<HTMLDivElement, StatCardProps>(
+const MetricCardRoot = React.forwardRef<HTMLDivElement, MetricCardProps>(
   ({ className, children, ...props }, ref) => (
-    <div ref={ref} className={cn(statCard({ className }))} {...props}>
+    <div ref={ref} className={cn(metricCard({ className }))} {...props}>
       {children}
     </div>
   )
 )
-StatCardRoot.displayName = 'StatCard'
+MetricCardRoot.displayName = 'MetricCard'
 
 const header = cva(['flex', 'justify-between', 'items-center'])
 const Header = React.forwardRef<
@@ -32,7 +32,7 @@ const Header = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div ref={ref} className={cn(header({ className }))} {...props} />
 ))
-Header.displayName = 'StatCard.Header'
+Header.displayName = 'MetricCard.Header'
 
 const title = cva(['text-sm', 'font-semibold', 'text-gray-800'])
 const Title = React.forwardRef<
@@ -43,7 +43,7 @@ const Title = React.forwardRef<
     {children}
   </h3>
 ))
-Title.displayName = 'StatCard.Title'
+Title.displayName = 'MetricCard.Title'
 
 const content = cva(['flex', 'items-center', 'gap-2', 'text-lg', 'font-light'])
 const Content = React.forwardRef<
@@ -52,7 +52,7 @@ const Content = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div ref={ref} className={cn(content({ className }))} {...props} />
 ))
-Content.displayName = 'StatCard.Content'
+Content.displayName = 'MetricCard.Content'
 
 const description = cva(['text-xs', 'text-gray-500'])
 const Description = React.forwardRef<
@@ -61,9 +61,9 @@ const Description = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p ref={ref} className={cn(description({ className }))} {...props} />
 ))
-Description.displayName = 'StatCard.Description'
+Description.displayName = 'MetricCard.Description'
 
-export const StatCard = Object.assign(StatCardRoot, {
+export const MetricCard = Object.assign(MetricCardRoot, {
   Header,
   Title,
   Content,
