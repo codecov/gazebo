@@ -5,6 +5,7 @@ import { setupServer } from 'msw/node'
 import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { UploadTypeEnum } from 'shared/utils/commit'
 import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
 import { useIndirectChangedFilesTable } from './useIndirectChangedFilesTable'
@@ -92,6 +93,32 @@ const mockPull = {
           },
           uploads: {
             totalCount: 4,
+            edges: [
+              {
+                node: {
+                  uploadType: UploadTypeEnum.CARRIED_FORWARD,
+                  flags: ['flag3'],
+                },
+              },
+              {
+                node: {
+                  uploadType: UploadTypeEnum.UPLOADED,
+                  flags: null,
+                },
+              },
+              {
+                node: {
+                  uploadType: UploadTypeEnum.CARRIED_FORWARD,
+                  flags: ['flag4', 'flag5'],
+                },
+              },
+              {
+                node: {
+                  uploadType: UploadTypeEnum.UPLOADED,
+                  flags: ['flag6'],
+                },
+              },
+            ],
           },
         },
         updatestamp: '2024-01-12T12:56:18.912860',
@@ -101,6 +128,14 @@ const mockPull = {
           commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
           uploads: {
             totalCount: 1,
+            edges: [
+              {
+                node: {
+                  uploadType: UploadTypeEnum.UPLOADED,
+                  flags: ['flag7'],
+                },
+              },
+            ],
           },
         },
       },

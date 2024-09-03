@@ -191,3 +191,112 @@ describe('extractUploads', () => {
     })
   })
 })
+
+describe('deleteDuplicateCFFUploads', () => {
+  it('returns total filtered uploads', () => {
+    const uploads = [
+      {
+        id: 3,
+        jobCode: 'blah',
+        buildCode: 'ok',
+        state: UploadStateEnum.complete,
+        provider: 'circleci',
+        createdAt: '2020-08-25T16:36:19.559474+00:00',
+        updatedAt: '2020-08-25T16:36:19.679868+00:00',
+        flags: ['test-one'],
+        name: 'upload - 1',
+        downloadUrl:
+          '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/7826783-de37-4272-ad50-c4dc805802fb.txt',
+        ciUrl: 'https://circleci.com/febg/repo-test/jobs/721065746',
+        uploadType: UploadTypeEnum.CARRIED_FORWARD,
+        errors: [],
+      },
+      {
+        id: 4,
+        jobCode: 'blah',
+        buildCode: 'ok',
+        state: UploadStateEnum.complete,
+        provider: 'circleci',
+        createdAt: '2020-08-25T16:36:19.559474+00:00',
+        updatedAt: '2020-08-25T16:36:19.679868+00:00',
+        flags: ['test-one'],
+        name: 'upload - 2',
+        downloadUrl:
+          '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+        ciUrl: 'https://circleci.com/febg/repo-test/jobs/721065746',
+        uploadType: UploadTypeEnum.CARRIED_FORWARD,
+        errors: [],
+      },
+      {
+        id: 5,
+        jobCode: 'blah',
+        buildCode: 'ok',
+        state: UploadStateEnum.complete,
+        provider: 'circleci',
+        createdAt: '2020-08-25T16:36:19.559474+00:00',
+        updatedAt: '2020-08-25T16:36:19.679868+00:00',
+        flags: ['test-two'],
+        name: 'test - 3',
+        downloadUrl:
+          '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+        ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
+        uploadType: UploadTypeEnum.CARRIED_FORWARD,
+        errors: [],
+      },
+      {
+        id: 6,
+        jobCode: 'blah',
+        buildCode: 'ok',
+        state: UploadStateEnum.processed,
+        provider: 'circleci',
+        createdAt: '2020-08-25T16:36:19.559474+00:00',
+        updatedAt: '2020-08-25T16:36:19.679868+00:00',
+        flags: ['test-one'],
+        name: 'upload - 1',
+        downloadUrl:
+          '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+        ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
+        uploadType: UploadTypeEnum.UPLOADED,
+        errors: [],
+      },
+    ]
+
+    const { groupedUploads } = extractUploads({ unfilteredUploads: uploads })
+    expect(groupedUploads).toStrictEqual({
+      circleci: [
+        {
+          id: 5,
+          jobCode: 'blah',
+          buildCode: 'ok',
+          state: UploadStateEnum.complete,
+          provider: 'circleci',
+          createdAt: '2020-08-25T16:36:19.559474+00:00',
+          updatedAt: '2020-08-25T16:36:19.679868+00:00',
+          flags: ['test-two'],
+          name: 'test - 3',
+          downloadUrl:
+            '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+          ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
+          uploadType: UploadTypeEnum.CARRIED_FORWARD,
+          errors: [],
+        },
+        {
+          id: 6,
+          jobCode: 'blah',
+          buildCode: 'ok',
+          state: UploadStateEnum.processed,
+          provider: 'circleci',
+          createdAt: '2020-08-25T16:36:19.559474+00:00',
+          updatedAt: '2020-08-25T16:36:19.679868+00:00',
+          flags: ['test-one'],
+          name: 'upload - 1',
+          downloadUrl:
+            '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+          ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
+          uploadType: UploadTypeEnum.UPLOADED,
+          errors: [],
+        },
+      ],
+    })
+  })
+})

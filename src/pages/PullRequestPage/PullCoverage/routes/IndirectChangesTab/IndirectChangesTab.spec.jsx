@@ -5,7 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { CommitStateEnum } from 'shared/utils/commit'
+import { CommitStateEnum, UploadTypeEnum } from 'shared/utils/commit'
 import { ComparisonReturnType } from 'shared/utils/comparison'
 import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
@@ -110,6 +110,32 @@ const mockPull = ({ overrideComparison, headState } = {}) => ({
           },
           uploads: {
             totalCount: 4,
+            edges: [
+              {
+                node: {
+                  uploadType: UploadTypeEnum.CARRIED_FORWARD,
+                  flags: ['flag3'],
+                },
+              },
+              {
+                node: {
+                  uploadType: UploadTypeEnum.UPLOADED,
+                  flags: ['flag7'],
+                },
+              },
+              {
+                node: {
+                  uploadType: UploadTypeEnum.UPLOADED,
+                  flags: ['flag7'],
+                },
+              },
+              {
+                node: {
+                  uploadType: UploadTypeEnum.UPLOADED,
+                  flags: ['flag7'],
+                },
+              },
+            ],
           },
         },
         updatestamp: '2024-01-12T12:56:18.912860',
@@ -119,6 +145,14 @@ const mockPull = ({ overrideComparison, headState } = {}) => ({
           commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
           uploads: {
             totalCount: 1,
+            edges: [
+              {
+                node: {
+                  uploadType: UploadTypeEnum.CARRIED_FORWARD,
+                  flags: ['flag3'],
+                },
+              },
+            ],
           },
         },
       },
