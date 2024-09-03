@@ -32,15 +32,15 @@ const systems = [
 ]
 
 export function InstructionBox() {
-  const [curSystem, setCurSystem] = useState<string>(systemsEnum.LINUX)
+  const [currSystem, setCurrSystem] = useState<string>(systemsEnum.LINUX)
 
   const handleInstructionClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     const name = e.currentTarget.name
-    setCurSystem(name)
+    setCurrSystem(name)
   }
 
-  const systemContent = systemsMapper[curSystem as keyof typeof systemsMapper]
+  const systemContent = systemsMapper[currSystem as keyof typeof systemsMapper]
 
   return (
     <div
@@ -51,9 +51,9 @@ export function InstructionBox() {
         {systems.map((system, idx) => (
           <button
             className={cs('self-center py-2 px-4 outline-none', {
-              'bg-ds-gray-primary': system === curSystem,
+              'bg-ds-gray-primary': system === currSystem,
               'bg-ds-sub-background hover:bg-ds-sub-hover-background':
-                system !== curSystem,
+                system !== currSystem,
             })}
             onClick={handleInstructionClick}
             name={system}

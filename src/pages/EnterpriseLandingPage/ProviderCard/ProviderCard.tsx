@@ -1,4 +1,5 @@
 import { EnterpriseLoginProviders } from 'services/config/useLoginProviders'
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import {
   loginProviderImage,
   LoginProvidersEnum,
@@ -65,6 +66,7 @@ export const InternalProviderButton: React.FC<InternalProviderButtonProps> = ({
 }
 
 const ProviderCard: React.FC<ProviderCardProps> = ({ provider, providers }) => {
+  const { theme } = useThemeContext()
   const isExternalProvider = providers.includes(provider?.external)
 
   let isInternalProvider = false
@@ -72,7 +74,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ provider, providers }) => {
     isInternalProvider = providers.includes(provider.selfHosted)
   }
 
-  const isDarkMode = document.body.classList.contains('dark')
+  const isDarkMode = theme === Theme.DARK
   const logo = loginProviderImage(provider.provider, isDarkMode) as
     | string
     | undefined
