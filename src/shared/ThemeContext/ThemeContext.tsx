@@ -34,18 +34,21 @@ export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
   const initialRender = useRef(true)
 
   if (initialRender.current) {
-    document.body.classList.remove(Theme.LIGHT, Theme.DARK)
-    document.body.classList.add(theme)
-
-    localStorage.setItem('theme', theme)
+    if (typeof document !== 'undefined' && document.body) {
+      document.body.classList.remove(Theme.LIGHT, Theme.DARK)
+      document.body.classList.add(theme)
+      localStorage.setItem('theme', theme)
+    }
     initialRender.current = false
   }
 
   const handleTheme = useCallback((theme: Theme) => {
-    document.body.classList.remove(Theme.LIGHT, Theme.DARK)
-    document.body.classList.add(theme)
-    localStorage.setItem('theme', theme)
-    setTheme(theme)
+    if (typeof document !== 'undefined' && document.body) {
+      document.body.classList.remove(Theme.LIGHT, Theme.DARK)
+      document.body.classList.add(theme)
+      localStorage.setItem('theme', theme)
+      setTheme(theme)
+    }
   }, [])
 
   return (
