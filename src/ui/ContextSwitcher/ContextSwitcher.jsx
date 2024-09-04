@@ -40,7 +40,7 @@ function ContextItem({ context, defaultOrgUsername, setToggle, owner }) {
 
   return (
     <li
-      className="cursor-pointer select-none py-2 text-gray-900 hover:bg-ds-gray-secondary dark:hover:bg-ds-gray-quaternary"
+      className="cursor-pointer select-none py-2 text-gray-900 hover:bg-ds-gray-secondary"
       id="listbox-option-0"
     >
       <Button

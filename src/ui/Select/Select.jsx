@@ -15,7 +15,7 @@ const SelectClasses = {
   root: 'relative',
   item: 'block cursor-pointer py-1 px-3 text-sm font-normal',
   button:
-    'flex justify-between items-center w-full rounded bg-ds-background text-left whitespace-nowrap disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
+    'flex justify-between items-center w-full rounded bg-ds-container text-left whitespace-nowrap disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
   ul: 'overflow-hidden rounded-bl rounded-br bg-ds-background border-ds-gray-tertiary absolute w-full z-40 max-h-80 min-w-fit',
   loadMoreTrigger: 'relative top-[-65px] invisible block leading-[0]',
 }
