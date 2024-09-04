@@ -10,7 +10,6 @@ const metricCard = cva([
   'bg-white',
   'border-r-2',
   'rounded-md',
-  'w-44',
   'px-4',
 ])
 
