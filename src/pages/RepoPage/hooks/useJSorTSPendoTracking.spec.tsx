@@ -66,8 +66,8 @@ const mockOverview = (language?: string) => {
         oldestCommitAt: '2022-10-10T11:59:59',
         coverageEnabled: true,
         bundleAnalysisEnabled: true,
-        languages,
         testAnalyticsEnabled: true,
+        languages,
       },
     },
   }
@@ -128,7 +128,7 @@ interface SetupArgs {
 }
 
 describe('useJSorTSPendoTracking', () => {
-  function setup({ enablePendo = false, language }: SetupArgs) {
+  function setup({ enablePendo = false, language = 'javascript' }: SetupArgs) {
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockUser))

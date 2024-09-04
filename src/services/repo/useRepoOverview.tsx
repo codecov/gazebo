@@ -85,6 +85,7 @@ export function useRepoOverview({
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
+          console.error(parsedData.error)
           return Promise.reject({
             status: 404,
             data: {},
