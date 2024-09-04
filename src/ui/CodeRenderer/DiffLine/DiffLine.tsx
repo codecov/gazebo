@@ -75,7 +75,7 @@ const DiffLine: React.FC<DiffLineProps> = ({
           onClick={baseHandleClick}
           className={cs('flex-1 text-right px-2', baseTargeted && 'font-bold')}
         >
-          <span className="text-black">
+          <span className="text-ds-secondary-text">
             <span className={cs({ invisible: !baseTargeted })}>#</span>
             {baseNumber}
           </span>
@@ -93,7 +93,7 @@ const DiffLine: React.FC<DiffLineProps> = ({
           onClick={headHandleClick}
           className={cs('flex-1 text-right px-2', headTargeted && 'font-bold')}
         >
-          <span className="text-black">
+          <span className="text-ds-secondary-text">
             <span className={cs({ invisible: !headTargeted })}>#</span>
             {headNumber}
           </span>

@@ -14,9 +14,9 @@ import { useLocationParams } from 'services/navigation'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useInternalUser, useUser } from 'services/user'
 import { isProvider } from 'shared/api/helpers'
-
 import 'ui/Table/Table.css'
 import 'ui/FileList/FileList.css'
+import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import AccountSettings from './pages/AccountSettings'
 import AdminSettings from './pages/AdminSettings'
@@ -177,11 +177,13 @@ const MainAppRoutes = () => (
 function App() {
   return (
     <>
-      <ToastNotificationProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
-        <MainAppRoutes />
-      </ToastNotificationProvider>
-      <Toaster />
+      <ThemeContextProvider>
+        <ToastNotificationProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+          <MainAppRoutes />
+        </ToastNotificationProvider>
+        <Toaster />
+      </ThemeContextProvider>
     </>
   )
 }

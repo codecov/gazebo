@@ -102,7 +102,7 @@ function getColumns({ pullId }: { pullId: string }) {
                 className={cs(
                   'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
                   {
-                    'text-ds-blue': row.getIsExpanded(),
+                    'text-ds-blue-default': row.getIsExpanded(),
                   }
                 )}
                 onClick={row.getToggleExpandedHandler()}

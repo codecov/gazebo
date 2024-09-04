@@ -17,7 +17,7 @@ function ResyncButton() {
   if (isSyncing) {
     return (
       <span className="flex items-center gap-1">
-        <span className="text-ds-blue">
+        <span className="text-ds-blue-default">
           <Spinner />
         </span>
         Syncing your organizations...
@@ -30,7 +30,7 @@ function ResyncButton() {
       <span>💡</span>
       if you installed the app recently you may need to{' '}
       <button
-        className="text-ds-blue hover:underline"
+        className="text-ds-blue-default hover:underline"
         onClick={() => triggerResync()}
         type="button"
       >

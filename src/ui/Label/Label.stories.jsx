@@ -4,13 +4,13 @@ const Template = (args) => (
   <div className="flex gap-2">
     <Label {...args}>Some label 🤠</Label>
     <Label {...args}>
-      <span className="text-ds-pink">Dynamic</span> Content
+      <span className="text-ds-pink-default">Dynamic</span> Content
     </Label>
   </div>
 )
 
 const TemplateInherits = (args) => (
-  <div className="text-ds-blue">
+  <div className="text-ds-blue-default">
     <p>
       Default inherits the current css color making it extremely flexible. The
       subtle variant will not.

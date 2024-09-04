@@ -97,7 +97,7 @@ const Trigger = React.forwardRef<
 Trigger.displayName = 'Dropdown.Trigger'
 
 const content = cva(
-  'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-32 overflow-hidden rounded-md border bg-white shadow-md'
+  'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-32 overflow-hidden rounded-md border bg-ds-container shadow-md'
 )
 
 interface ContentProps
@@ -120,7 +120,7 @@ const Content = React.forwardRef<
 Content.displayName = 'Dropdown.Content'
 
 const item = cva(
-  'focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm text-ds-gray-octonary outline-none transition-colors hover:cursor-pointer hover:bg-ds-gray-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
+  'focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm text-ds-gray-octonary outline-none transition-colors hover:cursor-pointer hover:bg-ds-gray-secondary dark:hover:bg-ds-gray-quaternary data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
 )
 
 interface ItemProps

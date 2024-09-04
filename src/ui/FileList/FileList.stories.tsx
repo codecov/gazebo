@@ -85,7 +85,7 @@ function Example() {
       header: () => 'Name',
       cell: ({ row, getValue }) => (
         <span
-          className="inline-flex cursor-pointer items-center gap-1 font-sans text-ds-blue hover:underline focus:ring-2"
+          className="inline-flex cursor-pointer items-center gap-1 font-sans text-ds-blue-default hover:underline focus:ring-2"
           {...{
             onClick: row.getToggleExpandedHandler(),
           }}

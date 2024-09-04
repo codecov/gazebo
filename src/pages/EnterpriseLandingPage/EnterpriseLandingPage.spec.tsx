@@ -4,6 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { ThemeContextProvider } from 'shared/ThemeContext'
+
 import EnterpriseLandingPage from './EnterpriseLandingPage'
 
 jest.mock('config')
@@ -13,9 +15,11 @@ const queryClient = new QueryClient()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/']}>
-      <Route path="/">{children}</Route>
-    </MemoryRouter>
+    <ThemeContextProvider>
+      <MemoryRouter initialEntries={['/']}>
+        <Route path="/">{children}</Route>
+      </MemoryRouter>
+    </ThemeContextProvider>
   </QueryClientProvider>
 )
 

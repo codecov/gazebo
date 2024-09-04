@@ -21,10 +21,14 @@ export type AlertOptionsType =
 const alertVariants = cva('relative w-full border-l-4 p-4', {
   variants: {
     variant: {
-      [AlertOptions.ERROR]: 'border-ds-primary-red bg-error-100',
-      [AlertOptions.INFO]: 'border-ds-blue-darker bg-ds-blue-nonary',
-      [AlertOptions.SUCCESS]: 'border-green-500 bg-green-100',
-      [AlertOptions.WARNING]: 'border-orange-500 bg-orange-100',
+      [AlertOptions.ERROR]:
+        'border-ds-primary-red bg-error-100 dark:bg-opacity-20',
+      [AlertOptions.INFO]:
+        'border-ds-blue-darker bg-ds-blue-nonary dark:bg-opacity-20',
+      [AlertOptions.SUCCESS]:
+        'border-green-500 bg-green-100 dark:bg-opacity-20',
+      [AlertOptions.WARNING]:
+        'border-orange-500 bg-orange-100 dark:bg-opacity-20',
     },
   },
   defaultVariants: {

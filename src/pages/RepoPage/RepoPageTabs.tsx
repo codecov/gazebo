@@ -128,7 +128,7 @@ const RepoPageTabs: React.FC<RepoPageTabsProps> = ({ refetchEnabled }) => {
   })
 
   return (
-    <div className="z-10 bg-white pb-2">
+    <div className="z-10 pb-2">
       <TabNavigation tabs={repoTabs} />
     </div>
   )

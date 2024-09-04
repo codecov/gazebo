@@ -14,6 +14,13 @@ describe('loginProviderImage', () => {
     })
   })
 
+  describe('also fetches dark mode images', () => {
+    it('returns string', () => {
+      const data = loginProviderImage(LOGIN_PROVIDER_NAMES.gh, true)
+      expect(data).toBe('github-icon-white.svg')
+    })
+  })
+
   describe('invalid value is passed in', () => {
     describe('value is not in the object', () => {
       it('returns undefined', () => {
@@ -27,6 +34,13 @@ describe('loginProviderImage', () => {
         const data = loginProviderImage()
         expect(data).toBe(undefined)
       })
+    })
+  })
+
+  describe('is dark mode', () => {
+    it('uses dark mode image', () => {
+      const data = loginProviderImage(LOGIN_PROVIDER_NAMES.gh, true)
+      expect(data).toBe('github-icon-white.svg')
     })
   })
 })

@@ -39,19 +39,19 @@ function DowngradePlan() {
           </p>
           <ul>
             <li className="flex items-center gap-1">
-              <span className="stroke-codecov-red">
+              <span className="stroke-ds-primary-red">
                 <Icon variant="solid" size="sm" name="no-symbol" />
               </span>
               Configurable number of users
             </li>
             <li className="flex items-center gap-1 pt-3">
-              <span className="stroke-codecov-red">
+              <span className="stroke-ds-primary-red">
                 <Icon variant="solid" size="sm" name="no-symbol" />
               </span>
               Technical support
             </li>
             <li className="flex items-center gap-1 pt-3">
-              <span className="stroke-codecov-red">
+              <span className="stroke-ds-primary-red">
                 <Icon variant="solid" size="sm" name="no-symbol" />
               </span>
               Unlimited private repo uploads

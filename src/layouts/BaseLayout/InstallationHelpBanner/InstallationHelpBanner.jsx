@@ -13,7 +13,7 @@ function ResyncButton() {
   if (isSyncing) {
     return (
       <span>
-        <span className="mr-1 inline-block text-ds-blue">
+        <span className="mr-1 inline-block text-ds-blue-default">
           <Spinner />
         </span>
         syncing...
@@ -23,7 +23,7 @@ function ResyncButton() {
 
   return (
     <button
-      className="text-ds-blue hover:underline"
+      className="text-ds-blue-default hover:underline"
       onClick={triggerResync}
       type="button"
     >

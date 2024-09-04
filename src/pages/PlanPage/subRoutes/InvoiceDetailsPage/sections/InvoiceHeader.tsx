@@ -37,7 +37,7 @@ function InvoiceHeader({ invoice, accountDetails }: InvoiceHeaderProps) {
       <div className="flex gap-64">
         <div>
           <p className="font-semibold">Codecov</p>
-          <address className="not-italic text-gray-800">
+          <address className="not-italic text-ds-gray-octonary">
             Functional Software, dba Sentry
             <br />
             45 Fremont St. 8th Floor
@@ -55,7 +55,7 @@ function InvoiceHeader({ invoice, accountDetails }: InvoiceHeaderProps) {
         </div>
         <div>
           <p className="font-semibold">Bill to</p>
-          <address className="not-italic text-gray-800">
+          <address className="not-italic text-ds-gray-octonary">
             {addressInfo.map((addressItem, i) => (
               <span key={`${addressItem}-${i}`}>
                 {addressItem}

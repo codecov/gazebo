@@ -1,5 +1,7 @@
 import testsPRComment from 'assets/svg/onboardingTests/testsPRComment.svg'
+import testsPRCommentDark from 'assets/svg/onboardingTests/testsPRCommentDark.svg'
 import testsRunning from 'assets/svg/onboardingTests/testsRunning.svg'
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
@@ -108,6 +110,11 @@ function Step4() {
 }
 
 function Step5() {
+  const { theme } = useThemeContext()
+
+  const testPRsImageSource =
+    theme === Theme.LIGHT ? testsPRComment : testsPRCommentDark
+
   return (
     <div>
       <Card>
@@ -135,7 +142,7 @@ function Step5() {
         </ExpandableSection.Trigger>
         <ExpandableSection.Content>
           <img
-            src={testsPRComment.toString()}
+            src={testPRsImageSource.toString()}
             alt="Tests in PR comment"
             className="w-full"
           />
