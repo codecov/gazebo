@@ -25,7 +25,6 @@ const variantClasses = {
     border-solid border shadow
 
     hover:bg-ds-gray-secondary
-    dark:hover:bg-ds-gray-quaternary
   `,
   primary: `
     justify-center font-semibold

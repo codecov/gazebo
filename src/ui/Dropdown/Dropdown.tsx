@@ -120,7 +120,7 @@ const Content = React.forwardRef<
 Content.displayName = 'Dropdown.Content'
 
 const item = cva(
-  'focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm text-ds-gray-octonary outline-none transition-colors hover:cursor-pointer hover:bg-ds-gray-secondary dark:hover:bg-ds-gray-quaternary data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
+  'focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm text-ds-gray-octonary outline-none transition-colors hover:cursor-pointer hover:bg-ds-gray-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
 )
 
 interface ItemProps
