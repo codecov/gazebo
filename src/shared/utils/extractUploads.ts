@@ -27,6 +27,8 @@ export interface Upload {
   errors: (ErrorObject | null)[]
 }
 
+export const NONE = 'none'
+
 function humanReadableOverview(state: string) {
   if (state === UploadStateEnum.error) return 'errored'
   if (state === UploadStateEnum.processed) return 'successful'
@@ -69,22 +71,20 @@ const createUploadGroups = ({ uploads }: { uploads: Upload[] }) => {
     }
 
     if (upload.provider === null || upload.provider === undefined) {
-      upload.provider = 'none'
+      upload.provider = NONE
     }
 
     if (!providerGroups[upload.provider]) {
       providerGroups[upload.provider] = [upload]
     } else {
-      // @ts-ignore this key will always exist if we hit the else; just TS being weird
-      providerGroups[upload.provider].push(upload)
+      providerGroups[upload.provider]!.push(upload)
     }
 
     if (upload.state === UploadStateEnum.error) {
       if (!errorProviderGroups[upload.provider]) {
         errorProviderGroups[upload.provider] = [upload]
       } else {
-        // @ts-ignore this key will always exist if we hit the else; just TS being weird
-        errorProviderGroups[upload.provider].push(upload)
+        errorProviderGroups[upload.provider]!.push(upload)
       }
     }
   })

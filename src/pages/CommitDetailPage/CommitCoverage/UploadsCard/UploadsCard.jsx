@@ -1,13 +1,12 @@
 import { Fragment, useState } from 'react'
 
+import { NONE } from 'shared/utils/extractUploads'
 import A from 'ui/A'
 
 import Upload from './Upload'
 import { useUploads } from './useUploads'
 
 import YamlModal from '../YamlModal'
-
-const NONE = 'none'
 
 function UploadsCard() {
   const [showYAMLModal, setShowYAMLModal] = useState(false)
