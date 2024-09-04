@@ -75,4 +75,5 @@ export const pendoDefaultUser = {
   businessEmail: null,
   onboardingCompleted: null,
   plan: null,
+  jsOrTsPresent: null,
 }

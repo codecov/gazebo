@@ -156,8 +156,11 @@ describe('useJSorTSPendoTracking', () => {
     const updateOptionsMock = jest.fn()
     if (enablePendo) {
       window.pendo = {
+        initialize: jest.fn(),
         updateOptions: updateOptionsMock,
       }
+    } else {
+      window.pendo = {}
     }
 
     const user = userEvent.setup()
@@ -175,7 +178,6 @@ describe('useJSorTSPendoTracking', () => {
 
         renderHook(() => useJSorTSPendoTracking(), { wrapper })
 
-        await waitFor(() => expect(updateOptionsMock).toHaveBeenCalled())
         await waitFor(() =>
           expect(updateOptionsMock).toHaveBeenCalledWith({
             account: expect.objectContaining({

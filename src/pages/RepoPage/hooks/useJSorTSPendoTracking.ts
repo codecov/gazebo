@@ -9,8 +9,9 @@ import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
 
 declare global {
   interface Window {
-    pendo: {
-      updateOptions: (options: object) => void
+    pendo?: {
+      updateOptions?: (options: object) => void
+      initialize?: (options: object) => void
     }
   }
 }
@@ -40,6 +41,16 @@ export function useJSorTSPendoTracking() {
   const { data: userData } = useUser({})
 
   useEffect(() => {
+    console.error({
+      // if we don't have any data then we can't do anything
+      ownerData,
+      repoOverview,
+      userData,
+      // no sense in firing this event if we don't have the data we need
+      jsOrTsPresent: repoOverview?.jsOrTsPresent,
+      // if the owner hasn't changed, we don't need to update the pendo options
+      owner: previousOwner.current?.ownerid === ownerData?.ownerid,
+    })
     if (
       // if we don't have any data then we can't do anything
       !ownerData ||
@@ -72,4 +83,6 @@ export function useJSorTSPendoTracking() {
       previousOwner.current = ownerData
     }
   }, [ownerData, repoOverview, userData])
+
+  return
 }
