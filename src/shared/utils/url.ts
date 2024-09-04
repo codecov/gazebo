@@ -1,5 +1,3 @@
-import isString from 'lodash/isString'
-
 export const formatPathPrefix = (pathname: string) =>
   pathname.charAt(pathname.length - 1) === '/'
     ? pathname.slice(0, pathname.length - 1)
@@ -10,22 +8,22 @@ export function getFilenameFromFilePath(path: string) {
 }
 
 export function getFilePathParts(path: string) {
-  if (path === '') {
+  if (!path || path === '') {
     return []
   }
-  return path?.split('/') ?? []
+  return path.split('/') ?? []
 }
 
 export function getFilenameFromPath(path?: string) {
-  if (!isString(path)) {
+  if (typeof path !== 'string') {
     return null
   }
-  return path.split('/').at(-1)
+  return path?.split('/').at(-1)
 }
 
 export function getFileExtension(fileName: string) {
-  if (!fileName?.includes('.')) {
+  if (!fileName.includes('.')) {
     return null
   }
-  return fileName?.split('.')?.at(-1)?.toLowerCase()
+  return fileName.split('.').at(-1)?.toLowerCase()
 }

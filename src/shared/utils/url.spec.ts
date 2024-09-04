@@ -22,7 +22,7 @@ describe('getFileExtension', () => {
     expect(getFileExtension(fileName)).toStrictEqual('py')
   })
 
-  it('returns an null if fileName is not present', () => {
+  it('returns null if fileName is not present', () => {
     expect(getFileExtension('')).toStrictEqual(null)
   })
 })

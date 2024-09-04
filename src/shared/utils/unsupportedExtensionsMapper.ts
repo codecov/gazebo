@@ -348,9 +348,9 @@ const imageFileExtensions = new Set([
   'xpm',
 ])
 
-export function unsupportedExtensionsMapper({ path }) {
-  const fileName = getFilenameFromPath(path)
-  const fileExtension = getFileExtension(fileName)
+export function unsupportedExtensionsMapper({ path }: { path: string }) {
+  const fileName = getFilenameFromPath(path) ?? ''
+  const fileExtension = getFileExtension(fileName) ?? ''
   if (binaryFileExtensions.has(fileExtension)) {
     return true
   }
