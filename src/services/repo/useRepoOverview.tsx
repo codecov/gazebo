@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
 
 import { RepoNotFoundErrorSchema } from './schemas'
 
@@ -87,7 +88,8 @@ export function useRepoOverview({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useRepoOverview - 404 failed to parse',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedData.data
@@ -96,7 +98,8 @@ export function useRepoOverview({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useRepoOverview - 404 NotFoundError',
+          } satisfies NetworkErrorObject)
         }
 
         if (!data?.owner?.repository) {
