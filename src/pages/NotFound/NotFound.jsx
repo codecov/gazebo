@@ -18,7 +18,7 @@ const NotFoundErrorMessage = () => {
         You may be able to locate this content by browsing for it from{' '}
         <A
           rel="noreferrer"
-          className="text-blue-400"
+          className="text-ds-blue-default"
           href={href}
           target="_blank"
           hook="home"
@@ -34,7 +34,7 @@ const NotFoundErrorMessage = () => {
       You may be able to locate the content by visiting{' '}
       <A
         rel="noreferrer"
-        className="text-blue-400"
+        className="text-ds-blue-default"
         href={href}
         isExternal={true}
         hook="home"

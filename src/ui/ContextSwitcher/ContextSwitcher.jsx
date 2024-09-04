@@ -40,7 +40,7 @@ function ContextItem({ context, defaultOrgUsername, setToggle, owner }) {
 
   return (
     <li
-      className="cursor-pointer select-none py-2 text-gray-900 hover:bg-ds-gray-secondary"
+      className="cursor-pointer select-none py-2 text-gray-900 hover:bg-ds-gray-secondary dark:hover:bg-ds-gray-quaternary"
       id="listbox-option-0"
     >
       <Button
@@ -135,7 +135,7 @@ function ContextSwitcher({
       <button
         type="button"
         className={cs(
-          '"relative flex gap-1 items-center text-xl font-semibold w-full rounded-md bg-white py-1.5 text-left text-gray-900 focus:outline-none"',
+          '"relative flex gap-1 items-center text-xl font-semibold w-full rounded-md py-1.5 text-left text-gray-900 focus:outline-none"',
           {
             [buttonVariant.outlined]:
               'ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 shadow-sm',
@@ -160,7 +160,7 @@ function ContextSwitcher({
       </button>
       <ul
         className={cs(
-          'absolute z-10 max-h-64 w-full overflow-y-auto rounded-md bg-white shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none',
+          'absolute z-10 max-h-64 w-full overflow-y-auto rounded-md bg-ds-background shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-ds-container dark:shadow-lg dark:ring-1 dark:ring-ds-gray-tertiary',
           { hidden: !toggle }
         )}
         tabIndex="-1"
@@ -168,14 +168,14 @@ function ContextSwitcher({
         aria-labelledby="listbox-label"
       >
         {isGh ? (
-          <li className="flex justify-between border-b border-ds-gray-secondary px-4 py-3">
+          <li className="flex justify-between border-b border-ds-border-line px-4 py-3">
             <A to={{ pageName: 'codecovAppInstallation' }}>
               <Icon name="plus-circle" />
               Install Codecov GitHub app
             </A>
           </li>
         ) : (
-          <li className="flex justify-between border-b border-ds-gray-secondary px-4 py-3 text-xs font-semibold">
+          <li className="flex justify-between border-b border-ds-border-line px-4 py-3 text-xs font-semibold">
             <span>Switch context</span>
           </li>
         )}

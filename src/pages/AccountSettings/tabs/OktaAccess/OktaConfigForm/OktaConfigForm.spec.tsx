@@ -194,10 +194,10 @@ describe('OktaConfigForm', () => {
       name: /Okta Sync Enabled/,
     })
     expect(oktaSyncEnabledToggle).toBeInTheDocument()
-    expect(oktaSyncEnabledToggle).toHaveClass('bg-ds-gray-quinary')
+    expect(oktaSyncEnabledToggle).toHaveClass('bg-toggle-inactive')
 
     await user.click(oktaSyncEnabledToggle)
-    expect(oktaSyncEnabledToggle).toHaveClass('bg-ds-primary-base')
+    expect(oktaSyncEnabledToggle).toHaveClass('bg-toggle-active')
   })
 
   it('should toggle Okta Login Enforce on', async () => {
@@ -208,10 +208,10 @@ describe('OktaConfigForm', () => {
       name: /Okta Login Enforced/,
     })
     expect(oktaLoginEnforceToggle).toBeInTheDocument()
-    expect(oktaLoginEnforceToggle).toHaveClass('bg-ds-gray-quinary')
+    expect(oktaLoginEnforceToggle).toHaveClass('bg-toggle-inactive')
 
     await user.click(oktaLoginEnforceToggle)
-    expect(oktaLoginEnforceToggle).toHaveClass('bg-ds-primary-base')
+    expect(oktaLoginEnforceToggle).toHaveClass('bg-toggle-active')
   })
 
   it('toggles enabled on when enforced is on', async () => {
@@ -222,14 +222,14 @@ describe('OktaConfigForm', () => {
       name: /Okta Login Enforced/,
     })
     expect(oktaLoginEnforceToggle).toBeInTheDocument()
-    expect(oktaLoginEnforceToggle).toHaveClass('bg-ds-gray-quinary')
+    expect(oktaLoginEnforceToggle).toHaveClass('bg-toggle-inactive')
 
     await user.click(oktaLoginEnforceToggle)
     const oktaSyncEnabledToggle = await screen.findByRole('button', {
       name: /Okta Sync Enabled/,
     })
-    expect(oktaLoginEnforceToggle).toHaveClass('bg-ds-primary-base')
-    expect(oktaSyncEnabledToggle).toHaveClass('bg-ds-primary-base')
+    expect(oktaLoginEnforceToggle).toHaveClass('bg-toggle-active')
+    expect(oktaSyncEnabledToggle).toHaveClass('bg-toggle-active')
   })
 
   it('disables enforce toggle when enabled is off', async () => {
@@ -240,20 +240,20 @@ describe('OktaConfigForm', () => {
       name: /Okta Sync Enabled/,
     })
     expect(oktaSyncEnabledToggle).toBeInTheDocument()
-    expect(oktaSyncEnabledToggle).toHaveClass('bg-ds-gray-quinary')
+    expect(oktaSyncEnabledToggle).toHaveClass('bg-toggle-inactive')
 
     const oktaLoginEnforceToggle = await screen.findByRole('button', {
       name: /Okta Login Enforced/,
     })
     expect(oktaLoginEnforceToggle).toBeInTheDocument()
-    expect(oktaLoginEnforceToggle).toHaveClass('bg-ds-gray-quinary')
+    expect(oktaLoginEnforceToggle).toHaveClass('bg-toggle-inactive')
 
     await user.click(oktaLoginEnforceToggle)
-    expect(oktaLoginEnforceToggle).toHaveClass('bg-ds-primary-base')
+    expect(oktaLoginEnforceToggle).toHaveClass('bg-toggle-active')
 
     await user.click(oktaSyncEnabledToggle)
-    expect(oktaSyncEnabledToggle).toHaveClass('bg-ds-gray-quinary')
-    expect(oktaLoginEnforceToggle).toHaveClass('bg-ds-gray-quinary')
+    expect(oktaSyncEnabledToggle).toHaveClass('bg-toggle-inactive')
+    expect(oktaLoginEnforceToggle).toHaveClass('bg-toggle-inactive')
   })
 
   it('disables save button when form is in invalid state', async () => {
@@ -307,7 +307,7 @@ describe('OktaConfigForm', () => {
         name: /Okta Sync Enabled/,
       })
       await waitFor(() => {
-        expect(oktaSyncEnabledToggle).toHaveClass('bg-ds-gray-quinary')
+        expect(oktaSyncEnabledToggle).toHaveClass('bg-toggle-inactive')
       })
     })
 
@@ -319,7 +319,7 @@ describe('OktaConfigForm', () => {
         name: /Okta Login Enforced/,
       })
       await waitFor(() => {
-        expect(oktaLoginEnforceToggle).toHaveClass('bg-ds-gray-quinary')
+        expect(oktaLoginEnforceToggle).toHaveClass('bg-toggle-inactive')
       })
     })
   })

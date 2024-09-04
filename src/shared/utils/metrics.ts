@@ -97,6 +97,12 @@ type IncrementKeys = {
   old_session_expiry: {
     cleanup: string
   }
+  button_clicked: {
+    theme: {
+      light: string
+      dark: string
+    }
+  }
 }
 
 type SetKeys = {

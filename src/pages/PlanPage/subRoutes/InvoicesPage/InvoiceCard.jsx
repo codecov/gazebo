@@ -9,11 +9,11 @@ import Icon from 'ui/Icon'
 
 //Fix to use our color scheme
 const statusToColor = {
-  draft: 'text-gray-500',
-  open: 'text-blue-400',
-  paid: 'text-success-700',
+  draft: 'text-ds-gray-quinary',
+  open: 'text-ds-blue-default',
+  paid: 'text-ds-primary-green',
   void: 'text-gray-900',
-  uncollectible: 'text-error-500',
+  uncollectible: 'text-ds-error-quinary',
 }
 
 function InvoiceCard({ invoice }) {

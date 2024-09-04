@@ -101,7 +101,7 @@ export function OktaConfigForm() {
                 placeholder="Enter Client ID"
               />
               {formState.errors.clientId ? (
-                <p className="mt-1 text-codecov-red">
+                <p className="mt-1 text-ds-primary-red">
                   {formState.errors.clientId.message}
                 </p>
               ) : null}
@@ -131,7 +131,7 @@ export function OktaConfigForm() {
                 </button>
               </div>
               {formState.errors.clientSecret ? (
-                <p className="mt-1 text-codecov-red">
+                <p className="mt-1 text-ds-primary-red">
                   {formState.errors.clientSecret.message}
                 </p>
               ) : null}
@@ -148,7 +148,7 @@ export function OktaConfigForm() {
                 placeholder="Enter Redirect URI"
               />
               {formState.errors.redirectUri ? (
-                <p className="mt-1 text-codecov-red">
+                <p className="mt-1 text-ds-primary-red">
                   {formState.errors.redirectUri.message}
                 </p>
               ) : null}

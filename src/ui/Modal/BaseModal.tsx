@@ -23,8 +23,8 @@ const BaseModal: React.FC<BaseModalProps> = ({
   title,
 }) => {
   return (
-    <div className="rounded bg-white">
-      <header className="flex items-center justify-between px-4 pt-4">
+    <div className="rounded bg-ds-container">
+      <header className="flex items-center justify-between bg-modal-header p-4">
         <h2 className={cn('text-3xl font-semibold', customHeaderClassname)}>
           {title}
         </h2>
@@ -40,12 +40,12 @@ const BaseModal: React.FC<BaseModalProps> = ({
       </header>
       {subtitle && <p className="px-4 text-lg">{subtitle}</p>}
       {body && (
-        <div className="mt-4 max-h-96 w-full overflow-y-auto border-t p-4 text-sm text-ds-gray-octonary">
+        <div className="max-h-96 w-full overflow-y-auto border-t border-ds-sub-background bg-ds-container p-4 text-sm text-ds-gray-octonary">
           {body}
         </div>
       )}
       {footer && (
-        <footer className="mt-4 flex justify-end rounded-b border-t bg-ds-gray-primary p-4">
+        <footer className="mt-4 flex justify-end rounded-b border-t border-ds-border-line bg-ds-gray-primary p-4">
           {footer}
         </footer>
       )}

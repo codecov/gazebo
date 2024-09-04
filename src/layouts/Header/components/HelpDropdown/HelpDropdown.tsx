@@ -3,6 +3,7 @@ import { useLayoutEffect } from 'react'
 
 import { SentryUserFeedback } from 'sentry'
 
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import Button from 'ui/Button'
 import { Dropdown } from 'ui/Dropdown/Dropdown'
 import Icon from 'ui/Icon'
@@ -15,9 +16,10 @@ type DropdownItem = {
 }
 
 function HelpDropdown() {
+  const { theme } = useThemeContext()
   const { data: form, isSuccess: isFormSuccess } = useQuery({
-    queryKey: ['HelpDropdownForm'],
-    queryFn: () => SentryUserFeedback.createForm(),
+    queryKey: ['HelpDropdownForm', theme],
+    queryFn: () => SentryUserFeedback(theme === Theme.DARK).createForm(),
     suspense: false,
   })
 
@@ -57,6 +59,7 @@ function HelpDropdown() {
 
       <Dropdown>
         <Dropdown.Trigger
+          aria-label="help menu"
           data-marketing="help menu"
           data-testid="help-dropdown-trigger"
         >

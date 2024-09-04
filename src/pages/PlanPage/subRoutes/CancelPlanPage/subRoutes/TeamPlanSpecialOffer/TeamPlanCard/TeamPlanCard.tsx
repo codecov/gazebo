@@ -42,7 +42,7 @@ const TeamPlanCard: React.FC = () => {
           <BenefitList
             benefits={teamPlanYear?.benefits}
             iconName="check"
-            iconColor="text-ds-pink-quinary"
+            iconColor="text-ds-pink-default"
           />
         </div>
         <div className="flex flex-col gap-2 border-t pt-2 sm:border-0 sm:p-0">

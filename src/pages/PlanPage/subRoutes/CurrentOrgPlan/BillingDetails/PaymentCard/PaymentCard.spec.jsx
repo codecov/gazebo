@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { useUpdateCard } from 'services/account'
+import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import PaymentCard from './PaymentCard'
 
@@ -22,6 +23,10 @@ const subscriptionDetail = {
   currentPeriodEnd: 1606851492,
   cancelAtPeriodEnd: false,
 }
+
+const wrapper = ({ children }) => (
+  <ThemeContextProvider>{children}</ThemeContextProvider>
+)
 
 // mocking all the stripe components; and trusting the library :)
 jest.mock('@stripe/react-stripe-js', () => {
@@ -73,7 +78,8 @@ describe('PaymentCard', () => {
           }}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
 
       expect(
@@ -94,7 +100,8 @@ describe('PaymentCard', () => {
             }}
             provider="gh"
             owner="codecov"
-          />
+          />,
+          { wrapper }
         )
 
         useUpdateCard.mockReturnValue({
@@ -116,7 +123,8 @@ describe('PaymentCard', () => {
             }}
             provider="gh"
             owner="codecov"
-          />
+          />,
+          { wrapper }
         )
 
         useUpdateCard.mockReturnValue({
@@ -139,7 +147,8 @@ describe('PaymentCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
 
       expect(screen.getByText(/•••• 1234/)).toBeInTheDocument()
@@ -152,7 +161,8 @@ describe('PaymentCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
 
       expect(screen.getByText(/December 1, 2020/)).toBeInTheDocument()
@@ -169,7 +179,8 @@ describe('PaymentCard', () => {
           }}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
 
       expect(screen.queryByText(/1st December, 2020/)).not.toBeInTheDocument()
@@ -190,7 +201,8 @@ describe('PaymentCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
       await user.click(screen.getByTestId('edit-card'))
 
@@ -209,7 +221,8 @@ describe('PaymentCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
       await user.click(screen.getByTestId('edit-card'))
 
@@ -231,7 +244,8 @@ describe('PaymentCard', () => {
             subscriptionDetail={subscriptionDetail}
             provider="gh"
             owner="codecov"
-          />
+          />,
+          { wrapper }
         )
         await user.click(screen.getByTestId('edit-card'))
         await user.click(screen.queryByRole('button', { name: /update/i }))
@@ -252,7 +266,8 @@ describe('PaymentCard', () => {
             subscriptionDetail={subscriptionDetail}
             provider="gh"
             owner="codecov"
-          />
+          />,
+          { wrapper }
         )
 
         await user.click(screen.getByTestId('edit-card'))
@@ -278,7 +293,8 @@ describe('PaymentCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
 
       await user.click(screen.getByTestId('edit-card'))
@@ -296,7 +312,8 @@ describe('PaymentCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
       await user.click(screen.getByTestId('edit-card'))
 

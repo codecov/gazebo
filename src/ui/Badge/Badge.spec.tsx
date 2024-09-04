@@ -8,7 +8,7 @@ describe('Badge', () => {
       render(<Badge>Badge</Badge>)
 
       const badge = screen.getByText('Badge')
-      expect(badge).toHaveClass('bg-ds-pink text-white')
+      expect(badge).toHaveClass('bg-ds-pink-default text-white')
     })
   })
 })

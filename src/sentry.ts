@@ -74,19 +74,20 @@ export const SentryBugReporter = Sentry.feedbackIntegration({
 })
 
 // Help dropdown user feedback form
-export const SentryUserFeedback = Sentry.feedbackIntegration({
-  showBranding: false,
-  colorScheme: 'light',
-  formTitle: 'Give Feedback',
-  buttonLabel: 'Give Feedback',
-  submitButtonLabel: 'Send Feedback',
-  messagePlaceholder:
-    'Share your experience and suggest opportunities for improvement.',
-  nameLabel: 'Username',
-  isEmailRequired: true,
-  autoInject: false,
-  id: 'help-dropdown-widget',
-})
+export const SentryUserFeedback = (isDark: boolean) =>
+  Sentry.feedbackIntegration({
+    showBranding: false,
+    colorScheme: isDark ? 'dark' : 'light',
+    formTitle: 'Give Feedback',
+    buttonLabel: 'Give Feedback',
+    submitButtonLabel: 'Send Feedback',
+    messagePlaceholder:
+      'Share your experience and suggest opportunities for improvement.',
+    nameLabel: 'Username',
+    isEmailRequired: true,
+    autoInject: false,
+    id: 'help-dropdown-widget',
+  })
 
 export const setupSentry = ({
   history,

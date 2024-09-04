@@ -32,7 +32,7 @@ interface CoverageSelectProps
 export function CoverageSelect({ coverage }: CoverageSelectProps) {
   return (
     <div className={cn(coverageSelect({ coverage }))}>
-      <span className="text-black">{coverage.toLowerCase()}</span>
+      <span className="text-ds-default-text">{coverage.toLowerCase()}</span>
       <CoverageLineIndicator coverage={coverage} />
     </div>
   )

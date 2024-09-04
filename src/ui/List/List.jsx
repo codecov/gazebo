@@ -15,9 +15,9 @@ function List({ items, onItemSelect, noBorder }) {
     items.length > 0 && (
       <ul
         className={cs(
-          'w-full text-ds-gray-octonary divide-y divide-solid divide-gray-200',
+          'w-full text-ds-gray-octonary divide-y divide-solid divide-ds-gray-secondary',
           {
-            'border border-ds-gray-secondary': !noBorder,
+            'border border-ds-border-line': !noBorder,
           }
         )}
       >

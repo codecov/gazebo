@@ -9,7 +9,7 @@ const ExpandableSectionRoot = forwardRef<
   React.ComponentPropsWithoutRef<typeof Collapsible.Root>
 >(({ children, className, ...props }, ref) => (
   <Collapsible.Root
-    className={cn('my-2 border border-gray-200', className)}
+    className={cn('my-2 border border-ds-gray-secondary', className)}
     {...props}
     ref={ref}
   >
@@ -32,7 +32,7 @@ const ExpandableSectionTrigger = forwardRef<
   return (
     <Collapsible.Trigger
       className={cn(
-        'flex w-full items-center justify-between p-4 text-left hover:bg-gray-100',
+        'flex w-full items-center justify-between p-4 text-left hover:bg-ds-gray-primary',
         '[&_#expandable-icon]:data-[state=open]:rotate-180',
         className
       )}
@@ -54,7 +54,7 @@ const ExpandableSectionContent = forwardRef<
   React.ComponentPropsWithoutRef<typeof Collapsible.Content>
 >(({ children, className, ...props }, ref) => (
   <Collapsible.Content
-    className={cn('border-t border-gray-200 p-4', className)}
+    className={cn('border-t border-ds-gray-secondary p-4', className)}
     {...props}
     ref={ref}
   >

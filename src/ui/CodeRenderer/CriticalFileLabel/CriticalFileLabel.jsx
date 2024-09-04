@@ -30,7 +30,7 @@ function CriticalFileLabel({ variant = 'default' }) {
 
   return (
     <div className={className}>
-      <div className="text-warning-500">
+      <div className="text-ds-primary-yellow">
         <Icon name="exclamation-circle" size="sm" variant="outline" />
       </div>
       <p>

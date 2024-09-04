@@ -71,7 +71,10 @@ function InvoiceDetail() {
   return (
     <>
       <div
-        className={cs('bg-white  border-pink-500 border-t-2', printClassnames)}
+        className={cs(
+          'bg-ds-container  border-ds-pink-default border-t-2',
+          printClassnames
+        )}
       >
         <div className={classNameSection}>
           <InvoiceHeader invoice={invoice} accountDetails={accountDetails} />

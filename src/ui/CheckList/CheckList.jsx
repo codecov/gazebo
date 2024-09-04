@@ -8,7 +8,7 @@ function CheckList({ list = [] }) {
     <ul>
       {list.map((item) => (
         <li key={item} className={className}>
-          <span className="text-ds-pink">
+          <span className="text-ds-pink-default">
             <Icon variant="solid" name="check" />
           </span>{' '}
           {item}
