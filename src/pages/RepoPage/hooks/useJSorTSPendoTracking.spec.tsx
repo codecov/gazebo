@@ -175,6 +175,7 @@ describe('useJSorTSPendoTracking', () => {
 
         renderHook(() => useJSorTSPendoTracking(), { wrapper })
 
+        await waitFor(() => expect(updateOptionsMock).toHaveBeenCalled())
         await waitFor(() =>
           expect(updateOptionsMock).toHaveBeenCalledWith({
             account: expect.objectContaining({
@@ -201,6 +202,7 @@ describe('useJSorTSPendoTracking', () => {
         const link = screen.getByText('ClickMe')
         await user.click(link)
 
+        await waitFor(() => expect(updateOptionsMock).toHaveBeenCalled())
         await waitFor(() =>
           expect(updateOptionsMock).toHaveBeenCalledWith({
             account: expect.objectContaining({
