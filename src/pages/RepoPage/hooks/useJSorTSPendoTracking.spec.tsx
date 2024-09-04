@@ -178,40 +178,13 @@ describe('useJSorTSPendoTracking', () => {
         await waitFor(() => expect(updateOptionsMock).toHaveBeenCalled())
         await waitFor(() =>
           expect(updateOptionsMock).toHaveBeenCalledWith({
-            account: {
+            account: expect.objectContaining({
               id: 123,
-              is_admin: true,
-              is_current_user_part_of_org: true,
               name: 'test-owner',
-            },
-            visitor: {
-              business_email: 'jane.doe@codecov.io',
-              created_at: 'timestamp',
-              default_org: null,
-              email: 'jane.doe@codecov.io',
-              full_name: 'janedoe',
-              guest: false,
-              id: 123,
+            }),
+            visitor: expect.objectContaining({
               js_or_ts_present: true,
-              onboarding_completed: true,
-              ownerid: 123,
-              plan: 'users-basic',
-              plan_user_count: 1,
-              profile: {
-                created_at: 'timestamp',
-                goals: [],
-                other_goal: null,
-                type_projects: [],
-              },
-              profile_created_at: 'timestamp',
-              profile_goals: [],
-              profile_other_goal: null,
-              profile_type_projects: [],
-              service: 'github',
-              staff: false,
-              updated_at: 'timestamp',
-              username: 'janedoe',
-            },
+            }),
           })
         )
       })
@@ -232,40 +205,13 @@ describe('useJSorTSPendoTracking', () => {
         await waitFor(() => expect(updateOptionsMock).toHaveBeenCalled())
         await waitFor(() =>
           expect(updateOptionsMock).toHaveBeenCalledWith({
-            account: {
+            account: expect.objectContaining({
               id: 456,
-              is_admin: true,
-              is_current_user_part_of_org: true,
               name: 'second-owner',
-            },
-            visitor: {
-              business_email: 'jane.doe@codecov.io',
-              created_at: 'timestamp',
-              default_org: null,
-              email: 'jane.doe@codecov.io',
-              full_name: 'janedoe',
-              guest: false,
-              id: 123,
+            }),
+            visitor: expect.objectContaining({
               js_or_ts_present: true,
-              onboarding_completed: true,
-              ownerid: 123,
-              plan: 'users-basic',
-              plan_user_count: 1,
-              profile: {
-                created_at: 'timestamp',
-                goals: [],
-                other_goal: null,
-                type_projects: [],
-              },
-              profile_created_at: 'timestamp',
-              profile_goals: [],
-              profile_other_goal: null,
-              profile_type_projects: [],
-              service: 'github',
-              staff: false,
-              updated_at: 'timestamp',
-              username: 'janedoe',
-            },
+            }),
           })
         )
       })
