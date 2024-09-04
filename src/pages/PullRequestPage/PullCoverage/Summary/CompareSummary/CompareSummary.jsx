@@ -119,7 +119,7 @@ function CardWithDifferentNumberOfUploads({
         </A>{' '}
       </p>
       <div className="flex gap-1 text-sm">
-        <div className="text-warning-500">
+        <div className="text-ds-primary-yellow">
           <Icon name="exclamation-triangle" size="sm" variant="outline" />
         </div>
         <p className="text-xs">

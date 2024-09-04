@@ -4,6 +4,7 @@ import { z } from 'zod'
 
 import { SubscriptionDetailSchema } from 'services/account'
 import { useUpdateBillingAddress } from 'services/account/useUpdateBillingAddress'
+import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import AddressCard from './AddressCard'
 
@@ -32,6 +33,10 @@ const subscriptionDetail = {
   currentPeriodEnd: 1606851492,
   cancelAtPeriodEnd: false,
 } as z.infer<typeof SubscriptionDetailSchema>
+
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <ThemeContextProvider>{children}</ThemeContextProvider>
+)
 
 // mocking stripe components
 jest.mock('@stripe/react-stripe-js', () => {
@@ -72,7 +77,8 @@ describe('AddressCard', () => {
     // BillingDetails.tsx if there is no subscriptionDetail
     it('renders the set card message', () => {
       render(
-        <AddressCard subscriptionDetail={null} provider="gh" owner="codecov" />
+        <AddressCard subscriptionDetail={null} provider="gh" owner="codecov" />,
+        { wrapper }
       )
 
       expect(
@@ -94,7 +100,8 @@ describe('AddressCard', () => {
           }}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
 
       expect(
@@ -116,7 +123,8 @@ describe('AddressCard', () => {
             }}
             provider="gh"
             owner="codecov"
-          />
+          />,
+          { wrapper }
         )
 
         mockUseUpdateBillingAddress.mockReturnValue({
@@ -141,7 +149,8 @@ describe('AddressCard', () => {
             }}
             provider="gh"
             owner="codecov"
-          />
+          />,
+          { wrapper }
         )
 
         mockUseUpdateBillingAddress.mockReturnValue({
@@ -164,7 +173,8 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
 
       expect(screen.getByText(/Billing address/)).toBeInTheDocument()
@@ -202,7 +212,8 @@ describe('AddressCard', () => {
           }}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
 
       expect(screen.getByText('Cardholder name')).toBeInTheDocument()
@@ -218,7 +229,8 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
 
       expect(screen.getByText(/Cardholder name/)).toBeInTheDocument()
@@ -240,7 +252,8 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
       await user.click(screen.getByTestId('edit-address'))
 
@@ -265,7 +278,8 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
       await user.click(screen.getByTestId('edit-address'))
 
@@ -287,7 +301,8 @@ describe('AddressCard', () => {
             subscriptionDetail={subscriptionDetail}
             provider="gh"
             owner="codecov"
-          />
+          />,
+          { wrapper }
         )
         await user.click(screen.getByTestId('edit-address'))
         await user.click(screen.queryByRole('button', { name: /update/i })!)
@@ -308,7 +323,8 @@ describe('AddressCard', () => {
             subscriptionDetail={subscriptionDetail}
             provider="gh"
             owner="codecov"
-          />
+          />,
+          { wrapper }
         )
 
         await user.click(screen.getByTestId('edit-address'))
@@ -334,7 +350,8 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
 
       await user.click(screen.getByTestId('edit-address'))
@@ -355,7 +372,8 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
-        />
+        />,
+        { wrapper }
       )
       await user.click(screen.getByTestId('edit-address'))
 

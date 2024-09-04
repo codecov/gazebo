@@ -24,14 +24,22 @@ const defaultStyles = {
     left: 0,
     right: 15,
   },
-  coverageAxisLabels: { fontSize: 4, padding: 1 },
-  dateAxisLabels: { fontSize: 4, padding: 0 },
+  coverageAxisLabels: {
+    fontSize: 4,
+    padding: 1,
+    fill: 'rgb(var(--color-app-text-secondary))',
+  },
+  dateAxisLabels: {
+    fontSize: 4,
+    padding: 0,
+    fill: 'rgb(var(--color-app-text-secondary))',
+  },
 }
 
 // These theme accessors shouldn't be functions but something in the
 // tailwind config is wrong and that requires a much larger theme lift.
 const ColorMap = Object.freeze({
-  default: 'rgb(var(--color-ds-gray-senary))',
+  default: 'rgb(var(--color-chart-area-stroke))',
   primary: 'rgb(var(--color-ds-primary-green))',
   warning: 'rgb(var(--color-ds-primary-yellow))',
   danger: 'rgb(var(--color-ds-primary-red))',

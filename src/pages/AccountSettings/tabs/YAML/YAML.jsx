@@ -68,7 +68,7 @@ function YAML({ owner }) {
             Changes made to the Global YAML are applied to all repositories in
             the org if they do not have a repo level YAML.{' '}
             <a
-              className="text-ds-blue hover:underline"
+              className="text-ds-blue-default hover:underline"
               href="https://docs.codecov.io/docs/codecov-yaml"
               target="_blank"
               rel="noreferrer"

@@ -24,7 +24,10 @@ const Template = (args) => {
         />
         <label htmlFor="secondaryRadio">This is a test label</label>
       </div>
-      <button className="mt-1 rounded bg-gray-500 p-2 text-white" type="submit">
+      <button
+        className="mt-1 rounded bg-ds-gray-quinary p-2 text-white"
+        type="submit"
+      >
         Submit!
       </button>
     </form>

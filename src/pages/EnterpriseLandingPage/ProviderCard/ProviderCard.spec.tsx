@@ -1,14 +1,17 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { ThemeContextProvider } from 'shared/ThemeContext'
 import { LoginProvidersEnum } from 'shared/utils/loginProviders'
 
 import ProviderCard, { InternalProviderButton } from './ProviderCard'
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/']}>
-    <Route path="/">{children}</Route>
-  </MemoryRouter>
+  <ThemeContextProvider>
+    <MemoryRouter initialEntries={['/']}>
+      <Route path="/">{children}</Route>
+    </MemoryRouter>
+  </ThemeContextProvider>
 )
 
 describe('ProviderCard', () => {

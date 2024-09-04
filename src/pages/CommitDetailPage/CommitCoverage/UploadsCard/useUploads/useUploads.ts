@@ -5,8 +5,15 @@ import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { extractUploads } from 'shared/utils/extractUploads'
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+  commit: string
+}
+
 export function useUploads() {
-  const { provider, owner, repo, commit } = useParams()
+  const { provider, owner, repo, commit } = useParams<URLParams>()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: tierData } = useTier({ provider, owner })
 
@@ -21,12 +28,12 @@ export function useUploads() {
     isTeamPlan,
   })
 
-  const { uploadsOverview, sortedUploads, uploadsProviderList, hasNoUploads } =
+  const { uploadsOverview, groupedUploads, uploadsProviderList, hasNoUploads } =
     extractUploads({ unfilteredUploads: data?.commit?.uploads })
 
   return {
     uploadsOverview,
-    sortedUploads,
+    groupedUploads,
     uploadsProviderList,
     hasNoUploads,
   }

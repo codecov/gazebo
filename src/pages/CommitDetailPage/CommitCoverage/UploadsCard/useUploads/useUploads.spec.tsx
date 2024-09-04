@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
+import { graphql, RequestHandler } from 'msw'
 import { setupServer } from 'msw/node'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
@@ -11,7 +12,7 @@ import {
   commitOnePending,
   compareTotalsEmpty,
 } from 'services/commit/mocks'
-import { TierNames } from 'services/tier'
+import { TierNames, TTierNames } from 'services/tier'
 
 import { useUploads } from './useUploads'
 
@@ -39,7 +40,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/test/test-repo/1234']}>
     <Route path="/:provider/:owner/:repo/:commit">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -57,7 +58,7 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('useUploads', () => {
-  function setup(query, tierValue = TierNames.PRO) {
+  function setup(query: RequestHandler, tierValue: TTierNames = TierNames.PRO) {
     server.use(query, compareTotalsEmpty)
 
     server.use(
@@ -85,12 +86,12 @@ describe('useUploads', () => {
     })
 
     describe('when data is loaded', () => {
-      it('returns sortedUploads', () => {
+      it('returns groupedUploads', () => {
         const { result } = renderHook(() => useUploads(), {
           wrapper,
         })
 
-        expect(result.current.sortedUploads).toMatchObject({})
+        expect(result.current.groupedUploads).toMatchObject({})
       })
 
       it('returns a uploadsProviderList', () => {
@@ -137,20 +138,20 @@ describe('useUploads', () => {
         )
       })
 
-      it('returns sortedUploads', async () => {
+      it('returns groupedUploads', async () => {
         const { result } = renderHook(() => useUploads(), {
           wrapper,
         })
 
-        const initSortedUploads = result.current.sortedUploads
+        const initgroupedUploads = result.current.groupedUploads
 
         await waitFor(() =>
-          expect(initSortedUploads).not.toMatchObject(
-            result.current.sortedUploads
+          expect(initgroupedUploads).not.toMatchObject(
+            result.current.groupedUploads
           )
         )
 
-        expect(result.current.sortedUploads).toMatchObject({
+        expect(result.current.groupedUploads).toMatchObject({
           'github actions': [
             {
               buildCode: '1234',
@@ -349,7 +350,7 @@ describe('useUploads', () => {
         expect(initUploadsOverview).not.toBe(result.current.uploadsOverview)
       )
 
-      expect(result.current.sortedUploads).toHaveProperty('travisTeam')
+      expect(result.current.groupedUploads).toHaveProperty('travisTeam')
       expect(result.current.uploadsProviderList).toStrictEqual(['travisTeam'])
     })
   })

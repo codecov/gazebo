@@ -16,6 +16,7 @@ module.exports = {
     './public/*.html',
   ],
   mode: 'jit',
+  darkMode: 'selector',
   theme: {
     container: {
       center: true,
@@ -29,14 +30,24 @@ module.exports = {
       colors: {
         transparent: `transparent`,
         ds: {
+          background: withOpacity('--color-app-background'),
+          container: withOpacity('--color-app-container'),
+          'default-text': withOpacity('--color-app-text-primary'),
+          'secondary-text': withOpacity('--color-app-text-secondary'),
+          'border-line': withOpacity('--color-app-border-line'),
+          'chart-area-stroke': withOpacity('--color-chart-area-stroke'),
+          'sub-background': withOpacity('--color-app-sub-background'),
+          'sub-hover-background': withOpacity(
+            '--color-app-sub-hover-background'
+          ),
+          'summary-container': withOpacity('--color-ds-summary-dropdown'),
           pink: {
-            DEFAULT: withOpacity('--color-ds-pink-default'),
+            default: withOpacity('--color-ds-pink-default'),
             secondary: withOpacity('--color-ds-pink-secondary'),
             tertiary: withOpacity('--color-ds-pink-tertiary'),
-            quinary: withOpacity('--color-ds-pink-default'),
           },
           blue: {
-            DEFAULT: withOpacity('--color-ds-blue-darker'),
+            default: withOpacity('--color-ds-blue-default'),
             light: withOpacity('--color-ds-blue-light'),
             medium: withOpacity('--color-ds-blue-medium'),
             darker: withOpacity('--color-ds-blue-darker'),
@@ -47,7 +58,7 @@ module.exports = {
             nonary: withOpacity('--color-ds-blue-nonary'),
           },
           gray: {
-            DEFAULT: withOpacity('--color-ds-gray-default'),
+            default: withOpacity('--color-ds-gray-default'),
             primary: withOpacity('--color-ds-gray-primary'),
             secondary: withOpacity('--color-ds-gray-secondary'),
             tertiary: withOpacity('--color-ds-gray-tertiary'),
@@ -55,7 +66,6 @@ module.exports = {
             quinary: withOpacity('--color-ds-gray-quinary'),
             senary: withOpacity('--color-ds-gray-senary'),
             octonary: withOpacity('--color-ds-gray-octonary'),
-            nonary: withOpacity('--color-ds-gray-default'),
           },
           primary: {
             green: withOpacity('--color-ds-primary-green'),
@@ -65,8 +75,8 @@ module.exports = {
             base: withOpacity('--color-ds-primary-base'),
           },
           coverage: {
-            covered: withOpacity('--color-success-100'),
-            uncovered: withOpacity('--color-error-100'),
+            covered: withOpacity('--color-ds-coverage-covered'),
+            uncovered: withOpacity('--color-ds-coverage-uncovered'),
             partial: withOpacity('--color-ds-coverage-partial'),
           },
           error: {
@@ -75,7 +85,6 @@ module.exports = {
           },
         },
         codecov: {
-          red: withOpacity('--color-ds-primary-red'),
           orange: withOpacity('--color-codecov-orange'),
           footer: withOpacity('--color-codecov-footer'),
           code: withOpacity('--color-codecov-code'),
@@ -133,9 +142,28 @@ module.exports = {
           900: withOpacity('--color-info-900'),
         },
         github: withOpacity('--color-github'),
+        'github-text': withOpacity('--color-github-text'),
         gitlab: withOpacity('--color-gitlab'),
         bitbucket: withOpacity('--color-bitbucket'),
         okta: withOpacity('--color-okta'),
+        'okta-text': withOpacity('--color-okta-text'),
+        'code-default': withOpacity('--color-code-default'),
+        'code-keyword': withOpacity('--color-code-keyword'),
+        'code-line-number': withOpacity('--color-code-line-number'),
+        'code-comment': withOpacity('--color-code-comment'),
+        'code-punctuation': withOpacity('--color-code-punctuation'),
+        'code-function': withOpacity('--color-code-function'),
+        'code-property': withOpacity('--color-code-property'),
+        'code-operator': withOpacity('--color-code-operator'),
+        modal: {
+          header: withOpacity('--color-modal-header'),
+          footer: withOpacity('--color-modal-footer'),
+        },
+        toggle: {
+          active: withOpacity('--color-toggle-active'),
+          inactive: withOpacity('--color-toggle-inactive'),
+          disabled: withOpacity('--color-toggle-disabled'),
+        },
       },
       screens: {
         print: { raw: 'print' },

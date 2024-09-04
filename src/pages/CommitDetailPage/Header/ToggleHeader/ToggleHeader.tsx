@@ -26,7 +26,7 @@ function ToggleHeader({ showHitCount = true, noBottomBorder = false }) {
   const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
   const containerClasses = cs(
-    'flex w-full flex-1 flex-wrap items-start gap-2 bg-white sm:flex-row sm:items-center md:mb-1 lg:w-auto lg:flex-none',
+    'flex w-full flex-1 flex-wrap items-start gap-2 bg-ds-container sm:flex-row sm:items-center md:mb-1 lg:w-auto lg:flex-none',
     'border-ds-gray-tertiary',
     {
       'border-b-0 pb-1': noBottomBorder,

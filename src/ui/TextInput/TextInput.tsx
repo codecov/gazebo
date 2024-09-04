@@ -21,7 +21,7 @@ const VariantClasses = {
 
 const styles = {
   input:
-    'block border-ds-gray-tertiary px-3 text-sm w-full h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary',
+    'block border-ds-gray-tertiary px-3 text-sm w-full h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-container',
   label: 'block font-semibold mb-2',
   iconWrapper:
     'absolute text-ds-gray-quaternary left-2 h-full flex items-center',

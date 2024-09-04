@@ -112,7 +112,7 @@ function PullRequestPage() {
   }
 
   return (
-    <div className="mx-4 flex flex-col gap-4 md:mx-0">
+    <div className="mx-4 flex flex-col md:mx-0">
       <Header />
       {displayMode === DISPLAY_MODE.BOTH ? (
         <SummaryDropdown type="multiple" defaultValue={defaultDropdown}>

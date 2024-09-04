@@ -69,9 +69,9 @@ export const CardWithFooter: Story = {
 
 export const CardWithCustomStyles: Story = {
   render: () => (
-    <Card className="border-4 border-ds-pink">
+    <Card className="border-4 border-ds-pink-default">
       <Card.Header className="border-b-4 border-inherit">
-        <Card.Title className="text-ds-blue">Custom Styles</Card.Title>
+        <Card.Title className="text-ds-blue-default">Custom Styles</Card.Title>
       </Card.Header>
       <Card.Content className="flex gap-5">
         <Card className="flex-1">
@@ -90,7 +90,7 @@ export const CardWithCustomStyles: Story = {
         But if you&apos;re going to do that, consider adding a{' '}
         <a
           href="https://cva.style/docs/getting-started/variants"
-          className="text-ds-blue hover:underline"
+          className="text-ds-blue-default hover:underline"
         >
           CVA variant
         </a>{' '}

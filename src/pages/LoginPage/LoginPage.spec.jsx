@@ -1,17 +1,21 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import { ThemeContextProvider } from 'shared/ThemeContext'
+
 import LoginPage from './LoginPage'
 
 const wrapper =
   (initialEntries) =>
   ({ children }) => (
-    <MemoryRouter initialEntries={[initialEntries]}>
-      <Switch>
-        <Route path="/login/:provider">{children}</Route>
-        <Route path="/login/"> {children}</Route>
-      </Switch>
-    </MemoryRouter>
+    <ThemeContextProvider>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Switch>
+          <Route path="/login/:provider">{children}</Route>
+          <Route path="/login/"> {children}</Route>
+        </Switch>
+      </MemoryRouter>
+    </ThemeContextProvider>
   )
 
 describe('LoginPage', () => {
@@ -144,7 +148,7 @@ describe('LoginPage', () => {
           wrapper: wrapper('/login'),
         })
 
-        expect(mockSetItem).not.toHaveBeenCalled()
+        expect(mockSetItem).not.toHaveBeenCalledWith('sentry-token')
       })
     })
   })

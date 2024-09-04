@@ -75,7 +75,7 @@ describe('UploadsCard', () => {
       setup({
         uploadsProviderList: ['travis', 'circleci', 'null'],
         uploadsOverview: 'uploads overview',
-        sortedUploads: {
+        groupedUploads: {
           travis: [
             {
               id: 0,
@@ -191,11 +191,11 @@ describe('UploadsCard', () => {
       expect(flagOne).toBeInTheDocument()
     })
 
-    it('does not render null as an upload provider label', () => {
+    it('does not render none as an upload provider label', () => {
       render(<UploadsCard />, { wrapper })
 
-      const nullText = screen.queryByText(/null/)
-      expect(nullText).not.toBeInTheDocument()
+      const noneText = screen.queryByText(/none/)
+      expect(noneText).not.toBeInTheDocument()
     })
   })
   describe('renders no Uploads', () => {
@@ -203,7 +203,7 @@ describe('UploadsCard', () => {
       setup({
         uploadsProviderList: [],
         uploadsOverview: '',
-        sortedUploads: {},
+        groupedUploads: {},
         hasNoUploads: true,
       })
     })
@@ -227,7 +227,7 @@ describe('UploadsCard', () => {
       setup({
         uploadsProviderList: [],
         uploadsOverview: '',
-        sortedUploads: {},
+        groupedUploads: {},
         hasNoUploads: false,
       })
     })
@@ -244,7 +244,7 @@ describe('UploadsCard', () => {
       setup({
         uploadsProviderList: [],
         uploadsOverview: '',
-        sortedUploads: {},
+        groupedUploads: {},
         hasNoUploads: false,
       })
     })

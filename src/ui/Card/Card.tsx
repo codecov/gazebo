@@ -3,7 +3,7 @@ import React from 'react'
 
 import { cn } from 'shared/utils/cn'
 
-const card = cva(['border border-ds-gray-secondary'])
+const card = cva(['border border-ds-gray-secondary bg-ds-container'])
 interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof card> {}

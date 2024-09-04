@@ -22,7 +22,7 @@ describe('Toggle', () => {
       )
 
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('bg-ds-primary-base')
+      expect(button).toHaveClass('bg-toggle-active')
     })
 
     it('Slides circle to the left', () => {
@@ -73,7 +73,7 @@ describe('Toggle', () => {
       )
 
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('bg-ds-gray-quinary')
+      expect(button).toHaveClass('bg-toggle-inactive')
     })
 
     it('Slides circle to the right', () => {
@@ -125,7 +125,7 @@ describe('Toggle', () => {
       )
 
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('bg-ds-gray-quaternary')
+      expect(button).toHaveClass('bg-toggle-disabled')
     })
 
     it('cursor is set to not allow', () => {

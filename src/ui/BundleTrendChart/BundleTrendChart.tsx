@@ -26,8 +26,16 @@ const defaultStyles = {
     left: 0,
     right: 15,
   },
-  bundleAxisLabels: { fontSize: 4, padding: 1 },
-  dateAxisLabels: { fontSize: 4, padding: 0 },
+  bundleAxisLabels: {
+    fontSize: 4,
+    padding: 1,
+    fill: 'rgb(var(--color-app-text-secondary))',
+  },
+  dateAxisLabels: {
+    fontSize: 4,
+    padding: 0,
+    fill: 'rgb(var(--color-app-text-secondary))',
+  },
 }
 
 // @ts-expect-error - This function wants two args, however we have only ever provided it one, see CoverageAreaChart.
@@ -219,7 +227,7 @@ export const BundleTrendChart = memo(function ({
             data: {
               fill: '#0071C220',
               cursor: 'pointer',
-              stroke: 'rgb(var(--color-ds-gray-octonary))',
+              stroke: 'rgb(var(--color-chart-area-stroke))',
               strokeWidth: '0.25px',
             },
           }}

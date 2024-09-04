@@ -70,7 +70,7 @@ function PlanUpgradePro({ isSentryUpgrade, plans }) {
           <BenefitList
             benefits={upgradeToPlan?.benefits}
             iconName="check"
-            iconColor="text-ds-pink-quinary"
+            iconColor="text-ds-pink-default"
           />
         </div>
         <div className="flex flex-col">

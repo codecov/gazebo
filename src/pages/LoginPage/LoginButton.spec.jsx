@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { ThemeContextProvider } from 'shared/ThemeContext'
+
 import LoginButton from './LoginButton'
 
 jest.mock('shared/featureFlags')
@@ -8,11 +10,13 @@ jest.mock('shared/featureFlags')
 const wrapper =
   ({ initialEntries, path }) =>
   ({ children }) => (
-    <MemoryRouter initialEntries={[initialEntries]}>
-      <Route path={path} exact>
-        {children}
-      </Route>
-    </MemoryRouter>
+    <ThemeContextProvider>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path={path} exact>
+          {children}
+        </Route>
+      </MemoryRouter>
+    </ThemeContextProvider>
   )
 
 describe('LoginButton', () => {

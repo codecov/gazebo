@@ -38,7 +38,7 @@ function PaidPlanCard() {
       <div className="flex justify-between p-4">
         <div>
           <h2 className="font-semibold">{marketingName} plan</h2>
-          <span className="text-gray-500">Current plan</span>
+          <span className="text-ds-gray-quinary">Current plan</span>
         </div>
         <ActionsBilling />
       </div>
@@ -49,7 +49,7 @@ function PaidPlanCard() {
           <BenefitList
             benefits={benefits ?? []}
             iconName="check"
-            iconColor="text-ds-pink-quinary"
+            iconColor="text-ds-pink-default"
           />
         </div>
         <div className="flex flex-col border-t pt-2 sm:border-0 sm:p-0">

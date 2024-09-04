@@ -480,7 +480,7 @@ describe('CommitsTab', () => {
         await user.click(completedOption)
 
         await waitFor(() =>
-          expect(completedOption).toHaveClass('border-l-black')
+          expect(completedOption).toHaveClass('border-l-ds-secondary-text')
         )
       })
     })
@@ -657,7 +657,7 @@ describe('CommitsTab', () => {
         await user.click(completedOption)
 
         await waitFor(() =>
-          expect(completedOption).toHaveClass('border-l-black')
+          expect(completedOption).toHaveClass('border-l-ds-secondary-text')
         )
       })
     })

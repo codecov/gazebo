@@ -196,7 +196,7 @@ function CodeTreeTable() {
             ) : (
               <>
                 {table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-100">
+                  <tr key={row.id} className="hover:bg-ds-gray-primary">
                     {row.getVisibleCells().map((cell) => (
                       <td
                         key={cell.id}
@@ -215,7 +215,7 @@ function CodeTreeTable() {
                   </tr>
                 ))}
                 {data.length >= 2 && (
-                  <tr className="bg-gray-200">
+                  <tr className="bg-ds-gray-secondary">
                     {baseColumns.map((column) => (
                       <td
                         key={column.id}
