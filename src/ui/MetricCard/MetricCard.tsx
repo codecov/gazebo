@@ -3,13 +3,7 @@ import React from 'react'
 
 import { cn } from 'shared/utils/cn'
 
-const metricCard = cva([
-  'flex',
-  'flex-col',
-  'gap-1',
-  'bg-white',
-  'px-4',
-])
+const metricCard = cva(['flex', 'flex-col', 'gap-1', 'bg-white', 'px-4'])
 
 interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -31,7 +25,7 @@ const Header = React.forwardRef<
 ))
 Header.displayName = 'MetricCard.Header'
 
-const title = cva(['text-sm', 'font-semibold', 'text-gray-800'])
+const title = cva(['text-sm', 'font-semibold', 'text-ds-gray-octonary'])
 const Title = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
@@ -51,7 +45,7 @@ const Content = React.forwardRef<
 ))
 Content.displayName = 'MetricCard.Content'
 
-const description = cva(['text-xs', 'text-gray-500'])
+const description = cva(['text-xs', 'text-ds-gray-quinary'])
 const Description = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
