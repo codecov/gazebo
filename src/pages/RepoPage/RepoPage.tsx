@@ -11,6 +11,7 @@ import LoadingLogo from 'ui/LoadingLogo'
 import ActivationAlert from './ActivationAlert'
 import { useCrumbs } from './context'
 import DeactivatedRepo from './DeactivatedRepo'
+import { useJSorTSPendoTracking } from './hooks/useJSorTSPendoTracking'
 import RepoPageTabs from './RepoPageTabs'
 
 const BundlesTab = lazy(() => import('./BundlesTab'))
@@ -251,6 +252,8 @@ function RepoPage() {
     },
   })
   const { setBaseCrumbs } = useCrumbs()
+
+  useJSorTSPendoTracking()
 
   useLayoutEffect(() => {
     setBaseCrumbs([

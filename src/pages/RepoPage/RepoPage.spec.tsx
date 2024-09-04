@@ -85,6 +85,58 @@ const mockRepoOverview = ({
   }
 }
 
+const mockOwner = {
+  ownerid: 123,
+  username: 'test-owner',
+  avatarUrl: 'http://127.0.0.1/avatar-url',
+  isCurrentUserPartOfOrg: true,
+  isAdmin: true,
+}
+
+const mockUser = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
+    user: {
+      name: 'Jane Doe',
+      username: 'janedoe',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+      customerIntent: 'PERSONAL',
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: 'users-basic',
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
+    },
+  },
+}
+
 const server = setupServer()
 let testLocation: ReturnType<typeof useLocation>
 
@@ -245,6 +297,12 @@ describe('RepoPage', () => {
             })
           )
         )
+      }),
+      graphql.query('DetailOwner', (req, res, ctx) => {
+        return res(ctx.data({ owner: mockOwner }))
+      }),
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockUser))
       })
     )
 
