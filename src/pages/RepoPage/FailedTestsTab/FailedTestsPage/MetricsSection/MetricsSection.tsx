@@ -40,7 +40,7 @@ const TotalTestsRunTimeCard = () => {
 
       <MetricCard.Content>
         125 hr
-        <Badge variant="success">+10%</Badge>
+        <Badge variant="danger">+10%</Badge>
       </MetricCard.Content>
       <MetricCard.Description>
         Increased by 12.5hr in the last 30 days
