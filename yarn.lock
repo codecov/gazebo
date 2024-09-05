@@ -2059,27 +2059,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codecov/bundler-plugin-core@npm:^0.0.1-beta.10":
-  version: 0.0.1-beta.10
-  resolution: "@codecov/bundler-plugin-core@npm:0.0.1-beta.10"
+"@codecov/bundler-plugin-core@npm:^0.0.1-beta.12":
+  version: 0.0.1-beta.12
+  resolution: "@codecov/bundler-plugin-core@npm:0.0.1-beta.12"
   dependencies:
     chalk: "npm:4.1.2"
     semver: "npm:^7.5.4"
     unplugin: "npm:^1.10.1"
     zod: "npm:^3.22.4"
-  checksum: 10c0/dfa54a435f7bf71476379d74e6703c81afe91468fb34b06c2e96508b2043139691ca0c3399f2443c501ffc18b66ad90cd05dcc2344bf5448246f6a783db69805
+  checksum: 10c0/818b1a46b3a8b0ecf9b70b5eb2b1a3b3a30acdbe4efe3479726faf94e8547c9c3aff0144ed7159a78547ce77e235300fd0ac167049a433b74dcfd14eb468e3c7
   languageName: node
   linkType: hard
 
-"@codecov/webpack-plugin@npm:^0.0.1-beta.6":
-  version: 0.0.1-beta.10
-  resolution: "@codecov/webpack-plugin@npm:0.0.1-beta.10"
+"@codecov/webpack-plugin@npm:^0.0.1-beta.12":
+  version: 0.0.1-beta.12
+  resolution: "@codecov/webpack-plugin@npm:0.0.1-beta.12"
   dependencies:
-    "@codecov/bundler-plugin-core": "npm:^0.0.1-beta.10"
+    "@codecov/bundler-plugin-core": "npm:^0.0.1-beta.12"
     unplugin: "npm:^1.10.1"
   peerDependencies:
     webpack: 5.x
-  checksum: 10c0/852f8a1eed84282dfbf86ca69c8814bdcfda3967a6bff63acd79d3ceed6fa5a1423b13b999f5a03b467fc3f905656ffee6268ab51e2844783aeaf90828c77781
+  checksum: 10c0/249ecbfb1a7820ef1acc622d9f132b96f0b250c43e0267dbd9de85fda610d09997a319ba1b1692b7d7a5f6191a78a89a8a48aa72453751a4f30be3fd94dbeaa9
   languageName: node
   linkType: hard
 
@@ -10553,7 +10553,7 @@ __metadata:
   dependencies:
     "@babel/plugin-proposal-private-property-in-object": "npm:^7.21.11"
     "@chromatic-com/storybook": "npm:^1"
-    "@codecov/webpack-plugin": "npm:^0.0.1-beta.6"
+    "@codecov/webpack-plugin": "npm:^0.0.1-beta.12"
     "@craco/craco": "npm:^7.1.0"
     "@hookform/resolvers": "npm:^2.8.5"
     "@radix-ui/react-accordion": "npm:^1.1.2"
