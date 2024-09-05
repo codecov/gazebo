@@ -3,7 +3,7 @@ import React from 'react'
 
 import { cn } from 'shared/utils/cn'
 
-const metricCard = cva(['flex', 'flex-col', 'gap-1', 'bg-white', 'px-4'])
+const metricCard = cva(['flex', 'flex-col', 'gap-1', 'px-4'])
 
 interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {}
 
