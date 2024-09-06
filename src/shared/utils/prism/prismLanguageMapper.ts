@@ -8,7 +8,9 @@ import { type Language } from 'prism-react-renderer'
 // @ts-expect-error - there's no types associated with this package
 import Prism from 'prism-react-renderer/prism'
 ;(typeof global !== 'undefined' ? global : window).Prism = Prism
-await import('./prismLanguages')
+;(async () => {
+  await import('./prismLanguages')
+})()
 
 const prismSupportedLanguages = new Map<string, string>([
   ['html', 'markup'],
