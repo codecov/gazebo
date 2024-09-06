@@ -5,10 +5,10 @@
  */
 import * as Sentry from '@sentry/react'
 import { type Language } from 'prism-react-renderer'
-import './prismLanguages'
 // @ts-expect-error - there's no types associated with this package
 import Prism from 'prism-react-renderer/prism'
 ;(typeof global !== 'undefined' ? global : window).Prism = Prism
+await import('./prismLanguages')
 
 const prismSupportedLanguages = new Map<string, string>([
   ['html', 'markup'],
