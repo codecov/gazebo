@@ -2,8 +2,8 @@
 ;(async () => {
   await Promise.all([
     import('prismjs/components/prism-csharp'),
-    import('prismjs/components/prism-dart'),
     import('prismjs/components/prism-cshtml'),
+    import('prismjs/components/prism-dart'),
     import('prismjs/components/prism-elixir'),
     import('prismjs/components/prism-fortran'),
     import('prismjs/components/prism-fsharp'),
@@ -12,11 +12,11 @@
     import('prismjs/components/prism-kotlin'),
     import('prismjs/components/prism-lua'),
     import('prismjs/components/prism-php'),
+    import('prismjs/components/prism-powershell'),
     import('prismjs/components/prism-r'),
     import('prismjs/components/prism-ruby'),
     import('prismjs/components/prism-rust'),
     import('prismjs/components/prism-scala'),
-    import('prismjs/components/prism-powershell'),
     import('prismjs/components/prism-solidity'),
     import('prismjs/components/prism-swift'),
     import('prismjs/components/prism-visual-basic'),
