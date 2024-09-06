@@ -24,13 +24,13 @@ import { useHistory, useLocation } from 'react-router-dom'
 
 import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
 import { cn } from 'shared/utils/cn'
-import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
+import { prismLanguageMapper } from 'shared/utils/prism/prismLanguageMapper'
 import Icon from 'ui/Icon'
 
 import { ColorBar } from './ColorBar'
 
 import './VirtualFileRenderer.css'
-import 'shared/utils/prismTheme.css'
+import 'shared/utils/prism/prismTheme.css'
 
 const LINE_ROW_HEIGHT = 18 as const
 

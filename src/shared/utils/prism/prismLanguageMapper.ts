@@ -5,36 +5,10 @@
  */
 import * as Sentry from '@sentry/react'
 import { type Language } from 'prism-react-renderer'
-// @ts-expect-error - there are no types included for this from the prism-react-renderer package
+import './prismLanguages'
+// @ts-expect-error - there's no types associated with this package
 import Prism from 'prism-react-renderer/prism'
 ;(typeof global !== 'undefined' ? global : window).Prism = Prism
-
-/**
- * Importing all the languages we want to support that are not included in the
- * prism-react-renderer package by default.
- *
- * Docs: https://github.com/FormidableLabs/prism-react-renderer/tree/v1.3.5?tab=readme-ov-file#faq
- */
-require('prismjs/components/prism-csharp')
-require('prismjs/components/prism-dart')
-require('prismjs/components/prism-cshtml')
-require('prismjs/components/prism-fortran')
-require('prismjs/components/prism-fsharp')
-require('prismjs/components/prism-java')
-require('prismjs/components/prism-julia')
-require('prismjs/components/prism-kotlin')
-require('prismjs/components/prism-php')
-require('prismjs/components/prism-r')
-require('prismjs/components/prism-ruby')
-require('prismjs/components/prism-rust')
-require('prismjs/components/prism-scala')
-require('prismjs/components/prism-powershell')
-require('prismjs/components/prism-ruby')
-require('prismjs/components/prism-rust')
-require('prismjs/components/prism-solidity')
-require('prismjs/components/prism-swift')
-require('prismjs/components/prism-visual-basic')
-require('prismjs/components/prism-zig')
 
 const prismSupportedLanguages = new Map<string, string>([
   ['html', 'markup'],
@@ -54,6 +28,8 @@ const prismSupportedLanguages = new Map<string, string>([
   ['cshtml', 'cshtml'],
   ['css', 'css'],
   ['dart', 'dart'],
+  ['ex', 'elixir'],
+  ['exs', 'elixir'],
   ['f', 'fortran'],
   ['fpp', 'fortran'],
   ['f90', 'fortran'],
@@ -66,6 +42,7 @@ const prismSupportedLanguages = new Map<string, string>([
   ['jsx', 'jsx'],
   ['kt', 'kotlin'],
   ['kts', 'kotlin'],
+  ['lua', 'lua'],
   ['go', 'go'],
   ['gql', 'graphql'],
   ['graphql', 'graphql'],
@@ -80,6 +57,7 @@ const prismSupportedLanguages = new Map<string, string>([
   ['psm1', 'powershell'],
   ['razor', 'cshtml'],
   ['rb', 'ruby'],
+  ['rake', 'ruby'],
   ['reason', 'reason'],
   ['rs', 'rust'],
   ['sass', 'sass'],
