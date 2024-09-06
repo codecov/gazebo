@@ -25,12 +25,13 @@ interface URLParams {
 export function useJSorTSPendoTracking() {
   const { provider, owner, repo } = useParams<URLParams>()
 
+  // track the previous repo so we can compare it to the current repo
+  // we're setting this to null initially so that we can track the first repo
+  const previousRepo = useRef<string | null>(null)
+
   const { data: ownerData } = useOwner({
     username: owner,
   })
-
-  // track the previous owner so we can compare it to the current owner
-  const previousOwner = useRef<typeof ownerData | null>(null)
 
   const { data: repoOverview } = useRepoOverview({
     provider,
@@ -46,10 +47,8 @@ export function useJSorTSPendoTracking() {
       !ownerData ||
       !repoOverview ||
       !userData ||
-      // no sense in firing this event if we don't have the data we need
-      !repoOverview?.jsOrTsPresent ||
       // if the owner hasn't changed, we don't need to update the pendo options
-      previousOwner.current?.ownerid === ownerData?.ownerid
+      previousRepo.current === repo
     ) {
       return
     }
@@ -60,7 +59,7 @@ export function useJSorTSPendoTracking() {
       window.pendo.updateOptions({
         visitor: snakeifyKeys({
           ...getCurUserInfo(user),
-          jsOrTsPresent: repoOverview?.jsOrTsPresent,
+          jsOrTsPresent: !!repoOverview?.jsOrTsPresent,
         }),
         account: snakeifyKeys({
           id: ownerData?.ownerid,
@@ -70,9 +69,8 @@ export function useJSorTSPendoTracking() {
         }),
       })
 
-      previousOwner.current = ownerData
+      // track the previous repo so we can compare it to the current repo
+      previousRepo.current = repo
     }
-  }, [ownerData, repoOverview, userData])
-
-  return
+  }, [ownerData, repo, repoOverview, userData])
 }
