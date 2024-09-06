@@ -146,11 +146,13 @@ export const AccountDetailsSchema = z.object({
     .nullable(),
   scheduleDetail: z
     .object({
-      scheduledPhase: z.object({
-        quantity: z.number(),
-        plan: z.string(),
-        startDate: z.number(),
-      }),
+      scheduledPhase: z
+        .object({
+          quantity: z.number(),
+          plan: z.string(),
+          startDate: z.number(),
+        })
+        .nullable(),
     })
     .nullable(),
   studentCount: z.number(),
