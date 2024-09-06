@@ -145,9 +145,11 @@ const CommitDetailPage: React.FC = () => {
           <CommitBundleAnalysis />
         </Suspense>
       ) : (
-        <Suspense fallback={<Loader />}>
-          <CommitCoverage />
-        </Suspense>
+        <div className="pt-2">
+          <Suspense fallback={<Loader />}>
+            <CommitCoverage />
+          </Suspense>
+        </div>
       )}
     </div>
   )

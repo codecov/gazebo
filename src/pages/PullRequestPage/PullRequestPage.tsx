@@ -132,9 +132,11 @@ function PullRequestPage() {
           <PullBundleAnalysis />
         </Suspense>
       ) : (
-        <Suspense fallback={<Loader />}>
-          <PullCoverage />
-        </Suspense>
+        <div className="pt-2">
+          <Suspense fallback={<Loader />}>
+            <PullCoverage />
+          </Suspense>
+        </div>
       )}
     </div>
   )
