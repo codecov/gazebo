@@ -25,7 +25,7 @@ export function useUpdatePendoWithOwner(user) {
   const oldOwner = useRef()
 
   useEffect(() => {
-    if (oldOwner.current !== owner) {
+    if (oldOwner.current?.ownerid !== owner?.ownerid) {
       window?.pendo?.updateOptions({
         visitor: getCurUserInfo(currentUser),
         account: snakeifyKeys({
@@ -45,7 +45,7 @@ export function useUpdatePendoWithOwner(user) {
   }, [oldOwner, owner, currentUser, ownerData])
 }
 
-function getCurUserInfo(currentUser) {
+export function getCurUserInfo(currentUser) {
   const profile = currentUser?.profile
   const defaultOrg = localStorage.getItem('gz-defaultOrganization')
 
@@ -75,4 +75,5 @@ export const pendoDefaultUser = {
   businessEmail: null,
   onboardingCompleted: null,
   plan: null,
+  jsOrTsPresent: null,
 }

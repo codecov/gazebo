@@ -94,6 +94,21 @@ const user = {
   },
 }
 
+const mockRepoOverview = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
+      testAnalyticsEnabled: true,
+      languages: ['JavaScript'],
+    },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -196,6 +211,9 @@ describe('App', () => {
       }),
       graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoOverview))
       })
     )
   }

@@ -41,11 +41,8 @@ describe('initialize pendo', () => {
     }
   }
 
-  beforeEach(() => {
-    setup()
-  })
-
   it('fires pendo initialization with expected params', () => {
+    setup()
     firePendo(curUser)
 
     expect(window.pendo.initialize).toHaveBeenCalledTimes(1)
@@ -57,17 +54,17 @@ describe('update pendo on owner change', () => {
     window.pendo = {
       updateOptions: jest.fn(),
     }
-    jest.spyOn(React, 'useRef').mockReturnValueOnce({ current: 'rula' })
+    jest
+      .spyOn(React, 'useRef')
+      .mockReturnValueOnce({ current: { ...ownerData, ownerid: 456 } })
 
     useParams.mockReturnValue({ owner: 'codecov' })
     useOwner.mockReturnValue({ data: ownerData })
   }
 
-  beforeEach(() => {
-    setup()
-  })
-
   it('fires pendo update options when pathname is different', () => {
+    setup()
+
     renderHook(() => useUpdatePendoWithOwner(curUser))
 
     expect(window.pendo.updateOptions).toHaveBeenCalledTimes(1)
@@ -85,11 +82,9 @@ describe('update pendo when owner is not changed', () => {
     useOwner.mockReturnValue({ data: ownerData })
   }
 
-  beforeEach(() => {
-    setup()
-  })
-
   it('does not fire pendo update', () => {
+    setup()
+
     renderHook(() => useUpdatePendoWithOwner(curUser))
 
     expect(window.pendo.updateOptions).toHaveBeenCalledTimes(0)
