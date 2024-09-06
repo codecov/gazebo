@@ -51,28 +51,21 @@ const mockUser = {
   },
 }
 
-const mockOverview = (language?: string) => {
-  let languages: string[] = []
-  if (language) {
-    languages = [language]
-  }
-
-  return {
-    owner: {
-      isCurrentUserActivated: true,
-      repository: {
-        __typename: 'Repository',
-        private: false,
-        defaultBranch: 'main',
-        oldestCommitAt: '2022-10-10T11:59:59',
-        coverageEnabled: true,
-        bundleAnalysisEnabled: true,
-        testAnalyticsEnabled: true,
-        languages,
-      },
+const mockOverview = (language: string) => ({
+  owner: {
+    isCurrentUserActivated: true,
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
+      testAnalyticsEnabled: true,
+      languages: [language],
     },
-  }
-}
+  },
+})
 
 const mockOwner1 = {
   ownerid: 123,
@@ -140,6 +133,7 @@ describe('useJSorTSPendoTracking', () => {
       graphql.query('DetailOwner', (req, res, ctx) => {
         if (req.variables.username === 'second-owner') {
           return res(
+            ctx.status(200),
             ctx.data({
               owner: mockOwner2,
             })
@@ -147,6 +141,7 @@ describe('useJSorTSPendoTracking', () => {
         }
 
         return res(
+          ctx.status(200),
           ctx.data({
             owner: mockOwner1,
           })
@@ -171,7 +166,7 @@ describe('useJSorTSPendoTracking', () => {
 
   describe('js or ts is present', () => {
     describe('first render', () => {
-      it('fires the event', async () => {
+      it('fires the event setting value to true', async () => {
         const { updateOptionsMock } = setup({
           enablePendo: true,
           language: 'javascript',
@@ -193,8 +188,8 @@ describe('useJSorTSPendoTracking', () => {
       })
     })
 
-    describe('owner has changed', () => {
-      it('fires the event a second time', async () => {
+    describe('repo has changed', () => {
+      it('fires the event a second time setting value to true', async () => {
         const { updateOptionsMock, user } = setup({
           enablePendo: true,
           language: 'javascript',
@@ -222,7 +217,7 @@ describe('useJSorTSPendoTracking', () => {
   })
 
   describe('js or ts is not present', () => {
-    it('does not call pendo.updateOptions', async () => {
+    it('fires the event setting value to false', async () => {
       const { updateOptionsMock } = setup({
         enablePendo: true,
         language: 'python',
@@ -230,10 +225,17 @@ describe('useJSorTSPendoTracking', () => {
 
       renderHook(() => useJSorTSPendoTracking(), { wrapper })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      await waitFor(() => expect(updateOptionsMock).not.toHaveBeenCalled())
+      await waitFor(() =>
+        expect(updateOptionsMock).toHaveBeenCalledWith({
+          account: expect.objectContaining({
+            id: 123,
+            name: 'test-owner',
+          }),
+          visitor: expect.objectContaining({
+            js_or_ts_present: false,
+          }),
+        })
+      )
     })
   })
 
