@@ -67,7 +67,6 @@ const BundleSelector = forwardRef<any, BranchSelectorProps>(
     if (!isString(selectedBundle) && bundles.length > 0 && !bundlesIsFetching) {
       history.push(
         bundlesLink.path({
-          // @ts-expect-error - useNavLinks needs to be typed
           branch,
           // @ts-expect-error - useNavLinks needs to be typed
           bundle: encodeURIComponent(bundles[0]),
@@ -101,7 +100,6 @@ const BundleSelector = forwardRef<any, BranchSelectorProps>(
               if (branch && name) {
                 history.push(
                   bundlesLink.path({
-                    // @ts-expect-error - useNavLinks needs to be typed
                     branch,
                     // @ts-expect-error - useNavLinks needs to be typed
                     bundle: encodeURIComponent(name),

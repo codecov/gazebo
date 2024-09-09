@@ -42,7 +42,13 @@ function CoverageTab() {
       {hideNavigator ? null : <CoverageTabNavigator />}
       <Suspense fallback={<Loader />}>
         <Switch>
-          <SentryRoute path="/:provider/:owner/:repo/flags" exact>
+          <SentryRoute
+            path={[
+              '/:provider/:owner/:repo/flags',
+              '/:provider/:owner/:repo/flags/:branch',
+            ]}
+            exact
+          >
             <FlagsTab />
           </SentryRoute>
           <SentryRoute

@@ -14,24 +14,25 @@ interface URLParams {
   provider: string
   owner: string
   repo: string
+  branch?: string
 }
 
 function CoverageTabNavigator() {
-  const { provider, owner, repo } = useParams<URLParams>()
+  const { provider, owner, repo, branch } = useParams<URLParams>()
   const location = useLocation()
   const history = useHistory()
   const { coverage, flagsTab, componentsTab } = useNavLinks()
 
   const urls = {
-    Overview: coverage.path({ provider, owner, repo }),
+    Overview: coverage.path({ provider, owner, repo, branch }),
     Flags: flagsTab.path({ provider, owner, repo }),
     // will probably need to add branch here as arg when we support
     // keeping same branch we are on another tab with
-    Components: componentsTab.path({ provider, owner, repo }),
+    Components: componentsTab.path({ provider, owner, repo, branch }),
   }
 
   let value: TabsValue = TABS.Overview
-  if (location.pathname === urls.Flags) {
+  if (location.pathname.startsWith(urls.Flags)) {
     value = TABS.Flags
   } else if (location.pathname.startsWith(urls.Components)) {
     value = TABS.Components
