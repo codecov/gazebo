@@ -3,8 +3,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
 
@@ -111,6 +112,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
 })
 
+let testLocation: ReturnType<typeof useLocation>
 const wrapper =
   (initialEntries = '/gh/codecov'): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
@@ -119,6 +121,13 @@ const wrapper =
         <Route path="/:provider/:owner">
           <Suspense fallback={null}>{children}</Suspense>
         </Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
       </MemoryRouter>
     </QueryClientProvider>
   )
@@ -332,6 +341,38 @@ describe('PlanTypeOptions', () => {
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
+
+        it('sets plan query param to team', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const teamBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(teamBtn).toBeInTheDocument()
+          await user.click(teamBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
+            )
+          )
+        })
       })
 
       describe('user clicks Pro button', () => {
@@ -368,6 +409,38 @@ describe('PlanTypeOptions', () => {
           )
           await waitFor(() =>
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
+          )
+        })
+
+        it('sets plan query param to pro', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const proBtn = await screen.findByRole('button', {
+            name: 'Pro',
+          })
+          expect(proBtn).toBeInTheDocument()
+          await user.click(proBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
+            )
           )
         })
       })
@@ -441,6 +514,38 @@ describe('PlanTypeOptions', () => {
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
+
+        it('sets plan query param to team', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_SENTRYY,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const teamBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(teamBtn).toBeInTheDocument()
+          await user.click(teamBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
+            )
+          )
+        })
       })
 
       describe('user clicks Pro button', () => {
@@ -477,6 +582,38 @@ describe('PlanTypeOptions', () => {
           )
           await waitFor(() =>
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
+          )
+        })
+
+        it('sets plan query param to pro', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_SENTRYY,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const proBtn = await screen.findByRole('button', {
+            name: 'Pro',
+          })
+          expect(proBtn).toBeInTheDocument()
+          await user.click(proBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
+            )
           )
         })
       })
@@ -583,6 +720,38 @@ describe('PlanTypeOptions', () => {
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
+
+        it('sets plan query param to team', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_TEAMY,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const teamBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(teamBtn).toBeInTheDocument()
+          await user.click(teamBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
+            )
+          )
+        })
       })
 
       describe('user clicks Pro button', () => {
@@ -619,6 +788,38 @@ describe('PlanTypeOptions', () => {
           )
           await waitFor(() =>
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
+          )
+        })
+
+        it('sets plan query param to pro', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_TEAMY,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const proBtn = await screen.findByRole('button', {
+            name: 'Pro',
+          })
+          expect(proBtn).toBeInTheDocument()
+          await user.click(proBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
+            )
           )
         })
       })
@@ -692,6 +893,38 @@ describe('PlanTypeOptions', () => {
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
+
+        it('sets plan query param to team', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_TRIAL,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const teamBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(teamBtn).toBeInTheDocument()
+          await user.click(teamBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
+            )
+          )
+        })
       })
 
       describe('user clicks Pro button', () => {
@@ -728,6 +961,38 @@ describe('PlanTypeOptions', () => {
           )
           await waitFor(() =>
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
+          )
+        })
+
+        it('sets plan query param to pro', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_TRIAL,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const proBtn = await screen.findByRole('button', {
+            name: 'Pro',
+          })
+          expect(proBtn).toBeInTheDocument()
+          await user.click(proBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
+            )
           )
         })
       })
@@ -803,6 +1068,38 @@ describe('PlanTypeOptions', () => {
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
+
+        it('sets plan query param to team', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const teamBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(teamBtn).toBeInTheDocument()
+          await user.click(teamBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
+            )
+          )
+        })
       })
 
       describe('user clicks Pro button', () => {
@@ -839,6 +1136,38 @@ describe('PlanTypeOptions', () => {
           )
           await waitFor(() =>
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
+          )
+        })
+
+        it('sets plan query param to pro', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const proBtn = await screen.findByRole('button', {
+            name: 'Pro',
+          })
+          expect(proBtn).toBeInTheDocument()
+          await user.click(proBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
+            )
           )
         })
       })
@@ -912,6 +1241,38 @@ describe('PlanTypeOptions', () => {
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
+
+        it('sets plan query param to team', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_SENTRYY,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const teamBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(teamBtn).toBeInTheDocument()
+          await user.click(teamBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
+            )
+          )
+        })
       })
 
       describe('user clicks Pro button', () => {
@@ -948,6 +1309,38 @@ describe('PlanTypeOptions', () => {
           )
           await waitFor(() =>
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
+          )
+        })
+
+        it('sets plan query param to pro', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_SENTRYY,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const proBtn = await screen.findByRole('button', {
+            name: 'Pro',
+          })
+          expect(proBtn).toBeInTheDocument()
+          await user.click(proBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
+            )
           )
         })
       })
@@ -1054,6 +1447,38 @@ describe('PlanTypeOptions', () => {
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
+
+        it('sets plan query param to team', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_TEAMY,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const teamBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(teamBtn).toBeInTheDocument()
+          await user.click(teamBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
+            )
+          )
+        })
       })
 
       describe('user clicks Pro button', () => {
@@ -1090,6 +1515,38 @@ describe('PlanTypeOptions', () => {
           )
           await waitFor(() =>
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
+          )
+        })
+
+        it('sets plan query param to pro', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_TEAMY,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const proBtn = await screen.findByRole('button', {
+            name: 'Pro',
+          })
+          expect(proBtn).toBeInTheDocument()
+          await user.click(proBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
+            )
           )
         })
       })
@@ -1163,6 +1620,38 @@ describe('PlanTypeOptions', () => {
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
+
+        it('sets plan query param to team', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_TRIAL,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const teamBtn = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          expect(teamBtn).toBeInTheDocument()
+          await user.click(teamBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
+            )
+          )
+        })
       })
 
       describe('user clicks Pro button', () => {
@@ -1199,6 +1688,38 @@ describe('PlanTypeOptions', () => {
           )
           await waitFor(() =>
             expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
+          )
+        })
+
+        it('sets plan query param to pro', async () => {
+          const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
+            setup({
+              planValue: Plans.USERS_TRIAL,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
+
+          render(
+            <PlanTypeOptions
+              setFormValue={mockSetFormValue}
+              setSelectedPlan={mockSetSelectedPlan}
+              newPlan={planValue}
+            />,
+            {
+              wrapper: wrapper(),
+            }
+          )
+
+          const proBtn = await screen.findByRole('button', {
+            name: 'Pro',
+          })
+          expect(proBtn).toBeInTheDocument()
+          await user.click(proBtn)
+
+          await waitFor(() =>
+            expect(testLocation.search).toEqual(
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
+            )
           )
         })
       })
