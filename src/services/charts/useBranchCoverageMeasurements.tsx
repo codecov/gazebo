@@ -59,6 +59,7 @@ query GetBranchCoverageMeasurements(
     repository: repository(name: $repo) {
       __typename
       ... on Repository {
+      CoverageAnalytics{
         measurements(
           interval: $interval
           after: $after
@@ -68,6 +69,7 @@ query GetBranchCoverageMeasurements(
           timestamp
           max
         }
+}
       }
       ... on NotFoundError {
         message
