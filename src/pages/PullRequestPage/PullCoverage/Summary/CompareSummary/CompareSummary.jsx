@@ -3,6 +3,8 @@ import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { getProviderCommitURL } from 'shared/utils'
+import { deleteDuplicateCFFUploads } from 'shared/utils/extractUploads'
+import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Summary from 'ui/Summary'
@@ -93,6 +95,14 @@ function CardWithDifferentNumberOfUploads({
   defaultBranch,
   flags = [],
 }) {
+  const headUploads = deleteDuplicateCFFUploads({
+    uploads: mapEdges(head?.uploads),
+  })
+
+  const baseUploads = deleteDuplicateCFFUploads({
+    uploads: mapEdges(base?.uploads),
+  })
+
   return (
     <div className="flex flex-col gap-1">
       <p className="text-sm text-ds-gray-octonary">
@@ -105,7 +115,7 @@ function CardWithDifferentNumberOfUploads({
           }}
         >
           {headCommit?.slice(0, 7)}
-          <span>({head?.uploads?.totalCount} uploads)</span>
+          <span>({headUploads?.length} uploads)</span>
         </A>{' '}
         compared to <span className="font-medium uppercase">base</span>{' '}
         <A
@@ -115,7 +125,7 @@ function CardWithDifferentNumberOfUploads({
           }}
         >
           {baseCommit?.slice(0, 7)}
-          <span>({base?.uploads?.totalCount} uploads)</span>
+          <span>({baseUploads?.length} uploads)</span>
         </A>{' '}
       </p>
       <div className="flex gap-1 text-sm">
