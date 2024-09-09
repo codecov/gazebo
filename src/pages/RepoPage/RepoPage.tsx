@@ -75,6 +75,7 @@ function Routes({
             path={[
               path,
               `${path}/flags`,
+              `${path}/flags/:branch`,
               `${path}/components`,
               `${path}/components/:branch`,
               `${path}/blob/:ref/:path+`,
