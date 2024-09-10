@@ -1,6 +1,8 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
+import { OrderingDirection } from 'types'
+
 import { MissingHeadReportSchema } from 'services/comparison'
 import {
   RepoNotFoundErrorSchema,
@@ -207,7 +209,7 @@ interface UseBundleAssetsArgs {
     reportGroups?: string[]
     loadTypes?: string[]
   }
-  orderingDirection?: 'ASC' | 'DESC'
+  orderingDirection?: OrderingDirection
   ordering?: 'NAME' | 'SIZE' | 'TYPE'
   opts?: {
     enabled?: boolean

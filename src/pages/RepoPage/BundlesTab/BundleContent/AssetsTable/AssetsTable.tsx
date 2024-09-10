@@ -12,6 +12,8 @@ import { Fragment, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
+import { OrderingDirection } from 'types'
+
 import {
   formatSizeToString,
   formatTimeToString,
@@ -218,7 +220,7 @@ export const AssetsTable: React.FC = () => {
     ordering = 'TYPE'
   }
 
-  let orderingDirection: 'ASC' | 'DESC' | undefined
+  let orderingDirection: OrderingDirection | undefined
   if (sorting[0]?.desc) {
     orderingDirection = 'DESC'
   } else if (!sorting[0]?.desc) {

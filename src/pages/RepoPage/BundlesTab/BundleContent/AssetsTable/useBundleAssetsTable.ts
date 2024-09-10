@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
 
+import { OrderingDirection } from 'types'
+
 import { useBundleAssets } from 'services/bundleAnalysis/useBundleAssets'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
@@ -11,7 +13,7 @@ interface UseBundleAssetsTableArgs {
   repo: string
   branch: string
   bundle: string
-  orderingDirection?: 'ASC' | 'DESC'
+  orderingDirection?: OrderingDirection
   ordering?: 'NAME' | 'SIZE' | 'TYPE'
 }
 
