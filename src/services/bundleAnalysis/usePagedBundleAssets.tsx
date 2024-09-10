@@ -305,6 +305,7 @@ export const usePagedBundleAssets = ({
         ) {
           return {
             assets: [],
+            bundleData: null,
             pageInfo: null,
           }
         }
@@ -316,6 +317,9 @@ export const usePagedBundleAssets = ({
 
         return {
           assets,
+          bundleData:
+            data?.owner?.repository?.branch?.head?.bundleAnalysisReport?.bundle
+              ?.bundleData,
           pageInfo:
             data?.owner?.repository?.branch?.head?.bundleAnalysisReport?.bundle
               ?.assetsPaginated?.pageInfo ?? null,
@@ -329,7 +333,10 @@ export const usePagedBundleAssets = ({
   })
 
   return {
-    data: { assets: data?.pages.map((page) => page.assets).flat() },
+    data: {
+      assets: data?.pages.map((page) => page.assets).flat() ?? [],
+      bundleData: data?.pages?.[0]?.bundleData ?? null,
+    },
     ...rest,
   }
 }
