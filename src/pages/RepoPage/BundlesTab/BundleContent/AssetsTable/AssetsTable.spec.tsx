@@ -1,68 +1,41 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { AssetsTable, ChangeOverTime } from './AssetsTable'
 
 jest.mock('./EmptyTable', () => () => <div>EmptyTable</div>)
 
-interface Asset {
-  name: string
-  extension: string
-  bundleData: {
-    loadTime: {
-      threeG: number
-      highSpeed: number
-    }
-    size: {
-      uncompress: number
-      gzip: number
-    }
-  }
-  measurements: {
-    change: {
-      size: {
-        uncompress: number
-      }
-    }
-    measurements: Array<{
-      timestamp: string
-      avg: number | null
-    }>
-  } | null
-}
-
-const mockAssets = (multipleAssets = true) => {
-  const assets: Array<Asset> = [
-    {
-      name: 'asset-1',
-      extension: 'js',
-      bundleData: {
-        loadTime: {
-          threeG: 2000,
-          highSpeed: 2000,
-        },
-        size: {
-          uncompress: 4000,
-          gzip: 400,
-        },
+const mockAssets = (hasNextPage = true) => {
+  const asset1 = {
+    name: 'asset-1',
+    extension: 'js',
+    bundleData: {
+      loadTime: {
+        threeG: 2000,
+        highSpeed: 2000,
       },
-      measurements: {
-        change: {
-          size: {
-            uncompress: 5,
-          },
-        },
-        measurements: [
-          { timestamp: '2022-10-10T11:59:59', avg: 6 },
-          { timestamp: '2022-10-11T11:59:59', avg: null },
-        ],
+      size: {
+        uncompress: 4000,
+        gzip: 400,
       },
     },
-  ]
+    measurements: {
+      change: {
+        size: {
+          uncompress: 5,
+        },
+      },
+      measurements: [
+        { timestamp: '2022-10-10T11:59:59', avg: 6 },
+        { timestamp: '2022-10-11T11:59:59', avg: null },
+      ],
+    },
+  }
 
   const asset2 = {
     name: 'asset-2',
@@ -106,11 +79,6 @@ const mockAssets = (multipleAssets = true) => {
     measurements: null,
   }
 
-  if (multipleAssets) {
-    assets.push(asset2)
-    assets.push(asset3)
-  }
-
   return {
     owner: {
       repository: {
@@ -125,7 +93,22 @@ const mockAssets = (multipleAssets = true) => {
                     uncompress: 6000,
                   },
                 },
-                assets,
+                assetsPaginated: {
+                  edges: [
+                    {
+                      node: asset1,
+                    },
+                    ...(hasNextPage
+                      ? [{ node: asset2 }, { node: asset3 }]
+                      : []),
+                  ],
+                  pageInfo: {
+                    hasNextPage: hasNextPage,
+                    endCursor: hasNextPage
+                      ? 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA'
+                      : null,
+                  },
+                },
               },
             },
           },
@@ -174,7 +157,13 @@ const mockEmptyAssets = {
                   uncompress: 12,
                 },
               },
-              assets: [],
+              assetsPaginated: {
+                edges: [],
+                pageInfo: {
+                  hasNextPage: false,
+                  endCursor: null,
+                },
+              },
             },
           },
         },
@@ -262,13 +251,27 @@ describe('AssetsTable', () => {
     multipleAssets = true,
   }: SetupArgs) {
     const user = userEvent.setup()
+    const mockOrdering = jest.fn()
+    const mockOrderingDirection = jest.fn()
 
     server.use(
-      graphql.query('BundleAssets', (req, res, ctx) => {
+      graphql.query('PagedBundleAssets', (req, res, ctx) => {
         if (isEmptyBundles) {
           return res(ctx.status(200), ctx.data(mockEmptyAssets))
         } else if (isMissingHeadReport) {
           return res(ctx.status(200), ctx.data(mockMissingHeadReport))
+        }
+
+        if (req.variables?.ordering) {
+          mockOrdering(req.variables.ordering)
+        }
+
+        if (req.variables?.orderingDirection) {
+          mockOrderingDirection(req.variables.orderingDirection)
+        }
+
+        if (multipleAssets && req.variables?.after) {
+          multipleAssets = true
         }
 
         return res(ctx.status(200), ctx.data(mockAssets(multipleAssets)))
@@ -281,7 +284,7 @@ describe('AssetsTable', () => {
       })
     )
 
-    return { user }
+    return { user, mockOrdering, mockOrderingDirection }
   }
 
   describe('there is no data', () => {
@@ -349,7 +352,7 @@ describe('AssetsTable', () => {
 
     describe('renders table rows', () => {
       it('renders asset column', async () => {
-        setup({})
+        setup({ multipleAssets: false })
         render(<AssetsTable />, { wrapper })
 
         const asset = await screen.findByText('asset-1')
@@ -357,7 +360,7 @@ describe('AssetsTable', () => {
       })
 
       it('renders type column', async () => {
-        setup({})
+        setup({ multipleAssets: false })
         render(<AssetsTable />, { wrapper })
 
         const [type] = await screen.findAllByText('js')
@@ -365,7 +368,7 @@ describe('AssetsTable', () => {
       })
 
       it('renders load time column', async () => {
-        setup({})
+        setup({ multipleAssets: false })
         render(<AssetsTable />, { wrapper })
 
         const [loadTime] = await screen.findAllByText('2s')
@@ -373,7 +376,7 @@ describe('AssetsTable', () => {
       })
 
       it('renders size column', async () => {
-        setup({})
+        setup({ multipleAssets: false })
         render(<AssetsTable />, { wrapper })
 
         const [size] = await screen.findAllByText('66.67% (4kB)')
@@ -381,7 +384,7 @@ describe('AssetsTable', () => {
       })
 
       it('renders change over time column', async () => {
-        setup({})
+        setup({ multipleAssets: false })
         render(<AssetsTable />, { wrapper })
 
         const [changeOverTime] = await screen.findAllByText('+5B 🔼')
@@ -404,31 +407,100 @@ describe('AssetsTable', () => {
       })
     })
 
+    describe('infinite scrolls', () => {
+      it('fetches more assets when user scrolls to the bottom', async () => {
+        setup({ multipleAssets: true })
+        render(<AssetsTable />, { wrapper })
+
+        const loading = await screen.findByText('Loading')
+        mockIsIntersecting(loading, true)
+
+        const asset2 = await screen.findByText('asset-2')
+        expect(asset2).toBeInTheDocument()
+      })
+    })
+
     describe('sorting table', () => {
+      describe('sorting on asset column', () => {
+        it('sorts the table by asset', async () => {
+          const { user, mockOrdering } = setup({ multipleAssets: false })
+          render(<AssetsTable />, { wrapper })
+
+          const assetColumn = await screen.findByText('Asset')
+          await user.click(assetColumn)
+
+          await waitFor(() => expect(mockOrdering).toHaveBeenCalledWith('NAME'))
+        })
+      })
+
+      describe('sorting on type column', () => {
+        it('sorts the table by type', async () => {
+          const { user, mockOrdering } = setup({ multipleAssets: false })
+          render(<AssetsTable />, { wrapper })
+
+          const typeColumn = await screen.findByText('Type')
+          await user.click(typeColumn)
+
+          await waitFor(() => expect(mockOrdering).toHaveBeenCalledWith('TYPE'))
+        })
+      })
+
+      describe('sorting on load time column', () => {
+        it('sorts the table by size', async () => {
+          const { user, mockOrdering } = setup({ multipleAssets: false })
+          render(<AssetsTable />, { wrapper })
+
+          const loadTimeColumn = await screen.findByText(
+            'Estimated load time (3G)'
+          )
+          await user.click(loadTimeColumn)
+
+          await waitFor(() => expect(mockOrdering).toHaveBeenCalledWith('SIZE'))
+        })
+      })
+
       describe('sorting on size column', () => {
         it('sorts the table by size', async () => {
-          const { user } = setup({})
+          const { user, mockOrdering } = setup({ multipleAssets: false })
           render(<AssetsTable />, { wrapper })
 
           const sizeColumn = await screen.findByText('Size')
           await user.click(sizeColumn)
 
-          const [asset] = await screen.findAllByText('asset-1')
-          expect(asset).toBeInTheDocument()
+          await waitFor(() => expect(mockOrdering).toHaveBeenCalledWith('SIZE'))
         })
       })
 
-      describe('sorting on change over time column', () => {
-        it('sorts the table by change value', async () => {
-          const { user } = setup({})
+      describe('sorting once sets the order to ascending', () => {
+        it('sorts the table by size', async () => {
+          const { user, mockOrderingDirection } = setup({
+            multipleAssets: false,
+          })
           render(<AssetsTable />, { wrapper })
 
-          const changeColumn = await screen.findByText('Change over time')
-          await user.click(changeColumn)
-          await user.click(changeColumn)
+          const sizeColumn = await screen.findByText('Size')
+          await user.click(sizeColumn)
 
-          const [asset] = await screen.findAllByText('asset-1')
-          expect(asset).toBeInTheDocument()
+          await waitFor(() =>
+            expect(mockOrderingDirection).toHaveBeenCalledWith('ASC')
+          )
+        })
+      })
+
+      describe('sorting twice sets the order to descending', () => {
+        it('sorts the table by size', async () => {
+          const { user, mockOrderingDirection } = setup({
+            multipleAssets: false,
+          })
+          render(<AssetsTable />, { wrapper })
+
+          const sizeColumn = await screen.findByText('Size')
+          await user.click(sizeColumn)
+          await user.click(sizeColumn)
+
+          await waitFor(() =>
+            expect(mockOrderingDirection).toHaveBeenCalledWith('DESC')
+          )
         })
       })
     })

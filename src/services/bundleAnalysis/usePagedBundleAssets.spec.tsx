@@ -231,8 +231,6 @@ describe('usePagedBundleAssets', () => {
             repo: 'codecov',
             branch: 'main',
             bundle: 'test-bundle',
-            ordering: 'NAME',
-            orderingDirection: 'ASC',
           }),
         {
           wrapper,
@@ -255,8 +253,6 @@ describe('usePagedBundleAssets', () => {
               repo: 'codecov',
               branch: 'main',
               bundle: 'test-bundle',
-              ordering: 'NAME',
-              orderingDirection: 'ASC',
             }),
           {
             wrapper,
@@ -264,7 +260,10 @@ describe('usePagedBundleAssets', () => {
         )
 
         await waitFor(() => {
-          expect(result.current.data?.assets).toEqual([node1, node2])
+          expect(result.current.data).toEqual({
+            assets: [node1, node2],
+            bundleData: { size: { uncompress: 12 } },
+          })
         })
 
         result.current.fetchNextPage()
@@ -273,7 +272,10 @@ describe('usePagedBundleAssets', () => {
         await waitFor(() => !result.current.isFetching)
 
         await waitFor(() =>
-          expect(result.current.data.assets).toEqual([node1, node2, node3])
+          expect(result.current.data).toEqual({
+            assets: [node1, node2, node3],
+            bundleData: { size: { uncompress: 12 } },
+          })
         )
       })
     })
@@ -289,8 +291,6 @@ describe('usePagedBundleAssets', () => {
               repo: 'codecov',
               branch: 'main',
               bundle: 'test-bundle',
-              ordering: 'NAME',
-              orderingDirection: 'ASC',
             }),
           {
             wrapper,
@@ -301,7 +301,7 @@ describe('usePagedBundleAssets', () => {
         await waitFor(() => expect(result.current.isLoading).toBeFalsy())
 
         await waitFor(() => {
-          expect(result.current.data).toEqual({ assets: [] })
+          expect(result.current.data).toEqual({ assets: [], bundleData: null })
         })
       })
     })
@@ -318,8 +318,6 @@ describe('usePagedBundleAssets', () => {
             repo: 'codecov',
             branch: 'main',
             bundle: 'test-bundle',
-            ordering: 'NAME',
-            orderingDirection: 'ASC',
           }),
         {
           wrapper,
@@ -330,7 +328,7 @@ describe('usePagedBundleAssets', () => {
       await waitFor(() => expect(result.current.isLoading).toBeFalsy())
 
       await waitFor(() => {
-        expect(result.current.data).toEqual({ assets: [] })
+        expect(result.current.data).toEqual({ assets: [], bundleData: null })
       })
     })
   })
@@ -356,8 +354,6 @@ describe('usePagedBundleAssets', () => {
             repo: 'codecov',
             branch: 'main',
             bundle: 'test-bundle',
-            ordering: 'NAME',
-            orderingDirection: 'ASC',
           }),
         {
           wrapper,
@@ -396,8 +392,6 @@ describe('usePagedBundleAssets', () => {
             repo: 'codecov',
             branch: 'main',
             bundle: 'test-bundle',
-            ordering: 'NAME',
-            orderingDirection: 'ASC',
           }),
         {
           wrapper,
@@ -436,8 +430,6 @@ describe('usePagedBundleAssets', () => {
             repo: 'codecov',
             branch: 'main',
             bundle: 'test-bundle',
-            ordering: 'NAME',
-            orderingDirection: 'ASC',
           }),
         {
           wrapper,
