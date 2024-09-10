@@ -290,7 +290,7 @@ describe('BundleContent', () => {
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoOverview))
       }),
-      graphql.query('PagedBundleAssets', (req, res, ctx) => {
+      graphql.query('BundleAssets', (req, res, ctx) => {
         if (isBundleError) {
           return res(ctx.status(200), ctx.data(mockMissingHeadReportAssets))
         }

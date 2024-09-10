@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 
-import { usePagedBundleAssets } from 'services/bundleAnalysis/usePagedBundleAssets'
+import { OrderingDirection } from 'types'
+
+import { useBundleAssets } from 'services/bundleAnalysis/useBundleAssets'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import { createTimeSeriesQueryVars, Trend } from 'shared/utils/timeseriesCharts'
@@ -11,7 +13,7 @@ interface UseBundleAssetsTableArgs {
   repo: string
   branch: string
   bundle: string
-  orderingDirection?: 'ASC' | 'DESC'
+  orderingDirection?: OrderingDirection
   ordering?: 'NAME' | 'SIZE' | 'TYPE'
 }
 
@@ -52,7 +54,7 @@ export function useBundleAssetsTable({
     }
   }, [overview?.oldestCommitAt, today, trend])
 
-  return usePagedBundleAssets({
+  return useBundleAssets({
     provider,
     owner,
     repo,

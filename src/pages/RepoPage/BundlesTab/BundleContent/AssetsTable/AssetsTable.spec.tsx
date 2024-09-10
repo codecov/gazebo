@@ -255,7 +255,7 @@ describe('AssetsTable', () => {
     const mockOrderingDirection = jest.fn()
 
     server.use(
-      graphql.query('PagedBundleAssets', (req, res, ctx) => {
+      graphql.query('BundleAssets', (req, res, ctx) => {
         if (isEmptyBundles) {
           return res(ctx.status(200), ctx.data(mockEmptyAssets))
         } else if (isMissingHeadReport) {
