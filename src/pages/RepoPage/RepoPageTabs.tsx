@@ -51,11 +51,10 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   let coverageLocation = undefined
   if (matchTree) {
     coverageLocation = {
-      pathname: branch
-        ? branch === ALL_BRANCHES
+      pathname:
+        branch === ALL_BRANCHES
           ? `/${provider}/${owner}/${repo}`
-          : `/${provider}/${owner}/${repo}/tree/${branch}`
-        : `/${provider}/${owner}/${repo}/tree`,
+          : `/${provider}/${owner}/${repo}/tree/${branch}`,
     }
   } else if (matchFlags || matchComponents) {
     coverageLocation = {
