@@ -210,7 +210,9 @@ export const AssetsTable: React.FC = () => {
   const sortColumn = sorting?.[0]?.id
   if (sortColumn === 'name') {
     ordering = 'NAME'
-  } else if (sortColumn === 'size' || sortColumn === 'loadTime') {
+  }
+  // load time is directly proportional to size so we can sort by size
+  else if (sortColumn === 'size' || sortColumn === 'loadTime') {
     ordering = 'SIZE'
   } else if (sortColumn === 'extension') {
     ordering = 'TYPE'
