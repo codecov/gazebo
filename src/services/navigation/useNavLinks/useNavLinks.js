@@ -7,6 +7,7 @@ import config from 'config'
 
 export function useNavLinks() {
   const {
+    branch: b,
     provider: p,
     owner: o,
     repo: r,
@@ -158,12 +159,18 @@ export function useNavLinks() {
     },
     commits: {
       path: (
-        { provider = p, owner = o, repo = r } = {
+        { provider = p, owner = o, repo = r, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
+          branch: b,
         }
-      ) => `/${provider}/${owner}/${repo}/commits`,
+      ) => {
+        if (branch) {
+          return `/${provider}/${owner}/${repo}/commits/${branch}`
+        }
+        return `/${provider}/${owner}/${repo}/commits`
+      },
       text: 'Commits',
     },
     commit: {
@@ -380,10 +387,11 @@ export function useNavLinks() {
           provider: p,
           owner: o,
           repo: r,
+          branch: undefined,
         }
       ) => {
         if (branch) {
-          return `/${provider}/${owner}/${repo}/components?branch=${branch}`
+          return `/${provider}/${owner}/${repo}/components/${encodeURIComponent(branch)}`
         }
         return `/${provider}/${owner}/${repo}/components`
       },
