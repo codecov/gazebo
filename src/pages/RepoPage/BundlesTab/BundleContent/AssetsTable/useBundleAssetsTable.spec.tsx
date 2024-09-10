@@ -26,7 +26,7 @@ const mockRepoOverview = {
   },
 }
 
-const mockBranchBundles = {
+const mockedPagedBundleAssets = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -40,32 +40,40 @@ const mockBranchBundles = {
                   uncompress: 12,
                 },
               },
-              assets: [
-                {
-                  name: 'asset-1',
-                  extension: 'js',
-                  bundleData: {
-                    loadTime: {
-                      threeG: 1,
-                      highSpeed: 2,
-                    },
-                    size: {
-                      uncompress: 3,
-                      gzip: 4,
-                    },
-                  },
-                  measurements: {
-                    change: {
-                      size: {
-                        uncompress: 5,
+              assetsPaginated: {
+                edges: [
+                  {
+                    node: {
+                      name: 'asset-1',
+                      extension: 'js',
+                      bundleData: {
+                        loadTime: {
+                          threeG: 1,
+                          highSpeed: 2,
+                        },
+                        size: {
+                          uncompress: 3,
+                          gzip: 4,
+                        },
+                      },
+                      measurements: {
+                        change: {
+                          size: {
+                            uncompress: 5,
+                          },
+                        },
+                        measurements: [
+                          { timestamp: '2022-10-10T11:59:59', avg: 6 },
+                        ],
                       },
                     },
-                    measurements: [
-                      { timestamp: '2022-10-10T11:59:59', avg: 6 },
-                    ],
                   },
+                ],
+                pageInfo: {
+                  hasNextPage: false,
+                  endCursor: null,
                 },
-              ],
+              },
             },
           },
         },
@@ -117,9 +125,9 @@ describe('useBundleAssetsTable', () => {
     const queryVarMock = jest.fn()
 
     server.use(
-      graphql.query('BundleAssets', (req, res, ctx) => {
+      graphql.query('PagedBundleAssets', (req, res, ctx) => {
         queryVarMock(req.variables)
-        return res(ctx.status(200), ctx.data(mockBranchBundles))
+        return res(ctx.status(200), ctx.data(mockedPagedBundleAssets))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoOverview))
@@ -174,7 +182,11 @@ describe('useBundleAssetsTable', () => {
           name: 'asset-1',
         },
       ],
-      bundleUncompressSize: 12,
+      bundleData: {
+        size: {
+          uncompress: 12,
+        },
+      },
     }
     await waitFor(() => expect(result.current.data).toEqual(expectedResult))
   })
