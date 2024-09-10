@@ -8,7 +8,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { Fragment, Suspense, useMemo, useRef, useState } from 'react'
+import { Fragment, Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -19,11 +20,7 @@ import Icon from 'ui/Icon'
 import Sparkline from 'ui/Sparkline'
 import Spinner from 'ui/Spinner'
 
-import {
-  genSizeColumn,
-  sortChangeOverTimeColumn,
-  sortSizeColumn,
-} from './assetTableHelpers'
+import { genSizeColumn } from './assetTableHelpers'
 import EmptyTable from './EmptyTable'
 import ModulesTable from './ModulesTable'
 import { useBundleAssetsTable } from './useBundleAssetsTable'
@@ -122,23 +119,10 @@ const createColumns = (totalBundleSize: number | null) => [
     cell: ({ getValue }) => {
       return genSizeColumn({ size: getValue(), totalBundleSize })
     },
-    sortingFn: (rowA, rowB) => {
-      return sortSizeColumn({
-        rowA: rowA.original.size,
-        rowB: rowB.original.size,
-        totalBundleSize,
-      })
-    },
   }),
   columnHelper.accessor('changeOverTime', {
     header: 'Change over time',
-    sortUndefined: -1,
-    sortingFn: (rowA, rowB) => {
-      return sortChangeOverTimeColumn({
-        rowA: rowA.original.changeOverTime?.change?.size.uncompress,
-        rowB: rowB.original.changeOverTime?.change?.size.uncompress,
-      })
-    },
+    enableSorting: false,
     cell: ({ getValue, row }) => {
       const value = getValue()
       let prevSize = 0
@@ -204,37 +188,77 @@ const Loader = ({ className }: LoaderProps) => (
   </div>
 )
 
+function LoadMoreTrigger({ intersectionRef }: { intersectionRef: any }) {
+  return (
+    <span
+      ref={intersectionRef}
+      className="invisible relative top-[-200px] block leading-[0]"
+    >
+      Loading
+    </span>
+  )
+}
+
 export const AssetsTable: React.FC = () => {
+  const { ref, inView } = useInView()
   const tableRef = useRef<HTMLDivElement | null>(null)
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [sorting, setSorting] = useState([{ id: 'size', desc: true }])
   const { provider, owner, repo, branch, bundle } = useParams<URLParams>()
 
-  const { data, isLoading } = useBundleAssetsTable({
+  let ordering: 'NAME' | 'SIZE' | 'TYPE' | undefined
+  const sortColumn = sorting?.[0]?.id
+  if (sortColumn === 'name') {
+    ordering = 'NAME'
+  } else if (sortColumn === 'size' || sortColumn === 'loadTime') {
+    ordering = 'SIZE'
+  } else if (sortColumn === 'extension') {
+    ordering = 'TYPE'
+  }
+
+  let orderingDirection: 'ASC' | 'DESC' | undefined
+  if (sorting[0]?.desc) {
+    orderingDirection = 'DESC'
+  } else if (!sorting[0]?.desc) {
+    orderingDirection = 'ASC'
+  }
+
+  const {
+    data,
+    fetchNextPage,
+    isInitialLoading,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useBundleAssetsTable({
     provider,
     owner,
     repo,
     branch,
     bundle,
+    ordering,
+    orderingDirection,
   })
 
-  const tableData: Array<Column> = useMemo(() => {
-    if (data?.assets) {
-      return data.assets.map((asset) => ({
-        name: asset.name,
-        extension: asset.extension,
-        size: asset.bundleData.size.uncompress,
-        loadTime: asset.bundleData.loadTime.threeG,
-        changeOverTime: asset.measurements ?? undefined,
-      }))
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage()
     }
+  }, [fetchNextPage, hasNextPage, inView])
 
-    return []
+  const tableData: Array<Column> = useMemo(() => {
+    // filtering like this will remove any null values, TS just has trouble with it
+    return data.assets.filter(Boolean).map((asset) => ({
+      name: asset!.name,
+      extension: asset!.extension,
+      size: asset!.bundleData.size.uncompress,
+      loadTime: asset!.bundleData.loadTime.threeG,
+      changeOverTime: asset!.measurements ?? undefined,
+    }))
   }, [data])
 
   const columns = useMemo(
-    () => createColumns(data?.bundleUncompressSize ?? null),
-    [data?.bundleUncompressSize]
+    () => createColumns(data?.bundleData?.size?.uncompress ?? null),
+    [data?.bundleData?.size?.uncompress]
   )
 
   const table = useReactTable({
@@ -251,147 +275,153 @@ export const AssetsTable: React.FC = () => {
     getExpandedRowModel: getExpandedRowModel(),
   })
 
-  if (data?.assets?.length === 0) {
+  if (data?.assets?.length === 0 && !isInitialLoading) {
     return <EmptyTable />
   }
 
   return (
-    <div className="filelistui" data-highlight-row="onHover">
-      <div ref={tableRef}>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <div key={headerGroup.id} className="filelistui-thead">
-            {headerGroup.headers.map((header) => {
-              return (
-                <div
-                  key={header.id}
-                  data-sortable="true"
-                  onClick={header.column.getToggleSortingHandler()}
-                  className={cs({
-                    'w-full @4xl/filelist:w-5/12': header.column.id === 'name',
-                    'w-2/12 hidden @4xl/filelist:block text-right':
-                      header.column.id === 'loadTime' ||
-                      header.column.id === 'size',
-                    'w-1/12 hidden @4xl/filelist:flex grow justify-end':
-                      header.column.id === 'changeOverTime',
-                    'w-1/12 hidden @4xl/filelist:block text-right':
-                      header.column.id === 'extension',
-                  })}
-                  {...(isNumericValue(header.id)
-                    ? {
-                        'data-type': 'numeric',
-                      }
-                    : {})}
-                >
+    <>
+      <div className="filelistui" data-highlight-row="onHover">
+        <div ref={tableRef}>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <div key={headerGroup.id} className="filelistui-thead">
+              {headerGroup.headers.map((header) => {
+                return (
                   <div
-                    className={cs('flex gap-1 items-center', {
-                      'flex-row-reverse justify-end': header.id === 'name',
-                      'flex-row justify-end': header.id !== 'name',
+                    key={header.id}
+                    data-sortable="true"
+                    onClick={header.column.getToggleSortingHandler()}
+                    className={cs({
+                      'w-full @4xl/filelist:w-5/12':
+                        header.column.id === 'name',
+                      'w-2/12 hidden @4xl/filelist:block text-right':
+                        header.column.id === 'loadTime' ||
+                        header.column.id === 'size',
+                      'w-1/12 hidden @4xl/filelist:flex grow justify-end':
+                        header.column.id === 'changeOverTime',
+                      'w-1/12 hidden @4xl/filelist:block text-right':
+                        header.column.id === 'extension',
                     })}
+                    {...(isNumericValue(header.id)
+                      ? {
+                          'data-type': 'numeric',
+                        }
+                      : {})}
                   >
-                    <span
-                      className="text-ds-blue-darker"
-                      data-sort-direction={header.column.getIsSorted()}
+                    <div
+                      className={cs('flex gap-1 items-center', {
+                        'flex-row-reverse justify-end': header.id === 'name',
+                        'flex-row justify-end': header.id !== 'name',
+                      })}
                     >
-                      <Icon name="arrowUp" size="sm" />
-                    </span>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        ))}
-        {isLoading ? (
-          <Loader />
-        ) : (
-          <div>
-            {table.getRowModel().rows.map((row, i) => {
-              const isExpanded = row.getIsExpanded()
-              return (
-                <Fragment key={row.getValue('name')}>
-                  <div
-                    className={cs('filelistui-row', {
-                      'bg-ds-gray-primary sticky': isExpanded,
-                    })}
-                  >
-                    {row.getVisibleCells().map((cell) => {
-                      let changeOverTime = '-'
-                      if (
-                        row.original.changeOverTime &&
-                        'change' in row.original.changeOverTime &&
-                        row.original.changeOverTime.change
-                      ) {
-                        changeOverTime = formatSizeToString(
-                          row.original.changeOverTime.change.size.uncompress
-                        )
-                      }
-
-                      return (
-                        <div
-                          key={cell.id}
-                          {...(isNumericValue(cell.column.id)
-                            ? {
-                                'data-type': 'numeric',
-                              }
-                            : {})}
-                          className={cs({
-                            'w-full @4xl/filelist:w-5/12':
-                              cell.column.id === 'name',
-                            'w-2/12 hidden @4xl/filelist:block text-right':
-                              cell.column.id === 'loadTime' ||
-                              cell.column.id === 'size',
-                            'w-1/12 hidden @4xl/filelist:flex grow justify-end gap-2':
-                              cell.column.id === 'changeOverTime',
-                            'w-1/12 hidden @4xl/filelist:block text-right':
-                              cell.column.id === 'extension',
-                          })}
-                        >
-                          <div className="mb-6 flex justify-between gap-8 @md/filelist:justify-start @4xl/filelist:hidden">
-                            <div>Type: {row.original.extension}</div>
-                            <div>
-                              Estimated load time (3G):{' '}
-                              <span className="font-mono">
-                                {formatTimeToString(row.original.loadTime)}
-                              </span>
-                            </div>
-                            <div>
-                              Size:{' '}
-                              <span className="font-mono">
-                                {genSizeColumn({
-                                  size: row.original.size,
-                                  totalBundleSize: data?.bundleUncompressSize,
-                                })}
-                              </span>
-                            </div>
-                            <div>Change over time: {changeOverTime}</div>
-                          </div>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                  <div data-expanded={row.getIsExpanded()}>
-                    {row.getIsExpanded() ? (
-                      <Suspense
-                        fallback={<Loader className="bg-ds-gray-secondary" />}
-                        key={i}
+                      <span
+                        className="text-ds-blue-darker"
+                        data-sort-direction={header.column.getIsSorted()}
                       >
-                        <ModulesTable asset={row.getValue('name')} />
-                      </Suspense>
-                    ) : null}
+                        <Icon name="arrowUp" size="sm" />
+                      </span>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </div>
                   </div>
-                </Fragment>
-              )
-            })}
-          </div>
-        )}
+                )
+              })}
+            </div>
+          ))}
+          {isInitialLoading ? (
+            <Loader />
+          ) : (
+            <div>
+              {table.getRowModel().rows.map((row, i) => {
+                const isExpanded = row.getIsExpanded()
+                return (
+                  <Fragment key={row.getValue('name')}>
+                    <div
+                      className={cs('filelistui-row', {
+                        'bg-ds-gray-primary sticky': isExpanded,
+                      })}
+                    >
+                      {row.getVisibleCells().map((cell) => {
+                        let changeOverTime = '-'
+                        if (
+                          row.original.changeOverTime &&
+                          'change' in row.original.changeOverTime &&
+                          row.original.changeOverTime.change
+                        ) {
+                          changeOverTime = formatSizeToString(
+                            row.original.changeOverTime.change.size.uncompress
+                          )
+                        }
+
+                        return (
+                          <div
+                            key={cell.id}
+                            {...(isNumericValue(cell.column.id)
+                              ? {
+                                  'data-type': 'numeric',
+                                }
+                              : {})}
+                            className={cs({
+                              'w-full @4xl/filelist:w-5/12':
+                                cell.column.id === 'name',
+                              'w-2/12 hidden @4xl/filelist:block text-right':
+                                cell.column.id === 'loadTime' ||
+                                cell.column.id === 'size',
+                              'w-1/12 hidden @4xl/filelist:flex grow justify-end gap-2':
+                                cell.column.id === 'changeOverTime',
+                              'w-1/12 hidden @4xl/filelist:block text-right':
+                                cell.column.id === 'extension',
+                            })}
+                          >
+                            <div className="mb-6 flex justify-between gap-8 @md/filelist:justify-start @4xl/filelist:hidden">
+                              <div>Type: {row.original.extension}</div>
+                              <div>
+                                Estimated load time (3G):{' '}
+                                <span className="font-mono">
+                                  {formatTimeToString(row.original.loadTime)}
+                                </span>
+                              </div>
+                              <div>
+                                Size:{' '}
+                                <span className="font-mono">
+                                  {genSizeColumn({
+                                    size: row.original.size,
+                                    totalBundleSize:
+                                      data?.bundleData?.size?.uncompress,
+                                  })}
+                                </span>
+                              </div>
+                              <div>Change over time: {changeOverTime}</div>
+                            </div>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <div data-expanded={row.getIsExpanded()}>
+                      {row.getIsExpanded() ? (
+                        <Suspense
+                          fallback={<Loader className="bg-ds-gray-secondary" />}
+                          key={i}
+                        >
+                          <ModulesTable asset={row.getValue('name')} />
+                        </Suspense>
+                      ) : null}
+                    </div>
+                  </Fragment>
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+      {isFetchingNextPage ? <Loader /> : null}
+      {hasNextPage ? <LoadMoreTrigger intersectionRef={ref} /> : null}
+    </>
   )
 }
