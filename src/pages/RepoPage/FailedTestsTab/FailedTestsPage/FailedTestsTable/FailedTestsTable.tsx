@@ -15,6 +15,7 @@ import { useParams } from 'react-router-dom'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
+import { Tooltip } from 'ui/Tooltip'
 
 import {
   OrderingDirection,
@@ -84,12 +85,14 @@ export function getSortingOption(
 const isNumericValue = (value: string) =>
   value === 'avgDuration' ||
   value === 'failureRate' ||
-  value === 'commitsFailed'
+  value === 'commitsFailed' ||
+  value === 'flakeRate'
 
 interface FailedTestsColumns {
   name: string
   avgDuration: number | null
   failureRate: number | null
+  flakeRate?: number | null
   commitsFailed: number | null
   updatedAt: string
 }
@@ -102,7 +105,7 @@ const columns = [
     cell: (info) => info.renderValue(),
   }),
   columnHelper.accessor('avgDuration', {
-    header: () => 'Average duration',
+    header: () => 'Last duration',
     cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
   }),
   columnHelper.accessor('failureRate', {
@@ -111,6 +114,38 @@ const columns = [
       const value = (info.renderValue() ?? 0) * 100
       const isInt = Number.isInteger(info.renderValue())
       return isInt ? `${value}%` : `${value.toFixed(2)}%`
+    },
+  }),
+  columnHelper.accessor('flakeRate', {
+    header: () => (
+      <div className="flex items-center gap-1">
+        Flake rate
+        <Icon
+          name="informationCircle"
+          size="sm"
+          className="text-ds-gray-tertiary"
+        />
+      </div>
+    ),
+    cell: (info) => {
+      return (
+        <Tooltip delayDuration={0} skipDelayDuration={100}>
+          <Tooltip.Root>
+            <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
+              {info.renderValue() ? `${info.renderValue()}%` : '9%'}
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content
+                className="bg-ds-gray-primary p-2 text-xs text-ds-gray-octonary"
+                side="right"
+              >
+                Passed 2,999, failed 100
+                <Tooltip.Arrow className="size-4 fill-ds-gray-primary" />
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip>
+      )
     },
   }),
   columnHelper.accessor('commitsFailed', {
