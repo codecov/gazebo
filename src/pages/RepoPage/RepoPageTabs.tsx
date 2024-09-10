@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { ALL_BRANCHES } from 'services/navigation'
 import { useRepo, useRepoOverview } from 'services/repo'
 import Badge from 'ui/Badge'
 import TabNavigation from 'ui/TabNavigation'
@@ -50,15 +51,16 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   let coverageLocation = undefined
   if (matchTree) {
     coverageLocation = {
-      pathname:
-        branch && branch !== 'All branches'
-          ? `/${provider}/${owner}/${repo}/tree/${branch}`
-          : `/${provider}/${owner}/${repo}/tree`,
+      pathname: branch
+        ? branch === ALL_BRANCHES
+          ? `/${provider}/${owner}/${repo}`
+          : `/${provider}/${owner}/${repo}/tree/${branch}`
+        : `/${provider}/${owner}/${repo}/tree`,
     }
   } else if (matchFlags || matchComponents) {
     coverageLocation = {
       pathname:
-        branch && branch !== 'All branches'
+        branch && branch !== ALL_BRANCHES
           ? `/${provider}/${owner}/${repo}/tree/${branch}`
           : `/${provider}/${owner}/${repo}`,
     }

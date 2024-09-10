@@ -2,7 +2,11 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { useBranchHasCommits } from 'services/branches'
-import { useLocationParams, useNavLinks } from 'services/navigation'
+import {
+  ALL_BRANCHES,
+  useLocationParams,
+  useNavLinks,
+} from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
@@ -13,7 +17,6 @@ import Spinner from 'ui/Spinner'
 import { filterItems, statusEnum } from './enums'
 import { useCommitsTabBranchSelector } from './hooks'
 
-const ALL_BRANCHES = 'All branches'
 const CommitsTable = lazy(() => import('./CommitsTable'))
 
 const Loader = () => (

@@ -5,7 +5,7 @@ import config from 'config'
 
 // Note to Terry, when we have more time automate all paths to pass through query search params.
 
-const ALL_BRANCHES = 'All branches'
+export const ALL_BRANCHES = 'All branches'
 export function useNavLinks() {
   const {
     branch: b,
