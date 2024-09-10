@@ -29,7 +29,8 @@
       "assets/*": ["./src/assets/*"],
       "custom-testing-library": ["./src/custom-testing-library"],
       "config": ["./src/config"],
-      "sentry": ["./src/sentry"]
+      "sentry": ["./src/sentry"],
+      "types": ["./src/types"]
     }
   },
   "include": [
