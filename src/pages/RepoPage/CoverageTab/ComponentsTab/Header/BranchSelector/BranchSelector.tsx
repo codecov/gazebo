@@ -32,9 +32,7 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
     owner,
     repo,
   })
-  const [selectedBranch, setSelectedBranch] = useState<string>(
-    branch ?? overview?.defaultBranch ?? ''
-  )
+  const selectedBranch = branch ?? overview?.defaultBranch ?? ''
   const [branchSearchTerm, setBranchSearchTerm] = useState<string>('')
   const history = useHistory()
   const { componentsTab } = useNavLinks()
@@ -91,7 +89,6 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
           items={branchList?.branches ?? []}
           value={decodedBranch ? { name: decodedBranch } : selection}
           onChange={(branch: Branch) => {
-            setSelectedBranch(branch?.name)
             history.push(
               componentsTab.path({
                 branch: encodeURIComponent(branch?.name),

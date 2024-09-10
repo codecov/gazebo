@@ -168,10 +168,9 @@ export function useNavLinks() {
         }
       ) => {
         if (branch) {
-          if (branch === ALL_BRANCHES) {
-            return `/${provider}/${owner}/${repo}/commits/${encodeURIComponent(ALL_BRANCHES)}`
-          }
-          return `/${provider}/${owner}/${repo}/commits/${branch}`
+          return branch === ALL_BRANCHES
+            ? `/${provider}/${owner}/${repo}/commits/${encodeURIComponent(ALL_BRANCHES)}`
+            : `/${provider}/${owner}/${repo}/commits/${branch}`
         }
         return `/${provider}/${owner}/${repo}/commits`
       },
