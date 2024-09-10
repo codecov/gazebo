@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import z from 'zod'
 
+import { OrderingDirection } from 'types'
+
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -86,7 +88,7 @@ interface FetchRepoComponentsArgs {
     components?: string[]
   }
   branch?: string
-  orderingDirection: 'ASC' | 'DESC'
+  orderingDirection: OrderingDirection
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
   after: string
   before: string
@@ -173,7 +175,7 @@ interface useRepoComponentsArgs {
   filters?: {
     components?: string[]
   }
-  orderingDirection?: 'ASC' | 'DESC'
+  orderingDirection?: OrderingDirection
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
   after: string
   before: string

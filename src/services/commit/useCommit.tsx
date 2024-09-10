@@ -2,6 +2,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ParsedQs } from 'qs'
 import { z } from 'zod'
 
+import { OrderingDirection } from 'types'
+
 import {
   FirstPullRequestSchema,
   MissingBaseCommitSchema,
@@ -300,7 +302,7 @@ interface UseCommitArgs {
     flags?: Array<string> | Array<ParsedQs>
     components?: Array<string> | Array<ParsedQs>
     ordering?: {
-      direction?: 'DESC' | 'ASC'
+      direction?: OrderingDirection
       parameter?:
         | 'FILE_NAME'
         | 'CHANGE_COVERAGE'
