@@ -12,11 +12,7 @@ import FailedTestsTab from './FailedTestsTab'
 
 jest.mock('./GitHubActions', () => () => 'GitHub Actions tab')
 jest.mock('./CodecovCLI', () => () => 'Codecov CLI tab')
-jest.mock(
-  './FailedTestsTable/FailedTestsTable.tsx',
-  () => () => 'Failed Tests Table'
-)
-jest.mock('./FailedTestsTable/BranchSelector', () => () => 'Branch Selector')
+jest.mock('./FailedTestsPage', () => () => 'Failed Tests Page')
 jest.mock('../ActivationAlert', () => () => 'Activation Alert')
 
 jest.mock('shared/useRedirect')
@@ -240,21 +236,12 @@ describe('FailedTestsTab', () => {
       expect(content).toBeInTheDocument()
     })
 
-    it('renders Failed Tests Table', async () => {
+    it('renders Failed Tests Page', async () => {
       setup({ testEnabled: true })
       render(<FailedTestsTab />, {
         wrapper: wrapper('/gh/codecov/cool-repo/tests'),
       })
-      const content = await screen.findByText(/Failed Tests Table/)
-      expect(content).toBeInTheDocument()
-    })
-
-    it('renders Branch Selector', async () => {
-      setup({ testEnabled: true })
-      render(<FailedTestsTab />, {
-        wrapper: wrapper('/gh/codecov/cool-repo/tests'),
-      })
-      const content = await screen.findByText(/Branch Selector/)
+      const content = await screen.findByText(/Failed Tests Page/)
       expect(content).toBeInTheDocument()
     })
   })
@@ -274,7 +261,7 @@ describe('FailedTestsTab', () => {
       expect(activationAlert).toBeInTheDocument()
     })
 
-    it('renders failed tests table if public repo', async () => {
+    it('renders failed tests page if public repo', async () => {
       setup({
         testEnabled: true,
         isCurrentUserActivated: false,
@@ -284,7 +271,7 @@ describe('FailedTestsTab', () => {
         wrapper: wrapper('/gh/codecov/cool-repo/tests'),
       })
 
-      const activationAlert = await screen.findByText(/Failed Tests Table/)
+      const activationAlert = await screen.findByText(/Failed Tests Page/)
       expect(activationAlert).toBeInTheDocument()
     })
   })
