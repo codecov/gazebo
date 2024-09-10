@@ -26,7 +26,7 @@ const mockRepoOverview = {
   },
 }
 
-const mockedPagedBundleAssets = {
+const mockedBundleAssets = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -125,9 +125,9 @@ describe('useBundleAssetsTable', () => {
     const queryVarMock = jest.fn()
 
     server.use(
-      graphql.query('PagedBundleAssets', (req, res, ctx) => {
+      graphql.query('BundleAssets', (req, res, ctx) => {
         queryVarMock(req.variables)
-        return res(ctx.status(200), ctx.data(mockedPagedBundleAssets))
+        return res(ctx.status(200), ctx.data(mockedBundleAssets))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoOverview))

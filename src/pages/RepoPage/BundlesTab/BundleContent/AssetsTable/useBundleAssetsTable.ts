@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { usePagedBundleAssets } from 'services/bundleAnalysis/usePagedBundleAssets'
+import { useBundleAssets } from 'services/bundleAnalysis/useBundleAssets'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import { createTimeSeriesQueryVars, Trend } from 'shared/utils/timeseriesCharts'
@@ -52,7 +52,7 @@ export function useBundleAssetsTable({
     }
   }, [overview?.oldestCommitAt, today, trend])
 
-  return usePagedBundleAssets({
+  return useBundleAssets({
     provider,
     owner,
     repo,
