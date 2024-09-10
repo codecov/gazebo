@@ -231,8 +231,6 @@ describe('usePagedBundleAssets', () => {
             repo: 'codecov',
             branch: 'main',
             bundle: 'test-bundle',
-            ordering: 'NAME',
-            orderingDirection: 'ASC',
           }),
         {
           wrapper,
@@ -255,8 +253,6 @@ describe('usePagedBundleAssets', () => {
               repo: 'codecov',
               branch: 'main',
               bundle: 'test-bundle',
-              ordering: 'NAME',
-              orderingDirection: 'ASC',
             }),
           {
             wrapper,
@@ -295,8 +291,6 @@ describe('usePagedBundleAssets', () => {
               repo: 'codecov',
               branch: 'main',
               bundle: 'test-bundle',
-              ordering: 'NAME',
-              orderingDirection: 'ASC',
             }),
           {
             wrapper,
@@ -324,8 +318,6 @@ describe('usePagedBundleAssets', () => {
             repo: 'codecov',
             branch: 'main',
             bundle: 'test-bundle',
-            ordering: 'NAME',
-            orderingDirection: 'ASC',
           }),
         {
           wrapper,
@@ -362,8 +354,6 @@ describe('usePagedBundleAssets', () => {
             repo: 'codecov',
             branch: 'main',
             bundle: 'test-bundle',
-            ordering: 'NAME',
-            orderingDirection: 'ASC',
           }),
         {
           wrapper,
@@ -402,8 +392,6 @@ describe('usePagedBundleAssets', () => {
             repo: 'codecov',
             branch: 'main',
             bundle: 'test-bundle',
-            ordering: 'NAME',
-            orderingDirection: 'ASC',
           }),
         {
           wrapper,
@@ -442,8 +430,6 @@ describe('usePagedBundleAssets', () => {
             repo: 'codecov',
             branch: 'main',
             bundle: 'test-bundle',
-            ordering: 'NAME',
-            orderingDirection: 'ASC',
           }),
         {
           wrapper,

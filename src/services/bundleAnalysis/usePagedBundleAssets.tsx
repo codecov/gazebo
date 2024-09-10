@@ -207,8 +207,8 @@ interface UsePagedBundleAssetsArgs {
     reportGroups?: string[]
     loadTypes?: string[]
   }
-  orderingDirection: 'ASC' | 'DESC'
-  ordering: 'NAME' | 'SIZE' | 'TYPE'
+  orderingDirection?: 'ASC' | 'DESC'
+  ordering?: 'NAME' | 'SIZE' | 'TYPE'
   opts?: {
     enabled?: boolean
     suspense?: boolean
