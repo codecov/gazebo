@@ -75,6 +75,8 @@ function Routes({
             path={[
               path,
               `${path}/flags`,
+              /* flags tab does not actually do anything with the branch but since it is one of multiple tabs
+              in the coverage page, it is better user experience to persist the selected branch */
               `${path}/flags/:branch`,
               `${path}/components`,
               `${path}/components/:branch`,
