@@ -202,8 +202,8 @@ describe('useBundleAssets', () => {
                               ? false
                               : true,
                             endCursor: req.variables.assetsAfter
-                              ? 'aa'
-                              : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+                              ? 'cursor-1'
+                              : 'cursor-2',
                           },
                         },
                       },
@@ -238,7 +238,19 @@ describe('useBundleAssets', () => {
       )
 
       await waitFor(() => {
-        expect(result.current.data?.assets).toEqual([node1, node2])
+        expect(result.current.data).toEqual({
+          pageParams: [undefined],
+          pages: [
+            {
+              assets: [node1, node2],
+              bundleData: { size: { uncompress: 12 } },
+              pageInfo: {
+                hasNextPage: true,
+                endCursor: 'cursor-2',
+              },
+            },
+          ],
+        })
       })
     })
 
@@ -261,8 +273,17 @@ describe('useBundleAssets', () => {
 
         await waitFor(() => {
           expect(result.current.data).toEqual({
-            assets: [node1, node2],
-            bundleData: { size: { uncompress: 12 } },
+            pageParams: [undefined],
+            pages: [
+              {
+                assets: [node1, node2],
+                bundleData: { size: { uncompress: 12 } },
+                pageInfo: {
+                  hasNextPage: true,
+                  endCursor: 'cursor-2',
+                },
+              },
+            ],
           })
         })
 
@@ -273,8 +294,25 @@ describe('useBundleAssets', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
-            assets: [node1, node2, node3],
-            bundleData: { size: { uncompress: 12 } },
+            pageParams: [undefined, 'cursor-2'],
+            pages: [
+              {
+                assets: [node1, node2],
+                bundleData: { size: { uncompress: 12 } },
+                pageInfo: {
+                  endCursor: 'cursor-2',
+                  hasNextPage: true,
+                },
+              },
+              {
+                assets: [node3],
+                bundleData: { size: { uncompress: 12 } },
+                pageInfo: {
+                  endCursor: 'cursor-1',
+                  hasNextPage: false,
+                },
+              },
+            ],
           })
         )
       })
@@ -301,7 +339,16 @@ describe('useBundleAssets', () => {
         await waitFor(() => expect(result.current.isLoading).toBeFalsy())
 
         await waitFor(() => {
-          expect(result.current.data).toEqual({ assets: [], bundleData: null })
+          expect(result.current.data).toEqual({
+            pageParams: [undefined],
+            pages: [
+              {
+                assets: [],
+                bundleData: null,
+                pageInfo: null,
+              },
+            ],
+          })
         })
       })
     })
@@ -328,7 +375,10 @@ describe('useBundleAssets', () => {
       await waitFor(() => expect(result.current.isLoading).toBeFalsy())
 
       await waitFor(() => {
-        expect(result.current.data).toEqual({ assets: [], bundleData: null })
+        expect(result.current.data).toEqual({
+          pageParams: [undefined],
+          pages: [{ assets: [], bundleData: null, pageInfo: null }],
+        })
       })
     })
   })
