@@ -78,14 +78,14 @@ const BranchSelector = () => {
   }
 
   return (
-    <div className="md:w-64">
+    <div className="flex flex-col gap-1 md:w-80">
       <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
         <span className="text-ds-gray-quinary">
           <Icon name="branch" size="sm" variant="developer" />
         </span>
         Branch Context
       </h3>
-      <span className="min-w-64 text-sm">
+      <span className="min-w-52 text-sm">
         <Select
           // @ts-expect-error - Select has some TS issues because it's still written in JS
           dataMarketing="branch-selector-test-results-tab"
