@@ -231,7 +231,7 @@ export const useBundleAssets = ({
   ordering,
   opts,
 }: UseBundleAssetsArgs) => {
-  const { data, ...rest } = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: [
       'BundleAssets',
       provider,
@@ -333,12 +333,4 @@ export const useBundleAssets = ({
     enabled: opts?.enabled !== undefined ? opts.enabled : true,
     suspense: !!opts?.suspense,
   })
-
-  return {
-    data: {
-      assets: data?.pages.map((page) => page.assets).flat() ?? [],
-      bundleData: data?.pages?.[0]?.bundleData ?? null,
-    },
-    ...rest,
-  }
 }
