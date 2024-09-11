@@ -250,20 +250,29 @@ export const AssetsTable: React.FC = () => {
   }, [fetchNextPage, hasNextPage, inView])
 
   const tableData: Array<Column> = useMemo(() => {
-    // filtering like this will remove any null values, TS just has trouble with it
-    return data.assets.filter(Boolean).map((asset) => ({
-      name: asset!.name,
-      extension: asset!.extension,
-      size: asset!.bundleData.size.uncompress,
-      loadTime: asset!.bundleData.loadTime.threeG,
-      changeOverTime: asset!.measurements ?? undefined,
-    }))
+    if (data) {
+      return data?.pages
+        .map((page) => page.assets)
+        .flat()
+        .filter(Boolean)
+        .map((asset) => ({
+          name: asset!.name,
+          extension: asset!.extension,
+          size: asset!.bundleData.size.uncompress,
+          loadTime: asset!.bundleData.loadTime.threeG,
+          changeOverTime: asset!.measurements ?? undefined,
+        }))
+    }
+
+    return []
   }, [data])
 
-  const columns = useMemo(
-    () => createColumns(data?.bundleData?.size?.uncompress ?? null),
-    [data?.bundleData?.size?.uncompress]
+  const bundleSize = useMemo(
+    () => data?.pages?.[0]?.bundleData?.size?.uncompress ?? null,
+    [data?.pages]
   )
+
+  const columns = useMemo(() => createColumns(bundleSize), [bundleSize])
 
   const table = useReactTable({
     columns,
@@ -279,7 +288,7 @@ export const AssetsTable: React.FC = () => {
     getExpandedRowModel: getExpandedRowModel(),
   })
 
-  if (data?.assets?.length === 0 && !isInitialLoading) {
+  if (tableData.length === 0 && !isInitialLoading) {
     return <EmptyTable />
   }
 
@@ -392,8 +401,7 @@ export const AssetsTable: React.FC = () => {
                                 <span className="font-mono">
                                   {genSizeColumn({
                                     size: row.original.size,
-                                    totalBundleSize:
-                                      data?.bundleData?.size?.uncompress,
+                                    totalBundleSize: bundleSize,
                                   })}
                                 </span>
                               </div>

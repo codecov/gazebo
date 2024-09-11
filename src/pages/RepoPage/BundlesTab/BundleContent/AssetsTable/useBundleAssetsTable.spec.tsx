@@ -153,40 +153,49 @@ describe('useBundleAssetsTable', () => {
     )
 
     const expectedResult = {
-      assets: [
+      pageParams: [undefined],
+      pages: [
         {
+          assets: [
+            {
+              bundleData: {
+                loadTime: {
+                  highSpeed: 2,
+                  threeG: 1,
+                },
+                size: {
+                  gzip: 4,
+                  uncompress: 3,
+                },
+              },
+              extension: 'js',
+              measurements: {
+                change: {
+                  size: {
+                    uncompress: 5,
+                  },
+                },
+                measurements: [
+                  {
+                    avg: 6,
+                    timestamp: '2022-10-10T11:59:59',
+                  },
+                ],
+              },
+              name: 'asset-1',
+            },
+          ],
           bundleData: {
-            loadTime: {
-              highSpeed: 2,
-              threeG: 1,
-            },
             size: {
-              gzip: 4,
-              uncompress: 3,
+              uncompress: 12,
             },
           },
-          extension: 'js',
-          measurements: {
-            change: {
-              size: {
-                uncompress: 5,
-              },
-            },
-            measurements: [
-              {
-                avg: 6,
-                timestamp: '2022-10-10T11:59:59',
-              },
-            ],
+          pageInfo: {
+            endCursor: null,
+            hasNextPage: false,
           },
-          name: 'asset-1',
         },
       ],
-      bundleData: {
-        size: {
-          uncompress: 12,
-        },
-      },
     }
     await waitFor(() => expect(result.current.data).toEqual(expectedResult))
   })
