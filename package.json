@@ -31,6 +31,7 @@
       "prettier --write"
     ],
     "*.{js,jsx,ts,tsx}": [
+      "yarn generate-icons:webpack",
       "eslint --fix --no-ignore --max-warnings=0 -c .eslintrc.json"
     ]
   },
