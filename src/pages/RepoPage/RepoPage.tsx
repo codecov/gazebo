@@ -291,7 +291,7 @@ function RepoPage() {
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
   const isRepoPrivate =
-    !!repoData?.repository?.private ?? repoData?.isRepoPrivate
+    !!repoData?.repository?.private || !!repoData?.isRepoPrivate
   if (!refetchEnabled && !isRepoActivated) {
     setRefetchEnabled(true)
   }

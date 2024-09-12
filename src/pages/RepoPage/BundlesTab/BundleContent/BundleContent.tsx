@@ -9,13 +9,13 @@ import Spinner from 'ui/Spinner'
 import { ToggleElement } from 'ui/ToggleElement'
 
 import AssetsTable from './AssetsTable'
+import { EmptyTable as AssetEmptyTable } from './AssetsTable/EmptyTable'
 import { BundleChart } from './BundleChart'
 import { BundleDetails, NoDetails } from './BundleDetails'
 import BundleSelection from './BundleSelection'
 import InfoBanner from './InfoBanner'
 import { TrendDropdown } from './TrendDropdown'
 
-const AssetEmptyTable = lazy(() => import('./AssetsTable/EmptyTable'))
 const ErrorBanner = lazy(() => import('./ErrorBanner'))
 
 interface URLParams {

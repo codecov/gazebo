@@ -1,4 +1,4 @@
-import { sanitize } from 'dompurify'
+import dompurify from 'dompurify'
 import noop from 'lodash/noop'
 import PropTypes from 'prop-types'
 import { Controller, useForm } from 'react-hook-form'
@@ -43,7 +43,7 @@ function YAML({ owner }) {
   }
 
   const onSubmit = handleSubmit((formData) => {
-    return mutateAsync({ yaml: sanitize(formData.editor) })
+    return mutateAsync({ yaml: dompurify.sanitize(formData.editor) })
       .then(({ data, errors }) => {
         if (data?.setYamlOnOwner?.error) {
           formError(data?.setYamlOnOwner?.error.message)
