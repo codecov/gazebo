@@ -17,10 +17,12 @@ export const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
 export const COOKIE_SESSION_EXPIRY = 'session_expiry'
 
 export function removeReactAppPrefix(obj) {
-  // in .env file, the variable must start with REACT_APP_
+  // in .env file, the variable must start with VITE_ or REACT_APP_
   // to be injected in the application, so we remove that
   // prefix to be more convenient for us
-  const keys = mapKeys(obj, (_, key) => key.replace('REACT_APP_', ''))
+  const keys = mapKeys(obj, (_, key) =>
+    key.replace('VITE_', '').replace('REACT_APP_', '')
+  )
 
   if ('ENV' in keys) {
     keys['IS_SELF_HOSTED'] = keys['ENV'].toLowerCase() === 'enterprise'
