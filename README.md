@@ -93,8 +93,8 @@ You must prepend env variables with `REACT_APP`.
 
 ```
 PROXY_TO=https://stage-api.codecov.dev
-REACT_APPMY_CUSTOM_VAR=foobar
-REACT_APPBASE_URL=http://localhost
+REACT_APP_MY_CUSTOM_VAR=foobar
+REACT_APP_BASE_URL=http://localhost
 ```
 
 `/src/somefile.js`
