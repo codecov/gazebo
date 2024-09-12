@@ -15,4 +15,4 @@ import { ReactComponent as setting } from './setting.svg'
 import { ReactComponent as signOut } from './signOut.svg'
 import { ReactComponent as search } from './search.svg'
 
-export { angleDown, angleUp, arrowLeft, ban, check, creditCard, exclamationCircle, infoCircle, times, chevronRight, chevronLeft, fileAlt, hamburger, setting, signOut, search }
+export { angleDown, angleUp, arrowLeft, ban, check, chevronLeft, chevronRight, creditCard, exclamationCircle, fileAlt, hamburger, infoCircle, search, setting, signOut, times }
