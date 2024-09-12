@@ -28,7 +28,6 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md,json}": [
-      "yarn generate-icons:webpack",
       "prettier --write"
     ],
     "*.{js,jsx,ts,tsx}": [
