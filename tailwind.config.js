@@ -11,10 +11,10 @@ function withOpacity(variableName) {
 
 module.exports = {
   content: [
-    './src/**/*.{css,js,jsx,ts,tsx}',
-    './src/*.{css,js,jsx,ts,tsx}',
-    './public/*.html',
     './index.html',
+    './public/*.html',
+    './src/*.{css,js,jsx,ts,tsx}',
+    './src/**/*.{css,js,jsx,ts,tsx}',
   ],
   mode: 'jit',
   darkMode: 'selector',
