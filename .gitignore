@@ -55,3 +55,8 @@ codecov
 # VSCode
 .vscode
 
+# ignore icon index files as they're genreated when executing
+src/old_ui/Icon/svg/index.jsx
+src/ui/Icon/svg/developer/index.jsx
+src/ui/Icon/svg/outline/index.jsx
+src/ui/Icon/svg/solid/index.jsx
