@@ -14,6 +14,7 @@ module.exports = {
     './src/**/*.{css,js,jsx,ts,tsx}',
     './src/*.{css,js,jsx,ts,tsx}',
     './public/*.html',
+    './index.html',
   ],
   mode: 'jit',
   darkMode: 'selector',
