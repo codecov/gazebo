@@ -7,12 +7,12 @@ const { resolve } = require('path')
 const SentryPlugin = sentryWebpackPlugin({
   applicationKey: 'gazebo',
   org: process.env.SENTRY_ORG || 'codecov',
-  project: process.env.VITE_SENTRY_PROJECT || 'gazebo',
+  project: process.env.REACT_APP_SENTRY_PROJECT || 'gazebo',
   authToken: process.env.SENTRY_AUTH_TOKEN,
   release: {
     name: process.env.GAZEBO_SHA,
     deploy: {
-      env: process.env.VITE_SENTRY_ENVIRONMENT || process.env.NODE_ENV,
+      env: process.env.REACT_APP_SENTRY_ENVIRONMENT || process.env.NODE_ENV,
     },
   },
 })

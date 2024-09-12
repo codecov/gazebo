@@ -10,14 +10,6 @@ describe('config', () => {
       expect(removeReactAppPrefix(obj)).toEqual({ TEST_ENV: 'test env' })
     })
 
-    it('removes VITE prefix', () => {
-      const obj = {
-        VITE_TEST_ENV: 'test env',
-      }
-
-      expect(removeReactAppPrefix(obj)).toEqual({ TEST_ENV: 'test env' })
-    })
-
     describe('sets IS_SELF_HOSTED to boolean', () => {
       it('sets to true', () => {
         const obj = {
