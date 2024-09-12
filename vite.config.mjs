@@ -5,7 +5,7 @@ import { ViteEjsPlugin } from 'vite-plugin-ejs'
 import svgr from 'vite-plugin-svgr'
 
 export default defineConfig((config) => {
-  const env = loadEnv(config.mode, process.cwd(), "REACT_APP_")
+  const env = loadEnv(config.mode, process.cwd(), 'REACT_APP')
 
   const envWithProcessPrefix = {
     'process.env': `${JSON.stringify(env)}`,
