@@ -15,9 +15,9 @@ export default defineConfig((config) => {
 
   const plugins = []
   if (
-    process.env.UPLOAD_CODECOV_BUNDLE_STATS &&
     process.env.CODECOV_API_URL &&
-    process.env.CODECOV_ORG_TOKEN
+    process.env.CODECOV_ORG_TOKEN &&
+    process.env.UPLOAD_CODECOV_BUNDLE_STATS
   ) {
     plugins.push(
       codecovVitePlugin({
@@ -29,7 +29,9 @@ export default defineConfig((config) => {
     )
   }
 
-  if (config.mode === 'production') {
+  const runSentryPlugin =
+    config.mode === 'production' && !!process.env.SENTRY_AUTH_TOKEN
+  if (runSentryPlugin) {
     plugins.push(
       sentryVitePlugin({
         applicationKey: 'gazebo',
@@ -54,7 +56,7 @@ export default defineConfig((config) => {
     },
     build: {
       outDir: 'build',
-      sourcemap: config.mode === 'production',
+      sourcemap: runSentryPlugin,
     },
     define: envWithProcessPrefix,
     plugins: [
