@@ -1,7 +1,16 @@
+import * as Sentry from '@sentry/react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import OktaErrorBanners from './OktaErrorBanners'
+
+jest.mock('@sentry/react', () => {
+  const originalModule = jest.requireActual('@sentry/react')
+  return {
+    ...originalModule,
+    captureMessage: jest.fn(),
+  }
+})
 
 const wrapper =
   (
@@ -73,6 +82,19 @@ describe('OktaErrorBanners', () => {
       /An unknown error occurred. Please try again or contact support./
     )
     expect(content).toBeInTheDocument()
+  })
+
+  it('should capture unknown error message', () => {
+    render(<OktaErrorBanners />, {
+      wrapper: wrapper(['/gh/codecov?error=unknown']),
+    })
+
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(
+      'Unknown Okta error: unknown',
+      {
+        fingerprint: ['unknown-okta-error'],
+      }
+    )
   })
 
   it('should render dismiss button', () => {

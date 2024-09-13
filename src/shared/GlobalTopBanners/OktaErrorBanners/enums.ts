@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/react'
+
 const ErrorType = {
   UnauthorizedClient: 'unauthorized_client',
   AccessDenied: 'access_denied',
@@ -41,5 +43,10 @@ export const getErrorMessage = (error: string): string => {
   if (error in errorMessages) {
     return errorMessages[error as keyof typeof errorMessages]
   }
+
+  Sentry.captureMessage(`Unknown Okta error: ${error}`, {
+    fingerprint: ['unknown-okta-error'],
+  })
+
   return 'An unknown error occurred. Please try again or contact support.'
 }
