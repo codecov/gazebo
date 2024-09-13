@@ -26,14 +26,9 @@ function OktaBanners() {
   if (!owner || !oktaConfig?.enabled || data?.owner?.isUserOktaAuthenticated)
     return null
 
-  return oktaConfig?.enforced ? (
+  return (
     <div className="flex flex-col gap-2">
-      <OktaEnforcedBanner />
-      <OktaErrorBanners />
-    </div>
-  ) : (
-    <div className="flex flex-col gap-2">
-      <OktaEnabledBanner />
+      {oktaConfig?.enforced ? <OktaEnforcedBanner /> : <OktaEnabledBanner />}
       <OktaErrorBanners />
     </div>
   )
