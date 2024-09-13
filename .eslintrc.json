@@ -29,9 +29,6 @@
     "testing-library/prefer-user-event": "warn",
     "testing-library/prefer-wait-for": "warn",
     "testing-library/prefer-explicit-assert": "warn",
-    "complexity": "off",
-    "max-statements": "off",
-    "max-nested-callbacks": ["error", 2],
     "react/prefer-stateless-function": ["error"],
     "react/prop-types": [
       "warn",
@@ -259,7 +256,6 @@
         "*.test.tsx"
       ],
       "rules": {
-        "max-nested-callbacks": "off",
         "react/display-name": "off",
         "camelcase": "off"
       }
