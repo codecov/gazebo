@@ -20,14 +20,9 @@ export function useCancel({ customerId, isModalOpen }, options = {}) {
     push(`/plan/${provider}/${owner}`)
   }
 
-  console.log({ baremetricsBlocked, isLoading })
-
   function cancelPlan() {
     mutate(null, {
       onSuccess: () => {
-        console.log(
-          'This thing is not being called, callback isnt being triggered from baremetrics side'
-        )
         sendUserToPlan()
       },
       onError: () =>
