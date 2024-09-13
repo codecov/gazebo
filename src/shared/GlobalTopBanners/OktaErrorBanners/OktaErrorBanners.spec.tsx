@@ -64,6 +64,17 @@ describe('OktaErrorBanners', () => {
     expect(content).toBeInTheDocument()
   })
 
+  it('should render default error message for unknown error', () => {
+    render(<OktaErrorBanners />, {
+      wrapper: wrapper(['/gh/codecov?error=unknown']),
+    })
+
+    const content = screen.getByText(
+      /An unknown error occurred. Please try again or contact support./
+    )
+    expect(content).toBeInTheDocument()
+  })
+
   it('should render dismiss button', () => {
     render(<OktaErrorBanners />, {
       wrapper: wrapper(['/gh/codecov?error=invalid_request']),

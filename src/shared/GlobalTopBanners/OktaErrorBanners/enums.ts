@@ -1,18 +1,18 @@
-enum ErrorType {
-  UnauthorizedClient = 'unauthorized_client',
-  AccessDenied = 'access_denied',
-  UnsupportedResponseType = 'unsupported_response_type',
-  UnsupportedResponseMode = 'unsupported_response_mode',
-  InvalidScope = 'invalid_scope',
-  ServerError = 'server_error',
-  TemporarilyUnavailable = 'temporarily_unavailable',
-  InvalidClient = 'invalid_client',
-  LoginRequired = 'login_required',
-  InvalidRequest = 'invalid_request',
-  UserCanceledRequest = 'user_canceled_request',
-}
+const ErrorType = {
+  UnauthorizedClient: 'unauthorized_client',
+  AccessDenied: 'access_denied',
+  UnsupportedResponseType: 'unsupported_response_type',
+  UnsupportedResponseMode: 'unsupported_response_mode',
+  InvalidScope: 'invalid_scope',
+  ServerError: 'server_error',
+  TemporarilyUnavailable: 'temporarily_unavailable',
+  InvalidClient: 'invalid_client',
+  LoginRequired: 'login_required',
+  InvalidRequest: 'invalid_request',
+  UserCanceledRequest: 'user_canceled_request',
+} as const
 
-export const errorMessages: Record<ErrorType, string> = {
+const errorMessages = {
   [ErrorType.UnauthorizedClient]:
     "Unauthorized client: The client isn't authorized to request an authorization code using this method. Please reach out to your administrator.",
   [ErrorType.AccessDenied]:
@@ -35,12 +35,11 @@ export const errorMessages: Record<ErrorType, string> = {
     "Invalid request: The request parameters aren't valid. Please try again or contact support.",
   [ErrorType.UserCanceledRequest]:
     'Request canceled: User canceled the social sign-in request. Please try again if this was unintentional.',
-}
+} as const
 
 export const getErrorMessage = (error: string): string => {
-  const errorType = error as ErrorType
-  return (
-    errorMessages[errorType] ||
-    'An unknown error occurred. Please try again or contact support.'
-  )
+  if (error in errorMessages) {
+    return errorMessages[error as keyof typeof errorMessages]
+  }
+  return 'An unknown error occurred. Please try again or contact support.'
 }
