@@ -23,7 +23,7 @@ import Sparkline from 'ui/Sparkline'
 import Spinner from 'ui/Spinner'
 
 import { genSizeColumn } from './assetTableHelpers'
-import EmptyTable from './EmptyTable'
+import { EmptyTable } from './EmptyTable'
 import ModulesTable from './ModulesTable'
 import { useBundleAssetsTable } from './useBundleAssetsTable'
 

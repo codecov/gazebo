@@ -33,14 +33,6 @@
       "types": ["./src/types"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.cjs",
-    "**/*.mjs",
-    "**/*.js",
-    "**/*.jsx",
-    "global.d.ts"
-  ],
+  "include": ["src"],
   "exclude": ["node_modules", "dist", "public"]
 }

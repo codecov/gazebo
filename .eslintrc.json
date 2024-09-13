@@ -10,6 +10,11 @@
     "plugin:storybook/recommended",
     "plugin:tailwindcss/recommended"
   ],
+  "ignorePatterns": [
+    "!src/**/*.{js,jsx,ts,tsx}",
+    "src/old_ui/Icon/svg/*.jsx",
+    "src/ui/Icon/svg/**/*.jsx"
+  ],
   "rules": {
     "react/react-in-jsx-scope": "off",
     "testing-library/no-node-access": "warn",

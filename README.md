@@ -87,7 +87,7 @@ Gazebo supports [env files](https://create-react-app.dev/docs/adding-custom-envi
 
 To override environment variables when working locally create a `.env.local` file, this file is ignored by git.
 
-You must prepend env variables with `REACT_APP_`.
+You must prepend env variables with `REACT_APP`.
 
 `.env.local`
 

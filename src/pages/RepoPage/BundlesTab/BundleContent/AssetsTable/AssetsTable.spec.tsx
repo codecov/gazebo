@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -7,8 +7,6 @@ import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { AssetsTable, ChangeOverTime } from './AssetsTable'
-
-jest.mock('./EmptyTable', () => () => <div>EmptyTable</div>)
 
 const mockAssets = (hasNextPage = true) => {
   const asset1 = {
@@ -292,8 +290,14 @@ describe('AssetsTable', () => {
       setup({ isEmptyBundles: true })
       render(<AssetsTable />, { wrapper })
 
-      const table = await screen.findByText('EmptyTable')
-      expect(table).toBeInTheDocument()
+      const tableRoles = await screen.findAllByRole('row')
+      expect(tableRoles).toHaveLength(2)
+
+      const tableCells = await within(tableRoles[1]!).findAllByRole('cell')
+      expect(tableCells).toHaveLength(4)
+      tableCells.forEach((cell) => {
+        expect(cell).toHaveTextContent('-')
+      })
     })
   })
 
@@ -302,8 +306,14 @@ describe('AssetsTable', () => {
       setup({ isMissingHeadReport: true })
       render(<AssetsTable />, { wrapper })
 
-      const table = await screen.findByText('EmptyTable')
-      expect(table).toBeInTheDocument()
+      const tableRoles = await screen.findAllByRole('row')
+      expect(tableRoles).toHaveLength(2)
+
+      const tableCells = await within(tableRoles[1]!).findAllByRole('cell')
+      expect(tableCells).toHaveLength(4)
+      tableCells.forEach((cell) => {
+        expect(cell).toHaveTextContent('-')
+      })
     })
   })
 
