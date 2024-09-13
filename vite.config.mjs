@@ -1,6 +1,7 @@
+import { codecovVitePlugin } from '@codecov/vite-plugin'
+import react from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import react from '@vitejs/plugin-react'
 import { ViteEjsPlugin } from 'vite-plugin-ejs'
 import svgr from 'vite-plugin-svgr'
 
@@ -9,6 +10,18 @@ export default defineConfig((config) => {
 
   const envWithProcessPrefix = {
     'process.env': `${JSON.stringify(env)}`,
+  }
+
+  const plugins = []
+  if (process.env.CODECOV_ORG_TOKEN && process.env.CODECOV_API_URL) {
+    plugins.push(
+      codecovVitePlugin({
+        enableBundleAnalysis: true,
+        bundleName: process.env.CODECOV_BUNDLE_NAME,
+        apiUrl: process.env.CODECOV_API_URL,
+        uploadToken: process.env.CODECOV_ORG_TOKEN,
+      })
+    )
   }
 
   return {

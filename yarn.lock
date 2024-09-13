@@ -2231,6 +2231,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@codecov/bundler-plugin-core@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@codecov/bundler-plugin-core@npm:1.0.1"
+  dependencies:
+    "@actions/core": "npm:^1.10.1"
+    "@actions/github": "npm:^6.0.0"
+    chalk: "npm:4.1.2"
+    semver: "npm:^7.5.4"
+    unplugin: "npm:^1.10.1"
+    zod: "npm:^3.22.4"
+  checksum: 10c0/4a2fbcb0d33ada3c5f0335fae555cc534b46ee8e9ae4f72976b894d1d0c21954ba6309c8ee4b4d759a203674557360932c94c40f766368dfaf5195d77fe6feb8
+  languageName: node
+  linkType: hard
+
+"@codecov/vite-plugin@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@codecov/vite-plugin@npm:1.0.1"
+  dependencies:
+    "@codecov/bundler-plugin-core": "npm:^1.0.1"
+    unplugin: "npm:^1.10.1"
+  peerDependencies:
+    vite: 4.x || 5.x
+  checksum: 10c0/e6fb5d924fd17cd4ac429c5c5279cc3ff13c25853826aa0cd70468916475d09a163df2669f3a646d7738a4659203de7ccf397ec9834813eef5e013cf4db9c72a
+  languageName: node
+  linkType: hard
+
 "@codecov/webpack-plugin@npm:^1.0.0":
   version: 1.0.0
   resolution: "@codecov/webpack-plugin@npm:1.0.0"
@@ -11268,6 +11294,7 @@ __metadata:
   dependencies:
     "@babel/plugin-proposal-private-property-in-object": "npm:^7.21.11"
     "@chromatic-com/storybook": "npm:^1"
+    "@codecov/vite-plugin": "npm:^1.0.1"
     "@codecov/webpack-plugin": "npm:^1.0.0"
     "@craco/craco": "npm:^7.1.0"
     "@hookform/resolvers": "npm:^2.8.5"

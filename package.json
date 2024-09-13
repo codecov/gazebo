@@ -105,6 +105,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@chromatic-com/storybook": "^1",
+    "@codecov/vite-plugin": "^1.0.1",
     "@codecov/webpack-plugin": "^1.0.0",
     "@craco/craco": "^7.1.0",
     "@sentry/webpack-plugin": "^2.22.2",
