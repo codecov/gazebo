@@ -406,7 +406,7 @@ describe('CommitsTab', () => {
 
     describe('user selects from the branch selector', () => {
       describe('user selects All branches', () => {
-        it.only('updates the button with the selected branch', async () => {
+        it('updates the button with the selected branch', async () => {
           const { user } = setup({ hasNextPage: false, returnBranch: 'main' })
           repoPageRender({
             renderCommits: () => (
