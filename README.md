@@ -58,13 +58,6 @@ We are using the [Testing Library](https://testing-library.com/docs/react-testin
 
 will lint the whole project.
 
-We have some extra rules to keep the code more maintainable:
-
-- Complexity of max 5 per function: to prevent functions with a lot of of different outcome
-- 10 max statements per function: to prevent a function doing too much
-- 2 level of nested callbacks: to prevent complexity within nested functions
-- Mandatory prop-types: as we don't have a Type system, this rule will help us have documented components
-
 ## Build the application for production
 
 ```bash
