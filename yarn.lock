@@ -4294,6 +4294,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/babel-plugin-component-annotate@npm:2.22.4":
+  version: 2.22.4
+  resolution: "@sentry/babel-plugin-component-annotate@npm:2.22.4"
+  checksum: 10c0/35bd4ce07cf581ee1443e9411bf1a492ee9eb260d919c4efe70b7866adc0db77220a3c1a7941a9a24f03eb17c90d8f25226138f1d87cc82c83996565c7487a70
+  languageName: node
+  linkType: hard
+
 "@sentry/browser@npm:8.24.0":
   version: 8.24.0
   resolution: "@sentry/browser@npm:8.24.0"
@@ -4322,6 +4329,22 @@ __metadata:
     magic-string: "npm:0.30.8"
     unplugin: "npm:1.0.1"
   checksum: 10c0/e12aa15d2e7d8d06f2e260d63a84fe4e5c68375004d2d9ef6b86675796da056c158538d7f37d91aa81695dbe16663b5c2c9c9c4efa2eacdd4318d5fac16e1e57
+  languageName: node
+  linkType: hard
+
+"@sentry/bundler-plugin-core@npm:2.22.4":
+  version: 2.22.4
+  resolution: "@sentry/bundler-plugin-core@npm:2.22.4"
+  dependencies:
+    "@babel/core": "npm:^7.18.5"
+    "@sentry/babel-plugin-component-annotate": "npm:2.22.4"
+    "@sentry/cli": "npm:^2.33.1"
+    dotenv: "npm:^16.3.1"
+    find-up: "npm:^5.0.0"
+    glob: "npm:^9.3.2"
+    magic-string: "npm:0.30.8"
+    unplugin: "npm:1.0.1"
+  checksum: 10c0/abec341d5648964e99d269a87ec2c1e6b583ec6a7a8497d1da4a8c502d1348b60b0697849990f82e17987121b9eaab196f8963a203398b43680fc03d6ca6b2f8
   languageName: node
   linkType: hard
 
@@ -4449,6 +4472,16 @@ __metadata:
   dependencies:
     "@sentry/types": "npm:8.24.0"
   checksum: 10c0/5a9da3c5fbfac886a365fc48d467954a63c0d15bd049cc2a61d24d0146c8f6e8c88f1e57e2666384d834b440d6cc4abdc986d3dda57f7418a310e2032bdbecdc
+  languageName: node
+  linkType: hard
+
+"@sentry/vite-plugin@npm:^2.22.4":
+  version: 2.22.4
+  resolution: "@sentry/vite-plugin@npm:2.22.4"
+  dependencies:
+    "@sentry/bundler-plugin-core": "npm:2.22.4"
+    unplugin: "npm:1.0.1"
+  checksum: 10c0/9c1c2ef152052d634e78ed67b1d33c8313127a8904362508fe8e7a890a8d8fd9c258073f00df652b6a07f8cec925acb5a5fe58336bec25600fc76cfeae34e5c0
   languageName: node
   linkType: hard
 
@@ -11306,6 +11339,7 @@ __metadata:
     "@radix-ui/react-radio-group": "npm:^1.1.3"
     "@radix-ui/react-tooltip": "npm:^1.1.2"
     "@sentry/react": "npm:^8.24.0"
+    "@sentry/vite-plugin": "npm:^2.22.4"
     "@sentry/webpack-plugin": "npm:^2.22.2"
     "@storybook/addon-a11y": "npm:^8.2.6"
     "@storybook/addon-actions": "npm:^8.2.6"

@@ -108,6 +108,7 @@
     "@codecov/vite-plugin": "^1.0.1",
     "@codecov/webpack-plugin": "^1.0.0",
     "@craco/craco": "^7.1.0",
+    "@sentry/vite-plugin": "^2.22.4",
     "@sentry/webpack-plugin": "^2.22.2",
     "@storybook/addon-a11y": "^8.2.6",
     "@storybook/addon-actions": "^8.2.6",
