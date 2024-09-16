@@ -1009,4 +1009,79 @@ describe('useRepoTabs', () => {
       })
     })
   })
+
+  describe('tests tab', () => {
+    describe('when test analytics is enabled', () => {
+      it('adds the tests link to the array', async () => {
+        setup({ testAnalyticsEnabled: true })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        const expectedTab = [
+          {
+            pageName: 'failedTests',
+            children: expect.anything(),
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+    })
+
+    describe('when test analytics is disabled', () => {
+      it('does not add the tests link to the array', async () => {
+        setup({ testAnalyticsEnabled: false })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        const expectedTab = [
+          {
+            pageName: 'failedTestsOnboarding',
+            children: expect.anything(),
+          },
+        ]
+
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+    })
+
+    describe('when test analytics is disabled and user is not part of the org', () => {
+      it('does not add the tests link to the array', async () => {
+        setup({ testAnalyticsEnabled: false, isCurrentUserPartOfOrg: false })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        const expectedTab = [
+          {
+            pageName: 'failedTestsOnboarding',
+            children: expect.anything(),
+          },
+        ]
+
+        await waitFor(() =>
+          expect(result.current).not.toEqual(
+            expect.arrayContaining(expectedTab)
+          )
+        )
+      })
+    })
+  })
 })

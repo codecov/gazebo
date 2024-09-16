@@ -813,6 +813,26 @@ describe('RepoPage', () => {
           const failedTests = await screen.findByText('FailedTestsTab')
           expect(failedTests).toBeInTheDocument()
         })
+
+        it('redirects to repo page if test analytics is disabled and user is not part of the org', async () => {
+          const { queryClient } = setup({
+            isRepoActive: true,
+            hasRepoData: true,
+            isRepoActivated: true,
+            testAnalyticsEnabled: false,
+            isCurrentUserPartOfOrg: false,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tests',
+            }),
+          })
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
+          )
+        })
       })
 
       describe('testing config path', () => {

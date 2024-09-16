@@ -38,6 +38,7 @@ interface URLParams {
 }
 
 interface RoutesProps {
+  isCurrentUserPartOfOrg: boolean
   isRepoActivated: boolean
   isRepoActive: boolean
   coverageEnabled?: boolean
@@ -49,6 +50,7 @@ interface RoutesProps {
 }
 
 function Routes({
+  isCurrentUserPartOfOrg,
   isRepoActivated,
   isRepoActive,
   coverageEnabled,
@@ -135,17 +137,19 @@ function Routes({
             <BundleOnboarding />
           </SentryRoute>
         ) : null}
-        <SentryRoute
-          path={[
-            `${path}/tests`,
-            `${path}/tests/new`,
-            `${path}/tests/new/codecov-cli`,
-            `${path}/tests/:branch`,
-          ]}
-          exact
-        >
-          <FailedTestsTab />
-        </SentryRoute>
+        {isCurrentUserPartOfOrg || testAnalyticsEnabled ? (
+          <SentryRoute
+            path={[
+              `${path}/tests`,
+              `${path}/tests/new`,
+              `${path}/tests/new/codecov-cli`,
+              `${path}/tests/:branch`,
+            ]}
+            exact
+          >
+            <FailedTestsTab />
+          </SentryRoute>
+        ) : null}
         {productEnabled && userAuthorizedtoViewRepo ? (
           <SentryRoute
             path={[`${path}/commits`, `${path}/commits/:branch`]}
@@ -207,17 +211,19 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
-      <SentryRoute
-        path={[
-          `${path}/tests`,
-          `${path}/tests/new`,
-          `${path}/tests/new/codecov-cli`,
-          `${path}/tests/:branch`,
-        ]}
-        exact
-      >
-        <FailedTestsTab />
-      </SentryRoute>
+      {isCurrentUserPartOfOrg || testAnalyticsEnabled ? (
+        <SentryRoute
+          path={[
+            `${path}/tests`,
+            `${path}/tests/new`,
+            `${path}/tests/new/codecov-cli`,
+            `${path}/tests/:branch`,
+          ]}
+          exact
+        >
+          <FailedTestsTab />
+        </SentryRoute>
+      ) : null}
       {jsOrTsPresent ? (
         <SentryRoute
           path={[
@@ -310,6 +316,7 @@ function RepoPage() {
           isRepoPrivate={isRepoPrivate}
           isCurrentUserActivated={isCurrentUserActivated}
           testAnalyticsEnabled={repoOverview?.testAnalyticsEnabled}
+          isCurrentUserPartOfOrg={repoData?.isCurrentUserPartOfOrg || false}
         />
       </Suspense>
     </div>
