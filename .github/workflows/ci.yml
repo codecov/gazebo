@@ -318,7 +318,7 @@ jobs:
       - name: Run tests
         run: |
           TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
-          yarn test:ci:new --maxWorkers=2 $TESTS
+          yarn test:ci:new --minWorkers=1 --maxWorkers=2 $TESTS
         env:
           JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
           TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes-vitest.outputs.test_list_array)[matrix.runner-index]) }}
@@ -330,21 +330,21 @@ jobs:
           token: ${{ secrets.CODECOV_ORG_TOKEN }}
           url: ${{ secrets.CODECOV_URL }}
 
-      - name: Upload test results to codecov
+      - name: Upload test results to codecov staging
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
           token: ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
           url: ${{ secrets.CODECOV_STAGING_URL }}
 
-      - name: Upload test results to codecov
+      - name: Upload test results to codecov QA
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
           token: ${{ secrets.CODECOV_QA_TOKEN }}
           url: ${{ secrets.CODECOV_QA_URL }}
 
-      - name: Upload test results to codecov
+      - name: Upload test results to codecov public QA
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
