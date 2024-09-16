@@ -320,7 +320,7 @@ jobs:
           TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
           yarn test:ci:new --minWorkers=1 --maxWorkers=2 $TESTS
         env:
-          JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+          ENABLE_TEST_REPORTER: true
           TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes-vitest.outputs.test_list_array)[matrix.runner-index]) }}
 
       - name: Upload test results to codecov
