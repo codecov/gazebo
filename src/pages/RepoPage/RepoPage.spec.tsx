@@ -839,7 +839,7 @@ describe('RepoPage', () => {
             isRepoActive: false,
             hasRepoData: true,
             isRepoActivated: false,
-            testAnalyticsEnabled: true,
+            testAnalyticsEnabled: false,
             isCurrentUserPartOfOrg: false,
           })
           render(<RepoPage />, {
@@ -850,7 +850,7 @@ describe('RepoPage', () => {
           })
 
           await waitFor(() =>
-            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
           )
 
           const failedTests = screen.queryByText('FailedTestsTab')
