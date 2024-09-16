@@ -39,7 +39,7 @@ const errorMessages = {
     'Request canceled: User canceled the social sign-in request. Please try again if this was unintentional.',
 } as const
 
-export const getErrorMessage = (error: string): string => {
+export const getOktaErrorMessage = (error: string): string => {
   if (error in errorMessages) {
     return errorMessages[error as keyof typeof errorMessages]
   }

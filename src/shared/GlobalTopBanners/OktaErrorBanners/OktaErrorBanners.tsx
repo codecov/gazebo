@@ -3,7 +3,7 @@ import { useLocation, useParams } from 'react-router-dom'
 import Icon from 'ui/Icon'
 import TopBanner from 'ui/TopBanner'
 
-import { getErrorMessage } from './enums'
+import { getOktaErrorMessage } from './enums'
 
 interface URLParams {
   owner?: string
@@ -18,7 +18,7 @@ const OktaErrorBanners = () => {
 
   if (!owner || !error) return null
 
-  const errorMessage = getErrorMessage(error)
+  const errorMessage = getOktaErrorMessage(error)
 
   return (
     <TopBanner variant="error">
