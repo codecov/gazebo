@@ -165,7 +165,7 @@ jobs:
           echo test_list_array=$(echo ${TEST_LIST} | jq -c '[_nwise(${{ env.TEST_SPLIT_NUMBER }})]') >> $GITHUB_OUTPUT
 
   test-craco:
-    name: 'Test Runner #${{ matrix.runner-index }}'
+    name: 'Test Runner #${{ matrix.runner-index }} - CRACO'
     needs: [install, codecovstartup, runner-indexes-craco]
     runs-on: ubuntu-latest
     strategy:
@@ -258,7 +258,7 @@ jobs:
 
   runner-indexes-vitest:
     runs-on: ubuntu-latest
-    name: Generate runner indexes Vite
+    name: Generate runner indexes Vitest
     needs: install
     env:
       TEST_SPLIT_NUMBER: 80
@@ -286,7 +286,7 @@ jobs:
           echo test_list_array=$(echo ${TEST_LIST} | jq -c '[_nwise(${{ env.TEST_SPLIT_NUMBER }})]') >> $GITHUB_OUTPUT
 
   test-vitest:
-    name: 'Test Runner #${{ matrix.runner-index }}'
+    name: 'Test Runner #${{ matrix.runner-index }} - Vitest'
     needs: [install, codecovstartup, runner-indexes-vitest]
     runs-on: ubuntu-latest
     strategy:
