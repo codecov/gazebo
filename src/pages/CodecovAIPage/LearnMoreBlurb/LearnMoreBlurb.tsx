@@ -1,6 +1,7 @@
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 
+// TODO: Update link to docs once they are available
 function LearnMoreBlurb() {
   return (
     <div className="-mt-2">

@@ -15,13 +15,13 @@ const CodecovAICommands: React.FC = () => {
               <span className="bg-gray-200 font-semibold">
                 @codecov-ai-reviewer test
               </span>{' '}
-              --the bot will generate tests for the PR.
+              --the assistant will generate tests for the PR.
             </li>
             <li>
               <span className="bg-gray-200 font-semibold">
                 @codecov-ai-reviewer review
               </span>{' '}
-              --the bot will review the PR and make suggestions.
+              --the assistant will review the PR and make suggestions.
             </li>
           </ul>
         </Card.Content>

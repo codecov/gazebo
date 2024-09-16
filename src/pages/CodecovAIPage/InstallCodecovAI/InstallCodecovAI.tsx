@@ -17,13 +17,16 @@ const InstallCodecovAI: React.FC = () => {
     <div>
       <Card>
         <Card.Header>
-          <Card.Title size="base">Install the Codecov AI on Github</Card.Title>
+          <Card.Title size="base">
+            Install the Codecov AI app on Github
+          </Card.Title>
         </Card.Header>
         <Card.Content>
-          To enable the Codecov AI bot in your GitHub organization, or on
+          To enable the Codecov AI assistant in your GitHub organization, or on
           specific repositories, you need to install the Codecov AI GitHub App
-          Integration. This will allow the bot to analyze pull requests, provide
-          insights, and generate new tests to help increase your code coverage.
+          Integration. This will allow the assistant to analyze pull requests,
+          provide insights, and generate new tests to help increase your code
+          coverage.
           <div className="mt-4 flex">
             <Button
               to={{

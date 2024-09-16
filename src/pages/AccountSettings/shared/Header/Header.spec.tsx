@@ -5,16 +5,20 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useFlags } from 'shared/featureFlags'
+
 import Header from './Header'
 
 jest.mock('config')
-
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
+jest.mock('shared/featureFlags')
+
+const mockedUseFlags = useFlags as jest.Mock
 
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/account/gh/codecov']}>
       <Route path="/account/:provider/:owner">{children}</Route>
@@ -35,12 +39,9 @@ afterAll(() => {
 })
 
 describe('Header', () => {
-  function setup(
-    { isSelfHosted = false } = {
-      isSelfHosted: false,
-    }
-  ) {
+  function setup(isSelfHosted: boolean = false) {
     config.IS_SELF_HOSTED = isSelfHosted
+    mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: true })
   }
 
   describe('when users is part of the org', () => {
@@ -102,7 +103,7 @@ describe('Header', () => {
 
   describe('when rendered with enterprise account', () => {
     it('does not render link to members page', () => {
-      setup({ isSelfHosted: true })
+      setup(true)
       render(<Header />, { wrapper })
 
       expect(
@@ -113,7 +114,7 @@ describe('Header', () => {
     })
 
     it('does not render link to plan page', () => {
-      setup({ isSelfHosted: true })
+      setup(true)
       render(<Header />, { wrapper })
 
       expect(
@@ -121,6 +122,30 @@ describe('Header', () => {
           name: /plan/i,
         })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('ai features tab', () => {
+    it('does not render tab when flag is off', () => {
+      mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: false })
+      render(<Header />, { wrapper })
+
+      expect(
+        screen.queryByRole('link', {
+          name: /Codecov AI beta/i,
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders tab when flag is on', () => {
+      setup()
+      render(<Header />, { wrapper })
+
+      expect(
+        screen.getByRole('link', {
+          name: /Codecov AI beta/i,
+        })
+      ).toBeInTheDocument()
     })
   })
 })
