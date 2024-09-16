@@ -3,12 +3,17 @@ import { lazy, Suspense } from 'react'
 
 import config from 'config'
 
+import { useFlags } from 'shared/featureFlags'
 import Badge from 'ui/Badge'
 import TabNavigation from 'ui/TabNavigation'
 
 const TrialReminder = lazy(() => import('./TrialReminder'))
 
 function Tabs() {
+  const { codecovAiFeaturesTab } = useFlags({
+    codecovAiFeaturesTab: false,
+  })
+
   return (
     <TabNavigation
       tabs={[
@@ -20,14 +25,18 @@ function Tabs() {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        {
-          pageName: 'codecovAI',
-          children: (
-            <>
-              Codecov AI <Badge>beta</Badge>{' '}
-            </>
-          ),
-        },
+        ...(codecovAiFeaturesTab
+          ? [
+              {
+                pageName: 'codecovAI',
+                children: (
+                  <>
+                    Codecov AI <Badge>beta</Badge>{' '}
+                  </>
+                ),
+              },
+            ]
+          : []),
         ...(config.IS_SELF_HOSTED
           ? []
           : [{ pageName: 'membersTab' }, { pageName: 'planTab' }]),

@@ -32,7 +32,6 @@ function UploadsCard() {
             <Fragment key={title}>
               {title !== NONE && (
                 <span className="sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary px-4 py-1 text-sm font-semibold">
-                  asfsa
                   {title}
                 </span>
               )}
