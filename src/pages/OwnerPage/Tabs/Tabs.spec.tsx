@@ -7,7 +7,6 @@ import config from 'config'
 
 import { useFlags } from 'shared/featureFlags'
 
-
 import Tabs from './Tabs'
 
 jest.mock('./TrialReminder', () => () => 'TrialReminder')
