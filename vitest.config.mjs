@@ -11,6 +11,7 @@ const VitestConfig = defineConfig((config) => {
   return {
     test: {
       coverage: {
+        include: ['src/**/*'],
         provider: 'v8',
         reporters: [['text'], ['html', { outputFile: 'coverage/index.html' }]],
         reportOnFailure: true,
