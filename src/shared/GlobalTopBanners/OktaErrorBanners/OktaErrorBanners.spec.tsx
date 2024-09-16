@@ -93,6 +93,9 @@ describe('OktaErrorBanners', () => {
       'Unknown Okta error: unknown',
       {
         fingerprint: ['unknown-okta-error'],
+        tags: {
+          error: 'unknown',
+        },
       }
     )
   })

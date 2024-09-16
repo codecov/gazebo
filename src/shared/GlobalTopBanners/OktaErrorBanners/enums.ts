@@ -46,6 +46,9 @@ export const getOktaErrorMessage = (error: string): string => {
 
   Sentry.captureMessage(`Unknown Okta error: ${error}`, {
     fingerprint: ['unknown-okta-error'],
+    tags: {
+      error: error,
+    },
   })
 
   return 'An unknown error occurred. Please try again or contact support.'
