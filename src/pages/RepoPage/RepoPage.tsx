@@ -75,7 +75,11 @@ function Routes({
             path={[
               path,
               `${path}/flags`,
+              /* flags tab does not actually do anything with the branch but since it is one of multiple tabs
+              in the coverage page, it is better user experience to persist the selected branch */
+              `${path}/flags/:branch`,
               `${path}/components`,
+              `${path}/components/:branch`,
               `${path}/blob/:ref/:path+`,
               `${path}/tree/:branch`,
               `${path}/tree/:branch/:path+`,
@@ -143,7 +147,10 @@ function Routes({
           <FailedTestsTab />
         </SentryRoute>
         {productEnabled && userAuthorizedtoViewRepo ? (
-          <SentryRoute path={`${path}/commits`} exact>
+          <SentryRoute
+            path={[`${path}/commits`, `${path}/commits/:branch`]}
+            exact
+          >
             <CommitsTab />
           </SentryRoute>
         ) : null}
@@ -284,7 +291,7 @@ function RepoPage() {
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
   const isRepoPrivate =
-    !!repoData?.repository?.private ?? repoData?.isRepoPrivate
+    !!repoData?.repository?.private || !!repoData?.isRepoPrivate
   if (!refetchEnabled && !isRepoActivated) {
     setRefetchEnabled(true)
   }

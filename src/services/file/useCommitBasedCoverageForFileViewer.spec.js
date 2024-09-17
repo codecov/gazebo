@@ -200,7 +200,7 @@ describe('useCommitBasedCoverageForFileViewer', () => {
       setup({ mainCoverageData, coverageWithFlags, selectedFlags })
     })
 
-    it.only('returns commit file coverage', async () => {
+    it('returns commit file coverage', async () => {
       const { result } = renderHook(
         () =>
           useCommitBasedCoverageForFileViewer({

@@ -5,8 +5,10 @@ import config from 'config'
 
 // Note to Terry, when we have more time automate all paths to pass through query search params.
 
+export const ALL_BRANCHES = 'All branches'
 export function useNavLinks() {
   const {
+    branch: b,
     provider: p,
     owner: o,
     repo: r,
@@ -163,12 +165,20 @@ export function useNavLinks() {
     },
     commits: {
       path: (
-        { provider = p, owner = o, repo = r } = {
+        { provider = p, owner = o, repo = r, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
+          branch: b,
         }
-      ) => `/${provider}/${owner}/${repo}/commits`,
+      ) => {
+        if (branch) {
+          return branch === ALL_BRANCHES
+            ? `/${provider}/${owner}/${repo}/commits/${encodeURIComponent(ALL_BRANCHES)}`
+            : `/${provider}/${owner}/${repo}/commits/${branch}`
+        }
+        return `/${provider}/${owner}/${repo}/commits`
+      },
       text: 'Commits',
     },
     commit: {
@@ -341,26 +351,33 @@ export function useNavLinks() {
     },
     overview: {
       path: (
-        { provider = p, owner = o, repo = r } = {
+        { provider = p, owner = o, repo = r, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
+          branch: b,
         }
-      ) => `/${provider}/${owner}/${repo}`,
+      ) =>
+        `/${provider}/${owner}/${repo}${branch && branch !== ALL_BRANCHES ? `/tree/${branch}` : ''}`,
       text: 'Overview',
     },
     coverage: {
       path: (
-        { provider = p, owner = o, repo = r, queryParams = {} } = {
+        { provider = p, owner = o, repo = r, queryParams = {}, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
           queryParams: {},
+          branch: b,
         }
       ) => {
         let query = ''
         if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+
+        if (branch && branch !== ALL_BRANCHES) {
+          return `/${provider}/${owner}/${repo}/tree/${branch}${query}`
         }
 
         return `/${provider}/${owner}/${repo}${query}`
@@ -370,25 +387,28 @@ export function useNavLinks() {
     },
     flagsTab: {
       path: (
-        { provider = p, owner = o, repo = r } = {
+        { provider = p, owner = o, repo = r, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
+          branch: b,
         }
-      ) => `/${provider}/${owner}/${repo}/flags`,
+      ) =>
+        `/${provider}/${owner}/${repo}/flags${branch && branch !== ALL_BRANCHES ? `/${branch}` : ''}`,
       isExternalLink: false,
       text: 'Flags',
     },
     componentsTab: {
       path: (
-        { provider = p, owner = o, repo = r, branch = undefined } = {
+        { provider = p, owner = o, repo = r, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
+          branch: b,
         }
       ) => {
-        if (branch) {
-          return `/${provider}/${owner}/${repo}/components?branch=${branch}`
+        if (branch && branch !== ALL_BRANCHES) {
+          return `/${provider}/${owner}/${repo}/components/${branch}`
         }
         return `/${provider}/${owner}/${repo}/components`
       },
@@ -720,7 +740,7 @@ export function useNavLinks() {
           provider = p,
           owner = o,
           repo = r,
-          branch = undefined,
+          branch = b,
           bundle = undefined,
         } = {
           provider: p,
@@ -728,11 +748,11 @@ export function useNavLinks() {
           repo: r,
         }
       ) => {
-        if (branch && bundle) {
+        if (branch && branch !== ALL_BRANCHES && bundle) {
           return `/${provider}/${owner}/${repo}/bundles/${branch}/${bundle}`
         }
 
-        if (branch) {
+        if (branch && branch !== ALL_BRANCHES) {
           return `/${provider}/${owner}/${repo}/bundles/${branch}`
         }
 
@@ -812,13 +832,14 @@ export function useNavLinks() {
     },
     failedTests: {
       path: (
-        { provider = p, owner = o, repo = r, branch = undefined } = {
+        { provider = p, owner = o, repo = r, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
+          branch: b,
         }
       ) => {
-        if (branch) {
+        if (branch && branch !== ALL_BRANCHES) {
           return `/${provider}/${owner}/${repo}/tests/${branch}`
         }
 

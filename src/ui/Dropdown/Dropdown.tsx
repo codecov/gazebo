@@ -62,7 +62,6 @@ const Trigger = React.forwardRef<
   React.useEffect(() => {
     if (!isOpen) {
       setWasJustClosed(true)
-      // eslint-disable-next-line max-nested-callbacks
       setTimeout(() => {
         ref.current?.blur()
         setWasJustClosed(false)

@@ -72,7 +72,6 @@ const BranchSelector = () => {
     selection.head !== null
   ) {
     history.push(
-      // @ts-expect-error - useNavLinks needs to be typed
       failedTestsLink.path({ branch: encodeURIComponent(selection?.name) })
     )
   }
@@ -94,7 +93,6 @@ const BranchSelector = () => {
           value={selection}
           onChange={(item: Branch) => {
             history.push(
-              // @ts-expect-error - useNavLinks needs to be typed
               failedTestsLink.path({ branch: encodeURIComponent(item?.name) })
             )
           }}

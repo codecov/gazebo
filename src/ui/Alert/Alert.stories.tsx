@@ -98,7 +98,7 @@ export const AlertInfoWithCustomIcon: Story = {
     variant: AlertOptions.INFO,
   },
   render: (args) => (
-    <Alert variant={args.variant} customIconName="sparkles">
+    <Alert variant={args.variant} customIconName="speakerphone">
       <Alert.Title>Sample Alert Title</Alert.Title>
       <Alert.Description>
         This is what a sample alert description looks like

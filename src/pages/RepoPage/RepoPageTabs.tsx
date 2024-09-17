@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { ALL_BRANCHES } from 'services/navigation'
 import { useRepo, useRepoOverview } from 'services/repo'
 import Badge from 'ui/Badge'
 import TabNavigation from 'ui/TabNavigation'
@@ -16,6 +17,7 @@ interface URLParams {
   provider: string
   owner: string
   repo: string
+  branch?: string
 }
 
 interface UseRepoTabsArgs {
@@ -30,7 +32,7 @@ interface TabArgs {
 }
 
 export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
-  const { provider, owner, repo } = useParams<URLParams>()
+  const { provider, owner, repo, branch } = useParams<URLParams>()
   const { data: repoOverview } = useRepoOverview({ provider, owner, repo })
   const { data: repoData } = useRepo({
     provider,
@@ -46,11 +48,23 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   const matchCoverageOnboarding = useMatchCoverageOnboardingPath()
   const matchFlags = useMatchFlagsPath()
   const matchComponents = useMatchComponentsPath()
-  let location = undefined
+  let coverageLocation = undefined
   if (matchTree) {
-    location = { pathname: `/${provider}/${owner}/${repo}/tree` }
+    coverageLocation = {
+      pathname:
+        branch === ALL_BRANCHES
+          ? `/${provider}/${owner}/${repo}`
+          : `/${provider}/${owner}/${repo}/tree/${branch}`,
+    }
+  } else if (matchFlags || matchComponents) {
+    coverageLocation = {
+      pathname:
+        branch && branch !== ALL_BRANCHES
+          ? `/${provider}/${owner}/${repo}/tree/${branch}`
+          : `/${provider}/${owner}/${repo}`,
+    }
   } else if (matchBlobs) {
-    location = { pathname: `/${provider}/${owner}/${repo}/blob` }
+    coverageLocation = { pathname: `/${provider}/${owner}/${repo}/blob` }
   }
 
   const tabs: TabArgs[] = []
@@ -67,7 +81,9 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
         matchFlags ||
         matchComponents
       ),
-      location,
+      /* if exact is false, location (or the current url if location is undefined) needs to be as
+      specific or more than the url that the tab is linking to for the underlying NavLink matching to work correctly and apply the active state. In other words, the url this tab links to is the more generic pattern */
+      location: coverageLocation,
     })
   }
 
