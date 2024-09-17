@@ -13,7 +13,7 @@
     "test": "yarn generate-icons:webpack && craco test",
     "test:ci": "yarn generate-icons:webpack && craco test --collectCoverage --reporters=default --reporters=jest-junit",
     "test:new": "yarn generate-icons:vite && vitest run --changed --config ./vitest.config.mjs",
-    "test:watch:new": "yarn generate-icons:vite && vitest watch --config ./vitest.config.mjs",
+    "test:watch:new": "yarn generate-icons:vite && vitest watch --changed --config ./vitest.config.mjs",
     "test:ci:new": "yarn generate-icons:vite && vitest run --config ./vitest.config.mjs --coverage",
     "preview-coverage": "npx vite preview --open --outDir coverage",
     "test:mutation": "npx stryker run",
