@@ -285,97 +285,97 @@ jobs:
           echo json=${INDEX_JSON} >> $GITHUB_OUTPUT
           echo test_list_array=$(echo ${TEST_LIST} | jq -c '[_nwise(${{ env.TEST_SPLIT_NUMBER }})]') >> $GITHUB_OUTPUT
 
-#   test-vitest:
-#     name: 'Test Runner #${{ matrix.runner-index }} - Vitest'
-#     needs: [install, codecov-startup, runner-indexes-vitest]
-#     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         runner-index: ${{ fromjson(needs.runner-indexes-vitest.outputs.json) }}
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 2
+  test-vitest:
+    name: 'Test Runner #${{ matrix.runner-index }} - Vitest'
+    needs: [install, codecov-startup, runner-indexes-vitest]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runner-index: ${{ fromjson(needs.runner-indexes-vitest.outputs.json) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-#       - name: Setup Node
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: 20
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-#       - name: Cache node_modules
-#         id: cache-node-modules
-#         uses: actions/cache@v4
-#         env:
-#           cache-name: cache-gazebo-node-modules
-#         with:
-#           path: |
-#             node_modules
-#           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-#           restore-keys: |
-#             ${{ runner.os }}-${{ env.cache-name }}-
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-gazebo-node-modules
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
 
-#       - name: Run tests
-#         run: |
-#           TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
-#           yarn test:ci:new --minWorkers=1 --maxWorkers=2 $TESTS
-#         env:
-#           ENABLE_TEST_REPORTER: true
-#           TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes-vitest.outputs.test_list_array)[matrix.runner-index]) }}
+      - name: Run tests
+        run: |
+          TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
+          yarn test:ci:new --minWorkers=1 --maxWorkers=2 $TESTS
+        env:
+          ENABLE_TEST_REPORTER: true
+          TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes-vitest.outputs.test_list_array)[matrix.runner-index]) }}
 
-#       - name: Upload test results to Codecov
-#         uses: codecov/test-results-action@v1
-#         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
-#         with:
-#           token: ${{ secrets.CODECOV_ORG_TOKEN }}
-#           url: ${{ secrets.CODECOV_URL }}
+      - name: Upload test results to Codecov
+        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
+        with:
+          token: ${{ secrets.CODECOV_ORG_TOKEN }}
+          url: ${{ secrets.CODECOV_URL }}
 
-#       - name: Upload test results to Codecov staging
-#         uses: codecov/test-results-action@v1
-#         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
-#         with:
-#           token: ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
-#           url: ${{ secrets.CODECOV_STAGING_URL }}
+      - name: Upload test results to Codecov staging
+        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
+        with:
+          token: ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
+          url: ${{ secrets.CODECOV_STAGING_URL }}
 
-#       - name: Upload test results to Codecov QA
-#         uses: codecov/test-results-action@v1
-#         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
-#         with:
-#           token: ${{ secrets.CODECOV_QA_TOKEN }}
-#           url: ${{ secrets.CODECOV_QA_URL }}
+      - name: Upload test results to Codecov QA
+        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
+        with:
+          token: ${{ secrets.CODECOV_QA_TOKEN }}
+          url: ${{ secrets.CODECOV_QA_URL }}
 
-#       - name: Upload test results to Codecov public QA
-#         uses: codecov/test-results-action@v1
-#         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
-#         with:
-#           token: ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }}
-#           url: ${{ secrets.CODECOV_PUBLIC_QA_URL }}
+      - name: Upload test results to Codecov public QA
+        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
+        with:
+          token: ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }}
+          url: ${{ secrets.CODECOV_PUBLIC_QA_URL }}
 
-#       - name: Install CLI
-#         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-#         run: |
-#           make test_env.install_cli
+      - name: Install CLI
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          make test_env.install_cli
 
-#       ## Don't upload on forks for now.
-#       - name: Upload coverage to Production
-#         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-#         run: |
-#           codecovcli -u ${{ secrets.CODECOV_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error --name "VITEST-${{ matrix.runner-index }}"
+      ## Don't upload on forks for now.
+      - name: Upload coverage to Production
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error --name "VITEST-${{ matrix.runner-index }}"
 
-#       - name: Upload coverage to Staging
-#         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-#         run: |
-#           codecovcli -u ${{ secrets.CODECOV_STAGING_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error
+      - name: Upload coverage to Staging
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_STAGING_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error
 
-#       - name: Upload coverage to QA
-#         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-#         run: |
-#           codecovcli -u ${{ secrets.CODECOV_QA_URL }} do-upload -t ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
+      - name: Upload coverage to QA
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_QA_URL }} do-upload -t ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
 
-#       - name: Upload coverage to Public QA
-#         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-#         run: |
-#           codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} do-upload -t ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
+      - name: Upload coverage to Public QA
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} do-upload -t ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
 
   upload-bundle-stats-to-prod:
     name: Upload Bundle Stats - Production
