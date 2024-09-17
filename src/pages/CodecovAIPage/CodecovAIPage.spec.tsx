@@ -3,9 +3,13 @@ import { render, screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import CodecovAIPage from './CodecovAIPage'
+
+jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,6 +45,10 @@ afterAll(() => {
 })
 
 describe('CodecovAIPage', () => {
+  beforeEach(() => {
+    mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: true })
+  })
+
   it('renders top section', async () => {
     render(<CodecovAIPage />, { wrapper })
 
@@ -117,5 +125,16 @@ describe('CodecovAIPage', () => {
 
     const docLink = await screen.findByText(/Visit our guide/)
     expect(docLink).toBeInTheDocument()
+  })
+})
+
+describe('flag is off', () => {
+  it('does not render page', async () => {
+    mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: false })
+
+    render(<CodecovAIPage />, { wrapper })
+
+    const topSection = screen.queryByText(/Codecov AI is a/)
+    expect(topSection).not.toBeInTheDocument()
   })
 })
