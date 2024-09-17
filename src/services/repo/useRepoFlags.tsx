@@ -28,27 +28,29 @@ query FlagMeasurements(
     repository(name: $repo) {
       __typename
       ... on Repository {
-        flags(
-          filters: $filters
-          orderingDirection: $orderingDirection
-          after: $after
-          first: 15
-        ) {
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-          edges {
-            node {
-              name
-              percentCovered
-              percentChange
-              measurements(
-                interval: $interval
-                after: $afterDate
-                before: $beforeDate
-              ) {
-                avg
+        coverageAnalytics {
+          flags(
+            filters: $filters
+            orderingDirection: $orderingDirection
+            after: $after
+            first: 15
+          ) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            edges {
+              node {
+                name
+                percentCovered
+                percentChange
+                measurements(
+                  interval: $interval
+                  after: $afterDate
+                  before: $beforeDate
+                ) {
+                  avg
+                }
               }
             }
           }

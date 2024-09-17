@@ -20,9 +20,11 @@ query RepoComponentsSelector(
     repository(name: $repo) {
       __typename
       ... on Repository {
-        componentsYaml(termId: $termId) {
-          name
-          id
+        coverageAnalytics {
+          componentsYaml(termId: $termId) {
+            name
+            id
+          }
         }
       }
       ... on NotFoundError {

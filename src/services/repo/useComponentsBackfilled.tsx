@@ -19,9 +19,11 @@ query BackfillComponentMemberships($name: String!, $repo: String!) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        componentsMeasurementsActive
-        componentsMeasurementsBackfilled
-        componentsCount
+        coverageAnalytics {
+          componentsMeasurementsActive
+          componentsMeasurementsBackfilled
+          componentsCount
+        }
       }
     }
   }
@@ -29,9 +31,13 @@ query BackfillComponentMemberships($name: String!, $repo: String!) {
 `
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  componentsMeasurementsActive: z.boolean().nullish(),
-  componentsMeasurementsBackfilled: z.boolean().nullish(),
-  componentsCount: z.number().nullish(),
+  coverageAnalytics: z
+    .object({
+      componentsMeasurementsActive: z.boolean().nullish(),
+      componentsMeasurementsBackfilled: z.boolean().nullish(),
+      componentsCount: z.number().nullish(),
+    })
+    .nullable(),
 })
 
 const BackfillComponentsMembershipSchema = z.object({

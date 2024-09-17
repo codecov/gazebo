@@ -66,7 +66,7 @@ const Header = ({
             Configured components
           </h3>
           <p className="flex flex-1 text-xl font-light text-ds-gray-octonary">
-            {data?.componentsCount}
+            {data?.coverageAnalytics?.componentsCount}
           </p>
           <p className="text-xs">
             {/* @ts-expect-error */}

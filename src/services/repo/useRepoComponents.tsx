@@ -27,22 +27,24 @@ query ComponentMeasurements(
     repository(name: $repo) {
       __typename
       ... on Repository {
-        components(
-          filters: $filters
-          orderingDirection: $orderingDirection
-          after: $after
-          interval: $interval
-          before: $before
-          branch: $branch
-        ) {
-          componentId
-          name
-          percentCovered
-          percentChange
-          lastUploaded
-          measurements {
-            avg
-          }
+        coverageAnalytics {
+          components(
+             filters: $filters
+             orderingDirection: $orderingDirection
+             after: $after
+             interval: $interval
+             before: $before
+             branch: $branch
+           ) {
+             componentId
+             name
+             percentCovered
+             percentChange
+             lastUploaded
+             measurements {
+               avg
+             }
+           }
         }
       }
     }

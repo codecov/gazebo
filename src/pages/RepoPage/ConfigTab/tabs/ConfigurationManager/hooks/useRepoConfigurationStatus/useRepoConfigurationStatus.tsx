@@ -55,13 +55,15 @@ const query = `query GetRepoConfigurationStatus($owner: String!, $repo: String!)
     repository(name:$repo) {
       __typename
       ... on Repository {
-        flagsCount
-        componentsCount
         coverageEnabled
         bundleAnalysisEnabled
         testAnalyticsEnabled
         yaml
         languages
+        coverageAnalytics {
+          flagsCount
+          componentsCount
+        }
       }
       ... on NotFoundError {
         message
