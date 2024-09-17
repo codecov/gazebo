@@ -98,11 +98,18 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     })
   }
 
-  if (isCurrentUserPartOfOrg) {
+  if (repoOverview?.testAnalyticsEnabled) {
     tabs.push({
-      pageName: repoOverview?.testAnalyticsEnabled
-        ? 'failedTests'
-        : 'failedTestsOnboarding',
+      pageName: 'failedTests',
+      children: (
+        <>
+          Tests <Badge>beta</Badge>{' '}
+        </>
+      ),
+    })
+  } else if (isCurrentUserPartOfOrg) {
+    tabs.push({
+      pageName: 'failedTestsOnboarding',
       children: (
         <>
           Tests <Badge>beta</Badge>{' '}
