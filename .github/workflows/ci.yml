@@ -209,21 +209,21 @@ jobs:
           token: ${{ secrets.CODECOV_ORG_TOKEN }}
           url: ${{ secrets.CODECOV_URL }}
 
-      - name: Upload test results to codecov
+      - name: Upload test results to codecov staging
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
           token: ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
           url: ${{ secrets.CODECOV_STAGING_URL }}
 
-      - name: Upload test results to codecov
+      - name: Upload test results to codecov QA
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
           token: ${{ secrets.CODECOV_QA_TOKEN }}
           url: ${{ secrets.CODECOV_QA_URL }}
 
-      - name: Upload test results to codecov
+      - name: Upload test results to codecov public QA
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
@@ -239,7 +239,7 @@ jobs:
       - name: Upload to Production
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
-          codecovcli -u ${{ secrets.CODECOV_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error --name "CRACO-${{ matrix.runner-index }}"
 
       - name: Upload to Staging
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
@@ -360,7 +360,7 @@ jobs:
       - name: Upload to Production
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
-          codecovcli -u ${{ secrets.CODECOV_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error --name "VITEST-${{ matrix.runner-index }}"
 
       - name: Upload to Staging
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
