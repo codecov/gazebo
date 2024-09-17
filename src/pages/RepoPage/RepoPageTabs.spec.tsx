@@ -1069,18 +1069,7 @@ describe('useRepoTabs', () => {
           { wrapper: wrapper('/gh/codecov/test-repo') }
         )
 
-        const expectedTab = [
-          {
-            pageName: 'failedTestsOnboarding',
-            children: expect.anything(),
-          },
-        ]
-
-        await waitFor(() =>
-          expect(result.current).not.toEqual(
-            expect.arrayContaining(expectedTab)
-          )
-        )
+        await waitFor(() => expect(result.current).toEqual([]))
       })
     })
   })
