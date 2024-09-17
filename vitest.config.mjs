@@ -12,14 +12,23 @@ const VitestConfig = defineConfig((config) => {
     test: {
       coverage: {
         include: ['src/**/*'],
-        exclude: [],
+        exclude: [
+          'vitest.setup.ts',
+          'custom-testing-library.js',
+          'setupTestGlobal.js',
+          'setupTests.js',
+          'setupProxy.js',
+          'ts-override.d.ts',
+          'types.ts',
+          'vite-env.d.ts',
+        ],
         provider: 'v8',
         reporters: [['text'], ['html', { outputFile: 'coverage/index.html' }]],
         reportOnFailure: true,
       },
       globals: true,
       environment: ['jsdom'],
-      setupFiles: './src/vitest.setup.js',
+      setupFiles: './src/vitest.setup.ts',
       reporters: reporters,
       include: ['src/**/*.test.*'],
       exclude: [
