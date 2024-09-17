@@ -316,7 +316,7 @@ function RepoPage() {
           isRepoPrivate={isRepoPrivate}
           isCurrentUserActivated={isCurrentUserActivated}
           testAnalyticsEnabled={repoOverview?.testAnalyticsEnabled}
-          isCurrentUserPartOfOrg={repoData?.isCurrentUserPartOfOrg || false}
+          isCurrentUserPartOfOrg={!!repoData?.isCurrentUserPartOfOrg}
         />
       </Suspense>
     </div>
