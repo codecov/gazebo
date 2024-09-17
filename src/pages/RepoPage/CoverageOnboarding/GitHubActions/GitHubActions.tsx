@@ -136,7 +136,7 @@ jobs:
     },
     Pytest: {
       install: 'pip install pytest pytest-cov',
-      run: 'pytest --cov',
+      run: 'pytest --cov --cov-report=xml',
       workflow: `name: Run tests and upload coverage
 
 on: 
@@ -159,7 +159,7 @@ jobs:
         run: pip install pytest pytest-cov
 
       - name: Run tests
-        run: pytest --cov
+        run: pytest --cov --cov-report=xml
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v4
