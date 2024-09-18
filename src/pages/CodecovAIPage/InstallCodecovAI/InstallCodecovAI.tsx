@@ -11,7 +11,7 @@ const InstallCodecovAI: React.FC = () => {
   const { theme } = useThemeContext()
 
   const isDarkMode = theme === Theme.DARK
-  const githubImage = loginProviderImage('Github', isDarkMode)
+  const githubImage = loginProviderImage('Github', !isDarkMode)
 
   return (
     <div>
@@ -32,10 +32,11 @@ const InstallCodecovAI: React.FC = () => {
               to={{
                 pageName: 'codecovAIAppInstallation',
               }}
+              variant="github"
               disabled={undefined}
               hook={undefined}
             >
-              <img alt={`github logo`} className="pr-1" src={githubImage} />
+              <img alt={`github logo`} className="h-6 pr-1" src={githubImage} />
               Install Codecov AI
             </Button>
           </div>

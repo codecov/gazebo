@@ -12,13 +12,13 @@ const CodecovAICommands: React.FC = () => {
           After installing the app, use these commands in your PR Comments:
           <ul className="mt-2 list-inside list-disc space-y-1">
             <li>
-              <span className="bg-gray-200 font-semibold">
+              <span className="rounded border border-gray-200 bg-gray-100 px-1 font-semibold">
                 @codecov-ai-reviewer test
               </span>{' '}
               --the assistant will generate tests for the PR.
             </li>
             <li>
-              <span className="bg-gray-200 font-semibold">
+              <span className="rounded border border-gray-200 bg-gray-100 px-1 font-semibold">
                 @codecov-ai-reviewer review
               </span>{' '}
               --the assistant will review the PR and make suggestions.
