@@ -1,5 +1,5 @@
 codecov:
-  require_ci_to_pass: yes
+  require_ci_to_pass: true
 
 ai_pr_review:
   enabled: false
@@ -11,8 +11,8 @@ coverage:
 
   status:
     project: yes
-    patch: yes
-    changes: no
+    patch: true
+    changes: false
 
 github_checks:
   annotations: false
@@ -20,9 +20,9 @@ github_checks:
 comment:
   layout: 'reach, diff, flags, files, components, footer'
   behavior: default
-  require_changes: no
-  require_base: no
-  require_head: yes
+  require_changes: false
+  require_base: false
+  require_head: true
   after_n_builds: 10 # ceil(number of test files / 80). See ci.yml for more details.
 
 ignore:
@@ -46,6 +46,9 @@ ignore:
   - ./src/pages/RepoPage/repo-jest-setup.js
   - ./src/ui/SunburstChart/*.jsx
   - ./src/ui/SunburstChart/*.js
+  - './src/**/*.svg'
+  - './src/**/*.png'
+  - './src/**/*.jpg'
 
 component_management:
   default_rules:
