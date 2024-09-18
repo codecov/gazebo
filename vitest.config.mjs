@@ -2,6 +2,31 @@ import { defineConfig, mergeConfig } from 'vitest/config'
 
 import ViteConfig from './vite.config.mjs'
 
+const EXCLUDE_FROM_TESTING = [
+  // Default exclude patterns
+  '**/node_modules/**',
+  '**/dist/**',
+  '**/cypress/**',
+  '**/.{idea,git,cache,output,temp}/**',
+  '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
+  // Custom exclude patterns
+  'src/**/*.spec.*',
+]
+
+const EXCLUDE_FROM_COVERAGE = [
+  'src/**/*.spec.*',
+  'src/**/*.stories.*',
+  'repo-jest-setup.jsx',
+  'vitest.setup.ts',
+  'custom-testing-library.js',
+  'setupTestGlobal.js',
+  'setupTests.js',
+  'setupProxy.js',
+  'ts-override.d.ts',
+  'types.ts',
+  'vite-env.d.ts',
+]
+
 const VitestConfig = defineConfig((config) => {
   const reporters = []
   if (process.env.ENABLE_TEST_REPORTER) {
@@ -12,17 +37,8 @@ const VitestConfig = defineConfig((config) => {
     test: {
       coverage: {
         include: ['src/**/*'],
-        exclude: [
-          'vitest.setup.ts',
-          'custom-testing-library.js',
-          'setupTestGlobal.js',
-          'setupTests.js',
-          'setupProxy.js',
-          'ts-override.d.ts',
-          'types.ts',
-          'vite-env.d.ts',
-        ],
-        provider: 'v8',
+        exclude: EXCLUDE_FROM_COVERAGE,
+        provider: 'istanbul',
         reporters: [['text'], ['html', { outputFile: 'coverage/index.html' }]],
         reportOnFailure: true,
       },
@@ -31,16 +47,7 @@ const VitestConfig = defineConfig((config) => {
       setupFiles: './src/vitest.setup.ts',
       reporters: reporters,
       include: ['src/**/*.test.*'],
-      exclude: [
-        // Default exclude patterns
-        '**/node_modules/**',
-        '**/dist/**',
-        '**/cypress/**',
-        '**/.{idea,git,cache,output,temp}/**',
-        '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
-        // Custom exclude patterns
-        'src/**/*.spec.*',
-      ],
+      exclude: EXCLUDE_FROM_TESTING,
     },
   }
 })
