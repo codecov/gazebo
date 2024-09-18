@@ -45,6 +45,8 @@ const HomePageRedirect = () => {
 
   let redirectURL = '/login'
 
+  console.log('ahh', internalUser)
+
   if (internalUser && internalUser.owners) {
     redirectURL = `/${internalUser.owners[0]?.service}/${internalUser.owners[0]?.username}`
     if (to === 'plan') {
