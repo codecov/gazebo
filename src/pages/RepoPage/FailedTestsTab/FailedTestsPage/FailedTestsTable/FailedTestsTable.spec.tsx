@@ -166,7 +166,7 @@ describe('FailedTestsTable', () => {
       const nameColumn = await screen.findByText('Test name')
       expect(nameColumn).toBeInTheDocument()
 
-      const durationColumn = await screen.findByText('Average duration')
+      const durationColumn = await screen.findByText('Last duration')
       expect(durationColumn).toBeInTheDocument()
 
       const failureRateColumn = await screen.findByText('Failure rate')
@@ -226,7 +226,7 @@ describe('FailedTestsTable', () => {
         wrapper: wrapper(queryClient),
       })
 
-      const durationColumn = await screen.findByText('Average duration')
+      const durationColumn = await screen.findByText('Last duration')
       await user.click(durationColumn)
 
       await waitFor(() => {

@@ -15,7 +15,7 @@ const TooltipWithIcon = ({ children }: { children: React.ReactNode }) => {
         <Tooltip.Portal>
           <Tooltip.Content
             side="right"
-            className="w-64 rounded-md bg-ds-gray-primary p-3 text-xs text-gray-700"
+            className="w-64 rounded-md bg-ds-gray-primary p-3 text-xs text-ds-gray-octonary"
           >
             {children}
             <Tooltip.Arrow className="size-4 fill-gray-100" />
@@ -158,8 +158,8 @@ const TotalSkippedTestsCard = () => {
 
 function MetricsSection() {
   return (
-    <div className="flex">
-      <div className="flex flex-col gap-3 border-r-2">
+    <div className="overflow-x-auto overflow-y-hidden md:flex">
+      <div className="mb-6 flex flex-col gap-3 border-r-2 md:mb-0">
         <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
           Improve CI Run Efficiency
         </p>
