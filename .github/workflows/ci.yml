@@ -271,13 +271,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Generate test index list
         id: generate-index-list
-        # We currently don't have all of these yet, so we'll need to add them in as we go along
-        # src/**/*.test.js
-        # src/**/*.test.ts
-        # src/**/*.test.tsx
         run: |
           shopt -s globstar
-          TEST_LIST=$(ls src/**/*.test.jsx | jq -R -s -c 'split("\n")[:-1]')
+          TEST_LIST=$(ls src/**/*.test.js src/**/*.test.jsx src/**/*.test.ts src/**/*.test.tsx | jq -R -s -c 'split("\n")[:-1]')
           TEST_LENGTH=$(echo $TEST_LIST | jq length)
           MAX_INDEX=$((($TEST_LENGTH/${{ env.TEST_SPLIT_NUMBER }})))
           MAX_INDEX=$(($MAX_INDEX < 0 ? 0 : $TEST_LENGTH % ${{ env.TEST_SPLIT_NUMBER }} == 0 ? $MAX_INDEX - 1 : $MAX_INDEX))
