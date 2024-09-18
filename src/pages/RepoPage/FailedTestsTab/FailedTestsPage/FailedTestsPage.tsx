@@ -4,6 +4,7 @@ import {
   TimeOptions,
 } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
+import A from 'ui/A'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 
@@ -27,10 +28,10 @@ function FailedTestsPage() {
   )
 
   return (
-    <div className="flex flex-1 flex-col gap-4">
-      <div className="flex flex-1 flex-row items-center justify-between">
+    <div className="flex flex-1 flex-col gap-2">
+      <div className="flex flex-1 flex-row justify-between">
         <BranchSelector />
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 px-4">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Historical trend
           </h3>
@@ -49,8 +50,11 @@ function FailedTestsPage() {
               renderSelected={({ label }: { label: string }) => label}
             />
           </div>
+          <A to={''} isExternal hook={'30-day-retention'}>
+            30 day retention
+          </A>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 px-4">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Test suites
           </h3>
@@ -67,7 +71,7 @@ function FailedTestsPage() {
             />
           </div>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 pl-4">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">Flags</h3>
           <div className="sm:w-52 lg:w-80">
             <MultiSelect

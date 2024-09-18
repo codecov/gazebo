@@ -31,7 +31,7 @@ const TotalTestsRunTimeCard = () => {
     <MetricCard>
       <MetricCard.Header>
         <MetricCard.Title className="flex items-center gap-2">
-          Total tests run time
+          Test run time
           <TooltipWithIcon>
             The total time it takes to run all your tests.
           </TooltipWithIcon>
@@ -43,7 +43,7 @@ const TotalTestsRunTimeCard = () => {
         <Badge variant="danger">+10%</Badge>
       </MetricCard.Content>
       <MetricCard.Description>
-        Increased by 12.5hr in the last 30 days
+        Increased by [12.5hr] in the last [30 days]
       </MetricCard.Description>
     </MetricCard>
   )
@@ -56,15 +56,14 @@ const SlowestTestsCard = () => {
         <MetricCard.Title className="flex items-center gap-2">
           Slowest tests
           <TooltipWithIcon>
-            The number of tests that take the longer than 100ms time to
-            complete.
+            The number of tests that take the longer than [100ms] to complete.
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
 
       <MetricCard.Content>6</MetricCard.Content>
       <MetricCard.Description>
-        The total run time of the 6 tests is 2.5hr.
+        The slowest [6 tests] take [2.5hr] to run.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -75,10 +74,10 @@ const TotalFlakyTestsCard = () => {
     <MetricCard>
       <MetricCard.Header>
         <MetricCard.Title className="flex items-center gap-2">
-          Total flaky tests
+          Flaky tests
           <TooltipWithIcon>
             The number of tests that transition from fail to pass or pass to
-            fail in the last 30 days.
+            fail in the last [30 days].
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
@@ -87,7 +86,7 @@ const TotalFlakyTestsCard = () => {
         <Badge variant="success">-15%</Badge>
       </MetricCard.Content>
       <MetricCard.Description>
-        The total rerun time for flaky tests is 50hr.
+        *The total rerun time for flaky tests is [50hr].
       </MetricCard.Description>
     </MetricCard>
   )
@@ -98,7 +97,7 @@ const AverageFlakeRateCard = () => {
     <MetricCard>
       <MetricCard.Header>
         <MetricCard.Title className="flex items-center gap-2">
-          Average flake rate
+          Avg. flake rate
           <TooltipWithIcon>
             The percentage of tests that flake, based on how many times a test
             transitions from fail to pass or pass to fail on a given branch and
@@ -111,7 +110,7 @@ const AverageFlakeRateCard = () => {
         <Badge variant="success">-35%</Badge>
       </MetricCard.Content>
       <MetricCard.Description>
-        On average, a flaky test ran 20 times before it passed.
+        On average, a flaky test ran [20] times before it passed.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -122,16 +121,16 @@ const TotalFailuresCard = () => {
     <MetricCard>
       <MetricCard.Header>
         <MetricCard.Title className="flex items-center gap-2">
-          Total failures
+          Failures
           <TooltipWithIcon>
-            The number of failures indicates errors that caused the tests to
-            fail.
+            The number of failures indicate the number of errors that caused the
+            tests to fail.
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
       <MetricCard.Content>6</MetricCard.Content>
       <MetricCard.Description>
-        Recent failures across all branches.
+        The number of test failures across all branches.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -142,7 +141,7 @@ const TotalSkippedTestsCard = () => {
     <MetricCard>
       <MetricCard.Header>
         <MetricCard.Title className="flex items-center gap-2">
-          Total skipped tests
+          Skipped tests
           <TooltipWithIcon>
             The number of tests that were skipped in the last 30 days.
           </TooltipWithIcon>
@@ -151,7 +150,7 @@ const TotalSkippedTestsCard = () => {
 
       <MetricCard.Content>55</MetricCard.Content>
       <MetricCard.Description>
-        Total skipped tests across all branches.
+        The number of skipped tests in your test suite.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -171,7 +170,7 @@ function MetricsSection() {
       </div>
       <div className="flex flex-col gap-3">
         <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
-          Improve CI Run Efficiency
+          Improve Test Performance
         </p>
         <div className="flex">
           <TotalFlakyTestsCard />

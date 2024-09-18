@@ -77,7 +77,7 @@ const BranchSelector = () => {
   }
 
   return (
-    <div className="flex flex-col gap-1 md:w-80">
+    <div className="flex flex-col gap-1 pr-4 sm:w-52 lg:w-80">
       <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
         <span className="text-ds-gray-quinary">
           <Icon name="branch" size="sm" variant="developer" />
