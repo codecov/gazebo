@@ -330,8 +330,8 @@ describe('DefaultOrgSelector', () => {
       const selfOrg = screen.getByRole('option', { name: 'Rula' })
       expect(selfOrg).toBeInTheDocument()
 
-      const addNewOrg = screen.getByRole('option', {
-        name: 'plus-circle.svg Install Codecov GitHub app',
+      const addNewOrg = screen.getByRole('link', {
+        name: 'plus-circle.svg Install Codecov GitHub app external-link.svg',
       })
       expect(addNewOrg).toBeInTheDocument()
     })
@@ -378,8 +378,8 @@ describe('DefaultOrgSelector', () => {
       const selfOrg = screen.queryByRole('option', { name: 'janedoe' })
       expect(selfOrg).not.toBeInTheDocument()
 
-      const addNewOrg = screen.getByRole('option', {
-        name: 'plus-circle.svg Install Codecov GitHub app',
+      const addNewOrg = screen.getByRole('link', {
+        name: 'plus-circle.svg Install Codecov GitHub app external-link.svg',
       })
       expect(addNewOrg).toBeInTheDocument()
     })
@@ -417,8 +417,8 @@ describe('DefaultOrgSelector', () => {
       const noOrgsFound = screen.getByText(/No organizations found/)
       expect(noOrgsFound).toBeInTheDocument()
 
-      const addNewOrg = screen.getByRole('option', {
-        name: 'plus-circle.svg Install Codecov GitHub app',
+      const addNewOrg = screen.getByRole('link', {
+        name: 'plus-circle.svg Install Codecov GitHub app external-link.svg',
       })
       expect(addNewOrg).toBeInTheDocument()
     })
@@ -458,8 +458,8 @@ describe('DefaultOrgSelector', () => {
       const orgInList = screen.getByRole('option', { name: 'criticalRole' })
       expect(orgInList).toBeInTheDocument()
 
-      const addNewOrg = screen.queryByRole('option', {
-        name: 'plus-circle.svg Install Codecov GitHub app',
+      const addNewOrg = screen.queryByRole('link', {
+        name: 'plus-circle.svg Install Codecov GitHub app external-link.svg',
       })
       expect(addNewOrg).not.toBeInTheDocument()
     })
@@ -496,8 +496,8 @@ describe('DefaultOrgSelector', () => {
 
       await user.click(selectOrg)
 
-      const addNewOrg = screen.getByRole('option', {
-        name: 'plus-circle.svg Install Codecov GitHub app',
+      const addNewOrg = screen.getByRole('link', {
+        name: 'plus-circle.svg Install Codecov GitHub app external-link.svg',
       })
 
       await user.click(addNewOrg)
