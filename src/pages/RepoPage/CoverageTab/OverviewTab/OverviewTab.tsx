@@ -21,7 +21,6 @@ const CoverageChart = lazy(() => import('./subroute/CoverageChart'))
 const Sunburst = lazy(() => import('./subroute/Sunburst'))
 
 const MAX_FILE_COUNT = 200_000
-const MAX_LINE_COUNT = 1_000_000
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
@@ -57,12 +56,8 @@ function CoverageOverviewTab() {
   const withinFileCount =
     typeof fileCount === 'number' && fileCount <= MAX_FILE_COUNT
 
-  const lineCount = data?.branch?.head?.totals?.lineCount
-  const withinLineCount =
-    typeof lineCount === 'number' && lineCount <= MAX_LINE_COUNT
-
   let displaySunburst = false
-  if (withinFileCount || withinLineCount) {
+  if (withinFileCount) {
     displaySunburst = true
   }
 

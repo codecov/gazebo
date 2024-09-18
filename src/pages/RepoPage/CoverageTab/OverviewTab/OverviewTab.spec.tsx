@@ -224,7 +224,7 @@ const mockOverview = {
   },
 }
 
-const mockCoverageTabData = (fileCount = 10, lineCount = 100) => ({
+const mockCoverageTabData = (fileCount = 10) => ({
   owner: {
     repository: {
       __typename: 'Repository',
@@ -232,7 +232,6 @@ const mockCoverageTabData = (fileCount = 10, lineCount = 100) => ({
         head: {
           totals: {
             fileCount,
-            lineCount,
           },
         },
       },
@@ -338,7 +337,6 @@ interface SetupArgs {
   isPrivate?: boolean
   tierValue?: TTierNames
   fileCount?: number
-  lineCount?: number
 }
 
 describe('Coverage overview tab', () => {
@@ -347,7 +345,6 @@ describe('Coverage overview tab', () => {
     isPrivate = false,
     tierValue = TierNames.PRO,
     fileCount = 10,
-    lineCount = 100,
   }: SetupArgs) {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
@@ -392,10 +389,7 @@ describe('Coverage overview tab', () => {
         return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       }),
       graphql.query('CoverageTabData', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockCoverageTabData(fileCount, lineCount))
-        )
+        return res(ctx.status(200), ctx.data(mockCoverageTabData(fileCount)))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockOverview))
@@ -453,21 +447,6 @@ describe('Coverage overview tab', () => {
   describe('file count is above 200_000', () => {
     it('does not render the sunburst chart', async () => {
       setup({ fileCount: 200_000 })
-      render(<CoverageOverviewTab />, {
-        wrapper: wrapper(['/gh/test-org/repoName']),
-      })
-
-      const hideChart = await screen.findByText(/Hide charts/)
-      expect(hideChart).toBeInTheDocument()
-
-      const sunburst = screen.queryByText('Sunburst')
-      expect(sunburst).not.toBeInTheDocument()
-    })
-  })
-
-  describe('line count is above 1_000_000', () => {
-    it('does not render the sunburst chart', async () => {
-      setup({ lineCount: 2_000_000 })
       render(<CoverageOverviewTab />, {
         wrapper: wrapper(['/gh/test-org/repoName']),
       })

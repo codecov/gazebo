@@ -17,7 +17,6 @@ const BranchSchema = z
         totals: z
           .object({
             fileCount: z.number().nullable(),
-            lineCount: z.number().nullable(),
           })
           .nullable(),
       })
@@ -52,7 +51,6 @@ query CoverageTabData($owner: String!, $repo: String!, $branch: String!) {
           head {
             totals {
               fileCount
-              lineCount
             }
           }
         }

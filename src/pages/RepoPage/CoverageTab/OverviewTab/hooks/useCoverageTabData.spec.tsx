@@ -30,7 +30,6 @@ const mockCoverageTabData = {
         head: {
           totals: {
             fileCount: 10,
-            lineCount: 100,
           },
         },
       },
@@ -157,7 +156,6 @@ describe('useCoverageTabData', () => {
               head: {
                 totals: {
                   fileCount: 10,
-                  lineCount: 100,
                 },
               },
             },
@@ -186,7 +184,6 @@ describe('useCoverageTabData', () => {
               head: {
                 totals: {
                   fileCount: 10,
-                  lineCount: 100,
                 },
               },
             },
