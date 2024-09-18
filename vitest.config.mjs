@@ -34,19 +34,17 @@ const VitestConfig = defineConfig((config) => {
   }
 
   return {
+
     test: {
       coverage: {
         include: ['src/**/*'],
         exclude: EXCLUDE_FROM_COVERAGE,
         provider: 'istanbul',
-        reporters: [
-          ['text'],
-          ['html', { outputFile: 'coverage/index.html' }],
-        ],
+        reporters: [['text'], ['html', { outputFile: 'coverage/index.html' }]],
         reportOnFailure: true,
       },
       globals: true,
-      environment: ['jsdom'],
+      environment: 'jsdom',
       setupFiles: './src/vitest.setup.ts',
       reporters: reporters,
       include: ['src/**/*.test.*'],
