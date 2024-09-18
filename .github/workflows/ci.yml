@@ -318,7 +318,7 @@ jobs:
       - name: Run tests
         run: |
           TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
-          yarn test:ci:new --minWorkers=1 --maxWorkers=2 $TESTS
+          yarn test:ci:vite --minWorkers=1 --maxWorkers=2 $TESTS
         env:
           ENABLE_TEST_REPORTER: true
           TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes-vitest.outputs.test_list_array)[matrix.runner-index]) }}
