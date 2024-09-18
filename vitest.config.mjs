@@ -2,6 +2,7 @@ import { defineConfig, mergeConfig } from 'vitest/config'
 
 import ViteConfig from './vite.config.mjs'
 
+// See for more details: https://vitest.dev/config/#coverage-exclude
 const EXCLUDE_FROM_TESTING = [
   // Default exclude patterns
   '**/node_modules/**',
@@ -11,11 +12,11 @@ const EXCLUDE_FROM_TESTING = [
   '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
   // Custom exclude patterns
   'src/**/*.spec.*',
+  'src/**/*.stories.*',
 ]
 
 const EXCLUDE_FROM_COVERAGE = [
-  'src/**/*.spec.*',
-  'src/**/*.stories.*',
+  ...EXCLUDE_FROM_TESTING,
   'repo-jest-setup.jsx',
   'vitest.setup.ts',
   'custom-testing-library.js',
@@ -34,7 +35,6 @@ const VitestConfig = defineConfig((config) => {
   }
 
   return {
-
     test: {
       coverage: {
         include: ['src/**/*'],
