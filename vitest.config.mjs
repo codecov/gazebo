@@ -39,7 +39,10 @@ const VitestConfig = defineConfig((config) => {
         include: ['src/**/*'],
         exclude: EXCLUDE_FROM_COVERAGE,
         provider: 'istanbul',
-        reporters: [['text'], ['html', { outputFile: 'coverage/index.html' }]],
+        reporters: [
+          ['text'],
+          ['html', { outputFile: 'coverage/index.html' }],
+        ],
         reportOnFailure: true,
       },
       globals: true,
