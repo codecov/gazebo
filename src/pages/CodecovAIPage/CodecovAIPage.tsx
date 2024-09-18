@@ -19,7 +19,7 @@ const CodecovAIPage: React.FC = () => {
     codecovAiFeaturesTab: false,
   })
 
-  if (codecovAiFeaturesTab) {
+  if (!codecovAiFeaturesTab) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
 
