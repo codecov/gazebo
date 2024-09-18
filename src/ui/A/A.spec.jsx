@@ -12,7 +12,7 @@ describe('A', () => {
 
   describe('hostnameWithoutRegex', () => {
     it('returns to home if no url passed', () => {
-      expect(getHostnameFromRegex(undefined)).toBe('https://app.codecov.io')
+      expect(getHostnameFromRegex(undefined)).toBe('app.codecov.io')
     })
     it('scrubs URL if one exists', () => {
       expect(getHostnameFromRegex('https://app.codecov.io')).toBe(
