@@ -196,6 +196,7 @@ jobs:
 
       - name: Run tests
         run: |
+          yarn generate-icons:webpack
           TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
           yarn test:ci --maxWorkers=2 $TESTS
         env:
