@@ -13,7 +13,7 @@ const meta: Meta<typeof TopBannerComponent> = {
       },
     },
     variant: {
-      options: ['default', 'warning'],
+      options: ['default', 'warning', 'error'],
       control: 'radio',
       description:
         'This prop controls the variation of top banner that is displayed',
@@ -35,7 +35,7 @@ export const TopBanner: Story = {
   },
   argTypes: {
     variant: {
-      options: ['default', 'warning'],
+      options: ['default', 'warning', 'error'],
       control: 'radio',
     },
     children: {

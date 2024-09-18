@@ -90,7 +90,7 @@ function CoverageConfiguration({ repoConfiguration }: ConfigurationGroupProps) {
           docsLink="flags"
           getStartedLink="flags"
         >
-          Organize your coverage data into custom groups
+          Organize your coverage data by upload
         </FeatureItem>
         <FeatureItem
           name="Components"
@@ -99,7 +99,7 @@ function CoverageConfiguration({ repoConfiguration }: ConfigurationGroupProps) {
           docsLink="components"
           getStartedLink="components"
         >
-          Organize your coverage data into custom groups
+          Organize your coverage data by file paths
         </FeatureItem>
       </FeatureGroup.ProItems>
     </FeatureGroup>

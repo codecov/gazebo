@@ -560,6 +560,34 @@ describe('useNavLinks', () => {
       })
       expect(path).toBe('/bb/test-owner/test-repo?flags%5B0%5D=myFlag')
     })
+
+    it('passes branches into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/'),
+      })
+
+      const path = result.current.coverage.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        branch: 'hello',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/tree/hello')
+    })
+
+    it('does not pass "All branches" into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/'),
+      })
+
+      const path = result.current.coverage.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        branch: 'All branches',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo')
+    })
   })
 
   describe('commits link', () => {
@@ -583,6 +611,33 @@ describe('useNavLinks', () => {
         repo: 'test-repo',
       })
       expect(path).toBe('/bb/test-owner/test-repo/commits')
+    })
+    it('passes branches into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator'),
+      })
+
+      const path = result.current.commits.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        branch: 'myBranch',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/commits/myBranch')
+    })
+
+    it('passes "All branches" into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/'),
+      })
+
+      const path = result.current.commits.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        branch: 'All branches',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/commits/All%20branches')
     })
   })
 
@@ -920,6 +975,34 @@ describe('useNavLinks', () => {
       })
       expect(path).toBe('/bb/test-owner/gazebo/flags')
     })
+
+    it('passes branches into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/gazebo/flags'),
+      })
+
+      const path = result.current.flagsTab.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        branch: 'hello',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/flags/hello')
+    })
+
+    it('does not pass "All branches" into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/gazebo/flags'),
+      })
+
+      const path = result.current.flagsTab.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        branch: 'All branches',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/flags')
+    })
   })
 
   describe('repo components tab link', () => {
@@ -942,6 +1025,34 @@ describe('useNavLinks', () => {
         owner: 'test-owner',
       })
       expect(path).toBe('/bb/test-owner/gazebo/components')
+    })
+
+    it('passes branches into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/gazebo/components'),
+      })
+
+      const path = result.current.componentsTab.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        branch: 'main',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/components/main')
+    })
+
+    it('does not pass "All branches" into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/gazebo/components'),
+      })
+
+      const path = result.current.componentsTab.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        branch: 'All branches',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/components')
     })
   })
 
@@ -1819,6 +1930,18 @@ describe('useNavLinks', () => {
           '/gh/codecov/cool-repo/bundles/test-branch/test-bundle'
         )
       })
+
+      it('does not pass "All branches" into the url', () => {
+        const { result } = renderHook(() => useNavLinks(), {
+          wrapper: wrapper('/gh/codecov/cool-repo'),
+        })
+
+        const path = result.current.bundles.path({
+          branch: 'All branches',
+          bundle: 'test-bundle',
+        })
+        expect(path).toBe('/gh/codecov/cool-repo/bundles')
+      })
     })
   })
 
@@ -2047,6 +2170,20 @@ describe('useNavLinks', () => {
         branch: 'cool',
       })
       expect(path).toBe('/bb/test-owner/test-repo/tests/cool')
+    })
+
+    it('does not pass "All branches" into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTests.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        branch: 'All branches',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/tests')
     })
   })
 

@@ -13,7 +13,7 @@ const FALLBACK_PERIOD_TEXT = 'the end of the period'
 function CancelButton({
   customerId,
   planCost,
-  upComingCancelation,
+  upComingCancellation,
   currentPeriodEnd,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -27,11 +27,11 @@ function CancelButton({
     // disable button if
     queryIsLoading, // request in fly
     isAlreadyFreeUser, // user is a free user
-    upComingCancelation, // the subscription is already getting cancelled
+    upComingCancellation, // the subscription is already getting cancelled
   ].some(Boolean)
   const periodEnd = getEndPeriod(currentPeriodEnd)
 
-  function completeCancelation() {
+  function completeCancellation() {
     if (baremetricsBlocked) {
       cancelPlan()
     }
@@ -86,11 +86,12 @@ function CancelButton({
               Cancel
             </Button>
             <Button
+              // This ID is needed to render the baremetrics form. DO NOT CHANGE
               id="barecancel-trigger"
               variant="danger"
               hook="continue-cancellation-button"
               disabled={isDisabled}
-              onClick={completeCancelation}
+              onClick={completeCancellation}
             >
               Confirm Cancellation
             </Button>
@@ -104,7 +105,7 @@ function CancelButton({
 CancelButton.propTypes = {
   customerId: PropType.string,
   planCost: PropType.string.isRequired,
-  upComingCancelation: PropType.bool,
+  upComingCancellation: PropType.bool,
   currentPeriodEnd: PropType.number,
 }
 

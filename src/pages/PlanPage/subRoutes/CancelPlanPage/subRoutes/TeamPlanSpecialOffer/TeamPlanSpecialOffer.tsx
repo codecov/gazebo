@@ -30,7 +30,7 @@ function TeamPlanSpecialOffer() {
       </div>
       <TeamPlanCard />
       <A
-        variant="blueSeptenary"
+        variant="black"
         to={{ pageName: 'downgradePlanPage' }}
         hook="proceed-with-basic"
         isExternal={false}

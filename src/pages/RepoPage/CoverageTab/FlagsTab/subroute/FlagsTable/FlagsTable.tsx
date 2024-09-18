@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {
   createColumnHelper,
   flexRender,

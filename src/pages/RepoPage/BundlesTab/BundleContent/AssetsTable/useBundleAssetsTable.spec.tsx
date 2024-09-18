@@ -26,7 +26,7 @@ const mockRepoOverview = {
   },
 }
 
-const mockBranchBundles = {
+const mockedBundleAssets = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -40,32 +40,40 @@ const mockBranchBundles = {
                   uncompress: 12,
                 },
               },
-              assets: [
-                {
-                  name: 'asset-1',
-                  extension: 'js',
-                  bundleData: {
-                    loadTime: {
-                      threeG: 1,
-                      highSpeed: 2,
-                    },
-                    size: {
-                      uncompress: 3,
-                      gzip: 4,
-                    },
-                  },
-                  measurements: {
-                    change: {
-                      size: {
-                        uncompress: 5,
+              assetsPaginated: {
+                edges: [
+                  {
+                    node: {
+                      name: 'asset-1',
+                      extension: 'js',
+                      bundleData: {
+                        loadTime: {
+                          threeG: 1,
+                          highSpeed: 2,
+                        },
+                        size: {
+                          uncompress: 3,
+                          gzip: 4,
+                        },
+                      },
+                      measurements: {
+                        change: {
+                          size: {
+                            uncompress: 5,
+                          },
+                        },
+                        measurements: [
+                          { timestamp: '2022-10-10T11:59:59', avg: 6 },
+                        ],
                       },
                     },
-                    measurements: [
-                      { timestamp: '2022-10-10T11:59:59', avg: 6 },
-                    ],
                   },
+                ],
+                pageInfo: {
+                  hasNextPage: false,
+                  endCursor: null,
                 },
-              ],
+              },
             },
           },
         },
@@ -119,7 +127,7 @@ describe('useBundleAssetsTable', () => {
     server.use(
       graphql.query('BundleAssets', (req, res, ctx) => {
         queryVarMock(req.variables)
-        return res(ctx.status(200), ctx.data(mockBranchBundles))
+        return res(ctx.status(200), ctx.data(mockedBundleAssets))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoOverview))
@@ -145,36 +153,49 @@ describe('useBundleAssetsTable', () => {
     )
 
     const expectedResult = {
-      assets: [
+      pageParams: [undefined],
+      pages: [
         {
+          assets: [
+            {
+              bundleData: {
+                loadTime: {
+                  highSpeed: 2,
+                  threeG: 1,
+                },
+                size: {
+                  gzip: 4,
+                  uncompress: 3,
+                },
+              },
+              extension: 'js',
+              measurements: {
+                change: {
+                  size: {
+                    uncompress: 5,
+                  },
+                },
+                measurements: [
+                  {
+                    avg: 6,
+                    timestamp: '2022-10-10T11:59:59',
+                  },
+                ],
+              },
+              name: 'asset-1',
+            },
+          ],
           bundleData: {
-            loadTime: {
-              highSpeed: 2,
-              threeG: 1,
-            },
             size: {
-              gzip: 4,
-              uncompress: 3,
+              uncompress: 12,
             },
           },
-          extension: 'js',
-          measurements: {
-            change: {
-              size: {
-                uncompress: 5,
-              },
-            },
-            measurements: [
-              {
-                avg: 6,
-                timestamp: '2022-10-10T11:59:59',
-              },
-            ],
+          pageInfo: {
+            endCursor: null,
+            hasNextPage: false,
           },
-          name: 'asset-1',
         },
       ],
-      bundleUncompressSize: 12,
     }
     await waitFor(() => expect(result.current.data).toEqual(expectedResult))
   })

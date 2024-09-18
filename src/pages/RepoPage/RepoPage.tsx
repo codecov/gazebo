@@ -38,6 +38,7 @@ interface URLParams {
 }
 
 interface RoutesProps {
+  isCurrentUserPartOfOrg: boolean
   isRepoActivated: boolean
   isRepoActive: boolean
   coverageEnabled?: boolean
@@ -49,6 +50,7 @@ interface RoutesProps {
 }
 
 function Routes({
+  isCurrentUserPartOfOrg,
   isRepoActivated,
   isRepoActive,
   coverageEnabled,
@@ -75,7 +77,11 @@ function Routes({
             path={[
               path,
               `${path}/flags`,
+              /* flags tab does not actually do anything with the branch but since it is one of multiple tabs
+              in the coverage page, it is better user experience to persist the selected branch */
+              `${path}/flags/:branch`,
               `${path}/components`,
+              `${path}/components/:branch`,
               `${path}/blob/:ref/:path+`,
               `${path}/tree/:branch`,
               `${path}/tree/:branch/:path+`,
@@ -131,19 +137,24 @@ function Routes({
             <BundleOnboarding />
           </SentryRoute>
         ) : null}
-        <SentryRoute
-          path={[
-            `${path}/tests`,
-            `${path}/tests/new`,
-            `${path}/tests/new/codecov-cli`,
-            `${path}/tests/:branch`,
-          ]}
-          exact
-        >
-          <FailedTestsTab />
-        </SentryRoute>
+        {isCurrentUserPartOfOrg || testAnalyticsEnabled ? (
+          <SentryRoute
+            path={[
+              `${path}/tests`,
+              `${path}/tests/new`,
+              `${path}/tests/new/codecov-cli`,
+              `${path}/tests/:branch`,
+            ]}
+            exact
+          >
+            <FailedTestsTab />
+          </SentryRoute>
+        ) : null}
         {productEnabled && userAuthorizedtoViewRepo ? (
-          <SentryRoute path={`${path}/commits`} exact>
+          <SentryRoute
+            path={[`${path}/commits`, `${path}/commits/:branch`]}
+            exact
+          >
             <CommitsTab />
           </SentryRoute>
         ) : null}
@@ -200,17 +211,19 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
-      <SentryRoute
-        path={[
-          `${path}/tests`,
-          `${path}/tests/new`,
-          `${path}/tests/new/codecov-cli`,
-          `${path}/tests/:branch`,
-        ]}
-        exact
-      >
-        <FailedTestsTab />
-      </SentryRoute>
+      {isCurrentUserPartOfOrg || testAnalyticsEnabled ? (
+        <SentryRoute
+          path={[
+            `${path}/tests`,
+            `${path}/tests/new`,
+            `${path}/tests/new/codecov-cli`,
+            `${path}/tests/:branch`,
+          ]}
+          exact
+        >
+          <FailedTestsTab />
+        </SentryRoute>
+      ) : null}
       {jsOrTsPresent ? (
         <SentryRoute
           path={[
@@ -284,7 +297,7 @@ function RepoPage() {
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
   const isRepoPrivate =
-    !!repoData?.repository?.private ?? repoData?.isRepoPrivate
+    !!repoData?.repository?.private || !!repoData?.isRepoPrivate
   if (!refetchEnabled && !isRepoActivated) {
     setRefetchEnabled(true)
   }
@@ -303,6 +316,7 @@ function RepoPage() {
           isRepoPrivate={isRepoPrivate}
           isCurrentUserActivated={isCurrentUserActivated}
           testAnalyticsEnabled={repoOverview?.testAnalyticsEnabled}
+          isCurrentUserPartOfOrg={!!repoData?.isCurrentUserPartOfOrg}
         />
       </Suspense>
     </div>

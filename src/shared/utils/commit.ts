@@ -17,6 +17,9 @@ export const ErrorCodeEnum = {
   fileNotFoundInStorage: 'FILE_NOT_IN_STORAGE',
   reportExpired: 'REPORT_EXPIRED',
   reportEmpty: 'REPORT_EMPTY',
+
+  unknownProcessing: 'UNKNOWN_PROCESSING',
+  unknownStorage: 'UNKNOWN_STORAGE',
 } as const
 
 export const UploadTypeEnum = {

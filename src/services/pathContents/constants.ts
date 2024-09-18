@@ -1,6 +1,8 @@
 import { ParsedQs } from 'qs'
 import { z } from 'zod'
 
+import { OrderingDirection } from 'types'
+
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -22,7 +24,7 @@ export type PathContentsFilters = {
   searchValue?: string
   displayType?: DisplayType
   ordering?: {
-    direction: 'ASC' | 'DESC'
+    direction: OrderingDirection
     parameter: PathContentsFiltersParam
   }
   flags?: string[] | ParsedQs[]

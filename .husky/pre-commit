@@ -1,7 +1,7 @@
 # Don't run in CI
 [ -n "$CI" ] && exit 0
 
-npx --no-install lint-staged
+yarn lint-staged
 
 # Uncomment for testing pre commit (will stop commit)
 # exit 1

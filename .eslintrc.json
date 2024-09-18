@@ -10,6 +10,11 @@
     "plugin:storybook/recommended",
     "plugin:tailwindcss/recommended"
   ],
+  "ignorePatterns": [
+    "!src/**/*.{js,jsx,ts,tsx}",
+    "src/old_ui/Icon/svg/*.jsx",
+    "src/ui/Icon/svg/**/*.jsx"
+  ],
   "rules": {
     "react/react-in-jsx-scope": "off",
     "testing-library/no-node-access": "warn",
@@ -24,9 +29,6 @@
     "testing-library/prefer-user-event": "warn",
     "testing-library/prefer-wait-for": "warn",
     "testing-library/prefer-explicit-assert": "warn",
-    "complexity": "off",
-    "max-statements": "off",
-    "max-nested-callbacks": ["error", 2],
     "react/prefer-stateless-function": ["error"],
     "react/prop-types": [
       "warn",
@@ -119,6 +121,11 @@
           },
           {
             "pattern": "sentry",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "types",
             "group": "internal",
             "position": "before"
           }
@@ -249,7 +256,6 @@
         "*.test.tsx"
       ],
       "rules": {
-        "max-nested-callbacks": "off",
         "react/display-name": "off",
         "camelcase": "off"
       }
@@ -277,7 +283,8 @@
           ["assets", "./src/assets"],
           ["custom-testing-library", "./src/custom-testing-library"],
           ["config", "./src/config"],
-          ["sentry", "./src/sentry"]
+          ["sentry", "./src/sentry"],
+          ["types", "./src/types"]
         ],
         "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
       }
