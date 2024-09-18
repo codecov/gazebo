@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import A from '.'
+import A, { getHostnameFromRegex } from './A'
 
 describe('A', () => {
   function setup(props = {}) {
@@ -9,6 +9,17 @@ describe('A', () => {
       wrapper: MemoryRouter,
     })
   }
+
+  describe('hostnameWithoutRegex', () => {
+    it('returns to home if no url passed', () => {
+      expect(getHostnameFromRegex(undefined)).toBe('https://app.codecov.io')
+    })
+    it('scrubs URL if one exists', () => {
+      expect(getHostnameFromRegex('https://app.codecov.io')).toBe(
+        'app.codecov.io'
+      )
+    })
+  })
 
   describe('when rendered with the prop `to`', () => {
     beforeEach(() => {

@@ -12,7 +12,7 @@ function CodeRendererProgressHeader({ path, fileCoverage, change }) {
    * Header component that shows progress bar for the Code Renderer component.
    * @param {[String]} treePaths path of file from root directory. Only used in standalone file viewer
    * @param {Float} fileCoverage total coverage of current file
-   * @param {Float} change difference between head and base coverage. Only used in commmit based file viewer
+   * @param {Float} change difference between head and base coverage. Only used in commit based file viewer
    */
 
   const isUnsupportedFileType = unsupportedExtensionsMapper({ path })
