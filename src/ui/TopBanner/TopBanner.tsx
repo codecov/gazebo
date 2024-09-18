@@ -19,12 +19,21 @@ const variants = {
     iconColor: 'text-ds-primary-yellow',
     bgColor: 'bg-orange-100',
   },
+  error: {
+    icon: 'exclamationCircle',
+    iconColor: '',
+    bgColor: 'bg-ds-primary-red',
+  },
 } as const
 
 type Variants = keyof typeof variants
 
 const topBannerContext = z.object({
-  variant: z.union([z.literal('default'), z.literal('warning')]),
+  variant: z.union([
+    z.literal('default'),
+    z.literal('warning'),
+    z.literal('error'),
+  ]),
   localStorageKey: z.string().optional(),
   setHideBanner: z.function().args(z.boolean()).returns(z.void()),
 })

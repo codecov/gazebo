@@ -5,27 +5,23 @@ import Icon from 'old_ui/Icon'
 
 const typeToStyle = {
   success: {
-    text: 'text-success-900',
-    background: 'bg-success-500',
-    backgroundIcon: 'bg-success-100',
+    background: 'bg-green-100 dark:bg-opacity-20',
+    backgroundIcon: 'bg-green-100 dark:bg-opacity-20',
     icon: 'check',
   },
   warning: {
-    text: 'text-warning-900',
-    background: 'bg-codecov-orange',
-    backgroundIcon: 'bg-error-100',
+    background: 'bg-orange-100 dark:bg-opacity-20',
+    backgroundIcon: 'bg-error-100 dark:bg-opacity-20',
     icon: 'exclamationCircle',
   },
   info: {
-    text: 'text-info-900',
-    background: 'bg-info-500',
-    backgroundIcon: 'bg-info-100',
+    background: 'bg-ds-blue-nonary  dark:bg-opacity-20',
+    backgroundIcon: 'bg-ds-blue-nonary  dark:bg-opacity-20',
     icon: 'infoCircle',
   },
   error: {
-    text: 'text-error-900',
-    background: 'bg-error-500',
-    backgroundIcon: 'bg-error-100',
+    background: 'bg-error-100 dark:bg-opacity-20',
+    backgroundIcon: 'bg-error-100 dark:bg-opacity-20',
     icon: 'ban',
   },
 }

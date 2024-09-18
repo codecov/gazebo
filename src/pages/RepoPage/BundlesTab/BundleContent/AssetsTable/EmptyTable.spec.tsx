@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import EmptyTable from './EmptyTable'
+import { EmptyTable } from './EmptyTable'
 
 describe('EmptyTable', () => {
   describe('renders table header', () => {

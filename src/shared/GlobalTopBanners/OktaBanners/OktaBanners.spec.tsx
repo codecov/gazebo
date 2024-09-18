@@ -9,6 +9,7 @@ import OktaBanners from './OktaBanners'
 
 jest.mock('../OktaEnabledBanner', () => () => 'OktaEnabledBanner')
 jest.mock('../OktaEnforcedBanner', () => () => 'OktaEnforcedBanner')
+jest.mock('../OktaErrorBanners', () => () => 'OktaErrorBanners')
 
 const wrapper =
   (initialEntries = ['/gh/owner']): React.FC<React.PropsWithChildren> =>
@@ -145,6 +146,27 @@ describe('OktaBanners', () => {
           const banner = await screen.findByText(/OktaEnabledBanner/)
           expect(banner).toBeInTheDocument()
         })
+
+        it('should render OktaErrorBanners', async () => {
+          setup({
+            owner: {
+              isUserOktaAuthenticated: false,
+              account: {
+                oktaConfig: {
+                  enabled: true,
+                  enforced: false,
+                  url: 'https://okta.com',
+                  clientId: 'clientId',
+                  clientSecret: 'clientSecret',
+                },
+              },
+            },
+          })
+
+          render(<OktaBanners />, { wrapper: wrapper() })
+          const banner = await screen.findByText(/OktaErrorBanners/)
+          expect(banner).toBeInTheDocument()
+        })
       })
 
       describe('when Okta is enforced', () => {
@@ -167,6 +189,27 @@ describe('OktaBanners', () => {
           render(<OktaBanners />, { wrapper: wrapper() })
 
           const banner = await screen.findByText(/OktaEnforcedBanner/)
+          expect(banner).toBeInTheDocument()
+        })
+
+        it('should render OktaErrorBanners', async () => {
+          setup({
+            owner: {
+              isUserOktaAuthenticated: false,
+              account: {
+                oktaConfig: {
+                  enabled: true,
+                  enforced: true,
+                  url: 'https://okta.com',
+                  clientId: 'clientId',
+                  clientSecret: 'clientSecret',
+                },
+              },
+            },
+          })
+
+          render(<OktaBanners />, { wrapper: wrapper() })
+          const banner = await screen.findByText(/OktaErrorBanners/)
           expect(banner).toBeInTheDocument()
         })
       })

@@ -47,7 +47,7 @@ const renderItem = ({ item }) => {
   if (item?.isProvider) {
     return (
       <div className="flex h-8 items-center gap-2">
-        <A pathname={{ pageName: 'codecovAppInstallation' }}>
+        <A to={{ pageName: 'codecovAppInstallation' }}>
           <Icon name="plus-circle" />
           <span>Install Codecov GitHub app</span>
         </A>
