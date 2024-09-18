@@ -40,7 +40,7 @@ export function variantToIcon(
   variant?: string | null,
   customIconName?: keyof OutlineIconCollection | null
 ) {
-  let classname = 'float-left -mt-1 mr-2 align-middle'
+  let className = 'float-left -mt-1 mr-2 align-middle'
   switch (variant) {
     case AlertOptions.ERROR:
       return (
@@ -49,7 +49,7 @@ export function variantToIcon(
           size="md"
           name={customIconName ?? 'xCircle'}
           data-testid="error"
-          className={`stroke-ds-primary-red ${classname}`}
+          className={cn('stroke-ds-primary-red', className)}
         />
       )
     case AlertOptions.INFO:
@@ -59,7 +59,7 @@ export function variantToIcon(
           size="md"
           name={customIconName ?? 'informationCircle'}
           data-testid="info"
-          className={`stroke-ds-blue-darker ${classname}`}
+          className={cn('stroke-ds-blue-darker', className)}
         />
       )
     case AlertOptions.SUCCESS:
@@ -69,7 +69,7 @@ export function variantToIcon(
           size="md"
           name={customIconName ?? 'checkCircle'}
           data-testid="success"
-          className={`stroke-green-500 ${classname}`}
+          className={cn('stroke-green-500', className)}
         />
       )
     case AlertOptions.WARNING:
@@ -79,7 +79,7 @@ export function variantToIcon(
           size="md"
           name={customIconName ?? 'exclamationTriangle'}
           data-testid="warn"
-          className={`stroke-orange-500 ${classname}`}
+          className={cn('stroke-orange-500', className)}
         />
       )
     default:
@@ -89,7 +89,7 @@ export function variantToIcon(
           size="md"
           name={customIconName ?? 'informationCircle'}
           data-testid="default"
-          className={`stroke-ds-blue-darker ${classname}`}
+          className={cn('stroke-ds-blue-darker', className)}
         />
       )
   }

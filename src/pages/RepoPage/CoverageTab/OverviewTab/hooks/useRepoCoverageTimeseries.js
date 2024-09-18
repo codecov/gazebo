@@ -33,7 +33,7 @@ export function useRepoCoverageTimeseries({ branch }, options = {}) {
     owner,
     repo,
     branch,
-    after: queryVars?.startDate,
+    after: queryVars?.after,
     before: today,
     interval: queryVars.interval,
     opts: {

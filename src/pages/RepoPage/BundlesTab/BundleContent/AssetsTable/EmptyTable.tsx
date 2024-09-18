@@ -1,4 +1,4 @@
-const EmptyTable: React.FC = () => {
+export const EmptyTable: React.FC = () => {
   return (
     <div className="tableui">
       <table className="!border-t-0">
@@ -42,5 +42,3 @@ const EmptyTable: React.FC = () => {
     </div>
   )
 }
-
-export default EmptyTable

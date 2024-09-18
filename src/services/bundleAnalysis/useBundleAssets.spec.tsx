@@ -5,67 +5,72 @@ import { setupServer } from 'msw/node'
 
 import { useBundleAssets } from './useBundleAssets'
 
-const mockRepoOverview = {
-  owner: {
-    isCurrentUserActivated: true,
-    repository: {
-      __typename: 'Repository',
-      private: false,
-      defaultBranch: 'main',
-      oldestCommitAt: '2022-10-10T11:59:59',
-      coverageEnabled: false,
-      bundleAnalysisEnabled: false,
-      languages: ['javascript'],
-      testAnalyticsEnabled: true,
+const node1 = {
+  name: 'asset-1',
+  extension: 'js',
+  bundleData: {
+    loadTime: {
+      threeG: 1,
+      highSpeed: 2,
     },
+    size: {
+      uncompress: 3,
+      gzip: 4,
+    },
+  },
+  measurements: {
+    change: {
+      size: {
+        uncompress: 5,
+      },
+    },
+    measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
   },
 }
 
-const mockBranchBundles = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      branch: {
-        head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              bundleData: {
-                size: {
-                  uncompress: 12,
-                },
-              },
-              assets: [
-                {
-                  name: 'asset-1',
-                  extension: 'js',
-                  bundleData: {
-                    loadTime: {
-                      threeG: 1,
-                      highSpeed: 2,
-                    },
-                    size: {
-                      uncompress: 3,
-                      gzip: 4,
-                    },
-                  },
-                  measurements: {
-                    change: {
-                      size: {
-                        uncompress: 5,
-                      },
-                    },
-                    measurements: [
-                      { timestamp: '2022-10-10T11:59:59', avg: 6 },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
+const node2 = {
+  name: 'asset-2',
+  extension: 'js',
+  bundleData: {
+    loadTime: {
+      threeG: 1,
+      highSpeed: 2,
+    },
+    size: {
+      uncompress: 3,
+      gzip: 4,
+    },
+  },
+  measurements: {
+    change: {
+      size: {
+        uncompress: 5,
       },
     },
+    measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
+  },
+}
+
+const node3 = {
+  name: 'asset-3',
+  extension: 'js',
+  bundleData: {
+    loadTime: {
+      threeG: 1,
+      highSpeed: 2,
+    },
+    size: {
+      uncompress: 3,
+      gzip: 4,
+    },
+  },
+  measurements: {
+    change: {
+      size: {
+        uncompress: 5,
+      },
+    },
+    measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
   },
 }
 
@@ -172,60 +177,85 @@ describe('useBundleAssets', () => {
           return res(ctx.status(200), ctx.data(mockMissingHeadReport))
         }
 
-        return res(ctx.status(200), ctx.data(mockBranchBundles))
-      }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverview))
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              repository: {
+                __typename: 'Repository',
+                branch: {
+                  head: {
+                    bundleAnalysisReport: {
+                      __typename: 'BundleAnalysisReport',
+                      bundle: {
+                        bundleData: {
+                          size: {
+                            uncompress: 12,
+                          },
+                        },
+                        assetsPaginated: {
+                          edges: req.variables.assetsAfter
+                            ? [{ node: node3 }]
+                            : [{ node: node1 }, { node: node2 }],
+                          pageInfo: {
+                            hasNextPage: req.variables.assetsAfter
+                              ? false
+                              : true,
+                            endCursor: req.variables.assetsAfter
+                              ? 'cursor-1'
+                              : 'cursor-2',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          })
+        )
       })
     )
 
     return { passedBranch, madeRequest }
   }
 
-  describe('passing branch name', () => {
-    it('uses the branch name passed in', async () => {
-      const { passedBranch } = setup({})
-      renderHook(
+  describe('when __typename is Repository', () => {
+    it('returns expected asset nodes', async () => {
+      setup({})
+      const { result } = renderHook(
         () =>
           useBundleAssets({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
-            branch: 'cool-branch',
+            branch: 'main',
             bundle: 'test-bundle',
           }),
-        { wrapper }
+        {
+          wrapper,
+        }
       )
 
-      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(passedBranch).toHaveBeenCalledWith('cool-branch')
-      )
+      await waitFor(() => {
+        expect(result.current.data).toEqual({
+          pageParams: [undefined],
+          pages: [
+            {
+              assets: [node1, node2],
+              bundleData: { size: { uncompress: 12 } },
+              pageInfo: {
+                hasNextPage: true,
+                endCursor: 'cursor-2',
+              },
+            },
+          ],
+        })
+      })
     })
-  })
 
-  describe('no branch name passed', () => {
-    it('uses the default branch', async () => {
-      const { passedBranch } = setup({})
-      renderHook(
-        () =>
-          useBundleAssets({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            bundle: 'test-bundle',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
-    })
-  })
-
-  describe('returns repository typename of repository', () => {
-    describe('there is valid data', () => {
-      it('returns the list of assets', async () => {
+    describe('calling next page', () => {
+      it('adds in the next page of assets', async () => {
         setup({})
         const { result } = renderHook(
           () =>
@@ -236,45 +266,60 @@ describe('useBundleAssets', () => {
               branch: 'main',
               bundle: 'test-bundle',
             }),
-          { wrapper }
+          {
+            wrapper,
+          }
         )
 
-        const expectedResponse = {
-          bundleUncompressSize: 12,
-          assets: [
-            {
-              name: 'asset-1',
-              extension: 'js',
-              bundleData: {
-                loadTime: {
-                  threeG: 1,
-                  highSpeed: 2,
-                },
-                size: {
-                  uncompress: 3,
-                  gzip: 4,
+        await waitFor(() => {
+          expect(result.current.data).toEqual({
+            pageParams: [undefined],
+            pages: [
+              {
+                assets: [node1, node2],
+                bundleData: { size: { uncompress: 12 } },
+                pageInfo: {
+                  hasNextPage: true,
+                  endCursor: 'cursor-2',
                 },
               },
-              measurements: {
-                change: {
-                  size: {
-                    uncompress: 5,
-                  },
-                },
-                measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
-              },
-            },
-          ],
-        }
+            ],
+          })
+        })
+
+        result.current.fetchNextPage()
+
+        await waitFor(() => result.current.isFetching)
+        await waitFor(() => !result.current.isFetching)
 
         await waitFor(() =>
-          expect(result.current.data).toStrictEqual(expectedResponse)
+          expect(result.current.data).toEqual({
+            pageParams: [undefined, 'cursor-2'],
+            pages: [
+              {
+                assets: [node1, node2],
+                bundleData: { size: { uncompress: 12 } },
+                pageInfo: {
+                  endCursor: 'cursor-2',
+                  hasNextPage: true,
+                },
+              },
+              {
+                assets: [node3],
+                bundleData: { size: { uncompress: 12 } },
+                pageInfo: {
+                  endCursor: 'cursor-1',
+                  hasNextPage: false,
+                },
+              },
+            ],
+          })
         )
       })
     })
 
     describe('there is a missing head report', () => {
-      it('returns an empty list', async () => {
+      it('returns an empty array', async () => {
         setup({ missingHeadReport: true })
         const { result } = renderHook(
           () =>
@@ -285,23 +330,32 @@ describe('useBundleAssets', () => {
               branch: 'main',
               bundle: 'test-bundle',
             }),
-          { wrapper }
+          {
+            wrapper,
+          }
         )
 
-        const expectedResponse = {
-          bundleUncompressSize: null,
-          assets: [],
-        }
+        await waitFor(() => expect(result.current.isLoading).toBeTruthy())
+        await waitFor(() => expect(result.current.isLoading).toBeFalsy())
 
-        await waitFor(() =>
-          expect(result.current.data).toStrictEqual(expectedResponse)
-        )
+        await waitFor(() => {
+          expect(result.current.data).toEqual({
+            pageParams: [undefined],
+            pages: [
+              {
+                assets: [],
+                bundleData: null,
+                pageInfo: null,
+              },
+            ],
+          })
+        })
       })
     })
   })
 
-  describe('there is invalid data', () => {
-    it('returns a null value', async () => {
+  describe('owner is null', () => {
+    it('returns an empty array', async () => {
       setup({ isNullOwner: true })
       const { result } = renderHook(
         () =>
@@ -312,21 +366,24 @@ describe('useBundleAssets', () => {
             branch: 'main',
             bundle: 'test-bundle',
           }),
-        { wrapper }
+        {
+          wrapper,
+        }
       )
 
-      const expectedResponse = {
-        assets: [],
-        bundleUncompressSize: null,
-      }
+      await waitFor(() => expect(result.current.isLoading).toBeTruthy())
+      await waitFor(() => expect(result.current.isLoading).toBeFalsy())
 
-      await waitFor(() =>
-        expect(result.current.data).toStrictEqual(expectedResponse)
-      )
+      await waitFor(() => {
+        expect(result.current.data).toEqual({
+          pageParams: [undefined],
+          pages: [{ assets: [], bundleData: null, pageInfo: null }],
+        })
+      })
     })
   })
 
-  describe('returns NotFoundError __typename', () => {
+  describe('when __typename is NotFoundError', () => {
     let oldConsoleError = console.error
 
     beforeEach(() => {
@@ -348,7 +405,9 @@ describe('useBundleAssets', () => {
             branch: 'main',
             bundle: 'test-bundle',
           }),
-        { wrapper }
+        {
+          wrapper,
+        }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -362,7 +421,7 @@ describe('useBundleAssets', () => {
     })
   })
 
-  describe('returns OwnerNotActivatedError __typename', () => {
+  describe('when __typename is OwnerNotActivatedError', () => {
     let oldConsoleError = console.error
 
     beforeEach(() => {
@@ -384,7 +443,9 @@ describe('useBundleAssets', () => {
             branch: 'main',
             bundle: 'test-bundle',
           }),
-        { wrapper }
+        {
+          wrapper,
+        }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -398,7 +459,7 @@ describe('useBundleAssets', () => {
     })
   })
 
-  describe('unsuccessful parse of zod schema', () => {
+  describe('unsuccessful parse error', () => {
     let oldConsoleError = console.error
 
     beforeEach(() => {
@@ -420,7 +481,9 @@ describe('useBundleAssets', () => {
             branch: 'main',
             bundle: 'test-bundle',
           }),
-        { wrapper }
+        {
+          wrapper,
+        }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -431,110 +494,6 @@ describe('useBundleAssets', () => {
           })
         )
       )
-    })
-  })
-
-  describe('passing enabled to opts object', () => {
-    describe('enabled is true', () => {
-      describe('branch is not passed', () => {
-        it('runs the query', async () => {
-          const { madeRequest } = setup({})
-          renderHook(
-            () =>
-              useBundleAssets({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'codecov',
-                bundle: 'test-bundle',
-                opts: {
-                  enabled: true,
-                },
-              }),
-            { wrapper }
-          )
-
-          await waitFor(() => queryClient.isFetching())
-          await waitFor(() => !queryClient.isFetching())
-
-          await waitFor(() => expect(madeRequest).toHaveBeenCalled())
-        })
-      })
-
-      describe('branch is passed', () => {
-        it('runs the query', async () => {
-          const { madeRequest } = setup({})
-          renderHook(
-            () =>
-              useBundleAssets({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'codecov',
-                branch: 'cool-branch',
-                bundle: 'test-bundle',
-                opts: {
-                  enabled: true,
-                },
-              }),
-            { wrapper }
-          )
-
-          await waitFor(() => queryClient.isFetching())
-          await waitFor(() => !queryClient.isFetching())
-
-          await waitFor(() => expect(madeRequest).toHaveBeenCalled())
-        })
-      })
-    })
-
-    describe('enabled is false', () => {
-      describe('branch is not passed', () => {
-        it('does not run the query', async () => {
-          const { madeRequest } = setup({})
-          renderHook(
-            () =>
-              useBundleAssets({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'codecov',
-                bundle: 'test-bundle',
-                opts: {
-                  enabled: false,
-                },
-              }),
-            { wrapper }
-          )
-
-          await waitFor(() => queryClient.isFetching())
-          await waitFor(() => !queryClient.isFetching())
-
-          await waitFor(() => expect(madeRequest).not.toHaveBeenCalled())
-        })
-      })
-
-      describe('branch is passed', () => {
-        it('does not run the query', async () => {
-          const { madeRequest } = setup({})
-          renderHook(
-            () =>
-              useBundleAssets({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'codecov',
-                branch: 'cool-branch',
-                bundle: 'test-bundle',
-                opts: {
-                  enabled: false,
-                },
-              }),
-            { wrapper }
-          )
-
-          await waitFor(() => queryClient.isFetching())
-          await waitFor(() => !queryClient.isFetching())
-
-          await waitFor(() => expect(madeRequest).not.toHaveBeenCalled())
-        })
-      })
     })
   })
 })

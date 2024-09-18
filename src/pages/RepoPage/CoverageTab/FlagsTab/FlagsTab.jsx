@@ -75,7 +75,13 @@ function FlagsTab() {
           flagsMeasurementsActive,
           flagsMeasurementsBackfilled,
         }) ? (
-          <SentryRoute path="/:provider/:owner/:repo/flags" exact>
+          <SentryRoute
+            path={[
+              '/:provider/:owner/:repo/flags',
+              '/:provider/:owner/:repo/flags/:branch',
+            ]}
+            exact
+          >
             <FlagsTable />
           </SentryRoute>
         ) : (
