@@ -8,7 +8,7 @@ const TooltipWithIcon = ({ children }: { children: React.ReactNode }) => {
     <Tooltip delayDuration={0} skipDelayDuration={100}>
       <Tooltip.Root>
         <Tooltip.Trigger>
-          <div className="text-ds-gray-tertiary">
+          <div className="text-ds-gray-tertiary dark:text-ds-gray-quinary">
             <Icon name="informationCircle" size="sm" />
           </div>
         </Tooltip.Trigger>
