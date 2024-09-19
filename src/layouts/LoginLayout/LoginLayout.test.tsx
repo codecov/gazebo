@@ -57,7 +57,7 @@ describe('LoginLayout', () => {
   function setup() {
     server.use(
       graphql.query('CurrentUser', (info) => {
-        return HttpResponse.json({ data: { me: null } }, { status: 200 })
+        return HttpResponse.json({ data: { me: null } })
       })
     )
     mocks.useLocation.mockReturnValue({ search: [] })
