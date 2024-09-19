@@ -20,6 +20,8 @@ const FileExplorer = lazy(() => import('./subroute/FileExplorer'))
 const CoverageChart = lazy(() => import('./subroute/CoverageChart'))
 const Sunburst = lazy(() => import('./subroute/Sunburst'))
 
+const MAX_FILE_COUNT = 200_000
+
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
     <Spinner />
@@ -50,9 +52,12 @@ function CoverageOverviewTab() {
     branch: branch,
   })
 
-  let displaySunburst = false
   const fileCount = data?.branch?.head?.totals?.fileCount
-  if (typeof fileCount === 'number' && fileCount <= 200_000) {
+  const withinFileCount =
+    typeof fileCount === 'number' && fileCount <= MAX_FILE_COUNT
+
+  let displaySunburst = false
+  if (withinFileCount) {
     displaySunburst = true
   }
 
