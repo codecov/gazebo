@@ -1,10 +1,18 @@
 import cs from 'classnames'
-import PropType from 'prop-types'
 
 import ErrorBoundary from '../shared/ErrorBoundary'
 import NetworkErrorBoundary from '../shared/NetworkErrorBoundary'
 
-function SidebarLayout({ sidebar, children, className = '' }) {
+interface SidebarLayoutProps {
+  sidebar: React.ReactNode
+  className?: string
+}
+
+const SidebarLayout: React.FC<React.PropsWithChildren<SidebarLayoutProps>> = ({
+  sidebar,
+  children,
+  className = '',
+}) => {
   return (
     <div className="container flex flex-col lg:flex-row">
       <ErrorBoundary sentryScopes={[['layout', 'sidebar']]}>
@@ -20,10 +28,6 @@ function SidebarLayout({ sidebar, children, className = '' }) {
       </ErrorBoundary>
     </div>
   )
-}
-
-SidebarLayout.propTypes = {
-  sidebar: PropType.element.isRequired,
 }
 
 export default SidebarLayout
