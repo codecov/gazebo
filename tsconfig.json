@@ -18,7 +18,6 @@
     "noImplicitAny": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "types": ["vitest/globals"],
     "paths": {
       "layouts/*": ["./src/layouts/*"],
       "ui/*": ["./src/ui/*"],
