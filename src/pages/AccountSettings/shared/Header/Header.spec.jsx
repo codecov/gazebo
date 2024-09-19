@@ -9,8 +9,6 @@ import Header from './Header'
 
 jest.mock('config')
 
-jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
-
 const queryClient = new QueryClient()
 const server = setupServer()
 
