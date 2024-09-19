@@ -3,7 +3,11 @@ import Icon from 'ui/Icon'
 import { MetricCard } from 'ui/MetricCard'
 import { Tooltip } from 'ui/Tooltip'
 
-const TooltipWithIcon = ({ children }: { children: React.ReactNode }) => {
+export const TooltipWithIcon = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
   return (
     <Tooltip delayDuration={0} skipDelayDuration={100}>
       <Tooltip.Root>
