@@ -1,5 +1,4 @@
-import { renderHook } from '@testing-library/react'
-import React from 'react'
+import { cleanup, renderHook } from '@testing-library/react'
 
 import { useTruncation } from './useTruncation'
 
@@ -24,9 +23,24 @@ class ResizeObserver {
 
 global.window.ResizeObserver = ResizeObserver
 
-describe('useTruncation', () => {
-  let useRefSpy: any
+const mocks = vi.hoisted(() => ({
+  useRef: vi.fn(),
+}))
 
+vi.mock('react', async () => {
+  const original = await vi.importActual('react')
+
+  return {
+    ...original,
+    useRef: mocks.useRef,
+  }
+})
+
+afterEach(() => {
+  cleanup()
+})
+
+describe('useTruncation', () => {
   function setup({
     clientHeight = 0,
     scrollHeight = 0,
@@ -45,7 +59,8 @@ describe('useTruncation', () => {
             scrollWidth,
           },
         }
-    useRefSpy = jest.spyOn(React, 'useRef').mockReturnValue(refReturn)
+
+    mocks.useRef.mockReturnValue(refReturn)
 
     if (enableEntry) {
       entry = {
@@ -62,7 +77,7 @@ describe('useTruncation', () => {
   }
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   describe('scrolls are larger then clients', () => {
@@ -71,7 +86,7 @@ describe('useTruncation', () => {
         setup({ scrollHeight: 10, scrollWidth: 10 })
         const { result } = renderHook(() => useTruncation())
 
-        expect(useRefSpy).toHaveBeenCalled()
+        expect(mocks.useRef).toHaveBeenCalled()
         expect(result.current.canTruncate).toBeTruthy()
       })
     })
@@ -81,7 +96,7 @@ describe('useTruncation', () => {
         setup({ scrollHeight: 10, scrollWidth: 0 })
         const { result } = renderHook(() => useTruncation())
 
-        expect(useRefSpy).toHaveBeenCalled()
+        expect(mocks.useRef).toHaveBeenCalled()
         expect(result.current.canTruncate).toBeTruthy()
       })
     })
@@ -91,7 +106,7 @@ describe('useTruncation', () => {
         setup({ scrollHeight: 0, scrollWidth: 10 })
         const { result } = renderHook(() => useTruncation())
 
-        expect(useRefSpy).toHaveBeenCalled()
+        expect(mocks.useRef).toHaveBeenCalled()
         expect(result.current.canTruncate).toBeTruthy()
       })
     })
@@ -103,7 +118,7 @@ describe('useTruncation', () => {
         setup({ clientHeight: 10, clientWidth: 10 })
         const { result } = renderHook(() => useTruncation())
 
-        expect(useRefSpy).toHaveBeenCalled()
+        expect(mocks.useRef).toHaveBeenCalled()
         expect(result.current.canTruncate).toBeFalsy()
       })
     })
@@ -113,7 +128,7 @@ describe('useTruncation', () => {
         setup({ clientHeight: 10, clientWidth: 0 })
         const { result } = renderHook(() => useTruncation())
 
-        expect(useRefSpy).toHaveBeenCalled()
+        expect(mocks.useRef).toHaveBeenCalled()
         expect(result.current.canTruncate).toBeFalsy()
       })
     })
@@ -123,7 +138,7 @@ describe('useTruncation', () => {
         setup({ clientHeight: 0, clientWidth: 10 })
         const { result } = renderHook(() => useTruncation())
 
-        expect(useRefSpy).toHaveBeenCalled()
+        expect(mocks.useRef).toHaveBeenCalled()
         expect(result.current.canTruncate).toBeFalsy()
       })
     })
