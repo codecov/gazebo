@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { vi } from 'vitest'
 
 import Message from '.'
 
@@ -9,7 +10,7 @@ describe('Message', () => {
   const defaultProps = {
     variant: 'info',
     children: 'hello',
-    onClose: jest.fn(),
+    onClose: vi.fn(),
   }
 
   function setup(over = {}) {

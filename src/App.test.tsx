@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React, { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
+import { type Mock, vi } from 'vitest'
 
 import config from 'config'
 
@@ -11,26 +12,36 @@ import { useLocationParams } from 'services/navigation'
 
 import App from './App'
 
-jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
-jest.mock('./pages/AdminSettings', () => () => 'AdminSettingsPage')
-jest.mock('./pages/AnalyticsPage', () => () => 'AnalyticsPage')
-jest.mock('./pages/CommitDetailPage', () => () => 'CommitDetailPage')
-jest.mock('./pages/LoginPage', () => () => 'LoginPage')
-jest.mock('./pages/OwnerPage', () => () => 'OwnerPage')
-jest.mock('./pages/MembersPage', () => () => 'MembersPage')
-jest.mock('./pages/PlanPage', () => () => 'PlanPage')
-jest.mock('./pages/PullRequestPage', () => () => 'PullRequestPage')
-jest.mock('./pages/RepoPage', () => () => 'RepoPage')
-jest.mock('./pages/TermsOfService', () => () => 'TermsOfService')
-jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
-jest.mock('./pages/SyncProviderPage', () => () => 'SyncProviderPage')
-
-jest.mock('services/navigation', () => ({
-  ...jest.requireActual('services/navigation'),
-  useLocationParams: jest.fn(),
+vi.mock('./pages/AccountSettings', () => ({ default: () => 'AccountSettings' }))
+vi.mock('./pages/AdminSettings', () => ({ default: () => 'AdminSettingsPage' }))
+vi.mock('./pages/AnalyticsPage', () => ({ default: () => 'AnalyticsPage' }))
+vi.mock('./pages/CommitDetailPage', () => ({
+  default: () => 'CommitDetailPage',
+}))
+vi.mock('./pages/LoginPage', () => ({ default: () => 'LoginPage' }))
+vi.mock('./pages/OwnerPage', () => ({ default: () => 'OwnerPage' }))
+vi.mock('./pages/MembersPage', () => ({ default: () => 'MembersPage' }))
+vi.mock('./pages/PlanPage', () => ({ default: () => 'PlanPage' }))
+vi.mock('./pages/PullRequestPage', () => ({ default: () => 'PullRequestPage' }))
+vi.mock('./pages/RepoPage', () => ({ default: () => 'RepoPage' }))
+vi.mock('./pages/TermsOfService', () => ({ default: () => 'TermsOfService' }))
+vi.mock('./pages/EnterpriseLandingPage', () => ({
+  default: () => 'EnterpriseLandingPage',
+}))
+vi.mock('./pages/SyncProviderPage', () => ({
+  default: () => 'SyncProviderPage',
 }))
 
-const mockedUseLocationParams = useLocationParams as jest.Mock
+vi.mock('services/navigation', async () => {
+  const servicesNavigation = await vi.importActual('services/navigation')
+
+  return {
+    ...servicesNavigation,
+    useLocationParams: vi.fn(),
+  }
+})
+
+const mockedUseLocationParams = useLocationParams as Mock
 
 const internalUser = {
   email: 'internal@user.com',
@@ -117,7 +128,6 @@ const queryClient = new QueryClient({
   },
 })
 
-const server = setupServer()
 let testLocation: ReturnType<typeof useLocation>
 const wrapper =
   (initialEntries = ['']): React.FC<React.PropsWithChildren> =>
@@ -137,6 +147,8 @@ const wrapper =
       </MemoryRouter>
     </QueryClientProvider>
   )
+
+const server = setupServer()
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
@@ -163,57 +175,57 @@ describe('App', () => {
     hasSession?: boolean
   }) {
     server.use(
-      rest.get('/internal/user', (_, res, ctx) => {
+      http.get('/internal/user', (info) => {
         if (hasSession) {
-          return res(ctx.status(200), ctx.json(internalUser))
+          return HttpResponse.json(internalUser, { status: 200 })
         } else {
-          return res(ctx.status(200), ctx.json({}))
+          return HttpResponse.json({}, { status: 200 })
         }
       }),
-      rest.get('/internal/users/current', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}))
+      http.get('/internal/users/current', (info) => {
+        return HttpResponse.json({}, { status: 200 })
       }),
-      graphql.query('DetailOwner', (_, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: 'codecov' }))
+      graphql.query('DetailOwner', (info) =>
+        HttpResponse.json({ data: { owner: 'codecov' } }, { status: 200 })
       ),
-      graphql.query('CurrentUser', (req, res, ctx) => {
+      graphql.query('CurrentUser', (info) => {
         if (hasLoggedInUser) {
-          return res(ctx.status(200), ctx.data(user))
+          return HttpResponse.json({ data: user }, { status: 200 })
         }
-        return res(ctx.status(200), ctx.data({}))
+        HttpResponse.json({ data: {} }, { status: 200 })
       }),
-      graphql.query('GetPlanData', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({ data: {} }, { status: 200 })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({ data: {} }, { status: 200 })
       }),
-      graphql.query('Seats', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+      graphql.query('Seats', (info) => {
+        return HttpResponse.json({ data: {} }, { status: 200 })
       }),
-      graphql.query('HasAdmins', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+      graphql.query('HasAdmins', (info) => {
+        return HttpResponse.json({ data: {} }, { status: 200 })
       }),
-      graphql.query('owner', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ me: { owner: { isAdmin: true } } })
+      graphql.query('owner', (info) => {
+        return HttpResponse.json(
+          { data: { owner: { isAdmin: true } } },
+          { status: 200 }
         )
       }),
-      graphql.query('MyContexts', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+      graphql.query('MyContexts', (info) => {
+        return HttpResponse.json({ data: {} }, { status: 200 })
       }),
-      graphql.query('GetOktaConfig', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+      graphql.query('GetOktaConfig', (info) => {
+        return HttpResponse.json({ data: {} }, { status: 200 })
       }),
-      graphql.query('OwnerPageData', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+      graphql.query('OwnerPageData', (info) => {
+        return HttpResponse.json({ data: {} }, { status: 200 })
       }),
-      graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+      graphql.mutation('updateDefaultOrganization', (info) => {
+        return HttpResponse.json({ data: {} }, { status: 200 })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverview))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockRepoOverview }, { status: 200 })
       })
     )
   }
@@ -605,6 +617,7 @@ describe('App', () => {
       expect(page).toBeInTheDocument()
     })
   })
+
   describe('user has session, not logged in', () => {
     it('redirects to session default', async () => {
       setup({ hasLoggedInUser: false, hasSession: true })
@@ -622,6 +635,7 @@ describe('App', () => {
       setup({ hasLoggedInUser: false, hasSession: true })
 
       render(<App />, { wrapper: wrapper(['/blah']) })
+
       await waitFor(() =>
         expect(testLocation.pathname).toBe('/plan/cool-service/cool-guy')
       )
