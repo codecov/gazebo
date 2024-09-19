@@ -30,9 +30,13 @@ const EXCLUDE_FROM_COVERAGE = [
 ]
 
 const VitestConfig = defineConfig((config) => {
-  const reporters = []
+  const reporters = ['basic']
   if (process.env.ENABLE_TEST_REPORTER) {
     reporters.push(['junit', { outputFile: 'reports/junit/junit.xml' }])
+  }
+
+  if (process.env.GITHUB_ACTIONS) {
+    reporters.push('github-actions')
   }
 
   const env = loadEnv(config.mode, process.cwd(), 'REACT_APP')
