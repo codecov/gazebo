@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type Mock } from 'vitest'
 
 import config from 'config'
 
@@ -10,8 +11,8 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import GuestHeader from './GuestHeader'
 
-jest.mock('config')
-jest.mock('shared/featureFlags')
+vi.mock('config')
+vi.mock('shared/featureFlags')
 
 // silence console errors
 console.error = () => {}
@@ -32,11 +33,15 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   </QueryClientProvider>
 )
 
-const mockedUseFlags = useFlags as jest.Mock
+const mockedUseFlags = useFlags as Mock
 
 beforeEach(() => {
-  queryClient.clear()
   mockedUseFlags.mockReturnValue({ darkMode: false })
+})
+
+afterEach(() => {
+  cleanup()
+  queryClient.clear()
 })
 
 describe('GuestHeader', () => {

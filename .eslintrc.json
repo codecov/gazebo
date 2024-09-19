@@ -25,7 +25,7 @@
     "testing-library/prefer-find-by": "warn",
     "testing-library/await-fire-event": "warn",
     "testing-library/no-global-regexp-flag-in-query": "warn",
-    "testing-library/no-manual-cleanup": "warn",
+    "testing-library/no-manual-cleanup": "off",
     "testing-library/prefer-user-event": "warn",
     "testing-library/prefer-wait-for": "warn",
     "testing-library/prefer-explicit-assert": "warn",

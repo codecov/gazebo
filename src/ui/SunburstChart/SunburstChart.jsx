@@ -48,15 +48,39 @@ function SunburstChart({
     // Tracks previous location for rendering .. in the breadcrumb.
     let previous
 
-    const selectorMutate = (node) => {
-      if (Array.isArray(node.children)) {
-        return {
-          ...node,
-          value: selectorHandler.current(node),
-          children: node.children.map((child) => selectorMutate(child)),
+    // const selectorMutate = (node) => {
+    //   if (Array.isArray(node.children)) {
+    //     return {
+    //       ...node,
+    //       value: selectorHandler.current(node),
+    //       children: node.children.map((child) => selectorMutate(child)),
+    //     }
+    //   }
+
+    //   return { ...node, value: selectorHandler.current(node) }
+    // }
+
+    const selectorMutate = (rootNode) => {
+      const stack = [rootNode]
+      const result = { ...rootNode, value: selectorHandler.current(rootNode) }
+      const nodeMap = new Map()
+      nodeMap.set(rootNode, result)
+
+      while (stack.length > 0) {
+        const node = stack.pop()
+        const currentNode = nodeMap.get(node)
+
+        if (Array.isArray(node.children)) {
+          currentNode.children = node.children.map((child) => {
+            const newChild = { ...child, value: selectorHandler.current(child) }
+            nodeMap.set(child, newChild)
+            stack.push(child)
+            return newChild
+          })
         }
       }
-      return { ...node, value: selectorHandler.current(node) }
+
+      return result
     }
 
     // Process data for use in D3

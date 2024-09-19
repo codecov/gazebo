@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route, Switch, useLocation } from 'react-router-dom'
+import { type Mock } from 'vitest'
 
 import config from 'config'
 
@@ -55,9 +56,9 @@ const mockUser = {
   },
 }
 
-jest.mock('services/image')
-jest.mock('config')
-jest.mock('js-cookie')
+vi.mock('services/image')
+vi.mock('config')
+vi.mock('js-cookie')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -89,17 +90,20 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
+  cleanup()
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
 
 describe('UserDropdown', () => {
   function setup({ selfHosted } = { selfHosted: false }) {
-    const mockUseImage = useImage as jest.Mock
+    const mockUseImage = useImage as Mock
     mockUseImage.mockReturnValue({
       src: 'imageUrl',
       isLoading: false,
@@ -109,10 +113,12 @@ describe('UserDropdown', () => {
     config.API_URL = ''
 
     server.use(
-      rest.post('/logout', (req, res, ctx) => res(ctx.status(205))),
-      graphql.query('CurrentUser', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockUser))
-      )
+      http.post('/logout', (info) => {
+        return HttpResponse.json({}, { status: 205 })
+      }),
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: mockUser })
+      })
     )
 
     return {
@@ -135,7 +141,7 @@ describe('UserDropdown', () => {
 
   describe('when on GitHub', () => {
     afterEach(() => {
-      jest.resetAllMocks()
+      vi.resetAllMocks()
     })
     describe('when the avatar is clicked', () => {
       it('shows settings link', async () => {
@@ -172,7 +178,7 @@ describe('UserDropdown', () => {
       it('handles sign out', async () => {
         const { user } = setup()
 
-        jest.spyOn(console, 'error').mockImplementation()
+        vi.spyOn(console, 'error').mockImplementation(() => {})
         render(<UserDropdown />, {
           wrapper: wrapper(),
         })
@@ -245,7 +251,7 @@ describe('UserDropdown', () => {
       it('handles sign out', async () => {
         const { user } = setup()
 
-        jest.spyOn(console, 'error').mockImplementation()
+        vi.spyOn(console, 'error').mockImplementation(() => {})
         render(<UserDropdown />, {
           wrapper: wrapper(),
         })

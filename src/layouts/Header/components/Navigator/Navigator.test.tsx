@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { useLayoutEffect } from 'react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
@@ -170,20 +170,19 @@ interface SetupArgs {
 describe('Header Navigator', () => {
   function setup({ isMyOrg = true }: SetupArgs) {
     server.use(
-      graphql.query('MyContexts', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockMyContexts))
-      ),
-      graphql.query('DetailOwner', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockDetailOwner))
-      ),
-      graphql.query('OwnerPageData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          isMyOrg
-            ? ctx.data(mockOwnerPageData)
-            : ctx.data(mockOwnerPageDataNotInOrg)
-        )
-      )
+      graphql.query('MyContexts', (info) => {
+        return HttpResponse.json({ data: mockMyContexts })
+      }),
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({ data: mockDetailOwner })
+      }),
+      graphql.query('OwnerPageData', (info) => {
+        if (isMyOrg) {
+          return HttpResponse.json({ data: mockOwnerPageData })
+        }
+
+        return HttpResponse.json({ data: mockOwnerPageDataNotInOrg })
+      })
     )
 
     return {

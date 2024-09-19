@@ -1,20 +1,29 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
+import { type Mock } from 'vitest'
 
 import EnterpriseLoginLayout from './EnterpriseLoginLayout'
 
-jest.mock('layouts/Header/components/GuestHeader', () => () => 'GuestHeader')
-jest.mock('layouts/Footer', () => () => 'Footer')
-jest.mock('shared/GlobalBanners', () => () => 'GlobalBanners')
-jest.mock('layouts/ToastNotifications', () => () => 'ToastNotifications')
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn(),
+vi.mock('layouts/Header/components/GuestHeader', () => ({
+  default: () => 'GuestHeader',
+}))
+vi.mock('layouts/Footer', () => ({ default: () => 'Footer' }))
+vi.mock('shared/GlobalBanners', () => ({ default: () => 'GlobalBanners' }))
+vi.mock('layouts/ToastNotifications', () => ({
+  default: () => 'ToastNotifications',
 }))
 
-const mockedUseLocation = useLocation as jest.Mock
+vi.mock('react-router-dom', async () => {
+  const reactRouterDom = await vi.importActual('react-router-dom')
+
+  return {
+    ...reactRouterDom,
+    useLocation: vi.fn(),
+  }
+})
+
+const mockedUseLocation = useLocation as Mock
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,7 +52,7 @@ describe('EnterpriseLoginLayout', () => {
   })
 
   afterAll(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('renders children', () => {

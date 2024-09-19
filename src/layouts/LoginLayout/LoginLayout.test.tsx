@@ -1,17 +1,22 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
-import { MemoryRouter, Route, useLocation } from 'react-router-dom'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import LoginLayout from './LoginLayout'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn(),
+const mocks = vi.hoisted(() => ({
+  useLocation: vi.fn(),
 }))
 
-const mockedUseLocation = useLocation as jest.Mock
+vi.mock('react-router-dom', async () => {
+  const module = await import('react-router-dom')
+  return {
+    ...module,
+    useLocation: mocks.useLocation,
+  }
+})
 
 const server = setupServer()
 const queryClient = new QueryClient()
@@ -39,21 +44,23 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
+  cleanup()
+  vi.clearAllMocks()
 })
 
 afterAll(() => {
   server.close()
-  jest.restoreAllMocks()
+  vi.restoreAllMocks()
 })
 
 describe('LoginLayout', () => {
   function setup() {
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ me: null }))
-      )
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: { me: null } })
+      })
     )
-    mockedUseLocation.mockReturnValue({ search: [] })
+    mocks.useLocation.mockReturnValue({ search: [] })
   }
 
   describe('rendering component', () => {
@@ -95,7 +102,7 @@ describe('LoginLayout', () => {
     it('renders the expiry banner when query param set', async () => {
       setup()
 
-      mockedUseLocation.mockReturnValueOnce({
+      mocks.useLocation.mockReturnValueOnce({
         search: 'expired',
       })
 
