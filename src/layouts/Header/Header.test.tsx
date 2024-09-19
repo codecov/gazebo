@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { cleanup, render, screen } from '@testing-library/react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type Mock, vi } from 'vitest'
 
 import config from 'config'
 
@@ -12,29 +13,29 @@ import { useFlags } from 'shared/featureFlags'
 
 import Header from './Header'
 
-jest.mock('src/layouts/Header/components/Navigator', () => () => 'Navigator')
-jest.mock(
-  'src/layouts/Header/components/UserDropdown',
-  () => () => 'User Dropdown'
-)
-jest.mock(
-  'src/layouts/Header/components/HelpDropdown',
-  () => () => 'Help Dropdown'
-)
-jest.mock('src/layouts/Header/components/AdminLink', () => () => 'Admin Link')
-jest.mock(
-  'src/layouts/Header/components/SeatDetails',
-  () => () => 'Seat Details'
-)
-jest.mock(
-  'src/layouts/Header/components/ThemeToggle',
-  () => () => 'Theme Toggle'
-)
+vi.mock('src/layouts/Header/components/Navigator', () => ({
+  default: () => 'Navigator',
+}))
+vi.mock('src/layouts/Header/components/UserDropdown', () => ({
+  default: () => 'User Dropdown',
+}))
+vi.mock('src/layouts/Header/components/HelpDropdown', () => ({
+  default: () => 'Help Dropdown',
+}))
+vi.mock('src/layouts/Header/components/AdminLink', () => ({
+  default: () => 'Admin Link',
+}))
+vi.mock('src/layouts/Header/components/SeatDetails', () => ({
+  default: () => 'Seat Details',
+}))
+vi.mock('src/layouts/Header/components/ThemeToggle', () => ({
+  default: () => 'Theme Toggle',
+}))
 
-jest.mock('services/impersonate')
-jest.mock('shared/featureFlags')
-const mockedUseImpersonate = useImpersonate as jest.Mock
-const mockedUseFlags = useFlags as jest.Mock
+vi.mock('services/impersonate')
+vi.mock('shared/featureFlags')
+const mockedUseImpersonate = useImpersonate as Mock
+const mockedUseFlags = useFlags as Mock
 
 const mockUser = {
   me: {
@@ -87,12 +88,19 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
+  cleanup()
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={[`/gh/codecov/test-repo`]}>
@@ -111,9 +119,9 @@ describe('Header', () => {
     mockedUseImpersonate.mockReturnValue({ isImpersonating: false })
     mockedUseFlags.mockReturnValue({ darkMode: false })
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(user))
-      )
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: user }, { status: 200 })
+      })
     )
   }
 
