@@ -1,3 +1,4 @@
+import { loadEnv } from 'vite'
 import { defineConfig, mergeConfig } from 'vitest/config'
 
 import ViteConfig from './vite.config.mjs'
@@ -34,8 +35,11 @@ const VitestConfig = defineConfig((config) => {
     reporters.push(['junit', { outputFile: 'reports/junit/junit.xml' }])
   }
 
+  const env = loadEnv(config.mode, process.cwd(), 'REACT_APP')
+
   return {
     test: {
+      env: env,
       coverage: {
         include: ['src/**/*'],
         exclude: EXCLUDE_FROM_COVERAGE,
