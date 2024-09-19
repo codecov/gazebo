@@ -177,55 +177,52 @@ describe('App', () => {
     server.use(
       http.get('/internal/user', (info) => {
         if (hasSession) {
-          return HttpResponse.json(internalUser, { status: 200 })
+          return HttpResponse.json(internalUser)
         } else {
-          return HttpResponse.json({}, { status: 200 })
+          return HttpResponse.json({})
         }
       }),
       http.get('/internal/users/current', (info) => {
-        return HttpResponse.json({}, { status: 200 })
+        return HttpResponse.json({})
       }),
       graphql.query('DetailOwner', (info) =>
-        HttpResponse.json({ data: { owner: 'codecov' } }, { status: 200 })
+        HttpResponse.json({ data: { owner: 'codecov' } })
       ),
       graphql.query('CurrentUser', (info) => {
         if (hasLoggedInUser) {
-          return HttpResponse.json({ data: user }, { status: 200 })
+          return HttpResponse.json({ data: user })
         }
-        HttpResponse.json({ data: {} }, { status: 200 })
+        HttpResponse.json({ data: {} })
       }),
       graphql.query('GetPlanData', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       graphql.query('OwnerTier', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       graphql.query('Seats', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       graphql.query('HasAdmins', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       graphql.query('owner', (info) => {
-        return HttpResponse.json(
-          { data: { owner: { isAdmin: true } } },
-          { status: 200 }
-        )
+        return HttpResponse.json({ data: { owner: { isAdmin: true } } })
       }),
       graphql.query('MyContexts', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       graphql.query('GetOktaConfig', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       graphql.query('OwnerPageData', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       graphql.mutation('updateDefaultOrganization', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       graphql.query('GetRepoOverview', (info) => {
-        return HttpResponse.json({ data: mockRepoOverview }, { status: 200 })
+        return HttpResponse.json({ data: mockRepoOverview })
       })
     )
   }

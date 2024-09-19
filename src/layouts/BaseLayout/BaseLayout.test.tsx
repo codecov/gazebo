@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
+import { type Mock } from 'vitest'
 
 import config from 'config'
 
@@ -12,16 +13,24 @@ import { useInternalUser, useUser } from 'services/user'
 
 import BaseLayout from './BaseLayout'
 
-jest.mock('services/image')
-const mockedUseImage = useImage as jest.Mock
-jest.mock('services/impersonate')
-const mockedUseImpersonate = useImpersonate as jest.Mock
-jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
-jest.mock('./InstallationHelpBanner', () => () => 'InstallationHelpBanner')
-jest.mock('pages/TermsOfService', () => () => 'TermsOfService')
-jest.mock('pages/DefaultOrgSelector', () => () => 'DefaultOrgSelector')
-jest.mock('layouts/Header', () => () => 'Header')
-jest.mock('layouts/Footer', () => () => 'Footer')
+vi.mock('services/image')
+const mockedUseImage = useImage as Mock
+
+vi.mock('services/impersonate')
+const mockedUseImpersonate = useImpersonate as Mock
+
+vi.mock('shared/GlobalTopBanners', () => ({
+  default: () => 'GlobalTopBanners',
+}))
+vi.mock('./InstallationHelpBanner', () => ({
+  default: () => 'InstallationHelpBanner',
+}))
+vi.mock('pages/TermsOfService', () => ({ default: () => 'TermsOfService' }))
+vi.mock('pages/DefaultOrgSelector', () => ({
+  default: () => 'DefaultOrgSelector',
+}))
+vi.mock('layouts/Header', () => ({ default: () => 'Header' }))
+vi.mock('layouts/Footer', () => ({ default: () => 'Footer' }))
 
 const mockOwner = {
   owner: {
@@ -183,7 +192,8 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
-  jest.resetAllMocks()
+  vi.clearAllMocks()
+  cleanup()
 })
 
 afterAll(() => {
@@ -212,32 +222,31 @@ describe('BaseLayout', () => {
     mockedUseImpersonate.mockReturnValue({ isImpersonating })
 
     server.use(
-      rest.get('/internal/user', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(internalUser))
+      http.get('/internal/user', (info) => {
+        return HttpResponse.json(internalUser)
       }),
-      graphql.query('CurrentUser', (_, res, ctx) =>
-        res(ctx.status(200), ctx.data(currentUser))
-      ),
-      graphql.query('DetailOwner', (_, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockOwner))
-      ),
-      rest.get('/internal/:provider/:owner/account-details', (_, res, ctx) =>
-        res(ctx.status(200), ctx.json({}))
-      ),
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: currentUser })
+      }),
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({ data: mockOwner })
+      }),
+      http.get('/internal/:provider/:owner/account-details', (info) => {
+        return HttpResponse.json({})
+      }),
       // Self hosted only
-      graphql.query('HasAdmins', (_, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
-      ),
-      graphql.query('Seats', (_, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
-      ),
-      graphql.query('TermsOfService', (_, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
-      ),
-      graphql.query('UseMyOrganizations', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('HasAdmins', (info) => {
+        return HttpResponse.json({ data: {} })
+      }),
+      graphql.query('Seats', (info) => {
+        return HttpResponse.json({ data: {} })
+      }),
+      graphql.query('TermsOfService', (info) => {
+        return HttpResponse.json({ data: {} })
+      }),
+      graphql.query('UseMyOrganizations', (info) => {
+        return HttpResponse.json({
+          data: {
             myOrganizationsData: {
               me: {
                 myOrganizations: {
@@ -246,15 +255,15 @@ describe('BaseLayout', () => {
                 },
               },
             },
-          })
-        )
-      ),
-      graphql.mutation('updateDefaultOrganization', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
-      ),
-      rest.get('/internal/users/current', (_, res, ctx) =>
-        res(ctx.status(200), ctx.json({}))
-      )
+          },
+        })
+      }),
+      graphql.mutation('updateDefaultOrganization', (info) => {
+        return HttpResponse.json({ data: {} })
+      }),
+      http.get('/internal/users/current', (info) => {
+        return HttpResponse.json({})
+      })
     )
   }
 
