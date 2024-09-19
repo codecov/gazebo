@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { cleanup, renderHook, waitFor } from '@testing-library/react'
+import { delay, graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
@@ -10,7 +10,7 @@ import { User } from 'services/user'
 
 import { useUserAccessGate } from './useUserAccessGate'
 
-jest.spyOn(console, 'error')
+vi.spyOn(console, 'error')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -221,6 +221,7 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
+  cleanup()
   queryClient.clear()
   server.resetHandlers()
 })
@@ -251,33 +252,33 @@ describe('useUserAccessGate', () => {
       internalUser: internalUserHasSyncedProviders,
     }
   ) {
-    const mockMutationVariables = jest.fn()
+    const mockMutationVariables = vi.fn()
 
     server.use(
-      rest.get('/internal/user', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(internalUser))
+      http.get('/internal/user', (info) => {
+        return HttpResponse.json(internalUser, { status: 200 })
       }),
 
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(user))
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: user }, { status: 200 })
       }),
-      graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
-        mockMutationVariables(req.variables)
+      graphql.mutation('updateDefaultOrganization', async (info) => {
+        mockMutationVariables(info.variables)
 
         if (delayMutation) {
-          return res(ctx.delay(1000), ctx.status(200), ctx.data({}))
+          await delay(1000)
+          return HttpResponse.json({}, { status: 200 })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             updateDefaultOrganization: {
               defaultOrg: {
                 username: 'criticalRole',
               },
             },
-          })
-        )
+          },
+        })
       })
     )
 
@@ -286,7 +287,7 @@ describe('useUserAccessGate', () => {
     }
   }
 
-  afterEach(() => jest.resetAllMocks)
+  afterEach(() => vi.resetAllMocks)
 
   describe.each([
     [
