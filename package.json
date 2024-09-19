@@ -204,12 +204,12 @@
   },
   "volta": {
     "node": "20.15.1",
-    "yarn": "4.4.1"
+    "yarn": "4.5.0"
   },
   "resolutions": {
     "react-refresh": "^0.14.0",
     "resolve-url-loader/postcss": "8.4.31"
   },
-  "packageManager": "yarn@4.4.1",
+  "packageManager": "yarn@4.5.0",
   "engineStrict": false
 }
