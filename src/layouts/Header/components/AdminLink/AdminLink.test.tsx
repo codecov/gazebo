@@ -45,7 +45,7 @@ describe('AdminLink', () => {
   function setup(data = {}) {
     server.use(
       http.get('/internal/users/current', (info) => {
-        return HttpResponse.json(data, { status: 200 })
+        return HttpResponse.json(data)
       })
     )
   }

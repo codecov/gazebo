@@ -171,20 +171,17 @@ describe('Header Navigator', () => {
   function setup({ isMyOrg = true }: SetupArgs) {
     server.use(
       graphql.query('MyContexts', (info) => {
-        return HttpResponse.json({ data: mockMyContexts }, { status: 200 })
+        return HttpResponse.json({ data: mockMyContexts })
       }),
       graphql.query('DetailOwner', (info) => {
-        return HttpResponse.json({ data: mockDetailOwner }, { status: 200 })
+        return HttpResponse.json({ data: mockDetailOwner })
       }),
       graphql.query('OwnerPageData', (info) => {
         if (isMyOrg) {
-          return HttpResponse.json({ data: mockOwnerPageData }, { status: 200 })
+          return HttpResponse.json({ data: mockOwnerPageData })
         }
 
-        return HttpResponse.json(
-          { data: mockOwnerPageDataNotInOrg },
-          { status: 200 }
-        )
+        return HttpResponse.json({ data: mockOwnerPageDataNotInOrg })
       })
     )
 

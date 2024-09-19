@@ -117,7 +117,7 @@ describe('UserDropdown', () => {
         return HttpResponse.json({}, { status: 205 })
       }),
       graphql.query('CurrentUser', (info) => {
-        return HttpResponse.json({ data: mockUser }, { status: 200 })
+        return HttpResponse.json({ data: mockUser })
       })
     )
 

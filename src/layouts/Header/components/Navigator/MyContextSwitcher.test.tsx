@@ -80,7 +80,7 @@ describe('MyContextSwitcher', () => {
     server.use(
       graphql.query('MyContexts', (info) => {
         if (noData) {
-          return HttpResponse.json({ data: { me: null } }, { status: 200 })
+          return HttpResponse.json({ data: { me: null } })
         }
 
         const orgList = !!info.variables?.after ? org2 : org1
@@ -104,11 +104,11 @@ describe('MyContextSwitcher', () => {
           },
         }
 
-        return HttpResponse.json({ data: queryData }, { status: 200 })
+        return HttpResponse.json({ data: queryData })
       }),
       graphql.query('DetailOwner', (info) => {
         if (noData) {
-          return HttpResponse.json({ data: { me: null } }, { status: 200 })
+          return HttpResponse.json({ data: { me: null } })
         }
 
         const queryData = {
@@ -117,7 +117,7 @@ describe('MyContextSwitcher', () => {
             avatarUrl: 'http://127.0.0.1/avatar-url',
           },
         }
-        return HttpResponse.json({ data: queryData }, { status: 200 })
+        return HttpResponse.json({ data: queryData })
       })
     )
 

@@ -120,7 +120,7 @@ describe('Header', () => {
     mockedUseFlags.mockReturnValue({ darkMode: false })
     server.use(
       graphql.query('CurrentUser', (info) => {
-        return HttpResponse.json({ data: user }, { status: 200 })
+        return HttpResponse.json({ data: user })
       })
     )
   }
