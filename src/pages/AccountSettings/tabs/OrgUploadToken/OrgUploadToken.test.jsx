@@ -7,6 +7,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
+import { useFlags } from 'shared/featureFlags'
 
 import OrgUploadToken from './OrgUploadToken'
 
@@ -146,6 +147,13 @@ describe('OrgUploadToken', () => {
         'href',
         'https://docs.codecov.com/docs/codecov-uploader#organization-upload-token'
       )
+    })
+
+    it('renders TokenlessSection component', async () => {
+      render(<OrgUploadToken />, { wrapper })
+
+      const tokenlessSection = await screen.findByText('TokenlessSection')
+      expect(tokenlessSection).toBeInTheDocument()
     })
   })
 
