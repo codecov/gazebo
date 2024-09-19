@@ -25,9 +25,9 @@ const ThemeToggle = () => {
       data-testid="theme-toggle"
     >
       {theme === Theme.LIGHT ? (
-        <Icon variant="outline" name="moon" />
+        <Icon variant="outline" name="moon" label="moon" />
       ) : (
-        <Icon variant="outline" name="sun" />
+        <Icon variant="outline" name="sun" label="sun" />
       )}
     </button>
   )

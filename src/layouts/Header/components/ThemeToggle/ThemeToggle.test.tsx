@@ -1,17 +1,23 @@
 import * as Sentry from '@sentry/react'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import ThemeToggle from './ThemeToggle'
 
-const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
-const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
+const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
 describe('ThemeToggle', () => {
   function setup({ isMediaPrefersDark }: { isMediaPrefersDark: boolean }) {
-    window.matchMedia = jest
+    window.matchMedia = vi
       .fn()
       .mockReturnValue({ matches: isMediaPrefersDark } as MediaQueryList)
 
@@ -26,8 +32,9 @@ describe('ThemeToggle', () => {
     localStorage.clear()
   })
 
-  afterAll(() => {
-    jest.clearAllMocks()
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
   })
 
   it('displays the correct icon and updates localStorage when toggling theme', async () => {
@@ -44,16 +51,23 @@ describe('ThemeToggle', () => {
         <ThemeToggle />
       </ThemeContextProvider>
     )
-    expect(screen.getByRole('button')).toHaveTextContent('moon')
+
+    const button = screen.getByRole('button')
+    const icon = within(button).getByTestId('moon')
+    expect(icon).toBeInTheDocument()
 
     // toggle to dark mode
-    userEvent.click(screen.getByRole('button'))
+    userEvent.click(button)
+
     await waitFor(() => {
       expect(mockSetItem).toHaveBeenCalledWith('theme', 'dark')
     })
+
     await waitFor(() => {
-      expect(screen.getByRole('button')).toHaveTextContent('sun')
+      const sunIcon = within(button).getByTestId('sun')
+      expect(sunIcon).toHaveAttribute('data-icon', 'sun')
     })
+
     expect(Sentry.metrics.increment).toHaveBeenCalledWith(
       'button_clicked.theme.dark',
       1,
@@ -61,13 +75,15 @@ describe('ThemeToggle', () => {
     )
 
     // toggle back to light mode
-    userEvent.click(screen.getByRole('button'))
+    userEvent.click(button)
     await waitFor(() => {
       expect(mockSetItem).toHaveBeenCalledWith('theme', 'light')
     })
+
     await waitFor(() => {
-      expect(screen.getByRole('button')).toHaveTextContent('moon')
+      expect(icon).toHaveAttribute('data-icon', 'moon')
     })
+
     await waitFor(() => {
       expect(Sentry.metrics.increment).toHaveBeenCalledWith(
         'button_clicked.theme.light',
@@ -85,6 +101,9 @@ describe('ThemeToggle', () => {
         <ThemeToggle />
       </ThemeContextProvider>
     )
-    expect(screen.getByRole('button')).toHaveTextContent('moon')
+
+    const button = screen.getByRole('button')
+    const icon = within(button).getByTestId('moon')
+    expect(icon).toBeInTheDocument()
   })
 })
