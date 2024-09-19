@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { cleanup, render, screen } from '@testing-library/react'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import AdminLink from './AdminLink'
@@ -27,24 +27,31 @@ const queryClient = new QueryClient({
 })
 
 const server = setupServer()
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
+  cleanup()
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('AdminLink', () => {
   function setup(data = {}) {
     server.use(
-      rest.get('/internal/users/current', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(data))
-      )
+      http.get('/internal/users/current', (info) => {
+        return HttpResponse.json(data, { status: 200 })
+      })
     )
   }
 
   describe('user is an admin', () => {
-    beforeEach(() => {
+    it('renders link to access page', async () => {
       setup({
         activated: false,
         email: 'codecov@codecov.io',
@@ -53,9 +60,7 @@ describe('AdminLink', () => {
         ownerid: 2,
         username: 'codecov',
       })
-    })
 
-    it('renders link to access page', async () => {
       render(<AdminLink />, { wrapper: wrapper({}) })
       const link = await screen.findByText(/Admin/)
 
@@ -65,7 +70,7 @@ describe('AdminLink', () => {
   })
 
   describe('user is not an admin', () => {
-    beforeEach(() => {
+    it('renders nothing', () => {
       setup({
         activated: false,
         email: 'codecov@codecov.io',
@@ -74,11 +79,8 @@ describe('AdminLink', () => {
         ownerid: 2,
         username: 'codecov',
       })
-    })
 
-    const { container } = render(<AdminLink />, { wrapper: wrapper({}) })
-
-    it('renders nothing', () => {
+      const { container } = render(<AdminLink />, { wrapper: wrapper({}) })
       expect(container).toBeEmptyDOMElement()
     })
   })
