@@ -1,25 +1,30 @@
-import { render, screen, waitFor } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-import useIntersection from 'react-use/lib/useIntersection'
+import { type Mock } from 'vitest'
 
 import { useImage } from 'services/image'
 
 import MyContextSwitcher from './MyContextSwitcher'
 
-jest.mock('services/image')
-jest.mock('react-use/lib/useIntersection')
-const mockedUseImage = useImage as jest.Mock
-const mockedUseIntersection = useIntersection as jest.Mock
+vi.mock('services/image')
+const mockedUseImage = useImage as Mock
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+const mocks = vi.hoisted(() => ({
+  useIntersection: vi.fn(),
+}))
+
+vi.mock('react-use', async () => {
+  const original = await vi.importActual('react-use')
+
+  return {
+    ...original,
+    useIntersection: mocks.useIntersection,
+  }
 })
-const server = setupServer()
 
 const org1 = {
   username: 'codecov',
@@ -30,6 +35,10 @@ const org2 = {
   username: 'spotify',
   avatarUrl: 'https://github.com/spotify.png?size=40',
 }
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/gh') =>
@@ -43,14 +52,21 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
     </QueryClientProvider>
   )
 
-beforeAll(() => server.listen())
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen()
+})
 
 afterEach(() => {
+  cleanup()
   queryClient.clear()
   server.restoreHandlers()
 })
 
-afterAll(() => server.close())
+afterAll(() => {
+  server.close()
+})
 
 describe('MyContextSwitcher', () => {
   function setup(noData = false) {
@@ -62,14 +78,14 @@ describe('MyContextSwitcher', () => {
       error: null,
     })
     server.use(
-      graphql.query('MyContexts', (req, res, ctx) => {
+      graphql.query('MyContexts', (info) => {
         if (noData) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: { me: null } }, { status: 200 })
         }
 
-        const orgList = !!req.variables?.after ? org2 : org1
-        const hasNextPage = req.variables?.after ? false : true
-        const endCursor = req.variables?.after ? 'second' : 'first'
+        const orgList = !!info.variables?.after ? org2 : org1
+        const hasNextPage = info.variables?.after ? false : true
+        const endCursor = info.variables?.after ? 'second' : 'first'
 
         const queryData = {
           me: {
@@ -88,11 +104,11 @@ describe('MyContextSwitcher', () => {
           },
         }
 
-        return res(ctx.status(200), ctx.data(queryData))
+        return HttpResponse.json({ data: queryData }, { status: 200 })
       }),
-      graphql.query('DetailOwner', (req, res, ctx) => {
+      graphql.query('DetailOwner', (info) => {
         if (noData) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: { me: null } }, { status: 200 })
         }
 
         const queryData = {
@@ -101,8 +117,7 @@ describe('MyContextSwitcher', () => {
             avatarUrl: 'http://127.0.0.1/avatar-url',
           },
         }
-
-        return res(ctx.status(200), ctx.data(queryData))
+        return HttpResponse.json({ data: queryData }, { status: 200 })
       })
     )
 
@@ -110,11 +125,8 @@ describe('MyContextSwitcher', () => {
   }
 
   describe('when there are no contexts (user not logged in)', () => {
-    beforeEach(() => {
-      setup(true)
-    })
-
     it('renders nothing', async () => {
+      setup(true)
       const { container } = render(
         <MyContextSwitcher pageName="accountPage" />,
         {
@@ -141,12 +153,9 @@ describe('MyContextSwitcher', () => {
   })
 
   describe('user "scrolls" and fetches next page', () => {
-    beforeEach(() => {
-      setup()
-      mockedUseIntersection.mockReturnValue({ isIntersecting: true })
-    })
-
     it('loads second item', async () => {
+      setup()
+      mocks.useIntersection.mockReturnValue({ isIntersecting: true })
       render(<MyContextSwitcher pageName="owner" />, {
         wrapper: wrapper('/gh/codecov'),
       })
