@@ -18,7 +18,6 @@ const EXCLUDE_FROM_TESTING = [
 
 const EXCLUDE_FROM_COVERAGE = [
   ...EXCLUDE_FROM_TESTING,
-  'src/**/*.test.*',
   'repo-jest-setup.jsx',
   'vitest.setup.ts',
   'custom-testing-library.js',
