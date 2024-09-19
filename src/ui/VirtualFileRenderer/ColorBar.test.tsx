@@ -1,14 +1,22 @@
 import * as Sentry from '@sentry/react'
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 
 import { ColorBar, findCoverage } from './ColorBar'
 
-jest.mock('@sentry/react', () => {
-  const originalModule = jest.requireActual('@sentry/react')
+const mocks = vi.hoisted(() => ({
+  captureMessage: vi.fn(),
+}))
+
+vi.mock('@sentry/react', async () => {
+  const originalModule = vi.importActual('@sentry/react')
   return {
     ...originalModule,
-    captureMessage: jest.fn(),
+    captureMessage: mocks.captureMessage,
   }
+})
+
+afterEach(() => {
+  cleanup()
 })
 
 describe('ColorBar', () => {
