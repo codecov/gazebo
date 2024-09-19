@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { vi } from 'vitest'
 
 import config from 'config'
 
 import Footer from './Footer'
 
-jest.mock('config')
+vi.mock('config')
 
 const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
@@ -24,14 +25,14 @@ describe('Footer', () => {
 
   describe('renders the current years copyright', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('3301-01-01'))
+      vi.useFakeTimers().setSystemTime(new Date('3301-01-01'))
       setup()
     })
 
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => vi.resetAllMocks())
 
     afterAll(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('renders a link', () => {
@@ -48,7 +49,7 @@ describe('Footer', () => {
         setup()
       })
 
-      afterEach(() => jest.resetAllMocks())
+      afterEach(() => vi.resetAllMocks())
 
       it('renders the link', () => {
         render(<Footer />, { wrapper })
@@ -63,7 +64,7 @@ describe('Footer', () => {
         setup({ selfHosted: true })
       })
 
-      afterEach(() => jest.resetAllMocks())
+      afterEach(() => vi.resetAllMocks())
 
       it('does not render pricing link', () => {
         render(<Footer />, { wrapper })
