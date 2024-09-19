@@ -256,18 +256,18 @@ describe('useUserAccessGate', () => {
 
     server.use(
       http.get('/internal/user', (info) => {
-        return HttpResponse.json(internalUser, { status: 200 })
+        return HttpResponse.json(internalUser)
       }),
 
       graphql.query('CurrentUser', (info) => {
-        return HttpResponse.json({ data: user }, { status: 200 })
+        return HttpResponse.json({ data: user })
       }),
       graphql.mutation('updateDefaultOrganization', async (info) => {
         mockMutationVariables(info.variables)
 
         if (delayMutation) {
           await delay(1000)
-          return HttpResponse.json({}, { status: 200 })
+          return HttpResponse.json({})
         }
 
         return HttpResponse.json({

@@ -223,49 +223,46 @@ describe('BaseLayout', () => {
 
     server.use(
       http.get('/internal/user', (info) => {
-        return HttpResponse.json(internalUser, { status: 200 })
+        return HttpResponse.json(internalUser)
       }),
       graphql.query('CurrentUser', (info) => {
-        return HttpResponse.json({ data: currentUser }, { status: 200 })
+        return HttpResponse.json({ data: currentUser })
       }),
       graphql.query('DetailOwner', (info) => {
-        return HttpResponse.json({ data: mockOwner }, { status: 200 })
+        return HttpResponse.json({ data: mockOwner })
       }),
       http.get('/internal/:provider/:owner/account-details', (info) => {
-        return HttpResponse.json({}, { status: 200 })
+        return HttpResponse.json({})
       }),
       // Self hosted only
       graphql.query('HasAdmins', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       graphql.query('Seats', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       graphql.query('TermsOfService', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       graphql.query('UseMyOrganizations', (info) => {
-        return HttpResponse.json(
-          {
-            data: {
-              myOrganizationsData: {
-                me: {
-                  myOrganizations: {
-                    edges: [],
-                    pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
-                  },
+        return HttpResponse.json({
+          data: {
+            myOrganizationsData: {
+              me: {
+                myOrganizations: {
+                  edges: [],
+                  pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
                 },
               },
             },
           },
-          { status: 200 }
-        )
+        })
       }),
       graphql.mutation('updateDefaultOrganization', (info) => {
-        return HttpResponse.json({ data: {} }, { status: 200 })
+        return HttpResponse.json({ data: {} })
       }),
       http.get('/internal/users/current', (info) => {
-        return HttpResponse.json({}, { status: 200 })
+        return HttpResponse.json({})
       })
     )
   }

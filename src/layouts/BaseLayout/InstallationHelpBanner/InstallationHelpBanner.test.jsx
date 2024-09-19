@@ -51,32 +51,26 @@ describe('InstallationHelpBanner', () => {
 
     server.use(
       graphql.query('IsSyncing', (info) => {
-        return HttpResponse.json(
-          {
-            data: {
-              me: {
-                isSyncing: false,
-              },
+        return HttpResponse.json({
+          data: {
+            me: {
+              isSyncing: false,
             },
           },
-          { status: 200 }
-        )
+        })
       }),
       graphql.mutation('SyncData', (info) => {
         mutation(info.variables)
 
-        return HttpResponse.json(
-          {
-            data: {
-              syncWithGitProvider: {
-                me: {
-                  isSyncing: true,
-                },
+        return HttpResponse.json({
+          data: {
+            syncWithGitProvider: {
+              me: {
+                isSyncing: true,
               },
             },
           },
-          { status: 200 }
-        )
+        })
       })
     )
 
