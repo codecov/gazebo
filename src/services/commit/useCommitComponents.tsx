@@ -38,6 +38,8 @@ export const CommitComponentsSchema = z.object({
 
 export type CommitComponentsData = z.infer<typeof CommitComponentsSchema>
 
+// random comment for change to commit
+
 const query = `
   query CommitComponents(
     $owner: String!
