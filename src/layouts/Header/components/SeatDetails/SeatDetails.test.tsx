@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { cleanup, render, screen } from '@testing-library/react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import SeatDetails from './SeatDetails'
@@ -38,19 +38,26 @@ const queryClient = new QueryClient({
 })
 
 const server = setupServer()
-beforeAll(() => server.listen())
-beforeEach(() => {
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  cleanup()
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('SeatDetails', () => {
   function setup({ data = mockData }: { data?: any }) {
     server.use(
-      graphql.query('Seats', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(data))
-      )
+      graphql.query('Seats', (info) => {
+        return HttpResponse.json({ data })
+      })
     )
   }
 

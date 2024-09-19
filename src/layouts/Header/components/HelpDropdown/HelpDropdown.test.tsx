@@ -1,6 +1,5 @@
-import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
@@ -25,35 +24,51 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   </QueryClientProvider>
 )
 
-afterEach(() => queryClient.clear())
+const mocks = vi.hoisted(() => {
+  const appendToDom = vi.fn()
+  const removeFromDom = vi.fn()
+  const open = vi.fn()
 
-describe('HelpDropdown', () => {
-  function setup() {
-    const appendToDom = jest.fn()
-    const removeFromDom = jest.fn()
-    const open = jest.fn()
-    const createForm = jest.fn().mockResolvedValue({
+  return {
+    appendToDom,
+    removeFromDom,
+    open,
+    attachTo: vi.fn(),
+    createWidget: vi.fn(),
+    remove: vi.fn(),
+    createForm: vi.fn().mockResolvedValue({
       appendToDom,
       removeFromDom,
       open,
-    })
+    }),
+  }
+})
 
-    jest.spyOn(Sentry, 'feedbackIntegration').mockReturnValue({
-      createForm: createForm,
+vi.mock('@sentry/react', async () => {
+  const originalModule = await vi.importActual('@sentry/react')
+
+  return {
+    ...originalModule,
+    feedbackIntegration: () => ({
+      createForm: mocks.createForm,
       name: '',
-      attachTo: jest.fn(),
-      createWidget: jest.fn(),
-      remove: jest.fn(),
-    })
+      attachTo: mocks.attachTo,
+      createWidget: mocks.createWidget,
+      remove: mocks.remove,
+    }),
+  }
+})
 
+afterEach(() => {
+  cleanup()
+  vi.clearAllMocks()
+  queryClient.clear()
+})
+
+describe('HelpDropdown', () => {
+  function setup() {
     return {
       user: userEvent.setup(),
-      mocks: {
-        appendToDom,
-        removeFromDom,
-        open,
-        createForm,
-      },
     }
   }
 
@@ -105,14 +120,16 @@ describe('HelpDropdown', () => {
   describe('when Share feedback item is selected', () => {
     it('opens the sentry user feedback modal', async () => {
       console.error = () => {}
-      const { user, mocks } = setup()
+      const { user } = setup()
 
       render(<HelpDropdown />, { wrapper })
 
       const dropdown = await screen.findByTestId('help-dropdown-trigger')
       expect(dropdown).toBeInTheDocument()
+
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
+
       expect(mocks.createForm).toHaveBeenCalled()
       expect(mocks.appendToDom).toHaveBeenCalled()
       expect(mocks.open).not.toHaveBeenCalled()
@@ -133,14 +150,16 @@ describe('HelpDropdown', () => {
     describe('and component unmounts', () => {
       it('calls removeSentryForm cleanup function', async () => {
         console.error = () => {}
-        const { user, mocks } = setup()
+        const { user } = setup()
 
         const { unmount } = render(<HelpDropdown />, { wrapper })
 
         const dropdown = await screen.findByTestId('help-dropdown-trigger')
         expect(dropdown).toBeInTheDocument()
+
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => !queryClient.isFetching)
+
         expect(mocks.createForm).toHaveBeenCalled()
         expect(mocks.appendToDom).toHaveBeenCalled()
         expect(mocks.open).not.toHaveBeenCalled()
