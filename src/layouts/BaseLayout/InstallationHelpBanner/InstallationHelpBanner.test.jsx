@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
+import { vi } from 'vitest'
 
 import InstallationHelpBanner from './InstallationHelpBanner'
 
@@ -16,10 +17,13 @@ const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
+
 beforeEach(() => {
+  cleanup()
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -40,34 +44,38 @@ const wrapper =
 
 describe('InstallationHelpBanner', () => {
   function setup() {
-    const mutation = jest.fn()
+    const mutation = vi.fn()
 
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
-    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
-      graphql.query('IsSyncing', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            me: {
-              isSyncing: false,
-            },
-          })
-        )
-      }),
-      graphql.mutation('SyncData', (req, res, ctx) => {
-        mutation(req.variables)
-
-        return res(
-          ctx.status(200),
-          ctx.data({
-            syncWithGitProvider: {
+      graphql.query('IsSyncing', (info) => {
+        return HttpResponse.json(
+          {
+            data: {
               me: {
-                isSyncing: true,
+                isSyncing: false,
               },
             },
-          })
+          },
+          { status: 200 }
+        )
+      }),
+      graphql.mutation('SyncData', (info) => {
+        mutation(info.variables)
+
+        return HttpResponse.json(
+          {
+            data: {
+              syncWithGitProvider: {
+                me: {
+                  isSyncing: true,
+                },
+              },
+            },
+          },
+          { status: 200 }
         )
       })
     )
@@ -146,9 +154,9 @@ describe('InstallationHelpBanner', () => {
         wrapper: wrapper(),
       })
 
-      const dismissButton = await screen.findByRole('button', {
-        name: 'x.svg',
-      })
+      const dismissButton = await screen.findByTestId(
+        'dismiss-install-help-banner'
+      )
       expect(dismissButton).toBeInTheDocument()
     })
 
@@ -161,9 +169,9 @@ describe('InstallationHelpBanner', () => {
         wrapper: wrapper(),
       })
 
-      const dismissButton = await screen.findByRole('button', {
-        name: 'x.svg',
-      })
+      const dismissButton = await screen.findByTestId(
+        'dismiss-install-help-banner'
+      )
       expect(dismissButton).toBeInTheDocument()
       await user.click(dismissButton)
 
@@ -184,9 +192,9 @@ describe('InstallationHelpBanner', () => {
         wrapper: wrapper(),
       })
 
-      const dismissButton = await screen.findByRole('button', {
-        name: 'x.svg',
-      })
+      const dismissButton = await screen.findByTestId(
+        'dismiss-install-help-banner'
+      )
       expect(dismissButton).toBeInTheDocument()
       await user.click(dismissButton)
 
