@@ -30,7 +30,10 @@ const variantClasses = {
   configure: `rounded bg-ds-blue-default px-4 py-1 font-semibold text-ds-gray-primary dark:text-white dark:bg-ds-blue-nonary`,
 }
 
-const getHostnameFromRegex = (url) => {
+export const getHostnameFromRegex = (url) => {
+  if (!url) {
+    return 'app.codecov.io'
+  }
   // run against regex
   const matches = url.match(/^https?:\/\/([^/?#]+)(?:[/?#]|$)/i)
   // extract hostname (will be null if no match is found)
