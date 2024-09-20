@@ -97,12 +97,12 @@ describe('chartQuery', () => {
 
 describe('legacyRepoCoverageQuery', () => {
   function setup(props) {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date('2022/01/01'))
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2022/01/01'))
 
     return legacyRepoCoverageQuery(props)
   }
-  afterAll(() => jest.useRealTimers())
+  afterAll(() => vi.useRealTimers())
 
   describe('static params', () => {
     it('aggFunction', () => {
