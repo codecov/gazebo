@@ -8,9 +8,12 @@
     "plugin:import/recommended",
     "prettier",
     "plugin:storybook/recommended",
-    "plugin:tailwindcss/recommended",
-    "plugin:@vitest"
+    "plugin:tailwindcss/recommended"
   ],
+  "plugins": ["@vitest"],
+  "globals": {
+    "vi": true
+  },
   "ignorePatterns": [
     "!src/**/*.{js,jsx,ts,tsx}",
     "src/old_ui/Icon/svg/*.jsx",
