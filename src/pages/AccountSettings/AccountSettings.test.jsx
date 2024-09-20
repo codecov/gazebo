@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -9,18 +9,19 @@ import config from 'config'
 
 import AccountSettings from './AccountSettings'
 
-jest.mock('config')
+vi.mock('config')
 
-jest.mock('./shared/Header', () => () => 'Header')
-jest.mock('./AccountSettingsSideMenu', () => () => 'AccountSettingsSideMenu')
-
-jest.mock('./tabs/Access', () => () => 'Access')
-jest.mock('./tabs/Admin', () => () => 'Admin')
-jest.mock('../NotFound', () => () => 'NotFound')
-jest.mock('./tabs/OrgUploadToken', () => () => 'OrgUploadToken')
-jest.mock('./tabs/Profile', () => () => 'Profile')
-jest.mock('./tabs/YAML', () => () => 'YAML')
-jest.mock('./tabs/OktaAccess', () => () => 'OktaAccess')
+vi.mock('./shared/Header', () => ({ default: () => 'Header' }))
+vi.mock('./AccountSettingsSideMenu', () => ({
+  default: () => 'AccountSettingsSideMenu',
+}))
+vi.mock('./tabs/Access', () => ({ default: () => 'Access' }))
+vi.mock('./tabs/Admin', () => ({ default: () => 'Admin' }))
+vi.mock('../NotFound', () => ({ default: () => 'NotFound' }))
+vi.mock('./tabs/OrgUploadToken', () => ({ default: () => 'OrgUploadToken' }))
+vi.mock('./tabs/Profile', () => ({ default: () => 'Profile' }))
+vi.mock('./tabs/YAML', () => ({ default: () => 'YAML' }))
+vi.mock('./tabs/OktaAccess', () => ({ default: () => 'OktaAccess' }))
 
 const mockPlanData = {
   baseUnitPrice: 10,
@@ -142,16 +143,17 @@ describe('AccountSettings', () => {
     config.HIDE_ACCESS_TAB = hideAccessTab
 
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCurrentUser(username)))
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: mockCurrentUser(username) })
       }),
-      graphql.query('DetailOwner', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { username: owner, isAdmin } }))
-      ),
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({
+          data: { owner: { username: owner, isAdmin } },
+        })
+      }),
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
@@ -159,9 +161,9 @@ describe('AccountSettings', () => {
                 value: planValue,
               },
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
   }
 
