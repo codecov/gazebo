@@ -42,11 +42,6 @@ function TokenlessSection() {
       <Card.Content>
         <p className="mb-3">Select an authentication option</p>
         <RadioTileGroup
-          defaultValue={
-            tokenRequired
-              ? AUTHENTICATION_OPTIONS.Required
-              : AUTHENTICATION_OPTIONS.NotRequired
-          }
           value={
             tokenRequired
               ? AUTHENTICATION_OPTIONS.Required
