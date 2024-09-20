@@ -4,14 +4,15 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Component, useState } from 'react'
 import { MemoryRouter, useHistory } from 'react-router-dom'
+import { vi } from 'vitest'
 
 import config from 'config'
 
 import NetworkErrorBoundary from './NetworkErrorBoundary'
 
 // silence all verbose console.error
-jest.spyOn(console, 'error').mockImplementation()
-jest.mock('config')
+vi.spyOn(console, 'error').mockImplementation(() => undefined)
+vi.mock('config')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -354,7 +355,7 @@ describe('NetworkErrorBoundary', () => {
       })
 
       // Mock the global fetch function
-      global.fetch = jest.fn(() =>
+      global.fetch = vi.fn(() =>
         Promise.resolve({
           ok: true,
           json: () => Promise.resolve({}),
