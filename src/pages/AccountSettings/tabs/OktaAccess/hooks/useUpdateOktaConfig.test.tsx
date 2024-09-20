@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type Mock } from 'vitest'
 
 import { useAddNotification } from 'services/toastNotification'
 
@@ -11,8 +12,8 @@ import {
   useUpdateOktaConfig,
 } from './useUpdateOktaConfig'
 
-jest.mock('services/toastNotification')
-const mockedToastNotification = useAddNotification as jest.Mock
+vi.mock('services/toastNotification')
+const mockedToastNotification = useAddNotification as Mock
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -42,24 +43,39 @@ const oktaConfigDetails = {
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useUpdateOktaConfig', () => {
-  const addToast = jest.fn()
+  const addToast = vi.fn()
 
   const setup = (response: any) => {
     mockedToastNotification.mockReturnValue(addToast)
 
     server.use(
-      graphql.mutation(`SaveOktaConfig`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(response))
+      graphql.mutation(`SaveOktaConfig`, (info) => {
+        return HttpResponse.json({ data: response })
       })
     )
   }
 
   describe('when calling the mutation', () => {
+    let consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
+    })
+
     it('shows a success toast notification on successful response', async () => {
       setup({
         saveOktaConfig: {
