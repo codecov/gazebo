@@ -1,17 +1,18 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type Mock } from 'vitest'
 
 import { Session } from 'services/access'
 import { formatTimeToNow } from 'shared/utils/dates'
 
 import SessionsTable from './SessionsTable'
 
-jest.mock('shared/utils/dates')
-const mockedFormatTimeToNow = formatTimeToNow as jest.Mock
+vi.mock('shared/utils/dates')
+const mockedFormatTimeToNow = formatTimeToNow as Mock
 
 window.confirm = () => true
 
@@ -55,18 +56,19 @@ describe('SessionsTable', () => {
   function setup() {
     const user = userEvent.setup()
     mockedFormatTimeToNow.mockReturnValue('18 minutes ago')
-    const mutation = jest.fn()
+    const mutation = vi.fn()
     server.use(
-      graphql.mutation('DeleteSession', async (req, res, ctx) => {
-        mutation((await req.json()).variables.input)
-        return res(ctx.status(200), ctx.data({ owner: null }))
+      graphql.mutation('DeleteSession', async (info) => {
+        mutation(info.variables.input)
+
+        return HttpResponse.json({ data: { owner: null } })
       })
     )
     return { mutation, user }
   }
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   describe('when rendering SessionsTable', () => {
