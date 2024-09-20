@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -9,7 +9,7 @@ import config from 'config'
 
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
 
-jest.mock('config')
+vi.mock('config')
 
 const mockPlanData = {
   baseUnitPrice: 10,
@@ -131,16 +131,17 @@ describe('AccountSettingsSideMenu', () => {
     config.HIDE_ACCESS_TAB = hideAccessTab
 
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCurrentUser(username)))
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: mockCurrentUser(username) })
       }),
-      graphql.query('DetailOwner', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { username: owner, isAdmin } }))
-      ),
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({
+          data: { owner: { username: owner, isAdmin } },
+        })
+      }),
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
@@ -148,9 +149,9 @@ describe('AccountSettingsSideMenu', () => {
                 value: planValue,
               },
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
   }
 
