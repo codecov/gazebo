@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Component, useState } from 'react'
 import { MemoryRouter, useHistory } from 'react-router-dom'
@@ -20,7 +20,6 @@ const queryClient = new QueryClient({
 
 afterEach(() => {
   queryClient.clear()
-  cleanup()
 })
 
 class TestErrorBoundary extends Component {

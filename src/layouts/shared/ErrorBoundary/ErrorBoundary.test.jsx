@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/browser'
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { vi } from 'vitest'
 
@@ -12,10 +12,6 @@ function BadComponent() {
 
 // https://docs.sentry.io/platforms/javascript/guides/react/components/errorboundary/#using-multiple-error-boundaries
 const sentryMockScope = vi.fn()
-
-afterEach(() => {
-  cleanup()
-})
 
 describe('Error Boundary', () => {
   let mockError

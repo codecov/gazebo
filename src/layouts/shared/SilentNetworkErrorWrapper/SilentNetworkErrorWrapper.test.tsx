@@ -1,10 +1,6 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import SilentNetworkError from './SilentNetworkErrorWrapper'
-
-afterEach(() => {
-  cleanup()
-})
 
 describe('SilentNetworkErrorWrapper', () => {
   function setup() {

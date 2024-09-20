@@ -1,14 +1,10 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
 
 import SilentNetworkError from './SilentNetworkError'
 
 // silence all verbose console.error
 vi.spyOn(console, 'error').mockImplementation(() => undefined)
-
-afterEach(() => {
-  cleanup()
-})
 
 describe('SilentNetworkError', () => {
   function setup(ComponentToRender, props = {}) {
