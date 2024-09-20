@@ -11,7 +11,7 @@ describe('SuccessModal', () => {
   }
   describe('renders initial SuccessModal', () => {
     it('renders title', () => {
-      const closeModal = jest.fn()
+      const closeModal = vi.fn()
       render(
         <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
       )
@@ -21,7 +21,7 @@ describe('SuccessModal', () => {
     })
 
     it('renders body', () => {
-      const closeModal = jest.fn()
+      const closeModal = vi.fn()
       render(
         <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
       )
@@ -33,7 +33,7 @@ describe('SuccessModal', () => {
     })
 
     it('renders footer', () => {
-      const closeModal = jest.fn()
+      const closeModal = vi.fn()
       render(
         <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
       )
@@ -44,7 +44,7 @@ describe('SuccessModal', () => {
 
     it('closes on done click', async () => {
       const { user } = setup()
-      const closeModal = jest.fn()
+      const closeModal = vi.fn()
       render(
         <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
       )
@@ -55,12 +55,12 @@ describe('SuccessModal', () => {
 
     it('closes on X click', async () => {
       const { user } = setup()
-      const closeModal = jest.fn()
+      const closeModal = vi.fn()
       render(
         <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
       )
 
-      await user.click(screen.getByText('x.svg'))
+      await user.click(screen.getByTestId('modal-close-icon'))
       expect(closeModal).toHaveBeenCalled()
     })
   })
