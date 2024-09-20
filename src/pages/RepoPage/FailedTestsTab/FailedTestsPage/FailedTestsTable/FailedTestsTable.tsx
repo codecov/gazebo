@@ -22,6 +22,7 @@ import {
   OrderingParameter,
   useInfiniteTestResults,
 } from '../hooks'
+import { TooltipWithIcon } from '../MetricsSection/MetricsSection'
 
 const getDecodedBranch = (branch?: string) =>
   !!branch ? decodeURIComponent(branch) : undefined
@@ -120,11 +121,11 @@ const columns = [
     header: () => (
       <div className="flex items-center gap-1">
         Flake rate
-        <Icon
-          name="informationCircle"
-          size="sm"
-          className="text-ds-gray-tertiary"
-        />
+        <TooltipWithIcon>
+          Shows how often a flake occurs by tracking how many times a test goes
+          from fail to pass or pass to fail on a given branch and commit within
+          the last [7] days.
+        </TooltipWithIcon>
       </div>
     ),
     cell: (info) => {
