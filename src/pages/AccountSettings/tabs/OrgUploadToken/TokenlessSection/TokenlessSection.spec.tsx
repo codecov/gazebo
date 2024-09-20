@@ -62,4 +62,16 @@ describe('TokenlessSection', () => {
     const modal = screen.getByText('Mocked TokenRequiredModal')
     expect(modal).toBeInTheDocument()
   })
+
+  it("switches to 'Not required' option when not required is selected", async () => {
+    const { user } = setup()
+
+    const requiredOption = screen.getByLabelText('Required')
+    await user.click(requiredOption)
+
+    const notRequiredOption = screen.getByLabelText('Not required')
+    await user.click(notRequiredOption)
+
+    expect(notRequiredOption).toBeChecked()
+  })
 })
