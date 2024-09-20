@@ -10,15 +10,21 @@ import { userEvent } from '@testing-library/user-event'
 // eslint-disable-next-line no-restricted-imports
 import { type Dictionary } from 'lodash'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import { VirtualFileRenderer } from './VirtualFileRenderer'
 
-jest.mock('@sentry/react', () => {
-  const originalModule = jest.requireActual('@sentry/react')
+const mocks = vi.hoisted(() => ({
+  withProfiler: (component: any) => component,
+  captureMessage: vi.fn(),
+}))
+
+vi.mock('@sentry/react', () => {
+  const originalModule = vi.importActual('@sentry/react')
   return {
     ...originalModule,
-    withProfiler: (component: any) => component,
-    captureMessage: jest.fn(),
+    withProfiler: mocks.withProfiler,
+    captureMessage: mocks.captureMessage,
   }
 })
 
@@ -28,7 +34,7 @@ window.requestAnimationFrame = (cb) => {
 }
 window.cancelAnimationFrame = () => {}
 
-const scrollToMock = jest.fn()
+const scrollToMock = vi.fn()
 window.scrollTo = scrollToMock
 window.scrollY = 100
 
@@ -286,21 +292,21 @@ describe('VirtualFileRenderer', () => {
   })
 
   describe('toggling pointer events', () => {
-    let requestAnimationFrameSpy: jest.SpyInstance
-    let cancelAnimationFrameSpy: jest.SpyInstance
-    let dateNowSpy: jest.SpyInstance
+    let requestAnimationFrameSpy: MockInstance
+    let cancelAnimationFrameSpy: MockInstance
+    let dateNowSpy: MockInstance
 
     beforeEach(() => {
-      requestAnimationFrameSpy = jest.spyOn(window, 'requestAnimationFrame')
-      cancelAnimationFrameSpy = jest.spyOn(window, 'cancelAnimationFrame')
-      dateNowSpy = jest.spyOn(Date, 'now')
+      requestAnimationFrameSpy = vi.spyOn(window, 'requestAnimationFrame')
+      cancelAnimationFrameSpy = vi.spyOn(window, 'cancelAnimationFrame')
+      dateNowSpy = vi.spyOn(Date, 'now')
     })
 
     afterEach(() => {
       requestAnimationFrameSpy.mockRestore()
       cancelAnimationFrameSpy.mockRestore()
       dateNowSpy.mockRestore()
-      jest.clearAllMocks()
+      vi.clearAllMocks()
     })
 
     it('disables pointer events on scroll and resets after timeout', async () => {
