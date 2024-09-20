@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
@@ -60,15 +60,15 @@ describe('useSelfActivationMutation', () => {
         }
 
         server.use(
-          rest.get('/internal/users/current', (req, res, ctx) => {
-            return res(ctx.status(200), ctx.json(mockUser))
+          http.get('/internal/users/current', (info) => {
+            return HttpResponse.json(mockUser)
           }),
-          rest.patch('/internal/users/current', (req, res, ctx) => {
-            const { activated } = req.body
+          http.patch('/internal/users/current', async (info) => {
+            const { activated } = await info.request.json()
 
             mockUser.activated = activated
 
-            return res(ctx.status(200), ctx.json({}))
+            return HttpResponse.json({})
           })
         )
       })
@@ -115,15 +115,14 @@ describe('useSelfActivationMutation', () => {
         }
 
         server.use(
-          rest.get('/internal/users/current', (req, res, ctx) => {
-            return res(ctx.status(200), ctx.json(mockUser))
+          http.get('/internal/users/current', (info) => {
+            return HttpResponse.json(mockUser)
           }),
-          rest.patch('/internal/users/current', (req, res, ctx) => {
-            const { activated } = req.body
+          http.patch('/internal/users/current', async (info) => {
+            const { activated } = await info.request.json()
 
             mockUser.activated = activated
-
-            return res(ctx.status(200), ctx.json({}))
+            return HttpResponse.json({})
           })
         )
       })
@@ -170,15 +169,15 @@ describe('useSelfActivationMutation', () => {
         }
 
         server.use(
-          rest.get('/internal/users/current', (req, res, ctx) => {
-            return res(ctx.status(200), ctx.json(mockUser))
+          http.get('/internal/users/current', (info) => {
+            return HttpResponse.json(mockUser)
           }),
-          rest.patch('/internal/users/current', (req, res, ctx) => {
-            const { activated } = req.body
+          http.patch('/internal/users/current', async (info) => {
+            const { activated } = await info.request.json()
 
             mockUser.activated = activated
 
-            return res(ctx.status(200), ctx.json({}))
+            return HttpResponse.json({})
           })
         )
       })
@@ -226,11 +225,11 @@ describe('useSelfActivationMutation', () => {
       }
 
       server.use(
-        rest.get('/internal/users/current', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(mockUser))
+        http.get('/internal/users/current', (req, res, ctx) => {
+          return HttpResponse.json(mockUser)
         }),
-        rest.patch('/internal/users/current', (req, res, ctx) => {
-          return res(ctx.status(400), ctx.json({}))
+        http.patch('/internal/users/current', (req, res, ctx) => {
+          return HttpResponse.json({}, { status: 400 })
         })
       )
     })
