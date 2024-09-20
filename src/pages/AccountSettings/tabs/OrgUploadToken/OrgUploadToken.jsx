@@ -14,8 +14,8 @@ const TokenlessSection = lazy(() => import('./TokenlessSection'))
 function OrgUploadToken() {
   const { provider, owner } = useParams()
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
-  const { TokenlessSection: TokenlessSectionFlag } = useFlags({
-    TokenlessSection: false,
+  const { tokenlessSection: tokenlessSectionFlag } = useFlags({
+    tokenlessSection: false,
   })
 
   return (
@@ -28,7 +28,7 @@ function OrgUploadToken() {
       </div>
       <hr />
       <div className="flex flex-col gap-6">
-        {TokenlessSectionFlag ? <TokenlessSection /> : null}
+        {tokenlessSectionFlag ? <TokenlessSection /> : null}
         <Banner>
           <h2 className="font-semibold">Sensitive credential</h2>
           <p>
