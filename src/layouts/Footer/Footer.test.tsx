@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { vi } from 'vitest'
 
 import config from 'config'
 

@@ -151,6 +151,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "@vitest/coverage-istanbul": "^2.1.1",
     "@vitest/coverage-v8": "^2.1.1",
+    "@vitest/eslint-plugin": "^1.1.4",
     "@vitest/ui": "^2.1.1",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.39.0",
@@ -204,12 +205,12 @@
   },
   "volta": {
     "node": "20.15.1",
-    "yarn": "4.4.1"
+    "yarn": "4.5.0"
   },
   "resolutions": {
     "react-refresh": "^0.14.0",
     "resolve-url-loader/postcss": "8.4.31"
   },
-  "packageManager": "yarn@4.4.1",
+  "packageManager": "yarn@4.5.0",
   "engineStrict": false
 }
