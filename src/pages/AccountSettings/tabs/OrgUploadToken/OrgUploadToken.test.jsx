@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -10,7 +10,7 @@ import { useAddNotification } from 'services/toastNotification'
 
 import OrgUploadToken from './OrgUploadToken'
 
-jest.mock('services/toastNotification')
+vi.mock('services/toastNotification')
 
 const mockOwner = {
   owner: {
@@ -58,47 +58,43 @@ describe('OrgUploadToken', () => {
     }
   ) {
     const user = userEvent.setup()
-    const mutate = jest.fn()
-    const addNotification = jest.fn()
+    const mutate = vi.fn()
+    const addNotification = vi.fn()
 
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      graphql.query('DetailOwner', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               ...mockOwner.owner,
               isAdmin: isAdmin,
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetOrgUploadToken', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               orgUploadToken: orgUploadToken,
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.mutation('regenerateOrgUploadToken', (req, res, ctx) => {
+      graphql.mutation('regenerateOrgUploadToken', (info) => {
         mutate('regenerateOrgUploadToken')
-
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             regenerateOrgUploadToken: {
               orgUploadToken,
               error: {
                 __typename: error,
               },
             },
-          })
-        )
+          },
+        })
       })
     )
 
@@ -106,11 +102,8 @@ describe('OrgUploadToken', () => {
   }
 
   describe('renders component', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('renders title', async () => {
+      setup({})
       render(<OrgUploadToken />, { wrapper })
 
       const title = await screen.findByText(/Global upload token/)
@@ -118,6 +111,7 @@ describe('OrgUploadToken', () => {
     })
 
     it('renders body', async () => {
+      setup({})
       render(<OrgUploadToken />, { wrapper })
 
       const p = await screen.findByText(/Sensitive credential/)
@@ -125,6 +119,7 @@ describe('OrgUploadToken', () => {
     })
 
     it('renders generate token', async () => {
+      setup({})
       render(<OrgUploadToken />, { wrapper })
 
       const title = await screen.findByText(
@@ -134,6 +129,7 @@ describe('OrgUploadToken', () => {
     })
 
     it('renders generate button', async () => {
+      setup({})
       render(<OrgUploadToken />, { wrapper })
 
       const genBtn = await screen.findByRole('button', { name: /Generate/ })
@@ -141,6 +137,7 @@ describe('OrgUploadToken', () => {
     })
 
     it('renders link to codecov uploader', async () => {
+      setup({})
       render(<OrgUploadToken />, { wrapper })
 
       const link = await screen.findByRole('link', { name: /Learn more/ })
@@ -305,11 +302,8 @@ describe('OrgUploadToken', () => {
   })
 
   describe('when user is not an admin and token is not available', () => {
-    beforeEach(() => {
-      setup({ isAdmin: false })
-    })
-
     it('Render disabled regenerate button', async () => {
+      setup({ isAdmin: false })
       render(<OrgUploadToken />, { wrapper })
 
       const genBtn = await screen.findByText('Generate')
@@ -317,6 +311,7 @@ describe('OrgUploadToken', () => {
     })
 
     it('renders information', async () => {
+      setup({ isAdmin: false })
       render(<OrgUploadToken />, { wrapper })
 
       const text = await screen.findByText(
@@ -327,11 +322,8 @@ describe('OrgUploadToken', () => {
   })
 
   describe('when user is not an admin and token is available', () => {
-    beforeEach(() => {
-      setup({ orgUploadToken: 'token', isAdmin: false })
-    })
-
     it('renders disabled regenerate button', async () => {
+      setup({ orgUploadToken: 'token', isAdmin: false })
       render(<OrgUploadToken />, { wrapper })
 
       const reGen = await screen.findByText('Regenerate')
@@ -339,6 +331,7 @@ describe('OrgUploadToken', () => {
     })
 
     it('renders information', async () => {
+      setup({ orgUploadToken: 'token', isAdmin: false })
       render(<OrgUploadToken />, { wrapper })
 
       const text = await screen.findByText(
