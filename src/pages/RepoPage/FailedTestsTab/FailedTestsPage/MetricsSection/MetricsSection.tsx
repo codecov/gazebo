@@ -1,3 +1,6 @@
+import { useParams } from 'react-router-dom'
+
+import { useRepoOverview } from 'services/repo'
 import Badge from 'ui/Badge'
 import Icon from 'ui/Icon'
 import { MetricCard } from 'ui/MetricCard'
@@ -160,30 +163,58 @@ const TotalSkippedTestsCard = () => {
   )
 }
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+  branch?: string
+}
+
+const getDecodedBranch = (branch?: string) =>
+  !!branch ? decodeURIComponent(branch) : undefined
+
 function MetricsSection() {
+  const { provider, owner, repo, branch } = useParams<URLParams>()
+
+  const { data: overview } = useRepoOverview({
+    provider,
+    owner,
+    repo,
+  })
+
+  const decodedBranch = getDecodedBranch(branch)
+  const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
+
+  if (selectedBranch !== overview?.defaultBranch) {
+    return null
+  }
+
   return (
-    <div className="overflow-x-auto overflow-y-hidden md:flex">
-      <div className="mb-6 flex flex-col gap-3 border-r-2 md:mb-0">
-        <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
-          Improve CI Run Efficiency
-        </p>
-        <div className="flex">
-          <TotalTestsRunTimeCard />
-          <SlowestTestsCard />
+    <>
+      <hr />
+      <div className="overflow-x-auto overflow-y-hidden md:flex">
+        <div className="mb-6 flex flex-col gap-3 border-r-2 md:mb-0">
+          <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
+            Improve CI Run Efficiency
+          </p>
+          <div className="flex">
+            <TotalTestsRunTimeCard />
+            <SlowestTestsCard />
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
+            Improve Test Performance
+          </p>
+          <div className="flex">
+            <TotalFlakyTestsCard />
+            <AverageFlakeRateCard />
+            <TotalFailuresCard />
+            <TotalSkippedTestsCard />
+          </div>
         </div>
       </div>
-      <div className="flex flex-col gap-3">
-        <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
-          Improve Test Performance
-        </p>
-        <div className="flex">
-          <TotalFlakyTestsCard />
-          <AverageFlakeRateCard />
-          <TotalFailuresCard />
-          <TotalSkippedTestsCard />
-        </div>
-      </div>
-    </div>
+    </>
   )
 }
 
