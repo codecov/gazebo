@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import Profile from './Profile'
@@ -9,6 +9,15 @@ import Profile from './Profile'
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/account/gh/codecov-user']}>
+      <Route path="/account/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
 const mockUser = {
   name: 'Codecov User',
   username: 'codecov-user',
@@ -27,32 +36,20 @@ afterAll(() => server.close())
 describe('Profile', () => {
   function setup() {
     server.use(
-      rest.get('/internal/users/current', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(mockUser))
-      ),
-      graphql.query('Seats', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({ config: { seatsUsed: 0, seatsLimit: 10 } })
-        )
-      )
+      http.get('/internal/users/current', (info) => {
+        return HttpResponse.json(mockUser)
+      }),
+      graphql.query('Seats', (info) => {
+        return HttpResponse.json({
+          data: { config: { seatsUsed: 0, seatsLimit: 10 } },
+        })
+      })
     )
   }
   describe('rendering component', () => {
-    beforeEach(async () => {
-      setup()
-    })
-
     it('renders profile', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/account/gh/codecov-user']}>
-            <Route path="/account/:provider/:owner">
-              <Profile owner="codecov-user" provider="gh" />
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      setup()
+      render(<Profile owner="codecov-user" provider="gh" />, { wrapper })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
