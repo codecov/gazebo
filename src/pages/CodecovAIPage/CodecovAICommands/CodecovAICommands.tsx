@@ -9,7 +9,7 @@ const CodecovAICommands: React.FC = () => {
           <Card.Title size="base">Codecov AI Commands</Card.Title>
         </Card.Header>
         <Card.Content>
-          After installing the app, use these commands in your PR Comments:
+          After installing the app, use these commands in your PR comments:
           <ul className="mt-2 list-inside list-disc space-y-1">
             <li>
               <span className="rounded border border-gray-200 bg-gray-100 px-1 font-semibold">
