@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import SidebarLayout from './SidebarLayout'
@@ -11,10 +11,6 @@ vi.mock('layouts/Footer', () => ({ default: () => 'Footer' }))
 const robinQuote = 'Holy Tintinnabulation!'
 const batmanQuote =
   'Why do we fall? So that we can learn to pick ourselves back up.'
-
-afterEach(() => {
-  cleanup()
-})
 
 describe('SidebarLayout', () => {
   describe('it renders with no children', () => {
