@@ -124,9 +124,16 @@ describe('TokenlessSection', () => {
     const requiredOption = screen.getByLabelText('Required')
     await user.click(requiredOption)
 
-    const notRequiredOption = screen.getByLabelText('Not required')
-    await user.click(notRequiredOption)
+    const requireTokenButton = screen.getByRole('button', {
+      name: /Require token for upload/,
+    })
 
+    await user.click(requireTokenButton)
+    expect(requiredOption).toBeChecked()
+    const notRequiredOption = screen.getByLabelText('Not required')
+    expect(notRequiredOption).not.toBeChecked()
+
+    await user.click(notRequiredOption)
     expect(notRequiredOption).toBeChecked()
   })
 })
