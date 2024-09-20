@@ -6,7 +6,7 @@ import { useUsers } from 'services/users'
 
 import AddAdmins from './AddAdmins'
 
-jest.mock('services/users')
+vi.mock('services/users')
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -32,21 +32,21 @@ describe('AddAdmins', () => {
     beforeEach(() => setup([]))
 
     it('renders an empty input', () => {
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       const textbox = screen.getByRole('combobox')
       expect(textbox).toHaveValue('')
     })
 
     it(`doesn't render any dropdown`, () => {
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       const listBox = screen.getByRole('listbox')
       expect(listBox).toHaveClass('hidden')
     })
 
     it(`doesn't call the API`, () => {
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       expect(useUsers.mock.calls[0][0].opts.enabled).toBeFalsy()
     })
@@ -55,7 +55,7 @@ describe('AddAdmins', () => {
   describe('when typing and the api is loading', () => {
     it('renders the dropdown', async () => {
       const { user } = setup([], true)
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
@@ -66,7 +66,7 @@ describe('AddAdmins', () => {
 
     it('renders the loading state', async () => {
       const { user } = setup([], true)
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       expect(await screen.findByRole('combobox')).toBeTruthy()
       const textbox = screen.getByRole('combobox')
@@ -81,7 +81,7 @@ describe('AddAdmins', () => {
   describe('when typing and the api returns no data', () => {
     it('renders the dropdown', async () => {
       const { user } = setup([])
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
@@ -92,7 +92,7 @@ describe('AddAdmins', () => {
 
     it('renders the empty state', async () => {
       const { user } = setup([])
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
@@ -106,7 +106,7 @@ describe('AddAdmins', () => {
       const { user } = setup([
         { username: 'launda', email: 'c3@cr.io', name: 'laudna' },
       ])
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
@@ -118,7 +118,7 @@ describe('AddAdmins', () => {
       const { user } = setup([
         { username: 'funspooky', email: 'c3@cr.io', name: 'laudna' },
       ])
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
@@ -138,7 +138,7 @@ describe('AddAdmins', () => {
     it('calls the setAdminStatus with the user', async () => {
       const users = [{ username: 'launda', email: 'c3@cr.io', name: 'laudna' }]
       const { user } = setup(users)
-      const setAdminStatus = jest.fn()
+      const setAdminStatus = vi.fn()
       render(<AddAdmins setAdminStatus={setAdminStatus} />, { wrapper })
 
       let textbox = screen.getByRole('combobox')
@@ -156,7 +156,7 @@ describe('AddAdmins', () => {
       const { user } = setup([
         { username: 'launda', email: 'c3@cr.io', name: 'laudna' },
       ])
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       let textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
@@ -174,7 +174,7 @@ describe('AddAdmins', () => {
       const { user } = setup([
         { username: 'launda', email: 'c3@cr.io', name: 'laudna' },
       ])
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
@@ -193,7 +193,7 @@ describe('AddAdmins', () => {
     it('calls the setAdminStatus with the user', async () => {
       const users = [{ username: 'launda', email: 'c3@cr.io', name: 'laudna' }]
       const { user } = setup(users)
-      const setAdminStatus = jest.fn()
+      const setAdminStatus = vi.fn()
       render(<AddAdmins setAdminStatus={setAdminStatus} />, { wrapper })
 
       let textbox = screen.getByRole('combobox')
@@ -212,7 +212,7 @@ describe('AddAdmins', () => {
       const { user } = setup([
         { username: 'launda', email: 'c3@cr.io', name: 'laudna' },
       ])
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       let textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
@@ -231,7 +231,7 @@ describe('AddAdmins', () => {
       const { user } = setup([
         { username: 'launda', email: 'c3@cr.io', name: 'laudna' },
       ])
-      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+      render(<AddAdmins setAdminStatus={vi.fn()} />, { wrapper })
 
       const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
