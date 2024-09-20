@@ -7,7 +7,7 @@ import config from 'config'
 
 import Header from './Header'
 
-jest.mock('config')
+vi.mock('config')
 
 const queryClient = new QueryClient()
 const server = setupServer()
