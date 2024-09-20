@@ -2,14 +2,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import Access from './Access'
 
-window.confirm = jest.fn(() => true)
+window.confirm = vi.fn(() => true)
 
 const mockSignedInUser = {
   me: {
@@ -85,7 +85,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-const server = setupServer()
 
 let testLocation: ReturnType<typeof useLocation>
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
@@ -107,6 +106,7 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
     </QueryClientProvider>
   )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -125,11 +125,14 @@ describe('AccessTab', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('MySessions', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockSessionInfo))
+      graphql.query('MySessions', (info) => {
+        return HttpResponse.json({ data: mockSessionInfo })
       }),
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockSignedInUser))
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: mockSignedInUser })
+      }),
+      graphql.mutation('DeleteSession', (info) => {
+        return HttpResponse.json({ data: {} })
       })
     )
 
