@@ -146,11 +146,11 @@ describe('analyticsQuery', () => {
 
 describe('createTimeSeriesQueryVars', () => {
   beforeEach(() => {
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date('2022/01/01'))
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2022/01/01'))
   })
 
-  afterAll(() => jest.useRealTimers())
+  afterAll(() => vi.useRealTimers())
 
   describe('dynamic params', () => {
     it('sets the start date', () => {
