@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
 
 import {
@@ -24,10 +24,6 @@ const notifications = [
 ]
 
 vi.mock('services/toastNotification')
-
-afterEach(() => {
-  cleanup()
-})
 
 describe('ToastNotifications', () => {
   const removeNotification = vi.fn()
