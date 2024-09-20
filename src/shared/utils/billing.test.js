@@ -28,7 +28,7 @@ import {
   useProPlans,
 } from './billing'
 
-jest.mock('shared/featureFlags')
+vi.mock('shared/featureFlags')
 
 function getPlans() {
   return [
