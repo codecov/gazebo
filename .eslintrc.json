@@ -9,7 +9,7 @@
     "prettier",
     "plugin:storybook/recommended",
     "plugin:tailwindcss/recommended",
-    "@vitest"
+    "plugin:@vitest"
   ],
   "ignorePatterns": [
     "!src/**/*.{js,jsx,ts,tsx}",
