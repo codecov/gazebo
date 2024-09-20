@@ -6,12 +6,12 @@ import { useGenerateUserToken } from 'services/access'
 
 import CreateTokenModal from './CreateTokenModal'
 
-jest.mock('services/access')
+vi.mock('services/access')
 
 describe('CreateTokenModal', () => {
   function setup() {
     const user = userEvent.setup()
-    const closeModal = jest.fn()
+    const closeModal = vi.fn()
     const success = {
       data: {
         createUserToken: {
@@ -19,7 +19,7 @@ describe('CreateTokenModal', () => {
         },
       },
     }
-    const mutate = jest.fn((_, { onSuccess }) => {
+    const mutate = vi.fn((_, { onSuccess }) => {
       return onSuccess(success)
     })
     useGenerateUserToken.mockReturnValue({
@@ -129,7 +129,7 @@ describe('CreateTokenModal', () => {
         expect(label).toBeInTheDocument()
         const copyElements = screen.getByTestId('clipboard-copy-token')
         expect(copyElements).toBeInTheDocument()
-        window.prompt = jest.fn()
+        window.prompt = vi.fn()
         await user.click(copyElements)
 
         expect(window.prompt).toHaveBeenCalled()
