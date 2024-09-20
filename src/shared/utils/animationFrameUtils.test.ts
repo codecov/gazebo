@@ -1,4 +1,5 @@
 import { waitFor } from '@testing-library/react'
+import { type MockInstance } from 'vitest'
 
 import {
   cancelAnimationTimeout,
@@ -6,18 +7,18 @@ import {
 } from './animationFrameUtils'
 
 describe('requestAnimationTimeout', () => {
-  let requestAnimationFrameSpy: jest.SpyInstance
-  let dateNowSpy: jest.SpyInstance
+  let requestAnimationFrameSpy: MockInstance
+  let dateNowSpy: MockInstance
 
   beforeEach(() => {
-    requestAnimationFrameSpy = jest.spyOn(window, 'requestAnimationFrame')
-    dateNowSpy = jest.spyOn(Date, 'now')
+    requestAnimationFrameSpy = vi.spyOn(window, 'requestAnimationFrame')
+    dateNowSpy = vi.spyOn(Date, 'now')
   })
 
   afterEach(() => {
     requestAnimationFrameSpy.mockReset()
     dateNowSpy.mockReset()
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should call the callback after the specified delay', async () => {
@@ -31,7 +32,7 @@ describe('requestAnimationTimeout', () => {
       return 1
     })
 
-    const callback = jest.fn()
+    const callback = vi.fn()
     requestAnimationTimeout(callback, 1000)
 
     await waitFor(() => expect(callback).toHaveBeenCalled())
@@ -48,7 +49,7 @@ describe('requestAnimationTimeout', () => {
       return 1
     })
 
-    const callback = jest.fn()
+    const callback = vi.fn()
     requestAnimationTimeout(callback, 1000)
 
     await waitFor(() =>
@@ -67,7 +68,7 @@ describe('requestAnimationTimeout', () => {
       return 1
     })
 
-    const callback = jest.fn()
+    const callback = vi.fn()
     requestAnimationTimeout(callback, 1000)
 
     await waitFor(() =>
@@ -77,10 +78,10 @@ describe('requestAnimationTimeout', () => {
 })
 
 describe('cancelAnimationTimeout', () => {
-  let cancelAnimationFrameSpy: jest.SpyInstance
+  let cancelAnimationFrameSpy: MockInstance
 
   beforeEach(() => {
-    cancelAnimationFrameSpy = jest.spyOn(window, 'cancelAnimationFrame')
+    cancelAnimationFrameSpy = vi.spyOn(window, 'cancelAnimationFrame')
   })
 
   it('should call window.cancelAnimationFrame', () => {
