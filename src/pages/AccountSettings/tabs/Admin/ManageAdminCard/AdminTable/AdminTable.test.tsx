@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -82,12 +82,18 @@ const queryClient = new QueryClient({
   },
 })
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
@@ -109,32 +115,31 @@ describe('AdminTable', () => {
   function setup({ nullUsername = false, emptyAdmins = false }: SetupArgs) {
     const user = userEvent.setup({})
     server.use(
-      rest.patch(
-        '/internal/:provider/codecov/users/:userId',
-        (req, res, ctx) => {
-          patchRequest = {
-            userId: req.params.userId as string,
-            body: req.json(),
-          }
-          return res(ctx.status(204))
+      http.patch('/internal/:provider/codecov/users/:userId', (info) => {
+        patchRequest = {
+          userId: info.params.userId as string,
+          body: info?.request?.json(),
         }
-      ),
-      rest.get('/internal/:provider/codecov/users', (req, res, ctx) => {
+
+        return HttpResponse.text('no content', { status: 200 })
+      }),
+      http.get('/internal/:provider/codecov/users', (info) => {
         if (nullUsername) {
-          return res(ctx.status(200), ctx.json(mockedNullUsername))
+          return HttpResponse.json(mockedNullUsername)
         }
         if (emptyAdmins) {
-          return res(ctx.status(200), ctx.json(mockedEmptyAdmins))
+          return HttpResponse.json(mockedEmptyAdmins)
         }
 
-        requestSearchParams = req.url.searchParams
-        const pageNum = Number(requestSearchParams.get('page'))
+        const url = new URL(info.request.url)
+        requestSearchParams = url.searchParams
+        const pageNum = Number(url.searchParams.get('page'))
 
         if (pageNum > 1) {
-          return res(ctx.status(200), ctx.json(mockedSecondResponse))
+          return HttpResponse.json(mockedSecondResponse)
         }
 
-        return res(ctx.status(200), ctx.json(mockedFirstResponse))
+        return HttpResponse.json(mockedFirstResponse)
       })
     )
     mockAllIsIntersecting(false)
