@@ -2,11 +2,11 @@ import * as Sentry from '@sentry/react'
 
 import { prismLanguageMapper } from './prismLanguageMapper'
 
-jest.mock('@sentry/react', () => {
-  const originalModule = jest.requireActual('@sentry/react')
+vi.mock('@sentry/react', async () => {
+  const originalModule = await vi.importActual('@sentry/react')
   return {
     ...originalModule,
-    captureMessage: jest.fn(),
+    captureMessage: vi.fn(),
   }
 })
 
