@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react'
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { ColorBar, findCoverage } from './ColorBar'
 
@@ -13,10 +13,6 @@ vi.mock('@sentry/react', async () => {
     ...originalModule,
     captureMessage: mocks.captureMessage,
   }
-})
-
-afterEach(() => {
-  cleanup()
 })
 
 describe('ColorBar', () => {

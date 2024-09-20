@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/react'
 import {
-  cleanup,
   fireEvent,
   render,
   screen,
@@ -96,10 +95,6 @@ const wrapper =
       />
     </MemoryRouter>
   )
-
-afterEach(() => {
-  cleanup()
-})
 
 describe('VirtualFileRenderer', () => {
   function setup() {
