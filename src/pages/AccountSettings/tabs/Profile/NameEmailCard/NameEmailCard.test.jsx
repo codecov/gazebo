@@ -1,14 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { useAddNotification } from 'services/toastNotification'
 
 import NameEmailCard from './NameEmailCard'
 
-jest.mock('services/toastNotification')
+vi.mock('services/toastNotification')
 
 const currentUser = {
   name: 'donald duck',
@@ -47,24 +47,24 @@ const wrapper = ({ children }) => (
 describe('NameEmailCard', () => {
   function setup() {
     const user = userEvent.setup()
-    const addNotification = jest.fn()
+    const addNotification = vi.fn()
     server.use(
-      graphql.mutation('UpdateProfile', async (req, res, ctx) => {
-        const json = await req.json()
+      graphql.mutation('UpdateProfile', async (info) => {
+        const json = await info.request.json()
 
         if (json.variables.input.name === 'failTest') {
-          return res(ctx.status(500))
+          return HttpResponse.json({ data: {} }, { status: 500 })
         } else {
-          return res(
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               updateProfile: {
                 me: {
                   email: json.variables.input.email || '',
                   user: { name: json.variables.input.name || '' },
                 },
               },
-            })
-          )
+            },
+          })
         }
       })
     )
