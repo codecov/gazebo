@@ -32,7 +32,7 @@ const CodecovAIPage: React.FC = () => {
           Codecov AI is a generative AI assistant developed by Codecov at
           Sentry. It helps you with generating new tests for uncovered code and
           reviews your code changes, offering suggestions for improvement before
-          merging pull requests.{' '}
+          merging pull requests.
         </p>
       </section>
       <div className="flex flex-col gap-4 pt-2 lg:w-3/5">
