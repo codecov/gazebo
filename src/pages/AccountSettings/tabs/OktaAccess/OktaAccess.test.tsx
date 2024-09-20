@@ -1,13 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import OktaAccess from './OktaAccess'
 
-const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true, retry: false } },
 })
@@ -22,6 +21,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   </QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
@@ -38,16 +38,14 @@ afterAll(() => {
 describe('OktaAccess', () => {
   function setup({ isAdmin = false } = {}) {
     server.use(
-      graphql.query('DetailOwner', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({ owner: { username: 'codecov', isAdmin } })
-        )
-      ),
-      graphql.query('GetOktaConfig', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({
+          data: { owner: { username: 'codecov', isAdmin } },
+        })
+      }),
+      graphql.query('GetOktaConfig', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               isUserOktaAuthenticated: true,
               account: {
@@ -60,9 +58,9 @@ describe('OktaAccess', () => {
                 },
               },
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
   }
 
