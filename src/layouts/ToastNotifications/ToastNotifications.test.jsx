@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { vi } from 'vitest'
 
 import {
   useNotifications,
@@ -22,10 +23,10 @@ const notifications = [
   },
 ]
 
-jest.mock('services/toastNotification')
+vi.mock('services/toastNotification')
 
 describe('ToastNotifications', () => {
-  const removeNotification = jest.fn()
+  const removeNotification = vi.fn()
 
   function setup() {
     useNotifications.mockReturnValue(notifications)
@@ -35,7 +36,7 @@ describe('ToastNotifications', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
       removeNotification.mockReset()
       setup()
     })
@@ -47,7 +48,7 @@ describe('ToastNotifications', () => {
 
     describe('when enough time passes', () => {
       beforeEach(() => {
-        jest.runOnlyPendingTimers()
+        vi.runOnlyPendingTimers()
       })
 
       it('calls removeNotification with the notification that disappear', () => {

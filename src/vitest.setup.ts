@@ -1,6 +1,5 @@
 import * as matchers from '@testing-library/jest-dom/matchers'
 import { cleanup } from '@testing-library/react'
-import { vi } from 'vitest'
 import '@testing-library/jest-dom/vitest'
 
 // not sure why this lint is being fired here so I'm disabling it
