@@ -1,30 +1,35 @@
-import cs from 'classnames'
+import { cva, type VariantProps } from 'cva'
 import defaultTo from 'lodash/defaultTo'
 import uniqueId from 'lodash/uniqueId'
 import { forwardRef, HTMLProps, Ref } from 'react'
 
+import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 import { OutlineIconCollection } from 'ui/Icon/Icon'
 
-interface TextInputProps extends HTMLProps<HTMLInputElement> {
+const textInput = cva(
+  'block h-8 w-full border-ds-gray-tertiary bg-ds-container px-3 text-sm disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary disabled:text-ds-gray-quaternary',
+  {
+    variants: {
+      variant: {
+        default: 'rounded border',
+        topRounded:
+          'border-t border-r border-l focus:border rounded-tl rounded-tr',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+    },
+  }
+)
+
+interface TextInputProps
+  extends HTMLProps<HTMLInputElement>,
+    VariantProps<typeof textInput> {
   label?: string
   icon?: keyof OutlineIconCollection
   placeholder?: string
-  variant?: 'default' | 'topRounded'
   dataMarketing?: string
-}
-
-const VariantClasses = {
-  default: 'rounded border',
-  topRounded: 'border-t border-r border-l focus:border rounded-tl rounded-tr',
-}
-
-const styles = {
-  input:
-    'block border-ds-gray-tertiary px-3 text-sm w-full h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-container',
-  label: 'block font-semibold mb-2',
-  iconWrapper:
-    'absolute text-ds-gray-quaternary left-2 h-full flex items-center',
 }
 
 const TextInput = forwardRef(
@@ -49,7 +54,7 @@ const TextInput = forwardRef(
       <div>
         <label
           htmlFor={id}
-          className={cs(styles.label, {
+          className={cn('mb-2 block font-semibold', {
             'sr-only': !label,
           })}
         >
@@ -57,8 +62,8 @@ const TextInput = forwardRef(
         </label>
         <div className="relative">
           {icon && (
-            <div className={styles.iconWrapper}>
-              <Icon size="sm" variant="outline" name={icon} />
+            <div className="absolute left-2 flex h-full items-center text-ds-gray-quaternary">
+              <Icon size="sm" variant="outline" name={icon} label={icon} />
             </div>
           )}
           <input
@@ -66,7 +71,7 @@ const TextInput = forwardRef(
             ref={ref}
             id={id}
             type={type}
-            className={cs(styles.input, VariantClasses[variant], {
+            className={cn(textInput(), {
               'pl-7': Boolean(icon),
             })}
             placeholder={placeholder}
