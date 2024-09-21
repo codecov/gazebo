@@ -1,15 +1,14 @@
-import cs from 'classnames'
 import uniqueId from 'lodash/uniqueId'
-import PropTypes from 'prop-types'
 
-import { dataMarketingType } from 'shared/propTypes'
+import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 
-const ToggleClasses = {
-  button:
-    'relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-50',
-  circle:
-    'pointer-events-none translate-x-0 inline-block h-5 w-5 rounded-full bg-ds-container dark:bg-white shadow transform ring-0 transition ease-in-out duration-200',
+interface ToggleProps {
+  value?: boolean
+  label: string
+  onClick: () => void
+  disabled?: boolean
+  dataMarketing: string
 }
 
 function Toggle({
@@ -18,7 +17,7 @@ function Toggle({
   onClick,
   disabled = false,
   dataMarketing,
-}) {
+}: ToggleProps) {
   const ID = uniqueId('toggle')
 
   return (
@@ -38,12 +37,15 @@ function Toggle({
       )}
       <button
         id={ID}
-        className={cs(ToggleClasses.button, {
-          'bg-toggle-active': value,
-          'bg-toggle-inactive': !value && !disabled,
-          'bg-toggle-disabled': disabled,
-          'cursor-not-allowed': disabled,
-        })}
+        className={cn(
+          'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-50 focus:ring-offset-2',
+          {
+            'bg-toggle-active': value,
+            'bg-toggle-inactive': !value && !disabled,
+            'bg-toggle-disabled': disabled,
+            'cursor-not-allowed': disabled,
+          }
+        )}
         aria-pressed="false"
         type="button"
         disabled={disabled}
@@ -52,13 +54,16 @@ function Toggle({
         <span
           data-testid="switch"
           aria-hidden="true"
-          className={cs(ToggleClasses.circle, {
-            'translate-x-5': value,
-            'translate-x-0': !value,
-          })}
+          className={cn(
+            'pointer-events-none inline-block size-5 translate-x-0 rounded-full bg-ds-container shadow ring-0 transition duration-200 ease-in-out dark:bg-white',
+            {
+              'translate-x-5': value,
+              'translate-x-0': !value,
+            }
+          )}
         >
           <div
-            className={cs({
+            className={cn({
               'text-toggle-active': value,
               'text-toggle-inactive': !value && !disabled,
               'text-toggle-disabled': disabled,
@@ -70,14 +75,6 @@ function Toggle({
       </button>
     </div>
   )
-}
-
-Toggle.propTypes = {
-  value: PropTypes.bool.isRequired,
-  label: PropTypes.string,
-  onClick: PropTypes.func,
-  disabled: PropTypes.bool,
-  dataMarketing: dataMarketingType,
 }
 
 export default Toggle
