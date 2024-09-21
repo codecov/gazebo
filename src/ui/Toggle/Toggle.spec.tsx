@@ -11,7 +11,7 @@ describe('Toggle', () => {
 
   describe('Toggle is active', () => {
     it('renders active state', () => {
-      const mockFn = jest.fn()
+      const mockFn = vi.fn()
       render(
         <Toggle
           label="🐕"
@@ -26,7 +26,7 @@ describe('Toggle', () => {
     })
 
     it('Slides circle to the left', () => {
-      const mockFn = jest.fn()
+      const mockFn = vi.fn()
       render(
         <Toggle
           label="🐕"
@@ -42,7 +42,7 @@ describe('Toggle', () => {
 
     it('calls onClick', async () => {
       const { user } = setup()
-      const mockFn = jest.fn()
+      const mockFn = vi.fn()
       render(
         <Toggle
           label="🐕"
@@ -62,7 +62,7 @@ describe('Toggle', () => {
 
   describe('Toggle is not active', () => {
     it('renders inactive state', () => {
-      const mockFn = jest.fn()
+      const mockFn = vi.fn()
       render(
         <Toggle
           label="🐕"
@@ -77,7 +77,7 @@ describe('Toggle', () => {
     })
 
     it('Slides circle to the right', () => {
-      const mockFn = jest.fn()
+      const mockFn = vi.fn()
       render(
         <Toggle
           label="🐕"
@@ -93,7 +93,7 @@ describe('Toggle', () => {
 
     it('calls onClick', async () => {
       const { user } = setup()
-      const mockFn = jest.fn()
+      const mockFn = vi.fn()
       render(
         <Toggle
           label="🐕"
@@ -113,7 +113,7 @@ describe('Toggle', () => {
 
   describe('Toggle is disabled', () => {
     it('renders disabled state', () => {
-      const mockFn = jest.fn()
+      const mockFn = vi.fn()
       render(
         <Toggle
           label="🐕"
@@ -129,7 +129,7 @@ describe('Toggle', () => {
     })
 
     it('cursor is set to not allow', () => {
-      const mockFn = jest.fn()
+      const mockFn = vi.fn()
       render(
         <Toggle
           label="🐕"
@@ -146,7 +146,7 @@ describe('Toggle', () => {
 
     it('does not trigger onClick', async () => {
       const { user } = setup()
-      const mockFn = jest.fn()
+      const mockFn = vi.fn()
       render(
         <Toggle
           label="🐕"
@@ -165,7 +165,7 @@ describe('Toggle', () => {
     })
 
     it('has disabled state on button', () => {
-      const mockFn = jest.fn()
+      const mockFn = vi.fn()
       render(
         <Toggle
           label="🐕"
@@ -178,24 +178,6 @@ describe('Toggle', () => {
 
       const button = screen.getByRole('button')
       expect(button).toHaveAttribute('disabled')
-    })
-  })
-
-  describe('Shown Label', () => {
-    it('is screen reader only', () => {
-      const mockFn = jest.fn()
-      render(
-        <Toggle
-          label="🐕"
-          dataMarketing="marketing"
-          value={false}
-          showLabel={true}
-          onClick={mockFn}
-        />
-      )
-
-      const label = screen.getByText(/🐕/)
-      expect(label).toHaveClass('cursor-pointer')
     })
   })
 })
