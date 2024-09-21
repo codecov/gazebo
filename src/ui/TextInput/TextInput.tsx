@@ -71,7 +71,7 @@ const TextInput = forwardRef(
             ref={ref}
             id={id}
             type={type}
-            className={cn(textInput(), {
+            className={cn(textInput({ variant }), {
               'pl-7': Boolean(icon),
             })}
             placeholder={placeholder}
