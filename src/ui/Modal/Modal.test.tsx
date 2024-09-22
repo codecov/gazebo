@@ -1,5 +1,4 @@
-import { render, screen } from 'custom-testing-library'
-
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import BaseModal from './BaseModal'
@@ -11,7 +10,7 @@ describe('Modal', () => {
       const { container } = render(
         <Modal
           isOpen={false}
-          onClose={jest.fn()}
+          onClose={vi.fn()}
           body="hello"
           title="modal title"
         />
@@ -26,7 +25,7 @@ describe('Modal', () => {
       render(
         <Modal
           isOpen={true}
-          onClose={jest.fn()}
+          onClose={vi.fn()}
           body="hello"
           title="modal title"
         />
@@ -39,7 +38,7 @@ describe('Modal', () => {
       render(
         <Modal
           isOpen={true}
-          onClose={jest.fn()}
+          onClose={vi.fn()}
           body="hello"
           title="modal title"
         />
@@ -51,7 +50,7 @@ describe('Modal', () => {
 
   describe('when clicking on the close button', () => {
     it('calls the close handler', async () => {
-      const onClose = jest.fn()
+      const onClose = vi.fn()
       const user = userEvent.setup()
       render(
         <Modal
@@ -71,7 +70,7 @@ describe('Modal', () => {
       render(
         <Modal
           isOpen={true}
-          onClose={jest.fn()}
+          onClose={vi.fn()}
           body="hello"
           title="modal title"
           footer={<span>this is the footer</span>}
@@ -87,7 +86,7 @@ describe('Modal', () => {
       render(
         <Modal
           isOpen={true}
-          onClose={jest.fn()}
+          onClose={vi.fn()}
           body="hello"
           title="modal title"
           subtitle="to complete the title"
@@ -104,7 +103,7 @@ describe('Modal', () => {
         <Modal
           isOpen={false}
           hasCloseButton={false}
-          onClose={jest.fn()}
+          onClose={vi.fn()}
           body="hello"
           title="modal title"
           subtitle="to complete the title"
