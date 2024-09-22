@@ -1,11 +1,18 @@
-import cs from 'classnames'
 import uniqueId from 'lodash/uniqueId'
-import PropTypes from 'prop-types'
 import { forwardRef } from 'react'
 
-import { dataMarketingType } from 'shared/propTypes'
+import { cn } from 'shared/utils/cn'
 
-const RadioInput = forwardRef(
+interface RadioInputProps
+  extends Omit<React.HTMLProps<HTMLInputElement>, 'label'> {
+  label: React.ReactNode
+  showLabel?: boolean
+  disabled?: boolean
+  dataMarketing?: string
+  id?: string
+}
+
+const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(
   (
     {
       label,
@@ -21,10 +28,10 @@ const RadioInput = forwardRef(
     const id = idFromProps || uniqueId('radio-input')
     return (
       <div
-        className={cs('flex items-center', {
-          'text-ds-gray-quaternary': disabled,
-          'text-ds-gray-octonary': !disabled,
-        })}
+        className={cn(
+          'flex items-center',
+          disabled ? 'text-ds-gray-quaternary' : 'text-ds-gray-octonary'
+        )}
       >
         <input
           data-marketing={dataMarketing}
@@ -37,7 +44,7 @@ const RadioInput = forwardRef(
         />
         <label
           htmlFor={id}
-          className={cs('cursor-pointer', { 'sr-only': showLabel === false })}
+          className={cn('cursor-pointer', { 'sr-only': !showLabel })}
         >
           {label}
         </label>
@@ -47,13 +54,5 @@ const RadioInput = forwardRef(
 )
 
 RadioInput.displayName = 'RadioInput'
-
-RadioInput.propTypes = {
-  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  disabled: PropTypes.bool,
-  showLabel: PropTypes.bool,
-  dataMarketing: dataMarketingType,
-  id: PropTypes.string,
-}
 
 export default RadioInput
