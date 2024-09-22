@@ -8,7 +8,7 @@ const options = [{ text: 'test option 1' }, { text: 'test option 2' }]
 
 describe('OptionButton', () => {
   it('renders options', () => {
-    const onChange = jest.fn()
+    const onChange = vi.fn()
 
     render(
       <OptionButton onChange={onChange} options={options} active="active" />
@@ -23,7 +23,7 @@ describe('OptionButton', () => {
 
   it('fires click event', async () => {
     const user = userEvent.setup()
-    const onChange = jest.fn()
+    const onChange = vi.fn()
 
     render(
       <OptionButton onChange={onChange} options={options} active="active" />
@@ -36,7 +36,7 @@ describe('OptionButton', () => {
 
   describe('when disable prop is true', () => {
     it('sets buttons as disabled', () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
 
       render(
         <OptionButton
@@ -60,7 +60,7 @@ describe('OptionButton', () => {
   describe('when type prop is passed', () => {
     describe('when type is button', () => {
       it('sets type attribute as button', () => {
-        const onChange = jest.fn()
+        const onChange = vi.fn()
 
         render(
           <OptionButton
@@ -83,7 +83,7 @@ describe('OptionButton', () => {
 
     describe('when type is reset', () => {
       it('sets type attribute as reset', () => {
-        const onChange = jest.fn()
+        const onChange = vi.fn()
 
         render(
           <OptionButton
@@ -106,7 +106,7 @@ describe('OptionButton', () => {
 
     describe('when type is submit', () => {
       it('sets type attribute as submit', () => {
-        const onChange = jest.fn()
+        const onChange = vi.fn()
 
         render(
           <OptionButton
