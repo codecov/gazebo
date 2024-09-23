@@ -9,7 +9,6 @@ import config from 'config'
 
 import { useImpersonate } from 'services/impersonate'
 import { User } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 
 import Header from './Header'
 
@@ -33,9 +32,7 @@ vi.mock('src/layouts/Header/components/ThemeToggle', () => ({
 }))
 
 vi.mock('services/impersonate')
-vi.mock('shared/featureFlags')
 const mockedUseImpersonate = useImpersonate as Mock
-const mockedUseFlags = useFlags as Mock
 
 const mockUser = {
   me: {
@@ -117,7 +114,6 @@ type SetupArgs = {
 describe('Header', () => {
   function setup({ user = mockUser }: SetupArgs) {
     mockedUseImpersonate.mockReturnValue({ isImpersonating: false })
-    mockedUseFlags.mockReturnValue({ darkMode: false })
     server.use(
       graphql.query('CurrentUser', (info) => {
         return HttpResponse.json({ data: user })
@@ -186,21 +182,6 @@ describe('Header', () => {
 
       const userDropdown = await screen.findByText(/User Dropdown/)
       expect(userDropdown).toBeInTheDocument()
-    })
-    it('has toggle for light/dark mode when flag on', async () => {
-      setup({})
-      mockedUseFlags.mockReturnValue({ darkMode: true })
-      render(<Header />, { wrapper })
-
-      const toggle = await screen.findByText(/Theme Toggle/)
-      expect(toggle).toBeInTheDocument()
-    })
-    it('has no toggle for light/dark mode when flag off', () => {
-      setup({})
-      render(<Header />, { wrapper })
-
-      const toggle = screen.queryAllByText(/Theme Toggle/)
-      expect(toggle).toEqual([])
     })
   })
 
