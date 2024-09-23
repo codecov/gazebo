@@ -1,13 +1,14 @@
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { type Mock } from 'vitest'
 
 import { TopBanner, useTopBannerContext } from './TopBanner'
 
 describe('TopBanner', () => {
   function setup() {
     const user = userEvent.setup()
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
-    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     return {
       user,
@@ -38,7 +39,7 @@ describe('TopBanner', () => {
           </TopBanner>
         )
 
-        const icon = screen.getByText(/exclamation-circle.svg/)
+        const icon = screen.getByTestId('exclamationCircle')
         expect(icon).toBeInTheDocument()
       })
 
@@ -75,7 +76,7 @@ describe('TopBanner', () => {
           </TopBanner>
         )
 
-        const icon = screen.getByText(/exclamation-triangle.svg/)
+        const icon = screen.getByTestId('exclamationTriangle')
         expect(icon).toBeInTheDocument()
       })
 
@@ -196,11 +197,11 @@ describe('TopBanner', () => {
 
 describe('useTopBannerContext', () => {
   describe('when used outside of context', () => {
-    let errorMock: jest.Mock
+    let errorMock: Mock
 
     beforeEach(() => {
-      const spy = jest.spyOn(console, 'error')
-      errorMock = jest.fn()
+      const spy = vi.spyOn(console, 'error')
+      errorMock = vi.fn()
       spy.mockImplementation(errorMock)
     })
 
