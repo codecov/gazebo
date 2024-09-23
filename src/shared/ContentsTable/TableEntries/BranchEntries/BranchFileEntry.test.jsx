@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import BranchFileEntry from './BranchFileEntry'
@@ -82,13 +82,13 @@ afterAll(() => {
 describe('BranchFileEntry', () => {
   function setup() {
     const user = userEvent.setup()
-    const mockVars = jest.fn()
+    const mockVars = vi.fn()
 
     server.use(
-      graphql.query('CoverageForFile', (req, res, ctx) => {
-        mockVars(req.variables)
+      graphql.query('CoverageForFile', (info) => {
+        mockVars(info.variables)
 
-        return res(ctx.status(200), ctx.data(mockData))
+        return HttpResponse.json({ data: mockData })
       })
     )
 
