@@ -2,16 +2,19 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
-
 import { useTableDefaultSort } from './useTableDefaultSort'
 
-jest.mock('services/navigation', () => ({
-  ...jest.requireActual('services/navigation'),
-  useLocationParams: jest.fn(),
+const mocks = vi.hoisted(() => ({
+  useLocationParams: vi.fn(),
 }))
 
-const mockedUseLocationParams = useLocationParams as jest.Mock
+vi.mock('services/navigation', async () => {
+  const originalModule = await vi.importActual('services/navigation')
+  return {
+    ...originalModule,
+    useLocationParams: mocks.useLocationParams,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -29,7 +32,7 @@ describe('useTableDefaultSort', () => {
   describe('on initial render', () => {
     describe('no url parameters are set', () => {
       it('returns name ascending as default parameter', () => {
-        mockedUseLocationParams.mockReturnValue({
+        mocks.useLocationParams.mockReturnValue({
           params: {},
         })
         const { result } = renderHook(() => useTableDefaultSort(), { wrapper })
@@ -41,7 +44,7 @@ describe('useTableDefaultSort', () => {
 
     describe('url parameter is set to tree', () => {
       it('returns name ascending', () => {
-        mockedUseLocationParams.mockReturnValue({
+        mocks.useLocationParams.mockReturnValue({
           params: { displayType: 'tree' },
         })
         const { result } = renderHook(() => useTableDefaultSort(), { wrapper })
@@ -53,7 +56,7 @@ describe('useTableDefaultSort', () => {
 
     describe('url parameter is set to list', () => {
       it('returns misses descending', () => {
-        mockedUseLocationParams.mockReturnValue({
+        mocks.useLocationParams.mockReturnValue({
           params: { displayType: 'list' },
         })
         const { result } = renderHook(() => useTableDefaultSort(), { wrapper })
@@ -67,7 +70,7 @@ describe('useTableDefaultSort', () => {
   describe('on further renders', () => {
     describe('url parameter is switched to tree', () => {
       it('returns misses ascending', async () => {
-        mockedUseLocationParams
+        mocks.useLocationParams
           .mockReturnValueOnce({
             params: { displayType: 'list' },
           })
@@ -89,7 +92,7 @@ describe('useTableDefaultSort', () => {
 
     describe('url parameter is switched to list', () => {
       it('returns names descending', async () => {
-        mockedUseLocationParams
+        mocks.useLocationParams
           .mockReturnValueOnce({
             params: { displayType: 'tree' },
           })
