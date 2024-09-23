@@ -183,6 +183,14 @@ describe('Header', () => {
       const userDropdown = await screen.findByText(/User Dropdown/)
       expect(userDropdown).toBeInTheDocument()
     })
+
+    it('has toggle for light/dark mode', async () => {
+      setup({})
+      render(<Header />, { wrapper })
+
+      const toggle = await screen.findByText(/Theme Toggle/)
+      expect(toggle).toBeInTheDocument()
+    })
   })
 
   describe('when on self-hosted', () => {

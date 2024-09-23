@@ -109,6 +109,13 @@ describe('GuestHeader', () => {
         )
       })
     })
+
+    it('has toggle for light/dark mode', async () => {
+      render(<GuestHeader />, { wrapper })
+
+      const toggle = await screen.findByTestId('theme-toggle')
+      expect(toggle).toBeInTheDocument()
+    })
   })
 
   describe('self hosted build', () => {
