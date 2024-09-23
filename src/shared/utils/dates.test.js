@@ -24,7 +24,7 @@ describe('useDateFormatted and formatTimeToNow functions', () => {
 
   describe('when called with a iso date', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2022-09-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2022-09-01'))
       setup('2020-09-08T10:45:06Z')
     })
 
@@ -40,7 +40,7 @@ describe('useDateFormatted and formatTimeToNow functions', () => {
 
   describe('when called with an alternative date format', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2022-09-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2022-09-01'))
       setup('2020-09-08T10:45:06Z', 'MMMM yyyy')
     })
 
@@ -56,7 +56,7 @@ describe('useDateFormatted and formatTimeToNow functions', () => {
 
   describe('when called with a unix timestamp', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2022-09-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2022-09-01'))
       setup(1595270468)
     })
 

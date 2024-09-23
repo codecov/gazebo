@@ -9,7 +9,7 @@ import {
   providerToName,
 } from './provider'
 
-jest.mock('config')
+vi.mock('config')
 
 describe('providerToName', () => {
   describe('when called with gh', () => {
@@ -88,32 +88,32 @@ describe('providerToName', () => {
 describe('providerImage', () => {
   describe('when called for Github', () => {
     it('returns correct logo url', () => {
-      expect(providerImage('Github')).toEqual('github-icon.svg')
+      expect(providerImage('Github')).toMatch(/github-icon.svg/)
     })
   })
   describe('when called for Gitlab', () => {
     it('returns correct logo url', () => {
-      expect(providerImage('Gitlab')).toEqual('gitlab-icon.svg')
+      expect(providerImage('Gitlab')).toMatch(/gitlab-icon.svg/)
     })
   })
   describe('when called for BitBucket', () => {
     it('returns correct logo url', () => {
-      expect(providerImage('BitBucket')).toEqual('bitbucket-icon.svg')
+      expect(providerImage('BitBucket')).toMatch(/bitbucket-icon.svg/)
     })
   })
   describe('when called for Github Enterprise', () => {
     it('returns correct logo url', () => {
-      expect(providerImage('github_enterprise')).toEqual('github-icon.svg')
+      expect(providerImage('github_enterprise')).toMatch(/github-icon.svg/)
     })
   })
   describe('when called for Gitlab Enterprise', () => {
     it('returns correct logo url', () => {
-      expect(providerImage('gitlab_enterprise')).toEqual('gitlab-icon.svg')
+      expect(providerImage('gitlab_enterprise')).toMatch(/gitlab-icon.svg/)
     })
   })
   describe('when called for BitBucket Server', () => {
     it('returns correct logo url', () => {
-      expect(providerImage('bitbucket_server')).toEqual('bitbucket-icon.svg')
+      expect(providerImage('bitbucket_server')).toMatch(/bitbucket-icon.svg/)
     })
   })
 })

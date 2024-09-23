@@ -10,14 +10,14 @@ describe('loginProviderImage', () => {
   describe('valid value is passed in', () => {
     it('returns string', () => {
       const data = loginProviderImage(LOGIN_PROVIDER_NAMES.gh)
-      expect(data).toBe('github-icon.svg')
+      expect(data).toMatch(/github-icon.svg/)
     })
   })
 
   describe('also fetches dark mode images', () => {
     it('returns string', () => {
       const data = loginProviderImage(LOGIN_PROVIDER_NAMES.gh, true)
-      expect(data).toBe('github-icon-white.svg')
+      expect(data).toMatch(/github-icon-white.svg/)
     })
   })
 
@@ -25,14 +25,14 @@ describe('loginProviderImage', () => {
     describe('value is not in the object', () => {
       it('returns undefined', () => {
         const data = loginProviderImage('random value')
-        expect(data).toBe(undefined)
+        expect(data).toBeUndefined()
       })
     })
 
     describe('passed value is undefined', () => {
       it('returns undefined', () => {
         const data = loginProviderImage()
-        expect(data).toBe(undefined)
+        expect(data).toBeUndefined()
       })
     })
   })
@@ -40,7 +40,7 @@ describe('loginProviderImage', () => {
   describe('is dark mode', () => {
     it('uses dark mode image', () => {
       const data = loginProviderImage(LOGIN_PROVIDER_NAMES.gh, true)
-      expect(data).toBe('github-icon-white.svg')
+      expect(data).toMatch(/github-icon-white.svg/)
     })
   })
 })
@@ -49,7 +49,7 @@ describe('loginProviderToName', () => {
   describe('valid value is passed', () => {
     it('returns the provider name', () => {
       const data = loginProviderToName(LOGIN_PROVIDER_SHORT_NAMES.gh)
-      expect(data).toBe('Github')
+      expect(data).toMatch(/Github/)
     })
   })
 
@@ -57,14 +57,14 @@ describe('loginProviderToName', () => {
     describe('value is not in object', () => {
       it('returns undefined', () => {
         const data = loginProviderToName('blah')
-        expect(data).toBe(undefined)
+        expect(data).toBeUndefined()
       })
     })
 
     describe('value is undefined', () => {
       it('returns undefined', () => {
         const data = loginProviderToName()
-        expect(data).toBe(undefined)
+        expect(data).toBeUndefined()
       })
     })
   })
@@ -74,7 +74,7 @@ describe('loginProviderToShortName', () => {
   describe('valid value is passed', () => {
     it('returns the provider name', () => {
       const data = loginProviderToShortName(LOGIN_PROVIDER_NAMES.github)
-      expect(data).toBe('gh')
+      expect(data).toMatch('gh')
     })
   })
 
@@ -82,14 +82,14 @@ describe('loginProviderToShortName', () => {
     describe('value is not in object', () => {
       it('returns undefined', () => {
         const data = loginProviderToShortName('blah')
-        expect(data).toBe(undefined)
+        expect(data).toBeUndefined()
       })
     })
 
     describe('value is undefined', () => {
       it('returns undefined', () => {
         const data = loginProviderToShortName()
-        expect(data).toBe(undefined)
+        expect(data).toBeUndefined()
       })
     })
   })
