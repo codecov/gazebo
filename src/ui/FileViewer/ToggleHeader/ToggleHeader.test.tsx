@@ -1,12 +1,23 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ToggleHeader from './ToggleHeader'
 
-jest.mock('react-use/lib/useIntersection')
+const mocks = vi.hoisted(() => ({
+  useIntersection: vi.fn(),
+}))
+
+vi.mock('react-use', async () => {
+  const original = await vi.importActual('react-use')
+
+  return {
+    ...original,
+    useIntersection: mocks.useIntersection,
+  }
+})
 
 const mockFlagResponse = {
   owner: {
@@ -69,11 +80,11 @@ afterAll(() => {
 describe('ToggleHeader', () => {
   function setup() {
     server.use(
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBackfillResponse))
+      graphql.query('BackfillFlagMemberships', (info) => {
+        return HttpResponse.json({ data: mockBackfillResponse })
       }),
-      graphql.query('FlagsSelect', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockFlagResponse))
+      graphql.query('FlagsSelect', (info) => {
+        return HttpResponse.json({ data: mockFlagResponse })
       })
     )
   }
