@@ -15,7 +15,7 @@ const wrapper = ({ children }) => (
 describe('FileEntry', () => {
   describe('checking properties on list display', () => {
     it('displays the file path', () => {
-      const runPrefetchMock = jest.fn()
+      const runPrefetchMock = vi.fn()
       render(
         <FileEntry
           linkRef="main"
@@ -35,7 +35,7 @@ describe('FileEntry', () => {
 
   describe('checking properties on tree display', () => {
     it('displays the file name', () => {
-      const runPrefetchMock = jest.fn()
+      const runPrefetchMock = vi.fn()
       render(
         <FileEntry
           linkRef="main"
@@ -53,7 +53,7 @@ describe('FileEntry', () => {
     })
 
     it('does not display the file name', () => {
-      const runPrefetchMock = jest.fn()
+      const runPrefetchMock = vi.fn()
       render(
         <FileEntry
           linkRef="main"
@@ -73,7 +73,7 @@ describe('FileEntry', () => {
 
   describe('file is a critical file', () => {
     it('displays critical file label', () => {
-      const runPrefetchMock = jest.fn()
+      const runPrefetchMock = vi.fn()
       render(
         <FileEntry
           linkRef="main"
@@ -93,7 +93,7 @@ describe('FileEntry', () => {
 
   describe('is displaying a list', () => {
     it('displays the file path label', () => {
-      const runPrefetchMock = jest.fn()
+      const runPrefetchMock = vi.fn()
       render(
         <FileEntry
           linkRef="main"
@@ -113,7 +113,7 @@ describe('FileEntry', () => {
 
   describe('prefetches data', () => {
     it('fires the prefetch function on hover', async () => {
-      const runPrefetchMock = jest.fn()
+      const runPrefetchMock = vi.fn()
       const user = userEvent.setup()
       render(
         <FileEntry
@@ -135,7 +135,7 @@ describe('FileEntry', () => {
   })
 
   describe('passed pageName commit props', () => {
-    const runPrefetchMock = jest.fn()
+    const runPrefetchMock = vi.fn()
     it('sets the correct href', () => {
       render(
         <FileEntry
@@ -161,7 +161,7 @@ describe('FileEntry', () => {
 
   describe('passed queryParams prop', () => {
     it('sets the correct href', () => {
-      const runPrefetchMock = jest.fn()
+      const runPrefetchMock = vi.fn()
       render(
         <FileEntry
           linkRef="main"
