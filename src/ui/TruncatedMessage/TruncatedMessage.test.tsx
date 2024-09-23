@@ -1,14 +1,10 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { useTruncation } from './hooks'
 import TruncatedMessage from './TruncatedMessage'
 
 vi.mock('./hooks')
-
-afterEach(() => {
-  cleanup()
-})
 
 describe('TruncatedMessage', () => {
   function setup({ canTruncate = false }) {
