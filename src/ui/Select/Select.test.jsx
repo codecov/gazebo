@@ -1,11 +1,20 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { act } from 'react-dom/test-utils'
-import useIntersection from 'react-use/lib/useIntersection'
 
 import Select from './Select'
 
-jest.mock('react-use/lib/useIntersection')
+const mocks = vi.hoisted(() => ({
+  useIntersection: vi.fn(),
+}))
+
+vi.mock('react-use', async () => {
+  const original = await vi.importActual('react-use')
+
+  return {
+    ...original,
+    useIntersection: mocks.useIntersection,
+  }
+})
 
 describe('Select', () => {
   function setup() {
@@ -16,7 +25,7 @@ describe('Select', () => {
 
   describe('rendering with default values', () => {
     it('renders the default placeholder', () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -31,7 +40,7 @@ describe('Select', () => {
     })
 
     it('does not render the dropdown and items', () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -49,7 +58,7 @@ describe('Select', () => {
   describe('toggling dropdown', () => {
     it('displays the dropdown', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -67,7 +76,7 @@ describe('Select', () => {
 
     it('hides the dropdown', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -89,7 +98,7 @@ describe('Select', () => {
   describe('rendering with a resourceName', () => {
     it('renders with correct placeholder', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -110,7 +119,7 @@ describe('Select', () => {
 
   describe('rendering with a button icon', () => {
     it('renders the correct icon', async () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -129,7 +138,7 @@ describe('Select', () => {
 
   describe('when rendering with a value', () => {
     it('renders the default selected item', () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -149,7 +158,7 @@ describe('Select', () => {
   describe('when rendering with a searchValue', () => {
     it('renders the default selected item', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -172,7 +181,7 @@ describe('Select', () => {
   describe('when select is triggered', () => {
     it('renders the items', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -201,12 +210,12 @@ describe('Select', () => {
 
   describe('when selecting an item from the list', () => {
     afterEach(() => {
-      jest.resetAllMocks()
+      vi.clearAllMocks()
     })
 
     it('highlights the selected item', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -228,7 +237,7 @@ describe('Select', () => {
 
     it('calls onChange with the item', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -250,7 +259,7 @@ describe('Select', () => {
   describe('when rendered with complex items and custom item rendering', () => {
     it('renders the option user the custom rendered', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -281,7 +290,7 @@ describe('Select', () => {
 
   describe('when selectedItem has a custom renderer', () => {
     it('renders the custom selected item', () => {
-      const onChange = jest.fn()
+      const onChange = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -300,14 +309,14 @@ describe('Select', () => {
 
   describe('when onSearch is passed', () => {
     afterEach(() => {
-      jest.resetAllMocks()
+      vi.clearAllMocks()
     })
 
     it('renders search input', async () => {
       const { user } = setup()
 
-      const onChange = jest.fn()
-      const onSearch = jest.fn()
+      const onChange = vi.fn()
+      const onSearch = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -328,8 +337,8 @@ describe('Select', () => {
 
     it('calls onSearch with the search value', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
-      const onSearch = jest.fn()
+      const onChange = vi.fn()
+      const onSearch = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -354,8 +363,8 @@ describe('Select', () => {
     describe('when there are no items', () => {
       it('renders no results found when item length is zero', async () => {
         const { user } = setup()
-        const onChange = jest.fn()
-        const onSearch = jest.fn()
+        const onChange = vi.fn()
+        const onSearch = vi.fn()
         render(
           <Select
             ariaName="select test"
@@ -384,17 +393,18 @@ describe('Select', () => {
 
   describe('when onLoadMore function is passed', () => {
     beforeEach(() => {
-      useIntersection.mockReturnValue({ isIntersecting: true })
+      mocks.useIntersection.mockReturnValue({ isIntersecting: true })
     })
+
     afterEach(() => {
-      jest.resetAllMocks()
+      vi.clearAllMocks()
     })
 
     it('renders an invisible load more trigger', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
-      const onSearch = jest.fn()
-      const onLoadMore = jest.fn()
+      const onChange = vi.fn()
+      const onSearch = vi.fn()
+      const onLoadMore = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -415,9 +425,9 @@ describe('Select', () => {
 
     it('when load more trigger span is intersecting calls onLoadMore', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
-      const onSearch = jest.fn()
-      const onLoadMore = jest.fn()
+      const onChange = vi.fn()
+      const onSearch = vi.fn()
+      const onLoadMore = vi.fn()
       render(
         <Select
           ariaName="select test"
@@ -439,8 +449,8 @@ describe('Select', () => {
   describe('when isLoading is true', () => {
     it('renders a spinner', async () => {
       const { user } = setup()
-      const onSearch = jest.fn()
-      const onChange = jest.fn()
+      const onSearch = vi.fn()
+      const onChange = vi.fn()
 
       render(
         <Select
@@ -465,8 +475,8 @@ describe('Select', () => {
     it('sets reset function', async () => {
       let selectRef
       const { user } = setup()
-      const onSearch = jest.fn()
-      const onChange = jest.fn()
+      const onSearch = vi.fn()
+      const onChange = vi.fn()
 
       render(
         <Select
@@ -495,8 +505,8 @@ describe('Select', () => {
   describe('when an item is marked as isDisabled', () => {
     it('is not an option', async () => {
       const { user } = setup()
-      const onChange = jest.fn()
-      const onSearch = jest.fn()
+      const onChange = vi.fn()
+      const onSearch = vi.fn()
       render(
         <Select
           ariaName="select test"
