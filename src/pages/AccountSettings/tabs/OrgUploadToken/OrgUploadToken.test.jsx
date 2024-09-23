@@ -7,10 +7,13 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
+import { useFlags } from 'shared/featureFlags'
 
 import OrgUploadToken from './OrgUploadToken'
 
 vi.mock('services/toastNotification')
+vi.mock('shared/featureFlags')
+vi.mock('./TokenlessSection', () => ({ default: () => 'TokenlessSection' }))
 
 const mockOwner = {
   owner: {
@@ -60,6 +63,7 @@ describe('OrgUploadToken', () => {
     const user = userEvent.setup()
     const mutate = vi.fn()
     const addNotification = vi.fn()
+    useFlags.mockReturnValue({ tokenlessSection: true })
 
     useAddNotification.mockReturnValue(addNotification)
 
@@ -146,6 +150,14 @@ describe('OrgUploadToken', () => {
         'href',
         'https://docs.codecov.com/docs/codecov-uploader#organization-upload-token'
       )
+    })
+
+    it('renders TokenlessSection component', async () => {
+      setup({ orgUploadToken: 'upload-token' })
+      render(<OrgUploadToken />, { wrapper })
+
+      const tokenlessSection = await screen.findByText('TokenlessSection')
+      expect(tokenlessSection).toBeInTheDocument()
     })
   })
 

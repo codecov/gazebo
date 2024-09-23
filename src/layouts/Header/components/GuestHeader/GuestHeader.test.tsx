@@ -2,17 +2,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { type Mock } from 'vitest'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import GuestHeader from './GuestHeader'
 
 vi.mock('config')
-vi.mock('shared/featureFlags')
 
 // silence console errors
 console.error = () => {}
@@ -32,12 +29,6 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
     </ThemeContextProvider>
   </QueryClientProvider>
 )
-
-const mockedUseFlags = useFlags as Mock
-
-beforeEach(() => {
-  mockedUseFlags.mockReturnValue({ darkMode: false })
-})
 
 afterEach(() => {
   queryClient.clear()
@@ -117,18 +108,12 @@ describe('GuestHeader', () => {
         )
       })
     })
-    it('has toggle for light/dark mode when flag on', async () => {
-      mockedUseFlags.mockReturnValueOnce({ darkMode: true })
+
+    it('has toggle for light/dark mode', async () => {
       render(<GuestHeader />, { wrapper })
 
       const toggle = await screen.findByTestId('theme-toggle')
       expect(toggle).toBeInTheDocument()
-    })
-    it('has no toggle for light/dark mode when flag off', () => {
-      render(<GuestHeader />, { wrapper })
-
-      const toggle = screen.queryAllByTestId('theme-toggle')
-      expect(toggle).toEqual([])
     })
   })
 
