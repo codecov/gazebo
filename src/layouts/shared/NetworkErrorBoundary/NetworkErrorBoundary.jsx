@@ -1,14 +1,11 @@
+import { useState, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useHistory } from 'react-router-dom'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
-import { Component, useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
-
 import config from 'config'
-
 import A from 'ui/A'
 import Button from 'ui/Button'
-
 import openUmbrella from './assets/error-open-umbrella.svg'
 import upsideDownUmbrella from './assets/error-upsidedown-umbrella.svg'
 import styles from './NetworkErrorBoundary.module.css'
@@ -16,6 +13,11 @@ import {
   sendGraphQLErrorMetrics,
   sendNetworkErrorMetrics,
 } from './networkErrorMetrics'
+import { useUserAccessGate } from 'layouts/BaseLayout/hooks/useUserAccessGate'
+// import { useImpersonate } from '
+
+import GlobalBanners from 'shared/GlobalBanners'
+import GlobalTopBanners from 'shared/GlobalTopBanners'
 
 const errorToUI = {
   401: {
@@ -159,93 +161,110 @@ ResetHandler.propTypes = {
   logoutUser: PropTypes.bool,
 }
 
-class NetworkErrorBoundary extends Component {
-  constructor(props) {
-    super(props)
+const NetworkErrorBoundary = ({ children }) => {
+  const [hasNetworkError, setHasNetworkError] = useState(false)
+  const [hasGraphqlError, setHasGraphqlError] = useState(false)
+  const [error, setError] = useState(null)
 
-    this.state = {
-      hasNetworkError: false,
-      hasGraphqlError: false,
-      error: null,
-    }
+  const { isFullExperience, showDefaultOrgSelector } = useUserAccessGate()
+  // const { isImpersonating } = useImpersonate()
+  const isImpersonating = true
+
+  const resetErrorBoundary = () => {
+    setHasNetworkError(false)
+    setHasGraphqlError(false)
+    setError(null)
   }
 
-  static getDerivedStateFromError(error) {
-    // if the error is not a network error, we don't do anything and
-    // another error boundary will take it from there
-    if (Object.keys(errorToUI).includes(String(error.status))) {
-      sendNetworkErrorMetrics(error.status)
-      return { hasNetworkError: true, error }
-    }
+  useEffect(() => {
+    // const errorHandler = (error) => {
+    //   if (Object.keys(errorToUI).includes(String(error.status))) {
+    //     sendNetworkErrorMetrics(error.status)
+    //     setHasNetworkError(true)
+    //     setError(error)
+    //   } else if (Object.keys(graphQLErrorToUI).includes(error.__typename)) {
+    //     sendGraphQLErrorMetrics(error.__typename)
+    //     setHasGraphqlError(true)
+    //     setError(error)
+    //   }
+    // }
 
-    if (Object.keys(graphQLErrorToUI).includes(error.__typename)) {
-      sendGraphQLErrorMetrics(error.__typename)
-      return { hasGraphqlError: true, error }
-    }
+    // Add your error handling logic here to trigger errorHandler
+  }, [])
 
-    return {}
-  }
-
-  resetErrorBoundary = () => {
-    this.reset()
-  }
-
-  reset() {
-    this.setState({
-      hasNetworkError: false,
-      hasGraphqlError: false,
-      error: null,
-    })
-  }
-
-  renderGraphQLError() {
-    const { error } = this.state
+  const renderGraphQLError = () => {
     const { illustration, title } = graphQLErrorToUI[error.__typename]
 
     return (
-      <article className="mx-auto flex h-full flex-col items-center justify-center">
-        <img
-          alt="illustration error"
-          className={cs(styles.illustrationError, 'mx-auto')}
-          src={illustration}
-        />
-        <h1 className="mt-6 text-2xl">{title}</h1>
-        <NetworkErrorMessage />
-        <ResetHandler reset={this.resetErrorBoundary} />
-      </article>
+      <>
+        {isFullExperience || isImpersonating ? (
+          <>
+            <GlobalTopBanners />
+            <Header />
+          </>
+        ) : (
+          <Suspense fallback={null}>
+            {showDefaultOrgSelector && <InstallationHelpBanner />}
+          </Suspense>
+        )}
+        <article className="mx-auto flex h-full flex-col items-center justify-center">
+          <img
+            alt="illustration error"
+            className={cs(styles.illustrationError, 'mx-auto')}
+            src={illustration}
+          />
+          <h1 className="mt-6 text-2xl">{title}</h1>
+          <NetworkErrorMessage />
+          <ResetHandler reset={resetErrorBoundary} />
+        </article>
+      </>
     )
   }
 
-  renderError() {
-    const { status, data } = this.state.error
+  const renderError = () => {
+    const { status, data } = error
     const { illustration, title, description, showDocs } = errorToUI[status]
 
     return (
-      <article className="mx-auto flex h-full flex-col items-center justify-center">
-        <img
-          alt="illustration error"
-          className={cs(styles.illustrationError, 'mx-auto')}
-          src={illustration}
-        />
-        <h1 className="mt-6 text-2xl">{title}</h1>
-        {description ? <p className="mt-2">{description(data)}</p> : null}
-        {showDocs ? <NetworkErrorMessage /> : null}
-        <p>
-          <strong>Error {status}</strong>
-        </p>
-        <ResetHandler
-          logoutUser={status === 429}
-          reset={this.resetErrorBoundary}
-        />
-      </article>
+      <>
+        {isFullExperience || isImpersonating ? (
+          <>
+            <GlobalTopBanners />
+            <Header />
+          </>
+        ) : (
+          <Suspense fallback={null}>
+            {showDefaultOrgSelector && <InstallationHelpBanner />}
+          </Suspense>
+        )}
+        <article className="mx-auto flex h-full flex-col items-center justify-center">
+          <img
+            alt="illustration error"
+            className={cs(styles.illustrationError, 'mx-auto')}
+            src={illustration}
+          />
+          <h1 className="mt-6 text-2xl">{title}</h1>
+          {description ? <p className="mt-2">{description(data)}</p> : null}
+          {showDocs ? <NetworkErrorMessage /> : null}
+          <p>
+            <strong>Error {status}</strong>
+          </p>
+          <ResetHandler
+            logoutUser={status === 429}
+            reset={resetErrorBoundary}
+          />
+        </article>
+      </>
     )
   }
 
-  render() {
-    if (this.state.hasNetworkError) return this.renderError()
-    if (this.state.hasGraphqlError) return this.renderGraphQLError()
-    return <>{this.props.children}</>
-  }
+  if (hasNetworkError) return renderError()
+  if (hasGraphqlError) return renderGraphQLError()
+  return <>{children}</>
+}
+
+NetworkErrorBoundary.propTypes = {
+  children: PropTypes.node,
 }
 
 export default NetworkErrorBoundary
