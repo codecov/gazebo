@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -31,7 +31,6 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 afterEach(() => {
-  cleanup()
   queryClient.clear()
 })
 
