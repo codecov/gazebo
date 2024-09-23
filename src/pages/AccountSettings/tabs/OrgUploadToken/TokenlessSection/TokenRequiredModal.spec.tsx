@@ -12,12 +12,11 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 describe('TokenRequiredModal', () => {
-  function setup(isLoading = false) {
+  function setup() {
     return {
       user: userEvent.setup(),
       closeModal: jest.fn(),
       setTokenRequired: jest.fn(),
-      isLoading,
     }
   }
 
@@ -127,7 +126,7 @@ describe('TokenRequiredModal', () => {
     })
 
     it('renders loading state on require token button', async () => {
-      const { closeModal, setTokenRequired } = setup(true)
+      const { closeModal, setTokenRequired } = setup()
 
       render(
         <TokenRequiredModal
