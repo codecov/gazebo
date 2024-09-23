@@ -1,11 +1,11 @@
-import cs from 'classnames'
-import isNil from 'lodash/isNil'
-import PropTypes from 'prop-types'
-
 import Icon from 'ui/Icon'
 
-export default function CIStatusLabel({ ciPassed }) {
-  if (isNil(ciPassed)) {
+interface CIStatusLabelProps {
+  ciPassed?: boolean | null
+}
+
+export default function CIStatusLabel({ ciPassed }: CIStatusLabelProps) {
+  if (!ciPassed) {
     return (
       <span className="flex flex-none items-center gap-1 text-xs">
         <span className="text-ds-gray-senary">
@@ -16,21 +16,16 @@ export default function CIStatusLabel({ ciPassed }) {
     )
   }
 
+  const iconName = ciPassed ? 'check' : 'x'
+
   return (
     <span className="flex flex-none items-center gap-1 text-xs">
       <span
-        className={cs({
-          'text-ds-primary-green': ciPassed,
-          'text-ds-primary-red': !ciPassed,
-        })}
+        className={ciPassed ? 'text-ds-primary-green' : 'text-ds-primary-red'}
       >
-        <Icon size="sm" name={ciPassed ? 'check' : 'x'} />
+        <Icon size="sm" name={iconName} label={iconName} />
       </span>
       CI {ciPassed ? 'Passed' : 'Failed'}
     </span>
   )
-}
-
-CIStatusLabel.propTypes = {
-  ciPassed: PropTypes.bool,
 }
