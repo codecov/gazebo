@@ -63,4 +63,11 @@ describe('GlobalTopBanners', () => {
     const banner = await screen.findByText(/OktaBanners/)
     expect(banner).toBeInTheDocument()
   })
+
+  it('renders tokenless banner', async () => {
+    render(<GlobalTopBanners />)
+
+    const banner = await screen.findByText(/TokenlessBanner/)
+    expect(banner).toBeInTheDocument()
+  })
 })
