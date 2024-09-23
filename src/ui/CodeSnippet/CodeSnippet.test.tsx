@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { CodeSnippet } from './CodeSnippet'
 
-jest.mock('copy-to-clipboard', () => () => true)
+vi.mock('copy-to-clipboard', () => ({ default: () => true }))
 
 describe('CodeSnippet', () => {
   function setup() {
@@ -49,7 +49,7 @@ wow`}</CodeSnippet>
 
   it('passes clipboardOnClick through to CopyClipboard', async () => {
     const { user } = setup()
-    const callback = jest.fn()
+    const callback = vi.fn()
     render(
       <CodeSnippet clipboard="asdf" clipboardOnClick={callback}>
         asdf
