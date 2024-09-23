@@ -120,11 +120,13 @@ export function OktaConfigForm() {
                 />
                 <button
                   type="button"
+                  data-testid="toggle-password"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-sm leading-5"
                 >
                   <Icon
                     name={showPassword ? 'eye' : 'eyeOff'}
+                    label={showPassword ? 'eye' : 'eyeOff'}
                     size="sm"
                     variant="solid"
                   />
