@@ -113,25 +113,29 @@ describe('useScrollToLine', () => {
     })
 
     describe('head is passed to hook', () => {
-      const { result } = renderHook(
-        () => useScrollToLine({ number: 1, path: 'cool-hash', head: true }),
-        {
-          wrapper,
-        }
-      )
+      it('sets head hash', () => {
+        const { result } = renderHook(
+          () => useScrollToLine({ number: 1, path: 'cool-hash', head: true }),
+          {
+            wrapper,
+          }
+        )
 
-      expect(result.current.idString).toBe('#cool-hash-R1')
+        expect(result.current.idString).toBe('#cool-hash-R1')
+      })
     })
 
     describe('base is passed to hook', () => {
-      const { result } = renderHook(
-        () => useScrollToLine({ number: 1, path: 'cool-hash', base: true }),
-        {
-          wrapper,
-        }
-      )
+      it('sets base hash', () => {
+        const { result } = renderHook(
+          () => useScrollToLine({ number: 1, path: 'cool-hash', base: true }),
+          {
+            wrapper,
+          }
+        )
 
-      expect(result.current.idString).toBe('#cool-hash-L1')
+        expect(result.current.idString).toBe('#cool-hash-L1')
+      })
     })
 
     describe('testing on click handler', () => {
