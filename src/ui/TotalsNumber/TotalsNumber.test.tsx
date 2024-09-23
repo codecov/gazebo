@@ -1,10 +1,6 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import TotalsNumber from './TotalsNumber'
-
-afterEach(() => {
-  cleanup()
-})
 
 describe('TotalsNumber', () => {
   describe('when rendered', () => {
