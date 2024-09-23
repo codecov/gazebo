@@ -9,9 +9,9 @@ import { useFlags } from 'shared/featureFlags'
 
 import Header from './Header'
 
-jest.mock('config')
-jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
-jest.mock('shared/featureFlags')
+vi.mock('config')
+vi.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
+vi.mock('shared/featureFlags')
 
 const mockedUseFlags = useFlags as jest.Mock
 
