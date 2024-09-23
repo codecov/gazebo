@@ -5,15 +5,19 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useFlags } from 'shared/featureFlags'
+
 import Tabs from './Tabs'
 
 jest.mock('./TrialReminder', () => () => 'TrialReminder')
 jest.mock('config')
+jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock
 
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov']}>
       <Route path="/:provider/:owner">{children}</Route>
@@ -34,17 +38,14 @@ afterAll(() => {
 })
 
 describe('Tabs', () => {
-  function setup(
-    { isSelfHosted = false } = {
-      isSelfHosted: false,
-    }
-  ) {
+  function setup(isSelfHosted: boolean = false) {
     config.IS_SELF_HOSTED = isSelfHosted
+    mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: true })
   }
 
   describe('when user is part of the org', () => {
     it('renders links to the owner settings', () => {
-      setup({})
+      setup()
 
       render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
 
@@ -56,7 +57,7 @@ describe('Tabs', () => {
     })
 
     it('renders link to plan', () => {
-      setup({})
+      setup()
 
       render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
 
@@ -68,7 +69,7 @@ describe('Tabs', () => {
     })
 
     it('renders link to members page', () => {
-      setup({})
+      setup()
 
       render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
 
@@ -82,7 +83,7 @@ describe('Tabs', () => {
 
   describe('when user is enterprise account', () => {
     it('does not render link to plan', () => {
-      setup({ isSelfHosted: true })
+      setup(true)
 
       render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
 
@@ -93,7 +94,7 @@ describe('Tabs', () => {
     })
 
     it('does not render link to members page', () => {
-      setup({ isSelfHosted: true })
+      setup(true)
 
       render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
 
@@ -105,17 +106,37 @@ describe('Tabs', () => {
   })
 
   describe('rendering TrialReminder', () => {
-    beforeEach(() => {
-      setup({ props: { owner: { username: 'kelly' }, provider: 'gh' } })
-    })
-
     it('displays trial reminder', async () => {
-      setup({})
+      setup()
 
       render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
 
       const trialReminder = await screen.findByText('TrialReminder')
       expect(trialReminder).toBeInTheDocument()
+    })
+  })
+
+  describe('ai features tab', () => {
+    it('does not render tab when flag is off', () => {
+      mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: false })
+      render(<Tabs />, { wrapper })
+
+      expect(
+        screen.queryByRole('link', {
+          name: /Codecov AI beta/i,
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders tab when flag is on', () => {
+      setup()
+      render(<Tabs />, { wrapper })
+
+      expect(
+        screen.getByRole('link', {
+          name: /Codecov AI beta/i,
+        })
+      ).toBeInTheDocument()
     })
   })
 })
