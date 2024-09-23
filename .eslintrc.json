@@ -10,6 +10,10 @@
     "plugin:storybook/recommended",
     "plugin:tailwindcss/recommended"
   ],
+  "plugins": ["@vitest"],
+  "globals": {
+    "vi": true
+  },
   "ignorePatterns": [
     "!src/**/*.{js,jsx,ts,tsx}",
     "src/old_ui/Icon/svg/*.jsx",
