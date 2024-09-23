@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock } from 'vitest'
@@ -40,7 +40,6 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  cleanup()
   queryClient.clear()
 })
 
