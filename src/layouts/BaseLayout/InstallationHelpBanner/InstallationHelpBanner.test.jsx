@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
-import { vi } from 'vitest'
 
 import InstallationHelpBanner from './InstallationHelpBanner'
 
