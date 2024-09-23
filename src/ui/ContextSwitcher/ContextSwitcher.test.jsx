@@ -1,17 +1,27 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
-import useIntersection from 'react-use/lib/useIntersection'
 
 import { useImage } from 'services/image'
 
 import ContextSwitcher from './ContextSwitcher'
 
-jest.mock('react-use/lib/useIntersection')
-jest.mock('services/image')
+vi.mock('services/image')
+const mocks = vi.hoisted(() => ({
+  useIntersection: vi.fn(),
+}))
+
+vi.mock('react-use', async () => {
+  const original = await vi.importActual('react-use')
+
+  return {
+    ...original,
+    useIntersection: mocks.useIntersection,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -48,22 +58,27 @@ const wrapper =
 describe('ContextSwitcher', () => {
   function setup() {
     const user = userEvent.setup()
-    const mutate = jest.fn()
+    const mutate = vi.fn()
 
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     server.use(
-      graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
-        mutate(req.variables)
+      graphql.mutation('updateDefaultOrganization', (info) => {
+        mutate(info.variables)
 
-        return res(ctx.status(200), ctx.json({ username: 'spotify' }))
+        return HttpResponse.json({ data: { username: 'spotify' } })
       })
     )
     return { user, mutate }
   }
 
   describe('when rendered', () => {
-    beforeEach(() => setup())
-    afterEach(() => jest.restoreAllMocks())
+    beforeEach(() => {
+      setup()
+    })
+
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
 
     it('does not render the listed items initially', () => {
       render(
@@ -112,7 +127,9 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when the button is clicked', () => {
-    afterEach(() => jest.restoreAllMocks())
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
 
     it('renders the menu', async () => {
       const { user } = setup()
@@ -234,8 +251,13 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when rendered with no active context', () => {
-    beforeEach(() => setup())
-    afterEach(() => jest.restoreAllMocks())
+    beforeEach(() => {
+      setup()
+    })
+
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
 
     it('renders manage access restrictions', async () => {
       render(
@@ -290,7 +312,9 @@ describe('ContextSwitcher', () => {
 
   describe('when isLoading is passed', () => {
     describe('isLoading set to true', () => {
-      afterEach(() => jest.restoreAllMocks())
+      afterEach(() => {
+        vi.clearAllMocks()
+      })
 
       it('renders spinner', async () => {
         const { user } = setup()
@@ -343,7 +367,9 @@ describe('ContextSwitcher', () => {
       })
     })
     describe('isLoading set to false', () => {
-      afterEach(() => jest.restoreAllMocks())
+      afterEach(() => {
+        vi.clearAllMocks()
+      })
 
       it('does not render spinner', async () => {
         const { user } = setup()
@@ -399,13 +425,16 @@ describe('ContextSwitcher', () => {
 
   describe('when onLoadMore is passed and is intersecting', () => {
     beforeEach(() => {
-      useIntersection.mockReturnValue({ isIntersecting: true })
+      mocks.useIntersection.mockReturnValue({ isIntersecting: true })
     })
-    afterEach(() => jest.restoreAllMocks())
+
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
 
     it('calls onLoadMore', async () => {
       const { user } = setup()
-      const onLoadMoreFunc = jest.fn()
+      const onLoadMoreFunc = vi.fn()
       render(
         <ContextSwitcher
           activeContext={{
@@ -456,7 +485,9 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when not on gh provider', () => {
-    afterEach(() => jest.restoreAllMocks())
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
 
     it('does not render the add github org text', async () => {
       setup()
@@ -493,7 +524,9 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when custom modal component is passed', () => {
-    afterEach(() => jest.restoreAllMocks())
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
 
     it('renders the modal component', async () => {
       setup()
@@ -540,7 +573,9 @@ describe('ContextSwitcher', () => {
     })
 
     describe('when user clicks on an org', () => {
-      afterEach(() => jest.restoreAllMocks())
+      afterEach(() => {
+        vi.clearAllMocks()
+      })
 
       it('fires update org mutation', async () => {
         const { user, mutate } = setup()
