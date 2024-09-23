@@ -1,16 +1,25 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
-import useIntersection from 'react-use/lib/useIntersection'
 
 import Title, { TitleFlags, TitleHitCount } from './Title'
 
-jest.mock('shared/featureFlags')
-jest.mock('react-use/lib/useIntersection')
-const mockedUseIntersection = useIntersection as jest.Mock
+vi.mock('shared/featureFlags')
+const mocks = vi.hoisted(() => ({
+  useIntersection: vi.fn(),
+}))
+
+vi.mock('react-use', async () => {
+  const original = await vi.importActual('react-use')
+
+  return {
+    ...original,
+    useIntersection: mocks.useIntersection,
+  }
+})
 
 const mockFirstResponse = {
   owner: {
@@ -197,22 +206,24 @@ describe('TitleFlags', () => {
     }
   ) {
     const user = userEvent.setup()
-    const mockApiVars = jest.fn()
+    const mockApiVars = vi.fn()
 
-    mockedUseIntersection.mockReturnValue({ isIntersecting: isIntersecting })
+    mocks.useIntersection.mockReturnValue({
+      isIntersecting: isIntersecting,
+    })
 
     server.use(
-      graphql.query('FlagsSelect', (req, res, ctx) => {
-        mockApiVars(req.variables)
+      graphql.query('FlagsSelect', (info) => {
+        mockApiVars(info.variables)
 
-        if (!!req.variables?.after || noNextPage) {
-          return res(ctx.status(200), ctx.data(mockSecondResponse))
+        if (!!info.variables?.after || noNextPage) {
+          return HttpResponse.json({ data: mockSecondResponse })
         }
 
-        return res(ctx.status(200), ctx.data(mockFirstResponse))
+        return HttpResponse.json({ data: mockFirstResponse })
       }),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(backfillData))
+      graphql.query('BackfillFlagMemberships', (info) => {
+        return HttpResponse.json({ data: backfillData })
       })
     )
 
