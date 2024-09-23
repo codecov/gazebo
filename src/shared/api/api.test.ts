@@ -1,6 +1,7 @@
 import { waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import config from 'config'
 
@@ -30,91 +31,14 @@ const userData = {
   ],
 }
 
-const server = setupServer(
-  rest.get('/internal/test', (req, res, ctx) => {
-    const hasTokenType = Boolean(req.headers.get('token-type'))
-    return res(ctx.status(hasTokenType ? 200 : 401), ctx.json(rawUserData))
-  }),
-  rest.post('/internal/test', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(req.body))
-  }),
-  rest.patch('/internal/test', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(req.body))
-  }),
-  rest.delete('/internal/test', (req, res, ctx) => {
-    return res(ctx.status(204), ctx.json(null))
-  }),
-  graphql.query('MyInfo', (req, res, ctx) => {
-    return res(
-      ctx.data({
-        me: 'Codecov',
-      })
-    )
-  }),
-  graphql.query('ErrorQuery', (req, res, ctx) => {
-    return res(
-      ctx.status(400),
-      ctx.data({
-        me: 'Codecov',
-      })
-    )
-  }),
-  graphql.query('CoverageForFile', (req, res, ctx) => {
-    const { ref } = req.variables
-    return res(
-      ctx.data({
-        owner: {
-          repository: {
-            __typename: 'Repository',
-            commit: {
-              commitid: ref,
-            },
-          },
-        },
-      })
-    )
-  }),
-  graphql.mutation('CreateTokenUnauthorized', (req, res, ctx) => {
-    return res(
-      ctx.data({
-        createApiToken: {
-          error: {
-            __typename: 'UnauthorizedError',
-          },
-        },
-      })
-    )
-  }),
-  graphql.mutation('CreateToken', (req, res, ctx) => {
-    return res(
-      ctx.data({
-        createApiToken: {
-          error: null,
-          token: 123,
-        },
-      })
-    )
-  }),
-  graphql.query('UnauthorizationError', (req, res, ctx) => {
-    return res(
-      ctx.status(403),
-      ctx.errors([
-        {
-          message: 'Unauthorized',
-          extensions: {
-            status: 403,
-          },
-        },
-      ])
-    )
-  })
-)
+const server = setupServer()
 
 beforeAll(() => {
   server.listen()
 })
 
 afterEach(() => {
+  vi.clearAllMocks()
   server.resetHandlers()
 })
 
@@ -122,56 +46,134 @@ afterAll(() => {
   server.close()
 })
 
-let result: any, error: any
-function callApi(provider: string | null = null) {
-  result = null
-  error = null
-  return Api.get({
-    path: '/test',
-    provider,
-  })
-    .then((data) => {
-      result = data
+function setup() {
+  server.use(
+    http.get('/internal/test', (info) => {
+      const hasTokenType = Boolean(info.request.headers.get('token-type'))
+
+      return HttpResponse.json(rawUserData, {
+        status: hasTokenType ? 200 : 401,
+      })
+    }),
+    http.post('/internal/test', async (info) => {
+      const data = await info.request.json()
+      return HttpResponse.json(data)
+    }),
+    http.patch('/internal/test', async (info) => {
+      const data = await info.request.json()
+      return HttpResponse.json(data)
+    }),
+    http.delete('/internal/test', (info) => {
+      return HttpResponse.json(null)
+    }),
+    graphql.query('MyInfo', (info) => {
+      return HttpResponse.json({ data: { me: 'Codecov' } })
+    }),
+    graphql.query('ErrorQuery', (info) => {
+      return HttpResponse.json({ data: { me: 'Codecov' } }, { status: 400 })
+    }),
+    graphql.query('CoverageForFile', (info) => {
+      const { ref } = info.variables
+      return HttpResponse.json({
+        data: {
+          owner: {
+            repository: {
+              __typename: 'Repository',
+              commit: {
+                commitid: ref,
+              },
+            },
+          },
+        },
+      })
+    }),
+    graphql.mutation('CreateTokenUnauthorized', (info) => {
+      return HttpResponse.json({
+        data: {
+          createApiToken: {
+            error: {
+              __typename: 'UnauthorizedError',
+            },
+          },
+        },
+      })
+    }),
+    graphql.mutation('CreateToken', (info) => {
+      return HttpResponse.json({
+        data: {
+          createApiToken: {
+            error: null,
+            token: 123,
+          },
+        },
+      })
+    }),
+    graphql.query('UnauthorizationError', (info) => {
+      return HttpResponse.json(
+        {
+          errors: [
+            {
+              message: 'Unauthorized',
+              extensions: {
+                status: 403,
+              },
+            },
+          ],
+        },
+        { status: 403 }
+      )
     })
-    .catch((errorData) => {
-      error = errorData
-    })
+  )
 }
 
 describe('when calling an endpoint without a token', () => {
-  beforeEach(callApi)
+  it('has a 401 error', async () => {
+    setup()
+    let error: any
+    try {
+      const data = await Api.get({
+        path: '/test',
+        provider: null,
+      })
+      console.debug(data)
+    } catch (e) {
+      error = e
+    }
 
-  it('has a 401 error', () => {
-    expect(error.status).toBe(401)
+    await waitFor(() => expect(error!.status).toBe(401))
   })
 })
 
 describe('when calling an endpoint with a token', () => {
-  beforeEach(() => {
-    return callApi('gh')
-  })
+  it('has the data and no error', async () => {
+    setup()
+    let result: any
+    let error: any = null
+    try {
+      result = await Api.get({
+        path: '/test',
+        provider: 'gh',
+      })
+    } catch (e) {
+      error = e
+    }
 
-  it('has the data and no error', () => {
     expect(error).toBeNull()
     expect(result).toEqual(userData)
   })
 })
 
 describe('when using a post request', () => {
-  const body = {
-    test: 'foo',
-    camel_case: 'snakeCase',
-  }
-  beforeEach(() => {
-    return Api.post({
+  it('returns the data, and transform to camelCase', async () => {
+    setup()
+    const result = await Api.post({
       path: '/test',
-      body,
-    }).then((data) => {
-      result = data
+      body: {
+        test: 'foo',
+        camel_case: 'snakeCase',
+      },
     })
-  })
 
-  it('returns the data, and transform to camelCase', () => {
     expect(result).toEqual({
       test: 'foo',
       camelCase: 'snakeCase',
@@ -180,20 +182,16 @@ describe('when using a post request', () => {
 })
 
 describe('when using a patch request', () => {
-  const body = {
-    test: 'foo',
-    camel_case: 'snakeCase',
-  }
-  beforeEach(() => {
-    return Api.patch({
+  it('returns the data, and transform to camelCase', async () => {
+    setup()
+    const result = await Api.patch({
       path: '/test',
-      body,
-    }).then((data) => {
-      result = data
+      body: {
+        test: 'foo',
+        camel_case: 'snakeCase',
+      },
     })
-  })
 
-  it('returns the data, and transform to camelCase', () => {
     expect(result).toEqual({
       test: 'foo',
       camelCase: 'snakeCase',
@@ -202,31 +200,26 @@ describe('when using a patch request', () => {
 })
 
 describe('when using a delete request', () => {
-  beforeEach(() => {
-    return Api.delete({
+  it('returns null', async () => {
+    setup()
+    const result = await Api.delete({
       path: '/test',
-    }).then((data) => {
-      result = data
     })
-  })
 
-  it('returns null', () => {
     expect(result).toEqual(null)
   })
 })
 
 describe('when using a graphql request', () => {
   describe('the request is successful', () => {
-    beforeEach(() => {
-      result = Api.graphql({
+    it('returns what the server returns', async () => {
+      setup()
+      const result = await Api.graphql({
         provider: 'gh',
         query: 'query MyInfo { me }',
       })
-      return result
-    })
 
-    it('returns what the server retuns', () => {
-      return expect(result).resolves.toEqual({
+      return expect(result).toEqual({
         data: {
           me: 'Codecov',
         },
@@ -234,15 +227,48 @@ describe('when using a graphql request', () => {
     })
   })
 
-  describe('when different strings entered as provider', () => {
-    let fetchSpy: jest.SpyInstance
+  describe('when graphql query returns a 403 error', () => {
+    beforeAll(() => {
+      config.IS_SELF_HOSTED = true
+      const location = window.location
+      // @ts-expect-error - test magic
+      delete global.window.location
+      global.window.location = Object.assign({}, location)
+    })
 
     afterAll(() => {
+      config.IS_SELF_HOSTED = false
+    })
+
+    it('has a 403 error', async () => {
+      setup()
+      let error
+      try {
+        await Api.graphql({
+          provider: 'gh',
+          query: 'query UnauthorizationError { random }',
+        })
+      } catch (err) {
+        error = err
+      }
+
+      // @ts-expect-error - test magic
+      expect(error.status).toBe(403)
+      expect(window.location.href).toBe('/login')
+    })
+  })
+
+  describe('when different strings entered as provider', () => {
+    let fetchSpy: MockInstance
+
+    afterAll(() => {
+      vi.restoreAllMocks()
       fetchSpy.mockRestore()
     })
 
     it('does not have the provider in the url for non-provider', async () => {
-      const fetchMock = jest.fn((url, options) => {
+      setup()
+      const fetchMock = vi.fn((url, options) => {
         expect(url).toBe(`${config.API_URL}/graphql/`)
         return Promise.resolve({
           ok: true,
@@ -250,8 +276,8 @@ describe('when using a graphql request', () => {
         })
       })
 
-      // @ts-expect-error - jest spy
-      fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(fetchMock)
+      // @ts-expect-error - vi spy
+      fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(fetchMock)
 
       await Api.graphql({
         provider: 'random hacks and stuff',
@@ -264,16 +290,16 @@ describe('when using a graphql request', () => {
     test.each(AllProvidersArray)(
       'has the provider in the url for %s',
       async (provider) => {
-        const fetchMock = jest.fn((url, options) => {
-          expect(url).toBe(`${config.API_URL}/graphql/${provider}`)
+        setup()
+        const fetchMock = vi.fn((url, options) => {
           return Promise.resolve({
             ok: true,
             json: async () => ({ data: { example: 'dummy data' } }),
           })
         })
 
-        // @ts-expect-error - jest spy
-        fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(fetchMock)
+        // @ts-expect-error - vi spy
+        fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(fetchMock)
 
         await Api.graphql({
           provider: provider,
@@ -281,12 +307,17 @@ describe('when using a graphql request', () => {
         })
 
         expect(fetchMock).toHaveBeenCalled()
+        expect(fetchMock).toHaveBeenCalledWith(
+          `/graphql/${provider}`,
+          expect.any(Object)
+        )
       }
     )
   })
 
   describe('the request is unsuccessful', () => {
     it('returns the error status code', async () => {
+      setup()
       let error: any
       try {
         await Api.graphql({
@@ -306,6 +337,7 @@ describe('when using a graphql request', () => {
 
   describe('when sending an encoded string', () => {
     it('returns a decoded string', async () => {
+      setup()
       const query = `
         query CoverageForFile($owner: String!, $repo: String!, $ref: String!) {
           owner(username: $owner) {
@@ -349,6 +381,7 @@ describe('when using a graphql request', () => {
 describe('when using a graphql mutation', () => {
   describe('when the mutation has unauthenticated error', () => {
     it('throws an exception', async () => {
+      setup()
       const mutation = `
         mutation CreateTokenUnauthorized {
           createApiToken {
@@ -362,11 +395,12 @@ describe('when using a graphql mutation', () => {
 
       let error: any
       try {
-        await Api.graphqlMutation({
+        const data = await Api.graphqlMutation({
           provider: 'gh',
           query: mutation,
           mutationPath: 'createApiToken',
         })
+        console.debug(data)
       } catch (err) {
         error = err
       }
@@ -381,6 +415,7 @@ describe('when using a graphql mutation', () => {
 
   describe('when the mutation has no error', () => {
     it('resolves with the data', async () => {
+      setup()
       const mutation = `
       mutation CreateToken {
         createApiToken {
@@ -410,49 +445,25 @@ describe('when using a graphql mutation', () => {
     })
   })
 
-  describe('when the mutation supports serviceless', () => {
+  describe('when the mutation supports service-less', () => {
     it('resolves with the data', async () => {
+      setup()
       const result = await Api.graphqlMutation({
-        query: 'query MyInfo { me }',
-        mutationPath: 'me',
+        query: 'mutation CreateToken { createApiToken { error token } }',
+        mutationPath: 'createApiToken',
         supportsServiceless: true,
       })
 
       await waitFor(() =>
         expect(result).toEqual({
           data: {
-            me: 'Codecov',
+            createApiToken: {
+              error: null,
+              token: 123,
+            },
           },
         })
       )
-    })
-  })
-
-  describe('when graphql query returns a 401 error', () => {
-    config.IS_SELF_HOSTED = true
-
-    beforeAll(() => {
-      const location = window.location
-      // @ts-expect-error - test magic
-      delete global.window.location
-      global.window.location = Object.assign({}, location)
-    })
-
-    it('has a 403 error', async () => {
-      let error
-
-      try {
-        await Api.graphql({
-          provider: 'gh',
-          query: 'query UnauthorizationError { random }',
-        })
-      } catch (err) {
-        error = err
-      }
-
-      // @ts-expect-error - test magic
-      expect(error.status).toBe(403)
-      expect(window.location.href).toBe('/login')
     })
   })
 })
