@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CommitFileEntry from './CommitFileEntry'
@@ -10,30 +10,34 @@ import CommitFileEntry from './CommitFileEntry'
 import { displayTypeParameter } from '../../constants'
 
 const mockData = {
-  __typename: 'Repository',
-  commit: {
-    commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-    flagNames: ['a', 'b'],
-    components: [],
-    coverageFile: {
-      isCriticalFile: true,
-      hashedPath: 'hashed-path',
-      content:
-        'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
-      coverage: [
-        { line: 1, coverage: 'H' },
-        { line: 2, coverage: 'P' },
-        { line: 4, coverage: 'H' },
-        { line: 5, coverage: 'M' },
-        { line: 7, coverage: 'H' },
-        { line: 8, coverage: 'H' },
-      ],
-      totals: {
-        percentCovered: 66.67,
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
+        flagNames: ['a', 'b'],
+        components: [],
+        coverageFile: {
+          isCriticalFile: true,
+          hashedPath: 'hashed-path',
+          content:
+            'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
+          coverage: [
+            { line: 1, coverage: 'H' },
+            { line: 2, coverage: 'P' },
+            { line: 4, coverage: 'H' },
+            { line: 5, coverage: 'M' },
+            { line: 7, coverage: 'H' },
+            { line: 8, coverage: 'H' },
+          ],
+          totals: {
+            percentCovered: 66.67,
+          },
+        },
       },
+      branch: null,
     },
   },
-  branch: null,
 }
 
 const queryClient = new QueryClient({
@@ -67,16 +71,13 @@ afterAll(() => {
 describe('CommitFileEntry', () => {
   function setup() {
     const user = userEvent.setup()
-    const mockVars = jest.fn()
+    const mockVars = vi.fn()
 
     server.use(
-      graphql.query('CoverageForFile', (req, res, ctx) => {
-        mockVars(req.variables)
+      graphql.query('CoverageForFile', (info) => {
+        mockVars(info.variables)
 
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { repository: mockData } })
-        )
+        return HttpResponse.json({ data: mockData })
       })
     )
 
