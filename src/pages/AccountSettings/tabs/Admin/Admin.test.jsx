@@ -1,16 +1,18 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import Admin from './Admin'
 
-jest.mock('./DetailsSection', () => () => 'DetailsSection')
-jest.mock('./StudentSection', () => () => 'StudentSection')
-jest.mock('./GithubIntegrationSection', () => () => 'GithubIntegrationSection')
-jest.mock('./ManageAdminCard', () => () => 'ManageAdminCard')
-jest.mock('./DeletionCard', () => () => 'DeletionCard')
+vi.mock('./DetailsSection', () => ({ default: () => 'DetailsSection' }))
+vi.mock('./StudentSection', () => ({ default: () => 'StudentSection' }))
+vi.mock('./GithubIntegrationSection', () => ({
+  default: () => 'GithubIntegrationSection',
+}))
+vi.mock('./ManageAdminCard', () => ({ default: () => 'ManageAdminCard' }))
+vi.mock('./DeletionCard', () => ({ default: () => 'DeletionCard' }))
 
 const user = {
   me: {
@@ -70,18 +72,24 @@ const wrapper = ({ children }) => (
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('AdminTab', () => {
   function setup() {
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(user))
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: user })
       })
     )
   }

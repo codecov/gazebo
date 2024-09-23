@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
@@ -31,10 +31,12 @@ const wrapper =
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -49,23 +51,20 @@ describe('GithubIntegrationSection', () => {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            plan: {
-              marketingName: 'users-basic',
-              baseUnitPrice: 12,
-              benefits: ['Configurable # of users', 'Unlimited repos'],
-              quantity: 5,
-              value: 'users-inappm',
-            },
-            activatedUserCount: 2,
-            inactiveUserCount: 1,
-            integrationId: 2,
-            ...accountDetails,
-          })
-        )
+      http.get(`/internal/gh/codecov/account-details/`, (info) => {
+        return HttpResponse.json({
+          plan: {
+            marketingName: 'users-basic',
+            baseUnitPrice: 12,
+            benefits: ['Configurable # of users', 'Unlimited repos'],
+            quantity: 5,
+            value: 'users-inappm',
+          },
+          activatedUserCount: 2,
+          inactiveUserCount: 1,
+          integrationId: 2,
+          ...accountDetails,
+        })
       })
     )
   }

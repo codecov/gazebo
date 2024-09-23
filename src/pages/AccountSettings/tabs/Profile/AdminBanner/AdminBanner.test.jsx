@@ -3,29 +3,24 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import AdminBanner from './AdminBanner'
 
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/account/gh/codecov-user']}>
+    <Route path="/account/:provider/:owner">{children}</Route>
+  </MemoryRouter>
+)
+
 describe('AdminBanner', () => {
-  function setup() {
-    render(
-      <MemoryRouter initialEntries={['/account/gh/codecov-user']}>
-        <Route path="/account/:provider/:owner">
-          <AdminBanner />
-        </Route>
-      </MemoryRouter>
-    )
-  }
-
   describe('rendering component', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('displays heading', async () => {
+      render(<AdminBanner />, { wrapper })
+
       const heading = await screen.findByText('Managing users')
 
       expect(heading).toBeInTheDocument()
     })
 
     it('displays link to access page', async () => {
+      render(<AdminBanner />, { wrapper })
       const link = await screen.findByText('admin management settings')
 
       expect(link).toBeInTheDocument()

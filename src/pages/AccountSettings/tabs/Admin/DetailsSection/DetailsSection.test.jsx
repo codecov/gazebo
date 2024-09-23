@@ -1,15 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
 
 import DetailsSection from './DetailsSection'
 
-jest.mock('services/toastNotification')
+vi.mock('services/toastNotification')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -24,42 +24,47 @@ const wrapper = ({ children }) => (
   </QueryClientProvider>
 )
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('DetailsSection', () => {
   function setup() {
     const user = userEvent.setup()
-    const mutate = jest.fn()
-    const addNotification = jest.fn()
+    const mutate = vi.fn()
+    const addNotification = vi.fn()
 
     useAddNotification.mockReturnValue(addNotification)
     server.use(
-      graphql.mutation('UpdateProfile', (req, res, ctx) => {
-        mutate(req.variables)
+      graphql.mutation('UpdateProfile', (info) => {
+        mutate(info.variables)
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             updateProfile: {
               me: {
                 username: 'donald duck',
-                email: req.variables.input.email
-                  ? req.variables.input.email
+                email: info.variables.input.email
+                  ? info.variables.input.email
                   : 'donald@duck.com',
-                name: req.variables.input.name
-                  ? req.variables.input.name
+                name: info.variables.input.name
+                  ? info.variables.input.name
                   : 'donald duck',
                 avatarUrl: 'http://127.0.0.1/avatar-url',
                 onboardingCompleted: false,
               },
             },
-          })
-        )
+          },
+        })
       })
     )
 

@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ManageAdminCard from './ManageAdminCard'
@@ -55,54 +55,48 @@ const wrapper = ({ children }) => (
 describe('ManageAdminCard', () => {
   function setup(adminResults = []) {
     const user = userEvent.setup()
-    const refetch = jest.fn()
-    const mutate = jest.fn()
-    const searchParams = jest.fn()
+    const refetch = vi.fn()
+    const mutate = vi.fn()
+    const searchParams = vi.fn()
 
     server.use(
-      rest.get('/internal/gh/codecov/users', (req, res, ctx) => {
-        const searchParam = req.url.searchParams.get('search')
+      http.get('/internal/gh/codecov/users', (info) => {
+        const url = new URL(info.request.url)
+        const searchParam = url.searchParams.get('search')
 
         if (searchParam !== null && searchParam !== '') {
           searchParams(searchParam)
-
-          return res(
-            ctx.status(200),
-            ctx.json({
-              count: 1,
-              next: null,
-              previous: null,
-              results: [
-                {
-                  activated: true,
-                  is_admin: false,
-                  username: 'searched-user',
-                  email: 'searched-user@codecov.io',
-                  ownerid: 10,
-                  student: false,
-                  name: 'searching-user',
-                  last_pull_timestamp: null,
-                },
-              ],
-              total_pages: 1,
-            })
-          )
+          return HttpResponse.json({
+            count: 1,
+            next: null,
+            previous: null,
+            results: [
+              {
+                activated: true,
+                is_admin: false,
+                username: 'searched-user',
+                email: 'searched-user@codecov.io',
+                ownerid: 10,
+                student: false,
+                name: 'searching-user',
+                last_pull_timestamp: null,
+              },
+            ],
+            total_pages: 1,
+          })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.json({
-            ...mockUsersRequest,
-            results: adminResults,
-          })
-        )
+        return HttpResponse.json({
+          ...mockUsersRequest,
+          results: adminResults,
+        })
       }),
-      rest.patch('/internal/gh/codecov/users/:userId/', (req, res, ctx) => {
-        const userId = req.params.userId
+      http.patch('/internal/gh/codecov/users/:userId/', (info) => {
+        const userId = info.params.userId
 
         mutate(userId)
 
-        return res(ctx.status(200), ctx.json({}))
+        return HttpResponse.json({})
       })
     )
 

@@ -1,13 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type Mock } from 'vitest'
 
 import { useRevokeUserToken } from 'services/access'
 
 import TokensTable from './TokensTable'
 
-jest.mock('services/access')
-const mockedUseRevokeUserToken = useRevokeUserToken as jest.Mock
+vi.mock('services/access')
+const mockedUseRevokeUserToken = useRevokeUserToken as Mock
 
 window.confirm = () => true
 
@@ -20,14 +21,14 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 describe('TokensTable', () => {
   function setup() {
     const user = userEvent.setup()
-    const mutate = jest.fn()
+    const mutate = vi.fn()
     mockedUseRevokeUserToken.mockReturnValue({ mutate })
 
     return { mutate, user }
   }
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('when rendering TokensTable', () => {

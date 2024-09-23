@@ -2,8 +2,8 @@ import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import PropTypes from 'prop-types'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -23,14 +23,16 @@ const wrapper = ({ children }) => (
 )
 
 // The ace-editor is currently not really testable so I'm mocking the whole component with something to respond to the onChange event
-jest.mock('react-ace', () => (props) => <MockReactAce {...props} />)
-jest.mock('ace-builds/src-noconflict/theme-github', () => {})
-jest.mock('ace-builds/src-noconflict/mode-yaml', () => {})
-jest.mock('services/user')
+vi.mock('react-ace', () => ({
+  default: (props) => <MockReactAce {...props} />,
+}))
+vi.mock('ace-builds/src-noconflict/theme-github', () => ({ default: () => {} }))
+vi.mock('ace-builds/src-noconflict/mode-yaml', () => ({ default: () => {} }))
+vi.mock('services/user')
 
-const basicYamlConfig = { data: { owner: { yaml: '' } } }
+const basicYamlConfig = { owner: { yaml: '' } }
 const updateYamlConfig = (y) => ({
-  data: { setYamlOnOwner: { owner: { yaml: y, username: 'doggo' } } },
+  setYamlOnOwner: { owner: { yaml: y, username: 'doggo' } },
 })
 const updateYamlConfigError = (e) => ({
   data: { setYamlOnOwner: { error: { message: e } } },
@@ -49,35 +51,39 @@ MockReactAce.propTypes = {
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('YAMLTab', () => {
-  afterEach(() => jest.resetAllMocks())
+  afterEach(() => vi.clearAllMocks())
 
   function setup(dataReturned) {
     const user = userEvent.setup()
     useIsCurrentUserAnAdmin.mockReturnValue(true)
 
     server.use(
-      rest.post(`/graphql/gh`, (req, res, ctx) => {
-        if (req.body.query.includes('UpdateYamlConfig')) {
-          return res(ctx.status(200), ctx.json(dataReturned.UpdateYamlConfig))
-        }
-        if (req.body.query.includes('YamlConfig')) {
-          return res(ctx.status(200), ctx.json(dataReturned.YamlConfig))
-        }
+      graphql.query('YamlConfig', (info) => {
+        return HttpResponse.json({ data: dataReturned.YamlConfig })
+      }),
+      graphql.mutation('UpdateYamlConfig', (info) => {
+        return HttpResponse.json(dataReturned.UpdateYamlConfig)
       })
     )
 
     return { user }
   }
   describe('basic tests for admin users', () => {
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => vi.clearAllMocks())
 
     it('renders the description text', () => {
       setup({
@@ -119,7 +125,7 @@ describe('YAMLTab', () => {
   })
 
   describe('saves a valid yaml file', () => {
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => vi.clearAllMocks())
 
     it('You can close the modal by clicking done', async () => {
       const { user } = setup({
@@ -165,7 +171,7 @@ describe('YAMLTab', () => {
       )
       expect(yamlConfigurationUpdated).toBeInTheDocument()
 
-      const xSvg = screen.getByText(/x.svg/)
+      const xSvg = screen.getByTestId('modal-close-icon')
       await user.click(xSvg)
 
       yamlConfigurationUpdated = screen.queryByText(
@@ -176,7 +182,7 @@ describe('YAMLTab', () => {
   })
 
   describe('fails and displays linting error', () => {
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => vi.clearAllMocks())
 
     it('The save button becomes unsaved changes and an error is displayed', async () => {
       const { user } = setup({
@@ -199,7 +205,7 @@ describe('YAMLTab', () => {
   })
 
   describe('The api fails', () => {
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => vi.clearAllMocks())
 
     it('The save button becomes unsaved changes and an error is displayed', async () => {
       const { user } = setup({

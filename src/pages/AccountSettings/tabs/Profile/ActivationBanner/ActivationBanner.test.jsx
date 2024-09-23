@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Route } from 'react-router-dom'
 import { MemoryRouter } from 'react-router-dom/cjs/react-router-dom.min'
 
@@ -61,21 +61,21 @@ describe('ActivationBanner', () => {
     const querySeats = { ...mockSeatData, ...overrideSeatData }
 
     server.use(
-      rest.get('/internal/users/current', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(restUsersCurrent))
+      http.get('/internal/users/current', (info) => {
+        return HttpResponse.json(restUsersCurrent)
       }),
-      graphql.query('Seats', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(querySeats))
+      graphql.query('Seats', (info) => {
+        return HttpResponse.json({ data: querySeats })
       }),
-      rest.patch('/internal/users/current', async (req, res, ctx) => {
-        const { activated } = await req.json()
+      http.patch('/internal/users/current', async (info) => {
+        const { activated } = await info.request.json()
 
         restUsersCurrent = {
           ...mockUserData,
           activated,
         }
 
-        return res(ctx.status(200), ctx.json({}))
+        return HttpResponse.json({})
       })
     )
 
