@@ -13,8 +13,8 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 describe('ExpiredBanner', () => {
   function setup() {
     const user = userEvent.setup()
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
-    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     return { user, mockGetItem, mockSetItem }
   }
@@ -75,7 +75,9 @@ describe('ExpiredBanner', () => {
     it('renders dismiss button', () => {
       render(<ExpiredBanner />, { wrapper })
 
-      const dismissBtn = screen.getByRole('button', { name: /x.svg/ })
+      const dismissBtn = screen.getByTestId(
+        'dismiss-global-top-expired-trial-banner'
+      )
       expect(dismissBtn).toBeInTheDocument()
     })
   })
@@ -87,7 +89,9 @@ describe('ExpiredBanner', () => {
 
       mockGetItem.mockReturnValue(null)
 
-      const dismissBtn = screen.getByRole('button', { name: /x.svg/ })
+      const dismissBtn = screen.getByTestId(
+        'dismiss-global-top-expired-trial-banner'
+      )
       expect(dismissBtn).toBeInTheDocument()
       await user.click(dismissBtn)
 
@@ -105,7 +109,9 @@ describe('ExpiredBanner', () => {
 
       mockGetItem.mockReturnValue(null)
 
-      const dismissBtn = screen.getByRole('button', { name: /x.svg/ })
+      const dismissBtn = screen.getByTestId(
+        'dismiss-global-top-expired-trial-banner'
+      )
       expect(dismissBtn).toBeInTheDocument()
       await user.click(dismissBtn)
 
