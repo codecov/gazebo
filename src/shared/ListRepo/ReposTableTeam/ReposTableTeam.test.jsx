@@ -2,8 +2,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { OrderingDirection, TeamOrdering } from 'services/repos'
@@ -18,12 +18,18 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close)
+
+afterAll(() => {
+  server.close()
+})
 
 const wrapper =
   (repoDisplay) =>
@@ -41,21 +47,20 @@ const wrapper =
 
 describe('ReposTableTeam', () => {
   function setup({ edges = [], isCurrentUserPartOfOrg = true }) {
-    const mockApiVars = jest.fn()
-    const fetchNextPage = jest.fn()
+    const mockApiVars = vi.fn()
+    const fetchNextPage = vi.fn()
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetReposTeam', (req, res, ctx) => {
-        mockApiVars(req.variables)
+      graphql.query('GetReposTeam', (info) => {
+        mockApiVars(info.variables)
 
-        if (!!req.variables.after) {
-          fetchNextPage(req.variables.after)
+        if (!!info.variables.after) {
+          fetchNextPage(info.variables.after)
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               isCurrentUserPartOfOrg,
               repositories: {
@@ -66,8 +71,8 @@ describe('ReposTableTeam', () => {
                 },
               },
             },
-          })
-        )
+          },
+        })
       })
     )
 
@@ -178,13 +183,13 @@ describe('ReposTableTeam', () => {
         })
 
         const repo1 = await screen.findByRole('link', {
-          name: 'globe-alt.svg owner1 / Repo name 1',
+          name: /owner1 \/ Repo name 1/,
         })
         const repo2 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 2',
+          name: /owner1 \/ Repo name 2/,
         })
         const repo3 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 3',
+          name: /owner1 \/ Repo name 3/,
         })
 
         expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1')
@@ -203,13 +208,13 @@ describe('ReposTableTeam', () => {
         })
 
         const repo1 = await screen.findByRole('link', {
-          name: 'globe-alt.svg owner1 / Repo name 1',
+          name: /owner1 \/ Repo name 1/,
         })
         const repo2 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 2',
+          name: /owner1 \/ Repo name 2/,
         })
         const repo3 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 3',
+          name: /owner1 \/ Repo name 3/,
         })
 
         expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1/bundles')
@@ -307,17 +312,17 @@ describe('ReposTableTeam', () => {
         })
 
         const repo1 = await screen.findByRole('link', {
-          name: 'globe-alt.svg owner1 / Repo name 1',
+          name: /owner1 \/ Repo name 1/,
         })
         expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1/new')
 
         const repo2 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 2',
+          name: /owner1 \/ Repo name 2/,
         })
         expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2/new')
 
         const repo3 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 3',
+          name: /owner1 \/ Repo name 3/,
         })
         expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3/new')
       })
