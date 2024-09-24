@@ -1,15 +1,19 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import OktaBanners from './OktaBanners'
 
-jest.mock('../OktaEnabledBanner', () => () => 'OktaEnabledBanner')
-jest.mock('../OktaEnforcedBanner', () => () => 'OktaEnforcedBanner')
-jest.mock('../OktaErrorBanners', () => () => 'OktaErrorBanners')
+vi.mock('../OktaEnabledBanner', () => ({ default: () => 'OktaEnabledBanner' }))
+vi.mock('../OktaEnforcedBanner', () => ({
+  default: () => 'OktaEnforcedBanner',
+}))
+vi.mock('../OktaErrorBanners', () => ({
+  default: () => 'OktaErrorBanners',
+}))
 
 const wrapper =
   (initialEntries = ['/gh/owner']): React.FC<React.PropsWithChildren> =>
@@ -38,9 +42,9 @@ afterAll(() => server.close())
 describe('OktaBanners', () => {
   function setup(data = {}) {
     server.use(
-      graphql.query('GetOktaConfig', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(data))
-      )
+      graphql.query('GetOktaConfig', (info) => {
+        return HttpResponse.json({ data: data })
+      })
     )
   }
 
