@@ -4,11 +4,11 @@ import { BundleTrendChart } from './BundleTrendChart'
 
 describe('Coverage Area Chart', () => {
   beforeEach(() => {
-    jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
+    vi.useFakeTimers().setSystemTime(new Date('2020-04-01'))
   })
 
   afterAll(() => {
-    jest.useRealTimers()
+    vi.useRealTimers()
   })
 
   describe('Chart with data', () => {
