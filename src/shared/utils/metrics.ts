@@ -94,9 +94,6 @@ type IncrementKeys = {
       checkout_from_page: string
     }
   }
-  old_session_expiry: {
-    cleanup: string
-  }
   button_clicked: {
     theme: {
       light: string
