@@ -1,24 +1,32 @@
 import { renderHook } from '@testing-library/react'
 import Cookie from 'js-cookie'
-import { useLocation } from 'react-router-dom'
 
 import { useImpersonate } from './useImpersonate'
 
-jest.mock('react-router-dom', () => ({
-  useLocation: jest.fn(),
+const mocks = vi.hoisted(() => ({
+  useLocation: vi.fn(),
 }))
+
+vi.mock('react-router-dom', async () => {
+  const originalModule = await vi.importActual('react-router-dom')
+  return {
+    ...originalModule,
+    useLocation: mocks.useLocation,
+  }
+})
 
 // Note, calling rerender manually after setting the location to ensure
 // the useEffect hook has ran at least once.
 describe('useImpersonate', () => {
   function setup({ search }) {
-    useLocation.mockReturnValue({ search })
+    mocks.useLocation.mockReturnValue({ search })
   }
 
   describe('no staff_user cookie', () => {
     afterEach(() => {
       Cookie.remove('staff_user')
     })
+
     it('returns false no search', () => {
       setup({ search: '' })
 
@@ -55,9 +63,11 @@ describe('useImpersonate', () => {
     beforeEach(() => {
       Cookie.set('staff_user', 'doggo')
     })
+
     afterEach(() => {
       Cookie.remove('staff_user')
     })
+
     it('returns false no search', () => {
       setup({ search: '' })
       const { result, rerender } = renderHook(() => useImpersonate())
