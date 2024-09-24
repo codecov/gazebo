@@ -1,22 +1,14 @@
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createBrowserHistory } from 'history'
-import Cookies from 'js-cookie'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import ReactModal from 'react-modal'
 import { Router } from 'react-router-dom'
 import { CompatRouter } from 'react-router-dom-v5-compat'
 
-import config, {
-  COOKIE_SESSION_EXPIRY,
-  LOCAL_STORAGE_SESION_EXPIRED_KEY,
-  LOCAL_STORAGE_SESSION_TRACKING_KEY,
-} from 'config'
-
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import { withFeatureFlagProvider } from 'shared/featureFlags'
-import { metrics } from 'shared/utils/metrics'
 
 import App from './App'
 import './globals.css'
@@ -64,16 +56,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-
-if (Cookies.get(COOKIE_SESSION_EXPIRY)) {
-  localStorage.removeItem(LOCAL_STORAGE_SESION_EXPIRED_KEY)
-  localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
-  Cookies.remove(COOKIE_SESSION_EXPIRY, {
-    path: '/',
-    domain: `.${(config.BASE_URL as string).split('/')[2]}`,
-  }) // Remove http(s)://
-  metrics.increment('old_session_expiry.cleanup')
-}
 
 const domNode = document.getElementById('root')
 
