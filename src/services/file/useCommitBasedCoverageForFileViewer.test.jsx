@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCommitBasedCoverageForFileViewer } from './useCommitBasedCoverageForFileViewer'
@@ -69,18 +69,16 @@ describe('useCommitBasedCoverageForFileViewer', () => {
     selectedComponents,
   }) {
     server.use(
-      graphql.query('CoverageForFile', (req, res, ctx) => {
+      graphql.query('CoverageForFile', (info) => {
         if (Object.keys(coverageWithFlags).length > 0) {
-          return res(
-            ctx.status(200),
-            ctx.data(mockFileMainCoverage(coverageWithFlags, selectedFlags))
-          )
+          return HttpResponse.json({
+            data: mockFileMainCoverage(coverageWithFlags, selectedFlags),
+          })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data(mockFileMainCoverage(mainCoverageData, selectedFlags))
-        )
+        return HttpResponse.json({
+          data: mockFileMainCoverage(mainCoverageData, selectedFlags),
+        })
       })
     )
   }
