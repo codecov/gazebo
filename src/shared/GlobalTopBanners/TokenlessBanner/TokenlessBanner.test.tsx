@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import ResizeObserver from 'resize-observer-polyfill'
 
@@ -10,7 +10,7 @@ import { useFlags } from 'shared/featureFlags'
 
 import TokenlessBanner from './TokenlessBanner'
 
-jest.mock('shared/featureFlags')
+vi.mock('shared/featureFlags')
 global.ResizeObserver = ResizeObserver
 const mockedUseFlags = useFlags as jest.Mock
 
@@ -55,26 +55,24 @@ describe('TokenlessBanner', () => {
     mockedUseFlags.mockReturnValue({ tokenlessSection: true })
 
     server.use(
-      graphql.query('DetailOwner', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               ...mockOwner,
               isAdmin: isAdmin,
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetOrgUploadToken', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               orgUploadToken: orgUploadToken,
             },
-          })
-        )
+          },
+        })
       })
     )
 
@@ -169,12 +167,11 @@ describe('TokenlessBanner', () => {
       render(<TokenlessBanner />, { wrapper: wrapper() })
 
       await waitFor(() => screen.findByTestId(/token-trigger/))
-      const tooltip = screen.getByTestId(/token-trigger/)
-      await user.hover(tooltip)
+      const trigger = screen.getByTestId(/token-trigger/)
+      await user.hover(trigger)
 
-      const tooltipContent = await screen.findByText(/mock-token/, {
-        selector: '[role="tooltip"] div',
-      })
+      const tooltip = await screen.findByRole('tooltip')
+      const tooltipContent = within(tooltip).getByText(/mock-token/)
       expect(tooltipContent).toBeInTheDocument()
     })
 
@@ -183,12 +180,11 @@ describe('TokenlessBanner', () => {
       render(<TokenlessBanner />, { wrapper: wrapper() })
 
       await waitFor(() => screen.findByTestId(/token-trigger/))
-      const tooltip = screen.getByTestId(/token-trigger/)
-      await user.hover(tooltip)
+      const trigger = screen.getByTestId(/token-trigger/)
+      await user.hover(trigger)
 
-      const eyeIcon = await screen.findByText(/eye-off.svg/, {
-        selector: '[role="tooltip"] svg',
-      })
+      const tooltip = await screen.findByRole('tooltip')
+      const eyeIcon = within(tooltip).getByTestId('hide-token')
       expect(eyeIcon).toBeInTheDocument()
     })
 
@@ -197,19 +193,16 @@ describe('TokenlessBanner', () => {
       render(<TokenlessBanner />, { wrapper: wrapper() })
 
       await waitFor(() => screen.findByTestId(/token-trigger/))
-      const tooltip = screen.getByTestId(/token-trigger/)
-      await user.hover(tooltip)
+      const trigger = screen.getByTestId(/token-trigger/)
+      await user.hover(trigger)
 
-      const eyeIcon = await screen.findByText(/eye-off.svg/, {
-        selector: '[role="tooltip"] svg',
-      })
+      const tooltip = await screen.findByRole('tooltip')
+      const eyeIcon = within(tooltip).getByTestId('hide-token')
       expect(eyeIcon).toBeInTheDocument()
 
       await user.click(eyeIcon)
 
-      const eyeOnIcon = await screen.findByText(/eye.svg/, {
-        selector: '[role="tooltip"] svg',
-      })
+      const eyeOnIcon = within(tooltip).getByTestId('show-token')
       expect(eyeOnIcon).toBeInTheDocument()
     })
 
@@ -218,12 +211,11 @@ describe('TokenlessBanner', () => {
       render(<TokenlessBanner />, { wrapper: wrapper() })
 
       await waitFor(() => screen.findByTestId(/token-trigger/))
-      const tooltip = screen.getByTestId(/token-trigger/)
-      await user.hover(tooltip)
+      const trigger = screen.getByTestId(/token-trigger/)
+      await user.hover(trigger)
 
-      const eyeIcon = await screen.findByText(/eye-off.svg/, {
-        selector: '[role="tooltip"] svg',
-      })
+      const tooltip = await screen.findByRole('tooltip')
+      const eyeIcon = within(tooltip).getByTestId('hide-token')
       expect(eyeIcon).toBeInTheDocument()
 
       await user.click(eyeIcon)
@@ -239,12 +231,11 @@ describe('TokenlessBanner', () => {
       render(<TokenlessBanner />, { wrapper: wrapper() })
 
       await waitFor(() => screen.findByTestId(/token-trigger/))
-      const tooltip = screen.getByTestId(/token-trigger/)
-      await user.hover(tooltip)
+      const trigger = screen.getByTestId(/token-trigger/)
+      await user.hover(trigger)
 
-      const copyButton = await screen.findByText(/clipboard-copy.svg/, {
-        selector: '[role="tooltip"] svg',
-      })
+      const tooltip = await screen.findByRole('tooltip')
+      const copyButton = within(tooltip).getByTestId('clipboard-copy-token')
       expect(copyButton).toBeInTheDocument()
     })
   })
