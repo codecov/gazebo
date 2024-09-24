@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
 import RepoOrgNotFound from './RepoOrgNotFound'
@@ -38,38 +38,25 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 describe('RepoOrgNotFound', () => {
   function setup({ isGithubRateLimited = false }) {
-    const triggerResync = jest.fn()
+    const triggerResync = vi.fn()
 
     server.use(
-      graphql.query('IsSyncing', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            me: {
-              isSyncing: false,
-            },
-          })
-        )
+      graphql.query('IsSyncing', (info) => {
+        return HttpResponse.json({
+          data: { me: { isSyncing: false } },
+        })
       }),
-      graphql.query('GetOwnerRateLimitStatus', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ me: { owner: { isGithubRateLimited } } })
-        )
-      }),
-      graphql.mutation('SyncData', (req, res, ctx) => {
-        triggerResync(req.variables)
 
-        return res(
-          ctx.status(200),
-          ctx.data({
-            syncWithGitProvider: {
-              me: {
-                isSyncing: true,
-              },
-            },
-          })
-        )
+      graphql.query('GetOwnerRateLimitStatus', (info) => {
+        return HttpResponse.json({
+          data: { me: { owner: { isGithubRateLimited } } },
+        })
+      }),
+      graphql.mutation('SyncData', (info) => {
+        triggerResync(info.variables)
+        return HttpResponse.json({
+          data: { syncWithGitProvider: { me: { isSyncing: true } } },
+        })
       })
     )
 
