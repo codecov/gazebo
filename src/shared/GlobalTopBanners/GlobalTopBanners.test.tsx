@@ -2,12 +2,24 @@ import { render, screen } from '@testing-library/react'
 
 import GlobalTopBanners from './GlobalTopBanners'
 
-jest.mock('./RequestInstallBanner', () => () => 'RequestInstallBanner')
-jest.mock('./TrialBanner', () => () => 'TrialBanner')
-jest.mock('./TeamPlanFeedbackBanner', () => () => 'TeamPlanFeedbackBanner')
-jest.mock('./ProPlanFeedbackBanner', () => () => 'ProPlanFeedbackBanner')
-jest.mock('./BundleFeedbackBanner', () => () => 'BundleFeedbackBanner')
-jest.mock('./OktaBanners', () => () => 'OktaBanners')
+vi.mock('./RequestInstallBanner', () => ({
+  default: () => 'RequestInstallBanner',
+}))
+vi.mock('./TrialBanner', () => ({
+  default: () => 'TrialBanner',
+}))
+vi.mock('./TeamPlanFeedbackBanner', () => ({
+  default: () => 'TeamPlanFeedbackBanner',
+}))
+vi.mock('./ProPlanFeedbackBanner', () => ({
+  default: () => 'ProPlanFeedbackBanner',
+}))
+vi.mock('./BundleFeedbackBanner', () => ({
+  default: () => 'BundleFeedbackBanner',
+}))
+vi.mock('./OktaBanners', () => ({
+  default: () => 'OktaBanners',
+}))
 
 describe('GlobalTopBanners', () => {
   it('renders sentry trial banner', async () => {
