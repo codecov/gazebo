@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { useImage } from './useImage'
 
 afterEach(() => {
-  jest.resetAllMocks()
+  vi.resetAllMocks()
 })
 
 describe('useImage', () => {
