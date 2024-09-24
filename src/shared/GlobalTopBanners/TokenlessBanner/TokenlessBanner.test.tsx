@@ -51,7 +51,10 @@ const wrapper =
   )
 
 describe('TokenlessBanner', () => {
-  function setup({ isAdmin = true, orgUploadToken = 'mock-token' } = {}) {
+  function setup({
+    isAdmin = true,
+    orgUploadToken = 'mock-token',
+  }: { isAdmin?: boolean; orgUploadToken?: string | null } = {}) {
     mockedUseFlags.mockReturnValue({ tokenlessSection: true })
 
     server.use(
@@ -86,6 +89,14 @@ describe('TokenlessBanner', () => {
     })
 
     expect(container).toBeEmptyDOMElement()
+  })
+
+  it('should return token copy without tooltip if token is not provided', async () => {
+    setup({ orgUploadToken: null })
+    render(<TokenlessBanner />, { wrapper: wrapper() })
+
+    const token = await screen.findByText(/the token./)
+    expect(token).toBeInTheDocument()
   })
 
   describe('when user is admin', () => {
