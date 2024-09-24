@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
@@ -38,29 +38,33 @@ const queryClient = new QueryClient({
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
 
 describe('useStoreCodecovEventMetric', () => {
   function setup() {
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
-    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
-      graphql.mutation('storeEventMetric', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ storeEventMetric: null }))
+      graphql.mutation('storeEventMetric', (info) => {
+        return HttpResponse.json({ data: { storeEventMetric: null } })
       })
     )
 
     return { mockSetItem, mockGetItem }
   }
 
-  afterEach(() => jest.resetAllMocks())
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
 
   describe('when called', () => {
     describe('when successful', () => {
@@ -107,7 +111,7 @@ describe('useStoreCodecovEventMetric', () => {
       })
     })
 
-    describe('metric exists in localstorage', () => {
+    describe('metric exists in local storage', () => {
       it('does not fire mutation', async () => {
         const { mockSetItem, mockGetItem } = setup()
 
