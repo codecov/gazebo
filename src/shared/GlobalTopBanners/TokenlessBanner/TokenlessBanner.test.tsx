@@ -91,14 +91,6 @@ describe('TokenlessBanner', () => {
     expect(container).toBeEmptyDOMElement()
   })
 
-  it('should return token copy without tooltip if token is not provided', async () => {
-    setup({ orgUploadToken: null })
-    render(<TokenlessBanner />, { wrapper: wrapper() })
-
-    const token = await screen.findByText(/the token./)
-    expect(token).toBeInTheDocument()
-  })
-
   describe('when user is admin', () => {
     it('should render content of AdminTokenlessBanner', async () => {
       setup({ isAdmin: true })
@@ -110,12 +102,20 @@ describe('TokenlessBanner', () => {
       expect(content).toBeInTheDocument()
     })
 
+    it('should return token copy without tooltip if token is not provided', async () => {
+      setup({ orgUploadToken: null })
+      render(<TokenlessBanner />, { wrapper: wrapper() })
+
+      const token = await screen.findByText(/the token. /)
+      expect(token).toBeInTheDocument()
+    })
+
     it('should render token tooltip', async () => {
       setup({ isAdmin: true })
       render(<TokenlessBanner />, { wrapper: wrapper() })
 
-      const tooltip = await screen.findByText(/the token/)
-      expect(tooltip).toBeInTheDocument()
+      const trigger = await screen.findByTestId(/token-trigger/)
+      expect(trigger).toBeInTheDocument()
     })
 
     it('should render link to global upload token settings', async () => {
@@ -145,12 +145,20 @@ describe('TokenlessBanner', () => {
       expect(content).toBeInTheDocument()
     })
 
+    it('should return token copy without tooltip if token is not provided', async () => {
+      setup({ isAdmin: false, orgUploadToken: null })
+      render(<TokenlessBanner />, { wrapper: wrapper() })
+
+      const token = await screen.findByText(/the token. /)
+      expect(token).toBeInTheDocument()
+    })
+
     it('should render token tooltip', async () => {
       setup({ isAdmin: false })
       render(<TokenlessBanner />, { wrapper: wrapper() })
 
-      const tooltip = await screen.findByText(/the token/)
-      expect(tooltip).toBeInTheDocument()
+      const trigger = await screen.findByTestId(/token-trigger/)
+      expect(trigger).toBeInTheDocument()
     })
 
     it('should render reach to admin copy', async () => {
