@@ -91,7 +91,9 @@ const wrapper =
             '/:provider/:owner/:repo/blob/:ref/:path+',
             '/:provider/:owner/:repo/commits',
             '/:provider/:owner/:repo/compare',
+            '/:provider/:owner/:repo/flags/:branch',
             '/:provider/:owner/:repo/flags',
+            '/:provider/:owner/:repo/components/:branch',
             '/:provider/:owner/:repo/components',
             '/:provider/:owner/:repo/new',
             '/:provider/:owner/:repo/pulls',
@@ -233,9 +235,6 @@ describe('RepoPageTabs', () => {
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
-
-        const betaBadges = await screen.findAllByText('beta')
-        expect(betaBadges).toHaveLength(2)
       })
     })
 
@@ -250,9 +249,6 @@ describe('RepoPageTabs', () => {
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
-
-        const betaBadges = await screen.findAllByText('beta')
-        expect(betaBadges).toHaveLength(2)
       })
     })
 
@@ -268,9 +264,6 @@ describe('RepoPageTabs', () => {
 
         const tab = screen.queryByText('Bundles')
         expect(tab).not.toBeInTheDocument()
-
-        const betaBadge = screen.queryByText('beta')
-        expect(betaBadge).not.toBeInTheDocument()
       })
     })
   })
@@ -532,7 +525,11 @@ describe('useRepoTabs', () => {
             useRepoTabs({
               refetchEnabled: false,
             }),
-          { wrapper: wrapper('/gh/codecov/test-repo/tree/main/src') }
+          {
+            wrapper: wrapper(
+              '/gh/codecov/test-repo/tree/selected%2fbranch/src'
+            ),
+          }
         )
 
         const expectedTab = [
@@ -540,7 +537,31 @@ describe('useRepoTabs', () => {
             children: 'Coverage',
             exact: false,
             location: {
-              pathname: '/gh/codecov/test-repo/tree',
+              pathname: '/gh/codecov/test-repo/tree/selected%2fbranch',
+            },
+            pageName: 'overview',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+      it('returns the correct tab definition when All branch is selected', async () => {
+        setup({})
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo/tree/All%20branches') }
+        )
+
+        const expectedTab = [
+          {
+            children: 'Coverage',
+            exact: false,
+            location: {
+              pathname: '/gh/codecov/test-repo',
             },
             pageName: 'overview',
           },
@@ -593,6 +614,112 @@ describe('useRepoTabs', () => {
           {
             children: 'Coverage',
             exact: false,
+            pageName: 'overview',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+    })
+
+    describe('when match flags is true', () => {
+      it('returns the correct tab definition when no branch selected', async () => {
+        setup({})
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo/flags') }
+        )
+
+        const expectedTab = [
+          {
+            children: 'Coverage',
+            exact: false,
+            location: {
+              pathname: '/gh/codecov/test-repo',
+            },
+            pageName: 'overview',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+      it('returns the correct tab definition when branch is selected', async () => {
+        setup({})
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo/flags/selected%2fbranch') }
+        )
+
+        const expectedTab = [
+          {
+            children: 'Coverage',
+            exact: false,
+            location: {
+              pathname: '/gh/codecov/test-repo/tree/selected%2fbranch',
+            },
+            pageName: 'overview',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+    })
+
+    describe('when match components is true', () => {
+      it('returns the correct tab definition when no branch selected', async () => {
+        setup({})
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo/components') }
+        )
+
+        const expectedTab = [
+          {
+            children: 'Coverage',
+            exact: false,
+            location: {
+              pathname: '/gh/codecov/test-repo',
+            },
+            pageName: 'overview',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+      it('returns the correct tab definition when branch is selected', async () => {
+        setup({})
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          {
+            wrapper: wrapper(
+              '/gh/codecov/test-repo/components/selected%2fbranch'
+            ),
+          }
+        )
+
+        const expectedTab = [
+          {
+            children: 'Coverage',
+            exact: false,
+            location: {
+              pathname: '/gh/codecov/test-repo/tree/selected%2fbranch',
+            },
             pageName: 'overview',
           },
         ]
@@ -879,6 +1006,70 @@ describe('useRepoTabs', () => {
             expect.arrayContaining(expectedTab)
           )
         )
+      })
+    })
+  })
+
+  describe('tests tab', () => {
+    describe('when test analytics is enabled', () => {
+      it('adds the tests link to the array', async () => {
+        setup({ testAnalyticsEnabled: true })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        const expectedTab = [
+          {
+            pageName: 'failedTests',
+            children: expect.anything(),
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+    })
+
+    describe('when test analytics is disabled', () => {
+      it('does not add the tests link to the array', async () => {
+        setup({ testAnalyticsEnabled: false })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        const expectedTab = [
+          {
+            pageName: 'failedTestsOnboarding',
+            children: expect.anything(),
+          },
+        ]
+
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+    })
+
+    describe('when test analytics is disabled and user is not part of the org', () => {
+      it('does not add the tests link to the array', async () => {
+        setup({ testAnalyticsEnabled: false, isCurrentUserPartOfOrg: false })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        await waitFor(() => expect(result.current).toEqual([]))
       })
     })
   })

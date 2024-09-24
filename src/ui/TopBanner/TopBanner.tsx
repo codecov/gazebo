@@ -19,12 +19,21 @@ const variants = {
     iconColor: 'text-ds-primary-yellow',
     bgColor: 'bg-orange-100',
   },
+  error: {
+    icon: 'exclamationCircle',
+    iconColor: '',
+    bgColor: 'bg-ds-primary-red',
+  },
 } as const
 
 type Variants = keyof typeof variants
 
 const topBannerContext = z.object({
-  variant: z.union([z.literal('default'), z.literal('warning')]),
+  variant: z.union([
+    z.literal('default'),
+    z.literal('warning'),
+    z.literal('error'),
+  ]),
   localStorageKey: z.string().optional(),
   setHideBanner: z.function().args(z.boolean()).returns(z.void()),
 })
@@ -111,7 +120,12 @@ const IconSymbol: React.FC = () => {
   const { variant } = useTopBannerContext()
   return (
     <span className={cs('pr-2 md:pr-0', variants[variant].iconColor)}>
-      <Icon name={variants[variant].icon} size="md" variant="outline" />
+      <Icon
+        size="md"
+        variant="outline"
+        name={variants[variant].icon}
+        label={variants[variant].icon}
+      />
     </span>
   )
 }

@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 import { Branch, useBranch, useBranches } from 'services/branches'
-import { useLocationParams } from 'services/navigation'
+import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
@@ -13,10 +13,6 @@ interface URLParams {
   owner: string
   repo: string
   branch?: string
-}
-
-const defaultQueryParams = {
-  branch: '',
 }
 
 const getDecodedBranch = (branch?: string) =>
@@ -30,14 +26,16 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
   isDisabled = false,
 }) => {
   const { provider, owner, repo, branch } = useParams<URLParams>()
-  const { params, updateParams } = useLocationParams(defaultQueryParams)
-  const [branchSearchTerm, setBranchSearchTerm] = useState<string>('')
-
+  // this should be removed when we propogate selected branch between tabs
   const { data: overview } = useRepoOverview({
     provider,
     owner,
     repo,
   })
+  const selectedBranch = branch ?? overview?.defaultBranch ?? ''
+  const [branchSearchTerm, setBranchSearchTerm] = useState<string>('')
+  const history = useHistory()
+  const { componentsTab } = useNavLinks()
 
   const {
     data: branchList,
@@ -55,10 +53,6 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
   })
 
   const decodedBranch = getDecodedBranch(branch)
-
-  const selectedBranch =
-    // @ts-expect-error
-    decodedBranch || params.branch || overview?.defaultBranch || ''
 
   const { data: searchBranchValue } = useBranch({
     provider,
@@ -93,10 +87,13 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
           dataMarketing="branch-selector-components-tab"
           ariaName="components branch selector"
           items={branchList?.branches ?? []}
-          // @ts-expect-error - params is not typed
-          value={params?.branch ? { name: params.branch } : selection}
-          onChange={(item: Branch) => {
-            updateParams({ branch: item.name })
+          value={decodedBranch ? { name: decodedBranch } : selection}
+          onChange={(branch: Branch) => {
+            history.push(
+              componentsTab.path({
+                branch: encodeURIComponent(branch?.name),
+              })
+            )
           }}
           variant="gray"
           renderItem={(item: Branch) => <span>{item?.name}</span>}

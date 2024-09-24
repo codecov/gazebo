@@ -102,6 +102,7 @@ const pull = {
           },
           uploads: {
             totalCount: 4,
+            edges: [],
           },
         },
         updatestamp: '2024-01-12T12:56:18.912860',
@@ -111,6 +112,7 @@ const pull = {
           commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
           uploads: {
             totalCount: 1,
+            edges: [],
           },
         },
       },
@@ -164,7 +166,7 @@ describe('usePull', () => {
               author: { username: 'nicholas-codecov' },
               comparedTo: {
                 commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
-                uploads: { totalCount: 1 },
+                uploads: { totalCount: 1, edges: [] },
               },
               head: {
                 state: 'complete',
@@ -173,7 +175,7 @@ describe('usePull', () => {
                   'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
                 commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
                 totals: { percentCovered: 78.33 },
-                uploads: { totalCount: 4 },
+                uploads: { totalCount: 4, edges: [] },
               },
               commits: {
                 edges: [

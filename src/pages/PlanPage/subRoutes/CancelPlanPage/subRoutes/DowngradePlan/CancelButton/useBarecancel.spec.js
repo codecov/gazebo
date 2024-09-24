@@ -3,6 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import config from 'config'
 
 import { useBarecancel } from './useBarecancel'
+import { loadBaremetrics } from './utils'
 jest.mock('services/toastNotification')
 
 jest.mock('react-router-dom', () => ({
@@ -11,13 +12,25 @@ jest.mock('react-router-dom', () => ({
 }))
 jest.mock('services/account')
 
+jest.mock('./utils', () => ({
+  loadBaremetrics: jest.fn(),
+}))
+
 describe('useBarecancel', () => {
   describe('Initializes', () => {
+    beforeEach(() => {
+      window.barecancel = { params: null }
+    })
+
     it('window params are set', async () => {
+      loadBaremetrics.mockResolvedValue() // Mock successful load
       const callbackSend = () => {}
-      renderHook(() =>
+      const { result } = renderHook(() =>
         useBarecancel({ customerId: 1234, callbackSend, isModalOpen: true })
       )
+
+      // start as blocked
+      expect(result.current.baremetricsBlocked).toBe(true)
 
       const expectedParams = {
         access_token_id: config.BAREMETRICS_TOKEN,
@@ -36,12 +49,26 @@ describe('useBarecancel', () => {
           JSON.stringify(expectedParams)
         )
       )
+
+      // Check that it was not blocked
+      expect(result.current.baremetricsBlocked).toBe(false)
+    })
+
+    it('returns blocked if load fails', async () => {
+      loadBaremetrics.mockRejectedValueOnce()
+      const callbackSend = jest.fn()
+      const { result } = renderHook(() =>
+        useBarecancel({ customerId: 1234, callbackSend, isModalOpen: true })
+      )
+
+      expect(result.current.baremetricsBlocked).toBe(true)
     })
   })
 
   describe('Cleans up', () => {
     it('Removes script and styles tag', () => {
-      const callbackSend = () => {}
+      loadBaremetrics.mockResolvedValueOnce() // Mock successful load
+      const callbackSend = jest.fn()
       renderHook(() =>
         useBarecancel({ customerId: 1234, callbackSend, isModalOpen: true })
       )

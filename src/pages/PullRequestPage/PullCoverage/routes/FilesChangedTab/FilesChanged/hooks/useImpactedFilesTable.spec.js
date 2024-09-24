@@ -5,6 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
+import { UploadTypeEnum } from 'shared/utils/commit'
 import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
 import {
@@ -109,6 +110,32 @@ const mockPull = ({ overrideComparison } = {}) => ({
           },
           uploads: {
             totalCount: 4,
+            edges: [
+              {
+                node: {
+                  uploadType: UploadTypeEnum.CARRIED_FORWARD,
+                  flags: ['flag3'],
+                },
+              },
+              {
+                node: {
+                  uploadType: UploadTypeEnum.UPLOADED,
+                  flags: ['flag7'],
+                },
+              },
+              {
+                node: {
+                  uploadType: UploadTypeEnum.UPLOADED,
+                  flags: ['flag7'],
+                },
+              },
+              {
+                node: {
+                  uploadType: UploadTypeEnum.UPLOADED,
+                  flags: ['flag7'],
+                },
+              },
+            ],
           },
         },
         updatestamp: '2024-01-12T12:56:18.912860',
@@ -118,6 +145,14 @@ const mockPull = ({ overrideComparison } = {}) => ({
           commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
           uploads: {
             totalCount: 1,
+            edges: [
+              {
+                node: {
+                  uploadType: UploadTypeEnum.CARRIED_FORWARD,
+                  flags: ['flag3'],
+                },
+              },
+            ],
           },
         },
       },

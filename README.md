@@ -1,6 +1,4 @@
 [![codecov](https://codecov.io/gh/codecov/gazebo/branch/main/graph/badge.svg?token=UAP786D58M)](https://codecov.io/gh/codecov/gazebo)
-[![Storybook](https://raw.githubusercontent.com/storybookjs/brand/master/badge/badge-storybook.svg)](https://5fa9228f77839a00217f8a45-bkjyepljyt.chromatic.com/)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/128d65e5-70a2-4179-b216-4f16683513da/deploy-status)](https://app.netlify.com/sites/gazebo/deploys)
 
 # Gazebo
 
@@ -58,13 +56,6 @@ We are using the [Testing Library](https://testing-library.com/docs/react-testin
 
 will lint the whole project.
 
-We have some extra rules to keep the code more maintainable:
-
-- Complexity of max 5 per function: to prevent functions with a lot of of different outcome
-- 10 max statements per function: to prevent a function doing too much
-- 2 level of nested callbacks: to prevent complexity within nested functions
-- Mandatory prop-types: as we don't have a Type system, this rule will help us have documented components
-
 ## Build the application for production
 
 ```bash
@@ -87,7 +78,7 @@ Gazebo supports [env files](https://create-react-app.dev/docs/adding-custom-envi
 
 To override environment variables when working locally create a `.env.local` file, this file is ignored by git.
 
-You must prepend env variables with `REACT_APP_`.
+You must prepend env variables with `REACT_APP`.
 
 `.env.local`
 

@@ -4,6 +4,8 @@ import {
 } from '@tanstack/react-query'
 import { z } from 'zod'
 
+import { OrderingDirection } from 'types'
+
 import {
   FirstPullRequestSchema,
   MissingBaseCommitSchema,
@@ -239,7 +241,7 @@ interface UsePullArgs {
   filters: {
     state: PullStates
   }
-  orderingDirection: 'ASC' | 'DESC'
+  orderingDirection: OrderingDirection
   opts?: UseInfiniteQueryOptions<GetPullsReturn>
 }
 

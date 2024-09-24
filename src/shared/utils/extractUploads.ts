@@ -36,7 +36,7 @@ function humanReadableOverview(state: string) {
   if (state === UploadStateEnum.started) return 'started'
 }
 
-function deleteDuplicateCFFUploads({ uploads }: { uploads: Upload[] }) {
+export function deleteDuplicateCFFUploads({ uploads }: { uploads: Upload[] }) {
   const nonCFFlags = new Set()
 
   // Get all the flags from "uploaded" uploads

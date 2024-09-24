@@ -29,17 +29,10 @@
       "assets/*": ["./src/assets/*"],
       "custom-testing-library": ["./src/custom-testing-library"],
       "config": ["./src/config"],
-      "sentry": ["./src/sentry"]
+      "sentry": ["./src/sentry"],
+      "types": ["./src/types"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.cjs",
-    "**/*.mjs",
-    "**/*.js",
-    "**/*.jsx",
-    "global.d.ts"
-  ],
+  "include": ["src"],
   "exclude": ["node_modules", "dist", "public"]
 }

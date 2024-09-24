@@ -21,6 +21,7 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 import AccountSettings from './pages/AccountSettings'
 import AdminSettings from './pages/AdminSettings'
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
+const CodecovAIPage = lazy(() => import('./pages/CodecovAIPage'))
 const CommitDetailPage = lazy(() => import('./pages/CommitDetailPage'))
 const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -120,6 +121,11 @@ const MainAppRoutes = () => (
         <AnalyticsPage />
       </BaseLayout>
     </SentryRoute>
+    <SentryRoute path="/codecovai/:provider/:owner" exact>
+      <BaseLayout>
+        <CodecovAIPage />
+      </BaseLayout>
+    </SentryRoute>
     <SentryRoute path="/:provider" exact>
       <BaseLayout>
         <HomePageRedirect />
@@ -154,7 +160,19 @@ const MainAppRoutes = () => (
         <CommitDetailPage />
       </BaseLayout>
     </SentryRoute>
-    <SentryRoute path="/:provider/:owner/:repo">
+    <SentryRoute
+      path={[
+        '/:provider/:owner/:repo/commits/:branch',
+        '/:provider/:owner/:repo/tree/:branch',
+        '/:provider/:owner/:repo/flags/:branch',
+        '/:provider/:owner/:repo/components/:branch',
+        '/:provider/:owner/:repo/bundles/:branch',
+        '/:provider/:owner/:repo/tests/:branch',
+        // paths above are for grabbing branch for components in tree between here and RepoPage
+        // where there is another set of SentryRoute matching
+        '/:provider/:owner/:repo',
+      ]}
+    >
       <BaseLayout>
         <RepoPage />
       </BaseLayout>

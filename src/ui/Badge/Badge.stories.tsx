@@ -7,7 +7,7 @@ export default {
   component: Badge,
   argTypes: {
     variant: {
-      options: ['default'],
+      options: ['default', 'danger', 'success'],
       control: 'select',
       description:
         'This prop controls the variation of badge that is displayed',

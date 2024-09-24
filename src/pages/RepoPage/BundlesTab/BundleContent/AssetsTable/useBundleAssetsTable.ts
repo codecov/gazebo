@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 
-import { useBundleAssets } from 'services/bundleAnalysis'
+import { OrderingDirection } from 'types'
+
+import { useBundleAssets } from 'services/bundleAnalysis/useBundleAssets'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import { createTimeSeriesQueryVars, Trend } from 'shared/utils/timeseriesCharts'
@@ -11,6 +13,8 @@ interface UseBundleAssetsTableArgs {
   repo: string
   branch: string
   bundle: string
+  orderingDirection?: OrderingDirection
+  ordering?: 'NAME' | 'SIZE' | 'TYPE'
 }
 
 export function useBundleAssetsTable({
@@ -19,6 +23,8 @@ export function useBundleAssetsTable({
   repo,
   branch,
   bundle,
+  orderingDirection,
+  ordering,
 }: UseBundleAssetsTableArgs) {
   const { params } = useLocationParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
@@ -54,9 +60,11 @@ export function useBundleAssetsTable({
     repo,
     branch,
     bundle,
-    after: queryVars.after,
-    before: queryVars.before,
+    dateAfter: queryVars.after,
+    dateBefore: queryVars.before,
     interval: queryVars.interval,
+    ordering,
+    orderingDirection,
     filters: {
       reportGroups: typeFilters,
       loadTypes: loadTypes,

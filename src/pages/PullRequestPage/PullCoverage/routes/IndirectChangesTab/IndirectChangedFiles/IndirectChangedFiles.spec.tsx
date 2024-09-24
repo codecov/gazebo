@@ -8,6 +8,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { PullComparison } from 'services/pull'
+import { UploadTypeEnum } from 'shared/utils/commit'
 
 import IndirectChangedFiles from './IndirectChangedFiles'
 
@@ -93,7 +94,8 @@ const mockPull = (overrideComparison?: PullComparison) => ({
             percentCovered: 78.33,
           },
           uploads: {
-            totalCount: 4,
+            totalCount: 0,
+            edges: [],
           },
         },
         updatestamp: '2024-01-12T12:56:18.912860',
@@ -103,6 +105,14 @@ const mockPull = (overrideComparison?: PullComparison) => ({
           commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
           uploads: {
             totalCount: 1,
+            edges: [
+              {
+                node: {
+                  uploadType: UploadTypeEnum.CARRIED_FORWARD,
+                  flags: ['flag3'],
+                },
+              },
+            ],
           },
         },
       },

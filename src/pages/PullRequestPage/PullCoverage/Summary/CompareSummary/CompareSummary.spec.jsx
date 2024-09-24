@@ -123,6 +123,32 @@ const createPullData = ({ overrideCommits, overrideComparison } = {}) => {
             },
             uploads: {
               totalCount: 4,
+              edges: [
+                {
+                  node: {
+                    uploadType: 'UPLOADED',
+                    flags: ['flag1', 'flag2'],
+                  },
+                },
+                {
+                  node: {
+                    uploadType: 'CARRIEDFORWARD',
+                    flags: ['flag3'],
+                  },
+                },
+                {
+                  node: {
+                    uploadType: 'UPLOADED',
+                    flags: null,
+                  },
+                },
+                {
+                  node: {
+                    uploadType: 'CARRIEDFORWARD',
+                    flags: ['flag4', 'flag5'],
+                  },
+                },
+              ],
             },
           },
           updatestamp: '2024-01-12T12:56:18.912860',
@@ -132,6 +158,14 @@ const createPullData = ({ overrideCommits, overrideComparison } = {}) => {
             commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
             uploads: {
               totalCount: 1,
+              edges: [
+                {
+                  node: {
+                    uploadType: 'UPLOADED',
+                    flags: ['flag1', 'flag2'],
+                  },
+                },
+              ],
             },
           },
         },

@@ -81,7 +81,6 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
     selection.head !== null
   ) {
     history.push(
-      // @ts-expect-error - useNavLinks needs to be typed
       bundlesLink.path({ branch: encodeURIComponent(selection?.name) })
     )
   }
@@ -104,7 +103,6 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
           onChange={(item: Branch) => {
             resetBundleSelect()
             history.push(
-              // @ts-expect-error - useNavLinks needs to be typed
               bundlesLink.path({ branch: encodeURIComponent(item?.name) })
             )
           }}

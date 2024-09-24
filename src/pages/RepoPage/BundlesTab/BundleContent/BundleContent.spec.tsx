@@ -95,32 +95,40 @@ const mockAssets = {
                   uncompress: 12,
                 },
               },
-              assets: [
-                {
-                  name: 'asset-1',
-                  extension: 'js',
-                  bundleData: {
-                    loadTime: {
-                      threeG: 2000,
-                      highSpeed: 2000,
-                    },
-                    size: {
-                      uncompress: 3000,
-                      gzip: 4000,
-                    },
-                  },
-                  measurements: {
-                    change: {
-                      size: {
-                        uncompress: 5,
+              assetsPaginated: {
+                edges: [
+                  {
+                    node: {
+                      name: 'asset-1',
+                      extension: 'js',
+                      bundleData: {
+                        loadTime: {
+                          threeG: 2000,
+                          highSpeed: 2000,
+                        },
+                        size: {
+                          uncompress: 3000,
+                          gzip: 4000,
+                        },
+                      },
+                      measurements: {
+                        change: {
+                          size: {
+                            uncompress: 5,
+                          },
+                        },
+                        measurements: [
+                          { timestamp: '2022-10-10T11:59:59', avg: 6 },
+                        ],
                       },
                     },
-                    measurements: [
-                      { timestamp: '2022-10-10T11:59:59', avg: 6 },
-                    ],
                   },
+                ],
+                pageInfo: {
+                  hasNextPage: false,
+                  endCursor: null,
                 },
-              ],
+              },
             },
           },
         },
