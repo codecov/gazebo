@@ -1,17 +1,31 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { renderToast } from 'services/toast'
-import { useRedirect } from 'shared/useRedirect'
 
 import { useStartTrial } from './useStartTrial'
 
-jest.mock('services/toast')
-jest.mock('shared/useRedirect')
-const mockedUseRedirect = useRedirect as jest.Mock
+const mocks = vi.hoisted(() => ({
+  useRedirect: vi.fn(),
+  renderToast: vi.fn(),
+}))
+
+vi.mock('services/toast', async () => {
+  const actual = await vi.importActual('services/toast')
+  return {
+    ...actual,
+    renderToast: mocks.renderToast,
+  }
+})
+
+vi.mock('shared/useRedirect', async () => {
+  const actual = await vi.importActual('shared/useRedirect')
+  return {
+    ...actual,
+    useRedirect: mocks.useRedirect,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,36 +63,34 @@ interface SetupArgs {
 
 describe('useStartTrial', () => {
   function setup({ isOtherError = false, isServerError = false }: SetupArgs) {
-    const variablesPassed = jest.fn()
-    const mockRenderToast = renderToast as jest.Mock
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
-    const hardRedirect = jest.fn()
-    mockedUseRedirect.mockImplementation((data) => ({
+    const variablesPassed = vi.fn()
+    const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
+    const hardRedirect = vi.fn()
+    mocks.useRedirect.mockImplementation((data) => ({
       hardRedirect: () => hardRedirect(data),
     }))
 
     server.use(
-      graphql.mutation('startTrial', (req, res, ctx) => {
-        variablesPassed(req.variables)
+      graphql.mutation('startTrial', (info) => {
+        variablesPassed(info.variables)
         if (isOtherError) {
-          return res(
-            ctx.status(200),
-            ctx.data({ startTrial: { error: { message: 'Other Error' } } })
-          )
+          return HttpResponse.json({
+            data: { startTrial: { error: { message: 'Other Error' } } },
+          })
         }
 
         if (isServerError) {
-          return res(
-            ctx.status(500),
-            ctx.errors([{ message: 'Internal Server Error' }])
+          return HttpResponse.json(
+            { errors: [{ message: 'Internal Server Error' }] },
+            { status: 500 }
           )
         }
 
-        return res(ctx.status(200), ctx.data({ startTrial: null }))
+        return HttpResponse.json({ data: { startTrial: null } })
       })
     )
 
-    return { variablesPassed, mockRenderToast, mockSetItem }
+    return { variablesPassed, mockSetItem }
   }
 
   describe('calling mutation', () => {
@@ -113,14 +125,14 @@ describe('useStartTrial', () => {
 
       describe('handled server error', () => {
         it('triggers render toast', async () => {
-          const { mockRenderToast } = setup({ isOtherError: true })
+          setup({ isOtherError: true })
 
           const { result } = renderHook(() => useStartTrial(), { wrapper })
 
           result.current.mutate({ owner: 'codecov' })
 
           await waitFor(() =>
-            expect(mockRenderToast).toHaveBeenCalledWith({
+            expect(mocks.renderToast).toHaveBeenCalledWith({
               type: 'error',
               title: 'Error starting trial',
               content:
@@ -135,14 +147,14 @@ describe('useStartTrial', () => {
 
       describe('internal server error', () => {
         it('triggers toast', async () => {
-          const { mockRenderToast } = setup({ isServerError: true })
+          setup({ isServerError: true })
 
           const { result } = renderHook(() => useStartTrial(), { wrapper })
 
           result.current.mutate({ owner: 'codecov' })
 
           await waitFor(() =>
-            expect(mockRenderToast).toHaveBeenCalledWith({
+            expect(mocks.renderToast).toHaveBeenCalledWith({
               type: 'error',
               title: 'Error starting trial',
               content:
