@@ -7,11 +7,7 @@ import '@testing-library/jest-dom/vitest'
 expect.extend(matchers)
 
 // Prevent timezone differences between local and CI/CD
-const setupTestGlobal = async () => {
-  process.env.TZ = 'UTC'
-}
-
-export default setupTestGlobal
+process.env.TZ = 'UTC'
 
 process.env.REACT_APP_ZOD_IGNORE_TESTS = 'true'
 
@@ -28,6 +24,15 @@ vi.mock('@sentry/react', async () => {
       increment: vi.fn(),
       set: vi.fn(),
     },
+  }
+})
+
+beforeAll(() => {
+  // This is a bit of a hack to get Vitest fake timers setup with userEvents properly
+  // GH Issue: https://github.com/testing-library/react-testing-library/issues/1197#issuecomment-1693824628
+  globalThis.jest = {
+    ...globalThis.jest,
+    advanceTimersByTime: vi.advanceTimersByTime.bind(vi),
   }
 })
 
