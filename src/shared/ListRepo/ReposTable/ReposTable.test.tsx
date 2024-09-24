@@ -7,8 +7,8 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -186,28 +186,27 @@ describe('ReposTable', () => {
     isCurrentUserPartOfOrg = true,
     tierValue = TierNames.PRO,
   }: SetupArgs) {
-    const reposForOwnerMock = jest.fn()
-    const myReposMock = jest.fn()
+    const reposForOwnerMock = vi.fn()
+    const myReposMock = vi.fn()
     server.use(
-      graphql.query('DetailOwner', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { isCurrentUserPartOfOrg } })
-        )
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({
+          data: { owner: { isCurrentUserPartOfOrg } },
+        })
       }),
-      graphql.query('ReposForOwner', async (req, res, ctx) => {
-        reposForOwnerMock(req.variables)
-        const body = await req.json()
-        const isPublic = body.variables.filters.isPublic
+      graphql.query('ReposForOwner', async (info) => {
+        reposForOwnerMock(info.variables)
+
+        const isPublic = info.variables.filters.isPublic
+
         let filteredEdges = edges
         if (isPublic) {
           filteredEdges = edges.filter((edge) => edge.node.private === false)
         }
 
-        if (req?.variables?.after === '2') {
-          return res(
-            ctx.status(200),
-            ctx.data({
+        if (info.variables?.after === '2') {
+          return HttpResponse.json({
+            data: {
               owner: {
                 repositories: {
                   edges: [
@@ -236,13 +235,12 @@ describe('ReposTable', () => {
                   },
                 },
               },
-            })
-          )
+            },
+          })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               repositories: {
                 edges: filteredEdges,
@@ -252,20 +250,21 @@ describe('ReposTable', () => {
                 },
               },
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: tierValue } } })
-        )
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({
+          data: { owner: { plan: { tierName: tierValue } } },
+        })
       }),
-      graphql.query('RepoConfig', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoConfig))
+      graphql.query('RepoConfig', (info) => {
+        return HttpResponse.json({
+          data: { owner: { repository: { repositoryConfig: mockRepoConfig } } },
+        })
       }),
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockUser))
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: mockUser })
       })
     )
     return { myReposMock, reposForOwnerMock }
@@ -332,13 +331,13 @@ describe('ReposTable', () => {
         })
 
         const repo1 = await screen.findByRole('link', {
-          name: 'globe-alt.svg owner1 / Repo name 1',
+          name: /owner1 \/ Repo name 1/,
         })
         const repo2 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 2',
+          name: /owner1 \/ Repo name 2/,
         })
         const repo3 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 3',
+          name: /owner1 \/ Repo name 3/,
         })
 
         expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1')
@@ -360,13 +359,13 @@ describe('ReposTable', () => {
         })
 
         const repo1 = await screen.findByRole('link', {
-          name: 'globe-alt.svg owner1 / Repo name 1',
+          name: /owner1 \/ Repo name 1/,
         })
         const repo2 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 2',
+          name: /owner1 \/ Repo name 2/,
         })
         const repo3 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 3',
+          name: /owner1 \/ Repo name 3/,
         })
 
         expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1/bundles')
@@ -498,17 +497,17 @@ describe('ReposTable', () => {
         })
 
         const repo1 = await screen.findByRole('link', {
-          name: 'globe-alt.svg Repo name 1',
+          name: /Repo name 1/,
         })
         expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1/new')
 
         const repo2 = await screen.findByRole('link', {
-          name: 'lock-closed.svg Repo name 2',
+          name: /Repo name 2/,
         })
         expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2/new')
 
         const repo3 = await screen.findByRole('link', {
-          name: 'lock-closed.svg Repo name 3',
+          name: /Repo name 3/,
         })
         expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3/new')
       })
@@ -857,7 +856,7 @@ describe('ReposTable', () => {
     beforeEach(() => {
       setup({})
       server.use(
-        graphql.query('ReposForOwner', async (req, res, ctx) => {
+        graphql.query('ReposForOwner', async (info) => {
           const demoRepo = [
             {
               node: {
@@ -938,17 +937,16 @@ describe('ReposTable', () => {
 
           let reposToReturn = myRepos.filter(
             (repo) =>
-              !req.variables.filters.term ||
-              repo.node.name.includes(req.variables.filters.term)
+              !info.variables.filters.term ||
+              repo.node.name.includes(info.variables.filters.term)
           )
 
-          if (req.variables.owner === 'codecov') {
+          if (info.variables.owner === 'codecov') {
             reposToReturn = demoRepo
           }
 
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 repositories: {
                   edges: reposToReturn,
@@ -958,8 +956,8 @@ describe('ReposTable', () => {
                   },
                 },
               },
-            })
-          )
+            },
+          })
         })
       )
     })
