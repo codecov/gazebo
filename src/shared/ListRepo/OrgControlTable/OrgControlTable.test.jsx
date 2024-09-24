@@ -5,7 +5,7 @@ import { orderingOptions } from 'services/repos'
 
 import OrgControlTable from './OrgControlTable'
 
-jest.mock('./RepoOrgNotFound', () => () => 'RepoOrgNotFound')
+vi.mock('./RepoOrgNotFound', () => ({ default: () => 'RepoOrgNotFound' }))
 
 describe('OrgControlTable', () => {
   function setup() {
@@ -17,9 +17,9 @@ describe('OrgControlTable', () => {
       render(
         <OrgControlTable
           sortItem={orderingOptions[0]}
-          setSortItem={jest.fn()}
-          setRepoDisplay={jest.fn()}
-          setSearchValue={jest.fn()}
+          setSortItem={vi.fn()}
+          setRepoDisplay={vi.fn()}
+          setSearchValue={vi.fn()}
           searchValue=""
           canRefetch={true}
           repoDisplay="Configured"
@@ -41,14 +41,14 @@ describe('OrgControlTable', () => {
     describe('when clicking on "Not Configured" button', () => {
       it('calls setRepoDisplay with false', async () => {
         const { user } = setup()
-        const setRepoDisplay = jest.fn()
+        const setRepoDisplay = vi.fn()
         render(
           <OrgControlTable
             sortItem={orderingOptions[0]}
-            setSortItem={jest.fn()}
+            setSortItem={vi.fn()}
             repoDisplay="All"
             setRepoDisplay={setRepoDisplay}
-            setSearchValue={jest.fn()}
+            setSearchValue={vi.fn()}
             searchValue=""
             canRefetch={true}
           />
@@ -69,9 +69,9 @@ describe('OrgControlTable', () => {
       render(
         <OrgControlTable
           sortItem={orderingOptions[0]}
-          setSortItem={jest.fn()}
-          setRepoDisplay={jest.fn()}
-          setSearchValue={jest.fn()}
+          setSortItem={vi.fn()}
+          setRepoDisplay={vi.fn()}
+          setSearchValue={vi.fn()}
           searchValue=""
           canRefetch={true}
           repoDisplay="Not Configured"
@@ -93,14 +93,14 @@ describe('OrgControlTable', () => {
     describe('when clicking on "Configured" button', () => {
       it('calls setActive with false', async () => {
         const { user } = setup()
-        const setRepoDisplay = jest.fn()
+        const setRepoDisplay = vi.fn()
         render(
           <OrgControlTable
             sortItem={orderingOptions[0]}
-            setSortItem={jest.fn()}
+            setSortItem={vi.fn()}
             repoDisplay="All"
             setRepoDisplay={setRepoDisplay}
-            setSearchValue={jest.fn()}
+            setSearchValue={vi.fn()}
             searchValue=""
             canRefetch={true}
           />
@@ -121,13 +121,13 @@ describe('OrgControlTable', () => {
   describe('when typing in the search', () => {
     it(`doesn't call setSearchValue yet`, async () => {
       const { user } = setup()
-      const setSearchValue = jest.fn()
+      const setSearchValue = vi.fn()
       render(
         <OrgControlTable
           sortItem={orderingOptions[0]}
-          setSortItem={jest.fn()}
+          setSortItem={vi.fn()}
           repoDisplay="All"
-          setRepoDisplay={jest.fn()}
+          setRepoDisplay={vi.fn()}
           setSearchValue={setSearchValue}
           searchValue=""
           canRefetch={true}
@@ -145,13 +145,13 @@ describe('OrgControlTable', () => {
     describe('after waiting some time', () => {
       it('calls setSearchValue', async () => {
         const { user } = setup()
-        const setSearchValue = jest.fn()
+        const setSearchValue = vi.fn()
         render(
           <OrgControlTable
             sortItem={orderingOptions[0]}
-            setSortItem={jest.fn()}
+            setSortItem={vi.fn()}
             repoDisplay="All"
-            setRepoDisplay={jest.fn()}
+            setRepoDisplay={vi.fn()}
             setSearchValue={setSearchValue}
             searchValue=""
             canRefetch={true}
@@ -173,10 +173,10 @@ describe('OrgControlTable', () => {
       render(
         <OrgControlTable
           sortItem={orderingOptions[0]}
-          setSortItem={jest.fn()}
+          setSortItem={vi.fn()}
           repoDisplay="All"
-          setRepoDisplay={jest.fn()}
-          setSearchValue={jest.fn()}
+          setRepoDisplay={vi.fn()}
+          setSearchValue={vi.fn()}
           searchValue=""
           canRefetch={true}
         />
@@ -190,10 +190,10 @@ describe('OrgControlTable', () => {
       render(
         <OrgControlTable
           sortItem={orderingOptions[0]}
-          setSortItem={jest.fn()}
+          setSortItem={vi.fn()}
           repoDisplay="All"
-          setRepoDisplay={jest.fn()}
-          setSearchValue={jest.fn()}
+          setRepoDisplay={vi.fn()}
+          setSearchValue={vi.fn()}
           searchValue=""
           canRefetch={false}
         />
@@ -208,10 +208,10 @@ describe('OrgControlTable', () => {
       render(
         <OrgControlTable
           sortItem={orderingOptions[0]}
-          setSortItem={jest.fn()}
+          setSortItem={vi.fn()}
           repoDisplay="All"
-          setRepoDisplay={jest.fn()}
-          setSearchValue={jest.fn()}
+          setRepoDisplay={vi.fn()}
+          setSearchValue={vi.fn()}
           searchValue=""
           canRefetch={false}
           showTeamRepos={true}
