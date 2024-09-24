@@ -1,6 +1,6 @@
 import FailedTestsTable from './FailedTestsTable'
 import { MetricsSection } from './MetricsSection'
-import SelectorSection from './SelectorSection/SelectorSection'
+import { SelectorSection } from './SelectorSection'
 
 function FailedTestsPage() {
   return (
