@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { useTier } from './useTier'
 
@@ -52,13 +52,13 @@ describe('useTier', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
+      graphql.query('OwnerTier', (info) => {
         if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else {
-          return res(ctx.status(200), ctx.data(mockOwnerTier))
+          return HttpResponse.json({ data: mockOwnerTier })
         }
       })
     )
@@ -103,11 +103,11 @@ describe('useTier', () => {
 
     describe('unsuccessful parse of zod schema', () => {
       beforeEach(() => {
-        jest.spyOn(console, 'error')
+        vi.spyOn(console, 'error').mockImplementation(() => {})
       })
 
       afterEach(() => {
-        jest.resetAllMocks()
+        vi.resetAllMocks()
       })
 
       it('throws a 404', async () => {
