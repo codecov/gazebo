@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
@@ -10,11 +10,23 @@ import { ActiveContext } from 'shared/context'
 
 import ListRepo from './ListRepo'
 
-jest.mock('shared/featureFlags')
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
 
-jest.mock('./OrgControlTable/RepoOrgNotFound', () => () => 'RepoOrgNotFound')
-jest.mock('./ReposTable', () => () => 'ReposTable')
-jest.mock('./ReposTableTeam', () => () => 'ReposTableTeam.tsx')
+vi.mock('shared/featureFlags', async () => {
+  const original = await vi.importActual('shared/featureFlags')
+  return {
+    ...original,
+    useFlags: mocks.useFlags,
+  }
+})
+
+vi.mock('./OrgControlTable/RepoOrgNotFound', () => ({
+  default: () => 'RepoOrgNotFound',
+}))
+vi.mock('./ReposTable', () => ({ default: () => 'ReposTable' }))
+vi.mock('./ReposTableTeam', () => ({ default: () => 'ReposTableTeam.tsx' }))
 
 const server = setupServer()
 
@@ -22,10 +34,12 @@ beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
   console.error = () => {}
 })
+
 beforeEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -80,29 +94,22 @@ describe('ListRepo', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: tierValue } } })
-        )
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({
+          data: { owner: { plan: { tierName: tierValue } } },
+        })
+      }),
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: me })
       })
-    )
-
-    server.use(
-      graphql.query('CurrentUser', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(me))
-      )
     )
 
     return { user, me }
   }
 
   describe('renders', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders the children', () => {
+      setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper(),
       })
@@ -111,6 +118,7 @@ describe('ListRepo', () => {
     })
 
     it('renders the repo table', () => {
+      setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper(),
       })
@@ -120,11 +128,8 @@ describe('ListRepo', () => {
   })
 
   describe('reads URL parameters', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('reads search parameter from URL', () => {
+      setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({ url: '?search=thisisaquery' }),
       })
@@ -222,11 +227,8 @@ describe('ListRepo', () => {
   })
 
   describe('when rendered for team tier', () => {
-    beforeEach(() => {
-      setup({ tierValue: TierNames.TEAM })
-    })
-
     it('renders the team table', async () => {
+      setup({ tierValue: TierNames.TEAM })
       render(<ListRepo canRefetch />, {
         wrapper: wrapper(),
       })
