@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
-import React from 'react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { MockInstance } from 'vitest'
 
 import { useRepoConfig } from './useRepoConfig'
 
@@ -23,12 +23,12 @@ const mockRepoConfig = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -75,16 +75,15 @@ describe('useRepoConfig', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('RepoConfig', (req, res, ctx) => {
+      graphql.query('RepoConfig', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
-        } else {
-          return res(ctx.status(200), ctx.data(mockRepoConfig))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }
+        return HttpResponse.json({ data: mockRepoConfig })
       })
     )
   }
@@ -102,8 +101,6 @@ describe('useRepoConfig', () => {
             }),
           { wrapper }
         )
-
-        await waitFor(() => result.current.isSuccess)
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
@@ -129,8 +126,6 @@ describe('useRepoConfig', () => {
           { wrapper }
         )
 
-        await waitFor(() => result.current.isSuccess)
-
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
             indicationRange: { lowerRange: 60, upperRange: 80 },
@@ -141,15 +136,17 @@ describe('useRepoConfig', () => {
   })
 
   describe('hook errors', () => {
+    let consoleSpy: MockInstance
     beforeAll(() => {
-      console.error = () => {}
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
+
     afterAll(() => {
-      jest.resetAllMocks()
+      consoleSpy.mockRestore()
     })
+
     it('can return unsuccessful parse error', async () => {
       setup({ isUnsuccessfulParseError: true })
-
       const { result } = renderHook(
         () =>
           useRepoConfig({
@@ -163,7 +160,6 @@ describe('useRepoConfig', () => {
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
@@ -172,9 +168,9 @@ describe('useRepoConfig', () => {
         )
       )
     })
+
     it('can return owner not activated error', async () => {
       setup({ isOwnerNotActivatedError: true })
-
       const { result } = renderHook(
         () =>
           useRepoConfig({
@@ -188,7 +184,6 @@ describe('useRepoConfig', () => {
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
@@ -199,7 +194,6 @@ describe('useRepoConfig', () => {
     })
     it('can return not found error', async () => {
       setup({ isNotFoundError: true })
-
       const { result } = renderHook(
         () =>
           useRepoConfig({
@@ -213,7 +207,6 @@ describe('useRepoConfig', () => {
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
