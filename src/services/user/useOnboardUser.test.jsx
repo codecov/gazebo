@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useOnboardUser } from './index'
@@ -28,41 +28,42 @@ const wrapper =
   )
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useOnboardUser', () => {
   function setup() {
     server.use(
-      graphql.mutation('OnboardUser', (req, res, ctx) => {
+      graphql.mutation('OnboardUser', (info) => {
         const newUser = {
           ...user,
           onboardingCompleted: true,
         }
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             onboardUser: {
               me: newUser,
             },
-          })
-        )
+          },
+        })
       })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     describe('when calling the mutation', () => {
       it('returns success', async () => {
+        setup()
         const { result } = renderHook(() => useOnboardUser(), {
           wrapper: wrapper(),
         })
@@ -73,6 +74,7 @@ describe('useOnboardUser', () => {
       })
 
       it('updates the local cache', async () => {
+        setup()
         const { result } = renderHook(() => useOnboardUser(), {
           wrapper: wrapper(),
         })
@@ -92,20 +94,12 @@ describe('useOnboardUser', () => {
   })
 
   describe('when called with opts', () => {
-    const onSuccessFn = jest.fn()
-    beforeEach(() => {
-      setup()
-    })
-
     it('returns onSuccess from opts', async () => {
+      setup()
+      const onSuccessFn = jest.fn()
       const { result } = renderHook(
-        () =>
-          useOnboardUser({
-            onSuccess: onSuccessFn,
-          }),
-        {
-          wrapper: wrapper(),
-        }
+        () => useOnboardUser({ onSuccess: onSuccessFn }),
+        { wrapper: wrapper() }
       )
 
       result.current.mutate({})
