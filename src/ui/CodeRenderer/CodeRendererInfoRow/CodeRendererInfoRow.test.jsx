@@ -2,18 +2,17 @@ import { render, screen } from '@testing-library/react'
 
 import CodeRendererInfoRow from './CodeRendererInfoRow'
 
-//TODO: Almost there, missing the usenavlinks part
+//TODO: Almost there, missing the useNavLinks part
 describe('CodeRendererInfoRow', () => {
-  function setup(props, content) {
-    render(<CodeRendererInfoRow {...props}>{content}</CodeRendererInfoRow>)
-  }
-
   describe('when rendered with unexpected changes', () => {
-    beforeEach(() => {
-      setup({}, <span>This is some content</span>)
-    })
-
     it('renders contents', () => {
+      render(
+        <CodeRendererInfoRow>
+          {' '}
+          <span>This is some content</span>
+        </CodeRendererInfoRow>
+      )
+
       expect(screen.getByText(/This is some content/)).toBeInTheDocument()
     })
   })

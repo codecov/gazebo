@@ -4,8 +4,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useScrollToLine } from './useScrollToLine'
 
-const mockScrollIntoViewMock = jest.fn()
-const mockScrollTo = jest.fn()
+const mockScrollIntoViewMock = vi.fn()
+const mockScrollTo = vi.fn()
 
 const createIdString = ({ path, number }) => `#${path}-L${number}`
 
@@ -30,7 +30,7 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-class ResizeObserver {
+class ResizeObserverMock {
   callback = null
 
   constructor(callback) {
@@ -48,36 +48,41 @@ class ResizeObserver {
   }
 }
 
-global.window.ResizeObserver = ResizeObserver
+global.window.ResizeObserver = ResizeObserverMock
+
+const mocks = vi.hoisted(() => ({
+  useRef: vi.fn().mockImplementation(() => ({ current: false })),
+}))
+
+vi.mock('react', async () => {
+  const original = await vi.importActual('react')
+
+  return {
+    ...original,
+    useRef: mocks.useRef,
+  }
+})
 
 describe('useScrollToLine', () => {
-  let useRefSpy
-
   beforeEach(() => {
-    useRefSpy = jest
-      .spyOn(React, 'useRef')
-      .mockImplementationOnce(() => ({
-        current: { scrollIntoView: mockScrollIntoViewMock },
-      }))
-      .mockImplementation(() => ({ current: false }))
-
     Object.defineProperty(global.window, 'scrollTo', { value: mockScrollTo })
-    // Object.defineProperty(global.window.ResizeObserver, 'ResizeObserver', {
-    //   value: mockResizeObserver,
-    // })
   })
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('stickyPadding is not set', () => {
     it('calls scrollIntoView on load', async () => {
+      mocks.useRef.mockImplementation(() => ({
+        current: { scrollIntoView: mockScrollIntoViewMock },
+      }))
+
       renderHook(() => useScrollToLine({ number: 1, path: 'src/file.js' }), {
         wrapper,
       })
 
-      expect(useRefSpy).toHaveBeenCalled()
+      expect(mocks.useRef).toHaveBeenCalled()
       expect(mockScrollIntoViewMock).toHaveBeenCalled()
       expect(mockScrollIntoViewMock).toHaveBeenCalledWith({
         behavior: 'smooth',
@@ -108,25 +113,29 @@ describe('useScrollToLine', () => {
     })
 
     describe('head is passed to hook', () => {
-      const { result } = renderHook(
-        () => useScrollToLine({ number: 1, path: 'cool-hash', head: true }),
-        {
-          wrapper,
-        }
-      )
+      it('sets head hash', () => {
+        const { result } = renderHook(
+          () => useScrollToLine({ number: 1, path: 'cool-hash', head: true }),
+          {
+            wrapper,
+          }
+        )
 
-      expect(result.current.idString).toBe('#cool-hash-R1')
+        expect(result.current.idString).toBe('#cool-hash-R1')
+      })
     })
 
     describe('base is passed to hook', () => {
-      const { result } = renderHook(
-        () => useScrollToLine({ number: 1, path: 'cool-hash', base: true }),
-        {
-          wrapper,
-        }
-      )
+      it('sets base hash', () => {
+        const { result } = renderHook(
+          () => useScrollToLine({ number: 1, path: 'cool-hash', base: true }),
+          {
+            wrapper,
+          }
+        )
 
-      expect(result.current.idString).toBe('#cool-hash-L1')
+        expect(result.current.idString).toBe('#cool-hash-L1')
+      })
     })
 
     describe('testing on click handler', () => {
