@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event'
 
 import { ToggleElement } from './ToggleElement'
 
-jest.spyOn(window.localStorage.__proto__, 'setItem')
-window.localStorage.__proto__.setItem = jest.fn()
+vi.spyOn(window.localStorage.__proto__, 'setItem')
+window.localStorage.__proto__.setItem = vi.fn()
 
 describe('ToggleElement', () => {
   function setup() {

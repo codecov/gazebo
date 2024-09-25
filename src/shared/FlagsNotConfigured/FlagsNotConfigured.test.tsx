@@ -4,13 +4,13 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FlagsNotConfigured from './FlagsNotConfigured'
 
-describe('FlagsNotConfigured', () => {
-  const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-    <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
-      <Route path="/:provider/:owner/:repo/flags">{children}</Route>
-    </MemoryRouter>
-  )
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
+    <Route path="/:provider/:owner/:repo/flags">{children}</Route>
+  </MemoryRouter>
+)
 
+describe('FlagsNotConfigured', () => {
   describe('when rendered', () => {
     it('shows message', () => {
       render(<FlagsNotConfigured />, { wrapper })
