@@ -48,6 +48,7 @@ module.exports = {
   },
   jest: {
     configure: {
+      modulePathIgnorePatterns: ['.*.test.*'],
       moduleNameMapper: {
         '^layouts/(.*)$': '<rootDir>/src/layouts/$1',
         '^ui/(.*)$': '<rootDir>/src/ui/$1',
