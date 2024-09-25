@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import { User, useUser } from './useUser'
 
@@ -70,33 +71,32 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   )
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useUser', () => {
   function setup(userData: User | {}) {
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(userData))
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: userData })
       })
     )
   }
 
   describe('when query resolves', () => {
     describe('there is user data', () => {
-      beforeEach(() => {
-        const spy = jest.spyOn(console, 'error')
-        spy.mockImplementation(jest.fn())
-
-        setup(user)
-      })
-
       it('returns the user', async () => {
+        setup(user)
         const { result } = renderHook(() => useUser(), {
           wrapper: wrapper(),
         })
@@ -106,14 +106,17 @@ describe('useUser', () => {
     })
 
     describe('there is no user data', () => {
-      beforeEach(() => {
-        const spy = jest.spyOn(console, 'error')
-        spy.mockImplementation(jest.fn())
+      let consoleSpy: MockInstance
+      beforeAll(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
 
-        setup(nullUser)
+      afterAll(() => {
+        consoleSpy.mockRestore()
       })
 
       it('returns the user', async () => {
+        setup(nullUser)
         const { result } = renderHook(() => useUser(), {
           wrapper: wrapper(),
         })
@@ -123,14 +126,17 @@ describe('useUser', () => {
     })
 
     describe('the response is bad', () => {
-      beforeEach(() => {
-        const spy = jest.spyOn(console, 'error')
-        spy.mockImplementation(jest.fn())
+      let consoleSpy: MockInstance
+      beforeAll(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
 
-        setup(badResponse)
+      afterAll(() => {
+        consoleSpy.mockRestore()
       })
 
       it('returns 404 failed to parse', async () => {
+        setup(badResponse)
         const { result } = renderHook(() => useUser(), {
           wrapper: wrapper(),
         })
