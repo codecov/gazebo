@@ -48,6 +48,7 @@ export function variantToIcon(
           variant="outline"
           size="md"
           name={customIconName ?? 'xCircle'}
+          label={customIconName ?? 'xCircle'}
           data-testid="error"
           className={cn('stroke-ds-primary-red', className)}
         />
@@ -58,6 +59,7 @@ export function variantToIcon(
           variant="outline"
           size="md"
           name={customIconName ?? 'informationCircle'}
+          label={customIconName ?? 'informationCircle'}
           data-testid="info"
           className={cn('stroke-ds-blue-darker', className)}
         />
@@ -68,6 +70,7 @@ export function variantToIcon(
           variant="outline"
           size="md"
           name={customIconName ?? 'checkCircle'}
+          label={customIconName ?? 'checkCircle'}
           data-testid="success"
           className={cn('stroke-green-500', className)}
         />
@@ -78,6 +81,7 @@ export function variantToIcon(
           variant="outline"
           size="md"
           name={customIconName ?? 'exclamationTriangle'}
+          label={customIconName ?? 'exclamationTriangle'}
           data-testid="warn"
           className={cn('stroke-orange-500', className)}
         />
@@ -88,6 +92,7 @@ export function variantToIcon(
           variant="outline"
           size="md"
           name={customIconName ?? 'informationCircle'}
+          label={customIconName ?? 'informationCircle'}
           data-testid="default"
           className={cn('stroke-ds-blue-darker', className)}
         />
