@@ -1,15 +1,22 @@
+import { lazy } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
+import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 
 import GenerateOrgUploadToken from './GenerateOrgUploadToken'
 import RegenerateOrgUploadToken from './RegenerateOrgUploadToken'
 
+const TokenlessSection = lazy(() => import('./TokenlessSection'))
+
 function OrgUploadToken() {
   const { provider, owner } = useParams()
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
+  const { tokenlessSection: tokenlessSectionFlag } = useFlags({
+    tokenlessSection: false,
+  })
 
   return (
     <div className="flex flex-col gap-4 lg:w-3/4">
@@ -21,6 +28,7 @@ function OrgUploadToken() {
       </div>
       <hr />
       <div className="flex flex-col gap-6">
+        {tokenlessSectionFlag ? <TokenlessSection /> : null}
         <Banner>
           <h2 className="font-semibold">Sensitive credential</h2>
           <p>
