@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import { useCommit } from './index'
 
@@ -247,7 +248,7 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
-  jest.useRealTimers()
+  vi.useRealTimers()
   server.resetHandlers()
   queryClient.clear()
 })
@@ -273,27 +274,27 @@ describe('useCommit', () => {
     skipPolling = false,
   }: SetupArgs) {
     server.use(
-      graphql.query(`Commit`, (req, res, ctx) => {
+      graphql.query(`Commit`, (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else {
-          const dataToReturn = req.variables.isTeamPlan
+          const dataToReturn = info.variables.isTeamPlan
             ? dataReturnedTeam
             : dataReturned
-          return res(ctx.status(200), ctx.data(dataToReturn))
+          return HttpResponse.json({ data: dataToReturn })
         }
       }),
-      graphql.query(`CompareTotals`, (req, res, ctx) => {
+      graphql.query(`CompareTotals`, (info) => {
         if (skipPolling) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: {} })
         }
-        return res(ctx.status(200), ctx.data(compareDoneData))
+        return HttpResponse.json({ data: compareDoneData })
       })
     )
   }
@@ -496,12 +497,14 @@ describe('useCommit', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
+    let consoleSpy: MockInstance
+
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -531,12 +534,14 @@ describe('useCommit', () => {
   })
 
   describe('returns OwnerNotActivatedError __typename', () => {
+    let consoleSpy: MockInstance
+
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
@@ -566,12 +571,14 @@ describe('useCommit', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
+    let consoleSpy: MockInstance
+
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -607,16 +614,16 @@ describe('useCommit polling', () => {
   function setup() {
     nbCallCompare = 0
     server.use(
-      graphql.query(`Commit`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(dataReturned))
+      graphql.query(`Commit`, (info) => {
+        return HttpResponse.json({ data: dataReturned })
       }),
-      graphql.query(`CompareTotals`, (req, res, ctx) => {
+      graphql.query(`CompareTotals`, (info) => {
         nbCallCompare++
         // after 10 calls, the server returns that the commit is processed
         if (nbCallCompare < 1) {
-          return res(ctx.status(200), ctx.data(dataReturned))
+          return HttpResponse.json({ data: {} })
         }
-        return res(ctx.status(200), ctx.data(compareDoneData))
+        return HttpResponse.json({ data: compareDoneData })
       })
     )
   }
