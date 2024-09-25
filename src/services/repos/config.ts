@@ -29,7 +29,7 @@ export const orderingOptions = [
     ordering: 'NAME',
     direction: 'DESC',
   },
-]
+] as const
 
 export const nonActiveOrderingOptions = [
   {
@@ -42,14 +42,14 @@ export const nonActiveOrderingOptions = [
     ordering: 'NAME',
     direction: 'DESC',
   },
-]
+] as const
 
-export const OrderingDirection = Object.freeze({
+export const OrderingDirection = {
   DESC: 'DESC',
   ASC: 'ASC',
-})
+} as const
 
-export const TeamOrdering = Object.freeze({
+export const TeamOrdering = {
   COMMIT_DATE: 'COMMIT_DATE',
   NAME: 'NAME',
-})
+} as const
