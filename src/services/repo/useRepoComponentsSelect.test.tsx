@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import A from 'ui/A'
 
@@ -25,10 +26,18 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 )
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 const dataReturned = {
   owner: {
@@ -55,51 +64,46 @@ describe('RepoComponentsYamlSelector', () => {
     isNotFoundError = false,
   } = {}) {
     server.use(
-      graphql.query('RepoComponentsSelector', (req, res, ctx) => {
+      graphql.query('RepoComponentsSelector', (info) => {
         if (isSchemaInvalid) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({})
         }
 
         if (isOwnerActivationError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 repository: {
                   __typename: 'OwnerNotActivatedError',
                   message: 'Owner not activated',
                 },
               },
-            })
-          )
+            },
+          })
         }
 
         if (isNotFoundError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 repository: {
                   __typename: 'NotFoundError',
                   message: 'Repo not found',
                 },
               },
-            })
-          )
+            },
+          })
         }
 
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return HttpResponse.json({ data: dataReturned })
       })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     describe('when data is loaded', () => {
       it('returns the data', async () => {
+        setup()
         const { result } = renderHook(
           () =>
             useRepoComponentsSelect({
@@ -109,9 +113,6 @@ describe('RepoComponentsYamlSelector', () => {
             wrapper,
           }
         )
-
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
@@ -123,11 +124,16 @@ describe('RepoComponentsYamlSelector', () => {
   })
 
   describe('when the schema is invalid', () => {
-    beforeEach(() => {
-      setup({ isSchemaInvalid: true })
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
+    afterAll(() => {
+      consoleSpy.mockRestore()
+    })
     it('returns an error', async () => {
+      setup({ isSchemaInvalid: true })
       const { result } = renderHook(() => useRepoComponentsSelect(), {
         wrapper,
       })
@@ -143,11 +149,17 @@ describe('RepoComponentsYamlSelector', () => {
   })
 
   describe('when repo is not found', () => {
-    beforeEach(() => {
-      setup({ isNotFoundError: true })
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('returns an error', async () => {
+      setup({ isNotFoundError: true })
       const { result } = renderHook(() => useRepoComponentsSelect(), {
         wrapper,
       })
@@ -163,11 +175,17 @@ describe('RepoComponentsYamlSelector', () => {
   })
 
   describe('when owner is not activated', () => {
-    beforeEach(() => {
-      setup({ isOwnerActivationError: true })
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('returns an error', async () => {
+      setup({ isOwnerActivationError: true })
       const { result } = renderHook(() => useRepoComponentsSelect(), {
         wrapper,
       })
