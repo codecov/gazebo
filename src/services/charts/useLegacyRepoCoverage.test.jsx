@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { setupServer } from 'msw/node'
+import { setupServer } from 'msw2/node'
 
 import { repoCoverageHandler } from './mocks'
 
@@ -16,12 +16,18 @@ const wrapper = ({ children }) => (
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const exampleYearlyHookData = {
   coverage: [
