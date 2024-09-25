@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { useReposCoverageMeasurements } from './useReposCoverageMeasurements'
 
@@ -51,12 +51,12 @@ afterAll(() => {
 describe('useReposCoverageMeasurements', () => {
   function setup({ hasNoData = false }: { hasNoData: boolean }) {
     server.use(
-      graphql.query('GetReposCoverageMeasurements', (req, res, ctx) => {
+      graphql.query('GetReposCoverageMeasurements', (info) => {
         if (hasNoData) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: {} })
         }
 
-        return res(ctx.status(200), ctx.data(mockReposMeasurements))
+        return HttpResponse.json({ data: mockReposMeasurements })
       })
     )
   }
