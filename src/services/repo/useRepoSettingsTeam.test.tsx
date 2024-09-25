@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { MockInstance } from 'vitest'
 
 import { useRepoSettingsTeam } from './useRepoSettingsTeam'
 
@@ -21,13 +22,18 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 )
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const mockNotFoundError = {
   owner: {
@@ -72,13 +78,13 @@ describe('useRepoSettingsTeam', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+      graphql.query('GetRepoSettingsTeam', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockIncorrectResponse))
+          return HttpResponse.json({ data: mockIncorrectResponse })
         }
-        return res(ctx.status(200), ctx.data(mockResponse))
+        return HttpResponse.json({ data: mockResponse })
       })
     )
   }
@@ -94,9 +100,6 @@ describe('useRepoSettingsTeam', () => {
         const { result } = renderHook(() => useRepoSettingsTeam(), {
           wrapper,
         })
-
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
@@ -120,12 +123,21 @@ describe('useRepoSettingsTeam', () => {
   })
 
   describe('when failed to parse data', () => {
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
+    })
+
     it('returns a failed to parse error', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(() => useRepoSettingsTeam(), {
         wrapper,
       })
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
+
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
@@ -138,12 +150,21 @@ describe('useRepoSettingsTeam', () => {
   })
 
   describe('when data not found', () => {
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
+    })
+
     it('returns a not found error', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(() => useRepoSettingsTeam(), {
         wrapper,
       })
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
+
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
