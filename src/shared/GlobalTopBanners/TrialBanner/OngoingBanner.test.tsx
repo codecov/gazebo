@@ -13,8 +13,8 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 describe('OngoingBanner', () => {
   function setup() {
     const user = userEvent.setup()
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
-    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     return { user, mockGetItem, mockSetItem }
   }
@@ -68,7 +68,9 @@ describe('OngoingBanner', () => {
     it('renders dismiss button', () => {
       render(<OngoingBanner dateDiff={3} />, { wrapper })
 
-      const dismissBtn = screen.getByRole('button', { name: /x.svg/ })
+      const dismissBtn = screen.getByTestId(
+        'dismiss-global-top-ongoing-trial-banner'
+      )
       expect(dismissBtn).toBeInTheDocument()
     })
   })
@@ -80,7 +82,9 @@ describe('OngoingBanner', () => {
 
       mockGetItem.mockReturnValue(null)
 
-      const dismissBtn = screen.getByRole('button', { name: /x.svg/ })
+      const dismissBtn = screen.getByTestId(
+        'dismiss-global-top-ongoing-trial-banner'
+      )
       expect(dismissBtn).toBeInTheDocument()
       await user.click(dismissBtn)
 
@@ -98,7 +102,9 @@ describe('OngoingBanner', () => {
 
       mockGetItem.mockReturnValue(null)
 
-      const dismissBtn = screen.getByRole('button', { name: /x.svg/ })
+      const dismissBtn = screen.getByTestId(
+        'dismiss-global-top-ongoing-trial-banner'
+      )
       expect(dismissBtn).toBeInTheDocument()
       await user.click(dismissBtn)
 

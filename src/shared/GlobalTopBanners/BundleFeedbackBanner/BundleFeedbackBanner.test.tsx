@@ -1,14 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import BundleFeedbackBanner from './BundleFeedbackBanner'
 
-const mockOverview = {
+const mockOverview = (bundleAnalysisEnabled = true) => ({
   owner: {
     isCurrentUserActivated: true,
     repository: {
@@ -17,12 +17,12 @@ const mockOverview = {
       defaultBranch: 'main',
       oldestCommitAt: '2022-10-10T11:59:59',
       coverageEnabled: true,
-      bundleAnalysisEnabled: true,
+      bundleAnalysisEnabled,
       languages: ['typescript'],
       testAnalyticsEnabled: true,
     },
   },
-}
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -30,13 +30,19 @@ const queryClient = new QueryClient({
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
-  jest.resetAllMocks()
+  vi.resetAllMocks()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const wrapper =
   (initialEntries = ''): React.FC<React.PropsWithChildren> =>
@@ -50,15 +56,15 @@ const wrapper =
   )
 
 describe('BundleFeedbackBanner', () => {
-  function setup() {
+  function setup(bundleAnalysisEnabled = true) {
     const user = userEvent.setup()
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
-    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockOverview))
-      )
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockOverview(bundleAnalysisEnabled) })
+      })
     )
 
     return {
@@ -154,6 +160,7 @@ describe('BundleFeedbackBanner', () => {
 
   describe('user does not have BA enabled', () => {
     it('does not render banner', async () => {
+      setup(false)
       const { container } = render(<BundleFeedbackBanner />, {
         wrapper: wrapper('/gh/codecov/cool-repo'),
       })

@@ -6,20 +6,38 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useLocationParams } from 'services/navigation'
-
 import RequestInstallBanner from './RequestInstallBanner'
 
-jest.mock('services/navigation')
-jest.mock('config')
-jest.mock('shared/featureFlags')
-jest.mock('@sentry/react', () => {
-  const originalModule = jest.requireActual('@sentry/react')
+vi.mock('config')
+
+const mocks = vi.hoisted(() => ({
+  useLocationParams: vi.fn(),
+  useFlags: vi.fn(),
+  captureMessage: vi.fn(),
+}))
+
+vi.mock('services/navigation', async () => {
+  const originalModule = await vi.importActual('services/navigation')
+  return {
+    ...originalModule,
+    useLocationParams: mocks.useLocationParams,
+  }
+})
+vi.mock('shared/featureFlags', async () => {
+  const originalModule = await vi.importActual('shared/featureFlags')
+  return {
+    ...originalModule,
+    useFlags: mocks.useFlags,
+  }
+})
+vi.mock('@sentry/react', async () => {
+  const originalModule = await vi.importActual('@sentry/react')
   return {
     ...originalModule,
     metrics: {
+      // @ts-expect-error
       ...originalModule.metrics,
-      increment: jest.fn(),
+      increment: mocks.captureMessage,
     },
   }
 })
@@ -40,17 +58,18 @@ type SetupArgs = {
 }
 
 describe('RequestInstallBanner', () => {
-  afterAll(() => jest.restoreAllMocks())
+  afterAll(() => {
+    vi.restoreAllMocks()
+  })
 
   function setup({ setUpAction = 'request', isSelfHosted = false }: SetupArgs) {
     const user = userEvent.setup()
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
-    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     config.IS_SELF_HOSTED = isSelfHosted
 
-    // @ts-expect-error
-    useLocationParams.mockReturnValue({
+    mocks.useLocationParams.mockReturnValue({
       params: { setup_action: setUpAction },
     })
 
@@ -176,7 +195,7 @@ describe('RequestInstallBanner', () => {
 
       mockGetItem.mockReturnValue(null)
 
-      const dismissBtn = screen.getByRole('button', { name: /x.svg/ })
+      const dismissBtn = screen.getByTestId('dismiss-request-install-banner')
       expect(dismissBtn).toBeInTheDocument()
       await user.click(dismissBtn)
 
@@ -196,7 +215,7 @@ describe('RequestInstallBanner', () => {
 
       mockGetItem.mockReturnValue(null)
 
-      const dismissBtn = screen.getByRole('button', { name: /x.svg/ })
+      const dismissBtn = screen.getByTestId('dismiss-request-install-banner')
       expect(dismissBtn).toBeInTheDocument()
       await user.click(dismissBtn)
 

@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -56,7 +56,7 @@ beforeAll(() => server.listen())
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
-  jest.resetAllMocks()
+  vi.resetAllMocks()
 })
 afterAll(() => server.close())
 
@@ -73,16 +73,16 @@ const wrapper =
 describe('ProPlanFeedbackBanner', () => {
   function setup() {
     const user = userEvent.setup()
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
-    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockProTier))
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({ data: mockProTier })
       }),
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: mockTrialData }))
-      )
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({ data: mockTrialData })
+      })
     )
 
     return {

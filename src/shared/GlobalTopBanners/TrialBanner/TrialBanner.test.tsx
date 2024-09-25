@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -12,7 +12,7 @@ import { TrialStatuses } from 'services/account'
 
 import TrialBanner from './TrialBanner'
 
-jest.mock('config')
+vi.mock('config')
 
 const proPlanMonth = {
   marketingName: 'Pro Team',
@@ -121,7 +121,7 @@ describe('TrialBanner', () => {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('GetPlanData', (_, res, ctx) => {
+      graphql.query('GetPlanData', (info) => {
         let plan: any = basicPlan
 
         if (isTrialPlan) {
@@ -130,9 +130,8 @@ describe('TrialBanner', () => {
           plan = proPlanMonth
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
@@ -151,14 +150,13 @@ describe('TrialBanner', () => {
                 hasSeatsLeft: true,
               },
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('DetailOwner', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { isCurrentUserPartOfOrg } })
-        )
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({
+          data: { owner: { isCurrentUserPartOfOrg } },
+        })
       })
     )
 
@@ -169,16 +167,16 @@ describe('TrialBanner', () => {
 
   describe('owner is undefined', () => {
     beforeAll(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2021-01-01'))
     })
 
     describe('owner does not belong to org', () => {
       beforeAll(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+        vi.useFakeTimers().setSystemTime(new Date('2021-01-01'))
       })
 
       afterAll(() => {
-        jest.useRealTimers()
+        vi.useRealTimers()
       })
 
       it('renders nothing', async () => {
@@ -208,11 +206,11 @@ describe('TrialBanner', () => {
 
   describe('owner does not belong to org', () => {
     beforeAll(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2021-01-01'))
     })
 
     afterAll(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('renders nothing', async () => {
@@ -231,11 +229,11 @@ describe('TrialBanner', () => {
 
   describe('trial is ongoing', () => {
     beforeAll(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2021-01-01'))
     })
 
     afterAll(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     describe('date diff is greater than 4', () => {
@@ -261,7 +259,7 @@ describe('TrialBanner', () => {
 
     describe('date diff is less than 0', () => {
       beforeAll(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2021-01-02'))
+        vi.useFakeTimers().setSystemTime(new Date('2021-01-02'))
       })
 
       it('renders nothing', async () => {
@@ -286,7 +284,7 @@ describe('TrialBanner', () => {
 
     describe('date diff is 2 and user is on a plan page', () => {
       beforeAll(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2021-01-02'))
+        vi.useFakeTimers().setSystemTime(new Date('2021-01-02'))
       })
 
       it('renders nothing', async () => {
@@ -311,7 +309,7 @@ describe('TrialBanner', () => {
 
     describe('date diff is 2 and user is not on a plan page', () => {
       beforeAll(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2021-01-02'))
+        vi.useFakeTimers().setSystemTime(new Date('2021-01-02'))
       })
 
       it('renders the trial banner', async () => {
@@ -338,11 +336,11 @@ describe('TrialBanner', () => {
 
   describe('trial is expired', () => {
     beforeAll(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2021-01-01'))
     })
 
     afterAll(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     describe('user is on a free plan with one day expiry', () => {
@@ -366,11 +364,11 @@ describe('TrialBanner', () => {
 
     describe('date diff is greater than 4', () => {
       beforeAll(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+        vi.useFakeTimers().setSystemTime(new Date('2021-01-01'))
       })
 
       afterAll(() => {
-        jest.useRealTimers()
+        vi.useRealTimers()
       })
 
       it('renders nothing', async () => {
@@ -395,11 +393,11 @@ describe('TrialBanner', () => {
 
     describe('date diff is less than 0', () => {
       beforeAll(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2021-01-02'))
+        vi.useFakeTimers().setSystemTime(new Date('2021-01-02'))
       })
 
       afterAll(() => {
-        jest.useRealTimers()
+        vi.useRealTimers()
       })
 
       it('renders nothing', async () => {
@@ -462,11 +460,11 @@ describe('TrialBanner', () => {
 
   describe('running in self hosted mode', () => {
     beforeAll(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2021-01-01'))
     })
 
     afterAll(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('renders nothing', async () => {
