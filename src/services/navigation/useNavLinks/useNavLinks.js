@@ -60,6 +60,11 @@ export function useNavLinks() {
         `/analytics/${provider}/${owner}`,
       isExternalLink: false,
     },
+    codecovAI: {
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/codecovai/${provider}/${owner}`,
+      isExternalLink: false,
+    },
     repo: {
       path: (
         { provider = p, owner = o, repo = r } = {
