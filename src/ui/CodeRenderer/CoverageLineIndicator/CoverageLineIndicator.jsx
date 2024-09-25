@@ -19,7 +19,12 @@ function CoverageIcon({ coverage }) {
       })}
     >
       {coverage === LINE_STATE.UNCOVERED ? (
-        <Icon name="exclamationTriangle" size="sm" variant="outline" />
+        <Icon
+          name="exclamationTriangle"
+          label="exclamationTriangle"
+          size="sm"
+          variant="outline"
+        />
       ) : (
         <span data-testid="partial-icon">!</span>
       )}
