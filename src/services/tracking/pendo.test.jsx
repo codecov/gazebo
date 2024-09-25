@@ -102,7 +102,7 @@ describe('update pendo on owner change', () => {
   })
 })
 
-describe.only('update pendo when owner is not changed', () => {
+describe('update pendo when owner is not changed', () => {
   function setup() {
     const mockUpdateOptions = vi.fn()
     window.pendo = {
