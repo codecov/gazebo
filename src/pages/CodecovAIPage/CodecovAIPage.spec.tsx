@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -15,7 +16,6 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: true,
-      retry: false,
     },
   },
 })
@@ -45,7 +45,33 @@ afterAll(() => {
 })
 
 describe('CodecovAIPage', () => {
+  function setup(aiFeaturesEnabled = false) {
+    server.use(
+      graphql.query('GetCodecovAIAppInstallInfo', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              aiFeaturesEnabled,
+            },
+          })
+        )
+      }),
+      graphql.query('GetCodecovAIInstalledRepos', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              aiEnabledRepos: ['repo-1', 'repo-2'],
+            },
+          })
+        )
+      })
+    )
+  }
+
   beforeEach(() => {
+    setup()
     mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: true })
   })
 
@@ -74,7 +100,7 @@ describe('CodecovAIPage', () => {
 
   it('renders the install button', async () => {
     render(<CodecovAIPage />, { wrapper })
-    const buttonEl = screen.getByRole('link', { name: /Install Codecov AI/i })
+    const buttonEl = await screen.findByText(/Install Codecov AI/)
     expect(buttonEl).toBeInTheDocument()
   })
 
@@ -125,6 +151,29 @@ describe('CodecovAIPage', () => {
 
     const docLink = await screen.findByText(/Visit our guide/)
     expect(docLink).toBeInTheDocument()
+  })
+
+  describe('AI features are enabled and configured', () => {
+    beforeEach(() => {
+      setup(true)
+      mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: true })
+    })
+
+    it('does not render install link', () => {
+      setup(true)
+      render(<CodecovAIPage />, { wrapper })
+      const topSection = screen.queryByText(/Install Codecov AI/)
+      expect(topSection).not.toBeInTheDocument()
+    })
+
+    it('renders list of repos', async () => {
+      render(<CodecovAIPage />, { wrapper })
+
+      const repo1Link = await screen.findByText(/repo-1/)
+      expect(repo1Link).toBeInTheDocument()
+      const repo2Link = await screen.findByText(/repo-1/)
+      expect(repo2Link).toBeInTheDocument()
+    })
   })
 })
 

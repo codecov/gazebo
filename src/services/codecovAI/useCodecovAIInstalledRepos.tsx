@@ -7,7 +7,7 @@ import { NetworkErrorObject } from 'shared/api/helpers'
 const ResponseSchema = z.object({
   owner: z
     .object({
-      aiEnabledRepos: z.array(z.string().nullable()).nullable(),
+      aiEnabledRepos: z.array(z.string()).nullable(),
     })
     .nullable(),
 })

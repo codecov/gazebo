@@ -30,32 +30,24 @@ const columnHelper = createColumnHelper<{ name: string }>()
 
 function ConfiguredRepositories() {
   const { owner, provider } = useParams<URLParams>()
-
   const { data, isLoading } = useCodecovAIInstalledRepos({
     owner,
     provider,
   })
 
-  const [tempInstalledRepos, setTempInstalledRepos] = useState([
-    'gazebo',
-    'review-prompt-os',
-  ])
-
   const [isSortedAscending, setIsSortedAscending] = useState(true)
 
   const sortRepos = () => {
-    const nextIsSortedAscending = !isSortedAscending
-    const sortedRepos = [...tempInstalledRepos].sort((a, b) =>
-      nextIsSortedAscending ? a.localeCompare(b) : b.localeCompare(a)
-    )
-    setTempInstalledRepos(sortedRepos)
-    setIsSortedAscending(nextIsSortedAscending)
+    setIsSortedAscending(!isSortedAscending)
   }
 
-  const tableData = useMemo(
-    () => tempInstalledRepos.map((name) => ({ name })),
-    [tempInstalledRepos]
-  )
+  const tableData = useMemo(() => {
+    if (!data?.aiEnabledRepos) return []
+    const sortedRepos = [...data.aiEnabledRepos].sort((a, b) =>
+      isSortedAscending ? a.localeCompare(b) : b.localeCompare(a)
+    )
+    return sortedRepos.map((name) => ({ name }))
+  }, [data?.aiEnabledRepos, isSortedAscending])
 
   const columns = useMemo(
     () => [
@@ -65,12 +57,7 @@ function ConfiguredRepositories() {
           const repoName = info.getValue()
           const link = `/${provider}/${owner}/${repoName}`
           return (
-            <A
-              href={link}
-              to={undefined}
-              hook={undefined}
-              isExternal={undefined}
-            >
+            <A href={link} to={undefined} hook={undefined} isExternal={false}>
               {repoName}
             </A>
           )
@@ -86,8 +73,8 @@ function ConfiguredRepositories() {
     getCoreRowModel: getCoreRowModel(),
   })
 
-  //This should technically never happen, but render a fallback just in case
-  if (!data?.aiEnabledRepos || data.aiEnabledRepos.length === 0) {
+  // This should technically never happen, but render a fallback just in case
+  if (tableData.length === 0) {
     return <InstallCodecovAI />
   }
 
@@ -96,10 +83,10 @@ function ConfiguredRepositories() {
       <Card className="mb-0 border-b-0">
         <Card.Header className="border-b-0">
           <Card.Title size="base">
-            {tempInstalledRepos?.length} configured repositories
+            {tableData.length} configured repositories
           </Card.Title>
           <p>
-            To install more repos, please manage your Codecov AI app on Github.
+            To install more repos, please manage your Codecov AI app on GitHub.
             <br />
             To uninstall the app, please go to your GitHub Apps settings.
           </p>

@@ -42,7 +42,7 @@ const CodecovAIPage: React.FC = () => {
         </p>
       </section>
       <div className="flex flex-col gap-4 pt-2 lg:w-3/5">
-        {!installationData?.aiFeaturesEnabled ? (
+        {installationData?.aiFeaturesEnabled ? (
           <ConfiguredRepositories />
         ) : (
           <InstallCodecovAI />
