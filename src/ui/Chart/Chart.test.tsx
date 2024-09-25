@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import { Area, AreaChart } from 'recharts'
+import { Mock } from 'vitest'
 
 import {
   type ChartConfig,
@@ -16,11 +17,12 @@ declare global {
   }
 }
 
-jest.mock('recharts', () => {
-  const OriginalModule = jest.requireActual('recharts')
+vi.mock('recharts', async () => {
+  const OriginalModule = await vi.importActual('recharts')
   return {
     ...OriginalModule,
     ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
+      // @ts-expect-error - something is off with the import actual but this does exist, and this mock does work
       <OriginalModule.ResponsiveContainer width={800} height={800}>
         {children}
       </OriginalModule.ResponsiveContainer>
@@ -49,7 +51,7 @@ const chartConfig = {
 } satisfies ChartConfig
 
 describe('Chart', () => {
-  let resizeObserverMock: jest.Mock<any, any>
+  let resizeObserverMock: Mock
   let oldConsoleWarn = console.warn
 
   beforeEach(() => {
@@ -63,11 +65,11 @@ describe('Chart', () => {
      * This mock also allow us to use {@link notifyResizeObserverChange} to fire changes
      * from inside our test.
      */
-    resizeObserverMock = jest.fn().mockImplementation((callback) => {
+    resizeObserverMock = vi.fn().mockImplementation((callback) => {
       return {
-        observe: jest.fn(),
-        unobserve: jest.fn(),
-        disconnect: jest.fn(),
+        observe: vi.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
       }
     })
 
