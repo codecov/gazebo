@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
+import { type MockInstance } from 'vitest'
 
 import { useBranchHasCommits } from './useBranchHasCommits'
 
@@ -112,21 +113,21 @@ describe('useBranchHasCommits', () => {
     commitsIsNull = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBranchCommits', (req, res, ctx) => {
+      graphql.query('GetBranchCommits', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else if (hasNoCommits) {
-          return res(ctx.status(200), ctx.data(mockBranchHasNoCommits))
+          return HttpResponse.json({ data: mockBranchHasNoCommits })
         } else if (commitsIsNull) {
-          return res(ctx.status(200), ctx.data(mockCommitsIsNull))
+          return HttpResponse.json({ data: mockCommitsIsNull })
         } else {
-          return res(ctx.status(200), ctx.data(mockBranchHasCommits))
+          return HttpResponse.json({ data: mockBranchHasCommits })
         }
       })
     )
@@ -220,14 +221,14 @@ describe('useBranchHasCommits', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
+      let consoleSpy: MockInstance
 
       beforeEach(() => {
-        console.error = () => null
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
       })
 
       afterEach(() => {
-        console.error = oldConsoleError
+        consoleSpy.mockRestore()
       })
 
       it('throws a 404', async () => {
@@ -255,14 +256,14 @@ describe('useBranchHasCommits', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
+      let consoleSpy: MockInstance
 
       beforeEach(() => {
-        console.error = () => null
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
       })
 
       afterEach(() => {
-        console.error = oldConsoleError
+        consoleSpy.mockRestore()
       })
 
       it('throws a 403', async () => {
@@ -290,14 +291,14 @@ describe('useBranchHasCommits', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
+      let consoleSpy: MockInstance
 
       beforeEach(() => {
-        console.error = () => null
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
       })
 
       afterEach(() => {
-        console.error = oldConsoleError
+        consoleSpy.mockRestore()
       })
 
       it('throws a 404', async () => {
