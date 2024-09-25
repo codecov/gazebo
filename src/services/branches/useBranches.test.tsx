@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import { useBranches } from './useBranches'
 
@@ -85,20 +86,20 @@ describe('GetBranches', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBranches', (req, res, ctx) => {
+      graphql.query('GetBranches', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwnerData))
+          return HttpResponse.json({ data: mockNullOwnerData })
         }
 
-        const branchData = !!req.variables?.after ? branch2 : branch1
-        const hasNextPage = req.variables?.after ? false : true
-        const endCursor = req.variables?.after ? 'second' : 'first'
+        const branchData = !!info.variables?.after ? branch2 : branch1
+        const hasNextPage = info.variables?.after ? false : true
+        const endCursor = info.variables?.after ? 'second' : 'first'
 
         const queryData = {
           owner: {
@@ -119,8 +120,7 @@ describe('GetBranches', () => {
             },
           },
         }
-
-        return res(ctx.status(200), ctx.data(queryData))
+        return HttpResponse.json({ data: queryData })
       })
     )
   }
@@ -132,9 +132,7 @@ describe('GetBranches', () => {
           setup({})
           const { result } = renderHook(
             () => useBranches({ provider, owner, repo }),
-            {
-              wrapper,
-            }
+            { wrapper }
           )
 
           await waitFor(() => expect(result.current.isSuccess).toBe(true))
@@ -161,9 +159,7 @@ describe('GetBranches', () => {
           setup({})
           const { result } = renderHook(
             () => useBranches({ provider, owner, repo }),
-            {
-              wrapper,
-            }
+            { wrapper }
           )
 
           await waitFor(() => expect(result.current.status).toBe('success'))
@@ -201,9 +197,7 @@ describe('GetBranches', () => {
         setup({ isNullOwner: true })
         const { result } = renderHook(
           () => useBranches({ provider, owner, repo }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         await waitFor(() => expect(result.current.status).toBe('success'))
@@ -222,23 +216,21 @@ describe('GetBranches', () => {
   })
 
   describe('when __typename is NotFoundError', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () => useBranches({ provider, owner, repo }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -254,23 +246,21 @@ describe('GetBranches', () => {
   })
 
   describe('when __typename is OwnerNotActivatedError', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () => useBranches({ provider, owner, repo }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -286,23 +276,21 @@ describe('GetBranches', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () => useBranches({ provider, owner, repo }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
