@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { MockInstance } from 'vitest'
 
 import { useReposTeam } from './useReposTeam'
 
@@ -74,10 +75,8 @@ const repo4 = {
 }
 
 const server = setupServer()
-
 beforeAll(() => {
   server.listen()
-  jest.spyOn(global.console, 'error')
 })
 
 beforeEach(() => {
@@ -87,48 +86,33 @@ beforeEach(() => {
 
 afterAll(() => {
   server.close()
-  jest.resetAllMocks()
 })
 
 describe('useReposTeam', () => {
   function setup({ invalidResponse = false } = {}) {
     server.use(
-      graphql.query('GetReposTeam', (req, res, ctx) => {
+      graphql.query('GetReposTeam', (info) => {
         if (invalidResponse) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({})
         }
 
         const data = {
           owner: {
             isCurrentUserPartOfOrg: true,
             repositories: {
-              edges: req.variables.after
-                ? [
-                    {
-                      node: repo3,
-                    },
-                    {
-                      node: repo4,
-                    },
-                  ]
-                : [
-                    {
-                      node: repo1,
-                    },
-                    {
-                      node: repo2,
-                    },
-                  ],
+              edges: info.variables.after
+                ? [{ node: repo3 }, { node: repo4 }]
+                : [{ node: repo1 }, { node: repo2 }],
               pageInfo: {
-                hasNextPage: req.variables.after ? false : true,
-                endCursor: req.variables.after
+                hasNextPage: info.variables.after ? false : true,
+                endCursor: info.variables.after
                   ? 'aa'
                   : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
               },
             },
           },
         }
-        return res(ctx.status(200), ctx.data(data))
+        return HttpResponse.json({ data })
       })
     )
   }
@@ -137,14 +121,8 @@ describe('useReposTeam', () => {
     it('returns repositories', async () => {
       setup()
       const { result } = renderHook(
-        () =>
-          useReposTeam({
-            activated: true,
-            owner: 'codecov',
-          }),
-        {
-          wrapper,
-        }
+        () => useReposTeam({ activated: true, owner: 'codecov' }),
+        { wrapper }
       )
 
       await waitFor(() =>
@@ -169,24 +147,14 @@ describe('useReposTeam', () => {
     it('returns repositories of the user', async () => {
       setup()
       const { result } = renderHook(
-        () =>
-          useReposTeam({
-            owner: 'codecov',
-            activated: true,
-            first: 2,
-          }),
-        {
-          wrapper,
-        }
+        () => useReposTeam({ owner: 'codecov', activated: true, first: 2 }),
+        { wrapper }
       )
 
       await waitFor(() => result.current.isFetching)
       await waitFor(() => !result.current.isFetching)
 
       result.current.fetchNextPage()
-
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
 
       await waitFor(() =>
         expect(result.current.data).toEqual({
@@ -215,24 +183,27 @@ describe('useReposTeam', () => {
   })
 
   describe('error parsing request for owner', () => {
+    let consoleSpy: MockInstance
+
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
+    })
+
     it('throws an error', async () => {
       setup({ invalidResponse: true })
       const { result } = renderHook(
-        () =>
-          useReposTeam({
-            owner: 'codecov',
-            activated: true,
-            first: 2,
-          }),
-        {
-          wrapper,
-        }
+        () => useReposTeam({ owner: 'codecov', activated: true, first: 2 }),
+        { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-
-      expect(result.current.error).toEqual(
-        expect.objectContaining({ status: 404 })
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({ status: 404 })
+        )
       )
     })
   })
