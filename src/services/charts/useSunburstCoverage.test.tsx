@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useSunburstCoverage } from './index'
@@ -21,13 +21,18 @@ const wrapper =
   )
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
 afterEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const exampleResponse = [
   {
@@ -87,19 +92,17 @@ const filteredResponse = [
 describe('useSunburstCoverage', () => {
   beforeEach(() => {
     server.use(
-      rest.get(
-        '/internal/:provider/:owner/:repo/coverage/tree',
-        (req, res, ctx) => {
-          const flags = req.url.searchParams.getAll('flags')
-          const components = req.url.searchParams.getAll('components')
+      http.get('/internal/:provider/:owner/:repo/coverage/tree', (info) => {
+        const searchParams = new URL(info.request.url).searchParams
+        const flags = searchParams.getAll('flags')
+        const components = searchParams.getAll('components')
 
-          if (flags.length > 0 || components.length > 0) {
-            return res(ctx.status(200), ctx.json(filteredResponse))
-          } else {
-            return res(ctx.status(200), ctx.json(exampleResponse))
-          }
+        if (flags.length > 0 || components.length > 0) {
+          return HttpResponse.json(filteredResponse)
+        } else {
+          return HttpResponse.json(exampleResponse)
         }
-      )
+      })
     )
   })
 
