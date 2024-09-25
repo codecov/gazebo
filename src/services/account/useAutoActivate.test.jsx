@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAutoActivate } from './useAutoActivate'
@@ -23,12 +23,21 @@ const wrapper =
 const provider = 'gh'
 const owner = 'codecov'
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useAutoActivate', () => {
-  let onSuccess = jest.fn()
+  let onSuccess = vi.fn()
   const opts = {
     onSuccess,
   }
@@ -36,21 +45,18 @@ describe('useAutoActivate', () => {
   describe('options is set', () => {
     function setup() {
       server.use(
-        rest.patch(
+        http.patch(
           `/internal/${provider}/${owner}/account-details/`,
-          (req, res, ctx) => {
-            return res(ctx.status(200), ctx.json({}))
+          (info) => {
+            return HttpResponse.json({})
           }
         )
       )
     }
 
     describe('when called', () => {
-      beforeEach(() => {
-        setup()
-      })
-
       it('opts are passed through to react-query', async () => {
+        setup()
         const { result } = renderHook(
           () =>
             useAutoActivate({
@@ -58,9 +64,7 @@ describe('useAutoActivate', () => {
               owner,
               opts,
             }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         result.current.mutate(true)
@@ -69,6 +73,7 @@ describe('useAutoActivate', () => {
       })
 
       it('accountDetails cache unchanged', async () => {
+        setup()
         const { result } = renderHook(
           () =>
             useAutoActivate({
@@ -76,9 +81,7 @@ describe('useAutoActivate', () => {
               owner,
               opts,
             }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         result.current.mutate(true)
@@ -89,6 +92,7 @@ describe('useAutoActivate', () => {
       })
 
       it('users cache unchanged', async () => {
+        setup()
         const { result } = renderHook(
           () =>
             useAutoActivate({
@@ -96,9 +100,7 @@ describe('useAutoActivate', () => {
               owner,
               opts,
             }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         result.current.mutate(true)
@@ -111,30 +113,25 @@ describe('useAutoActivate', () => {
   describe('opts is not set', () => {
     function setup() {
       server.use(
-        rest.patch(
+        http.patch(
           `/internal/${provider}/${owner}/account-details/`,
-          (req, res, ctx) => {
-            return res(ctx.status(200), ctx.json({}))
+          (info) => {
+            return HttpResponse.json({})
           }
         )
       )
     }
 
     describe('when called', () => {
-      beforeEach(() => {
-        setup()
-      })
-
       it('accountDetails cache unchanged', async () => {
+        setup()
         const { result } = renderHook(
           () =>
             useAutoActivate({
               provider,
               owner,
             }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         result.current.mutate(true)
@@ -145,15 +142,14 @@ describe('useAutoActivate', () => {
       })
 
       it('users cache unchanged', async () => {
+        setup()
         const { result } = renderHook(
           () =>
             useAutoActivate({
               provider,
               owner,
             }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         result.current.mutate(true)
