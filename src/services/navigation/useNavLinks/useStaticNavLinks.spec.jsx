@@ -5,7 +5,7 @@ import config from 'config'
 
 import { useStaticNavLinks } from './useStaticNavLinks'
 
-jest.mock('config')
+vi.mock('config')
 
 describe('useStaticNavLinks', () => {
   const view = renderHook(() => useStaticNavLinks(), {
@@ -16,8 +16,14 @@ describe('useStaticNavLinks', () => {
     ),
   })
   describe('cloud', () => {
-    beforeAll(() => jest.requireActual('config'))
-    afterAll(() => jest.mock('config'))
+    beforeAll(async () => {
+      await vi.importActual('config')
+    })
+
+    afterAll(() => {
+      vi.mock('config')
+    })
+
     const links = view.result.current
 
     describe.each`
