@@ -4,11 +4,18 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import DiffLine from './DiffLine'
 
-import { useScrollToLine } from '../hooks/useScrollToLine'
+const mocks = vi.hoisted(() => ({
+  useScrollToLine: vi.fn(),
+}))
 
-jest.mock('../hooks/useScrollToLine')
+vi.mock('../hooks/useScrollToLine', async () => {
+  const original = await vi.importActual('../hooks/useScrollToLine')
 
-const mockedScrollToLine = useScrollToLine as jest.Mock
+  return {
+    ...original,
+    useScrollToLine: mocks.useScrollToLine,
+  }
+})
 
 const content = [
   { types: ['plain'], content: '      ' },
@@ -40,8 +47,8 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 
 describe('DiffLine', () => {
   function setup(targeted = false) {
-    const mockHandleClick = jest.fn()
-    mockedScrollToLine.mockImplementation(() => ({
+    const mockHandleClick = vi.fn()
+    mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: mockHandleClick,
       targeted,
@@ -199,8 +206,8 @@ describe('DiffLine', () => {
         { wrapper }
       )
 
-      const triangles = screen.getAllByText('exclamation-triangle.svg')
-      expect(triangles.length).toBe(1)
+      const triangles = screen.getAllByTestId('exclamationTriangle')
+      expect(triangles).toHaveLength(1)
     })
 
     it('renders hit counter when hit count is passed', () => {

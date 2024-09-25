@@ -6,11 +6,20 @@ import { LINE_TYPE } from 'shared/utils/fileviewer'
 
 import SingleLine from './SingleLine'
 
-import { useScrollToLine } from '../hooks/useScrollToLine'
-
 const createIdString = ({ path, number }) => `#${path}-L${number}`
 
-jest.mock('../hooks/useScrollToLine')
+const mocks = vi.hoisted(() => ({
+  useScrollToLine: vi.fn(),
+}))
+
+vi.mock('../hooks/useScrollToLine', async () => {
+  const original = await vi.importActual('../hooks/useScrollToLine')
+
+  return {
+    ...original,
+    useScrollToLine: mocks.useScrollToLine,
+  }
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter
@@ -32,9 +41,9 @@ const wrapper = ({ children }) => (
 describe('SingleLine', () => {
   function setup(targeted = false) {
     const user = userEvent.setup()
-    const mockHandleClick = jest.fn()
+    const mockHandleClick = vi.fn()
 
-    useScrollToLine.mockImplementation(() => ({
+    mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: mockHandleClick,
       targeted,
@@ -116,8 +125,8 @@ describe('SingleLine', () => {
         { wrapper }
       )
 
-      const missedIcons = screen.getAllByText('exclamation-triangle.svg')
-      expect(missedIcons.length).toBe(1)
+      const missedIcons = screen.getAllByTestId('exclamationTriangle')
+      expect(missedIcons).toHaveLength(1)
     })
   })
 
