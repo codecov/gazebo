@@ -1,17 +1,27 @@
-import cs from 'classnames'
 import PropTypes from 'prop-types'
 
+import { cn } from 'shared/utils/cn'
 import { CopyClipboard } from 'ui/CopyClipboard'
 
-const TokenWrapper = ({ token, onClick, truncate = false, encodedToken }) => {
+interface TokenWrapperProps {
+  token: string
+  onClick?: React.ComponentProps<typeof CopyClipboard>['onClick']
+  truncate?: boolean
+  encodedToken?: string
+}
+
+const TokenWrapper = ({
+  token,
+  onClick,
+  truncate = false,
+  encodedToken,
+}: TokenWrapperProps) => {
   return (
     <div className="flex flex-row gap-1 overflow-auto">
       <pre
-        className={cs(
-          'font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto whitespace-pre-line',
-          {
-            'line-clamp-1': truncate,
-          }
+        className={cn(
+          'h-auto whitespace-pre-line bg-ds-gray-secondary font-mono text-ds-gray-octonary',
+          truncate && 'line-clamp-1'
         )}
       >
         {encodedToken ? encodedToken : token}
