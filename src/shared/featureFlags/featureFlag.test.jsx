@@ -1,73 +1,101 @@
 /* eslint-disable no-restricted-imports */
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
-import {
-  useLDClient,
-  useFlags as useLDFlags,
-  withLDProvider,
-} from 'launchdarkly-react-client-sdk'
 
 import config from 'config'
 
 import { useFlags, useIdentifyUser, withFeatureFlagProvider } from './index'
 
-jest.mock('launchdarkly-react-client-sdk', () => ({
-  __esModule: true,
-  withLDProvider: jest.fn(),
-  useLDClient: jest.fn(),
-  useFlags: jest.fn(),
+const mocks = vi.hoisted(() => ({
+  withLDProvider: vi.fn(),
+  useLDClient: vi.fn(),
+  useFlags: vi.fn(),
 }))
+
+vi.mock('launchdarkly-react-client-sdk', async () => {
+  const actual = await vi.importActual('launchdarkly-react-client-sdk')
+  return {
+    ...actual,
+    __esModule: true,
+    withLDProvider: mocks.withLDProvider,
+    useLDClient: mocks.useLDClient,
+    useFlags: mocks.useFlags,
+  }
+})
 
 const Dummy = () => <p>I rendered</p>
 
 describe('withFeatureFlagProvider', () => {
-  afterAll(() => (config.LAUNCHDARKLY = undefined))
+  afterAll(() => {
+    config.LAUNCHDARKLY = undefined
+  })
+
   function setup(ldkey) {
     config.LAUNCHDARKLY = ldkey
-    withLDProvider.mockImplementation(() => (C) => C)
+    mocks.withLDProvider.mockImplementation(() => (C) => C)
 
     const Component = withFeatureFlagProvider(Dummy)
     render(<Component />)
   }
 
   describe('env has REACT_APP_LAUNCHDARKLY', () => {
-    afterEach(() => jest.clearAllMocks())
-    beforeEach(() => setup('test'))
-    it(`Apply's withLDProvider`, () => {
-      expect(withLDProvider).toHaveBeenCalledTimes(1)
+    afterEach(() => {
+      vi.clearAllMocks()
+      config.LAUNCHDARKLY = undefined
+    })
+
+    it('Apply withLDProvider', () => {
+      setup('test')
+
+      expect(mocks.withLDProvider).toHaveBeenCalledTimes(1)
       expect(screen.getByText(/I rendered/)).toBeTruthy()
     })
   })
 
   describe('env does not have REACT_APP_LAUNCHDARKLY', () => {
-    afterEach(() => jest.clearAllMocks())
-    beforeEach(() => setup())
+    afterEach(() => {
+      vi.clearAllMocks()
+      config.LAUNCHDARKLY = undefined
+    })
+
     it('Does not apply withLDProvider', () => {
-      expect(withLDProvider).toHaveBeenCalledTimes(0)
+      setup()
+
+      expect(mocks.withLDProvider).toHaveBeenCalledTimes(0)
       expect(screen.getByText(/I rendered/)).toBeTruthy()
     })
   })
 })
 
 describe('useFlags', () => {
-  afterAll(() => (config.LAUNCHDARKLY = undefined))
+  afterAll(() => {
+    config.LAUNCHDARKLY = undefined
+  })
+
   function setup(ldkey) {
     config.LAUNCHDARKLY = ldkey
-    useLDFlags.mockImplementation(() => ({ foo: 'fiz' }))
+    mocks.useFlags.mockImplementation(() => ({ foo: 'fiz' }))
   }
 
   describe('env has REACT_APP_LAUNCHDARKLY', () => {
-    afterEach(() => jest.clearAllMocks())
-    beforeEach(() => {
-      setup('key')
+    afterEach(() => {
+      vi.clearAllMocks()
+      config.LAUNCHDARKLY = undefined
     })
+
     it('returns a launch darkly flag', () => {
+      setup('key')
+
       const { result } = renderHook(() => useFlags({ foo: 'bar' }))
       expect(result.current).toStrictEqual({ foo: 'fiz' })
     })
   })
 
   describe('env does not have REACT_APP_LAUNCHDARKLY', () => {
-    afterEach(() => jest.clearAllMocks())
+    afterEach(() => {
+      vi.clearAllMocks()
+      config.LAUNCHDARKLY = undefined
+    })
+
     it('Return fallback value', async () => {
       setup(undefined)
       const { result } = renderHook(() => useFlags({ foo: 'bar' }))
@@ -76,7 +104,7 @@ describe('useFlags', () => {
     })
 
     it('Throws an error if no fallback is provided', async () => {
-      const spy = jest.spyOn(console, 'error').mockImplementation()
+      const spy = vi.spyOn(console, 'error').mockImplementation()
       setup(undefined)
 
       renderHook(() => useFlags())
@@ -91,20 +119,25 @@ describe('useFlags', () => {
 })
 
 describe('useIdentifyUser', () => {
-  const mockIdentify = jest.fn()
-  afterAll(() => (config.LAUNCHDARKLY = undefined))
   function setup(ldkey) {
+    const mockIdentify = vi.fn()
     config.LAUNCHDARKLY = ldkey
 
-    useLDClient.mockImplementation(() => ({
+    mocks.useLDClient.mockImplementation(() => ({
       identify: mockIdentify,
     }))
+
+    return { mockIdentify }
   }
 
+  afterEach(() => {
+    vi.clearAllMocks()
+    config.LAUNCHDARKLY = undefined
+  })
+
   describe('env has REACT_APP_LAUNCHDARKLY', () => {
-    afterEach(() => jest.clearAllMocks())
     it('emits a new user to launch darkly', () => {
-      setup('borkbork')
+      const { mockIdentify } = setup('key')
 
       renderHook(() =>
         useIdentifyUser({ name: 'doggo', key: 'hello', avatar: 'doggo.picz' })
@@ -118,14 +151,18 @@ describe('useIdentifyUser', () => {
     })
 
     it('guest users are not reported', () => {
-      setup({ name: 'doggo', key: 'hello', guest: true }, 'woofwoof')
+      const { mockIdentify } = setup('key')
+
+      renderHook(() => useIdentifyUser({ key: 'abc', guest: true }))
+
       expect(mockIdentify).toHaveBeenCalledTimes(0)
     })
   })
 
   describe('env does not have REACT_APP_LAUNCHDARKLY', () => {
-    afterEach(() => jest.clearAllMocks())
     it('never phones home', () => {
+      const { mockIdentify } = setup(undefined)
+
       renderHook(() => useIdentifyUser({ key: 'abc' }))
 
       expect(mockIdentify).toHaveBeenCalledTimes(0)

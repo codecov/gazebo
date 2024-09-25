@@ -23,7 +23,7 @@ describe('ComponentsNotConfigured', () => {
       render(<ComponentsNotConfigured />, { wrapper })
 
       const configureComponentsButton = screen.getByRole('link', {
-        name: 'Get started with components external-link.svg',
+        name: /Get started with components/i,
       })
       expect(configureComponentsButton).toBeInTheDocument()
     })
