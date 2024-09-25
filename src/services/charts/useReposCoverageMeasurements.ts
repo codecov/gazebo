@@ -6,16 +6,12 @@ import Api from 'shared/api'
 
 export const ReposCoverageMeasurementsConfig = z
   .object({
-    coverageAnalytics: z
-      .object({
-        measurements: z.array(
-          z.object({
-            timestamp: z.string(),
-            avg: z.number().nullish(),
-          })
-        ),
+    measurements: z.array(
+      z.object({
+        timestamp: z.string(),
+        avg: z.number().nullish(),
       })
-      .nullish(),
+    ),
   })
   .nullish()
 
@@ -44,17 +40,15 @@ const query = `
     $isPublic: Boolean
   ) {
     owner(username: $owner) {
-      coverageAnalytics {
-        measurements(
-          after: $after
-          before: $before
-          interval: $interval
-          repos: $repos
-          isPublic: $isPublic
-        ) {
-          timestamp
-          avg
-        }
+      measurements(
+        after: $after
+        before: $before
+        interval: $interval
+        repos: $repos
+        isPublic: $isPublic
+      ) {
+        timestamp
+        avg
       }
     }
   }
@@ -96,10 +90,7 @@ export const useReposCoverageMeasurements = ({
           isPublic,
         },
       }).then(
-        (res) =>
-          ReposCoverageMeasurementsConfig.parse(
-            res?.data?.owner?.coverageAnalytics
-          ) ?? {}
+        (res) => ReposCoverageMeasurementsConfig.parse(res?.data?.owner) ?? {}
       ),
     ...(!!opts && opts),
   })

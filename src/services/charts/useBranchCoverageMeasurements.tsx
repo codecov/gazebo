@@ -36,6 +36,18 @@ const GetBranchCoverageMeasurementsSchema = z.object({
           z
             .object({
               __typename: z.literal('Repository'),
+              coverageAnalytics: z
+                .object({
+                  measurements: z
+                    .array(
+                      z.object({
+                        timestamp: z.string(),
+                        max: z.number(),
+                      })
+                    )
+                    .optional(),
+                })
+                .optional(),
             })
             .merge(MeasurementsSchema),
           RepoNotFoundErrorSchema,
@@ -59,17 +71,17 @@ query GetBranchCoverageMeasurements(
     repository: repository(name: $repo) {
       __typename
       ... on Repository {
-      CoverageAnalytics{
-        measurements(
-          interval: $interval
-          after: $after
-          before: $before
-          branch: $branch
-        ) {
-          timestamp
-          max
+        CoverageAnalytics{
+          measurements(
+            interval: $interval
+            after: $after
+            before: $before
+            branch: $branch
+          ) {
+            timestamp
+            max
+          }
         }
-}
       }
       ... on NotFoundError {
         message
@@ -169,7 +181,8 @@ export const useBranchCoverageMeasurements = ({
         }
 
         return {
-          measurements: data?.owner?.repository?.measurements ?? [],
+          measurements:
+            data?.owner?.repository?.coverageAnalytics?.measurements ?? [],
         }
       }),
     ...opts,
