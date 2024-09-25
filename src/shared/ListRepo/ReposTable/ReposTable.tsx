@@ -224,6 +224,7 @@ const ReposTable = ({
                         className="text-ds-blue-darker group-hover/columnheader:opacity-100"
                         data-sort-direction={header.column.getIsSorted()}
                       >
+                        {''}
                         <Icon name="arrowUp" size="sm" />
                       </span>
                     </div>
