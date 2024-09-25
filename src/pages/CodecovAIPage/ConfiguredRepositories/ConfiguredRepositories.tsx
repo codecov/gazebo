@@ -31,7 +31,7 @@ const columnHelper = createColumnHelper<{ name: string }>()
 function ConfiguredRepositories() {
   const { owner, provider } = useParams<URLParams>()
 
-  const { data: installedRepos, isLoading } = useCodecovAIInstalledRepos({
+  const { data, isLoading } = useCodecovAIInstalledRepos({
     owner,
     provider,
   })
@@ -87,7 +87,7 @@ function ConfiguredRepositories() {
   })
 
   //This should technically never happen, but render a fallback just in case
-  if (!installedRepos || installedRepos.length === 0) {
+  if (!data?.aiEnabledRepos || data.aiEnabledRepos.length === 0) {
     return <InstallCodecovAI />
   }
 

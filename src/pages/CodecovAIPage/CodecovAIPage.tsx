@@ -19,10 +19,12 @@ const CodecovAIPage: React.FC = () => {
   const { codecovAiFeaturesTab } = useFlags({
     codecovAiFeaturesTab: false,
   })
-  const { data: aiFeaturesEnabled } = useCodecovAIInstallation({
+
+  const { data: installationData } = useCodecovAIInstallation({
     owner,
     provider,
   })
+
   if (!codecovAiFeaturesTab) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
@@ -40,7 +42,11 @@ const CodecovAIPage: React.FC = () => {
         </p>
       </section>
       <div className="flex flex-col gap-4 pt-2 lg:w-3/5">
-        {!aiFeaturesEnabled ? <ConfiguredRepositories /> : <InstallCodecovAI />}
+        {!installationData?.aiFeaturesEnabled ? (
+          <ConfiguredRepositories />
+        ) : (
+          <InstallCodecovAI />
+        )}
         <CodecovAICommands />
         <LearnMoreBlurb />
       </div>
