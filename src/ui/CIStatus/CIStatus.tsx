@@ -5,7 +5,7 @@ interface CIStatusLabelProps {
 }
 
 export default function CIStatusLabel({ ciPassed }: CIStatusLabelProps) {
-  if (!ciPassed) {
+  if (typeof ciPassed !== 'boolean') {
     return (
       <span className="flex flex-none items-center gap-1 text-xs">
         <span className="text-ds-gray-senary">
