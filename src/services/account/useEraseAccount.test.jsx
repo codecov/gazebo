@@ -1,13 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import Cookie from 'js-cookie'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useEraseAccount } from './useEraseAccount'
 
-jest.mock('js-cookie')
+vi.mock('js-cookie')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -26,39 +26,37 @@ const provider = 'gh'
 const owner = 'codecov'
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useEraseAccount', () => {
   function setup() {
     server.use(
-      rest.delete(
-        `/internal/${provider}/${owner}/account-details/`,
-        (req, res, ctx) => {
-          return res(ctx.status(204), null)
-        }
-      )
+      http.delete(`/internal/${provider}/${owner}/account-details/`, (info) => {
+        return HttpResponse.json({})
+      })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('deletes the auth cookie', async () => {
+      setup()
       const { result } = renderHook(
         () => useEraseAccount({ provider, owner }),
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       result.current.mutate()
-
-      await waitFor(() => result.current.isSuccess)
 
       await waitFor(() =>
         expect(Cookie.remove).toHaveBeenCalledWith('github-token')
