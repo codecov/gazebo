@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useSelfHostedCurrentUser } from './useSelfHostedCurrentUser'
@@ -27,35 +27,35 @@ const wrapper = ({ children }) => (
 )
 
 const server = setupServer()
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useSelfHostedCurrentUser', () => {
   function setup() {
     server.use(
-      rest.get('/internal/users/current', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(user))
-      )
+      http.get('/internal/users/current', (info) => {
+        return HttpResponse.json(user)
+      })
     )
   }
 
   describe('when called', () => {
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        setup()
-      })
-
       it('returns the user info', async () => {
+        setup()
         const { result } = renderHook(() => useSelfHostedCurrentUser(), {
           wrapper,
         })
-
-        await waitFor(() => result.current.isFetching)
-        await waitFor(() => !result.current.isFetching)
 
         await waitFor(() => expect(result.current.data).toEqual(user))
       })
