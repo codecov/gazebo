@@ -28,7 +28,8 @@ describe('ScheduledPlanDetails', () => {
         { wrapper }
       )
 
-      expect(screen.getByText(/annual/)).toBeInTheDocument()
+      const plan = screen.getByText(/annual/)
+      expect(plan).toBeInTheDocument()
     })
 
     it('renders quantity', () => {
@@ -43,7 +44,8 @@ describe('ScheduledPlanDetails', () => {
         { wrapper }
       )
 
-      expect(screen.getByText(/14/)).toBeInTheDocument()
+      const quantity = screen.getByText(/14/)
+      expect(quantity).toBeInTheDocument()
     })
 
     it('renders start date in human readable', () => {
@@ -58,7 +60,8 @@ describe('ScheduledPlanDetails', () => {
         { wrapper }
       )
 
-      expect(screen.getByText(/January 13th 2022/)).toBeInTheDocument()
+      const startDate = screen.getByText(/January 13th 2022/)
+      expect(startDate).toBeInTheDocument()
     })
   })
 })

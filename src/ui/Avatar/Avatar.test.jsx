@@ -1,18 +1,23 @@
 import { render, screen } from '@testing-library/react'
 
-import { useImage } from 'services/image'
+import Avatar from './Avatar'
 
-import Avatar from '.'
+const mocks = vi.hoisted(() => ({
+  useImage: vi.fn(),
+}))
 
-jest.mock('services/image')
+vi.mock('services/image', async () => {
+  const original = await vi.importActual('services/image')
+
+  return {
+    ...original,
+    useImage: mocks.useImage,
+  }
+})
 
 describe('Avatar', () => {
   function setup({ useImageReturn }) {
-    const useImageMock = jest.fn(() => useImageReturn)
-    useImage.mockImplementation(useImageMock)
-    return {
-      useImageMock,
-    }
+    mocks.useImage.mockImplementation(() => useImageReturn)
   }
 
   it('renders an image with the correct attributes', () => {

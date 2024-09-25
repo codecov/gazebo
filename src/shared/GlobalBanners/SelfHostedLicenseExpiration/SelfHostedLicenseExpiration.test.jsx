@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -10,7 +10,7 @@ import config from 'config'
 
 import SelfHostedLicenseExpiration from './SelfHostedLicenseExpiration'
 
-jest.mock('config')
+vi.mock('config')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
@@ -20,10 +20,12 @@ const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -50,14 +52,13 @@ describe('SelfHostedLicenseExpiration', () => {
     const user = userEvent.setup({ delay: null })
 
     server.use(
-      graphql.query('SelfHostedSeatsAndLicense', (req, res, ctx) => {
+      graphql.query('SelfHostedSeatsAndLicense', (info) => {
         if (isUndefined) {
-          return res(ctx.status(200), ctx.data({ config: undefined }))
+          return HttpResponse.json({ data: { config: undefined } })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             config: {
               seatsLimit,
               seatsUsed,
@@ -65,8 +66,8 @@ describe('SelfHostedLicenseExpiration', () => {
                 expirationDate,
               },
             },
-          })
-        )
+          },
+        })
       })
     )
 
@@ -79,7 +80,10 @@ describe('SelfHostedLicenseExpiration', () => {
       config.IS_DEDICATED_NAMESPACE = false
       setup({ isUndefined: true })
     })
-    afterEach(() => jest.resetAllMocks())
+
+    afterEach(() => {
+      vi.resetAllMocks()
+    })
 
     it('does not render when there is no provider', () => {
       render(<SelfHostedLicenseExpiration />, { wrapper: wrapper(['']) })
@@ -97,7 +101,9 @@ describe('SelfHostedLicenseExpiration', () => {
   })
 
   describe('self hosted and ECDN with invalid data params', () => {
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => {
+      vi.resetAllMocks()
+    })
 
     it('does not render the banner when it is self-hosted but not ECDN', async () => {
       config.IS_SELF_HOSTED = true
@@ -172,13 +178,19 @@ describe('SelfHostedLicenseExpiration', () => {
 
   describe('self hosted and ECDN with correct params', () => {
     beforeAll(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2023-08-01'))
-    })
-    beforeEach(() => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2023-08-01'))
       config.IS_SELF_HOSTED = true
       config.IS_DEDICATED_NAMESPACE = true
     })
-    afterEach(() => jest.resetAllMocks())
+
+    afterEach(() => {
+      vi.resetAllMocks()
+    })
+
+    afterAll(() => {
+      vi.useRealTimers()
+    })
 
     it('does not render the banner when there is not a seat limit or when the license has not expired/will expire within 30 days', async () => {
       setup({
@@ -190,6 +202,7 @@ describe('SelfHostedLicenseExpiration', () => {
 
       const suspense = await screen.findByText('Loading')
       expect(suspense).toBeInTheDocument()
+
       await waitFor(() =>
         expect(screen.queryByText('Loading')).not.toBeInTheDocument()
       )
@@ -347,7 +360,7 @@ describe('SelfHostedLicenseExpiration', () => {
           expect(resolveIssueButton).toBeInTheDocument()
           await user.click(resolveIssueButton)
 
-          const xButton = screen.getByText('x.svg')
+          const xButton = screen.getByLabelText('Close')
           await user.click(xButton)
 
           const seatsLimitReachedTitle =

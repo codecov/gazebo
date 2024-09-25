@@ -1,14 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
 import MissingDesignatedAdmins from './MissingDesignatedAdmins'
 
-jest.mock('config')
+vi.mock('config')
 
 const mockApiSelfHostedSetUpCorrectly = { config: { hasAdmins: true } }
 const mockApiSelfHostedSetUpIncorrectly = { config: { hasAdmins: false } }
@@ -22,10 +22,12 @@ const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -43,12 +45,12 @@ const wrapper =
 describe('MissingDesignatedAdmins', () => {
   function setup(overrideData) {
     server.use(
-      graphql.query('HasAdmins', (req, res, ctx) => {
+      graphql.query('HasAdmins', (info) => {
         if (overrideData) {
-          return res(ctx.status(200), ctx.data(overrideData))
+          return HttpResponse.json({ data: overrideData })
         }
 
-        return res(ctx.status(200), ctx.data(mockApiSelfHostedSetUpCorrectly))
+        return HttpResponse.json({ data: mockApiSelfHostedSetUpCorrectly })
       })
     )
   }
@@ -58,7 +60,10 @@ describe('MissingDesignatedAdmins', () => {
       config.IS_SELF_HOSTED = false
       setup(mockApiCloud)
     })
-    afterEach(() => jest.resetAllMocks())
+
+    afterEach(() => {
+      vi.resetAllMocks()
+    })
 
     it('does not render when there is no provider', () => {
       render(<MissingDesignatedAdmins />, { wrapper: wrapper(['']) })
@@ -81,7 +86,10 @@ describe('MissingDesignatedAdmins', () => {
       config.IS_SELF_HOSTED = true
       setup(mockApiSelfHostedSetUpIncorrectly)
     })
-    afterEach(() => jest.resetAllMocks())
+
+    afterEach(() => {
+      vi.resetAllMocks()
+    })
 
     it('does not render when there is no provider', () => {
       render(<MissingDesignatedAdmins />, { wrapper: wrapper(['']) })
@@ -107,7 +115,10 @@ describe('MissingDesignatedAdmins', () => {
       config.IS_SELF_HOSTED = true
       setup(mockApiSelfHostedSetUpCorrectly)
     })
-    afterEach(() => jest.resetAllMocks())
+
+    afterEach(() => {
+      vi.resetAllMocks()
+    })
 
     it('does not render when there is no provider', () => {
       render(<MissingDesignatedAdmins />, { wrapper: wrapper(['']) })
