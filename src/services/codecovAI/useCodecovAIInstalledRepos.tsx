@@ -43,7 +43,6 @@ export function useCodecovAIInstalledRepos({
         const parsedRes = ResponseSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          console.log(res?.data)
           return Promise.reject({
             status: 404,
             data: {},
@@ -51,7 +50,9 @@ export function useCodecovAIInstalledRepos({
           } satisfies NetworkErrorObject)
         }
 
-        return parsedRes.data.owner?.aiEnabledRepos
+        return {
+          aiEnabledRepos: parsedRes.data.owner?.aiEnabledRepos,
+        }
       })
     },
   })

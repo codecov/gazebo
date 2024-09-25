@@ -40,6 +40,7 @@ export function useCodecovAIInstallation({
           username: owner,
         },
       }).then((res) => {
+        console.log(res?.data)
         const parsedRes = ResponseSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
@@ -50,7 +51,9 @@ export function useCodecovAIInstallation({
           } satisfies NetworkErrorObject)
         }
 
-        return parsedRes.data.owner?.aiFeaturesEnabled
+        return {
+          aiFeaturesEnabled: parsedRes.data.owner?.aiFeaturesEnabled,
+        }
       })
     },
   })
