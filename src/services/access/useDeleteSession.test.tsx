@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useDeleteSession } from './useDeleteSession'
@@ -21,18 +21,24 @@ const provider = 'gh'
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useDeleteSession', () => {
   function setup() {
     server.use(
-      rest.post(`/graphql/gh`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ data: { me: null } }))
+      graphql.mutation('DeleteSession', (info) => {
+        return HttpResponse.json({ data: { deleteSession: { error: null } } })
       })
     )
   }
