@@ -7,7 +7,7 @@ describe('CoverageLineIndicator', () => {
     it('renders uncovered alert icon', () => {
       render(<CoverageLineIndicator coverage="UNCOVERED" />)
 
-      const icon = screen.getByText('exclamation-triangle.svg')
+      const icon = screen.getByTestId('exclamationTriangle')
       expect(icon).toBeInTheDocument()
     })
 
@@ -24,7 +24,7 @@ describe('CoverageLineIndicator', () => {
       const partialIcon = screen.queryByTestId('partial-icon')
       expect(partialIcon).not.toBeInTheDocument()
 
-      const exclamationTriangle = screen.queryByText('exclamation-triangle.svg')
+      const exclamationTriangle = screen.queryByTestId('exclamationTriangle')
       expect(exclamationTriangle).not.toBeInTheDocument()
     })
 
@@ -34,7 +34,7 @@ describe('CoverageLineIndicator', () => {
       const partialIcon = screen.queryByTestId('partial-icon')
       expect(partialIcon).not.toBeInTheDocument()
 
-      const exclamationTriangle = screen.queryByText('exclamation-triangle.svg')
+      const exclamationTriangle = screen.queryByTestId('exclamationTriangle')
       expect(exclamationTriangle).not.toBeInTheDocument()
     })
   })

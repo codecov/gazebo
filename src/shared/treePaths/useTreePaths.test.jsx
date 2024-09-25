@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -72,8 +72,8 @@ const overviewMock = {
 describe('useTreePaths', () => {
   function setup({ repoOverviewData }) {
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(repoOverviewData))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: repoOverviewData })
       })
     )
   }

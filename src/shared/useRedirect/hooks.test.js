@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react'
 
 import { useRedirect } from './hooks'
 
-const href = `/account/gh/rula/billing`
+const href = `/account/gh/test-user/billing`
 describe('useRedirect', () => {
   let originalLocation
 
@@ -10,12 +10,12 @@ describe('useRedirect', () => {
     originalLocation = global.window.location
     delete global.window.location
     global.window.location = {
-      replace: jest.fn(),
+      replace: vi.fn(),
     }
   })
 
   afterAll(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     window.location = originalLocation
   })
 

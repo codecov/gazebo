@@ -1,6 +1,14 @@
-import PropTypes from 'prop-types'
+interface SettingsDescriptorProps {
+  title: React.ReactNode
+  description: React.ReactNode
+  content: React.ReactNode
+}
 
-function SettingsDescriptor({ title, description, content }) {
+function SettingsDescriptor({
+  title,
+  description,
+  content,
+}: SettingsDescriptorProps) {
   return (
     <div className="m-4 flex flex-col gap-4 sm:mx-0">
       <div className="flex flex-col gap-2">
@@ -13,13 +21,6 @@ function SettingsDescriptor({ title, description, content }) {
       </div>
     </div>
   )
-}
-
-SettingsDescriptor.propTypes = {
-  title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
-  description: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-  content: PropTypes.oneOfType([PropTypes.string, PropTypes.element])
-    .isRequired,
 }
 
 export default SettingsDescriptor
