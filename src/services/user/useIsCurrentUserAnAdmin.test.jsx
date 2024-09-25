@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useIsCurrentUserAnAdmin } from './useIsCurrentUserAnAdmin'
@@ -9,7 +9,6 @@ import { useIsCurrentUserAnAdmin } from './useIsCurrentUserAnAdmin'
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper =
   (initialEntries = '/gh/codecov') =>
@@ -21,11 +20,16 @@ const wrapper =
     </QueryClientProvider>
   )
 
-beforeAll(() => server.listen())
+const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -33,10 +37,9 @@ afterAll(() => {
 describe('useIsCurrentUserAnAdmin', () => {
   function setup() {
     server.use(
-      graphql.query('DetailOwner', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               ownerid: 123,
               username: 'cool-user',
@@ -44,16 +47,15 @@ describe('useIsCurrentUserAnAdmin', () => {
               isCurrentUserPartOfOrg: true,
               isAdmin: true,
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => setup())
-
     it('returns boolean value', async () => {
+      setup()
       const { result } = renderHook(
         () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
         { wrapper: wrapper() }
