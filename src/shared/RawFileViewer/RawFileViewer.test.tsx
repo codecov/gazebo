@@ -1,40 +1,41 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useFlags } from 'shared/featureFlags'
-import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import RawFileViewer from './RawFileViewer'
 
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{ virtualFileRenderer: boolean }>
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+  useScrollToLine: vi.fn(),
+  captureMessage: vi.fn(),
+}))
 
-jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
-const mockedScrollToLine = useScrollToLine as jest.Mock
-
-window.requestAnimationFrame = (cb) => {
-  cb(1)
-  return 1
-}
-window.cancelAnimationFrame = () => {}
-jest.mock(
-  'ui/FileViewer/ToggleHeader/ToggleHeader',
-  () => () => 'The FileViewer'
-)
-jest.mock(
-  'ui/CodeRenderer/CodeRendererProgressHeader',
-  () => () => 'The Progress Header for CodeRenderer'
-)
-
-jest.mock('@sentry/react', () => {
-  const originalModule = jest.requireActual('@sentry/react')
+vi.mock('@sentry/react', async () => {
+  const originalModule = await vi.importActual('@sentry/react')
   return {
     ...originalModule,
     withProfiler: (component: any) => component,
-    captureMessage: jest.fn(),
+    captureMessage: mocks.captureMessage,
+  }
+})
+
+vi.mock('shared/featureFlags', async () => {
+  const originalModule = await vi.importActual('shared/featureFlags')
+  return {
+    ...originalModule,
+    useFlags: mocks.useFlags,
+  }
+})
+
+vi.mock('ui/CodeRenderer/hooks/useScrollToLine', async () => {
+  const originalModule = await vi.importActual(
+    'ui/CodeRenderer/hooks/useScrollToLine'
+  )
+  return {
+    ...originalModule,
+    useScrollToLine: mocks.useScrollToLine,
   }
 })
 
@@ -43,8 +44,20 @@ window.requestAnimationFrame = (cb) => {
   return 1
 }
 window.cancelAnimationFrame = () => {}
+vi.mock('ui/FileViewer/ToggleHeader/ToggleHeader', () => ({
+  default: () => 'The FileViewer',
+}))
+vi.mock('ui/CodeRenderer/CodeRendererProgressHeader', () => ({
+  default: () => 'The Progress Header for CodeRenderer',
+}))
 
-const scrollToMock = jest.fn()
+window.requestAnimationFrame = (cb) => {
+  cb(1)
+  return 1
+}
+window.cancelAnimationFrame = () => {}
+
+const scrollToMock = vi.fn()
 window.scrollTo = scrollToMock
 window.scrollX = 100
 
@@ -102,10 +115,12 @@ const wrapper =
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -119,22 +134,21 @@ interface SetupArgs {
 
 describe('RawFileViewer', () => {
   function setup({ content, owner, coverage, isCriticalFile }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({ virtualFileRenderer: true })
+    mocks.useFlags.mockReturnValue({ virtualFileRenderer: true })
 
-    mockedScrollToLine.mockImplementation(() => ({
+    mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
-      handleClick: jest.fn(),
+      handleClick: vi.fn(),
       targeted: false,
     }))
 
     server.use(
-      graphql.query('DetailOwner', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner }))
-      ),
-      graphql.query('CoverageForFile', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({ data: { owner } })
+      }),
+      graphql.query('CoverageForFile', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
@@ -154,9 +168,9 @@ describe('RawFileViewer', () => {
                 },
               },
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
   }
 
@@ -190,9 +204,7 @@ describe('RawFileViewer', () => {
       it('renders the FileViewer Header, CodeRenderer Header, and VirtualFileRenderer', async () => {
         render(
           <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         await waitFor(() => queryClient.isFetching)
