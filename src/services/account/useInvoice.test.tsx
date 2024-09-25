@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -25,26 +25,30 @@ const provider = 'gh'
 const owner = 'codecov'
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useInvoice', () => {
   function setup(hasError = false) {
     server.use(
-      graphql.query('Invoice', (req, res, ctx) => {
+      graphql.query('Invoice', (info) => {
         if (hasError) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: {} })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { invoice: invoiceObject } })
-        )
+        return HttpResponse.json({
+          data: { owner: { invoice: invoiceObject } },
+        })
       })
     )
   }
@@ -55,9 +59,7 @@ describe('useInvoice', () => {
         setup()
         const { result } = renderHook(
           () => useInvoice({ provider, owner, id: invoiceObject.id }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         await waitFor(() => expect(result.current.data).toEqual(invoiceObject))
@@ -65,13 +67,19 @@ describe('useInvoice', () => {
     })
 
     describe('on fail', () => {
+      beforeAll(() => {
+        vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterAll(() => {
+        vi.restoreAllMocks()
+      })
+
       it('fails to parse if bad data', async () => {
         setup(true)
         const { result } = renderHook(
           () => useInvoice({ provider, owner, id: 'blah' }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         await waitFor(() => expect(result.current.error).toBeTruthy())
