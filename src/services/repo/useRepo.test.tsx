@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
+import { MockInstance } from 'vitest'
 
 import { useRepo } from './useRepo'
 
@@ -82,53 +83,91 @@ describe('useRepo', () => {
     isOwnerNotActivatedError?: boolean
   }) {
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) => {
+      graphql.query('GetRepo', (info) => {
         if (failedToParseError) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: {} })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         }
 
-        return res(ctx.status(200), ctx.data(mockRepo))
+        return HttpResponse.json({ data: mockRepo })
       })
     )
   }
 
   describe('calling hook', () => {
-    it('returns the repository details successfully', async () => {
-      setup({})
-      const { result } = renderHook(
-        () =>
-          useRepo({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'cool-repo',
-          }),
-        { wrapper }
-      )
+    describe('when successful', () => {
+      describe('when owner is activated', () => {
+        it('returns the repository details successfully', async () => {
+          setup({})
+          const { result } = renderHook(
+            () =>
+              useRepo({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+              }),
+            { wrapper }
+          )
 
-      await waitFor(() => result.current.isSuccess)
-
-      await waitFor(() =>
-        expect(result.current.data).toEqual({
-          isCurrentUserPartOfOrg: true,
-          isAdmin: null,
-          isCurrentUserActivated: null,
-          repository: {
-            __typename: 'Repository',
-            private: false,
-            uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
-            defaultBranch: 'main',
-            yaml: '',
-            activated: false,
-            oldestCommitAt: '',
-            active: true,
-            isFirstPullRequest: false,
-          },
+          await waitFor(() =>
+            expect(result.current.data).toEqual({
+              isCurrentUserPartOfOrg: true,
+              isAdmin: null,
+              isCurrentUserActivated: null,
+              repository: {
+                __typename: 'Repository',
+                private: false,
+                uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
+                defaultBranch: 'main',
+                yaml: '',
+                activated: false,
+                oldestCommitAt: '',
+                active: true,
+                isFirstPullRequest: false,
+              },
+            })
+          )
         })
-      )
+      })
+
+      describe('when owner is not activated', () => {
+        it('returns a subset of data when owner not activated', async () => {
+          setup({ isOwnerNotActivatedError: true })
+          const { result } = renderHook(
+            () =>
+              useRepo({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+              }),
+            { wrapper }
+          )
+
+          await waitFor(() =>
+            expect(result.current.data).toEqual(
+              expect.objectContaining({
+                isCurrentUserActivated: false,
+                repository: null,
+                isRepoPrivate: true,
+              })
+            )
+          )
+        })
+      })
+    })
+  })
+
+  describe('when failed to parse error', () => {
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('can return a failed to parse error', async () => {
@@ -143,8 +182,6 @@ describe('useRepo', () => {
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
@@ -154,6 +191,18 @@ describe('useRepo', () => {
         )
       )
     })
+  })
+
+  describe('when not found error', () => {
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
+    })
+
     it('can return a not found error', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
@@ -166,35 +215,11 @@ describe('useRepo', () => {
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
             dev: 'useRepo - 404 NotFoundError',
-          })
-        )
-      )
-    })
-    it('returns a subset of data when owner not activated', async () => {
-      setup({ isOwnerNotActivatedError: true })
-      const { result } = renderHook(
-        () =>
-          useRepo({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'cool-repo',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() =>
-        expect(result.current.data).toEqual(
-          expect.objectContaining({
-            isCurrentUserActivated: false,
-            repository: null,
-            isRepoPrivate: true,
           })
         )
       )
