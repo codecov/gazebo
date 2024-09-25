@@ -1,60 +1,55 @@
-import { graphql } from 'msw'
+import { graphql, HttpResponse } from 'msw2'
 
-export const flagsSelectHandler = graphql.query(
-  'FlagsSelect',
-  (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.data({
-        owner: {
-          repository: {
-            __typename: 'Repository',
-            flags: {
-              pageInfo: {
-                hasNextPage: false,
-                endCursor: 'bGF0ZXN0LXVwbG9hZGVy',
-              },
-              edges: [
-                {
-                  node: {
-                    name: 'unit-python-uploader',
-                  },
-                },
-                {
-                  node: {
-                    name: 'unit-latest-uploader',
-                  },
-                },
-                {
-                  node: {
-                    name: 'unit',
-                  },
-                },
-                {
-                  node: {
-                    name: 'new_python_uploader',
-                  },
-                },
-                {
-                  node: {
-                    name: 'latest-uploader',
-                  },
-                },
-              ],
+export const flagsSelectHandler = graphql.query('FlagsSelect', (info) => {
+  return HttpResponse.json({
+    data: {
+      owner: {
+        repository: {
+          __typename: 'Repository',
+          flags: {
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: 'bGF0ZXN0LXVwbG9hZGVy',
             },
+            edges: [
+              {
+                node: {
+                  name: 'unit-python-uploader',
+                },
+              },
+              {
+                node: {
+                  name: 'unit-latest-uploader',
+                },
+              },
+              {
+                node: {
+                  name: 'unit',
+                },
+              },
+              {
+                node: {
+                  name: 'new_python_uploader',
+                },
+              },
+              {
+                node: {
+                  name: 'latest-uploader',
+                },
+              },
+            ],
           },
         },
-      })
-    )
-  }
-)
+      },
+    },
+  })
+})
 
 export const flagMeasurementsHandler = graphql.query(
   'FlagMeasurements',
-  (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.data({
+  (info) => {
+    return HttpResponse.json({
+      data: {
         owner: {
           repository: {
             flags: {
@@ -102,17 +97,16 @@ export const flagMeasurementsHandler = graphql.query(
             },
           },
         },
-      })
-    )
+      },
+    })
   }
 )
 
 export const backfillFlagMembershipsHandler = graphql.query(
   'BackfillFlagMemberships',
-  (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.data({
+  (info) => {
+    return HttpResponse.json({
+      data: {
         config: {
           isTimescaleEnabled: true,
         },
@@ -124,7 +118,7 @@ export const backfillFlagMembershipsHandler = graphql.query(
             flagsCount: 12,
           },
         },
-      })
-    )
+      },
+    })
   }
 )
