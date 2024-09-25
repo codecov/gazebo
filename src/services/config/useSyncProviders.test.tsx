@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { EnterpriseSyncProviders, useSyncProviders } from './useSyncProviders'
@@ -40,15 +40,14 @@ interface SetupArgs {
 describe('useSyncProviders', () => {
   function setup({ syncProviders, hasParsingError }: SetupArgs) {
     server.use(
-      graphql.query('GetSyncProviders', (req, res, ctx) => {
+      graphql.query('GetSyncProviders', (info) => {
         if (hasParsingError) {
-          return res(ctx.status(200), ctx.data({ idk: true }))
+          return HttpResponse.json({ data: { idk: true } })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({ config: { syncProviders: syncProviders } })
-        )
+        return HttpResponse.json({
+          data: { config: { syncProviders: syncProviders } },
+        })
       })
     )
   }
@@ -89,11 +88,11 @@ describe('useSyncProviders', () => {
 
   describe('error parsing request', () => {
     beforeAll(() => {
-      jest.spyOn(global.console, 'error')
+      vi.spyOn(global.console, 'error').mockImplementation(() => {})
     })
 
     afterAll(() => {
-      jest.resetAllMocks()
+      vi.restoreAllMocks()
     })
 
     it('throws an error', async () => {

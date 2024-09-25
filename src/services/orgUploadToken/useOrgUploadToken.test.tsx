@@ -1,15 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
-import { useTier } from './useTier'
+import { useOrgUploadToken } from './useOrgUploadToken'
 
-const mockOwnerTier = {
+const mockOrgUploadToken = {
   owner: {
-    plan: {
-      tierName: 'pro',
-    },
+    orgUploadToken: 'cool-token-123',
   },
 }
 
@@ -46,32 +44,32 @@ interface SetupArgs {
   isUnsuccessfulParseError?: boolean
 }
 
-describe('useTier', () => {
+describe('useOrgUploadToken', () => {
   function setup({
     isUnsuccessfulParseError = false,
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
+      graphql.query('GetOrgUploadToken', (info) => {
         if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else {
-          return res(ctx.status(200), ctx.data(mockOwnerTier))
+          return HttpResponse.json({ data: mockOrgUploadToken })
         }
       })
     )
   }
 
-  describe('when useTier is called', () => {
+  describe('when useOrgUploadToken is called', () => {
     describe('api returns valid response', () => {
-      describe('tier field is resolved', () => {
-        it('returns the owners tier', async () => {
+      describe('orgUploadToken field is resolved', () => {
+        it('returns the orgs upload token', async () => {
           setup({})
           const { result } = renderHook(
             () =>
-              useTier({
+              useOrgUploadToken({
                 provider: 'gh',
                 owner: 'codecov',
               }),
@@ -79,7 +77,9 @@ describe('useTier', () => {
           )
 
           await waitFor(() => result.current.isSuccess)
-          await waitFor(() => expect(result.current.data).toEqual('pro'))
+          await waitFor(() =>
+            expect(result.current.data).toEqual('cool-token-123')
+          )
         })
       })
 
@@ -89,7 +89,7 @@ describe('useTier', () => {
 
           const { result } = renderHook(
             () =>
-              useTier({
+              useOrgUploadToken({
                 provider: 'gh',
                 owner: 'codecov',
               }),
@@ -103,18 +103,18 @@ describe('useTier', () => {
 
     describe('unsuccessful parse of zod schema', () => {
       beforeEach(() => {
-        jest.spyOn(console, 'error')
+        vi.spyOn(console, 'error').mockImplementation(() => {})
       })
 
       afterEach(() => {
-        jest.resetAllMocks()
+        vi.restoreAllMocks()
       })
 
       it('throws a 404', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
-            useTier({
+            useOrgUploadToken({
               provider: 'gh',
               owner: 'codecov',
             }),

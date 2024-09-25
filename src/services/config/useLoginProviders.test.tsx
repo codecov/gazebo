@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
@@ -43,15 +43,14 @@ interface SetupArgs {
 describe('useLoginProviders', () => {
   function setup({ loginProviders, hasParsingError }: SetupArgs) {
     server.use(
-      graphql.query('GetLoginProviders', (req, res, ctx) => {
+      graphql.query('GetLoginProviders', (info) => {
         if (hasParsingError) {
-          return res(ctx.status(200), ctx.data({ idk: true }))
+          return HttpResponse.json({ data: { idk: true } })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({ config: { loginProviders: loginProviders } })
-        )
+        return HttpResponse.json({
+          data: { config: { loginProviders: loginProviders } },
+        })
       })
     )
   }
@@ -108,11 +107,11 @@ describe('useLoginProviders', () => {
 
   describe('error parsing request', () => {
     beforeAll(() => {
-      jest.spyOn(global.console, 'error')
+      vi.spyOn(global.console, 'error').mockImplementation(() => {})
     })
 
     afterAll(() => {
-      jest.resetAllMocks()
+      vi.restoreAllMocks()
     })
 
     it('throws an error', async () => {

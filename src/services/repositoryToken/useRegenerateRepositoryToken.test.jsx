@@ -1,23 +1,29 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useAddNotification } from 'services/toastNotification'
 
 import { useRegenerateRepositoryToken } from './useRegenerateRepositoryToken'
 
-jest.mock('services/toastNotification')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
+
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
 
 const data = {
-  data: {
-    regenerateRepositoryToken: {
-      error: {
-        __typename: 'Error',
-      },
-      token: 'new token',
+  regenerateRepositoryToken: {
+    error: {
+      __typename: 'Error',
     },
+    token: 'new token',
   },
 }
 
@@ -29,11 +35,15 @@ const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
@@ -45,16 +55,16 @@ const wrapper = ({ children }) => (
 
 describe('useRegenerateRepositoryToken', () => {
   function setup({ triggerError = false } = { triggerError: false }) {
-    const addNotification = jest.fn()
+    const addNotification = vi.fn()
 
-    useAddNotification.mockReturnValue(addNotification)
+    mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      graphql.mutation('RegenerateRepositoryToken', (req, res, ctx) => {
+      graphql.mutation('RegenerateRepositoryToken', (info) => {
         if (triggerError) {
-          return res(ctx.status(500), ctx.data({ data: null }))
+          return HttpResponse.json({ errors: [] }, { status: 500 })
         }
-        return res(ctx.status(200), ctx.data({ data }))
+        return HttpResponse.json({ data })
       })
     )
 

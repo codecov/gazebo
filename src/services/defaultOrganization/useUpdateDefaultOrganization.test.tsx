@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React, { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -32,11 +32,11 @@ const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
 describe('useUpdateDefaultOrganization', () => {
   function setup(data = {}, triggerError = false) {
     server.use(
-      graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
+      graphql.mutation('updateDefaultOrganization', (info) => {
         if (triggerError) {
-          return res(ctx.status(200), ctx.data(data))
+          return HttpResponse.json({ data })
         } else {
-          return res(ctx.status(200), ctx.data(data))
+          return HttpResponse.json({ data })
         }
       })
     )
@@ -60,7 +60,7 @@ describe('useUpdateDefaultOrganization', () => {
           wrapper,
         })
         result.current.mutate({ username: 'codecov' })
-        const invalidateQueries = jest.spyOn(queryClient, 'invalidateQueries')
+        const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries')
 
         await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 

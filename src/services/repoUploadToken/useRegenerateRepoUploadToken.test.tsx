@@ -1,20 +1,36 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useAddNotification } from 'services/toastNotification'
 
 import { useRegenerateRepoUploadToken } from './useRegenerateRepoUploadToken'
 
-jest.mock('services/toastNotification')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
+
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -30,34 +46,30 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 
 describe('useRegenerateRepoUploadToken', () => {
   function setup({ isErrorResponse = false }) {
-    //@ts-ignore
-    const mockAddToast = jest.fn()
-
-    //@ts-ignore
-    useAddNotification.mockReturnValue(mockAddToast)
+    const mockAddToast = vi.fn()
+    mocks.useAddNotification.mockReturnValue(mockAddToast)
 
     server.use(
-      graphql.mutation('RegenerateRepositoryUploadToken', (req, res, ctx) => {
+      graphql.mutation('RegenerateRepositoryUploadToken', (info) => {
         if (isErrorResponse) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               regenerateRepositoryUploadToken: {
                 error: {
                   __typename: 'ValidationError',
                 },
               },
-            })
-          )
+            },
+          })
         }
-        return res(
-          ctx.status(200),
-          ctx.data({
+
+        return HttpResponse.json({
+          data: {
             regenerateRepositoryUploadToken: {
               token: 'repo-token',
             },
-          })
-        )
+          },
+        })
       })
     )
 

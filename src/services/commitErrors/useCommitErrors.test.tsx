@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -74,26 +74,23 @@ describe('useCommitErrors', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query(`CommitErrors`, (req, res, ctx) => {
+      graphql.query(`CommitErrors`, (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else {
-          return res(ctx.status(200), ctx.data(dataReturned))
+          return HttpResponse.json({ data: dataReturned })
         }
       })
     )
   }
 
   describe('when called and user is authenticated', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('returns commit info', async () => {
+      setup({})
       const { result } = renderHook(() => useCommitErrors(), {
         wrapper,
       })
@@ -109,6 +106,14 @@ describe('useCommitErrors', () => {
     })
   })
   describe('when called but repository errors', () => {
+    beforeAll(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      vi.restoreAllMocks()
+    })
+
     it('can return unsuccessful parse error', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(() => useCommitErrors(), {
@@ -124,6 +129,7 @@ describe('useCommitErrors', () => {
         )
       )
     })
+
     it('can return not found error', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(() => useCommitErrors(), {
@@ -139,6 +145,7 @@ describe('useCommitErrors', () => {
         )
       )
     })
+
     it('can return owner not activated error', async () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(() => useCommitErrors(), {

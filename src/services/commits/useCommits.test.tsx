@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { useCommits } from './useCommits'
 
@@ -144,15 +144,15 @@ describe('GetCommits', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetCommits', (req, res, ctx) => {
+      graphql.query('GetCommits', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwnerData))
+          return HttpResponse.json({ data: mockNullOwnerData })
         }
 
         const dataReturned = {
@@ -160,7 +160,7 @@ describe('GetCommits', () => {
             repository: {
               __typename: 'Repository',
               commits: {
-                edges: req.variables.after
+                edges: info.variables.after
                   ? [
                       {
                         node: node3,
@@ -175,8 +175,8 @@ describe('GetCommits', () => {
                       },
                     ],
                 pageInfo: {
-                  hasNextPage: req.variables.after ? false : true,
-                  endCursor: req.variables.after
+                  hasNextPage: info.variables.after ? false : true,
+                  endCursor: info.variables.after
                     ? 'aa'
                     : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
                 },
@@ -184,7 +184,8 @@ describe('GetCommits', () => {
             },
           },
         }
-        return res(ctx.status(200), ctx.data(dataReturned))
+
+        return HttpResponse.json({ data: dataReturned })
       })
     )
   }
