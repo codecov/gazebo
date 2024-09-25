@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { MockInstance } from 'vitest'
 
 import { useRepoOverview } from './useRepoOverview'
 
@@ -44,7 +45,6 @@ const mockNullOwner = {
 
 const mockUnsuccessfulParseError = {}
 
-const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -53,6 +53,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -81,15 +82,15 @@ describe('useRepoOverview', () => {
     language,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
+      graphql.query('GetRepoOverview', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         }
-        return res(ctx.status(200), ctx.data(mockOverview(language)))
+        return HttpResponse.json({ data: mockOverview(language) })
       })
     )
   }
@@ -204,14 +205,13 @@ describe('useRepoOverview', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
-    let oldConsoleError = console.error
-
-    beforeEach(() => {
-      console.error = () => null
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
-    afterEach(() => {
-      console.error = oldConsoleError
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -226,7 +226,6 @@ describe('useRepoOverview', () => {
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
@@ -238,14 +237,13 @@ describe('useRepoOverview', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
-
-    beforeEach(() => {
-      console.error = () => null
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
-    afterEach(() => {
-      console.error = oldConsoleError
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -260,7 +258,6 @@ describe('useRepoOverview', () => {
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
