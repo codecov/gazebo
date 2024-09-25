@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import A from 'ui/A'
 
@@ -25,10 +26,18 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 const expectedData = [
   {
@@ -67,60 +76,54 @@ describe('ComponentMeasurements', () => {
     isNotFoundError = false,
   } = {}) {
     server.use(
-      graphql.query('ComponentMeasurements', (req, res, ctx) => {
+      graphql.query('ComponentMeasurements', (info) => {
         if (isSchemaInvalid) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({})
         }
 
         if (isOwnerActivationError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 repository: {
                   __typename: 'OwnerNotActivatedError',
                   message: 'Owner not activated',
                 },
               },
-            })
-          )
+            },
+          })
         }
 
         if (isNotFoundError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 repository: {
                   __typename: 'NotFoundError',
                   message: 'Repo not found',
                 },
               },
-            })
-          )
+            },
+          })
         }
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
                 components: expectedData,
               },
             },
-          })
-        )
+          },
+        })
       })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     describe('when data is loaded', () => {
       it('returns the data', async () => {
+        setup()
         const { result } = renderHook(
           () =>
             useRepoComponents({
@@ -133,9 +136,6 @@ describe('ComponentMeasurements', () => {
           }
         )
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-
         await waitFor(() =>
           expect(result.current.data).toEqual({
             components: expectedData,
@@ -146,11 +146,17 @@ describe('ComponentMeasurements', () => {
   })
 
   describe('when the schema is invalid', () => {
-    beforeEach(() => {
-      setup({ isSchemaInvalid: true })
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('returns an error', async () => {
+      setup({ isSchemaInvalid: true })
       const { result } = renderHook(
         () =>
           useRepoComponents({
@@ -174,11 +180,17 @@ describe('ComponentMeasurements', () => {
   })
 
   describe('when repo is not found', () => {
-    beforeEach(() => {
-      setup({ isNotFoundError: true })
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('returns an error', async () => {
+      setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
           useRepoComponents({
@@ -202,11 +214,17 @@ describe('ComponentMeasurements', () => {
   })
 
   describe('when owner is not activated', () => {
-    beforeEach(() => {
-      setup({ isOwnerActivationError: true })
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('returns an error', async () => {
+      setup({ isOwnerActivationError: true })
       const { result } = renderHook(
         () =>
           useRepoComponents({
