@@ -4,7 +4,9 @@ import userEvent from '@testing-library/user-event'
 import SearchField from './SearchField'
 
 describe('SearchField', () => {
-  afterAll(() => jest.resetAllMocks())
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
 
   function setup() {
     const user = userEvent.setup()
@@ -14,7 +16,7 @@ describe('SearchField', () => {
   describe('Basic', () => {
     describe('when typing in the search field', () => {
       it('waits to call setSearchValue', async () => {
-        const setSearchValue = jest.fn()
+        const setSearchValue = vi.fn()
         const { user } = setup()
         render(
           <SearchField
@@ -38,7 +40,7 @@ describe('SearchField', () => {
 
     describe('after waiting for debounce', () => {
       it('calls setSearchValue', async () => {
-        const setSearchValue = jest.fn()
+        const setSearchValue = vi.fn()
         const { user } = setup()
         render(
           <SearchField
@@ -63,8 +65,8 @@ describe('SearchField', () => {
 
   describe('custom onChange', () => {
     it('fired the custom onChange', async () => {
-      const onChange = jest.fn()
-      const setSearchValue = jest.fn()
+      const onChange = vi.fn()
+      const setSearchValue = vi.fn()
       const { user } = setup()
       render(
         <SearchField

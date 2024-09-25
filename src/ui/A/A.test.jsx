@@ -60,15 +60,18 @@ describe('A', () => {
     let mockError
 
     beforeEach(() => {
-      mockError = jest.fn()
-      const spy = jest.spyOn(console, 'error')
+      mockError = vi.fn()
+      const spy = vi.spyOn(console, 'error')
       spy.mockImplementation(mockError)
 
       setup({
         href: '/banana',
       })
     })
-    afterEach(() => jest.resetAllMocks())
+
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
 
     it('PropTypes warning is thrown that developers need to provide a hook prop if not using to', () => {
       expect(mockError).toHaveBeenCalledTimes(1)
