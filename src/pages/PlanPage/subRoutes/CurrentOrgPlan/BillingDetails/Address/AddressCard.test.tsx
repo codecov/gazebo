@@ -3,12 +3,21 @@ import userEvent from '@testing-library/user-event'
 import { z } from 'zod'
 
 import { SubscriptionDetailSchema } from 'services/account'
-import { useUpdateBillingAddress } from 'services/account/useUpdateBillingAddress'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import AddressCard from './AddressCard'
 
-jest.mock('services/account/useUpdateBillingAddress')
+const mocks = vi.hoisted(() => ({
+  useUpdateBillingAddress: vi.fn(),
+}))
+
+vi.mock('services/account/useUpdateBillingAddress', async () => {
+  const actual = await import('services/account/useUpdateBillingAddress')
+  return {
+    ...actual,
+    useUpdateBillingAddress: mocks.useUpdateBillingAddress,
+  }
+})
 
 const subscriptionDetail = {
   defaultPaymentMethod: {
@@ -39,31 +48,30 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 )
 
 // mocking stripe components
-jest.mock('@stripe/react-stripe-js', () => {
+vi.mock('@stripe/react-stripe-js', () => {
   function makeFakeComponent(name: string) {
     // mocking onReady to be called after a bit of time
     return function Component({ onReady }: { onReady?: any }) {
       return name
     }
   }
+
   return {
     useElements: () => ({
-      getElement: jest.fn().mockReturnValue({
-        getValue: jest.fn().mockResolvedValue({
+      getElement: vi.fn().mockReturnValue({
+        getValue: vi.fn().mockResolvedValue({
           complete: true,
           value: {
             address: {},
           },
         }),
       }),
-      update: jest.fn(),
+      update: vi.fn(),
     }),
     useStripe: () => ({}),
     AddressElement: makeFakeComponent('AddressElement'),
   }
 })
-
-const mockUseUpdateBillingAddress = useUpdateBillingAddress as jest.Mock
 
 describe('AddressCard', () => {
   function setup() {
@@ -127,7 +135,7 @@ describe('AddressCard', () => {
           { wrapper }
         )
 
-        mockUseUpdateBillingAddress.mockReturnValue({
+        mocks.useUpdateBillingAddress.mockReturnValue({
           mutate: () => null,
           isLoading: false,
         })
@@ -153,7 +161,7 @@ describe('AddressCard', () => {
           { wrapper }
         )
 
-        mockUseUpdateBillingAddress.mockReturnValue({
+        mocks.useUpdateBillingAddress.mockReturnValue({
           mutate: () => null,
           isLoading: false,
         })
@@ -241,8 +249,8 @@ describe('AddressCard', () => {
   describe('when the user clicks on Edit', () => {
     it(`doesn't render the card anymore`, async () => {
       const { user } = setup()
-      const updateAddress = jest.fn()
-      mockUseUpdateBillingAddress.mockReturnValue({
+      const updateAddress = vi.fn()
+      mocks.useUpdateBillingAddress.mockReturnValue({
         mutate: updateAddress,
         isLoading: false,
       })
@@ -268,8 +276,8 @@ describe('AddressCard', () => {
 
     it('renders the form', async () => {
       const { user } = setup()
-      const updateAddress = jest.fn()
-      mockUseUpdateBillingAddress.mockReturnValue({
+      const updateAddress = vi.fn()
+      mocks.useUpdateBillingAddress.mockReturnValue({
         mutate: updateAddress,
         isLoading: false,
       })
@@ -291,8 +299,8 @@ describe('AddressCard', () => {
     describe('when submitting', () => {
       it('calls the service to update the address', async () => {
         const { user } = setup()
-        const updateAddress = jest.fn()
-        mockUseUpdateBillingAddress.mockReturnValue({
+        const updateAddress = vi.fn()
+        mocks.useUpdateBillingAddress.mockReturnValue({
           mutate: updateAddress,
           isLoading: false,
         })
@@ -314,8 +322,8 @@ describe('AddressCard', () => {
     describe('when the user clicks on cancel', () => {
       it(`doesn't render the form anymore`, async () => {
         const { user } = setup()
-        mockUseUpdateBillingAddress.mockReturnValue({
-          mutate: jest.fn(),
+        mocks.useUpdateBillingAddress.mockReturnValue({
+          mutate: vi.fn(),
           isLoading: false,
         })
         render(
@@ -341,8 +349,8 @@ describe('AddressCard', () => {
     it('renders the error', async () => {
       const { user } = setup()
       const randomError = 'not a valid address'
-      mockUseUpdateBillingAddress.mockReturnValue({
-        mutate: jest.fn(),
+      mocks.useUpdateBillingAddress.mockReturnValue({
+        mutate: vi.fn(),
         error: randomError,
       })
       render(
@@ -363,8 +371,8 @@ describe('AddressCard', () => {
   describe('when the form is loading', () => {
     it('has the error and save button disabled', async () => {
       const { user } = setup()
-      mockUseUpdateBillingAddress.mockReturnValue({
-        mutate: jest.fn(),
+      mocks.useUpdateBillingAddress.mockReturnValue({
+        mutate: vi.fn(),
         isLoading: true,
       })
       render(
