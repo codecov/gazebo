@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
@@ -9,8 +9,10 @@ import { Plans } from 'shared/utils/billing'
 
 import MembersActivation from './MembersActivation'
 
-jest.mock('./AutoActivate/AutoActivate', () => () => 'AutoActivate')
-jest.mock('./Activation/Activation', () => () => 'Activation')
+vi.mock('./AutoActivate/AutoActivate', () => ({
+  default: () => 'AutoActivate',
+}))
+vi.mock('./Activation/Activation', () => ({ default: () => 'Activation' }))
 
 const mockedAccountDetails = {
   plan: {
@@ -73,13 +75,12 @@ describe('Members Activation', () => {
     planValue = mockedAccountDetails.plan.value
   ) {
     server.use(
-      rest.get('/internal/gh/:owner/account-details/', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(accountDetails))
-      ),
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      http.get('/internal/:provider/:owner/account-details/', (info) => {
+        return HttpResponse.json(accountDetails)
+      }),
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
@@ -88,9 +89,9 @@ describe('Members Activation', () => {
                 value: planValue,
               },
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
   }
 
