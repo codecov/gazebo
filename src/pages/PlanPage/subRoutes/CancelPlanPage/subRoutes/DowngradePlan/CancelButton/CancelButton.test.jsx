@@ -1,21 +1,48 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
-
-import { useCancelPlan } from 'services/account'
-import { useAddNotification } from 'services/toastNotification'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import CancelButton from './CancelButton'
-import { useBarecancel } from './useBarecancel'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
+const mocks = vi.hoisted(() => ({
+  useParams: vi.fn(),
+  useBarecancel: vi.fn(),
+  useCancelPlan: vi.fn(),
+  useAddNotification: vi.fn(),
 }))
-jest.mock('./useBarecancel')
-jest.mock('services/account')
-jest.mock('services/toastNotification')
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom')
+  return {
+    ...actual, // import and retain the original functionalities
+    useParams: mocks.useParams,
+  }
+})
+
+vi.mock('./useBarecancel', async () => {
+  const actual = await vi.importActual('./useBarecancel')
+  return {
+    ...actual,
+    useBarecancel: mocks.useBarecancel,
+  }
+})
+
+vi.mock('services/account', async () => {
+  const actual = await vi.importActual('services/account')
+  return {
+    ...actual,
+    useCancelPlan: mocks.useCancelPlan,
+  }
+})
+
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,17 +74,17 @@ const wrapper = ({ children }) => (
 describe('CancelButton', () => {
   function setup(baremetricsBlocked = false) {
     const user = userEvent.setup()
-    const mutate = jest.fn()
-    const addNotification = jest.fn()
+    const mutate = vi.fn()
+    const addNotification = vi.fn()
 
-    useAddNotification.mockReturnValue(addNotification)
-    useParams.mockReturnValue({ owner: 'Ollie', provider: 'gh' })
-    useCancelPlan.mockReturnValue({
+    mocks.useAddNotification.mockReturnValue(addNotification)
+    mocks.useParams.mockReturnValue({ owner: 'Ollie', provider: 'gh' })
+    mocks.useCancelPlan.mockReturnValue({
       isLoading: false,
       mutate,
-      onError: jest.fn(),
+      onError: vi.fn(),
     })
-    useBarecancel.mockReturnValue({ baremetricsBlocked })
+    mocks.useBarecancel.mockReturnValue({ baremetricsBlocked })
 
     return { mutate, addNotification, user }
   }
