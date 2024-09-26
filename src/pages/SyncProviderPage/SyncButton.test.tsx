@@ -16,7 +16,7 @@ describe('SyncButton', () => {
 
       const link = screen.getByRole('link', { name: /Sync with Github/ })
 
-      const expectedRedirect = encodeURIComponent('http://localhost/gh')
+      const expectedRedirect = encodeURIComponent('http://localhost:3000/gh')
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', `/login/gh?to=${expectedRedirect}`)
     })
@@ -28,7 +28,7 @@ describe('SyncButton', () => {
 
       const link = screen.getByRole('link', { name: /Sync with Gitlab/ })
 
-      const expectedRedirect = encodeURIComponent('http://localhost/gl')
+      const expectedRedirect = encodeURIComponent('http://localhost:3000/gl')
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', `/login/gl?to=${expectedRedirect}`)
     })
@@ -40,7 +40,7 @@ describe('SyncButton', () => {
 
       const link = screen.getByRole('link', { name: /Sync with BitBucket/ })
 
-      const expectedRedirect = encodeURIComponent('http://localhost/bb')
+      const expectedRedirect = encodeURIComponent('http://localhost:3000/bb')
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', `/login/bb?to=${expectedRedirect}`)
     })
@@ -54,7 +54,7 @@ describe('SyncButton', () => {
         name: /Sync with Github Enterprise/,
       })
 
-      const expectedRedirect = encodeURIComponent('http://localhost/ghe')
+      const expectedRedirect = encodeURIComponent('http://localhost:3000/ghe')
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', `/login/ghe?to=${expectedRedirect}`)
     })
@@ -68,7 +68,7 @@ describe('SyncButton', () => {
         name: /Sync with Gitlab Enterprise/,
       })
 
-      const expectedRedirect = encodeURIComponent('http://localhost/gle')
+      const expectedRedirect = encodeURIComponent('http://localhost:3000/gle')
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', `/login/gle?to=${expectedRedirect}`)
     })
@@ -82,7 +82,7 @@ describe('SyncButton', () => {
         name: /Sync with BitBucket Server/,
       })
 
-      const expectedRedirect = encodeURIComponent('http://localhost/bbs')
+      const expectedRedirect = encodeURIComponent('http://localhost:3000/bbs')
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', `/login/bbs?to=${expectedRedirect}`)
     })
