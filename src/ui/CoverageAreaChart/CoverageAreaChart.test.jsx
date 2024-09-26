@@ -5,10 +5,11 @@ import CoverageAreaChart from './CoverageAreaChart'
 describe('Coverage Area Chart', () => {
   describe('No coverage data exists', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2020-04-01'))
     })
+
     afterAll(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('renders no chart', () => {
@@ -21,10 +22,10 @@ describe('Coverage Area Chart', () => {
 
   describe('Chart with data', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2020-04-01'))
     })
     afterAll(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('renders victory', () => {
@@ -81,10 +82,10 @@ describe('Coverage Area Chart', () => {
 
   describe('Not enough data to render', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2020-04-01'))
     })
     afterAll(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('renders victory', () => {
