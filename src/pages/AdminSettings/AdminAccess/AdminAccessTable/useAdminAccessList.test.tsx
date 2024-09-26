@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import { useAdminAccessList } from './useAdminAccessList'
 
@@ -55,44 +56,40 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
 
 const server = setupServer()
 beforeAll(() => {
-  console.error = () => {}
   server.listen()
 })
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useAdminAccessList', () => {
   function setup({ invalidResponse = false }) {
     server.use(
-      rest.get('/internal/users', (req, res, ctx) => {
+      http.get('/internal/users', (info) => {
         if (invalidResponse) {
-          return res(ctx.status(200), ctx.json({}))
+          return HttpResponse.json({})
         }
-
-        const {
-          url: { searchParams },
-        } = req
-
+        const searchParams = new URL(info.request.url).searchParams
         const pageNumber = Number(searchParams.get('page'))
 
         if (pageNumber > 1) {
-          return res(ctx.status(200), ctx.json(mockSecondResponse))
+          return HttpResponse.json(mockSecondResponse)
         }
 
-        return res(ctx.status(200), ctx.json(mockFirstResponse))
+        return HttpResponse.json(mockFirstResponse)
       })
     )
   }
 
   describe('hook queries first dataset', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('returns the data', async () => {
+      setup({})
       const { result } = renderHook(() => useAdminAccessList(), {
         wrapper: wrapper(),
       })
@@ -113,11 +110,8 @@ describe('useAdminAccessList', () => {
   })
 
   describe('hook fetches the next dataset', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('returns the data', async () => {
+      setup({})
       const { result } = renderHook(() => useAdminAccessList(), {
         wrapper: wrapper(),
       })
@@ -154,11 +148,17 @@ describe('useAdminAccessList', () => {
   })
 
   describe('endpoint returns invalid data', () => {
-    beforeEach(() => {
-      setup({ invalidResponse: true })
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('rejects with 404', async () => {
+      setup({ invalidResponse: true })
       const { result } = renderHook(() => useAdminAccessList(), {
         wrapper: wrapper(),
       })
