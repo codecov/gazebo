@@ -1,11 +1,19 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useInvoices } from 'services/account'
-
 import InvoicesPage from './InvoicesPage'
 
-jest.mock('services/account')
+const mocks = vi.hoisted(() => ({
+  useInvoices: vi.fn(),
+}))
+
+vi.mock('services/account', async () => {
+  const actual = await vi.importActual('services/account')
+  return {
+    ...actual,
+    useInvoices: mocks.useInvoices,
+  }
+})
 
 const invoices = [
   {
@@ -68,7 +76,7 @@ const invoices = [
 
 describe('InvoicesPage', () => {
   function setup() {
-    useInvoices.mockReturnValue({ data: invoices })
+    mocks.useInvoices.mockReturnValue({ data: invoices })
     render(<InvoicesPage owner="codecov" provider="codecov" />, {
       wrapper: MemoryRouter,
     })
