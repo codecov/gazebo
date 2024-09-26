@@ -2,21 +2,35 @@ import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCommitErrors } from 'services/commitErrors'
-
 import UploadsCard from './UploadsCard'
-import { useUploads } from './useUploads'
 
-jest.mock(
-  '../YamlModal/YamlModalErrorBanner',
-  () => () => 'YamlModalErrorBanner'
-)
-jest.mock('./useUploads')
-jest.mock('services/commitErrors')
+const mocks = vi.hoisted(() => ({
+  useCommitErrors: vi.fn(),
+  useUploads: vi.fn(),
+}))
+
+vi.mock('./useUploads', async () => {
+  const actual = await vi.importActual('./useUploads')
+  return {
+    ...actual,
+    useUploads: mocks.useUploads,
+  }
+})
+vi.mock('services/commitErrors', async () => {
+  const actual = await vi.importActual('services/commitErrors')
+  return {
+    ...actual,
+    useCommitErrors: mocks.useCommitErrors,
+  }
+})
+
+vi.mock('../YamlModal/YamlModalErrorBanner', () => ({
+  default: () => 'YamlModalErrorBanner',
+}))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,14 +61,15 @@ afterEach(() => {
 afterAll(() => server.close())
 describe('UploadsCard', () => {
   function setup(mockUploads) {
-    useUploads.mockReturnValue(mockUploads)
-    useCommitErrors.mockReturnValue({ data: { yamlErrors: [], botErrors: [] } })
+    mocks.useUploads.mockReturnValue(mockUploads)
+    mocks.useCommitErrors.mockReturnValue({
+      data: { yamlErrors: [], botErrors: [] },
+    })
 
     server.use(
-      graphql.query('CommitYaml', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('CommitYaml', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
@@ -64,8 +79,8 @@ describe('UploadsCard', () => {
                 },
               },
             },
-          })
-        )
+          },
+        })
       })
     )
   }
