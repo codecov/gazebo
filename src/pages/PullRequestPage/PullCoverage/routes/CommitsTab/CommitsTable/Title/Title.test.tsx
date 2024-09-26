@@ -2,18 +2,23 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useImage as originalUseImage } from 'services/image'
 import { formatTimeToNow } from 'shared/utils/dates'
 
 import Title from '.'
 
-jest.mock('services/image')
-jest.mock('services/user')
-jest.mock('services/repo')
+const mocks = vi.hoisted(() => ({
+  useImage: vi.fn(),
+}))
 
-const useImage = originalUseImage as jest.MockedFunction<
-  typeof originalUseImage
->
+vi.mock('services/image', async () => {
+  const actual = await vi.importActual('services/image')
+  return {
+    ...actual,
+    useImage: mocks.useImage,
+  }
+})
+vi.mock('services/user')
+vi.mock('services/repo')
 
 interface setupArgs {
   author?: {
@@ -30,7 +35,11 @@ describe('Title', () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     })
-    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
+    mocks.useImage.mockReturnValue({
+      src: 'imageUrl',
+      isLoading: false,
+      error: null,
+    })
 
     render(
       <MemoryRouter>
