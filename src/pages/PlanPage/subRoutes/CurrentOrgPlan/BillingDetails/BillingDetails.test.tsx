@@ -1,14 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import BillingDetails from './BillingDetails'
 
-jest.mock('./PaymentCard/PaymentCard', () => () => 'Payment Card')
-jest.mock('./EmailAddress/EmailAddress', () => () => 'Email Address')
-jest.mock('./Address/AddressCard', () => () => 'Address Card')
+vi.mock('./PaymentCard/PaymentCard', () => ({ default: () => 'Payment Card' }))
+vi.mock('./EmailAddress/EmailAddress', () => ({
+  default: () => 'Email Address',
+}))
+vi.mock('./Address/AddressCard', () => ({ default: () => 'Address Card' }))
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -58,25 +60,23 @@ describe('BillingDetails', () => {
     }
   ) {
     server.use(
-      rest.get('/internal/gh/:owner/account-details/', (req, res, ctx) => {
+      http.get('/internal/gh/:owner/account-details/', (info) => {
         if (hasSubscription) {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              subscriptionDetail: hasTax
-                ? {
-                    ...mockSubscription,
-                    taxIds: [
-                      { type: 'k', value: 'lol' },
-                      { type: 'nah', value: 'nice' },
-                    ],
-                  }
-                : mockSubscription,
-            })
-          )
-        } else {
-          return res(ctx.status(200), ctx.json({ subscriptionDetail: null }))
+          return HttpResponse.json({
+            subscriptionDetail: hasTax
+              ? {
+                  ...mockSubscription,
+                  taxIds: [
+                    { type: 'k', value: 'lol' },
+                    { type: 'nah', value: 'nice' },
+                  ],
+                }
+              : mockSubscription,
+          })
         }
+        return HttpResponse.json({
+          subscriptionDetail: null,
+        })
       })
     )
   }
