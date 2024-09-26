@@ -52,10 +52,8 @@ export function deleteDuplicateCFFUploads({ uploads }: { uploads: Upload[] }) {
   // Filter out uploads that have repeated flags, returning those without duplicates
   return uploads.filter(
     (upload) =>
-      !(
-        upload?.uploadType === UploadTypeEnum.CARRIED_FORWARD &&
-        upload?.flags?.some((flag) => nonCFFlags.has(flag))
-      )
+      upload?.uploadType === UploadTypeEnum.CARRIED_FORWARD &&
+      upload?.flags?.some((flag) => nonCFFlags.has(flag))
   )
 }
 
