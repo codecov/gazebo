@@ -1,8 +1,7 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { render, screen } from '@testing-library/react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
@@ -10,9 +9,9 @@ import { TierNames, TTierNames } from 'services/tier'
 
 import PullRequestPage from './PullRequestPage'
 
-jest.mock('./Header', () => () => 'Header')
-jest.mock('./PullCoverage', () => () => 'PullCoverage')
-jest.mock('./PullBundleAnalysis', () => () => 'PullBundleAnalysis')
+vi.mock('./Header', () => ({ default: () => 'Header' }))
+vi.mock('./PullCoverage', () => ({ default: () => 'PullCoverage' }))
+vi.mock('./PullBundleAnalysis', () => ({ default: () => 'PullBundleAnalysis' }))
 
 const mockPullHeadData = {
   owner: {
@@ -184,14 +183,13 @@ describe('PullRequestPage', () => {
     bundleAnalysisEnabled = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullHeadData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockPullHeadData))
-      ),
-      graphql.query('PullPageData', (req, res, ctx) => {
-        if (req.variables.isTeamPlan) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+      graphql.query('PullHeadData', (info) => {
+        return HttpResponse.json({ data: mockPullHeadData })
+      }),
+      graphql.query('PullPageData', (info) => {
+        if (info.variables.isTeamPlan) {
+          return HttpResponse.json({
+            data: {
               owner: {
                 repository: {
                   __typename: 'Repository',
@@ -200,13 +198,12 @@ describe('PullRequestPage', () => {
                   pull: mockPullPageDataTeam,
                 },
               },
-            })
-          )
+            },
+          })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
@@ -215,25 +212,24 @@ describe('PullRequestPage', () => {
                 pull: pullData,
               },
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOverview(privateRepo)))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockOverview(privateRepo) })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: { plan: { tierName: tierValue } },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('PullCoverageDropdownSummary', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockPullCoverageDropdownSummary))
+      graphql.query('PullCoverageDropdownSummary', (info) => {
+        return HttpResponse.json({ data: mockPullCoverageDropdownSummary })
       }),
-      graphql.query('PullBADropdownSummary', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockPullBADropdownSummary))
+      graphql.query('PullBADropdownSummary', (info) => {
+        return HttpResponse.json({ data: mockPullBADropdownSummary })
       })
     )
   }
