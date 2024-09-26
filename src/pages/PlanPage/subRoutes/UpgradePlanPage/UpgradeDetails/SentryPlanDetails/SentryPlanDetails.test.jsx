@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -10,7 +10,7 @@ import { Plans } from 'shared/utils/billing'
 
 import SentryPlanDetails from './SentryPlanDetails'
 
-jest.mock('shared/plan/BenefitList', () => () => 'Benefits List')
+vi.mock('shared/plan/BenefitList', () => ({ default: () => 'Benefits List' }))
 
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro',
@@ -172,10 +172,9 @@ describe('SentryPlanDetails', () => {
     }
   ) {
     server.use(
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
@@ -190,30 +189,22 @@ describe('SentryPlanDetails', () => {
                     : Plans.USERS_BASIC,
               },
             },
-          })
-        )
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: {
-              availablePlans: allPlans,
-            },
-          })
-        )
+          },
+        })
       }),
-      rest.get('/internal/gh/codecov/account-details', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            plan: sentryPlanYear,
-            subscriptionDetail: {
-              cancelAtPeriodEnd: hasUserCanceledAtPeriodEnd,
-            },
-            activatedUserCount: 10,
-          })
-        )
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: { owner: { availablePlans: allPlans } },
+        })
+      }),
+      http.get('/internal/gh/codecov/account-details', (info) => {
+        return HttpResponse.json({
+          plan: sentryPlanYear,
+          subscriptionDetail: {
+            cancelAtPeriodEnd: hasUserCanceledAtPeriodEnd,
+          },
+          activatedUserCount: 10,
+        })
       })
     )
   }
