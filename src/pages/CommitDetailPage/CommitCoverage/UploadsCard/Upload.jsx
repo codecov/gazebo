@@ -42,14 +42,14 @@ const Upload = ({
             onClick={() => {
               if (checked) {
                 // User is unchecking
-                queryClient.setQueryData(['IgnoredUploadIds'], (oldData) =>
-                  without(oldData, id)
-                )
-              } else {
                 queryClient.setQueryData(['IgnoredUploadIds'], (oldData) => [
                   ...(oldData ?? []),
                   id,
                 ])
+              } else {
+                queryClient.setQueryData(['IgnoredUploadIds'], (oldData) =>
+                  without(oldData, id)
+                )
               }
 
               setChecked(!checked)
