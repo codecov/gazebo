@@ -3,7 +3,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import TeamPlanSpecialOffer from './TeamPlanSpecialOffer'
 
-jest.mock('./TeamPlanCard', () => () => 'Team Plan Card')
+vi.mock('./TeamPlanCard', () => ({ default: () => 'Team Plan Card' }))
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/cancel']}>
