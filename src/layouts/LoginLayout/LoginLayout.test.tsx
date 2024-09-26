@@ -4,6 +4,8 @@ import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { ThemeContextProvider } from 'shared/ThemeContext'
+
 import LoginLayout from './LoginLayout'
 
 const mocks = vi.hoisted(() => ({
@@ -30,9 +32,11 @@ const wrapper =
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path={path}>{children}</Route>
-      </MemoryRouter>
+      <ThemeContextProvider>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path={path}>{children}</Route>
+        </MemoryRouter>
+      </ThemeContextProvider>
     </QueryClientProvider>
   )
 
