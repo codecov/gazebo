@@ -1,27 +1,35 @@
-import { render, screen, waitFor } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useAutoActivate } from 'services/account'
-
 import AutoActivate from './AutoActivate'
 
-jest.mock('services/account')
+const mocks = vi.hoisted(() => ({
+  useAutoActivate: vi.fn(),
+}))
+
+vi.mock('services/account', async () => {
+  const actual = await vi.importActual('services/account')
+
+  return {
+    ...actual,
+    useAutoActivate: mocks.useAutoActivate,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-const updateAccountMutate = jest.fn()
+const updateAccountMutate = vi.fn()
 const updateAccount = {
   mutate: updateAccountMutate,
 }
 describe('Auto Activate', () => {
   function setup({ planAutoActivate }) {
     const user = userEvent.setup()
-    useAutoActivate.mockReturnValue(updateAccount)
+    mocks.useAutoActivate.mockReturnValue(updateAccount)
 
     render(<AutoActivate planAutoActivate={planAutoActivate} />, {
       wrapper: ({ children }) => (
@@ -40,7 +48,9 @@ describe('Auto Activate', () => {
         const { user } = setup({ planAutoActivate: false })
         const toggle = screen.getByText(/Auto-activate members/)
         await user.click(toggle)
-        expect(screen.getByText('x.svg')).toBeInTheDocument()
+
+        const x = screen.getByTestId('x')
+        expect(x).toBeInTheDocument()
       })
 
       it('Triggers change', async () => {
@@ -56,7 +66,8 @@ describe('Auto Activate', () => {
         const { user } = setup({ planAutoActivate: true })
         const toggle = screen.getByText(/Auto-activate members/)
         await user.click(toggle)
-        expect(screen.getByText('check.svg')).toBeInTheDocument()
+        const check = screen.getByTestId('check')
+        expect(check).toBeInTheDocument()
       })
 
       it('Triggers change', async () => {
