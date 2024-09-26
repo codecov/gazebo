@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useComponentComparison } from './useComponentComparison'
@@ -93,19 +93,19 @@ describe('useComponentComparison', () => {
     const componentsMock = jest.fn()
 
     server.use(
-      graphql.query('PullComponentComparison', (req, res, ctx) => {
+      graphql.query('PullComponentComparison', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else {
-          if (req.variables?.filters?.components) {
-            componentsMock(req.variables.filters.components)
+          if (info.variables?.filters?.components) {
+            componentsMock(info.variables.filters.components)
           }
 
-          return res(ctx.status(200), ctx.data(mockResponse))
+          return HttpResponse.json({ data: mockResponse })
         }
       })
     )
