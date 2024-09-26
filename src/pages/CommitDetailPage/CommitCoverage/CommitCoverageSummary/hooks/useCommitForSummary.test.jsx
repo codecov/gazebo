@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import isNumber from 'lodash/isNumber'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
@@ -149,20 +149,18 @@ afterAll(() => {
 describe('usePullForCompareSummary', () => {
   function setup() {
     server.use(
-      graphql.query('Commit', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('Commit', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: { repository: { __typename: 'Repository', ...data } },
-          })
-        )
-      )
+          },
+        })
+      })
     )
   }
 
-  beforeEach(() => setup())
-
   it('returns data accordingly', async () => {
+    setup()
     const { result } = renderHook(
       () =>
         useCommitForSummary({
@@ -171,9 +169,7 @@ describe('usePullForCompareSummary', () => {
           repo: 'cool-repo',
           commit: 'sha256',
         }),
-      {
-        wrapper,
-      }
+      { wrapper }
     )
 
     await waitFor(() => expect(result.current).toEqual(successfulExpectedData))
