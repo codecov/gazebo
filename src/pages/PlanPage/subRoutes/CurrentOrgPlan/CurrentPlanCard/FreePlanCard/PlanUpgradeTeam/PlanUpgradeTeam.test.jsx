@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -9,7 +9,7 @@ import { TrialStatuses } from 'services/account'
 
 import PlanUpgradeTeam from './PlanUpgradeTeam'
 
-jest.mock('shared/plan/BenefitList', () => () => 'BenefitsList')
+vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
 
 const mockPlanBasic = {
   baseUnitPrice: 0,
@@ -163,7 +163,7 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
-  jest.resetAllMocks()
+  vi.clearAllMocks()
 })
 
 afterAll(() => {
@@ -183,24 +183,22 @@ const wrapper = ({ children }) => (
 describe('PlanUpgradeTeam', () => {
   function setup({ plan = mockPlanBasic } = { plan: mockPlanBasic }) {
     server.use(
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               pretrialPlan: mockPreTrialPlanInfo,
               plan,
             },
-          })
-        )
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({ owner: { availablePlans: mockAvailablePlans } })
-        )
-      )
+          },
+        })
+      }),
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: { owner: { availablePlans: mockAvailablePlans } },
+        })
+      })
     )
   }
 
