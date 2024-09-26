@@ -5,7 +5,7 @@ import isEqual from 'lodash/isEqual'
 import pluralize from 'pluralize'
 import PropTypes from 'prop-types'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
-import useIntersection from 'react-use/lib/useIntersection'
+import { useIntersection } from 'react-use'
 
 import { dataMarketingType } from 'shared/propTypes'
 

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev:vite": "yarn start:vite",
-    "start:vite": "yarn generate-icons:vite && vite",
+    "start:vite": "yarn generate-icons:vite && vite --host",
     "build:vite": "yarn generate-icons:vite && tsc -b && vite build",
     "dev": "yarn start",
     "start": "craco start",
@@ -209,7 +209,8 @@
   },
   "resolutions": {
     "react-refresh": "^0.14.0",
-    "resolve-url-loader/postcss": "8.4.31"
+    "resolve-url-loader/postcss": "8.4.31",
+    "micromatch": "^4.0.8"
   },
   "packageManager": "yarn@4.5.0",
   "engineStrict": false

@@ -1,8 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import LoginLayout from './LoginLayout'
 
@@ -30,9 +32,11 @@ const wrapper =
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path={path}>{children}</Route>
-      </MemoryRouter>
+      <ThemeContextProvider>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path={path}>{children}</Route>
+        </MemoryRouter>
+      </ThemeContextProvider>
     </QueryClientProvider>
   )
 
@@ -44,7 +48,6 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
-  cleanup()
   vi.clearAllMocks()
 })
 
