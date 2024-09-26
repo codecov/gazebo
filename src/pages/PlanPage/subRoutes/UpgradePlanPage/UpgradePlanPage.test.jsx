@@ -5,8 +5,8 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -15,7 +15,7 @@ import { Plans } from 'shared/utils/billing'
 
 import UpgradePlanPage from './UpgradePlanPage'
 
-jest.mock('./UpgradeForm', () => () => 'UpgradeForm')
+vi.mock('./UpgradeForm', () => ({ default: () => 'UpgradeForm' }))
 
 const plans = [
   {
@@ -202,75 +202,67 @@ describe('UpgradePlanPage', () => {
     }
   ) {
     server.use(
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
               },
             },
-          })
-        )
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
+          },
+        })
+      }),
+      graphql.query('GetAvailablePlans', (info) => {
         if (includeSentryPlans) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: { availablePlans: [sentryPlanMonth, sentryPlanYear] },
-            })
-          )
+            },
+          })
         } else if (includeTeamPlans) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: { availablePlans: [teamPlanMonth, teamPlanYear] },
-            })
-          )
+            },
+          })
         } else {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { availablePlans: plans } })
-          )
+          return HttpResponse.json({
+            data: {
+              owner: { availablePlans: plans },
+            },
+          })
         }
       }),
-      rest.get('/internal/gh/codecov/account-details', (req, res, ctx) => {
+      http.get('/internal/gh/codecov/account-details', (info) => {
         if (planValue === Plans.USERS_SENTRYY) {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              plan: sentryPlanYear,
-              subscriptionDetail: {
-                cancelAtPeriodEnd: periodEnd,
-              },
-              activatedUserCount: 10,
-            })
-          )
-        }
-
-        return res(
-          ctx.status(200),
-          ctx.json({
-            plan: {
-              marketingName: 'Pro Team',
-              value: planValue,
-              baseUnitPrice: 12,
-              benefits: [
-                'Configurable # of users',
-                'Unlimited public repositories',
-                'Unlimited private repositories',
-                'Priority Support',
-              ],
-            },
+          return HttpResponse.json({
+            plan: sentryPlanYear,
             subscriptionDetail: {
               cancelAtPeriodEnd: periodEnd,
             },
             activatedUserCount: 10,
           })
-        )
+        }
+
+        return HttpResponse.json({
+          plan: {
+            marketingName: 'Pro Team',
+            value: planValue,
+            baseUnitPrice: 12,
+            benefits: [
+              'Configurable # of users',
+              'Unlimited public repositories',
+              'Unlimited private repositories',
+              'Priority Support',
+            ],
+          },
+          subscriptionDetail: {
+            cancelAtPeriodEnd: periodEnd,
+          },
+          activatedUserCount: 10,
+        })
       })
     )
   }
