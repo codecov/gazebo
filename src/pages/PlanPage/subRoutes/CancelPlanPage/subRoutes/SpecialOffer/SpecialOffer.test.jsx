@@ -1,15 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import SpecialOffer from './SpecialOffer'
 
-const mockBody = jest.fn()
-const mockToast = jest.fn()
-jest.mock('services/toastNotification', () => ({
+const mockBody = vi.fn()
+const mockToast = vi.fn()
+
+vi.mock('services/toastNotification', () => ({
   useAddNotification: () => (data) => mockToast(data),
 }))
 
@@ -59,19 +60,16 @@ describe('SpecialOffer', () => {
     const user = userEvent.setup()
 
     server.use(
-      rest.patch(
-        '/internal/gh/codecov/account-details',
-        async (req, res, ctx) => {
-          if (unsuccessfulReq) {
-            return res(ctx.status(500))
-          }
-
-          const body = await req.json()
-          mockBody(body)
-
-          return res(ctx.status(200))
+      http.patch('/internal/gh/codecov/account-details', async (info) => {
+        if (unsuccessfulReq) {
+          return HttpResponse.error(500)
         }
-      )
+
+        const body = await info.request.json()
+        mockBody(body)
+
+        return HttpResponse.json({})
+      })
     )
 
     return { user }
