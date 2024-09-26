@@ -97,7 +97,7 @@ describe('TokenlessBanner', () => {
       render(<TokenlessBanner />, { wrapper: wrapper() })
 
       const content = await screen.findByText(
-        /Uploading with token is now required./
+        /Uploading with the token is now required./
       )
       expect(content).toBeInTheDocument()
     })
@@ -140,7 +140,7 @@ describe('TokenlessBanner', () => {
       render(<TokenlessBanner />, { wrapper: wrapper() })
 
       const content = await screen.findByText(
-        /Uploading with token is now required./
+        /Uploading with the token is now required./
       )
       expect(content).toBeInTheDocument()
     })
@@ -177,7 +177,7 @@ describe('TokenlessBanner', () => {
       setup()
       render(<TokenlessBanner />, { wrapper: wrapper() })
 
-      const tooltip = await screen.findByText(/the token/)
+      const tooltip = await screen.findByText(/the token. /)
       expect(tooltip).toBeInTheDocument()
     })
 

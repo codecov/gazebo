@@ -20,6 +20,9 @@ vi.mock('./BundleFeedbackBanner', () => ({
 vi.mock('./OktaBanners', () => ({
   default: () => 'OktaBanners',
 }))
+vi.mock('./TokenlessBanner', () => ({
+  default: () => 'TokenlessBanner',
+}))
 
 describe('GlobalTopBanners', () => {
   it('renders sentry trial banner', async () => {
