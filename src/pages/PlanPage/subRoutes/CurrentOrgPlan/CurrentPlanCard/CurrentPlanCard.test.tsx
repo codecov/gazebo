@@ -1,15 +1,17 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CurrentPlanCard from './CurrentPlanCard'
 
-jest.mock('./FreePlanCard', () => () => 'Free plan card')
-jest.mock('./PaidPlanCard', () => () => 'Paid plan card')
-jest.mock('./EnterprisePlanCard', () => () => 'Enterprise plan card')
+vi.mock('./FreePlanCard', () => ({ default: () => 'Free plan card' }))
+vi.mock('./PaidPlanCard', () => ({ default: () => 'Paid plan card' }))
+vi.mock('./EnterprisePlanCard', () => ({
+  default: () => 'Enterprise plan card',
+}))
 
 const proPlanDetails = {
   plan: {
@@ -100,9 +102,9 @@ afterAll(() => server.close())
 describe('CurrentPlanCard', () => {
   function setup(planDetails = freePlanDetails) {
     server.use(
-      rest.get('/internal/bb/critical-role/account-details/', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(planDetails))
-      )
+      http.get('/internal/bb/critical-role/account-details/', (http) => {
+        return HttpResponse.json(planDetails)
+      })
     )
   }
 
