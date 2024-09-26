@@ -6,8 +6,8 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -16,22 +16,30 @@ import { UploadStateEnum } from 'shared/utils/commit'
 
 import CommitCoverage from './CommitCoverage'
 
-jest.mock('./BotErrorBanner', () => () => <div>BotErrorBanner</div>)
-jest.mock('./YamlErrorBanner', () => () => <div>YamlErrorBanner</div>)
-jest.mock('./routes/FilesChangedTab', () => () => <div>FilesChangedTab</div>)
-jest.mock('./UploadsCard', () => () => <div>UploadsCard</div>)
-jest.mock('./routes/IndirectChangesTab', () => () => (
-  <div>IndirectChangesTab</div>
-))
-jest.mock('./CommitCoverageSummary', () => () => (
-  <div>CommitCoverageSummary</div>
-))
-jest.mock('./routes/CommitDetailFileExplorer', () => () => (
-  <div>CommitDetailFileExplorer</div>
-))
-jest.mock('./routes/CommitDetailFileViewer', () => () => (
-  <div>CommitDetailFileViewer</div>
-))
+vi.mock('./BotErrorBanner', () => ({
+  default: () => <div>BotErrorBanner</div>,
+}))
+vi.mock('./YamlErrorBanner', () => ({
+  default: () => <div>YamlErrorBanner</div>,
+}))
+vi.mock('./routes/FilesChangedTab', () => ({
+  default: () => <div>FilesChangedTab</div>,
+}))
+vi.mock('./UploadsCard', () => ({
+  default: () => <div>UploadsCard</div>,
+}))
+vi.mock('./routes/IndirectChangesTab', () => ({
+  default: () => <div>IndirectChangesTab</div>,
+}))
+vi.mock('./CommitCoverageSummary', () => ({
+  default: () => <div>CommitCoverageSummary</div>,
+}))
+vi.mock('./routes/CommitDetailFileExplorer', () => ({
+  default: () => <div>CommitDetailFileExplorer</div>,
+}))
+vi.mock('./routes/CommitDetailFileViewer', () => ({
+  default: () => <div>CommitDetailFileViewer</div>,
+}))
 
 const mockCommitData = {
   owner: {
@@ -395,66 +403,56 @@ describe('CommitCoverage', () => {
     })
 
     server.use(
-      graphql.query('Commit', (req, res, ctx) => {
+      graphql.query('Commit', (info) => {
         if (hasErroredUploads) {
-          return res(ctx.status(200), ctx.data(mockErroredUploads))
+          return HttpResponse.json({ data: mockErroredUploads })
         }
 
-        return res(ctx.status(200), ctx.data(mockCommitData))
+        return HttpResponse.json({ data: mockCommitData })
       }),
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockRepoSettingsTeamData(isPrivate))
-        )
+      graphql.query('GetRepoSettingsTeam', (info) => {
+        return HttpResponse.json({ data: mockRepoSettingsTeamData(isPrivate) })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(
-            mockRepoOverview({
-              coverageEnabled,
-              bundleAnalysisEnabled,
-              isPrivate,
-            })
-          )
-        )
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({
+          data: mockRepoOverview({
+            coverageEnabled,
+            bundleAnalysisEnabled,
+            isPrivate,
+          }),
+        })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOwnerTier(tierName)))
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({ data: mockOwnerTier(tierName) })
       }),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoBackfilledData))
+      graphql.query('BackfillFlagMemberships', (info) => {
+        return HttpResponse.json({ data: mockRepoBackfilledData })
       }),
-      graphql.query('CommitErrors', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCommitErrors(hasCommitErrors)))
+      graphql.query('CommitErrors', (info) => {
+        return HttpResponse.json({ data: mockCommitErrors(hasCommitErrors) })
       }),
-      graphql.query('DetailOwner', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOwnerData))
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({ data: mockOwnerData })
       }),
-      graphql.query('CompareTotals', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCompareTotals))
+      graphql.query('CompareTotals', (info) => {
+        return HttpResponse.json({ data: mockCompareTotals })
       }),
-      graphql.query('CommitComponents', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCommitComponentData))
+      graphql.query('CommitComponents', (info) => {
+        return HttpResponse.json({ data: mockCommitComponentData })
       }),
-      graphql.query('CommitPageData', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(
-            mockCommitPageData(
-              hasCommitPageMissingCommitDataError,
-              hasCommitPageOtherDataError,
-              hasFirstPR
-            )
-          )
-        )
+      graphql.query('CommitPageData', (info) => {
+        return HttpResponse.json({
+          data: mockCommitPageData(
+            hasCommitPageMissingCommitDataError,
+            hasCommitPageOtherDataError,
+            hasFirstPR
+          ),
+        })
       }),
-      graphql.query('GetRepoRateLimitStatus', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockRepoRateLimitStatus({ isGithubRateLimited }))
-        )
+      graphql.query('GetRepoRateLimitStatus', (info) => {
+        return HttpResponse.json({
+          data: mockRepoRateLimitStatus({ isGithubRateLimited }),
+        })
       })
     )
 
