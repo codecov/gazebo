@@ -1,17 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import PlanUpgradePro from './PlanUpgradePro'
 
-jest.mock('../ProPlanSubheading', () => () => 'Pro Subheading')
-jest.mock(
-  '../../shared/ActionsBilling/ActionsBilling',
-  () => () => 'Actions Billing'
-)
-jest.mock('shared/plan/BenefitList', () => () => 'BenefitsList')
+vi.mock('../ProPlanSubheading', () => ({ default: () => 'Pro Subheading' }))
+vi.mock('../../shared/ActionsBilling/ActionsBilling', () => ({
+  default: () => 'Actions Billing',
+}))
+vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
 
 const plansWithoutSentryOptions = [
   {
@@ -111,23 +109,13 @@ const plansWithSentryOptions = [
   },
 ]
 
-const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
 
-beforeAll(() => {
-  server.listen()
-})
-
 afterEach(() => {
   queryClient.clear()
-  server.resetHandlers()
-  jest.resetAllMocks()
-})
-
-afterAll(() => {
-  server.close()
+  vi.clearAllMocks()
 })
 
 const wrapper = ({ children }) => (
