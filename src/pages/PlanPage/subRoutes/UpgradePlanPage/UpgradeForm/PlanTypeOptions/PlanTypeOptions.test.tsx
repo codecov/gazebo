@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
@@ -200,25 +200,24 @@ describe('PlanTypeOptions', () => {
     }
   ) {
     server.use(
-      rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
+      http.get(`/internal/gh/codecov/account-details/`, (info) => {
         if (planValue === Plans.USERS_BASIC) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsBasic))
+          return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_PR_INAPPY) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsProYearly))
+          return HttpResponse.json(mockAccountDetailsProYearly)
         } else if (planValue === Plans.USERS_TRIAL) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTrial))
+          return HttpResponse.json(mockAccountDetailsTrial)
         } else if (planValue === Plans.USERS_TEAMY) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamYearly))
+          return HttpResponse.json(mockAccountDetailsTeamYearly)
         } else if (planValue === Plans.USERS_TEAMM) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamMonthly))
+          return HttpResponse.json(mockAccountDetailsTeamMonthly)
         } else if (planValue === Plans.USERS_SENTRYY) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsSentryYearly))
+          return HttpResponse.json(mockAccountDetailsSentryYearly)
         }
       }),
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               availablePlans: [
                 proPlanMonth,
@@ -227,13 +226,13 @@ describe('PlanTypeOptions', () => {
                 ...(hasSentryPlans ? [sentryPlanMonth, sentryPlanYear] : []),
               ],
             },
-          })
-        )
+          },
+        })
       })
     )
 
-    const mockSetFormValue = jest.fn()
-    const mockSetSelectedPlan = jest.fn()
+    const mockSetFormValue = vi.fn()
+    const mockSetSelectedPlan = vi.fn()
     const user = userEvent.setup()
 
     return { user, mockSetFormValue, mockSetSelectedPlan, planValue }
