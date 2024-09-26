@@ -152,9 +152,13 @@ describe('UploadsCard', () => {
   })
 
   describe('rendering errors', () => {
-    beforeEach(() => {
-      // Suppress prop-type warnings.
-      jest.spyOn(console, 'error').mockImplementation(() => {})
+    let consoleSpy
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('fileNotFoundInStorage error', () => {
