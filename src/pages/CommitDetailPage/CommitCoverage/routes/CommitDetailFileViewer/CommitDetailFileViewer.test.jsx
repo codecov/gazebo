@@ -1,15 +1,17 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import CommitDetailFileViewer from './CommitDetailFileViewer'
 
-jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
-jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
+vi.mock('ui/CodeRenderer/hooks/useScrollToLine')
+vi.mock('../ComponentsSelector', () => ({
+  default: () => 'ComponentsSelector',
+}))
 
 const mockOwner = {
   username: 'cool-user',
@@ -78,26 +80,28 @@ describe('CommitDetailFileViewer', () => {
   function setup() {
     useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
-      handleClick: jest.fn(),
+      handleClick: vi.fn(),
       targeted: false,
     }))
 
     server.use(
-      graphql.query('DetailOwner', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: mockOwner }))
-      ),
-      graphql.query('CoverageForFile', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { repository: mockCoverage } }))
-      ),
-      graphql.query('OwnerTier', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: null }))
-      ),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: null }))
-      ),
-      graphql.query('GetRepoOverview', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: null }))
-      )
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({ data: { owner: mockOwner } })
+      }),
+      graphql.query('CoverageForFile', (info) => {
+        return HttpResponse.json({
+          data: { owner: { repository: mockCoverage } },
+        })
+      }),
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({ data: { owner: null } })
+      }),
+      graphql.query('BackfillFlagMemberships', (info) => {
+        return HttpResponse.json({ data: { owner: null } })
+      }),
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: { owner: null } })
+      })
     )
   }
 
