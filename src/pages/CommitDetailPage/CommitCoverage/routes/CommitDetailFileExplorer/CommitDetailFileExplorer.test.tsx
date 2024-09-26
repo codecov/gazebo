@@ -1,13 +1,17 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CommitDetailFileExplorer from './CommitDetailFileExplorer'
 
-jest.mock('../ComponentsSelector', () => () => 'Components Selector')
-jest.mock('./CommitDetailFileExplorerTable', () => () => 'Table')
+vi.mock('../ComponentsSelector', () => ({
+  default: () => 'Components Selector',
+}))
+vi.mock('./CommitDetailFileExplorerTable', () => ({
+  default: () => 'Table',
+}))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -86,8 +90,8 @@ afterAll(() => {
 describe('CommitDetailFileExplorer', () => {
   function setup() {
     server.use(
-      graphql.query('CommitPathContents', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ owner: mockTreeData }))
+      graphql.query('CommitPathContents', (info) => {
+        return HttpResponse.json({ data: mockTreeData })
       })
     )
   }
