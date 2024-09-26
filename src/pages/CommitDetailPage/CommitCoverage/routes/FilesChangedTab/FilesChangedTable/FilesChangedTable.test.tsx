@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -11,7 +11,7 @@ import { ImpactedFileType } from 'services/commit'
 
 import FilesChangedTable from './FilesChangedTable'
 
-jest.mock('../shared/CommitFileDiff', () => () => 'CommitFileDiff')
+vi.mock('../shared/CommitFileDiff', () => ({ default: () => 'CommitFileDiff' }))
 
 const mockCommitData = (data: SetupArgs, state: string) => ({
   owner: {
@@ -51,7 +51,7 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
-  jest.resetAllMocks()
+  vi.clearAllMocks()
   server.resetHandlers()
 })
 
@@ -87,7 +87,7 @@ type SetupArgs = {
 
 describe('FilesChangedTable', () => {
   function setup(data: SetupArgs, state = 'processed') {
-    const mockVars = jest.fn()
+    const mockVars = vi.fn()
     const user = userEvent.setup()
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -99,9 +99,9 @@ describe('FilesChangedTable', () => {
     })
 
     server.use(
-      graphql.query('Commit', (req, res, ctx) => {
-        mockVars(req.variables)
-        return res(ctx.status(200), ctx.data(mockCommitData(data, state)))
+      graphql.query('Commit', (info) => {
+        mockVars(info.variables)
+        return HttpResponse.json({ data: mockCommitData(data, state) })
       })
     )
 
