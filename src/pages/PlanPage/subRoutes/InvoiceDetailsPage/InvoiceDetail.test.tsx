@@ -1,11 +1,21 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useAccountDetails, useInvoice } from 'services/account'
-
 import InvoiceDetail from './InvoiceDetail'
 
-jest.mock('services/account')
+const mocks = vi.hoisted(() => ({
+  useAccountDetails: vi.fn(),
+  useInvoice: vi.fn(),
+}))
+
+vi.mock('services/account', async () => {
+  const actual = await vi.importActual('services/account')
+  return {
+    ...actual,
+    useAccountDetails: mocks.useAccountDetails,
+    useInvoice: mocks.useInvoice,
+  }
+})
 
 const invoice = {
   id: 'in_1I3vJAGlVGuVgOrk5h77hHRa',
@@ -88,18 +98,15 @@ const subscriptionDetail = {
   customer: 'cus_IVd2T7puVJe1Ur',
 }
 
-const mockedUseInvoice = useInvoice as jest.Mock
-const mockedUseAccountDetails = useAccountDetails as jest.Mock
-
 describe('InvoiceDetail', () => {
   function setup(invoiceOver = {}, url = '', subscriptionOver = {}) {
-    mockedUseInvoice.mockReturnValue({
+    mocks.useInvoice.mockReturnValue({
       data: {
         ...invoice,
         ...invoiceOver,
       },
     })
-    mockedUseAccountDetails.mockReturnValue({
+    mocks.useAccountDetails.mockReturnValue({
       data: {
         subscriptionDetail: {
           ...subscriptionOver,
