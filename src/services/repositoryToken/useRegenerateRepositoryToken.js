@@ -35,8 +35,8 @@ export function useRegenerateRepositoryToken({ tokenType }) {
     useErrorBoundary: false,
     onSuccess: ({ data }) => {
       queryClient.invalidateQueries(['GetRepoSettings'])
-      const error =
-        data?.data?.data?.regenerateRepositoryToken?.error?.__typename
+      const error = data?.regenerateRepositoryToken?.error?.__typename
+
       if (error) {
         addToast({
           type: 'error',
