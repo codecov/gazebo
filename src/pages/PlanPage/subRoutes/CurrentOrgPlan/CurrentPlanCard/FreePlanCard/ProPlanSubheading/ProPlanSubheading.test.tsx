@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
@@ -63,10 +63,9 @@ describe('ProPlanSubheading', () => {
     hasPrivateRepos = true,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos,
               plan: {
@@ -75,9 +74,9 @@ describe('ProPlanSubheading', () => {
                 value: planValue,
               },
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
   }
 
