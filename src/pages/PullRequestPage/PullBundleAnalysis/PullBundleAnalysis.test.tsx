@@ -6,8 +6,8 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -15,11 +15,15 @@ import PullBundleAnalysis from './PullBundleAnalysis'
 
 import { TBundleAnalysisComparisonResult } from '../hooks'
 
-jest.mock('./EmptyTable', () => () => <div>EmptyTable</div>)
-jest.mock('./PullBundleHeadTable', () => () => <div>PullBundleHeadTable</div>)
-jest.mock('./PullBundleComparisonTable', () => () => (
-  <div>PullBundleComparisonTable</div>
-))
+vi.mock('./EmptyTable', () => ({
+  default: () => <div>EmptyTable</div>,
+}))
+vi.mock('./PullBundleHeadTable', () => ({
+  default: () => <div>PullBundleHeadTable</div>,
+}))
+vi.mock('./PullBundleComparisonTable', () => ({
+  default: () => <div>PullBundleComparisonTable</div>,
+}))
 
 const mockPullPageData = (
   compareType: TBundleAnalysisComparisonResult = 'BundleAnalysisComparison',
@@ -140,27 +144,23 @@ describe('PullBundleAnalysis', () => {
     bundleAnalysisEnabled = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullPageData', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(
-            mockPullPageData(
-              compareType,
-              headBundleType,
-              coverageEnabled,
-              bundleAnalysisEnabled
-            )
-          )
-        )
+      graphql.query('PullPageData', (info) => {
+        return HttpResponse.json({
+          data: mockPullPageData(
+            compareType,
+            headBundleType,
+            coverageEnabled,
+            bundleAnalysisEnabled
+          ),
+        })
       }),
-      graphql.query('PullBADropdownSummary', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockSummaryData))
+      graphql.query('PullBADropdownSummary', (info) => {
+        return HttpResponse.json({ data: mockSummaryData })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockRepoOverview({ coverageEnabled, bundleAnalysisEnabled }))
-        )
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({
+          data: mockRepoOverview({ coverageEnabled, bundleAnalysisEnabled }),
+        })
       })
     )
   }
