@@ -2,11 +2,12 @@ import { render, screen } from '@testing-library/react'
 
 import IndirectChangesTab from './IndirectChangesTab'
 
-jest.mock(
-  './IndirectChangesTable/IndirectChangesTable',
-  () => () => 'IndirectChangesTable'
-)
-jest.mock('../ComponentsSelector', () => () => 'Components Selector')
+vi.mock('./IndirectChangesTable/IndirectChangesTable', () => ({
+  default: () => 'IndirectChangesTable',
+}))
+vi.mock('../ComponentsSelector', () => ({
+  default: () => 'Components Selector',
+}))
 
 describe('IndirectChangesTab', () => {
   it('renders commits table', async () => {
