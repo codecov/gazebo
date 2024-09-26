@@ -95,14 +95,14 @@ const createUploadGroups = ({ uploads }: { uploads: Upload[] }) => {
     if (!providerGroups[provider]) {
       providerGroups[provider] = [upload]
     } else {
-      providerGroups[provider].push(upload)
+      providerGroups[provider]!.push(upload)
     }
 
     if (upload.state === UploadStateEnum.error) {
       if (!errorProviderGroups[provider]) {
         errorProviderGroups[provider] = [upload]
       } else {
-        errorProviderGroups[provider].push(upload)
+        errorProviderGroups[provider]!.push(upload)
       }
     }
   })
