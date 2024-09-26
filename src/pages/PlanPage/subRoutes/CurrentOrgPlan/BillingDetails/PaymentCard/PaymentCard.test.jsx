@@ -1,12 +1,21 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { useUpdateCard } from 'services/account'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import PaymentCard from './PaymentCard'
 
-jest.mock('services/account')
+const mocks = vi.hoisted(() => ({
+  useUpdateCard: vi.fn(),
+}))
+
+vi.mock('services/account', async () => {
+  const actual = await vi.importActual('services/account')
+  return {
+    ...actual,
+    useUpdateCard: mocks.useUpdateCard,
+  }
+})
 
 const subscriptionDetail = {
   defaultPaymentMethod: {
@@ -29,7 +38,7 @@ const wrapper = ({ children }) => (
 )
 
 // mocking all the stripe components; and trusting the library :)
-jest.mock('@stripe/react-stripe-js', () => {
+vi.mock('@stripe/react-stripe-js', () => {
   function makeFakeComponent(name) {
     // mocking onReady to be called after a bit of time
     return function Component({ onReady }) {
@@ -38,7 +47,7 @@ jest.mock('@stripe/react-stripe-js', () => {
   }
   return {
     useElements: () => ({
-      getElement: jest.fn(),
+      getElement: vi.fn(),
     }),
     useStripe: () => ({}),
     CardElement: makeFakeComponent('CardElement'),
@@ -104,7 +113,7 @@ describe('PaymentCard', () => {
           { wrapper }
         )
 
-        useUpdateCard.mockReturnValue({
+        mocks.useUpdateCard.mockReturnValue({
           mutate: () => null,
           isLoading: false,
         })
@@ -127,7 +136,7 @@ describe('PaymentCard', () => {
           { wrapper }
         )
 
-        useUpdateCard.mockReturnValue({
+        mocks.useUpdateCard.mockReturnValue({
           mutate: () => null,
           isLoading: false,
         })
@@ -191,7 +200,7 @@ describe('PaymentCard', () => {
     it(`doesn't render the card anymore`, async () => {
       const { user } = setup()
       const updateCard = jest.fn()
-      useUpdateCard.mockReturnValue({
+      mocks.useUpdateCard.mockReturnValue({
         mutate: updateCard,
         isLoading: false,
       })
@@ -212,7 +221,7 @@ describe('PaymentCard', () => {
     it('renders the form', async () => {
       const { user } = setup()
       const updateCard = jest.fn()
-      useUpdateCard.mockReturnValue({
+      mocks.useUpdateCard.mockReturnValue({
         mutate: updateCard,
         isLoading: false,
       })
@@ -235,7 +244,7 @@ describe('PaymentCard', () => {
       it('calls the service to update the card', async () => {
         const { user } = setup()
         const updateCard = jest.fn()
-        useUpdateCard.mockReturnValue({
+        mocks.useUpdateCard.mockReturnValue({
           mutate: updateCard,
           isLoading: false,
         })
@@ -257,7 +266,7 @@ describe('PaymentCard', () => {
     describe('when the user clicks on cancel', () => {
       it(`doesn't render the form anymore`, async () => {
         const { user } = setup()
-        useUpdateCard.mockReturnValue({
+        mocks.useUpdateCard.mockReturnValue({
           mutate: jest.fn(),
           isLoading: false,
         })
@@ -284,7 +293,7 @@ describe('PaymentCard', () => {
     it('renders the error', async () => {
       const { user } = setup()
       const randomError = 'not rich enough'
-      useUpdateCard.mockReturnValue({
+      mocks.useUpdateCard.mockReturnValue({
         mutate: jest.fn(),
         error: { message: randomError },
       })
@@ -306,7 +315,10 @@ describe('PaymentCard', () => {
   describe('when the form is loading', () => {
     it('has the error and save button disabled', async () => {
       const { user } = setup()
-      useUpdateCard.mockReturnValue({ mutate: jest.fn(), isLoading: true })
+      mocks.useUpdateCard.mockReturnValue({
+        mutate: jest.fn(),
+        isLoading: true,
+      })
       render(
         <PaymentCard
           subscriptionDetail={subscriptionDetail}
