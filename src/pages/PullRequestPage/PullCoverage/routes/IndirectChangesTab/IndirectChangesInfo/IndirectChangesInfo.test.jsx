@@ -1,10 +1,11 @@
-import { render, screen } from 'custom-testing-library'
-
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import IndirectChangesInfo from './IndirectChangesInfo'
 
-jest.mock('../../ComponentsSelector', () => () => 'ComponentsSelector')
+vi.mock('../../ComponentsSelector', () => ({
+  default: () => 'ComponentsSelector',
+}))
 
 describe('Indiret changes Info', () => {
   it('renders the expected copy', () => {

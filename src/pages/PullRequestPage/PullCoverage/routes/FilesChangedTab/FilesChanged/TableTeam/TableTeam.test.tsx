@@ -1,15 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { OrderingDirection, OrderingParameter } from 'services/pull/usePullTeam'
 
 import TableTeam, { getFilter } from './TableTeam'
 
-jest.mock('../FileDiff', () => () => 'FileDiff')
+vi.mock('../FileDiff', () => ({ default: () => 'FileDiff' }))
 
 const mockComparisonTeamData = {
   owner: {
@@ -271,7 +271,7 @@ describe('TableTeam', () => {
     }
   ) {
     const user = userEvent.setup()
-    const mockVars = jest.fn()
+    const mockVars = vi.fn()
 
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -282,47 +282,35 @@ describe('TableTeam', () => {
     })
 
     server.use(
-      graphql.query('GetPullTeam', (req, res, ctx) => {
-        mockVars(req.variables?.filters)
+      graphql.query('GetPullTeam', (info) => {
+        mockVars(info.variables?.filters)
 
         if (pendingPull) {
-          return res(ctx.status(200), ctx.data(mockPendingPull))
+          return HttpResponse.json({ data: mockPendingPull })
+        } else if (noCoveredFiles) {
+          return HttpResponse.json({ data: mockEmptyFilesPull })
+        } else if (criticalFile) {
+          return HttpResponse.json({ data: mockPullCriticalFileData })
+        } else if (noChange) {
+          return HttpResponse.json({ data: mockNoChangeFileData })
         }
 
-        if (noCoveredFiles) {
-          return res(ctx.status(200), ctx.data(mockEmptyFilesPull))
-        }
-
-        if (criticalFile) {
-          return res(ctx.status(200), ctx.data(mockPullCriticalFileData))
-        }
-
-        if (noChange) {
-          return res(ctx.status(200), ctx.data(mockNoChangeFileData))
-        }
-
-        return res(ctx.status(200), ctx.data(mockPullTeamData))
+        return HttpResponse.json({ data: mockPullTeamData })
       }),
-      graphql.query('GetPullCompareTotalsTeam', (req, res, ctx) => {
-        mockVars(req.variables)
+      graphql.query('GetPullCompareTotalsTeam', (info) => {
+        mockVars(info.variables)
 
         if (pendingPull) {
-          return res(ctx.status(200), ctx.data(mockPendingComparison))
+          return HttpResponse.json({ data: mockPendingComparison })
+        } else if (noCoveredFiles) {
+          return HttpResponse.json({ data: mockEmptyFilesComparison })
+        } else if (criticalFile) {
+          return HttpResponse.json({ data: mockPullCriticalFileData })
+        } else if (noChange) {
+          return HttpResponse.json({ data: mockNoChangeFileData })
         }
 
-        if (noCoveredFiles) {
-          return res(ctx.status(200), ctx.data(mockEmptyFilesComparison))
-        }
-
-        if (criticalFile) {
-          return res(ctx.status(200), ctx.data(mockPullCriticalFileData))
-        }
-
-        if (noChange) {
-          return res(ctx.status(200), ctx.data(mockNoChangeFileData))
-        }
-
-        return res(ctx.status(200), ctx.data(mockComparisonTeamData))
+        return HttpResponse.json({ data: mockComparisonTeamData })
       })
     )
 

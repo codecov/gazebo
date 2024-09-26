@@ -1,8 +1,7 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { render, screen } from '@testing-library/react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CompareSummary from './CompareSummary'
@@ -200,9 +199,9 @@ afterAll(() => {
 describe('CompareSummary', () => {
   function setup({ pullData }) {
     server.use(
-      graphql.query('Pull', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(pullData))
-      )
+      graphql.query('Pull', (info) => {
+        return HttpResponse.json({ data: pullData })
+      })
     )
   }
 

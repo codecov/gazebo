@@ -1,10 +1,8 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { PullComparison } from 'services/pull'
@@ -12,7 +10,7 @@ import { UploadTypeEnum } from 'shared/utils/commit'
 
 import IndirectChangedFiles from './IndirectChangedFiles'
 
-jest.mock('../FileDiff', () => () => 'FileDiff Component')
+vi.mock('../FileDiff', () => ({ default: () => 'FileDiff Component' }))
 
 const mockImpactedFiles = [
   {
@@ -210,19 +208,18 @@ const wrapper: WrapperClosure =
 
 describe('IndirectChangedFiles', () => {
   function setup(overrideComparison?: PullComparison) {
-    const mockVars = jest.fn()
+    const mockVars = vi.fn()
 
     server.use(
-      graphql.query('Pull', (req, res, ctx) => {
-        mockVars(req.variables)
-        return res(ctx.status(200), ctx.data(mockPull(overrideComparison)))
+      graphql.query('Pull', (info) => {
+        mockVars(info.variables)
+        return HttpResponse.json({ data: mockPull(overrideComparison) })
       }),
-
-      graphql.query('ImpactedFileComparison', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockSingularImpactedFilesData))
+      graphql.query('ImpactedFileComparison', (info) =>
+        HttpResponse.json({ data: mockSingularImpactedFilesData })
       ),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOverview))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockOverview })
       })
     )
 

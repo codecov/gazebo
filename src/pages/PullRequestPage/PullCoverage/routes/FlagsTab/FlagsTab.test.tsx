@@ -1,8 +1,7 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { render, screen } from '@testing-library/react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { PullComparison } from 'services/pull'
@@ -171,11 +170,11 @@ describe('FlagsTab', () => {
   function setup({
     overrideComparison,
   }: { overrideComparison?: PullComparison } = {}) {
-    const variablesPassed = jest.fn()
+    const variablesPassed = vi.fn()
     server.use(
-      graphql.query('Pull', (req, res, ctx) => {
-        variablesPassed(req.variables)
-        return res(ctx.status(200), ctx.data(mockPull({ overrideComparison })))
+      graphql.query('Pull', (info) => {
+        variablesPassed(info.variables)
+        return HttpResponse.json({ data: mockPull({ overrideComparison }) })
       })
     )
 
@@ -229,7 +228,10 @@ describe('FlagsTab', () => {
         name: /Flags feature not configured/,
       })
       expect(flagsMarketingImg).toBeInTheDocument()
-      expect(flagsMarketingImg).toHaveAttribute('src', 'flagManagement.svg')
+      expect(flagsMarketingImg).toHaveAttribute(
+        'src',
+        '/src/assets/flagManagement.svg'
+      )
       expect(flagsMarketingImg).toHaveAttribute(
         'alt',
         'Flags feature not configured'

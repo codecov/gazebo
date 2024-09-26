@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import NameColumn from './NameColumn'
@@ -26,7 +26,6 @@ const mockSingularImpactedFilesData = {
             isRenamedFile: false,
             isDeletedFile: false,
             isCriticalFile: false,
-            changeCoverage: 58.333333333333336,
             headCoverage: {
               percentCovered: 90.23,
             },
@@ -36,6 +35,7 @@ const mockSingularImpactedFilesData = {
             patchCoverage: {
               percentCovered: 27.43,
             },
+            changeCoverage: 58.333333333333336,
             segments: {
               results: [
                 {
@@ -84,9 +84,9 @@ describe('NameColumn', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('ImpactedFileComparison', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockSingularImpactedFilesData))
-      )
+      graphql.query('ImpactedFileComparison', (info) => {
+        return HttpResponse.json({ data: mockSingularImpactedFilesData })
+      })
     )
 
     return { user }
@@ -115,7 +115,6 @@ describe('NameColumn', () => {
 
     it('prefetches query data', async () => {
       const { user } = setup()
-
       const getValue = jest.fn()
       getValue.mockImplementation(() => 'file.ts')
 

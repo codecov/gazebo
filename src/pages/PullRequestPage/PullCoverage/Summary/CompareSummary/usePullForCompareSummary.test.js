@@ -1,18 +1,29 @@
 import { renderHook } from '@testing-library/react'
-import { useParams } from 'react-router-dom'
-
-import { usePull } from 'services/pull'
 
 import {
   getPullDataForCompareSummary,
   usePullForCompareSummary,
 } from './usePullForCompareSummary'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
+const mocks = vi.hoisted(() => ({
+  usePull: vi.fn(),
+  useParams: vi.fn(),
 }))
-jest.mock('services/pull')
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom')
+  return {
+    ...actual,
+    useParams: mocks.useParams,
+  }
+})
+vi.mock('services/pull', async () => {
+  const actual = await vi.importActual('services/pull')
+  return {
+    ...actual,
+    usePull: mocks.usePull,
+  }
+})
 
 const pull = {
   pullId: 5,
@@ -88,13 +99,13 @@ describe('usePullForCompareSummary', () => {
   let hookData
 
   function setup() {
-    useParams.mockReturnValue({
+    mocks.useParams.mockReturnValue({
       owner: 'caleb',
       provider: 'gh',
       repo: 'mighty-nein',
       pullId: '9',
     })
-    usePull.mockReturnValue({ data: { pull } })
+    mocks.usePull.mockReturnValue({ data: { pull } })
     hookData = renderHook(() => usePullForCompareSummary())
   }
 

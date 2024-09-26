@@ -1,15 +1,26 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import FileViewer from './FileViewer'
 
-jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
-jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
+const mocks = vi.hoisted(() => ({
+  useScrollToLine: vi.fn(),
+}))
+
+vi.mock('ui/CodeRenderer/hooks/useScrollToLine', async () => {
+  const actual = await vi.importActual('ui/CodeRenderer/hooks/useScrollToLine')
+  return {
+    ...actual,
+    useScrollToLine: mocks.useScrollToLine,
+  }
+})
+
+vi.mock('../ComponentsSelector', () => ({
+  default: () => 'ComponentsSelector',
+}))
 
 const mockOwner = {
   username: 'cool-user',
@@ -96,31 +107,33 @@ afterAll(() => {
 
 describe('FileViewer', () => {
   function setup() {
-    useScrollToLine.mockImplementation(() => ({
+    mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
-      handleClick: jest.fn(),
+      handleClick: vi.fn(),
       targeted: false,
     }))
 
     server.use(
-      graphql.query('DetailOwner', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: mockOwner }))
-      ),
-      graphql.query('CoverageForFile', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { repository: mockCoverage } }))
-      ),
-      graphql.query('PullPageData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: mockPullData }))
-      ),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: null }))
-      ),
-      graphql.query('OwnerTier', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: null }))
-      ),
-      graphql.query('GetRepoOverview', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: null }))
-      )
+      graphql.query('DetailOwner', (req, res, ctx) => {
+        return HttpResponse.json({ data: { owner: mockOwner } })
+      }),
+      graphql.query('CoverageForFile', (req, res, ctx) => {
+        return HttpResponse.json({
+          data: { owner: { repository: mockCoverage } },
+        })
+      }),
+      graphql.query('PullPageData', (req, res, ctx) => {
+        return HttpResponse.json({ data: { owner: mockPullData } })
+      }),
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
+        return HttpResponse.json({ data: { owner: null } })
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return HttpResponse.json({ data: { owner: null } })
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return HttpResponse.json({ data: { owner: null } })
+      })
     )
   }
 

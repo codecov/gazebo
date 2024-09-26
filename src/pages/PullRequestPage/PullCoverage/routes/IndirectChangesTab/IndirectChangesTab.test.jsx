@@ -1,8 +1,7 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { render, screen } from '@testing-library/react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { CommitStateEnum, UploadTypeEnum } from 'shared/utils/commit'
@@ -11,10 +10,9 @@ import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
 import IndirectChangesTab from './IndirectChangesTab'
 
-jest.mock(
-  './IndirectChangedFiles/IndirectChangedFiles',
-  () => () => 'IndirectChangedFiles Component'
-)
+vi.mock('./IndirectChangedFiles/IndirectChangedFiles', () => ({
+  default: () => 'IndirectChangedFiles Component',
+}))
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -173,11 +171,10 @@ afterAll(() => server.close())
 describe('IndirectChangesTab', () => {
   function setup({ overrideComparison, headState } = {}) {
     server.use(
-      graphql.query('Pull', (_, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockPull({ overrideComparison, headState }))
-        )
+      graphql.query('Pull', (info) => {
+        return HttpResponse.json({
+          data: mockPull({ overrideComparison, headState }),
+        })
       })
     )
   }
