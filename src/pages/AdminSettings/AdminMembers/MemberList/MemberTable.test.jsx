@@ -1,17 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import MemberTable from './MemberTable'
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false, cacheTime: Infinity } },
-})
-const server = setupServer()
 
 const mockedFirstResponse = {
   count: 1,
@@ -63,6 +58,9 @@ const mockOpenSeatsTaken = {
   },
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false, cacheTime: Infinity } },
+})
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/admin/gh/members']}>
@@ -71,6 +69,7 @@ const wrapper = ({ children }) => (
   </QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -98,35 +97,29 @@ describe('MemberTable', () => {
     mockSecondResponse.results[0].activated = true
 
     server.use(
-      rest.get('/internal/users', (req, res, ctx) => {
+      http.get('/internal/users', (info) => {
         if (noData) {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              count: 0,
-              next: null,
-              previous: null,
-              results: [],
-              totalPages: 0,
-            })
-          )
+          return HttpResponse.json({
+            count: 0,
+            next: null,
+            previous: null,
+            results: [],
+            totalPages: 0,
+          })
         }
 
-        const {
-          url: { searchParams },
-        } = req
-
+        const searchParams = new URL(info.request.url).searchParams
         const pageNumber = Number(searchParams.get('page'))
 
         if (pageNumber > 1) {
-          return res(ctx.status(200), ctx.json(mockSecondResponse))
+          return HttpResponse.json(mockSecondResponse)
         } else if (returnActivated) {
-          return res(ctx.status(200), ctx.json(mockSecondResponse))
+          return HttpResponse.json(mockSecondResponse)
         }
-        return res(ctx.status(200), ctx.json(mockedFirstResponse))
+        return HttpResponse.json(mockedFirstResponse)
       }),
-      rest.patch('/internal/users/:id', (req, res, ctx) => {
-        const { id: idString } = req.params
+      http.patch('/internal/users/:id', (info) => {
+        const { id: idString } = info.params
 
         const id = Number(idString)
 
@@ -138,13 +131,13 @@ describe('MemberTable', () => {
             !mockSecondResponse.results[0].activated
         }
 
-        return res(ctx.status(200))
+        return HttpResponse.json({})
       }),
       graphql.query('SelfHostedSettings', (req, res, ctx) => {
         if (seatsOpen) {
-          return res(ctx.status(200), ctx.data(mockOpenSeatsTaken))
+          return HttpResponse.json({ data: mockOpenSeatsTaken })
         }
-        return res(ctx.status(200), ctx.data(mockAllSeatsTaken))
+        return HttpResponse.json({ data: mockAllSeatsTaken })
       })
     )
 

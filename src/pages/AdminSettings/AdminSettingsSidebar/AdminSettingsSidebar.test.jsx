@@ -3,32 +3,25 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import AdminSettingsSidebar from './AdminSettingsSidebar'
 
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/admin/gh/access']}>
+    <Route path="/admin/:provider/access">{children}</Route>
+  </MemoryRouter>
+)
+
 describe('AdminSettingsSidebar', () => {
-  function setup({ initialEntries = [], path = '' }) {
-    render(
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path={path}>
-          <AdminSettingsSidebar />
-        </Route>
-      </MemoryRouter>
-    )
-  }
-
   describe('when on global admin', () => {
-    beforeEach(() => {
-      setup({
-        initialEntries: ['/admin/gh/access'],
-        path: '/admin/:provider/access',
-      })
-    })
-
     it('renders access link', () => {
+      render(<AdminSettingsSidebar />, { wrapper })
+
       const link = screen.getByText('Access')
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/admin/gh/access')
     })
 
     it('renders users link', () => {
+      render(<AdminSettingsSidebar />, { wrapper })
+
       const link = screen.getByText('Users')
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/admin/gh/users')

@@ -1,9 +1,14 @@
-import PropTypes from 'prop-types'
-
 import A from 'ui/A'
 import TokenWrapper from 'ui/TokenWrapper'
 
-function ChartCard({ link, title, description, src }) {
+interface GraphCardProps {
+  description: string
+  link: string
+  src: string
+  title: string
+}
+
+function GraphCard({ link, title, description, src }: GraphCardProps) {
   return (
     <div className="flex flex-col gap-2 border-2 border-ds-gray-primary">
       <div className="flex flex-1 flex-col gap-2 p-4">
@@ -14,7 +19,7 @@ function ChartCard({ link, title, description, src }) {
       <hr />
       <div className="flex flex-col gap-2 p-4">
         <TokenWrapper token={link} truncate />
-        <A href={link} hook="open-svg-hook" isExternal>
+        <A href={link} hook="open-svg-hook" isExternal={true} to={undefined}>
           Open SVG
         </A>
       </div>
@@ -22,11 +27,4 @@ function ChartCard({ link, title, description, src }) {
   )
 }
 
-ChartCard.propTypes = {
-  src: PropTypes.string.isRequired,
-  link: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-}
-
-export default ChartCard
+export default GraphCard

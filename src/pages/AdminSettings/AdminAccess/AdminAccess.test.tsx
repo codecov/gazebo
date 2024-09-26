@@ -2,13 +2,16 @@ import { render, screen } from '@testing-library/react'
 
 import AdminAccess from './AdminAccess'
 
-jest.mock('./AdminAccessTable', () => () => 'AdminAccessTable')
+vi.mock('./AdminAccessTable', () => ({
+  default: () => 'AdminAccessTable',
+}))
 
 describe('AdminAccess', () => {
   describe('displays title', () => {
-    it('renders title', () => {
+    it('renders title', async () => {
       render(<AdminAccess />)
-      const title = screen.getByText('Administrator Access')
+
+      const title = await screen.findByText('Administrator Access')
       expect(title).toBeInTheDocument()
     })
   })
@@ -17,6 +20,7 @@ describe('AdminAccess', () => {
     describe('sub title text', () => {
       it('renders sub title text', () => {
         render(<AdminAccess />)
+
         const subTitle = screen.getByText('Admins can be edited in the')
         expect(subTitle).toBeInTheDocument()
       })
@@ -25,6 +29,7 @@ describe('AdminAccess', () => {
     describe('install.yml links to docs', () => {
       it('providers the correct href', () => {
         render(<AdminAccess />)
+
         const link = screen.getByText('install.yml')
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute(
@@ -37,6 +42,7 @@ describe('AdminAccess', () => {
     describe('learn more links to docs', () => {
       it('providers the correct href', () => {
         render(<AdminAccess />)
+
         const link = screen.getByText('learn more')
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute(
@@ -50,6 +56,7 @@ describe('AdminAccess', () => {
   describe('displays table', () => {
     it('renders component', () => {
       render(<AdminAccess />)
+
       const table = screen.getByText('AdminAccessTable')
       expect(table).toBeInTheDocument()
     })
