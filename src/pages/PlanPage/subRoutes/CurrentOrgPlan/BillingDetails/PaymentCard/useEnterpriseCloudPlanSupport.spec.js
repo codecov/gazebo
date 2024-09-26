@@ -1,17 +1,21 @@
 import { renderHook } from '@testing-library/react'
 
-import { useFlags } from 'shared/featureFlags'
+import { useEnterpriseCloudPlanSupport } from './useEnterpriseCloudPlanSupport'
 
-import { useEnterpriseCloudPlanSupport } from './hooks'
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
 
-jest.mock('shared/featureFlags')
+vi.mock('shared/featureFlags', () => ({
+  useFlags: mocks.useFlags,
+}))
 
 describe('useEnterpriseCloudPlanSupport', () => {
   let hookData
 
   function setup(flagValue) {
     const defaultPlans = ['users-inappm']
-    useFlags.mockReturnValue({
+    mocks.useFlags.mockReturnValue({
       enterpriseCloudPlanSupport: flagValue,
     })
     hookData = renderHook(() =>
