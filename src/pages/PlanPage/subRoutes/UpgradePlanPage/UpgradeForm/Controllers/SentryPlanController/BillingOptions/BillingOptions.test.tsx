@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -103,30 +103,19 @@ afterAll(() => {
 describe('BillingOptions', () => {
   function setup() {
     server.use(
-      graphql.query('GetAvailablePlans', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
-            owner: {
-              availablePlans,
-            },
-          })
-        )
-      ),
-      graphql.query('GetPlanData', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: {
-              hasPrivateRepos: true,
-              plan: mockPlanDataResponse,
-            },
-          })
-        )
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({ data: { owner: { availablePlans } } })
+      }),
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
+            owner: { hasPrivateRepos: true, plan: mockPlanDataResponse },
+          },
+        })
       })
     )
 
-    const mockSetFormValue = jest.fn()
+    const mockSetFormValue = vi.fn()
     const user = userEvent.setup()
 
     return { user, mockSetFormValue }
