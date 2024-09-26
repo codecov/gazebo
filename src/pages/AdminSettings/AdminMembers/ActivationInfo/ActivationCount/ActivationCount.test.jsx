@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ActivationCount from './ActivationCount'
@@ -9,7 +9,6 @@ import ActivationCount from './ActivationCount'
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const mockResponse = {
   config: {
@@ -29,29 +28,33 @@ const wrapper =
     </QueryClientProvider>
   )
 
-beforeAll(() => server.listen())
+const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('ActivationCount', () => {
   function setup() {
     server.use(
-      graphql.query('SelfHostedSettings', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockResponse))
+      graphql.query('SelfHostedSettings', (info) => {
+        return HttpResponse.json({ data: mockResponse })
       })
     )
   }
 
   describe('it renders component', () => {
     describe('seat limit is not reached', () => {
-      beforeEach(async () => {
-        setup()
-      })
-
       it('displays seat count', async () => {
+        setup()
         render(<ActivationCount />, { wrapper: wrapper() })
 
         const element = await screen.findByText('5')
@@ -59,6 +62,7 @@ describe('ActivationCount', () => {
       })
 
       it('displays seat limit', async () => {
+        setup()
         render(<ActivationCount />, { wrapper: wrapper() })
 
         const element = await screen.findByText('10')
@@ -67,15 +71,11 @@ describe('ActivationCount', () => {
     })
 
     describe('seat limit is reached', () => {
-      beforeEach(async () => {
-        setup({ seatsLimit: 10, seatsUsed: 10 })
-      })
-
       it('displays info message', async () => {
+        setup({ seatsLimit: 10, seatsUsed: 10 })
         render(<ActivationCount />, { wrapper: wrapper() })
 
         const link = await screen.findByText('sales@codecov.io')
-
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', 'mailto:sales@codecov.io')
       })
