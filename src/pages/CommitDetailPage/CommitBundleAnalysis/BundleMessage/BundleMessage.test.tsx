@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -14,14 +14,7 @@ const mockSummaryData = (uncompress: number) => ({
       commit: {
         bundleAnalysisCompareWithParent: {
           __typename: 'BundleAnalysisComparison',
-          bundleChange: {
-            loadTime: {
-              threeG: 0,
-            },
-            size: {
-              uncompress,
-            },
-          },
+          bundleChange: { loadTime: { threeG: 0 }, size: { uncompress } },
         },
       },
     },
@@ -117,16 +110,16 @@ describe('BundleMessage', () => {
     }
   ) {
     server.use(
-      graphql.query('CommitBADropdownSummary', (req, res, ctx) => {
+      graphql.query('CommitBADropdownSummary', (info) => {
         if (noData) {
-          return res(ctx.status(200), ctx.data(mockNoData))
+          return HttpResponse.json({ data: mockNoData })
         } else if (firstPullRequest) {
-          return res(ctx.status(200), ctx.data(mockFirstPullRequest))
+          return HttpResponse.json({ data: mockFirstPullRequest })
         } else if (comparisonError) {
-          return res(ctx.status(200), ctx.data(mockComparisonError))
+          return HttpResponse.json({ data: mockComparisonError })
         }
 
-        return res(ctx.status(200), ctx.data(mockSummaryData(uncompress)))
+        return HttpResponse.json({ data: mockSummaryData(uncompress) })
       })
     )
   }
