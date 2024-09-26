@@ -19,7 +19,7 @@
     "test:mutation": "npx stryker run",
     "eject": "craco eject",
     "lint": "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "yarn generate-icons:webpack && storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "npx chromatic --exit-zero-on-changes -ci",
     "format-staged": "npx prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md}'",
@@ -53,6 +53,7 @@
   "dependencies": {
     "@hookform/resolvers": "^2.8.5",
     "@radix-ui/react-accordion": "^1.1.2",
+    "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-label": "^2.0.2",
