@@ -1,9 +1,13 @@
+import { QueryClient } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import CodecovAIPage from './CodecovAIPage'
+
 
 const mocks = vi.hoisted(() => ({
   useFlags: vi.fn(),
@@ -17,6 +21,16 @@ vi.mock('shared/featureFlags', async () => {
   }
 })
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
+
+const server = setupServer()
+
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <ThemeContextProvider>
     <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles/new']}>
@@ -25,7 +39,42 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   </ThemeContextProvider>
 )
 
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
 describe('CodecovAIPage', () => {
+  function setup(aiFeaturesEnabled = false) {
+    server.use(
+      graphql.query('GetCodecovAIAppInstallInfo', (info) => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              aiFeaturesEnabled,
+            },
+          },
+        })
+      }),
+      graphql.query('GetCodecovAIInstalledRepos', (info) => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              aiEnabledRepos: ['repo-1', 'repo-2'],
+            },
+          },
+        })
+      })
+    )
+  }
   beforeEach(() => {
     mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: true })
   })
@@ -106,6 +155,29 @@ describe('CodecovAIPage', () => {
 
     const docLink = await screen.findByText(/Visit our guide/)
     expect(docLink).toBeInTheDocument()
+  })
+
+  describe('AI features are enabled and configured', () => {
+    beforeEach(() => {
+      setup(true)
+      mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: true })
+    })
+
+    it('does not render install link', () => {
+      setup(true)
+      render(<CodecovAIPage />, { wrapper })
+      const topSection = screen.queryByText(/Install Codecov AI/)
+      expect(topSection).not.toBeInTheDocument()
+    })
+
+    it('renders list of repos', async () => {
+      render(<CodecovAIPage />, { wrapper })
+
+      const repo1Link = await screen.findByText(/repo-1/)
+      expect(repo1Link).toBeInTheDocument()
+      const repo2Link = await screen.findByText(/repo-1/)
+      expect(repo2Link).toBeInTheDocument()
+    })
   })
 })
 
