@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import {
   mockAllIsIntersecting,
   mockIsIntersecting,
@@ -80,26 +80,23 @@ afterAll(() => server.close())
 describe('AdminAccessTable', () => {
   function setup() {
     server.use(
-      rest.get('/internal/users', (req, res, ctx) => {
-        const { searchParams } = req.url
+      http.get('/internal/users', (info) => {
+        const searchParams = new URL(info.request.url).searchParams
         const pageNumber = Number(searchParams.get('page'))
 
         if (pageNumber > 1) {
-          return res(ctx.status(200), ctx.json(mockSecondResponse))
+          return HttpResponse.json(mockSecondResponse)
         }
 
-        return res(ctx.status(200), ctx.json(mockFirstResponse))
+        return HttpResponse.json(mockFirstResponse)
       })
     )
     mockAllIsIntersecting(false)
   }
 
-  beforeEach(() => {
-    setup()
-  })
-
   describe('renders headers', () => {
     it('displays the Admin heading', async () => {
+      setup()
       render(<AdminAccessTable />, { wrapper })
 
       const admin = await screen.findByText('Admin')
@@ -107,6 +104,7 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays the Email heading', async () => {
+      setup()
       render(<AdminAccessTable />, { wrapper })
 
       const email = await screen.findByText('Email')
@@ -116,6 +114,7 @@ describe('AdminAccessTable', () => {
 
   describe('renders data', () => {
     it('displays admin name', async () => {
+      setup()
       render(<AdminAccessTable />, { wrapper })
 
       const name = await screen.findByText('User 1')
@@ -123,6 +122,7 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays admin username when name not available', async () => {
+      setup()
       render(<AdminAccessTable />, { wrapper })
 
       const loading = await screen.findByText('Loading')
@@ -133,6 +133,7 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays admin ownerid when name and username not available', async () => {
+      setup()
       // This really should never happen, but it's better than showing nothing.
       render(<AdminAccessTable />, { wrapper })
 
@@ -144,6 +145,7 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays admin email', async () => {
+      setup()
       render(<AdminAccessTable />, { wrapper })
 
       const email = await screen.findByText('user1@codecov.io')
@@ -153,6 +155,7 @@ describe('AdminAccessTable', () => {
 
   describe('handles pagination', () => {
     it('should fetch only the first page', async () => {
+      setup()
       render(<AdminAccessTable />, { wrapper })
 
       const user1 = await screen.findByText('User 1')
@@ -163,6 +166,7 @@ describe('AdminAccessTable', () => {
     })
 
     it('should fetch the second page once the bottom of table is visible', async () => {
+      setup()
       render(<AdminAccessTable />, { wrapper })
 
       const user1 = await screen.findByText('User 1')

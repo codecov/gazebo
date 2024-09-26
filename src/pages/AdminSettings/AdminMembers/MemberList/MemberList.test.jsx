@@ -4,7 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom/cjs/react-router-dom.min'
 
 import MemberList from './MemberList'
 
-jest.mock('./MemberTable', () => () => 'MemberTable')
+vi.mock('./MemberTable', () => ({ default: () => 'MemberTable' }))
 
 let testLocation
 const wrapper = ({ children }) => (
@@ -25,6 +25,7 @@ describe('MemberList', () => {
     const user = userEvent.setup()
     return { user }
   }
+
   describe('renders user activated status selector', () => {
     afterEach(() => (testLocation = undefined))
 

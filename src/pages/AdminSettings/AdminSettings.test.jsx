@@ -1,13 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import AdminSettings from './AdminSettings'
 
-jest.mock('./AdminAccess', () => () => 'AdminAccess')
-jest.mock('./AdminMembers', () => () => 'AdminMembers')
+vi.mock('./AdminAccess', () => ({ default: () => 'AdminAccess' }))
+vi.mock('./AdminMembers', () => ({ default: () => 'AdminMembers' }))
 
 const user = {
   activated: false,
@@ -21,7 +21,6 @@ const user = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 let testLocation
 const wrapper =
@@ -41,33 +40,35 @@ const wrapper =
     </QueryClientProvider>
   )
 
-beforeAll(() => server.listen())
+const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('AdminSettings', () => {
   function setup({ data = {} }) {
     server.use(
-      rest.get('/internal/users/current', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json({ ...user, ...data }))
-      ),
-      graphql.query('CurrentUser', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ me: null }))
-      )
+      http.get('/internal/users/current', (info) => {
+        return HttpResponse.json({ ...user, ...data })
+      }),
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        return HttpResponse.json({ data: { me: null } })
+      })
     )
   }
 
   describe('renders access page', () => {
-    beforeEach(() => {
-      setup({
-        data: { isAdmin: true },
-      })
-    })
-
     it('renders access page', async () => {
+      setup({ data: { isAdmin: true } })
       render(<AdminSettings />, {
         wrapper: wrapper({
           path: '/admin/:provider/access',
@@ -81,13 +82,8 @@ describe('AdminSettings', () => {
   })
 
   describe('renders users page', () => {
-    beforeEach(() => {
-      setup({
-        data: { isAdmin: true },
-      })
-    })
-
     it('renders users page', async () => {
+      setup({ data: { isAdmin: true } })
       render(<AdminSettings />, {
         wrapper: wrapper({
           initialEntries: ['/admin/gh/users'],
@@ -101,13 +97,8 @@ describe('AdminSettings', () => {
   })
 
   describe('user is not an admin', () => {
-    beforeEach(async () => {
-      setup({
-        data: { isAdmin: false },
-      })
-    })
-
     it('redirects the user', async () => {
+      setup({ data: { isAdmin: false } })
       render(<AdminSettings />, {
         wrapper: wrapper({
           initialEntries: ['/admin/gh/users'],

@@ -3,16 +3,9 @@ import { render, screen } from '@testing-library/react'
 import ActivationLimit from './ActivationLimit'
 
 describe('ActivationCount', () => {
-  function setup() {
-    render(<ActivationLimit />)
-  }
-
   describe('it renders component', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('displays info message', async () => {
+      render(<ActivationLimit />)
       const link = await screen.findByText('sales@codecov.io')
 
       expect(link).toBeInTheDocument()
