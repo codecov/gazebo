@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
@@ -147,7 +148,9 @@ const wrapper: WrapperClosure =
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner">{children}</Route>
+        <Route path="/:provider/:owner">
+          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+        </Route>
       </MemoryRouter>
     </QueryClientProvider>
   )
@@ -167,25 +170,21 @@ describe('ErrorBanner', () => {
     const user = userEvent.setup()
 
     server.use(
-      rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
+      http.get(`/internal/gh/codecov/account-details/`, (info) => {
         if (planValue === Plans.USERS_BASIC) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsBasic))
+          return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_TEAMM) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamMonthly))
+          return HttpResponse.json(mockAccountDetailsTeamMonthly)
         } else if (planValue === Plans.USERS_TEAMY) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamYearly))
+          return HttpResponse.json(mockAccountDetailsTeamYearly)
         }
       }),
-      rest.patch(
-        '/internal/gh/codecov/account-details/',
-        async (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ success: false }))
-        }
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      http.patch('/internal/gh/codecov/account-details/', async (info) => {
+        return HttpResponse.json({ success: false })
+      }),
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               availablePlans: [
                 basicPlan,
@@ -194,22 +193,22 @@ describe('ErrorBanner', () => {
                 proPlanYear,
               ],
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetPlanData', (req, res, ctx) => {
+      graphql.query('GetPlanData', (info) => {
         const planResponse = monthlyPlan
           ? mockPlanDataResponseMonthly
           : mockPlanDataResponseYearly
-        return res(
-          ctx.status(200),
-          ctx.data({
+
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: planResponse,
             },
-          })
-        )
+          },
+        })
       })
     )
 
@@ -224,8 +223,8 @@ describe('ErrorBanner', () => {
             message: UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE,
           },
         },
-        setFormValue: jest.fn(),
-        setSelectedPlan: jest.fn(),
+        setFormValue: vi.fn(),
+        setSelectedPlan: vi.fn(),
       }
 
       it('shows appropriate error message', async () => {
@@ -279,8 +278,8 @@ describe('ErrorBanner', () => {
             message: 'error message asdf',
           },
         },
-        setFormValue: jest.fn(),
-        setSelectedPlan: jest.fn(),
+        setFormValue: vi.fn(),
+        setSelectedPlan: vi.fn(),
       }
 
       it('shows error banner', async () => {
