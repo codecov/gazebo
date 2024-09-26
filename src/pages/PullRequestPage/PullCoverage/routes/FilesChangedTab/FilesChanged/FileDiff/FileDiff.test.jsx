@@ -1,14 +1,23 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import FileDiff from './FileDiff'
 
-jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
+const mocks = vi.hoisted(() => ({
+  useScrollToLine: vi.fn(),
+}))
+
+vi.mock('ui/CodeRenderer/hooks/useScrollToLine', async () => {
+  const actual = await vi.importActual('ui/CodeRenderer/hooks/useScrollToLine')
+  return {
+    ...actual,
+    useScrollToLine: mocks.useScrollToLine,
+  }
+})
+
 window.requestAnimationFrame = (cb) => cb()
 window.cancelAnimationFrame = () => {}
 
@@ -109,21 +118,18 @@ describe('FileDiff', () => {
       bundleAnalysisEnabled: false,
     }
   ) {
-    useScrollToLine.mockImplementation(() => ({
+    mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
-      handleClick: jest.fn(),
+      handleClick: vi.fn(),
       targeted: false,
     }))
 
     server.use(
-      graphql.query('ImpactedFileComparison', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(baseMock(impactedFile)))
-      ),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockOverview(bundleAnalysisEnabled))
-        )
+      graphql.query('ImpactedFileComparison', (info) => {
+        return HttpResponse.json({ data: baseMock(impactedFile) })
+      }),
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockOverview(bundleAnalysisEnabled) })
       })
     )
   }
