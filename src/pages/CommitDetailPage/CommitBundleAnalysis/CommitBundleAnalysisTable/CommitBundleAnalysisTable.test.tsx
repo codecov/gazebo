@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -22,40 +22,24 @@ const mockCommitBundleListData = {
               name: 'bundle.js',
               changeType: 'added',
               bundleChange: {
-                loadTime: {
-                  threeG: 3,
-                },
-                size: {
-                  uncompress: 1,
-                },
+                loadTime: { threeG: 3 },
+                size: { uncompress: 1 },
               },
               bundleData: {
-                loadTime: {
-                  threeG: 4,
-                },
-                size: {
-                  uncompress: 3,
-                },
+                loadTime: { threeG: 4 },
+                size: { uncompress: 3 },
               },
             },
             {
               name: 'bundle.css',
               changeType: 'added',
               bundleChange: {
-                loadTime: {
-                  threeG: 33,
-                },
-                size: {
-                  uncompress: -1000,
-                },
+                loadTime: { threeG: 33 },
+                size: { uncompress: -1000 },
               },
               bundleData: {
-                loadTime: {
-                  threeG: 45,
-                },
-                size: {
-                  uncompress: 3000,
-                },
+                loadTime: { threeG: 45 },
+                size: { uncompress: 3000 },
               },
             },
           ],
@@ -100,7 +84,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter
@@ -116,13 +99,16 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   </MemoryRouter>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -141,13 +127,13 @@ describe('CommitBundleAnalysisTable', () => {
   ) {
     const user = userEvent.setup()
     server.use(
-      graphql.query('CommitBundleList', (req, res, ctx) => {
+      graphql.query('CommitBundleList', (info) => {
         if (isEmptyList) {
-          return res(ctx.status(200), ctx.data(mockEmptyCommitBundleListData))
+          return HttpResponse.json({ data: mockEmptyCommitBundleListData })
         } else if (nonComparisonType) {
-          return res(ctx.status(200), ctx.data(mockNonComparisonTypeData))
+          return HttpResponse.json({ data: mockNonComparisonTypeData })
         } else {
-          return res(ctx.status(200), ctx.data(mockCommitBundleListData))
+          return HttpResponse.json({ data: mockCommitBundleListData })
         }
       })
     )
@@ -256,11 +242,11 @@ describe('useTableData', () => {
     }
   ) {
     server.use(
-      graphql.query('CommitBundleList', (req, res, ctx) => {
+      graphql.query('CommitBundleList', (info) => {
         if (nonComparisonType) {
-          return res(ctx.status(200), ctx.data(mockNonComparisonTypeData))
+          return HttpResponse.json({ data: mockNonComparisonTypeData })
         } else {
-          return res(ctx.status(200), ctx.data(mockCommitBundleListData))
+          return HttpResponse.json({ data: mockCommitBundleListData })
         }
       })
     )
