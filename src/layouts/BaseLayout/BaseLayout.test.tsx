@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
@@ -193,7 +193,6 @@ afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
   vi.clearAllMocks()
-  cleanup()
 })
 
 afterAll(() => {

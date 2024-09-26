@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
@@ -18,7 +18,6 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
-  cleanup()
   queryClient.clear()
   server.resetHandlers()
 })
