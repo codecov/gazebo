@@ -20,13 +20,13 @@ const wrapper =
 
 describe('LoginPage', () => {
   function setup() {
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
-    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     return { mockSetItem, mockGetItem }
   }
 
-  afterEach(() => jest.resetAllMocks())
+  afterEach(() => vi.clearAllMocks())
 
   describe('rendering DEC message', () => {
     it('renders the message', () => {
