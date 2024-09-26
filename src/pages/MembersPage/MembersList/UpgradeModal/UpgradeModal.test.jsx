@@ -1,5 +1,4 @@
-import { render, screen } from 'custom-testing-library'
-
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -19,7 +18,7 @@ describe('UpgradeModal', () => {
   }
   describe('rendering UpgradeModal', () => {
     it('renders the title', () => {
-      const setIsOpen = jest.fn()
+      const setIsOpen = vi.fn()
       render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, { wrapper })
 
       const title = screen.getByText('Upgrade to Pro')
@@ -27,7 +26,7 @@ describe('UpgradeModal', () => {
     })
 
     it('renders body', () => {
-      const setIsOpen = jest.fn()
+      const setIsOpen = vi.fn()
       render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, { wrapper })
 
       const firstParagraph = screen.getByText(/maximum number of free users/i)
@@ -42,7 +41,7 @@ describe('UpgradeModal', () => {
     })
 
     it('renders footer', () => {
-      const setIsOpen = jest.fn()
+      const setIsOpen = vi.fn()
       render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, { wrapper })
 
       const cancel = screen.getByRole('button', { name: 'Cancel' })
@@ -58,7 +57,7 @@ describe('UpgradeModal', () => {
     describe('when clicking x', () => {
       it('calls setIsOpen', async () => {
         const { user } = setup()
-        const setIsOpen = jest.fn()
+        const setIsOpen = vi.fn()
         render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, {
           wrapper,
         })
@@ -73,7 +72,7 @@ describe('UpgradeModal', () => {
     describe('when clicking cancel', () => {
       it('calls setIsOpen', async () => {
         const { user } = setup()
-        const setIsOpen = jest.fn()
+        const setIsOpen = vi.fn()
         render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, {
           wrapper,
         })
