@@ -1,14 +1,22 @@
 import { renderHook } from '@testing-library/react'
 
-import { useFlags } from 'shared/featureFlags'
+import { useProPlanMonth } from './useProPlanMonth'
 
-import { useProPlanMonth } from './hooks'
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
 
-jest.mock('shared/featureFlags')
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
+})
 
 describe('useProPlanMonth', () => {
   function setup(flagValue) {
-    useFlags.mockReturnValue({
+    mocks.useFlags.mockReturnValue({
       enterpriseCloudPlanSupport: flagValue,
     })
   }
