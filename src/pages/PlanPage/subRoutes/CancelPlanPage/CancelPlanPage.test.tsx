@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -10,12 +10,11 @@ import { Plans } from 'shared/utils/billing'
 
 import CancelPlanPage from './CancelPlanPage'
 
-jest.mock('./subRoutes/SpecialOffer', () => () => 'SpecialOffer')
-jest.mock('./subRoutes/DowngradePlan', () => () => 'DowngradePlan')
-jest.mock(
-  './subRoutes/TeamPlanSpecialOffer',
-  () => () => 'TeamPlanSpecialOffer'
-)
+vi.mock('./subRoutes/SpecialOffer', () => ({ default: () => 'SpecialOffer' }))
+vi.mock('./subRoutes/DowngradePlan', () => ({ default: () => 'DowngradePlan' }))
+vi.mock('./subRoutes/TeamPlanSpecialOffer', () => ({
+  default: () => 'TeamPlanSpecialOffer',
+}))
 
 const teamPlans = [
   {
@@ -137,25 +136,15 @@ describe('CancelPlanPage', () => {
     hasTeamPlans = false,
   }: SetupProps = {}) {
     server.use(
-      rest.get('internal/gh/codecov/account-details/', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            plan: {
-              value: planValue,
-            },
-            subscriptionDetail: {
-              customer: {
-                discount: hasDiscount,
-              },
-            },
-          })
-        )
-      ),
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      http.get('internal/gh/codecov/account-details/', (info) => {
+        return HttpResponse.json({
+          plan: { value: planValue },
+          subscriptionDetail: { customer: { discount: hasDiscount } },
+        })
+      }),
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
@@ -164,19 +153,18 @@ describe('CancelPlanPage', () => {
                 value: planValue,
               },
             },
-          })
-        )
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+          },
+        })
+      }),
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               availablePlans: mockAvailablePlans({ hasTeamPlans }),
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
   }
 
