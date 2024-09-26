@@ -2,11 +2,20 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import { z } from 'zod'
 
-import { InvoiceSchema, useInvoices } from 'services/account'
+import { InvoiceSchema } from 'services/account'
 
 import LatestInvoiceCard from './LatestInvoiceCard'
 
-jest.mock('services/account')
+const mocks = vi.hoisted(() => ({
+  useInvoices: vi.fn(),
+}))
+vi.mock('services/account', async () => {
+  const actual = await vi.importActual('services/account')
+  return {
+    ...actual,
+    useInvoices: mocks.useInvoices,
+  }
+})
 
 const invoice = {
   created: 1595270468,
@@ -16,8 +25,7 @@ const invoice = {
 
 describe('LatestInvoiceCard', () => {
   function setup({ invoices }: { invoices: z.infer<typeof InvoiceSchema>[] }) {
-    const mockedUseInvoices = useInvoices as jest.Mock
-    mockedUseInvoices.mockReturnValue({ data: invoices })
+    mocks.useInvoices.mockReturnValue({ data: invoices })
 
     render(
       <MemoryRouter initialEntries={['/plan/gh/codecov']}>
