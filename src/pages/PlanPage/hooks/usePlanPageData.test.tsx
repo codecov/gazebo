@@ -1,13 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import { usePlanPageData } from './usePlanPageData'
 
 const mockOwner = {
-  username: 'TerrySmithDC',
+  username: 'cool-user',
   isCurrentUserPartOfOrg: true,
   numberOfUploads: 30,
 }
@@ -35,11 +36,11 @@ afterAll(() => server.close())
 describe('usePlanPageData', () => {
   function setup({ invalidSchema = false }) {
     server.use(
-      graphql.query('PlanPageData', (req, res, ctx) => {
+      graphql.query('PlanPageData', (info) => {
         if (invalidSchema) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: {} })
         }
-        return res(ctx.status(200), ctx.data({ owner: mockOwner }))
+        return HttpResponse.json({ data: { owner: mockOwner } })
       })
     )
   }
@@ -67,6 +68,15 @@ describe('usePlanPageData', () => {
   })
 
   describe('when schema parsing fails', () => {
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
+    })
+
     it('rejects with status 404', async () => {
       setup({ invalidSchema: true })
       const { result } = renderHook(
