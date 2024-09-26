@@ -20,7 +20,12 @@ function ComponentsNotConfigured() {
           showExternalIcon={false}
         >
           Get started with components
-          <Icon name="externalLink" variant="solid" size="sm" />
+          <Icon
+            name="externalLink"
+            label="externalLink"
+            variant="solid"
+            size="sm"
+          />
         </Button>
       </div>
     </div>

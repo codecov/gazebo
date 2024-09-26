@@ -1,7 +1,6 @@
 import config from 'config'
 
 import { CodecovIcon } from 'assets/svg/codecov'
-import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import Button from 'ui/Button'
 
@@ -26,10 +25,6 @@ const LogoButton = () => {
 }
 
 function GuestHeader() {
-  const { darkMode } = useFlags({
-    darkMode: false,
-  })
-
   const isSelfHosted = config.IS_SELF_HOSTED
 
   return (
@@ -71,7 +66,7 @@ function GuestHeader() {
           )}
         </div>
         <div className="flex items-center gap-4 md:mx-4">
-          {darkMode ? <ThemeToggle /> : null}
+          <ThemeToggle />
           {isSelfHosted ? (
             <Button
               to={{ pageName: 'login' }}

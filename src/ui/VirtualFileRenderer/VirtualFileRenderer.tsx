@@ -167,15 +167,14 @@ const CodeBody = ({
                 }px)`,
               }}
               className={cn(
-                'absolute left-0 top-0 w-full select-none border-r border-ds-gray-tertiary bg-ds-container px-4 text-right text-ds-gray-senary hover:cursor-pointer hover:text-ds-secondary-text',
+                'absolute left-0 top-0 w-full select-none border-r border-ds-gray-tertiary bg-ds-container pl-2 pr-4 text-right text-ds-gray-senary hover:cursor-pointer hover:text-ds-secondary-text',
                 coverageValue === 'H' && 'bg-ds-coverage-covered',
                 coverageValue === 'M' &&
                   'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
                 coverageValue === 'P' &&
                   'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow',
                 // this needs to come last as it overrides the coverage colors
-                location.hash === `#L${lineNumber}` &&
-                  'bg-ds-blue-medium/25 font-semibold'
+                location.hash === `#L${lineNumber}` && 'bg-ds-blue-medium/25'
               )}
               onClick={() => {
                 location.hash =
@@ -183,7 +182,13 @@ const CodeBody = ({
                 history.push(location)
               }}
             >
-              <div className="flex items-center justify-between">
+              <div
+                className="flex items-center justify-between"
+                style={{
+                  height: `${LINE_ROW_HEIGHT}px`,
+                  lineHeight: `${LINE_ROW_HEIGHT}px`,
+                }}
+              >
                 <span
                   className={cn({
                     'text-ds-primary-red': coverageValue === 'M',
