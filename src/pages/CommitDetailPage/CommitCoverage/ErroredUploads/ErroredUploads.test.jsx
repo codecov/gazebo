@@ -1,4 +1,4 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen } from '@testing-library/react'
 
 import ErroredUploads from './ErroredUploads'
 
