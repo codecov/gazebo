@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -9,10 +9,12 @@ import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
 
 import CommitPage from './CommitDetailPage'
 
-jest.mock('ui/TruncatedMessage/hooks')
-jest.mock('./Header', () => () => 'Header')
-jest.mock('./CommitCoverage', () => () => 'CommitCoverage')
-jest.mock('./CommitBundleAnalysis', () => () => 'CommitBundleAnalysis')
+vi.mock('ui/TruncatedMessage/hooks')
+vi.mock('./Header', () => ({ default: () => 'Header' }))
+vi.mock('./CommitCoverage', () => ({ default: () => 'CommitCoverage' }))
+vi.mock('./CommitBundleAnalysis', () => ({
+  default: () => 'CommitBundleAnalysis',
+}))
 
 const mockNotFoundCommit = {
   owner: {
@@ -145,29 +147,26 @@ describe('CommitDetailPage', () => {
     }
   ) {
     server.use(
-      graphql.query('CommitPageData', (req, res, ctx) => {
+      graphql.query('CommitPageData', (info) => {
         if (notFoundCommit) {
-          return res(ctx.status(200), ctx.data(mockNotFoundCommit))
+          return HttpResponse.json({ data: mockNotFoundCommit })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data(
-            mockCommitPageData({
-              coverageEnabled,
-              bundleAnalysisEnabled,
-            })
-          )
-        )
+        return HttpResponse.json({
+          data: mockCommitPageData({
+            coverageEnabled,
+            bundleAnalysisEnabled,
+          }),
+        })
       }),
-      graphql.query('CommitBADropdownSummary', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBundleDropdownSummary))
+      graphql.query('CommitBADropdownSummary', (info) => {
+        return HttpResponse.json({ data: mockBundleDropdownSummary })
       }),
-      graphql.query('CommitDropdownSummary', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCoverageDropdownSummary))
+      graphql.query('CommitDropdownSummary', (info) => {
+        return HttpResponse.json({ data: mockCoverageDropdownSummary })
       }),
-      graphql.query('CommitComponents', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ owner: null }))
+      graphql.query('CommitComponents', (info) => {
+        return HttpResponse.json({ data: { owner: null } })
       })
     )
   }
