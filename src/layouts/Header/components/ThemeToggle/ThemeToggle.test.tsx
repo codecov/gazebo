@@ -1,11 +1,5 @@
 import * as Sentry from '@sentry/react'
-import {
-  cleanup,
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { ThemeContextProvider } from 'shared/ThemeContext'
@@ -33,7 +27,6 @@ describe('ThemeToggle', () => {
   })
 
   afterEach(() => {
-    cleanup()
     vi.clearAllMocks()
   })
 

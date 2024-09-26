@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/react'
-import React, { useState } from 'react'
 
 import { ExpandableSection } from './ExpandableSection'
 
@@ -11,31 +10,21 @@ export default meta
 
 type Story = StoryObj<typeof ExpandableSection>
 
-const DefaultStory: React.FC = () => {
-  const [isExpanded, setIsExpanded] = useState(false)
-  return (
+export const Default: Story = {
+  render: () => (
     <ExpandableSection>
-      <ExpandableSection.Trigger
-        isExpanded={isExpanded}
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        Expandable Section
-      </ExpandableSection.Trigger>
+      <ExpandableSection.Trigger>Expandable Section</ExpandableSection.Trigger>
       <ExpandableSection.Content>
         This is the content of the expandable section.
       </ExpandableSection.Content>
     </ExpandableSection>
-  )
+  ),
 }
 
-const WithHtmlContentStory: React.FC = () => {
-  const [isExpanded, setIsExpanded] = useState(false)
-  return (
+export const WithHtmlContent: Story = {
+  render: () => (
     <ExpandableSection>
-      <ExpandableSection.Trigger
-        isExpanded={isExpanded}
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
+      <ExpandableSection.Trigger>
         Expandable Section with HTML
       </ExpandableSection.Trigger>
       <ExpandableSection.Content>
@@ -48,13 +37,5 @@ const WithHtmlContentStory: React.FC = () => {
         </div>
       </ExpandableSection.Content>
     </ExpandableSection>
-  )
-}
-
-export const Default: Story = {
-  render: () => <DefaultStory />,
-}
-
-export const WithHtmlContent: Story = {
-  render: () => <WithHtmlContentStory />,
+  ),
 }

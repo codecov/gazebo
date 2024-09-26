@@ -120,7 +120,12 @@ const IconSymbol: React.FC = () => {
   const { variant } = useTopBannerContext()
   return (
     <span className={cs('pr-2 md:pr-0', variants[variant].iconColor)}>
-      <Icon name={variants[variant].icon} size="md" variant="outline" />
+      <Icon
+        size="md"
+        variant="outline"
+        name={variants[variant].icon}
+        label={variants[variant].icon}
+      />
     </span>
   )
 }
