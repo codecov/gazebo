@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import CommitsTab from './CommitsTab'
 
-jest.mock('./CommitsTable', () => () => 'CommitsTable')
+vi.mock('./CommitsTable', () => ({ default: () => 'CommitsTable' }))
 
 describe('CommitsTab', () => {
   it('renders commits table', async () => {
