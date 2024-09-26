@@ -50,7 +50,6 @@ export function deleteDuplicateCFFUploads({ uploads }: { uploads: Upload[] }) {
   })
 
   // Filter out uploads that have repeated flags, returning those without duplicates
-
   let result = []
 
   for (let upload of uploads) {
@@ -61,8 +60,8 @@ export function deleteDuplicateCFFUploads({ uploads }: { uploads: Upload[] }) {
         if (nonCFFlags.has(flag)) {
           break
         }
-        result.push(upload)
       }
+      result.push(upload)
     }
   }
 

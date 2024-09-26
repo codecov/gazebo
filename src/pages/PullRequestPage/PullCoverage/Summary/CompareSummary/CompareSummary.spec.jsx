@@ -30,7 +30,7 @@ const createPullData = ({ overrideCommits, overrideComparison } = {}) => {
                       message:
                         'create component to hold bundle list table for a given pull',
                       author: {
-                        username: 'nicholas-codecov',
+                        username: 'rand',
                       },
                     },
                   },
@@ -110,7 +110,7 @@ const createPullData = ({ overrideCommits, overrideComparison } = {}) => {
           title: 'feat: Create bundle analysis table for a given pull',
           state: 'OPEN',
           author: {
-            username: 'nicholas-codecov',
+            username: 'rand',
           },
           head: {
             ciPassed: true,
@@ -217,7 +217,7 @@ describe('CompareSummary', () => {
                 commitid: 'abc',
                 message: 'Pending commit',
                 author: {
-                  username: 'nicholas-codecov',
+                  username: 'rand',
                 },
               },
             },
@@ -249,7 +249,7 @@ describe('CompareSummary', () => {
                 state: 'OPEN',
                 updatestamp: '2024-01-12T12:56:18.912860',
                 author: {
-                  username: 'nicholas-codecov',
+                  username: 'rand',
                 },
                 behindBy: null,
                 behindByCommit: null,
@@ -285,7 +285,7 @@ describe('CompareSummary', () => {
                 commitid: 'c42fe217c61b007b2c17544a9d85840381857',
                 message: 'There is an error processing the coverage reports',
                 author: {
-                  username: 'nicholas-codecov',
+                  username: 'rand',
                 },
               },
             },
