@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -119,11 +119,10 @@ describe('PlanDetailsControls', () => {
     { hasSentryPlans = false }: SetupArgs = { hasSentryPlans: false }
   ) {
     server.use(
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
+      graphql.query('GetAvailablePlans', (info) => {
         if (hasSentryPlans) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 availablePlans: [
                   proPlanMonth,
@@ -134,12 +133,11 @@ describe('PlanDetailsControls', () => {
                   teamPlanYear,
                 ],
               },
-            })
-          )
+            },
+          })
         } else {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 availablePlans: [
                   proPlanMonth,
@@ -148,14 +146,14 @@ describe('PlanDetailsControls', () => {
                   teamPlanYear,
                 ],
               },
-            })
-          )
+            },
+          })
         }
       })
     )
 
-    const mockSetValue = jest.fn()
-    const mockSetSelectedPlan = jest.fn()
+    const mockSetValue = vi.fn()
+    const mockSetSelectedPlan = vi.fn()
     const user = userEvent.setup()
 
     return { user, mockSetValue, mockSetSelectedPlan }
