@@ -1,12 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ComponentsTable from './ComponentsTable'
 
-jest.mock('./ComponentsNotConfigured', () => () => 'ComponentsNotConfigured')
+vi.mock('./ComponentsNotConfigured', () => ({
+  default: () => 'ComponentsNotConfigured',
+}))
 
 const queryClient = new QueryClient()
 const server = setupServer()
@@ -69,16 +71,16 @@ describe('ComponentsTable', () => {
     const componentsMock = jest.fn()
 
     server.use(
-      graphql.query('PullComponentComparison', (req, res, ctx) => {
-        if (req.variables?.filters?.components) {
-          componentsMock(req.variables.filters.components)
+      graphql.query('PullComponentComparison', (info) => {
+        if (info.variables?.filters?.components) {
+          componentsMock(info.variables.filters.components)
         }
 
         if (overrideData) {
-          return res(ctx.status(200), ctx.data(overrideData))
+          return HttpResponse.json({ data: overrideData })
         }
 
-        return res(ctx.status(200), ctx.data(mockPull))
+        return HttpResponse.json({ data: mockPull })
       })
     )
 
