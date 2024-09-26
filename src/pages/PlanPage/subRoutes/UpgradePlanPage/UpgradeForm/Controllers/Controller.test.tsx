@@ -4,9 +4,13 @@ import { Plans } from 'shared/utils/billing'
 
 import Controller from './Controller'
 
-jest.mock('./ProPlanController', () => () => 'Pro Plan Controller')
-jest.mock('./SentryPlanController', () => () => 'Sentry Plan Controller')
-jest.mock('./TeamPlanController', () => () => 'Team Plan Controller')
+vi.mock('./ProPlanController', () => ({ default: () => 'Pro Plan Controller' }))
+vi.mock('./SentryPlanController', () => ({
+  default: () => 'Sentry Plan Controller',
+}))
+vi.mock('./TeamPlanController', () => ({
+  default: () => 'Team Plan Controller',
+}))
 
 describe('Controller', () => {
   describe('Form Controller', () => {
@@ -15,9 +19,9 @@ describe('Controller', () => {
         const props = {
           seats: 10,
           selectedPlan: Plans.USERS_PR_INAPPY,
-          register: jest.fn(),
-          setFormValue: jest.fn(),
-          setSelectedPlan: jest.fn(),
+          register: vi.fn(),
+          setFormValue: vi.fn(),
+          setSelectedPlan: vi.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }
@@ -39,9 +43,9 @@ describe('Controller', () => {
         const props = {
           seats: 10,
           selectedPlan: Plans.USERS_PR_INAPPM,
-          register: jest.fn(),
-          setFormValue: jest.fn(),
-          setSelectedPlan: jest.fn(),
+          register: vi.fn(),
+          setFormValue: vi.fn(),
+          setSelectedPlan: vi.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }
@@ -65,9 +69,9 @@ describe('Controller', () => {
         const props = {
           seats: 10,
           selectedPlan: Plans.USERS_SENTRYY,
-          register: jest.fn(),
-          setFormValue: jest.fn(),
-          setSelectedPlan: jest.fn(),
+          register: vi.fn(),
+          setFormValue: vi.fn(),
+          setSelectedPlan: vi.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }
@@ -89,9 +93,9 @@ describe('Controller', () => {
         const props = {
           seats: 10,
           selectedPlan: Plans.USERS_SENTRYM,
-          register: jest.fn(),
-          setFormValue: jest.fn(),
-          setSelectedPlan: jest.fn(),
+          register: vi.fn(),
+          setFormValue: vi.fn(),
+          setSelectedPlan: vi.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }
@@ -115,9 +119,9 @@ describe('Controller', () => {
         const props = {
           seats: 10,
           selectedPlan: Plans.USERS_TEAMY,
-          register: jest.fn(),
-          setFormValue: jest.fn(),
-          setSelectedPlan: jest.fn(),
+          register: vi.fn(),
+          setFormValue: vi.fn(),
+          setSelectedPlan: vi.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }
@@ -140,9 +144,9 @@ describe('Controller', () => {
         const props = {
           seats: 10,
           selectedPlan: Plans.USERS_TEAMM,
-          register: jest.fn(),
-          setFormValue: jest.fn(),
-          setSelectedPlan: jest.fn(),
+          register: vi.fn(),
+          setFormValue: vi.fn(),
+          setSelectedPlan: vi.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }
