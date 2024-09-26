@@ -1,14 +1,22 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useTruncation } from 'ui/TruncatedMessage/hooks'
 
 import HeaderTeam from './HeaderTeam'
 
-jest.mock('ui/TruncatedMessage/hooks')
+const mocks = vi.hoisted(() => ({
+  useTruncation: vi.fn(),
+}))
+
+vi.mock('ui/TruncatedMessage/hooks', async () => {
+  const actual = await vi.importActual('ui/TruncatedMessage/hooks')
+  return {
+    ...actual,
+    useTruncation: mocks.useTruncation,
+  }
+})
 
 const mockData = (pullId = null) => ({
   owner: {
@@ -57,15 +65,15 @@ afterAll(() => server.close())
 
 describe('HeaderTeam', () => {
   function setup(pullId = 1234) {
-    useTruncation.mockImplementation(() => ({
+    mocks.useTruncation.mockImplementation(() => ({
       ref: () => {},
       canTruncate: false,
     }))
 
     server.use(
-      graphql.query('CommitPageHeaderDataTeam', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData(pullId)))
-      )
+      graphql.query('CommitPageHeaderDataTeam', (info) => {
+        return HttpResponse.json({ data: mockData(pullId) })
+      })
     )
   }
 
