@@ -1,21 +1,28 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { useAddNotification } from 'services/toastNotification'
 import { Plans } from 'shared/utils/billing'
 
 import SentryPlanController from './SentryPlanController'
 
-jest.mock('services/toastNotification')
-jest.mock('@stripe/react-stripe-js')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
 
-const mockedToastNotification = useAddNotification as jest.Mock
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
+vi.mock('@stripe/react-stripe-js')
 
 const basicPlan = {
   marketingName: 'Basic',
@@ -175,49 +182,39 @@ describe('SentryPlanController', () => {
       monthlyPlan: true,
     }
   ) {
-    const addNotification = jest.fn()
+    const addNotification = vi.fn()
     const user = userEvent.setup()
-    mockedToastNotification.mockReturnValue(addNotification)
+    mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
+      http.get(`/internal/gh/codecov/account-details/`, (info) => {
         if (planValue === Plans.USERS_BASIC) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsBasic))
+          return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_SENTRYM) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsSentryMonthly))
+          return HttpResponse.json(mockAccountDetailsSentryMonthly)
         } else if (planValue === Plans.USERS_SENTRYY) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsSentryYearly))
+          return HttpResponse.json(mockAccountDetailsSentryYearly)
         }
       }),
-      rest.patch(
-        '/internal/gh/codecov/account-details/',
-        async (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ success: false }))
-        }
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      http.patch('/internal/gh/codecov/account-details/', async (info) => {
+        return HttpResponse.json({ success: false })
+      }),
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               availablePlans: [basicPlan, sentryPlanMonth, sentryPlanYear],
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetPlanData', (req, res, ctx) => {
+      graphql.query('GetPlanData', (info) => {
         const planResponse = monthlyPlan
           ? mockPlanDataResponseMonthly
           : mockPlanDataResponseYearly
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: {
-              hasPrivateRepos: true,
-              plan: planResponse,
-            },
-          })
-        )
+        return HttpResponse.json({
+          data: { owner: { hasPrivateRepos: true, plan: planResponse } },
+        })
       })
     )
 
@@ -227,8 +224,8 @@ describe('SentryPlanController', () => {
   describe('when rendered', () => {
     describe('when the user has a plan monthly', () => {
       const props = {
-        setFormValue: jest.fn(),
-        register: jest.fn(),
+        setFormValue: vi.fn(),
+        register: vi.fn(),
         newPlan: Plans.USERS_SENTRYM,
         seats: 10,
         errors: { seats: { message: '' } },
@@ -285,8 +282,8 @@ describe('SentryPlanController', () => {
 
     describe('when the user has a plan yearly', () => {
       const props = {
-        setFormValue: jest.fn(),
-        register: jest.fn(),
+        setFormValue: vi.fn(),
+        register: vi.fn(),
         newPlan: Plans.USERS_SENTRYY,
         seats: 5,
         errors: { seats: { message: '' } },
