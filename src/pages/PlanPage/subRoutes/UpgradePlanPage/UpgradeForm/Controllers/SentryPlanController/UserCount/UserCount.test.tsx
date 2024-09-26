@@ -4,8 +4,8 @@ import {
   screen,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -58,15 +58,12 @@ describe('UserCount', () => {
     }
   ) {
     server.use(
-      rest.get('/internal/gh/codecov/account-details', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            activatedUserCount,
-            activatedStudentCount,
-            inactiveUserCount,
-          })
-        )
+      http.get('/internal/gh/codecov/account-details', (info) => {
+        return HttpResponse.json({
+          activatedUserCount,
+          activatedStudentCount,
+          inactiveUserCount,
+        })
       })
     )
   }
