@@ -1,15 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
 
 import Header from './Header'
 
-jest.mock('./HeaderDefault', () => () => 'Default Header')
-jest.mock('./HeaderTeam', () => () => 'Team Header')
+vi.mock('./HeaderDefault', () => ({ default: () => 'Default Header' }))
+vi.mock('./HeaderTeam', () => ({ default: () => 'Team Header' }))
 
 const mockRepoSettings = (isPrivate = false) => ({
   owner: {
@@ -56,20 +56,20 @@ interface SetupArgs {
 describe('Header', () => {
   function setup({ isTeam = false, isPrivate = false }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
+      graphql.query('OwnerTier', (info) => {
         if (isTeam) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
-          )
+          return HttpResponse.json({
+            data: { owner: { plan: { tierName: TierNames.TEAM } } },
+          })
         }
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
-        )
+        return HttpResponse.json({
+          data: { owner: { plan: { tierName: TierNames.PRO } } },
+        })
       }),
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+      graphql.query('GetRepoSettingsTeam', (info) => {
+        return HttpResponse.json({
+          data: mockRepoSettings(isPrivate),
+        })
       })
     )
   }
