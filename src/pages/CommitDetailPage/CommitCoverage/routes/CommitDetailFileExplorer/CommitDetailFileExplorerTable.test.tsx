@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CommitDetailFileExplorer from './CommitDetailFileExplorer'
@@ -221,47 +221,47 @@ describe('CommitDetailFileExplorerTable', () => {
     unknownPath = false,
   } = {}) {
     const user = userEvent.setup()
-    const requestFilters = jest.fn()
+    const requestFilters = vi.fn()
 
     server.use(
-      graphql.query('CommitPathContents', (req, res, ctx) => {
-        requestFilters(req.variables.filters)
+      graphql.query('CommitPathContents', (info) => {
+        requestFilters(info.variables.filters)
 
         if (missingCoverage) {
-          return res(ctx.status(200), ctx.data({ owner: mockMissingCoverage }))
+          return HttpResponse.json({ data: { owner: mockMissingCoverage } })
         }
 
         if (unknownPath) {
-          return res(ctx.status(200), ctx.data({ owner: mockUnknownPath }))
+          return HttpResponse.json({ data: { owner: mockUnknownPath } })
         }
 
-        if (noFiles || req.variables?.filters?.searchValue) {
-          return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
+        if (noFiles || info.variables?.filters?.searchValue) {
+          return HttpResponse.json({ data: { owner: mockNoFiles } })
         }
 
         if (
-          req.variables?.filters?.displayType &&
-          req.variables?.filters?.displayType === 'LIST'
+          info.variables?.filters?.displayType &&
+          info.variables?.filters?.displayType === 'LIST'
         ) {
-          return res(ctx.status(200), ctx.data({ owner: mockListData }))
+          return HttpResponse.json({ data: { owner: mockListData } })
         }
 
-        return res(ctx.status(200), ctx.data(mockTreeData))
+        return HttpResponse.json({ data: mockTreeData })
       }),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockFlagBackfillData))
+      graphql.query('BackfillFlagMemberships', (info) => {
+        return HttpResponse.json({ data: mockFlagBackfillData })
       }),
-      graphql.query('CommitComponents', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCommitComponentData))
+      graphql.query('CommitComponents', (info) => {
+        return HttpResponse.json({ data: mockCommitComponentData })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOverview))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockOverview })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOwnerTier))
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({ data: mockOwnerTier })
       }),
-      graphql.query('FlagsSelect', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockFlagsResponse))
+      graphql.query('FlagsSelect', (info) => {
+        return HttpResponse.json({ data: mockFlagsResponse })
       })
     )
 
