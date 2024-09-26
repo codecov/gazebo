@@ -1,47 +1,34 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 import Tabs from './Tabs'
 
-jest.mock('config')
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
 
-jest.mock('shared/featureFlags')
+vi.mock('config')
 
-const mockedUseFlags = useFlags as jest.Mock
-
-const queryClient = new QueryClient()
-const server = setupServer()
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
+})
 
 const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-      <Route path="/analytics/:provider/:owner">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
+    <Route path="/analytics/:provider/:owner">{children}</Route>
+  </MemoryRouter>
 )
-
-beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'warn' })
-  console.error = () => {}
-})
-beforeEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => {
-  server.close()
-})
 
 describe('Tabs', () => {
   function setup(isSelfHosted: boolean = false) {
     config.IS_SELF_HOSTED = isSelfHosted
-    mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: true })
+    mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: true })
   }
 
   describe('when user is part of the org', () => {
@@ -127,7 +114,7 @@ describe('Tabs', () => {
 
   describe('ai features tab', () => {
     it('does not render tab when flag is off', () => {
-      mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: false })
+      mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: false })
       render(<Tabs />, { wrapper })
 
       expect(
