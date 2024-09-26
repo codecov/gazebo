@@ -1,14 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTruncation } from 'ui/TruncatedMessage/hooks'
 
 import HeaderDefault from './HeaderDefault'
 
-jest.mock('ui/TruncatedMessage/hooks')
+vi.mock('ui/TruncatedMessage/hooks')
 
 const mockData = (pullId = null) => ({
   owner: {
@@ -57,9 +57,9 @@ describe('HeaderDefault', () => {
     }))
 
     server.use(
-      graphql.query('CommitPageHeaderData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData(pullId)))
-      )
+      graphql.query('CommitPageHeaderData', (info) => {
+        return HttpResponse.json({ data: mockData(pullId) })
+      })
     )
   }
 
