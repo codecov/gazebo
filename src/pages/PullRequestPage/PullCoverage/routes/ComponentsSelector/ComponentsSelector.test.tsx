@@ -7,8 +7,8 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Location } from 'history'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ComponentsSelector from './ComponentsSelector'
@@ -74,13 +74,12 @@ describe('ComponentsSelector', () => {
     const mockApiVars = jest.fn()
 
     server.use(
-      graphql.query('PullComponentsSelector', (req, res, ctx) => {
-        mockApiVars(req.variables)
+      graphql.query('PullComponentsSelector', (info) => {
+        mockApiVars(info.variables)
 
-        return res(
-          ctx.status(200),
-          ctx.data(mockPullComponentsResponse(components))
-        )
+        return HttpResponse.json({
+          data: mockPullComponentsResponse(components),
+        })
       })
     )
 
