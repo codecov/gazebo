@@ -5,18 +5,23 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 import Tabs from './Tabs'
 
-jest.mock('config')
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
 
-jest.mock('shared/featureFlags')
+vi.mock('config')
 
-const mockedUseFlags = useFlags as jest.Mock
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
+})
 
 const queryClient = new QueryClient()
-const server = setupServer()
 
 const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
@@ -26,14 +31,16 @@ const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
-  console.error = () => {}
 })
+
 beforeEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -41,7 +48,7 @@ afterAll(() => {
 describe('Tabs', () => {
   function setup(isSelfHosted: boolean = false) {
     config.IS_SELF_HOSTED = isSelfHosted
-    mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: true })
+    mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: true })
   }
 
   describe('when user is part of the org', () => {
@@ -49,55 +56,40 @@ describe('Tabs', () => {
       setup()
       render(<Tabs />, { wrapper })
 
-      expect(
-        screen.getByRole('link', {
-          name: /repos/i,
-        })
-      ).toHaveAttribute('href', '/gh/codecov')
+      const link = screen.getByRole('link', { name: /repos/i })
+      expect(link).toHaveAttribute('href', '/gh/codecov')
     })
 
     it('renders links to the analytics page', () => {
       setup()
       render(<Tabs />, { wrapper })
 
-      expect(
-        screen.getByRole('link', {
-          name: /analytics/i,
-        })
-      ).toHaveAttribute('href', `/analytics/gh/codecov`)
+      const link = screen.getByRole('link', { name: /analytics/i })
+      expect(link).toHaveAttribute('href', `/analytics/gh/codecov`)
     })
 
     it('renders links to the settings page', () => {
       setup()
       render(<Tabs />, { wrapper })
 
-      expect(
-        screen.getByRole('link', {
-          name: /settings/i,
-        })
-      ).toHaveAttribute('href', `/account/gh/codecov`)
+      const link = screen.getByRole('link', { name: /settings/i })
+      expect(link).toHaveAttribute('href', `/account/gh/codecov`)
     })
 
     it('renders link to plan page', () => {
       setup()
       render(<Tabs />, { wrapper })
 
-      expect(
-        screen.getByRole('link', {
-          name: /plan/i,
-        })
-      ).toHaveAttribute('href', `/plan/gh/codecov`)
+      const link = screen.getByRole('link', { name: /plan/i })
+      expect(link).toHaveAttribute('href', `/plan/gh/codecov`)
     })
 
     it('renders link to members page', () => {
       setup()
       render(<Tabs />, { wrapper })
 
-      expect(
-        screen.getByRole('link', {
-          name: /members/i,
-        })
-      ).toHaveAttribute('href', `/members/gh/codecov`)
+      const link = screen.getByRole('link', { name: /members/i })
+      expect(link).toHaveAttribute('href', `/members/gh/codecov`)
     })
   })
 
@@ -117,35 +109,26 @@ describe('Tabs', () => {
       setup(true)
       render(<Tabs />, { wrapper })
 
-      expect(
-        screen.queryByRole('link', {
-          name: /plan/i,
-        })
-      ).not.toBeInTheDocument()
+      const link = screen.queryByRole('link', { name: /plan/i })
+      expect(link).not.toBeInTheDocument()
     })
   })
 
   describe('ai features tab', () => {
     it('does not render tab when flag is off', () => {
-      mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: false })
+      mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: false })
       render(<Tabs />, { wrapper })
 
-      expect(
-        screen.queryByRole('link', {
-          name: /Codecov AI beta/i,
-        })
-      ).not.toBeInTheDocument()
+      const link = screen.queryByRole('link', { name: /Codecov AI beta/i })
+      expect(link).not.toBeInTheDocument()
     })
 
     it('renders tab when flag is on', () => {
       setup()
       render(<Tabs />, { wrapper })
 
-      expect(
-        screen.getByRole('link', {
-          name: /Codecov AI beta/i,
-        })
-      ).toBeInTheDocument()
+      const link = screen.getByRole('link', { name: /Codecov AI beta/i })
+      expect(link).toBeInTheDocument()
     })
   })
 })

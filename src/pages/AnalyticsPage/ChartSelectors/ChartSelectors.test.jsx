@@ -2,31 +2,47 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
-import useIntersection from 'react-use/lib/useIntersection'
 
-import { useRepos } from 'services/repos'
 import { TierNames } from 'services/tier'
 
 import ChartSelectors from './ChartSelectors'
-;(() => {
-  return (global.ResizeObserver = class ResizeObserver {
-    constructor(cb) {
-      this.cb = cb
-    }
-    observe() {
-      this.cb([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }])
-    }
-    unobserve() {}
-    disconnect() {}
-  })
-})()
 
-jest.mock('services/repos')
-jest.mock('react-use/lib/useIntersection')
+class ResizeObserverMock {
+  constructor(cb) {
+    this.cb = cb
+  }
+  observe() {
+    this.cb([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }])
+  }
+  unobserve() {}
+  disconnect() {}
+}
+global.ResizeObserver = ResizeObserverMock
+
+const mocks = vi.hoisted(() => ({
+  useIntersection: vi.fn(),
+  useRepos: vi.fn(),
+}))
+
+vi.mock('react-use', async () => {
+  const actual = await vi.importActual('react-use')
+  return {
+    ...actual,
+    useIntersection: mocks.useIntersection,
+  }
+})
+
+vi.mock('services/repos', async () => {
+  const actual = await vi.importActual('services/repos')
+  return {
+    ...actual,
+    useRepos: mocks.useRepos,
+  }
+})
 
 const repositories = [
   {
@@ -51,9 +67,7 @@ const repositories = [
   },
 ]
 
-const server = setupServer()
 const queryClient = new QueryClient()
-
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
@@ -64,9 +78,10 @@ const wrapper = ({ children }) => (
   </QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
-  jest.useFakeTimers().setSystemTime(new Date('2022-04-20'))
+  vi.useFakeTimers().setSystemTime(new Date('2022-04-20'))
 })
 
 afterEach(() => {
@@ -75,26 +90,22 @@ afterEach(() => {
 })
 
 afterAll(() => {
-  jest.useRealTimers()
+  vi.useRealTimers()
   server.close()
 })
 
 describe('ChartSelectors', () => {
-  beforeEach(() => {
-    jest.resetAllMocks()
-  })
-
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   function setup({ hasNextPage = false, tierValue = TierNames.PRO }) {
     // https://github.com/testing-library/user-event/issues/1034
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
 
-    const fetchNextPage = jest.fn()
+    const fetchNextPage = vi.fn()
 
-    useRepos.mockReturnValue({
+    mocks.useRepos.mockReturnValue({
       data: {
         pages: [
           {
@@ -111,11 +122,10 @@ describe('ChartSelectors', () => {
     })
 
     server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: tierValue } } })
-        )
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({
+          data: { owner: { plan: { tierName: tierValue } } },
+        })
       })
     )
 
@@ -123,9 +133,8 @@ describe('ChartSelectors', () => {
   }
 
   describe('renders component', () => {
-    beforeEach(() => setup({}))
-
     it('renders date picker', async () => {
+      setup({})
       render(
         <ChartSelectors
           active={true}
@@ -134,7 +143,7 @@ describe('ChartSelectors', () => {
             direction: 'ASC',
           }}
           params={{ search: 'Repo name 1', repositories: [] }}
-          updateParams={jest.fn()}
+          updateParams={vi.fn()}
         />,
         { wrapper }
       )
@@ -144,6 +153,7 @@ describe('ChartSelectors', () => {
     })
 
     it('renders multiselect', async () => {
+      setup({})
       render(
         <ChartSelectors
           active={true}
@@ -152,7 +162,7 @@ describe('ChartSelectors', () => {
             direction: 'ASC',
           }}
           params={{ search: 'Repo name 1', repositories: [] }}
-          updateParams={jest.fn()}
+          updateParams={vi.fn()}
         />,
         { wrapper }
       )
@@ -162,6 +172,7 @@ describe('ChartSelectors', () => {
     })
 
     it('renders clear filters', async () => {
+      setup({})
       render(
         <ChartSelectors
           active={true}
@@ -170,7 +181,7 @@ describe('ChartSelectors', () => {
             direction: 'ASC',
           }}
           params={{ search: 'Repo name 1', repositories: [] }}
-          updateParams={jest.fn()}
+          updateParams={vi.fn()}
         />,
         { wrapper }
       )
@@ -182,8 +193,8 @@ describe('ChartSelectors', () => {
 
   describe('interacting with the date picker', () => {
     it('updates the location params', async () => {
+      const updateParams = vi.fn()
       const { user } = setup({})
-      const updateParams = jest.fn()
       render(
         <ChartSelectors
           active={true}
@@ -218,10 +229,10 @@ describe('ChartSelectors', () => {
 
     describe('start date and end date set and user clicks on the date', () => {
       it('clears the params', async () => {
-        const { user } = setup({})
-        const updateParams = jest.fn()
+        const updateParams = vi.fn()
         const testDate = new Date('2022-03-31T00:00:00.000Z')
 
+        const { user } = setup({})
         render(
           <ChartSelectors
             owner="bob"
@@ -266,7 +277,7 @@ describe('ChartSelectors', () => {
             direction: 'ASC',
           }}
           params={{ search: 'Repo name 1', repositories: [] }}
-          updateParams={jest.fn()}
+          updateParams={vi.fn()}
         />,
         { wrapper }
       )
@@ -292,7 +303,7 @@ describe('ChartSelectors', () => {
               direction: 'ASC',
             }}
             params={{ search: 'Repo name 1', repositories: ['Repo name 1'] }}
-            updateParams={jest.fn()}
+            updateParams={vi.fn()}
           />,
           { wrapper }
         )
@@ -309,7 +320,7 @@ describe('ChartSelectors', () => {
 
       it('updates url params', async () => {
         const { user } = setup({})
-        const updateParams = jest.fn()
+        const updateParams = vi.fn()
         render(
           <ChartSelectors
             active={true}
@@ -348,7 +359,7 @@ describe('ChartSelectors', () => {
               direction: 'ASC',
             }}
             params={{ search: 'Repo name 1', repositories: [] }}
-            updateParams={jest.fn()}
+            updateParams={vi.fn()}
           />,
           { wrapper }
         )
@@ -370,7 +381,7 @@ describe('ChartSelectors', () => {
               direction: 'ASC',
             }}
             params={{ search: 'Repo name 1', repositories: [] }}
-            updateParams={jest.fn()}
+            updateParams={vi.fn()}
           />,
           { wrapper }
         )
@@ -385,7 +396,7 @@ describe('ChartSelectors', () => {
         expect(searchBoxUpdated).toHaveAttribute('value', 'codecov')
 
         await waitFor(() => {
-          expect(useRepos).toHaveBeenCalledWith({
+          expect(mocks.useRepos).toHaveBeenCalledWith({
             activated: true,
             first: Infinity,
             owner: 'codecov',
@@ -405,10 +416,10 @@ describe('ChartSelectors', () => {
     describe('when onLoadMore is triggered', () => {
       describe('when there is a next page', () => {
         it('calls fetchNextPage', async () => {
-          const { user, fetchNextPage } = setup({ hasNextPage: true })
-          useIntersection.mockReturnValue({
+          mocks.useIntersection.mockReturnValue({
             isIntersecting: true,
           })
+          const { user, fetchNextPage } = setup({ hasNextPage: true })
 
           render(
             <ChartSelectors
@@ -418,7 +429,7 @@ describe('ChartSelectors', () => {
                 direction: 'ASC',
               }}
               params={{ search: 'Repo name 1', repositories: [] }}
-              updateParams={jest.fn()}
+              updateParams={vi.fn()}
             />,
             { wrapper }
           )
@@ -426,7 +437,7 @@ describe('ChartSelectors', () => {
           const multiselect = screen.getByText('All Repos')
           await user.click(multiselect)
 
-          expect(fetchNextPage).toHaveBeenCalled()
+          await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
         })
       })
 
@@ -442,7 +453,7 @@ describe('ChartSelectors', () => {
                 direction: 'ASC',
               }}
               params={{ search: 'Repo name 1', repositories: [] }}
-              updateParams={jest.fn()}
+              updateParams={vi.fn()}
             />,
             { wrapper }
           )
@@ -459,7 +470,7 @@ describe('ChartSelectors', () => {
   describe('interacting with clear filters', () => {
     it('updates params', async () => {
       const { user } = setup({})
-      const updateParams = jest.fn()
+      const updateParams = vi.fn()
       render(
         <ChartSelectors
           active={true}
@@ -499,7 +510,7 @@ describe('ChartSelectors', () => {
             direction: 'ASC',
           }}
           params={{ search: 'Repo name 1', repositories: [] }}
-          updateParams={jest.fn()}
+          updateParams={vi.fn()}
         />,
         { wrapper }
       )
@@ -511,7 +522,7 @@ describe('ChartSelectors', () => {
       expect(upgradeLink).toBeInTheDocument()
       expect(upgradeLink).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
       await waitFor(() => {
-        expect(useRepos).toHaveBeenCalledWith({
+        expect(mocks.useRepos).toHaveBeenCalledWith({
           activated: true,
           first: Infinity,
           owner: 'codecov',
