@@ -1,13 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import YamlModal from './YamlModal'
 
-jest.mock('./YAMLViewer', () => () => 'YAMLViewer')
+vi.mock('./YAMLViewer', () => ({ default: () => 'YAMLViewer' }))
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -27,12 +27,8 @@ const mockCommitNoYamlErrors = {
     repository: {
       __typename: 'Repository',
       commit: {
-        yamlErrors: {
-          edges: [],
-        },
-        botErrors: {
-          edges: [],
-        },
+        yamlErrors: { edges: [] },
+        botErrors: { edges: [] },
       },
     },
   },
@@ -54,24 +50,29 @@ const mockCommitYamlErrors = {
   },
 }
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
-  jest.resetAllMocks()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('YamlModal', () => {
-  const showModal = jest.fn()
+  const showModal = vi.fn()
   function setup({ hasYamlErrors } = { hasYamlErrors: false }) {
     server.use(
-      graphql.query('CommitErrors', (req, res, ctx) => {
+      graphql.query('CommitErrors', (info) => {
         if (hasYamlErrors) {
-          return res(ctx.status(200), ctx.data(mockCommitYamlErrors))
+          return HttpResponse.json({ data: mockCommitYamlErrors })
         }
 
-        return res(ctx.status(200), ctx.data(mockCommitNoYamlErrors))
+        return HttpResponse.json({ data: mockCommitNoYamlErrors })
       })
     )
   }
@@ -143,8 +144,8 @@ describe('YamlModal', () => {
         wrapper,
       })
 
-      const svg = await screen.findByText(/x.svg/)
-      await user.click(svg)
+      const closeIcon = await screen.findByTestId('modal-close-icon')
+      await user.click(closeIcon)
 
       expect(showModal).toHaveBeenCalled()
       expect(showModal).toHaveBeenCalledWith(false)
