@@ -1,14 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import IndirectChangesTable from './IndirectChangesTable'
 
-jest.mock('./CommitFileDiff', () => () => 'CommitFileDiff')
+vi.mock('./CommitFileDiff', () => ({ default: () => 'CommitFileDiff' }))
 
 const server = setupServer()
 
@@ -16,7 +16,7 @@ beforeAll(() => {
   server.listen()
 })
 
-beforeEach(() => {
+afterEach(() => {
   server.resetHandlers()
 })
 
@@ -57,11 +57,10 @@ describe('IndirectChangesTable', () => {
     })
 
     server.use(
-      graphql.query('Commit', (req, res, ctx) => {
-        mockVars(req.variables)
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('Commit', (info) => {
+        mockVars(info.variables)
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
@@ -90,8 +89,8 @@ describe('IndirectChangesTable', () => {
                 },
               },
             },
-          })
-        )
+          },
+        })
       })
     )
 
