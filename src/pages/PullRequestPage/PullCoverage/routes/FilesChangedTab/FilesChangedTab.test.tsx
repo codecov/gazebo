@@ -1,16 +1,20 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
 
 import FilesChangedTab from './FilesChangedTab'
 
-jest.mock('./FilesChanged', () => () => 'FilesChanged')
-jest.mock('./FilesChanged/TableTeam', () => () => 'TeamFilesChanged')
-jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
+vi.mock('./FilesChanged', () => ({ default: () => 'FilesChanged' }))
+vi.mock('./FilesChanged/TableTeam', () => ({
+  default: () => 'TeamFilesChanged',
+}))
+vi.mock('../ComponentsSelector', () => ({
+  default: () => 'ComponentsSelector',
+}))
 
 const mockTeamTier = {
   owner: {
@@ -105,20 +109,19 @@ interface SetupArgs {
 describe('FilesChangedTab', () => {
   function setup({ planValue, privateRepo }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
+      graphql.query('OwnerTier', (info) => {
         if (planValue === TierNames.TEAM) {
-          return res(ctx.status(200), ctx.data(mockTeamTier))
+          return HttpResponse.json({ data: mockTeamTier })
         }
 
-        return res(ctx.status(200), ctx.data(mockProTier))
+        return HttpResponse.json({ data: mockProTier })
       }),
-      graphql.query('GetPullTeam', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockCompareData))
-      ),
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPullTeam', (info) => {
+        return HttpResponse.json({ data: mockCompareData })
+      }),
+      graphql.query('GetRepoSettingsTeam', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               isCurrentUserPartOfOrg: true,
               repository: {
@@ -134,11 +137,11 @@ describe('FilesChangedTab', () => {
                 },
               },
             },
-          })
-        )
-      ),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOverview))
+          },
+        })
+      }),
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockOverview })
       })
     )
   }
