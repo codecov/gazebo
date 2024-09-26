@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import 'react-intersection-observer/test-utils'
 
@@ -84,25 +84,25 @@ describe('MembersList', () => {
 
   function setup({ accountDetails = {} } = { accountDetails: {} }) {
     const user = userEvent.setup()
-    const mockActivateUser = jest.fn()
+    const mockActivateUser = vi.fn()
 
     let sendActivatedUser = false
 
     server.use(
-      rest.get('/internal/gh/codecov/account-details', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(accountDetails))
-      ),
-      rest.get('/internal/gh/codecov/users', (req, res, ctx) => {
+      http.get('/internal/:provider/codecov/account-details', (info) => {
+        return HttpResponse.json(accountDetails)
+      }),
+      http.get('/internal/:provider/codecov/users', (info) => {
         if (sendActivatedUser) {
           sendActivatedUser = false
-          return res(ctx.status(200), ctx.json(mockActiveUserRequest))
+          return HttpResponse.json(mockActiveUserRequest)
         }
-        return res(ctx.status(200), ctx.json(mockNonActiveUserRequest))
+        return HttpResponse.json(mockNonActiveUserRequest)
       }),
-      rest.patch('/internal/gh/codecov/users/:ownerid', (req, res, ctx) => {
+      http.patch('/internal/:provider/codecov/users/:ownerid', (info) => {
         sendActivatedUser = true
         mockActivateUser()
-        return res(ctx.status(200))
+        return HttpResponse.json({})
       })
     )
 
