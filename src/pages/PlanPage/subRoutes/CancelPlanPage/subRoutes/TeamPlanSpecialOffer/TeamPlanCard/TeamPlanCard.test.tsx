@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import TeamPlanCard from './TeamPlanCard'
 
-jest.mock('shared/plan/BenefitList', () => () => 'BenefitsList')
+vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
 
 const mockAvailablePlans = [
   {
@@ -119,18 +119,16 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 describe('TeamPlanCard', () => {
   function setup() {
     server.use(
-      graphql.query('GetAvailablePlans', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({ owner: { availablePlans: mockAvailablePlans } })
-        )
-      )
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: { owner: { availablePlans: mockAvailablePlans } },
+        })
+      })
     )
   }
 
   it('shows the monthly marketing name', async () => {
     setup()
-
     render(<TeamPlanCard />, {
       wrapper,
     })
