@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
@@ -12,7 +12,7 @@ import {
 
 import FilesChangedTableTeam, { getFilter } from './FilesChangedTableTeam'
 
-jest.mock('../shared/CommitFileDiff', () => () => 'CommitFileDiff')
+vi.mock('../shared/CommitFileDiff', () => ({ default: () => 'CommitFileDiff' }))
 
 const mockComparisonTeamData = {
   owner: {
@@ -230,10 +230,6 @@ beforeAll(() => {
   server.listen()
 })
 
-beforeEach(() => {
-  server.resetHandlers()
-})
-
 afterEach(() => {
   server.resetHandlers()
 })
@@ -256,7 +252,7 @@ describe('FilesChangedTableTeam', () => {
     }
   ) {
     const user = userEvent.setup()
-    const mockVars = jest.fn()
+    const mockVars = vi.fn()
 
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -267,31 +263,31 @@ describe('FilesChangedTableTeam', () => {
     })
 
     server.use(
-      graphql.query('GetCommitTeam', (req, res, ctx) => {
-        mockVars(req.variables?.filters)
+      graphql.query('GetCommitTeam', (info) => {
+        mockVars(info.variables?.filters)
 
         if (pendingCommit) {
-          return res(ctx.status(200), ctx.data(mockPendingCommit))
+          return HttpResponse.json({ data: mockPendingCommit })
         }
 
         if (noCoveredFiles) {
-          return res(ctx.status(200), ctx.data(mockEmptyFilesCommit))
+          return HttpResponse.json({ data: mockEmptyFilesCommit })
         }
 
-        return res(ctx.status(200), ctx.data(mockCommitLiteData))
+        return HttpResponse.json({ data: mockCommitLiteData })
       }),
-      graphql.query('GetCompareTotalsTeam', (req, res, ctx) => {
-        mockVars(req.variables)
+      graphql.query('GetCompareTotalsTeam', (info) => {
+        mockVars(info.variables)
 
         if (pendingCommit) {
-          return res(ctx.status(200), ctx.data(mockPendingComparison))
+          return HttpResponse.json({ data: mockPendingComparison })
         }
 
         if (noCoveredFiles) {
-          return res(ctx.status(200), ctx.data(mockEmptyFilesComparison))
+          return HttpResponse.json({ data: mockEmptyFilesComparison })
         }
 
-        return res(ctx.status(200), ctx.data(mockComparisonTeamData))
+        return HttpResponse.json({ data: mockComparisonTeamData })
       })
     )
 
