@@ -1,23 +1,31 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import { IndividualPlan, TrialStatuses } from 'services/account'
 import { accountDetailsParsedObj } from 'services/account/mocks'
-import { useAddNotification } from 'services/toastNotification'
 import { Plans } from 'shared/utils/billing'
 
 import UpgradeForm from './UpgradeForm'
 
-jest.mock('services/toastNotification')
-jest.mock('@stripe/react-stripe-js')
-jest.mock('@sentry/react')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
 
-const mockedUseAddNotification = useAddNotification as jest.Mock
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
+
+vi.mock('@stripe/react-stripe-js')
+vi.mock('@sentry/react')
 
 const basicPlan = {
   marketingName: 'Basic',
@@ -231,12 +239,19 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
+  vi.clearAllMocks()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 let testLocation: ReturnType<typeof useLocation>
 
@@ -281,50 +296,51 @@ describe('UpgradeForm', () => {
     hasSentryPlans = false,
     monthlyPlan = true,
   }: SetupArgs) {
-    const addNotification = jest.fn()
+    const addNotification = vi.fn()
     const user = userEvent.setup()
-    const patchRequest = jest.fn()
-
-    mockedUseAddNotification.mockReturnValue(addNotification)
+    const patchRequest = vi.fn()
+    mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
+      http.get(`/internal/:provider/:owner/account-details/`, (info) => {
         if (planValue === Plans.USERS_BASIC) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsBasic))
+          return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_PR_INAPPM) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsProMonthly))
+          return HttpResponse.json(mockAccountDetailsProMonthly)
         } else if (planValue === Plans.USERS_PR_INAPPY) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsProYearly))
+          return HttpResponse.json(mockAccountDetailsProYearly)
         } else if (planValue === Plans.USERS_TRIAL) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTrial))
+          return HttpResponse.json(mockAccountDetailsTrial)
         } else if (planValue === Plans.USERS_TEAMY) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamYearly))
+          return HttpResponse.json(mockAccountDetailsTeamYearly)
         } else if (planValue === Plans.USERS_TEAMM) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamMonthly))
+          return HttpResponse.json(mockAccountDetailsTeamMonthly)
         } else if (planValue === Plans.USERS_SENTRYY) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsSentryYearly))
+          return HttpResponse.json(mockAccountDetailsSentryYearly)
         }
       }),
-      rest.patch(
-        '/internal/gh/codecov/account-details/',
-        async (req, res, ctx) => {
+      http.patch(
+        '/internal/:provider/:owner/account-details/',
+        async (info) => {
           if (!successfulPatchRequest) {
             if (errorDetails) {
-              return res(ctx.status(500), ctx.json({ detail: errorDetails }))
+              return HttpResponse.json(
+                { detail: errorDetails },
+                { status: 500 }
+              )
             }
-            return res(ctx.status(500), ctx.json({ success: false }))
+            return HttpResponse.json({ success: false }, { status: 500 })
           }
-          const body = await req.json()
+          const body = await info.request.json()
 
           patchRequest(body)
 
-          return res(ctx.status(200), ctx.json({ success: false }))
+          return HttpResponse.json({ success: true })
         }
       ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               availablePlans: [
                 basicPlan,
@@ -335,22 +351,22 @@ describe('UpgradeForm', () => {
                 ...(hasSentryPlans ? [sentryPlanMonth, sentryPlanYear] : []),
               ],
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetPlanData', (req, res, ctx) => {
+      graphql.query('GetPlanData', (info) => {
         const planResponse = monthlyPlan
           ? mockPlanDataResponseMonthly
           : mockPlanDataResponseYearly
-        return res(
-          ctx.status(200),
-          ctx.data({
+
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: { ...planResponse, trialStatus },
             },
-          })
-        )
+          },
+        })
       })
     )
 
@@ -360,7 +376,7 @@ describe('UpgradeForm', () => {
   describe('when rendered', () => {
     describe('when the user has a basic plan', () => {
       const props = {
-        setSelectedPlan: jest.fn(),
+        setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
         } as NonNullable<IndividualPlan>,
@@ -668,7 +684,7 @@ describe('UpgradeForm', () => {
 
     describe('when the user has a pro plan monthly', () => {
       const props = {
-        setSelectedPlan: jest.fn(),
+        setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
         } as NonNullable<IndividualPlan>,
@@ -971,7 +987,7 @@ describe('UpgradeForm', () => {
 
     describe('when the user has a pro plan yearly', () => {
       const props = {
-        setSelectedPlan: jest.fn(),
+        setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
         } as NonNullable<IndividualPlan>,
@@ -1298,7 +1314,7 @@ describe('UpgradeForm', () => {
 
     describe('when the user has a sentry plan yearly', () => {
       const props = {
-        setSelectedPlan: jest.fn(),
+        setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_SENTRYY,
         } as NonNullable<IndividualPlan>,
@@ -1618,7 +1634,7 @@ describe('UpgradeForm', () => {
 
     describe('when the user has a team plan yearly', () => {
       const props = {
-        setSelectedPlan: jest.fn(),
+        setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_TEAMY,
         } as NonNullable<IndividualPlan>,
@@ -1965,7 +1981,7 @@ describe('UpgradeForm', () => {
 
     describe('user is currently on a trial', () => {
       const props = {
-        setSelectedPlan: jest.fn(),
+        setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
         } as NonNullable<IndividualPlan>,
