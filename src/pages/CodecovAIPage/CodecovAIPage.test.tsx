@@ -1,52 +1,33 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import CodecovAIPage from './CodecovAIPage'
 
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-    },
-  },
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
 })
-const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeContextProvider>
-      <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles/new']}>
-        <Route path="/:provider/:owner/:repo/bundles/new">{children}</Route>
-      </MemoryRouter>
-    </ThemeContextProvider>
-  </QueryClientProvider>
+  <ThemeContextProvider>
+    <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles/new']}>
+      <Route path="/:provider/:owner/:repo/bundles/new">{children}</Route>
+    </MemoryRouter>
+  </ThemeContextProvider>
 )
-
-beforeAll(() => {
-  server.listen()
-})
-
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-
-afterAll(() => {
-  server.close()
-})
 
 describe('CodecovAIPage', () => {
   beforeEach(() => {
-    mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: true })
+    mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: true })
   })
 
   it('renders top section', async () => {
@@ -130,7 +111,7 @@ describe('CodecovAIPage', () => {
 
 describe('flag is off', () => {
   it('does not render page', async () => {
-    mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: false })
+    mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: false })
 
     render(<CodecovAIPage />, { wrapper })
 
