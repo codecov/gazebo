@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -53,9 +53,9 @@ afterAll(() => {
 describe('DowngradePlan', () => {
   function setup() {
     server.use(
-      rest.all('/internal/gh/codecov/account-details', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(mockAccountDetails))
-      )
+      http.all('/internal/gh/codecov/account-details', (info) => {
+        return HttpResponse.json(mockAccountDetails)
+      })
     )
   }
 
