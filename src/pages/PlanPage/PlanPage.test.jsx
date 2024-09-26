@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -9,14 +9,22 @@ import config from 'config'
 
 import PlanPage from './PlanPage'
 
-jest.mock('config')
+vi.mock('config')
 
-jest.mock('./Tabs', () => () => 'Tabs')
-jest.mock('./subRoutes/CancelPlanPage', () => () => 'CancelPlanPage')
-jest.mock('./subRoutes/CurrentOrgPlan', () => () => 'CurrentOrgPlan')
-jest.mock('./subRoutes/InvoicesPage', () => () => 'InvoicesPage')
-jest.mock('./subRoutes/InvoiceDetailsPage', () => () => 'InvoiceDetailsPage')
-jest.mock('./subRoutes/UpgradePlanPage', () => () => 'UpgradePlanPage')
+vi.mock('./Tabs', () => ({ default: () => 'Tabs' }))
+vi.mock('./subRoutes/CancelPlanPage', () => ({
+  default: () => 'CancelPlanPage',
+}))
+vi.mock('./subRoutes/CurrentOrgPlan', () => ({
+  default: () => 'CurrentOrgPlan',
+}))
+vi.mock('./subRoutes/InvoicesPage', () => ({ default: () => 'InvoicesPage' }))
+vi.mock('./subRoutes/InvoiceDetailsPage', () => ({
+  default: () => 'InvoiceDetailsPage',
+}))
+vi.mock('./subRoutes/UpgradePlanPage', () => ({
+  default: () => 'UpgradePlanPage',
+}))
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -54,7 +62,7 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
-  jest.resetAllMocks()
+  vi.resetAllMocks()
 })
 afterAll(() => {
   server.close()
@@ -73,9 +81,9 @@ describe('PlanPage', () => {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('PlanPageData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner }))
-      )
+      graphql.query('PlanPageData', (info) => {
+        return HttpResponse.json({ data: { owner } })
+      })
     )
   }
 
