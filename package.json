@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev:vite": "yarn start:vite",
+    "dev:vite": "yarn start:vite --host",
     "start:vite": "yarn generate-icons:vite && vite",
     "build:vite": "yarn generate-icons:vite && tsc -b && vite build",
     "dev": "yarn start",
