@@ -1,4 +1,4 @@
-import { cleanup, renderHook } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 
 import { useTruncation } from './useTruncation'
 
@@ -34,10 +34,6 @@ vi.mock('react', async () => {
     ...original,
     useRef: mocks.useRef,
   }
-})
-
-afterEach(() => {
-  cleanup()
 })
 
 describe('useTruncation', () => {
