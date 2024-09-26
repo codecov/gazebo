@@ -1,22 +1,30 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { useAddNotification } from 'services/toastNotification'
 import { Plans } from 'shared/utils/billing'
 import { UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE } from 'shared/utils/upgradeForm'
 
 import TeamPlanController from './TeamPlanController'
 
-jest.mock('services/toastNotification')
-jest.mock('@stripe/react-stripe-js')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
 
-const mockedToastNotification = useAddNotification as jest.Mock
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
+
+vi.mock('@stripe/react-stripe-js')
 
 const basicPlan = {
   marketingName: 'Basic',
@@ -175,30 +183,26 @@ describe('TeamPlanController', () => {
       monthlyPlan: true,
     }
   ) {
-    const addNotification = jest.fn()
+    const addNotification = vi.fn()
     const user = userEvent.setup()
-    mockedToastNotification.mockReturnValue(addNotification)
+    mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
+      http.get(`/internal/gh/codecov/account-details/`, (info) => {
         if (planValue === Plans.USERS_BASIC) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsBasic))
+          return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_TEAMM) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamMonthly))
+          return HttpResponse.json(mockAccountDetailsTeamMonthly)
         } else if (planValue === Plans.USERS_TEAMY) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamYearly))
+          return HttpResponse.json(mockAccountDetailsTeamYearly)
         }
       }),
-      rest.patch(
-        '/internal/gh/codecov/account-details/',
-        async (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ success: false }))
-        }
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      http.patch('/internal/gh/codecov/account-details/', async () => {
+        return HttpResponse.json({ success: false })
+      }),
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               availablePlans: [
                 basicPlan,
@@ -207,22 +211,16 @@ describe('TeamPlanController', () => {
                 proPlanYear,
               ],
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetPlanData', (req, res, ctx) => {
+      graphql.query('GetPlanData', (info) => {
         const planResponse = monthlyPlan
           ? mockPlanDataResponseMonthly
           : mockPlanDataResponseYearly
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: {
-              hasPrivateRepos: true,
-              plan: planResponse,
-            },
-          })
-        )
+        return HttpResponse.json({
+          data: { owner: { hasPrivateRepos: true, plan: planResponse } },
+        })
       })
     )
 
@@ -232,9 +230,9 @@ describe('TeamPlanController', () => {
   describe('when rendered', () => {
     describe('when the user has a team plan monthly', () => {
       const props = {
-        setFormValue: jest.fn(),
-        setSelectedPlan: jest.fn(),
-        register: jest.fn(),
+        setFormValue: vi.fn(),
+        setSelectedPlan: vi.fn(),
+        register: vi.fn(),
         newPlan: Plans.USERS_TEAMM,
         seats: 10,
         errors: { seats: { message: '' } },
@@ -290,12 +288,12 @@ describe('TeamPlanController', () => {
     })
 
     describe('when seats are greater than 10', () => {
-      const setFormValue = jest.fn()
-      const setSelectedPlan = jest.fn()
+      const setFormValue = vi.fn()
+      const setSelectedPlan = vi.fn()
       const props = {
         setFormValue,
         setSelectedPlan,
-        register: jest.fn(),
+        register: vi.fn(),
         newPlan: Plans.USERS_TEAMM,
         seats: 12,
         errors: {
@@ -351,9 +349,9 @@ describe('TeamPlanController', () => {
 
     describe('when the user has a team plan yearly', () => {
       const props = {
-        setFormValue: jest.fn(),
-        setSelectedPlan: jest.fn(),
-        register: jest.fn(),
+        setFormValue: vi.fn(),
+        setSelectedPlan: vi.fn(),
+        register: vi.fn(),
         newPlan: Plans.USERS_TEAMY,
         seats: 5,
         errors: { seats: { message: '' } },
