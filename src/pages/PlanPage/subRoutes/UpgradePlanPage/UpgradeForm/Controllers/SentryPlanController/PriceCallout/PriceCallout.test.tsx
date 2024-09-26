@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -86,11 +86,11 @@ afterAll(() => {
 })
 
 describe('PriceCallout', () => {
-  afterEach(() => jest.resetAllMocks())
+  afterEach(() => vi.resetAllMocks())
 
   function setup(periodEnd: number | null = 1609298708) {
     const user = userEvent.setup()
-    const mockSetFormValue = jest.fn()
+    const mockSetFormValue = vi.fn()
 
     const mockAccountDetails = {
       subscriptionDetail: {
@@ -101,17 +101,12 @@ describe('PriceCallout', () => {
     }
 
     server.use(
-      graphql.query('GetAvailablePlans', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
-            owner: { availablePlans },
-          })
-        )
-      ),
-      rest.get('internal/gh/codecov/account-details/', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(mockAccountDetails))
-      )
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({ data: { owner: { availablePlans } } })
+      }),
+      http.get('internal/gh/codecov/account-details/', (info) => {
+        return HttpResponse.json(mockAccountDetails)
+      })
     )
 
     return { mockSetFormValue, user }
