@@ -24,11 +24,11 @@ const CodecovAIPage: React.FC = () => {
     owner,
     provider,
   })
-
+  console.log('???')
   if (!codecovAiFeaturesTab) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
-
+  console.log(installationData)
   return (
     <>
       <Tabs />

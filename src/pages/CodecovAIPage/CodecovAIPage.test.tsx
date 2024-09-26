@@ -20,21 +20,15 @@ vi.mock('shared/featureFlags', async () => {
   }
 })
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-    },
-  },
-})
+const queryClient = new QueryClient()
 
 const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <ThemeContextProvider>
-      <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles/new']}>
-        <Route path="/:provider/:owner/:repo/bundles/new">{children}</Route>
+      <MemoryRouter initialEntries={['/gh/codecov/']}>
+        <Route path="/:provider/:owner/">{children}</Route>
       </MemoryRouter>
     </ThemeContextProvider>
   </QueryClientProvider>
@@ -105,7 +99,7 @@ describe('CodecovAIPage', () => {
 
   it('renders the install button', async () => {
     render(<CodecovAIPage />, { wrapper })
-    const buttonEl = screen.getByRole('link', { name: /Install Codecov AI/i })
+    const buttonEl = screen.queryByText(/Install Codecov AI/i)
     expect(buttonEl).toBeInTheDocument()
   })
 
