@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
@@ -10,21 +10,36 @@ import { ComparisonReturnType } from 'shared/utils/comparison'
 
 import PullRequestPageContent from './PullCoverage'
 
-jest.mock('./Summary', () => () => <div>CompareSummary</div>)
-jest.mock('./FirstPullBanner', () => () => <div>FirstPullBanner</div>)
-jest.mock('./PullCoverageTabs', () => () => 'PullCoverageTabs')
-
-jest.mock('./routes/FilesChangedTab', () => () => <div>FilesChangedTab</div>)
-jest.mock('./routes/IndirectChangesTab', () => () => (
-  <div>IndirectChangesTab</div>
-))
-jest.mock('./routes/CommitsTab', () => () => <div>CommitsTab</div>)
-jest.mock('./routes/FlagsTab', () => () => <div>FlagsTab</div>)
-jest.mock('./routes/FileExplorer', () => () => <div>FileExplorer</div>)
-jest.mock('./routes/FileViewer', () => () => <div>FileViewer</div>)
-jest.mock('./routes/ComponentsTab', () => () => <div>ComponentsTab</div>)
-
-jest.mock('shared/featureFlags')
+vi.mock('./Summary', () => ({
+  default: () => <div>CompareSummary</div>,
+}))
+vi.mock('./FirstPullBanner', () => ({
+  default: () => <div>FirstPullBanner</div>,
+}))
+vi.mock('./PullCoverageTabs', () => ({
+  default: () => 'PullCoverageTabs',
+}))
+vi.mock('./routes/FilesChangedTab', () => ({
+  default: () => <div>FilesChangedTab</div>,
+}))
+vi.mock('./routes/IndirectChangesTab', () => ({
+  default: () => <div>IndirectChangesTab</div>,
+}))
+vi.mock('./routes/CommitsTab', () => ({
+  default: () => <div>CommitsTab</div>,
+}))
+vi.mock('./routes/FlagsTab', () => ({
+  default: () => <div>FlagsTab</div>,
+}))
+vi.mock('./routes/FileExplorer', () => ({
+  default: () => <div>FileExplorer</div>,
+}))
+vi.mock('./routes/FileViewer', () => ({
+  default: () => <div>FileViewer</div>,
+}))
+vi.mock('./routes/ComponentsTab', () => ({
+  default: () => <div>ComponentsTab</div>,
+}))
 
 const mockPullData = (resultType) => {
   if (resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON) {
@@ -197,36 +212,31 @@ describe('PullRequestPageContent', () => {
     }
   ) {
     server.use(
-      graphql.query('PullPageData', (req, res, ctx) => {
-        if (req.variables.isTeamPlan) {
-          return res(ctx.status(200), ctx.data(mockPullDataTeam))
+      graphql.query('PullPageData', (info) => {
+        if (info.variables.isTeamPlan) {
+          return HttpResponse.json({ data: mockPullDataTeam })
         }
-        return res(ctx.status(200), ctx.data(mockPullData(resultType)))
+        return HttpResponse.json({ data: mockPullData(resultType) })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(
-            mockRepoOverview({
-              bundleAnalysisEnabled,
-              coverageEnabled,
-            })
-          )
-        )
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({
+          data: mockRepoOverview({
+            bundleAnalysisEnabled,
+            coverageEnabled,
+          }),
+        })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: { plan: { tierName: tierValue } },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetRepoRateLimitStatus', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockRepoRateLimitStatus({ isGithubRateLimited }))
-        )
+      graphql.query('GetRepoRateLimitStatus', (info) => {
+        return HttpResponse.json({
+          data: mockRepoRateLimitStatus({ isGithubRateLimited }),
+        })
       })
     )
   }
