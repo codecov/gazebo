@@ -50,11 +50,31 @@ export function deleteDuplicateCFFUploads({ uploads }: { uploads: Upload[] }) {
   })
 
   // Filter out uploads that have repeated flags, returning those without duplicates
-  return uploads.filter(
-    (upload) =>
-      upload?.uploadType === UploadTypeEnum.CARRIED_FORWARD &&
-      upload?.flags?.some((flag) => nonCFFlags.has(flag))
-  )
+
+  let result = []
+
+  for (let upload of uploads) {
+    if (upload.uploadType !== UploadTypeEnum.CARRIED_FORWARD || !upload.flags) {
+      result.push(upload)
+    } else {
+      for (let flag of upload.flags) {
+        if (nonCFFlags.has(flag)) {
+          break
+        }
+        result.push(upload)
+      }
+    }
+  }
+
+  return result
+
+  // return uploads.filter(
+  //   (upload) =>
+  //     !(
+  //       upload?.uploadType === UploadTypeEnum.CARRIED_FORWARD &&
+  //       upload?.flags?.some((flag) => nonCFFlags.has(flag))
+  //     )
+  // )
 }
 
 const createUploadGroups = ({ uploads }: { uploads: Upload[] }) => {
@@ -68,21 +88,22 @@ const createUploadGroups = ({ uploads }: { uploads: Upload[] }) => {
       stateCounts[upload.state] = (stateCounts[upload.state] || 0) + 1
     }
 
-    if (upload.provider === null || upload.provider === undefined) {
-      upload.provider = NONE
-    }
+    const provider =
+      upload.provider === null || upload.provider === undefined
+        ? NONE
+        : upload.provider
 
-    if (!providerGroups[upload.provider]) {
-      providerGroups[upload.provider] = [upload]
+    if (!providerGroups[provider]) {
+      providerGroups[provider] = [upload]
     } else {
-      providerGroups[upload.provider]!.push(upload)
+      providerGroups[provider].push(upload)
     }
 
     if (upload.state === UploadStateEnum.error) {
-      if (!errorProviderGroups[upload.provider]) {
-        errorProviderGroups[upload.provider] = [upload]
+      if (!errorProviderGroups[provider]) {
+        errorProviderGroups[provider] = [upload]
       } else {
-        errorProviderGroups[upload.provider]!.push(upload)
+        errorProviderGroups[provider].push(upload)
       }
     }
   })
@@ -114,7 +135,7 @@ export const extractUploads = ({
   }
 
   const uploads = deleteDuplicateCFFUploads({ uploads: unfilteredUploads })
-  const hasNoUploads = !uploads || uploads.length === 0
+  const hasNoUploads = uploads.length === 0
 
   const {
     uploadsOverview,
