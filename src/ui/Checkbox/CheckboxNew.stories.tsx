@@ -32,6 +32,14 @@ export const Disabled: Story = {
   ),
 }
 
+export const DisabledAndChecked: Story = {
+  render: () => (
+    <>
+      <CheckboxNew disabled checked={true} />
+    </>
+  ),
+}
+
 export const ControlledState: Story = {
   args: {
     checked: true,
