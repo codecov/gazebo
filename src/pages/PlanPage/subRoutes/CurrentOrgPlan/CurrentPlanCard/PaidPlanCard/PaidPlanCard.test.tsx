@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -9,16 +9,18 @@ import { Plan, PretrialPlan, TrialStatuses } from 'services/account'
 
 import PaidPlanCard from './PaidPlanCard'
 
-jest.mock(
-  '../shared/ActionsBilling/ActionsBilling',
-  () => () => 'Actions Billing'
-)
-jest.mock('../shared/PlanPricing', () => () => 'Plan Pricing')
-jest.mock('shared/plan/BenefitList', () => () => 'BenefitsList')
-jest.mock(
-  'shared/plan/ScheduledPlanDetails',
-  () => () => 'Scheduled Plan Details'
-)
+vi.mock('../shared/ActionsBilling/ActionsBilling', () => ({
+  default: () => 'Actions Billing',
+}))
+vi.mock('../shared/PlanPricing', () => ({
+  default: () => 'Plan Pricing',
+}))
+vi.mock('shared/plan/BenefitList', () => ({
+  default: () => 'BenefitsList',
+}))
+vi.mock('shared/plan/ScheduledPlanDetails', () => ({
+  default: () => 'Scheduled Plan Details',
+}))
 
 const mockProPlan = {
   marketingName: 'Pro',
@@ -93,42 +95,32 @@ describe('PaidPlanCard', () => {
     plan = mockProPlan,
   }: SetupArgs) {
     server.use(
-      rest.get(
-        '/internal/bb/critical-role/account-details/',
-        (req, res, ctx) => {
-          if (hasScheduledDetails) {
-            return res(
-              ctx.status(200),
-              ctx.json({ scheduleDetail: mockScheduleDetail })
-            )
-          } else {
-            return res(ctx.status(200), ctx.json({}))
-          }
-        }
-      ),
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
-            owner: {
-              hasPrivateRepos: true,
-              plan,
-            },
+      http.get('/internal/:provider/:owner/account-details/', (info) => {
+        if (hasScheduledDetails) {
+          return HttpResponse.json({
+            scheduleDetail: mockScheduleDetail,
           })
-        )
-      ),
-      graphql.query('PlanPageData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+        }
+        return HttpResponse.json({ data: {} })
+      }),
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
+            owner: { hasPrivateRepos: true, plan },
+          },
+        })
+      }),
+      graphql.query('PlanPageData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               username: 'popcorn',
               isCurrentUserPartOfOrg: true,
               numberOfUploads: 123,
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
   }
 
