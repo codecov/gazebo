@@ -134,7 +134,7 @@ describe('useUploads', () => {
         )
 
         expect(result.current.uploadsOverview).toEqual(
-          '2 errored, 3 started, 1 successful, 1 carried forward'
+          '2 errored, 3 started, 1 successful'
         )
       })
 
@@ -185,17 +185,6 @@ describe('useUploads', () => {
               updatedAt: '2020-08-25T16:36:25.859889+00:00',
               uploadType: 'UPLOADED',
               downloadUrl: '/test.txt',
-            },
-            {
-              createdAt: '2020-08-25T16:36:25.820340+00:00',
-              downloadUrl: '/test.txt',
-              errors: [],
-              flags: ['front-end'],
-              jobCode: '1234',
-              provider: 'github actions',
-              state: 'COMPLETE',
-              updatedAt: '2020-08-25T16:36:25.859889+00:00',
-              uploadType: 'CARRIEDFORWARD',
             },
           ],
           travis: [

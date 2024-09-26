@@ -56,12 +56,10 @@ export function deleteDuplicateCFFUploads({ uploads }: { uploads: Upload[] }) {
     if (upload.uploadType !== UploadTypeEnum.CARRIED_FORWARD || !upload.flags) {
       result.push(upload)
     } else {
-      for (let flag of upload.flags) {
-        if (nonCFFlags.has(flag)) {
-          break
-        }
+      let hasFlag = upload.flags.some((flag) => nonCFFlags.has(flag))
+      if (!hasFlag) {
+        result.push(upload)
       }
-      result.push(upload)
     }
   }
 
