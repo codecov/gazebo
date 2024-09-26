@@ -1,4 +1,4 @@
-const { useFlags } = require('shared/featureFlags')
+import { useFlags } from 'shared/featureFlags'
 
 export function useEnterpriseCloudPlanSupport({ plans }) {
   const { enterpriseCloudPlanSupport } = useFlags({
