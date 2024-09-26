@@ -1,5 +1,4 @@
-import { render, screen } from 'custom-testing-library'
-
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import YamlErrorBanner from './YamlErrorBanner'
