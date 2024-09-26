@@ -1,4 +1,4 @@
-import { QueryClient } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
@@ -7,7 +7,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import CodecovAIPage from './CodecovAIPage'
-
 
 const mocks = vi.hoisted(() => ({
   useFlags: vi.fn(),
@@ -32,11 +31,13 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <ThemeContextProvider>
-    <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles/new']}>
-      <Route path="/:provider/:owner/:repo/bundles/new">{children}</Route>
-    </MemoryRouter>
-  </ThemeContextProvider>
+  <QueryClientProvider client={queryClient}>
+    <ThemeContextProvider>
+      <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles/new']}>
+        <Route path="/:provider/:owner/:repo/bundles/new">{children}</Route>
+      </MemoryRouter>
+    </ThemeContextProvider>
+  </QueryClientProvider>
 )
 
 beforeAll(() => {
