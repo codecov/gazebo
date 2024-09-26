@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
@@ -10,7 +10,7 @@ import { TrialStatuses } from 'services/account'
 
 import HeaderBanners from './HeaderBanners'
 
-jest.mock('config')
+vi.mock('config')
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -66,45 +66,36 @@ describe('HeaderBanners', () => {
   }) {
     config.IS_SELF_HOSTED = isSelfHosted
     server.use(
-      graphql.query('OwnerPageData', (req, res, ctx) => {
+      graphql.query('OwnerPageData', (info) => {
         if (hasReachedLimit) {
-          return res(
-            ctx.status(200),
-            ctx.data({
-              owner: {
-                numberOfUploads: 252,
-              },
-            })
-          )
+          return HttpResponse.json({
+            data: { owner: { numberOfUploads: 252 } },
+          })
         }
 
         if (isReachingLimit) {
-          return res(
-            ctx.status(200),
-            ctx.data({
-              owner: {
-                numberOfUploads: 230,
-              },
-            })
-          )
+          return HttpResponse.json({
+            data: { owner: { numberOfUploads: 230 } },
+          })
         }
 
-        return res(ctx.status(200), ctx.data({}))
+        return HttpResponse.json({
+          data: { owner: { numberOfUploads: 230 } },
+        })
       }),
-      graphql.query('GetPlanData', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: mockPlanDataResponse,
             },
-          })
-        )
+          },
+        })
       }),
-      rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json({ integrationId }))
-      )
+      http.get('/internal/gh/codecov/account-details/', (info) => {
+        return HttpResponse.json({ integrationId })
+      })
     )
   }
 
@@ -275,9 +266,9 @@ describe('HeaderBanners', () => {
 
   describe('error in api response', () => {
     server.use(
-      rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) =>
-        res(ctx.status(404))
-      )
+      http.get('/internal/gh/codecov/account-details/', (info) => {
+        return HttpResponse.error(404)
+      })
     )
 
     it('does not display github app config banner', async () => {
