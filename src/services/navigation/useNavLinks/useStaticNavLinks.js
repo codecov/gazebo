@@ -116,6 +116,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    codecovAIAppInstallation: {
+      text: 'Install the Codecov AI app for an org',
+      path: () => `https://github.com/apps/${config.GH_APP}/installations/new`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
     userAppManagePage: {
       text: 'User App Manage/Access Page',
       path: () =>

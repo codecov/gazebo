@@ -1,11 +1,17 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
 import { usePrefetchSingleFileComp } from 'services/pull'
 import Icon from 'ui/Icon'
 
 export default function NameColumn({ row, getValue }) {
+  const { provider, owner, repo, pullId } = useParams()
   const { runPrefetch } = usePrefetchSingleFileComp({
+    provider,
+    owner,
+    repo,
+    pullId,
     path: row.original?.headName,
     filters: { hasUnintendedChanges: true },
   })

@@ -2,25 +2,18 @@ import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
 
-const styles = {
-  nav: 'sticky top-4 lg:w-56 mb-4 border border-ds-gray-tertiary rounded text-ds-gray-quinary overflow-hidden divide-y divide-ds-gray-tertiary mx-4 sm:mx-0',
-  link: 'block p-3 hover:bg-ds-gray-quaternary hover:bg-opacity-5',
-  activeLink:
-    'border-l-4 pl-2 border-ds-gray-octonary text-ds-gray-octonary font-semibold bg-ds-gray-quaternary bg-opacity-5',
-}
-
 function Sidemenu({ links }) {
   return (
     <div>
-      <nav className={styles.nav}>
+      <nav className="sticky top-4 mx-4 mb-4 divide-y divide-ds-gray-tertiary overflow-hidden rounded border border-ds-gray-tertiary text-ds-gray-quinary sm:mx-0 lg:w-56">
         {links.map((tab) => (
           // need an extra div to have the border to separate links from the
           // active left border with a different color
           <div key={tab.pageName}>
             <AppLink
               {...tab}
-              className={styles.link}
-              activeClassName={styles.activeLink}
+              className="block p-3 hover:bg-ds-gray-quaternary/5"
+              activeClassName="border-l-4 pl-2 border-ds-gray-octonary text-ds-gray-octonary font-semibold bg-ds-gray-quaternary bg-opacity-5"
             />
           </div>
         ))}
