@@ -1,15 +1,19 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
 
 import FilesChangedTab from './FilesChangedTab'
 
-jest.mock('./FilesChangedTable', () => () => 'FilesChangedTable')
-jest.mock('./FilesChangedTableTeam', () => () => 'FilesChangedTableTeam')
+vi.mock('./FilesChangedTable', () => ({
+  default: () => 'FilesChangedTable',
+}))
+vi.mock('./FilesChangedTableTeam', () => ({
+  default: () => 'FilesChangedTableTeam',
+}))
 
 const mockTeamTier = {
   owner: {
@@ -77,15 +81,15 @@ interface SetupArgs {
 describe('FilesChangedTab', () => {
   function setup({ planValue, isPrivate = false }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
+      graphql.query('OwnerTier', (info) => {
         if (planValue === 'team') {
-          return res(ctx.status(200), ctx.data(mockTeamTier))
+          return HttpResponse.json({ data: mockTeamTier })
         }
 
-        return res(ctx.status(200), ctx.data(mockProTier))
+        return HttpResponse.json({ data: mockProTier })
       }),
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+      graphql.query('GetRepoSettingsTeam', (info) => {
+        return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
       })
     )
   }
