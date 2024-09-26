@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -9,7 +9,7 @@ import { TrialStatuses } from 'services/account'
 
 import FreePlanCard from './FreePlanCard'
 
-jest.mock('./PlanUpgradeTeam', () => () => 'PlanUpgradeTeam')
+vi.mock('./PlanUpgradeTeam', () => ({ default: () => 'PlanUpgradeTeam' }))
 
 const allPlans = [
   {
@@ -165,7 +165,7 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
-  jest.resetAllMocks()
+  vi.resetAllMocks()
 })
 
 afterAll(() => {
@@ -207,13 +207,12 @@ describe('FreePlanCard', () => {
     }
   ) {
     server.use(
-      graphql.query('PlanPageData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner }))
-      ),
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('PlanPageData', (info) => {
+        return HttpResponse.json({ data: { owner } })
+      }),
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
@@ -224,15 +223,17 @@ describe('FreePlanCard', () => {
               },
               pretrialPlan: mockPreTrialPlanInfo,
             },
-          })
-        )
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { availablePlans: plans } }))
-      ),
-      rest.get('/internal/bb/critical-role/account-details/', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json({ numberOfUploads: 250 }))
-      )
+          },
+        })
+      }),
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: { owner: { availablePlans: plans } },
+        })
+      }),
+      http.get('/internal/bb/critical-role/account-details/', (info) => {
+        return HttpResponse.json({ numberOfUploads: 250 })
+      })
     )
   }
 
