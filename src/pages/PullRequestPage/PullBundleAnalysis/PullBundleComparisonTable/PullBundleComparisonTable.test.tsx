@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -137,13 +137,13 @@ describe('PullBundleComparisonTable', () => {
   ) {
     const user = userEvent.setup()
     server.use(
-      graphql.query('PullBundleComparisonList', (req, res, ctx) => {
+      graphql.query('PullBundleComparisonList', (info) => {
         if (isEmptyList) {
-          return res(ctx.status(200), ctx.data(mockEmptyPullBundleListData))
+          return HttpResponse.json({ data: mockEmptyPullBundleListData })
         } else if (nonComparisonType) {
-          return res(ctx.status(200), ctx.data(mockNonComparisonTypeData))
+          return HttpResponse.json({ data: mockNonComparisonTypeData })
         } else {
-          return res(ctx.status(200), ctx.data(mockPullBundleListData))
+          return HttpResponse.json({ data: mockPullBundleListData })
         }
       })
     )
@@ -252,11 +252,11 @@ describe('useTableData', () => {
     }
   ) {
     server.use(
-      graphql.query('PullBundleComparisonList', (req, res, ctx) => {
+      graphql.query('PullBundleComparisonList', (info) => {
         if (nonComparisonType) {
-          return res(ctx.status(200), ctx.data(mockNonComparisonTypeData))
+          return HttpResponse.json({ data: mockNonComparisonTypeData })
         } else {
-          return res(ctx.status(200), ctx.data(mockPullBundleListData))
+          return HttpResponse.json({ data: mockPullBundleListData })
         }
       })
     )
