@@ -5,15 +5,26 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { z } from 'zod'
 
 import { PlanUpdatedPlanNotificationContext } from 'pages/PlanPage/context'
-import { AccountDetailsSchema, useAccountDetails } from 'services/account'
+import { AccountDetailsSchema } from 'services/account'
 import { AlertOptions, type AlertOptionsType } from 'ui/Alert'
 
 import CurrentOrgPlan from './CurrentOrgPlan'
 
-jest.mock('services/account')
-jest.mock('./BillingDetails', () => () => 'BillingDetails')
-jest.mock('./CurrentPlanCard', () => () => 'CurrentPlanCard')
-jest.mock('./LatestInvoiceCard', () => () => 'LatestInvoiceCard')
+const mocks = vi.hoisted(() => ({
+  useAccountDetails: vi.fn(),
+}))
+
+vi.mock('services/account', async () => {
+  const actual = await vi.importActual('services/account')
+  return {
+    ...actual,
+    useAccountDetails: mocks.useAccountDetails,
+  }
+})
+
+vi.mock('./BillingDetails', () => ({ default: () => 'BillingDetails' }))
+vi.mock('./CurrentPlanCard', () => ({ default: () => 'CurrentPlanCard' }))
+vi.mock('./LatestInvoiceCard', () => ({ default: () => 'LatestInvoiceCard' }))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,8 +74,7 @@ describe('CurrentOrgPlan', () => {
   }: {
     accountDetails?: z.infer<typeof AccountDetailsSchema>
   }) {
-    const mockedUseAccountDetails = useAccountDetails as jest.Mock
-    mockedUseAccountDetails.mockReturnValue({
+    mocks.useAccountDetails.mockReturnValue({
       data: accountDetails,
     })
   }
