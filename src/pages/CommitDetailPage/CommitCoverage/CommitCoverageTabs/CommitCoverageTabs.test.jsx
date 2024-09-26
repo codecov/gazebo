@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -70,7 +70,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-const server = setupServer()
 
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/commit/sha256']) =>
@@ -92,6 +91,7 @@ const wrapper =
     </QueryClientProvider>
   )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -114,20 +114,19 @@ describe('CommitCoverageTabs', () => {
     }
   ) {
     server.use(
-      graphql.query('FlagsSelect', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockFlagsResponse))
+      graphql.query('FlagsSelect', (info) => {
+        return HttpResponse.json({ data: mockFlagsResponse })
       }),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBackfillResponse))
+      graphql.query('BackfillFlagMemberships', (info) => {
+        return HttpResponse.json({ data: mockBackfillResponse })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: tierValue } } })
-        )
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({
+          data: { owner: { plan: { tierName: tierValue } } },
+        })
       }),
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+      graphql.query('GetRepoSettingsTeam', (info) => {
+        return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
       })
     )
   }
