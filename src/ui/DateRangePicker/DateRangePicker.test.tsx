@@ -2,23 +2,28 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import DateRangePicker from './DateRangePicker'
-;(() => {
-  return (global.ResizeObserver = class ResizeObserver {
-    [x: string]: any
-    constructor(cb: any) {
-      this.cb = cb
-    }
-    observe() {
-      this.cb([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }])
-    }
-    unobserve() {}
-    disconnect() {}
-  } as any)
-})()
+
+class ResizeObserverMock {
+  [x: string]: any
+  constructor(cb: any) {
+    this.cb = cb
+  }
+  observe() {
+    this.cb([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }])
+  }
+  unobserve() {
+    // do nothing
+  }
+  disconnect() {
+    // do nothing
+  }
+}
+
+global.window.ResizeObserver = ResizeObserverMock
 
 describe('DateRangePicker', () => {
   function setup(addedProps?: {}) {
-    const mockOnChange = jest.fn()
+    const mockOnChange = vi.fn()
     const user = userEvent.setup()
 
     const props = {
