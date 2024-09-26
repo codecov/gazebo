@@ -1,14 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import EnterpriseLandingPage from './EnterpriseLandingPage'
 
-jest.mock('config')
+vi.mock('config')
 
 const server = setupServer()
 const queryClient = new QueryClient()
@@ -59,15 +59,15 @@ describe('EnterpriseLandingPage', () => {
     { sendProviders = true }: SetupArgs = { sendProviders: true }
   ) {
     server.use(
-      graphql.query('GetLoginProviders', (req, res, ctx) => {
+      graphql.query('GetLoginProviders', (info) => {
         if (sendProviders) {
-          return res(ctx.status(200), ctx.data(mockServiceProviders))
+          return HttpResponse.json({ data: mockServiceProviders })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({ config: { loginProviders: [] } })
-        )
+        return HttpResponse.json({ data: { config: { loginProviders: [] } } })
+      }),
+      graphql.query('EnterpriseLandingPageUser', (info) => {
+        return HttpResponse.json({ data: { me: undefined } })
       })
     )
   }
