@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
@@ -180,30 +180,29 @@ describe('PullCoverageTabs', () => {
     }
   ) {
     server.use(
-      graphql.query('PullPageData', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockPullData))
+      graphql.query('PullPageData', (info) => {
+        return HttpResponse.json({ data: mockPullData })
       }),
-      graphql.query('GetCommits', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockCommits))
-      ),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetCommits', (info) => {
+        return HttpResponse.json({ data: mockCommits })
+      }),
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: { plan: { tierName: tierValue.toLowerCase() } },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOverview(privateRepo)))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockOverview(privateRepo) })
       }),
-      graphql.query('FlagsSelect', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockFlagsResponse))
+      graphql.query('FlagsSelect', (info) => {
+        return HttpResponse.json({ data: mockFlagsResponse })
       }),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBackfillResponse))
+      graphql.query('BackfillFlagMemberships', (info) => {
+        return HttpResponse.json({ data: mockBackfillResponse })
       }),
-      graphql.query('PullFlagsSelect', (req, res, ctx) => {
+      graphql.query('PullFlagsSelect', (info) => {
         const dataReturned = {
           owner: {
             repository: {
@@ -222,7 +221,7 @@ describe('PullCoverageTabs', () => {
             },
           },
         }
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return HttpResponse.json({ data: dataReturned })
       })
     )
   }
