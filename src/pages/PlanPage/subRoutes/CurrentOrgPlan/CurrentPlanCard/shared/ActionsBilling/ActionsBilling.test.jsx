@@ -1,16 +1,25 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { useRedirect } from 'shared/useRedirect'
 
 import ActionsBilling from './ActionsBilling'
 
-jest.mock('shared/useRedirect')
+const mocks = vi.hoisted(() => ({
+  useRedirect: vi.fn(),
+}))
+
+vi.mock('shared/useRedirect', async () => {
+  const actual = await vi.importActual('shared/useRedirect')
+  return {
+    ...actual,
+    useRedirect: mocks.useRedirect,
+  }
+})
 
 const allPlans = [
   {
@@ -195,25 +204,25 @@ describe('Actions Billing', () => {
     }
   ) {
     const user = userEvent.setup()
-    const mockMutationVars = jest.fn()
-    const hardRedirect = jest.fn()
-    useRedirect.mockImplementation((data) => ({
+    const mockMutationVars = vi.fn()
+    const hardRedirect = vi.fn()
+    mocks.useRedirect.mockImplementation((data) => ({
       hardRedirect: () => hardRedirect(data),
     }))
 
     server.use(
-      rest.get('/internal/gh/critical-role/account-details/', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(accountDetails))
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { availablePlans: plans } }))
-      ),
-      graphql.query('GetPlanData', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ owner: trialPlanData }))
+      http.get('/internal/gh/critical-role/account-details/', (info) => {
+        return HttpResponse.json(accountDetails)
       }),
-      graphql.mutation('startTrial', (req, res, ctx) => {
-        mockMutationVars(req.variables)
-        return res(ctx.status(200), ctx.data({ startTrial: null }))
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({ data: { owner: { availablePlans: plans } } })
+      }),
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({ data: { owner: trialPlanData } })
+      }),
+      graphql.mutation('startTrial', (info) => {
+        mockMutationVars(info.variables)
+        return HttpResponse.json({ data: { startTrial: null } })
       })
     )
 
