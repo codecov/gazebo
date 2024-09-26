@@ -1,4 +1,3 @@
-import isString from 'lodash/isString'
 import { useState } from 'react'
 import { useParams } from 'react-router'
 
@@ -83,10 +82,10 @@ function AdminTokenlessBanner() {
         <p className="items-center gap-1 md:flex">
           <span className="flex items-center gap-1 font-semibold">
             <Icon name="informationCircle" />
-            Uploading with token is now required.
+            Uploading with the token is now required.
           </span>
           You must upload with{' '}
-          {isString(orgUploadToken) ? (
+          {typeof orgUploadToken === 'string' ? (
             <OrgUploadTokenTooltip orgUploadToken={orgUploadToken} />
           ) : (
             'the token. '
@@ -123,10 +122,10 @@ function MemberTokenlessBanner() {
         <p className="items-center gap-1 md:flex">
           <span className="flex items-center gap-1 font-semibold">
             <Icon name="informationCircle" />
-            Uploading with token is now required.
+            Uploading with the token is now required.
           </span>
           You must upload with
-          {isString(orgUploadToken) ? (
+          {typeof orgUploadToken === 'string' ? (
             <OrgUploadTokenTooltip orgUploadToken={orgUploadToken} />
           ) : (
             'the token. '
