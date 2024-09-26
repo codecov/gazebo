@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
@@ -195,18 +195,18 @@ const wrapper =
 
 describe('useImpactedFilesTable', () => {
   function setup({ overrideComparison } = {}) {
-    const callsHandleSort = jest.fn()
-    const flagsMock = jest.fn()
-    const componentsMock = jest.fn()
+    const callsHandleSort = vi.fn()
+    const flagsMock = vi.fn()
+    const componentsMock = vi.fn()
 
     server.use(
-      graphql.query('Pull', (req, res, ctx) => {
-        const { direction, parameter } = req.variables.filters.ordering
+      graphql.query('Pull', (info) => {
+        const { direction, parameter } = info.variables.filters.ordering
         callsHandleSort({ direction, parameter })
-        flagsMock(req.variables.filters.flags)
-        componentsMock(req.variables.filters.components)
+        flagsMock(info.variables.filters.flags)
+        componentsMock(info.variables.filters.components)
 
-        return res(ctx.status(200), ctx.data(mockPull({ overrideComparison })))
+        return HttpResponse.json({ data: mockPull({ overrideComparison }) })
       })
     )
     return { callsHandleSort, flagsMock, componentsMock }
