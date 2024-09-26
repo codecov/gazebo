@@ -163,7 +163,7 @@ describe('UploadsCard', () => {
       })
 
       const processingFailed = screen.getByText(
-        /Upload failed. Please rerun the upload./
+        /Processing failed. Please rerun the upload in a new commit../
       )
       expect(processingFailed).toBeInTheDocument()
     })
@@ -229,7 +229,7 @@ describe('UploadsCard', () => {
         { wrapper }
       )
 
-      const processingFailed = screen.getByText(/Upload failed/)
+      const processingFailed = screen.getByText(/Processing failed./)
       expect(processingFailed).toBeInTheDocument()
 
       const uploadExpired = screen.getByText(
