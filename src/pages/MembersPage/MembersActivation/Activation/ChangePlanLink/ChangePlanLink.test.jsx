@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from 'custom-testing-library'
-
+import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
