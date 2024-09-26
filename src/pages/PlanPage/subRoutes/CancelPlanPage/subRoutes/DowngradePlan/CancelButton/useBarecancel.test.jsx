@@ -3,17 +3,25 @@ import { renderHook, waitFor } from '@testing-library/react'
 import config from 'config'
 
 import { useBarecancel } from './useBarecancel'
-import { loadBaremetrics } from './utils'
-jest.mock('services/toastNotification')
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
+const mocks = vi.hoisted(() => ({
+  loadBaremetrics: vi.fn(),
+  useParams: vi.fn(),
 }))
-jest.mock('services/account')
 
-jest.mock('./utils', () => ({
-  loadBaremetrics: jest.fn(),
+vi.mock('services/toastNotification')
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.requireActual('react-router-dom')
+  return {
+    ...actual, // import and retain the original functionalities
+    useParams: mocks.useParams,
+  }
+})
+vi.mock('services/account')
+
+vi.mock('./utils', () => ({
+  loadBaremetrics: mocks.loadBaremetrics,
 }))
 
 describe('useBarecancel', () => {
@@ -23,7 +31,7 @@ describe('useBarecancel', () => {
     })
 
     it('window params are set', async () => {
-      loadBaremetrics.mockResolvedValue() // Mock successful load
+      mocks.loadBaremetrics.mockResolvedValue() // Mock successful load
       const callbackSend = () => {}
       const { result } = renderHook(() =>
         useBarecancel({ customerId: 1234, callbackSend, isModalOpen: true })
@@ -55,8 +63,8 @@ describe('useBarecancel', () => {
     })
 
     it('returns blocked if load fails', async () => {
-      loadBaremetrics.mockRejectedValueOnce()
-      const callbackSend = jest.fn()
+      mocks.loadBaremetrics.mockRejectedValueOnce()
+      const callbackSend = vi.fn()
       const { result } = renderHook(() =>
         useBarecancel({ customerId: 1234, callbackSend, isModalOpen: true })
       )
@@ -67,8 +75,8 @@ describe('useBarecancel', () => {
 
   describe('Cleans up', () => {
     it('Removes script and styles tag', () => {
-      loadBaremetrics.mockResolvedValueOnce() // Mock successful load
-      const callbackSend = jest.fn()
+      mocks.loadBaremetrics.mockResolvedValueOnce() // Mock successful load
+      const callbackSend = vi.fn()
       renderHook(() =>
         useBarecancel({ customerId: 1234, callbackSend, isModalOpen: true })
       )
