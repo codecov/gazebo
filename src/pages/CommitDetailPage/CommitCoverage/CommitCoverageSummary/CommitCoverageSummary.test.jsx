@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -111,40 +111,35 @@ afterAll(() => {
 describe('CommitCoverageSummary', () => {
   function setup(hasErrored = false) {
     server.use(
-      graphql.query('Commit', (req, res, ctx) => {
+      graphql.query('Commit', (info) => {
         if (hasErrored) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 repository: {
                   __typename: 'Repository',
                   commit: commit('ERROR'),
                 },
               },
-            })
-          )
+            },
+          })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: { __typename: 'Repository', commit: commit() },
             },
-          })
-        )
+          },
+        })
       })
     )
   }
 
   describe('when rendered with valid fields', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     describe('renders a card for every valid field', () => {
       it('has a head card', async () => {
+        setup()
         render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
         const headCardTitle = await screen.findByText('HEAD')
@@ -155,6 +150,7 @@ describe('CommitCoverageSummary', () => {
       })
 
       it('has a patch card', async () => {
+        setup()
         render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
         const patchCardTitle = await screen.findByText('Patch')
@@ -165,6 +161,7 @@ describe('CommitCoverageSummary', () => {
       })
 
       it('has a change card', async () => {
+        setup()
         render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
         const changeCardTitle = await screen.findByText('Change')
@@ -175,6 +172,7 @@ describe('CommitCoverageSummary', () => {
       })
 
       it('has a source card', async () => {
+        setup()
         render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
         const sourceCardTitle = await screen.findByText('Source')
@@ -197,11 +195,8 @@ describe('CommitCoverageSummary', () => {
   })
 
   describe('when rendered with state error', () => {
-    beforeEach(() => {
-      setup(true)
-    })
-
     it('renders error message', async () => {
+      setup(true)
       render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
       const errorMsg = await screen.findByText(
@@ -211,10 +206,11 @@ describe('CommitCoverageSummary', () => {
     })
 
     it('suggests support links', async () => {
+      setup(true)
       render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
       const pathFix = await screen.findByRole('link', {
-        name: 'files paths external-link.svg',
+        name: /files paths/,
       })
       expect(pathFix).toHaveAttribute(
         'href',
@@ -222,7 +218,7 @@ describe('CommitCoverageSummary', () => {
       )
 
       const errorRef = await screen.findByRole('link', {
-        name: 'reference external-link.svg',
+        name: /reference/,
       })
       expect(errorRef).toHaveAttribute(
         'href',
@@ -234,7 +230,6 @@ describe('CommitCoverageSummary', () => {
   describe('when rendered with a flag query param', () => {
     it('appends flag query param to commit id link', async () => {
       setup()
-
       render(<CommitCoverageSummary />, {
         wrapper: wrapper(
           `/gh/codecov/cool-repo/commit/sha256${qs.stringify(
