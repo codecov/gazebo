@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -10,11 +10,10 @@ import { Plans } from 'shared/utils/billing'
 
 import ProPlanDetails from './ProPlanDetails'
 
-jest.mock('shared/plan/BenefitList', () => () => 'Benefits List')
-jest.mock(
-  'shared/plan/ScheduledPlanDetails',
-  () => () => 'Scheduled Plan Details'
-)
+vi.mock('shared/plan/BenefitList', () => ({ default: () => 'Benefits List' }))
+vi.mock('shared/plan/ScheduledPlanDetails', () => ({
+  default: () => 'Scheduled Plan Details',
+}))
 
 const proPlanYear = {
   marketingName: 'Pro',
@@ -179,10 +178,9 @@ describe('ProPlanDetails', () => {
     }
   ) {
     server.use(
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
@@ -197,14 +195,13 @@ describe('ProPlanDetails', () => {
                     : Plans.USERS_BASIC,
               },
             },
-          })
-        )
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
+          },
+        })
+      }),
+      graphql.query('GetAvailablePlans', (info) => {
         if (isSentryPlan) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 availablePlans: [
                   ...allPlansWithoutSentry,
@@ -212,47 +209,40 @@ describe('ProPlanDetails', () => {
                   sentryPlanYear,
                 ],
               },
-            })
-          )
+            },
+          })
         } else {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { availablePlans: allPlansWithoutSentry } })
-          )
+          return HttpResponse.json({
+            data: { owner: { availablePlans: allPlansWithoutSentry } },
+          })
         }
       }),
-      rest.get('/internal/gh/codecov/account-details', (req, res, ctx) => {
+      http.get('/internal/gh/codecov/account-details', (info) => {
         if (isSentryPlan) {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              plan: sentryPlanYear,
-              subscriptionDetail: {
-                cancelAtPeriodEnd: undefined,
-              },
-              activatedUserCount: 10,
-            })
-          )
+          return HttpResponse.json({
+            plan: sentryPlanYear,
+            subscriptionDetail: {
+              cancelAtPeriodEnd: undefined,
+            },
+            activatedUserCount: 10,
+          })
         } else {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              plan: proPlanYear,
-              subscriptionDetail: {
-                cancelAtPeriodEnd: hasUserCanceledAtPeriodEnd,
-              },
-              scheduleDetail: {
-                scheduledPhase: hasScheduledPhase
-                  ? {
-                      quantity: 0,
-                      plan: '',
-                      startDate: 123456789,
-                    }
-                  : {},
-              },
-              activatedUserCount: 10,
-            })
-          )
+          return HttpResponse.json({
+            plan: proPlanYear,
+            subscriptionDetail: {
+              cancelAtPeriodEnd: hasUserCanceledAtPeriodEnd,
+            },
+            scheduleDetail: {
+              scheduledPhase: hasScheduledPhase
+                ? {
+                    quantity: 0,
+                    plan: '',
+                    startDate: 123456789,
+                  }
+                : {},
+            },
+            activatedUserCount: 10,
+          })
         }
       })
     )
