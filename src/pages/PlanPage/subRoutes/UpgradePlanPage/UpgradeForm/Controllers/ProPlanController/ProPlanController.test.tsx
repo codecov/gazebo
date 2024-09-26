@@ -1,19 +1,28 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { useAddNotification } from 'services/toastNotification'
 import { Plans } from 'shared/utils/billing'
 
 import ProPlanController from './ProPlanController'
 
-jest.mock('services/toastNotification')
-jest.mock('@stripe/react-stripe-js')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
+
+vi.mock('@stripe/react-stripe-js')
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
 
 const basicPlan = {
   marketingName: 'Basic',
@@ -187,53 +196,48 @@ describe('ProPlanController', () => {
       monthlyPlan: true,
     }
   ) {
-    const addNotification = jest.fn()
+    const addNotification = vi.fn()
     const user = userEvent.setup()
 
-    //@ts-ignore
-    useAddNotification.mockReturnValue(addNotification)
+    mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
+      http.get(`/internal/gh/codecov/account-details/`, (info) => {
         if (planValue === Plans.USERS_BASIC) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsBasic))
+          return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_PR_INAPPM) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsProMonthly))
+          return HttpResponse.json(mockAccountDetailsProMonthly)
         } else if (planValue === Plans.USERS_PR_INAPPY) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsProYearly))
+          return HttpResponse.json(mockAccountDetailsProYearly)
         } else if (planValue === Plans.USERS_TRIAL) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTrial))
+          return HttpResponse.json(mockAccountDetailsTrial)
         }
       }),
-      rest.patch(
-        '/internal/gh/codecov/account-details/',
-        async (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ success: false }))
-        }
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      http.patch('/internal/gh/codecov/account-details/', async (info) => {
+        return HttpResponse.json({ success: false })
+      }),
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               availablePlans: [basicPlan, proPlanMonth, proPlanYear, trialPlan],
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetPlanData', (req, res, ctx) => {
+      graphql.query('GetPlanData', (info) => {
         const planResponse = monthlyPlan
           ? mockPlanDataResponseMonthly
           : mockPlanDataResponseYearly
-        return res(
-          ctx.status(200),
-          ctx.data({
+
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: planResponse,
             },
-          })
-        )
+          },
+        })
       })
     )
 
@@ -243,8 +247,8 @@ describe('ProPlanController', () => {
   describe('when rendered', () => {
     describe('when the user has a pro plan monthly', () => {
       const props = {
-        setFormValue: jest.fn(),
-        register: jest.fn(),
+        setFormValue: vi.fn(),
+        register: vi.fn(),
         newPlan: Plans.USERS_PR_INAPPM,
         seats: 10,
         errors: { seats: { message: '' } },
@@ -285,8 +289,8 @@ describe('ProPlanController', () => {
 
     describe('when the user has a pro plan yearly', () => {
       const props = {
-        setFormValue: jest.fn(),
-        register: jest.fn(),
+        setFormValue: vi.fn(),
+        register: vi.fn(),
         newPlan: Plans.USERS_PR_INAPPY,
         seats: 13,
         errors: { seats: { message: '' } },
