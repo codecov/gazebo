@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepoCommitContentsTable } from './useRepoCommitContentsTable'
@@ -108,18 +108,18 @@ afterAll(() => {
 })
 
 describe('useRepoCommitContentsTable', () => {
-  const calledCommitContents = jest.fn()
+  const calledCommitContents = vi.fn()
 
   function setup(noData = false) {
     server.use(
-      graphql.query('CommitPathContents', (req, res, ctx) => {
-        calledCommitContents(req?.variables)
+      graphql.query('CommitPathContents', (info) => {
+        calledCommitContents(info.variables)
 
         if (noData) {
-          return res(ctx.status(200), ctx.data(mockCommitNoContentData))
+          return HttpResponse.json({ data: mockCommitNoContentData })
         }
 
-        return res(ctx.status(200), ctx.data(mockCommitContentData))
+        return HttpResponse.json({ data: mockCommitContentData })
       })
     )
   }
