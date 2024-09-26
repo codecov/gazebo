@@ -1,23 +1,28 @@
-import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
 
 import UpdateButton from './UpdateButton'
-jest.mock('@sentry/react', () => {
-  const originalModule = jest.requireActual('@sentry/react')
+
+const mocks = vi.hoisted(() => ({
+  increment: vi.fn(),
+  gauge: vi.fn(),
+}))
+
+vi.mock('@sentry/react', async () => {
+  const originalModule = await vi.importActual('@sentry/react')
   return {
     ...originalModule,
     metrics: {
-      ...originalModule.metrics,
-      increment: jest.fn(),
-      gauge: jest.fn(),
+      ...originalModule.metrics!,
+      increment: mocks.increment,
+      gauge: mocks.gauge,
     },
   }
 })
@@ -80,13 +85,13 @@ describe('UpdateButton', () => {
     }
   ) {
     server.use(
-      rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
+      http.get(`/internal/gh/codecov/account-details/`, (info) => {
         if (planValue === Plans.USERS_BASIC) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsBasic))
+          return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_TEAMM) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamMonthly))
+          return HttpResponse.json(mockAccountDetailsTeamMonthly)
         } else {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsProMonthly))
+          return HttpResponse.json(mockAccountDetailsProMonthly)
         }
       })
     )
@@ -195,13 +200,13 @@ describe('UpdateButton', () => {
         const button = await screen.findByText('Update')
         expect(button).toBeInTheDocument()
 
-        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+        expect(mocks.increment).toHaveBeenCalledWith(
           'bundles_tab.bundle_details.visited_page',
           undefined,
           undefined
         )
         await user.click(button)
-        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+        expect(mocks.increment).toHaveBeenCalledWith(
           'billing_change.user.checkout_from_page',
           undefined,
           undefined
@@ -224,14 +229,14 @@ describe('UpdateButton', () => {
         const button = await screen.findByText('Update')
         expect(button).toBeInTheDocument()
         await user.click(button)
-        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+        expect(mocks.gauge).toHaveBeenCalledWith(
           'billing_change.user.seats_change',
           -3,
           {
             tags: { plan: 'team' },
           }
         )
-        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+        expect(mocks.gauge).toHaveBeenCalledWith(
           'billing_change.user.seats_change',
           4,
           {
@@ -256,14 +261,14 @@ describe('UpdateButton', () => {
         const button = await screen.findByText('Update')
         expect(button).toBeInTheDocument()
         await user.click(button)
-        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+        expect(mocks.gauge).toHaveBeenCalledWith(
           'billing_change.user.seats_change',
           2,
           {
             tags: { plan: 'team' },
           }
         )
-        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+        expect(mocks.gauge).toHaveBeenCalledWith(
           'billing_change.user.seats_change',
           -4,
           {
@@ -288,7 +293,7 @@ describe('UpdateButton', () => {
         const button = await screen.findByText('Update')
         expect(button).toBeInTheDocument()
         await user.click(button)
-        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+        expect(mocks.gauge).toHaveBeenCalledWith(
           'billing_change.user.seats_change',
           2,
           {
@@ -313,7 +318,7 @@ describe('UpdateButton', () => {
         const button = await screen.findByText('Update')
         expect(button).toBeInTheDocument()
         await user.click(button)
-        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+        expect(mocks.gauge).toHaveBeenCalledWith(
           'billing_change.user.seats_change',
           -3,
           {
