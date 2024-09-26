@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import Chart from './Chart'
@@ -9,7 +9,6 @@ import Chart from './Chart'
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
@@ -19,55 +18,51 @@ const wrapper = ({ children }) => (
   </QueryClientProvider>
 )
 
-beforeAll(() => server.listen())
+const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('Analytics coverage chart', () => {
   const mockSingleDataPoint = {
     owner: {
-      measurements: [
-        {
-          timestamp: '2020-01-01T00:00:00Z',
-          avg: 91.11,
-        },
-      ],
+      measurements: [{ timestamp: '2020-01-01T00:00:00Z', avg: 91.11 }],
     },
   }
 
   const mockDataPoints = {
     owner: {
       measurements: [
-        {
-          timestamp: '2020-01-01T00:00:00Z',
-          avg: 90.0,
-        },
-        {
-          timestamp: '2021-01-01T00:00:00Z',
-          avg: 91.11,
-        },
+        { timestamp: '2020-01-01T00:00:00Z', avg: 90.0 },
+        { timestamp: '2021-01-01T00:00:00Z', avg: 91.11 },
       ],
     },
   }
 
   function setup({ hasNoData = false, hasSingleData = false }) {
     server.use(
-      graphql.query('GetReposCoverageMeasurements', (req, res, ctx) => {
+      graphql.query('GetReposCoverageMeasurements', (info) => {
         if (hasNoData) {
-          return res(ctx.status(200), ctx.data({ owner: { measurements: [] } }))
+          return HttpResponse.json({ data: { owner: { measurements: [] } } })
         }
 
         if (hasSingleData) {
-          return res(ctx.status(200), ctx.data(mockSingleDataPoint))
+          return HttpResponse.json({ data: mockSingleDataPoint })
         }
 
-        return res(ctx.status(200), ctx.data(mockDataPoints))
+        return HttpResponse.json({ data: mockDataPoints })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { tier: 'pro' } }))
+      graphql.query('OwnerTier', (info) =>
+        HttpResponse.json({ data: { owner: { plan: { tierName: 'pro' } } } })
       )
     )
   }
@@ -77,15 +72,8 @@ describe('Analytics coverage chart', () => {
       setup({ hasNoData: true })
 
       render(
-        <Chart
-          params={{
-            startDate: '2020-01-15',
-            endDate: '2020-01-19',
-          }}
-        />,
-        {
-          wrapper,
-        }
+        <Chart params={{ startDate: '2020-01-15', endDate: '2020-01-19' }} />,
+        { wrapper }
       )
 
       const message = await screen.findByTitle('coverage chart')
@@ -95,15 +83,8 @@ describe('Analytics coverage chart', () => {
     it('renders data label', async () => {
       setup({ hasNoData: true })
       render(
-        <Chart
-          params={{
-            startDate: '2020-01-15',
-            endDate: '2020-01-19',
-          }}
-        />,
-        {
-          wrapper,
-        }
+        <Chart params={{ startDate: '2020-01-15', endDate: '2020-01-19' }} />,
+        { wrapper }
       )
 
       const label = await screen.findByText(/Data is average of selected repos/)
@@ -122,9 +103,7 @@ describe('Analytics coverage chart', () => {
             repositories: [],
           }}
         />,
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       const message = await screen.findByText(/Not enough data to render/)
@@ -141,9 +120,7 @@ describe('Analytics coverage chart', () => {
             repositories: [],
           }}
         />,
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       const label = await screen.findByText(/Data is average of selected repos/)
@@ -163,9 +140,7 @@ describe('Analytics coverage chart', () => {
             repositories: [],
           }}
         />,
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       const img = await screen.findByRole('img')
@@ -183,9 +158,7 @@ describe('Analytics coverage chart', () => {
             repositories: ['api', 'frontend'],
           }}
         />,
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       const message = await screen.findByText(
@@ -204,9 +177,7 @@ describe('Analytics coverage chart', () => {
             repositories: ['api', 'frontend'],
           }}
         />,
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       const label = await screen.findByText(/Data is average of selected repos/)
