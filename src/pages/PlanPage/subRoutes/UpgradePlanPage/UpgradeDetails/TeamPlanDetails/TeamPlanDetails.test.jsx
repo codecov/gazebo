@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -10,11 +10,10 @@ import { Plans } from 'shared/utils/billing'
 
 import TeamPlanDetails from './TeamPlanDetails'
 
-jest.mock('shared/plan/BenefitList', () => () => 'Benefits List')
-jest.mock(
-  'shared/plan/ScheduledPlanDetails',
-  () => () => 'Scheduled Plan Details'
-)
+vi.mock('shared/plan/BenefitList', () => ({ default: () => 'Benefits List' }))
+vi.mock('shared/plan/ScheduledPlanDetails', () => ({
+  default: () => 'Scheduled Plan Details',
+}))
 
 const teamPlanMonth = {
   baseUnitPrice: 6,
@@ -137,10 +136,9 @@ describe('TeamPlanDetails', () => {
     }
   ) {
     server.use(
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
@@ -148,39 +146,35 @@ describe('TeamPlanDetails', () => {
                 trialStatus: trialValue,
               },
             },
-          })
-        )
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+          },
+        })
+      }),
+      graphql.query('GetAvailablePlans', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               availablePlans: allPlans,
             },
-          })
-        )
+          },
+        })
       }),
-      rest.get('/internal/gh/codecov/account-details', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            plan: teamPlanYear,
-            subscriptionDetail: {
-              cancelAtPeriodEnd: hasUserCanceledAtPeriodEnd,
-            },
-            scheduleDetail: {
-              scheduledPhase: hasScheduledPhase
-                ? {
-                    quantity: 0,
-                    plan: '',
-                    startDate: 123456789,
-                  }
-                : {},
-            },
-            activatedUserCount: 10,
-          })
-        )
+      http.get('/internal/gh/codecov/account-details', (info) => {
+        return HttpResponse.json({
+          plan: teamPlanYear,
+          subscriptionDetail: {
+            cancelAtPeriodEnd: hasUserCanceledAtPeriodEnd,
+          },
+          scheduleDetail: {
+            scheduledPhase: hasScheduledPhase
+              ? {
+                  quantity: 0,
+                  plan: '',
+                  startDate: 123456789,
+                }
+              : {},
+          },
+          activatedUserCount: 10,
+        })
       })
     )
   }
