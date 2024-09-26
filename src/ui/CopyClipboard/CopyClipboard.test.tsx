@@ -1,17 +1,30 @@
-import { act, render, screen, waitFor } from 'custom-testing-library'
-
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { CopyClipboard } from './CopyClipboard'
 
-jest.mock('copy-to-clipboard', () => () => true)
+vi.mock('copy-to-clipboard', () => ({ default: () => true }))
 
 describe('CopyClipboard', () => {
-  beforeAll(() => jest.useFakeTimers())
-  afterAll(() => jest.useRealTimers())
+  beforeAll(() => {
+    vi.useFakeTimers()
+  })
+
+  afterAll(() => {
+    vi.restoreAllMocks()
+  })
 
   function setup() {
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    // This is a bit of a hack to get Vitest fake timers setup with userEvents properly
+    // GH Issue: https://github.com/testing-library/react-testing-library/issues/1197#issuecomment-1693824628
+    globalThis.jest = {
+      ...globalThis.jest,
+      advanceTimersByTime: vi.advanceTimersByTime.bind(vi),
+    }
+
+    const user = userEvent.setup({
+      advanceTimers: globalThis.jest.advanceTimersByTime,
+    })
 
     return { user }
   }
@@ -19,7 +32,7 @@ describe('CopyClipboard', () => {
   it('renders the button with clipboard icon', () => {
     render(<CopyClipboard value="to be copied" />)
 
-    const clipboard = screen.getByText(/clipboard-copy/, { exact: true })
+    const clipboard = screen.getByLabelText('Copy to be copied')
     expect(clipboard).toBeInTheDocument()
   })
 
@@ -29,11 +42,11 @@ describe('CopyClipboard', () => {
       render(<CopyClipboard value="to be copied" />)
 
       const button = screen.getByRole('button', {
-        name: /copy/i,
+        name: 'Copy to be copied',
       })
       await user.click(button)
 
-      const success = screen.getByText(/check/, { exact: true })
+      const success = screen.getByTestId('check')
       expect(success).toBeInTheDocument()
     })
 
@@ -43,18 +56,16 @@ describe('CopyClipboard', () => {
         render(<CopyClipboard value="to be copied" />)
 
         const button = screen.getByRole('button', {
-          name: /copy/i,
+          name: 'Copy to be copied',
         })
         await user.click(button)
 
-        const success = await screen.findByText(/check/, { exact: true })
+        const success = await screen.findByTestId('check')
         expect(success).toBeInTheDocument()
 
-        act(() => jest.advanceTimersByTime(1500))
+        act(() => vi.advanceTimersByTime(1500))
 
-        const clipboard = await screen.findByText(/clipboard-copy/, {
-          exact: true,
-        })
+        const clipboard = await screen.findByTestId('clipboardCopy')
 
         expect(clipboard).toBeInTheDocument()
       })
@@ -81,7 +92,7 @@ describe('CopyClipboard', () => {
     describe('when onClick prop is set', () => {
       it('calls the function when button is clicked', async () => {
         const { user } = setup()
-        const callback = jest.fn()
+        const callback = vi.fn()
         render(<CopyClipboard value="asdf" onClick={callback} />)
 
         const button = screen.getByRole('button', {
