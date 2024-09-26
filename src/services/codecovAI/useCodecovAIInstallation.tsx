@@ -41,7 +41,6 @@ export function useCodecovAIInstallation({
         },
       }).then((res) => {
         const parsedRes = ResponseSchema.safeParse(res?.data)
-        console.log(res?.data)
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,

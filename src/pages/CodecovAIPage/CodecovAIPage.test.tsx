@@ -20,7 +20,14 @@ vi.mock('shared/featureFlags', async () => {
   }
 })
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      suspense: true,
+    },
+  },
+})
 
 const server = setupServer()
 
@@ -99,7 +106,7 @@ describe('CodecovAIPage', () => {
 
   it('renders the install button', async () => {
     render(<CodecovAIPage />, { wrapper })
-    const buttonEl = screen.queryByText(/Install Codecov AI/i)
+    const buttonEl = await screen.findByText(/Install Codecov AI/i)
     expect(buttonEl).toBeInTheDocument()
   })
 
