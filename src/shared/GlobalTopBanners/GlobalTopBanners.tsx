@@ -13,7 +13,6 @@ const TokenlessBanner = lazy(() => import('./TokenlessBanner'))
 const GlobalTopBanners: React.FC = () => {
   return (
     <SilentNetworkErrorWrapper>
-      {/* These are listed in priority order: if multiple banners are rendering, only the bottommost will display. */}
       <div className="[&>*:last-child]:block">
         <OktaBanners />
         <RequestInstallBanner />
