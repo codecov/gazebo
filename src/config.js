@@ -9,12 +9,8 @@ const defaultConfig = {
   SENTRY_SESSION_SAMPLE_RATE: 0.1,
   SENTRY_ERROR_SAMPLE_RATE: 1.0,
   GH_APP: 'codecov',
+  GH_APP_AI: 'codecov', // TODO: Update to proper GH app name once it is live
 }
-
-// To be removed after we're satisfied session_expiry cookie cleanup is complete
-export const LOCAL_STORAGE_SESION_EXPIRED_KEY = 'expired_session'
-export const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
-export const COOKIE_SESSION_EXPIRY = 'session_expiry'
 
 export function removeReactAppPrefix(obj) {
   // in .env file, the variable must start with REACT_APP_
