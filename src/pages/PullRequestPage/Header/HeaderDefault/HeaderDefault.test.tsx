@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import Header from './HeaderDefault'
@@ -71,15 +71,14 @@ describe('Header', () => {
     nullPull = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullHeadData', (req, res, ctx) => {
+      graphql.query('PullHeadData', (info) => {
         if (nullPull) {
-          return res(ctx.status(200), ctx.data({ owner: { repository: null } }))
+          return HttpResponse.json({ data: { owner: { repository: null } } })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data(mockPullData({ pullState, ciStatus }))
-        )
+        return HttpResponse.json({
+          data: mockPullData({ pullState, ciStatus }),
+        })
       })
     )
   }
