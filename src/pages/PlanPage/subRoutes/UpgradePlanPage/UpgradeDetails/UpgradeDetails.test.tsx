@@ -4,9 +4,15 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import UpgradeDetails from './UpgradeDetails'
 
-jest.mock('./SentryPlanDetails', () => () => 'Sentry Plan Details')
-jest.mock('./ProPlanDetails', () => () => 'Pro Plan Details')
-jest.mock('./TeamPlanDetails', () => () => 'Team Plan Details')
+vi.mock('./SentryPlanDetails', () => ({
+  default: () => 'Sentry Plan Details',
+}))
+vi.mock('./ProPlanDetails', () => ({
+  default: () => 'Pro Plan Details',
+}))
+vi.mock('./TeamPlanDetails', () => ({
+  default: () => 'Team Plan Details',
+}))
 
 const proPlanYear = {
   marketingName: 'Pro',
