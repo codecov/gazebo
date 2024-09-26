@@ -1,15 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { createMemoryHistory } from 'history'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Router } from 'react-router-dom'
 
 import config from 'config'
 
 import { useEnterpriseRedirect } from './useEnterpriseRedirect'
 
-jest.mock('config')
+vi.mock('config')
 
 const server = setupServer()
 const queryClient = new QueryClient()
@@ -42,19 +42,18 @@ describe('useEnterpriseRedirect', () => {
     config.ENTERPRISE_DEFAULT_PROVIDER = defaultProvider
 
     server.use(
-      graphql.query('EnterpriseLandingPageUser', (req, res, ctx) => {
+      graphql.query('EnterpriseLandingPageUser', (info) => {
         if (sendUser) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               me: {
                 email: 'cool-user@email.com',
               },
-            })
-          )
+            },
+          })
         }
 
-        return res(ctx.status(200), ctx.data({ me: undefined }))
+        return HttpResponse.json({ data: { me: undefined } })
       })
     )
   }
