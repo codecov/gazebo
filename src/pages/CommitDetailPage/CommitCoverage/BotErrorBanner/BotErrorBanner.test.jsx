@@ -1,8 +1,8 @@
 import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import BotErrorBanner from './BotErrorBanner.jsx'
@@ -14,8 +14,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-
-const server = setupServer()
 
 const wrapper =
   ({ provider }) =>
@@ -29,6 +27,7 @@ const wrapper =
 
 const defaultProps = { botErrorsCount: 2 }
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -45,14 +44,9 @@ afterAll(() => {
 describe('BotErrorBanner', () => {
   function setup({ integrationId } = { integrationId: null }) {
     server.use(
-      rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            integrationId,
-          })
-        )
-      )
+      http.get('/internal/:provider/codecov/account-details/', (info) => {
+        return HttpResponse.json({ integrationId })
+      })
     )
   }
 
