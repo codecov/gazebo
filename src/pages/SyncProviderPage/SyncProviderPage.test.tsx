@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -77,25 +77,23 @@ describe('SyncProviderPage', () => {
     }
   ) {
     server.use(
-      rest.get('/internal/user', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(user))
+      http.get('/internal/user', (info) => {
+        return HttpResponse.json(user)
       }),
-      graphql.query('GetSyncProviders', (req, res, ctx) => {
+      graphql.query('GetSyncProviders', (info) => {
         if (noSyncProviders) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               config: { syncProviders: [] },
-            })
-          )
+            },
+          })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             config: { syncProviders: ['GITHUB', 'GITLAB_ENTERPRISE'] },
-          })
-        )
+          },
+        })
       })
     )
   }
