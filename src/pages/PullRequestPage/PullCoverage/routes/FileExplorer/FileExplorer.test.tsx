@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
@@ -223,43 +223,36 @@ describe('FileExplorer', () => {
     unknownPath = false
   ) {
     const user = userEvent.setup()
-    const requestFilters = jest.fn()
+    const requestFilters = vi.fn()
 
     server.use(
-      graphql.query('PullPathContents', (req, res, ctx) => {
-        if (req.variables?.filters) {
-          requestFilters(req.variables?.filters)
+      graphql.query('PullPathContents', (info) => {
+        if (info.variables?.filters) {
+          requestFilters(info.variables?.filters)
         }
 
         if (missingCoverage) {
-          return res(ctx.status(200), ctx.data({ owner: mockMissingCoverage }))
-        }
-
-        if (unknownPath) {
-          return res(ctx.status(200), ctx.data({ owner: mockUnknownPath }))
-        }
-
-        if (noFiles || req.variables?.filters?.searchValue) {
-          return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
-        }
-
-        if (
-          req.variables?.filters?.displayType &&
-          req.variables?.filters?.displayType === 'LIST'
+          return HttpResponse.json({ data: { owner: mockMissingCoverage } })
+        } else if (unknownPath) {
+          return HttpResponse.json({ data: { owner: mockUnknownPath } })
+        } else if (noFiles || info.variables?.filters?.searchValue) {
+          return HttpResponse.json({ data: { owner: mockNoFiles } })
+        } else if (
+          info.variables?.filters?.displayType &&
+          info.variables?.filters?.displayType === 'LIST'
         ) {
-          return res(ctx.status(200), ctx.data({ owner: mockListData }))
+          return HttpResponse.json({ data: { owner: mockListData } })
         }
 
-        return res(ctx.status(200), ctx.data({ owner: mockTreeData }))
+        return HttpResponse.json({ data: { owner: mockTreeData } })
       })
     )
 
     // Mock so the components selector will be populated
     server.use(
-      graphql.query('PullComponentsSelector', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('PullComponentsSelector', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
@@ -275,17 +268,16 @@ describe('FileExplorer', () => {
                 },
               },
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
 
     // Mock so the flags selector will be populated
     server.use(
-      graphql.query('PullFlagsSelect', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('PullFlagsSelect', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
@@ -301,25 +293,23 @@ describe('FileExplorer', () => {
                 },
               },
             },
-          })
-        )
-      ),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBackfillData))
+          },
+        })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
-        )
+      graphql.query('BackfillFlagMemberships', (info) => {
+        return HttpResponse.json({ data: mockBackfillData })
       }),
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettings))
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({
+          data: { owner: { plan: { tierName: TierNames.PRO } } },
+        })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetRepoSettingsTeam', (info) => {
+        return HttpResponse.json({ data: mockRepoSettings })
+      }),
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               isCurrentUserActivated: true,
               repository: {
@@ -334,8 +324,8 @@ describe('FileExplorer', () => {
                 isCurrentUserActivated: true,
               },
             },
-          })
-        )
+          },
+        })
       })
     )
 
