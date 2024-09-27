@@ -9,24 +9,26 @@ const mockBranchMeasurements = {
   owner: {
     repository: {
       __typename: 'Repository',
-      measurements: [
-        {
-          timestamp: '2023-01-01T00:00:00+00:00',
-          max: 85,
-        },
-        {
-          timestamp: '2023-01-02T00:00:00+00:00',
-          max: 80,
-        },
-        {
-          timestamp: '2023-01-03T00:00:00+00:00',
-          max: 90,
-        },
-        {
-          timestamp: '2023-01-04T00:00:00+00:00',
-          max: 100,
-        },
-      ],
+      coverageAnalytics: {
+        measurements: [
+          {
+            timestamp: '2023-01-01T00:00:00+00:00',
+            max: 85,
+          },
+          {
+            timestamp: '2023-01-02T00:00:00+00:00',
+            max: 80,
+          },
+          {
+            timestamp: '2023-01-03T00:00:00+00:00',
+            max: 90,
+          },
+          {
+            timestamp: '2023-01-04T00:00:00+00:00',
+            max: 100,
+          },
+        ],
+      },
     },
   },
 }
