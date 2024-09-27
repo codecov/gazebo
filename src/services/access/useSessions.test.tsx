@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -72,13 +72,18 @@ const tokens: { edges: { node: UserToken }[] } = {
 }
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 interface SetupArgs {
   isUnsuccessfulParseError?: boolean
@@ -104,11 +109,11 @@ describe('useSessions', () => {
     dataReturned = { me: null },
   }: SetupArgs) {
     server.use(
-      graphql.query('MySessions', (req, res, ctx) => {
+      graphql.query('MySessions', (info) => {
         if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: {} })
         }
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return HttpResponse.json({ data: dataReturned })
       })
     )
   }
