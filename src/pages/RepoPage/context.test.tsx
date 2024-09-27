@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense, useLayoutEffect } from 'react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
@@ -79,19 +79,18 @@ describe('Repo breadcrumb context', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetRepo', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 private: false,
                 isFirstPullRequest: false,
               },
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
 
     return { user }
