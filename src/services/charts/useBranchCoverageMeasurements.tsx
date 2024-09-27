@@ -33,23 +33,21 @@ const GetBranchCoverageMeasurementsSchema = z.object({
     .object({
       repository: z
         .discriminatedUnion('__typename', [
-          z
-            .object({
-              __typename: z.literal('Repository'),
-              coverageAnalytics: z
-                .object({
-                  measurements: z
-                    .array(
-                      z.object({
-                        timestamp: z.string(),
-                        max: z.number(),
-                      })
-                    )
-                    .optional(),
-                })
-                .optional(),
-            })
-            .merge(MeasurementsSchema),
+          z.object({
+            __typename: z.literal('Repository'),
+            coverageAnalytics: z
+              .object({
+                measurements: z
+                  .array(
+                    z.object({
+                      timestamp: z.string(),
+                      max: z.number(),
+                    })
+                  )
+                  .optional(),
+              })
+              .optional(),
+          }),
           RepoNotFoundErrorSchema,
           RepoOwnerNotActivatedErrorSchema,
         ])
@@ -71,7 +69,7 @@ query GetBranchCoverageMeasurements(
     repository: repository(name: $repo) {
       __typename
       ... on Repository {
-        CoverageAnalytics{
+        coverageAnalytics{
           measurements(
             interval: $interval
             after: $after

@@ -94,24 +94,26 @@ const branchesMock = {
 
 const mockBranchMeasurements = {
   __typename: 'Repository',
-  measurements: [
-    {
-      timestamp: '2023-01-01T00:00:00+00:00',
-      max: 85,
-    },
-    {
-      timestamp: '2023-01-02T00:00:00+00:00',
-      max: 80,
-    },
-    {
-      timestamp: '2023-01-03T00:00:00+00:00',
-      max: 90,
-    },
-    {
-      timestamp: '2023-01-04T00:00:00+00:00',
-      max: 100,
-    },
-  ],
+  coverageAnalytics: {
+    measurements: [
+      {
+        timestamp: '2023-01-01T00:00:00+00:00',
+        max: 85,
+      },
+      {
+        timestamp: '2023-01-02T00:00:00+00:00',
+        max: 80,
+      },
+      {
+        timestamp: '2023-01-03T00:00:00+00:00',
+        max: 90,
+      },
+      {
+        timestamp: '2023-01-04T00:00:00+00:00',
+        max: 100,
+      },
+    ],
+  },
 }
 
 const branchMock = {
@@ -152,7 +154,11 @@ describe('CoverageChart', () => {
 
         return res(
           ctx.status(200),
-          ctx.data({ owner: { repository: branchMeasurementsData } })
+          ctx.data({
+            owner: {
+              repository: { coverageAnalytics: { branchMeasurementsData } },
+            },
+          })
         )
       })
     )
@@ -165,10 +171,12 @@ describe('CoverageChart', () => {
         branchesData: branchesMock,
         branchMeasurementsData: {
           __typename: 'Repository',
-          measurements: [
-            { timestamp: '2020-01-15T20:18:39.413Z', max: 20 },
-            { timestamp: '2020-01-17T20:18:39.413Z', max: 50 },
-          ],
+          coverageAnalytics: {
+            measurements: [
+              { timestamp: '2020-01-15T20:18:39.413Z', max: 20 },
+              { timestamp: '2020-01-17T20:18:39.413Z', max: 50 },
+            ],
+          },
         },
       })
     })
@@ -193,10 +201,12 @@ describe('CoverageChart', () => {
         branchesData: branchesMock,
         branchMeasurementsData: {
           __typename: 'Repository',
-          measurements: [
-            { timestamp: '2020-01-15T20:18:39.413Z', max: 20 },
-            { timestamp: '2020-01-17T20:18:39.413Z', max: 0 },
-          ],
+          coverageAnalytics: {
+            measurements: [
+              { timestamp: '2020-01-15T20:18:39.413Z', max: 20 },
+              { timestamp: '2020-01-17T20:18:39.413Z', max: 0 },
+            ],
+          },
         },
       })
     })
