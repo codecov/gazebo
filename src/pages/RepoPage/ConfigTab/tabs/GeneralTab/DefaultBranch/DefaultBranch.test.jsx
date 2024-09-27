@@ -1,17 +1,31 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-import useIntersection from 'react-use/lib/useIntersection'
-
-import { useAddNotification } from 'services/toastNotification'
 
 import DefaultBranch from './DefaultBranch'
 
-jest.mock('services/toastNotification')
-jest.mock('react-use/lib/useIntersection')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+  useIntersection: vi.fn(),
+}))
+
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
+vi.mock('react-use', async () => {
+  const actual = await vi.importActual('react-use')
+  return {
+    ...actual,
+    useIntersection: mocks.useIntersection,
+  }
+})
 
 const mockBranches = (hasNextPage = false) => ({
   owner: {
@@ -121,38 +135,37 @@ describe('DefaultBranch', () => {
     const fetchFilters = jest.fn()
 
     server.use(
-      graphql.query('GetBranches', (req, res, ctx) => {
-        const afterCursorPassed = !!req.variables?.after
+      graphql.query('GetBranches', (info) => {
+        const afterCursorPassed = !!info.variables?.after
         if (afterCursorPassed) {
           fetchesNextPage()
           const data = mockNextBranches(false)
-          return res(ctx.status(200), ctx.data(data))
+          return HttpResponse.json({ data })
         }
 
-        fetchFilters(req.variables?.filters)
+        fetchFilters(info.variables?.filters)
         const data = mockBranches(hasNextPage)
 
-        return res(ctx.status(200), ctx.data(data))
+        return HttpResponse.json({ data })
       }),
-
-      rest.patch(
+      http.patch(
         '/internal/github/codecov/repos/codecov-client/',
-        async (req, res, ctx) => {
-          const data = await req?.json()
+        async (info) => {
+          const data = await info.request.json()
           mutate()
 
           if (failMutation) {
-            return res(ctx.status(500))
+            return HttpResponse.error(500)
           }
 
-          return res(ctx.status(200), ctx.json(data))
+          return HttpResponse.json(data)
         }
       )
     )
 
-    useAddNotification.mockReturnValue(addNotification)
+    mocks.useAddNotification.mockReturnValue(addNotification)
 
-    useIntersection.mockReturnValue({
+    mocks.useIntersection.mockReturnValue({
       isIntersecting: isIntersecting,
     })
 
