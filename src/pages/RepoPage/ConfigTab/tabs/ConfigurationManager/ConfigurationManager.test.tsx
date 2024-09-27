@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router'
 
 import { TierNames, TTierNames } from 'services/tier'
@@ -83,8 +83,8 @@ interface SetupArgs {
 describe('Configuration Manager', () => {
   function setup({ repoConfig = mockRepoConfig({}) }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoConfigurationStatus', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ owner: repoConfig }))
+      graphql.query('GetRepoConfigurationStatus', (info) => {
+        return HttpResponse.json({ data: { owner: repoConfig } })
       })
     )
   }
