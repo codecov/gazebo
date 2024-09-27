@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -120,35 +120,32 @@ describe('BundleSelection', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               isCurrentUserActivated: true,
               repository: mockRepoOverview,
             },
-          })
-        )
-      ),
-      graphql.query('GetBranch', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+          },
+        })
+      }),
+      graphql.query('GetBranch', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: { __typename: 'Repository', ...mockBranch },
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetBranches', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { repository: mockBranches } })
-        )
+      graphql.query('GetBranches', (info) => {
+        return HttpResponse.json({
+          data: { owner: { repository: mockBranches } },
+        })
       }),
-      graphql.query('BranchBundlesNames', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBranchBundles))
+      graphql.query('BranchBundlesNames', (info) => {
+        return HttpResponse.json({ data: mockBranchBundles })
       })
     )
 

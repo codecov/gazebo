@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
@@ -117,25 +117,26 @@ describe('BundleSelector', () => {
     const mockFilterReset = jest.fn()
 
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
+      graphql.query('GetRepoOverview', (info) => {
         if (nullOverview) {
-          return res(ctx.status(200), ctx.data({ owner: null }))
+          return HttpResponse.json({ data: { owner: null } })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               isCurrentUserActivated: true,
               repository: mockRepoOverview,
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('BranchBundlesNames', (req, res, ctx) => {
+      graphql.query('BranchBundlesNames', (info) => {
         if (missingHeadReport) {
-          return res(ctx.status(200), ctx.data(mockBadBundles))
-        } else return res(ctx.status(200), ctx.data(mockBundles))
+          return HttpResponse.json({ data: mockBadBundles })
+        }
+
+        return HttpResponse.json({ data: mockBundles })
       })
     )
 
