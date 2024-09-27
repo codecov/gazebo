@@ -44,16 +44,17 @@ export function useTracking() {
   useTrackFeatureFlags(user) // TODO: Can probably delete
   useUpdatePendoWithOwner(user)
 
-  const maybeSentryUser = {}
+  const sentryUser = {}
   if (user?.email) {
-    maybeSentryUser.email = user?.email
+    sentryUser.email = user?.email
   }
   if (user?.user?.username) {
-    maybeSentryUser.username = user?.user?.username
+    sentryUser.username = user?.user?.username
   }
 
-  const sentryUser =
-    Object.keys(maybeSentryUser).length === 0 ? null : maybeSentryUser
+  // https://docs.sentry.io/platforms/javascript/enriching-events/identify-user/#ip_address
+  // eslint-disable-next-line
+  sentryUser.ip_address = '{{auto}}'
   Sentry.setUser(sentryUser)
 
   return { data: user, ...all }
