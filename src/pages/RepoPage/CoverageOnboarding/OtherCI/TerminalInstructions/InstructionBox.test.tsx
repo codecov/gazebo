@@ -5,8 +5,8 @@ import config from 'config'
 
 import { InstructionBox } from './InstructionBox'
 
-jest.mock('copy-to-clipboard', () => () => true)
-jest.mock('config')
+vi.mock('copy-to-clipboard', () => ({ default: () => true }))
+vi.mock('config')
 
 describe('InstructionBox', () => {
   function setup({ isSelfHosted = false } = {}) {
