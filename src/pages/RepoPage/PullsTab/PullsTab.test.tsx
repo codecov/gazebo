@@ -4,7 +4,7 @@ import PullsTab from './PullsTab'
 
 import { repoPageRender, screen } from '../repo-jest-setup'
 
-jest.mock('./PullsTable', () => () => 'PullsTable')
+vi.mock('./PullsTable', () => ({ default: () => 'PullsTable' }))
 
 describe('Pulls Tab', () => {
   function setup() {
