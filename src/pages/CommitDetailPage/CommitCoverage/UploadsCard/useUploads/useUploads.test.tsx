@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, RequestHandler } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse, RequestHandler } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -62,16 +62,15 @@ describe('useUploads', () => {
     server.use(query, compareTotalsEmpty)
 
     server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: { plan: { tierName: tierValue } },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOverview))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockOverview })
       })
     )
   }

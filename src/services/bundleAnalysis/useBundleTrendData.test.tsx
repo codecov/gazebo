@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import { useBundleTrendData } from './useBundleTrendData'
 
@@ -134,20 +135,20 @@ describe('useBundleTrendData', () => {
     isUnsuccessfulParseError,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBundleTrend', (req, res, ctx) => {
+      graphql.query('GetBundleTrend', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockRepoNotFound))
+          return HttpResponse.json({ data: mockRepoNotFound })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivated))
+          return HttpResponse.json({ data: mockOwnerNotActivated })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else if (isMissingHeadReport) {
-          return res(ctx.status(200), ctx.data(mockMissingHeadReport))
+          return HttpResponse.json({ data: mockMissingHeadReport })
         }
 
-        return res(ctx.status(200), ctx.data(mockBundleTrendData))
+        return HttpResponse.json({ data: mockBundleTrendData })
       })
     )
   }
@@ -237,14 +238,14 @@ describe('useBundleTrendData', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -279,14 +280,14 @@ describe('useBundleTrendData', () => {
   })
 
   describe('returns OwnerNotActivatedError __typename', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
@@ -321,14 +322,14 @@ describe('useBundleTrendData', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {

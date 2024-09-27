@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCommitYaml } from './index'
@@ -68,7 +68,7 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
-  jest.useRealTimers()
+  vi.useRealTimers()
   server.resetHandlers()
   queryClient.clear()
 })
@@ -93,27 +93,22 @@ describe('useCommitYaml', () => {
     ownerNotActivatedError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query(`CommitYaml`, (req, res, ctx) => {
+      graphql.query(`CommitYaml`, (info) => {
         if (badSchema) {
-          return res(ctx.status(200), ctx.data(mockCommitYamlBadSchema))
+          return HttpResponse.json({ data: mockCommitYamlBadSchema })
+        } else if (notFoundError) {
+          return HttpResponse.json({ data: mockCommitYamlNotFound })
+        } else if (ownerNotActivatedError) {
+          return HttpResponse.json({ data: mockCommitYamlOwnerNotActivated })
         }
-        if (notFoundError) {
-          return res(ctx.status(200), ctx.data(mockCommitYamlNotFound))
-        }
-        if (ownerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockCommitYamlOwnerNotActivated))
-        }
-        return res(ctx.status(200), ctx.data(mockCommitYaml(yaml)))
+        return HttpResponse.json({ data: mockCommitYaml(yaml) })
       })
     )
   }
 
   describe('when called and user is authenticated', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('returns commit info', async () => {
+      setup({})
       const { result } = renderHook(
         () =>
           useCommitYaml({

@@ -1,29 +1,28 @@
-import { graphql } from 'msw'
+import { graphql, HttpResponse } from 'msw2'
 
-export const commitErrored = graphql.query('Commit', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+export const commitErrored = graphql.query('Commit', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         repository: {
           __typename: 'Repository',
           commit: commitDataError,
         },
       },
-    })
-  )
+    },
+  })
 })
 
-export const commitOnePending = graphql.query('Commit', (req, res, ctx) => {
+export const commitOnePending = graphql.query('Commit', (info) => {
   let flags = ['unit']
   let provider = 'travis'
-  if (req.variables.isTeamPlan) {
+  if (info.variables.isTeamPlan) {
     flags = []
     provider = 'travisTeam'
   }
-  return res(
-    ctx.status(200),
-    ctx.data({
+
+  return HttpResponse.json({
+    data: {
       owner: {
         repository: {
           __typename: 'Repository',
@@ -54,70 +53,62 @@ export const commitOnePending = graphql.query('Commit', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-export const commitOneCarriedForward = graphql.query(
-  'Commit',
-  (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.data({
-        owner: {
-          repository: {
-            __typename: 'Repository',
-            commit: {
-              ...commitDataError,
-              uploads: {
-                edges: [
-                  {
-                    node: {
-                      id: null,
-                      name: null,
-                      errors: null,
-                      state: 'COMPLETE',
-                      provider: 'travis',
-                      createdAt: '2020-08-25T16:36:19.559474+00:00',
-                      updatedAt: '2020-08-25T16:36:19.679868+00:00',
-                      downloadUrl: '/test.txt',
-                      ciUrl: 'https://example.com',
-                      uploadType: 'CARRIEDFORWARD',
-                      jobCode: '1234',
-                      buildCode: '1234',
-                      flags: ['unit'],
-                    },
+export const commitOneCarriedForward = graphql.query('Commit', (info) => {
+  return HttpResponse.json({
+    data: {
+      owner: {
+        repository: {
+          __typename: 'Repository',
+          commit: {
+            ...commitDataError,
+            uploads: {
+              edges: [
+                {
+                  node: {
+                    id: null,
+                    name: null,
+                    errors: null,
+                    state: 'COMPLETE',
+                    provider: 'travis',
+                    createdAt: '2020-08-25T16:36:19.559474+00:00',
+                    updatedAt: '2020-08-25T16:36:19.679868+00:00',
+                    downloadUrl: '/test.txt',
+                    ciUrl: 'https://example.com',
+                    uploadType: 'CARRIEDFORWARD',
+                    jobCode: '1234',
+                    buildCode: '1234',
+                    flags: ['unit'],
                   },
-                ],
-              },
+                },
+              ],
             },
           },
         },
-      })
-    )
-  }
-)
+      },
+    },
+  })
+})
 
-export const commitEmptyUploads = graphql.query('Commit', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+export const commitEmptyUploads = graphql.query('Commit', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         repository: {
           __typename: 'Repository',
           commit: commitDataEmpty,
         },
       },
-    })
-  )
+    },
+  })
 })
 
-export const compareTotalsEmpty = graphql.query(
-  'CompareTotals',
-  (req, res, ctx) => {
-    return res(ctx.status(200), ctx.data({ owner: null }))
-  }
-)
+export const compareTotalsEmpty = graphql.query('CompareTotals', (info) => {
+  return HttpResponse.json({ data: { owner: null } })
+})
 
 const commitDataError = {
   totals: {

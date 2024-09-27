@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { MockInstance } from 'vitest'
 
-import { useBranchBundleSummary } from './useBranchBundleSummary'
+import { useBranchBundlesNames } from './useBranchBundlesNames'
 
 const mockRepoOverview = {
   owner: {
@@ -21,28 +22,15 @@ const mockRepoOverview = {
   },
 }
 
-const mockBranchBundleSummary = {
+const mockBranchBundles = {
   owner: {
     repository: {
       __typename: 'Repository',
       branch: {
         head: {
-          commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
-            bundleData: {
-              loadTime: { threeG: 200 },
-              size: { uncompress: 100 },
-            },
-            bundles: [
-              {
-                name: 'bundle1',
-                bundleData: {
-                  loadTime: { threeG: 100 },
-                  size: { uncompress: 50 },
-                },
-              },
-            ],
+            bundles: [{ name: 'bundle1' }],
           },
         },
       },
@@ -90,7 +78,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  jest.resetAllMocks()
+  vi.clearAllMocks()
   queryClient.clear()
   server.resetHandlers()
 })
@@ -106,35 +94,35 @@ interface SetupArgs {
   isNullOwner?: boolean
 }
 
-describe('useBranchBundleSummary', () => {
+describe('useBranchBundlesNames', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
     isNullOwner = false,
   }: SetupArgs) {
-    const passedBranch = jest.fn()
+    const passedBranch = vi.fn()
 
     server.use(
-      graphql.query('BranchBundleSummaryData', (req, res, ctx) => {
-        if (req.variables?.branch) {
-          passedBranch(req.variables?.branch)
+      graphql.query('BranchBundlesNames', (info) => {
+        if (info.variables?.branch) {
+          passedBranch(info.variables?.branch)
         }
 
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockRepoNotFound))
+          return HttpResponse.json({ data: mockRepoNotFound })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivated))
+          return HttpResponse.json({ data: mockOwnerNotActivated })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         }
 
-        return res(ctx.status(200), ctx.data(mockBranchBundleSummary))
+        return HttpResponse.json({ data: mockBranchBundles })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverview))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockRepoOverview })
       })
     )
 
@@ -146,7 +134,25 @@ describe('useBranchBundleSummary', () => {
       const { passedBranch } = setup({})
       renderHook(
         () =>
-          useBranchBundleSummary({
+          useBranchBundlesNames({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'codecov',
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
+      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
+    })
+  })
+
+  describe('no branch name passed', () => {
+    it('uses the default branch', async () => {
+      const { passedBranch } = setup({})
+      renderHook(
+        () =>
+          useBranchBundlesNames({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
@@ -162,31 +168,13 @@ describe('useBranchBundleSummary', () => {
     })
   })
 
-  describe('no branch name passed', () => {
-    it('uses the default branch', async () => {
-      const { passedBranch } = setup({})
-      renderHook(
-        () =>
-          useBranchBundleSummary({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
-    })
-  })
-
   describe('returns repository typename of repository', () => {
     describe('there is valid data', () => {
       it('returns the bundle summary', async () => {
         setup({})
         const { result } = renderHook(
           () =>
-            useBranchBundleSummary({
+            useBranchBundlesNames({
               provider: 'gh',
               owner: 'codecov',
               repo: 'codecov',
@@ -195,27 +183,7 @@ describe('useBranchBundleSummary', () => {
         )
 
         const expectedResponse = {
-          branch: {
-            head: {
-              commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
-              bundleAnalysisReport: {
-                __typename: 'BundleAnalysisReport',
-                bundleData: {
-                  loadTime: { threeG: 200 },
-                  size: { uncompress: 100 },
-                },
-                bundles: [
-                  {
-                    name: 'bundle1',
-                    bundleData: {
-                      loadTime: { threeG: 100 },
-                      size: { uncompress: 50 },
-                    },
-                  },
-                ],
-              },
-            },
-          },
+          bundles: ['bundle1'],
         }
 
         await waitFor(() =>
@@ -229,7 +197,7 @@ describe('useBranchBundleSummary', () => {
         setup({ isNullOwner: true })
         const { result } = renderHook(
           () =>
-            useBranchBundleSummary({
+            useBranchBundlesNames({
               provider: 'gh',
               owner: 'codecov',
               repo: 'codecov',
@@ -238,7 +206,7 @@ describe('useBranchBundleSummary', () => {
         )
 
         const expectedResponse = {
-          branch: null,
+          bundles: [],
         }
 
         await waitFor(() =>
@@ -249,21 +217,21 @@ describe('useBranchBundleSummary', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundleSummary({
+          useBranchBundlesNames({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
@@ -283,21 +251,21 @@ describe('useBranchBundleSummary', () => {
   })
 
   describe('returns OwnerNotActivatedError __typename', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundleSummary({
+          useBranchBundlesNames({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
@@ -317,21 +285,21 @@ describe('useBranchBundleSummary', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundleSummary({
+          useBranchBundlesNames({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',

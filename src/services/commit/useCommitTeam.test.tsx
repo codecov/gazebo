@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import { useCommitTeam } from './useCommitTeam'
 
@@ -159,7 +160,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  jest.useRealTimers()
+  vi.useRealTimers()
   queryClient.clear()
   server.resetHandlers()
 })
@@ -183,21 +184,21 @@ describe('useCommitTeam', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetCommitTeam', (req, res, ctx) => {
+      graphql.query('GetCommitTeam', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else {
-          return res(ctx.status(200), ctx.data(mockCommitData))
+          return HttpResponse.json({ data: mockCommitData })
         }
       }),
-      graphql.query('GetCompareTotalsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCompareData))
+      graphql.query('GetCompareTotalsTeam', (info) => {
+        return HttpResponse.json({ data: mockCompareData })
       })
     )
   }
@@ -320,12 +321,14 @@ describe('useCommitTeam', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
+    let consoleSpy: MockInstance
+
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -355,12 +358,14 @@ describe('useCommitTeam', () => {
   })
 
   describe('returns OwnerNotActivatedError __typename', () => {
+    let consoleSpy: MockInstance
+
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
@@ -390,12 +395,14 @@ describe('useCommitTeam', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
+    let consoleSpy: MockInstance
+
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -429,17 +436,17 @@ describe('useCommitTeam polling', () => {
   function setup() {
     let nbCallCompare = 0
     server.use(
-      graphql.query(`GetCommitTeam`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCommitData))
+      graphql.query(`GetCommitTeam`, (info) => {
+        return HttpResponse.json({ data: mockCommitData })
       }),
-      graphql.query(`GetCompareTotalsTeam`, (req, res, ctx) => {
+      graphql.query(`GetCompareTotalsTeam`, (info) => {
         nbCallCompare++
 
         if (nbCallCompare < 9) {
-          return res(ctx.status(200), ctx.data(mockCommitData))
+          return HttpResponse.json({ data: mockCompareData })
         }
 
-        return res(ctx.status(200), ctx.data(mockCompareData))
+        return HttpResponse.json({ data: mockCompareData })
       })
     )
   }

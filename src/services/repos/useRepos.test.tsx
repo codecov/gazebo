@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { MockInstance } from 'vitest'
 
 import { useRepos } from './useRepos'
 
@@ -64,35 +65,32 @@ const repo2 = {
 }
 
 const server = setupServer()
-
 beforeAll(() => {
   server.listen()
-  jest.spyOn(global.console, 'error')
 })
 
-beforeEach(() => {
-  server.resetHandlers()
+afterEach(() => {
   queryClient.clear()
+  server.resetHandlers()
 })
 
 afterAll(() => {
   server.close()
-  jest.resetAllMocks()
 })
 
 describe('useRepos', () => {
   function setup({ invalidResponse = false } = {}) {
     server.use(
-      graphql.query('ReposForOwner', (req, res, ctx) => {
+      graphql.query('ReposForOwner', (info) => {
         if (invalidResponse) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({})
         }
 
         const data = {
           owner: {
             username: 'codecov',
             repositories: {
-              edges: req.variables.after
+              edges: info.variables.after
                 ? [
                     {
                       node: repo2,
@@ -104,8 +102,8 @@ describe('useRepos', () => {
                     },
                   ],
               pageInfo: {
-                hasNextPage: req.variables.after ? false : true,
-                endCursor: req.variables.after
+                hasNextPage: info.variables.after ? false : true,
+                endCursor: info.variables.after
                   ? 'aa'
                   : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
               },
@@ -113,7 +111,7 @@ describe('useRepos', () => {
           },
         }
 
-        return res(ctx.status(200), ctx.data(data))
+        return HttpResponse.json({ data })
       })
     )
   }
@@ -165,10 +163,7 @@ describe('useRepos', () => {
             },
           },
           {
-            pageInfo: {
-              endCursor: 'aa',
-              hasNextPage: false,
-            },
+            pageInfo: { endCursor: 'aa', hasNextPage: false },
             repos: [repo2],
           },
         ])
@@ -177,19 +172,28 @@ describe('useRepos', () => {
   })
 
   describe('error parsing request for owner', () => {
+    let consoleErrorSpy: MockInstance
+    beforeAll(() => {
+      consoleErrorSpy = vi
+        .spyOn(global.console, 'error')
+        .mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleErrorSpy.mockRestore()
+    })
+
     it('throws an error', async () => {
       setup({ invalidResponse: true })
       const { result } = renderHook(
         () => useRepos({ provider: '', owner: 'owner1' }),
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-
-      expect(result.current.error).toEqual(
-        expect.objectContaining({ status: 404 })
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({ status: 404 })
+        )
       )
     })
   })
