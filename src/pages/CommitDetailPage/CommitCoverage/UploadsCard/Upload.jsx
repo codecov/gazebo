@@ -39,19 +39,20 @@ const Upload = ({
           <Checkbox
             checked={checked}
             dataMarketing="toggle-upload-hit-count"
-            onChange={(e) => {
-              if (!!e.target.checked) {
-                queryClient.setQueryData(['IgnoredUploadIds'], (oldData) =>
-                  without(oldData, id)
-                )
-              } else {
+            onClick={() => {
+              if (checked) {
+                // User is unchecking
                 queryClient.setQueryData(['IgnoredUploadIds'], (oldData) => [
                   ...(oldData ?? []),
                   id,
                 ])
+              } else {
+                queryClient.setQueryData(['IgnoredUploadIds'], (oldData) =>
+                  without(oldData, id)
+                )
               }
 
-              setChecked((c) => !c)
+              setChecked(!checked)
             }}
           />
 
