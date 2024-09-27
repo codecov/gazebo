@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -100,12 +100,12 @@ interface SetupArgs {
 describe('ModulesTable', () => {
   function setup({ noAssets = false }: SetupArgs) {
     server.use(
-      graphql.query('BundleAssetModules', (req, res, ctx) => {
+      graphql.query('BundleAssetModules', (info) => {
         if (noAssets) {
-          return res(ctx.status(200), ctx.data(mockMissingHeadReport))
+          return HttpResponse.json({ data: mockMissingHeadReport })
         }
 
-        return res(ctx.status(200), ctx.data(mockBundleAssetModules))
+        return HttpResponse.json({ data: mockBundleAssetModules })
       })
     )
   }
