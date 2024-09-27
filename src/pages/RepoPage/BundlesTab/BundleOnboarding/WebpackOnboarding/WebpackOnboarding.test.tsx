@@ -1,12 +1,27 @@
-import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import WebpackOnboarding from './WebpackOnboarding'
+
+const mocks = vi.hoisted(() => ({
+  increment: vi.fn(),
+}))
+
+vi.mock('@sentry/react', async () => {
+  const originalModule = await vi.importActual('@sentry/react')
+
+  return {
+    ...originalModule,
+    metrics: {
+      increment: mocks.increment,
+    },
+  }
+})
 
 const mockGetRepo = {
   owner: {
@@ -49,7 +64,9 @@ const server = setupServer()
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles/new']}>
-      <Route path="/:provider/:owner/:repo/bundles/new">{children}</Route>
+      <Route path="/:provider/:owner/:repo/bundles/new">
+        <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+      </Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -74,14 +91,13 @@ describe('WebpackOnboarding', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetRepo))
-      ),
-      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockGetOrgUploadToken(hasOrgUploadToken))
-        )
+      graphql.query('GetRepo', (info) => {
+        return HttpResponse.json({ data: mockGetRepo })
+      }),
+      graphql.query('GetOrgUploadToken', (info) => {
+        return HttpResponse.json({
+          data: mockGetOrgUploadToken(hasOrgUploadToken),
+        })
       })
     )
 
@@ -94,7 +110,7 @@ describe('WebpackOnboarding', () => {
       render(<WebpackOnboarding />, { wrapper })
 
       await waitFor(() =>
-        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+        expect(mocks.increment).toHaveBeenCalledWith(
           'bundles_tab.onboarding.visited_page',
           1,
           { tags: { bundler: 'webpack' } }
@@ -153,7 +169,7 @@ describe('WebpackOnboarding', () => {
             await user.click(npmInstallCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.install_command',
                 1,
                 { tags: { package_manager: 'npm', bundler: 'webpack' } }
@@ -189,7 +205,7 @@ describe('WebpackOnboarding', () => {
             await user.click(yarnInstallCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.install_command',
                 1,
                 { tags: { package_manager: 'yarn', bundler: 'webpack' } }
@@ -225,7 +241,7 @@ describe('WebpackOnboarding', () => {
             await user.click(pnpmInstallCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.install_command',
                 1,
                 { tags: { package_manager: 'pnpm', bundler: 'webpack' } }
@@ -296,7 +312,7 @@ describe('WebpackOnboarding', () => {
         await user.click(uploadTokenCopy)
 
         await waitFor(() =>
-          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          expect(mocks.increment).toHaveBeenCalledWith(
             'bundles_tab.onboarding.copied.token',
             1,
             { tags: { bundler: 'webpack' } }
@@ -352,7 +368,7 @@ describe('WebpackOnboarding', () => {
         await user.click(pluginConfigCopy)
 
         await waitFor(() =>
-          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          expect(mocks.increment).toHaveBeenCalledWith(
             'bundles_tab.onboarding.copied.config',
             1,
             { tags: { bundler: 'webpack' } }
@@ -411,7 +427,7 @@ describe('WebpackOnboarding', () => {
         await user.click(commitCommandCopy)
 
         await waitFor(() =>
-          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          expect(mocks.increment).toHaveBeenCalledWith(
             'bundles_tab.onboarding.copied.commit',
             1,
             { tags: { bundler: 'webpack' } }
@@ -466,7 +482,7 @@ describe('WebpackOnboarding', () => {
             await user.click(buildCommandCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.build_command',
                 1,
                 { tags: { package_manager: 'npm', bundler: 'webpack' } }
@@ -498,7 +514,7 @@ describe('WebpackOnboarding', () => {
             await user.click(buildCommandCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.build_command',
                 1,
                 { tags: { package_manager: 'yarn', bundler: 'webpack' } }
@@ -530,7 +546,7 @@ describe('WebpackOnboarding', () => {
             await user.click(buildCommandCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.build_command',
                 1,
                 { tags: { package_manager: 'pnpm', bundler: 'webpack' } }
