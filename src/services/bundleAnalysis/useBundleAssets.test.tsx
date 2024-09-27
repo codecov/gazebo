@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import { useBundleAssets } from './useBundleAssets'
 
@@ -130,7 +131,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  jest.resetAllMocks()
+  vi.clearAllMocks()
   queryClient.clear()
   server.resetHandlers()
 })
@@ -155,31 +156,30 @@ describe('useBundleAssets', () => {
     isNullOwner = false,
     missingHeadReport = false,
   }: SetupArgs) {
-    const passedBranch = jest.fn()
-    const madeRequest = jest.fn()
+    const passedBranch = vi.fn()
+    const madeRequest = vi.fn()
 
     server.use(
-      graphql.query('BundleAssets', (req, res, ctx) => {
+      graphql.query('BundleAssets', (info) => {
         madeRequest()
-        if (req.variables?.branch) {
-          passedBranch(req.variables?.branch)
+        if (info.variables?.branch) {
+          passedBranch(info.variables?.branch)
         }
 
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockRepoNotFound))
+          return HttpResponse.json({ data: mockRepoNotFound })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivated))
+          return HttpResponse.json({ data: mockOwnerNotActivated })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else if (missingHeadReport) {
-          return res(ctx.status(200), ctx.data(mockMissingHeadReport))
+          return HttpResponse.json({ data: mockMissingHeadReport })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
@@ -194,14 +194,14 @@ describe('useBundleAssets', () => {
                           },
                         },
                         assetsPaginated: {
-                          edges: req.variables.assetsAfter
+                          edges: info.variables.assetsAfter
                             ? [{ node: node3 }]
                             : [{ node: node1 }, { node: node2 }],
                           pageInfo: {
-                            hasNextPage: req.variables.assetsAfter
+                            hasNextPage: info.variables.assetsAfter
                               ? false
                               : true,
-                            endCursor: req.variables.assetsAfter
+                            endCursor: info.variables.assetsAfter
                               ? 'cursor-1'
                               : 'cursor-2',
                           },
@@ -212,8 +212,8 @@ describe('useBundleAssets', () => {
                 },
               },
             },
-          })
-        )
+          },
+        })
       })
     )
 
@@ -384,14 +384,14 @@ describe('useBundleAssets', () => {
   })
 
   describe('when __typename is NotFoundError', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -422,14 +422,14 @@ describe('useBundleAssets', () => {
   })
 
   describe('when __typename is OwnerNotActivatedError', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
@@ -460,14 +460,14 @@ describe('useBundleAssets', () => {
   })
 
   describe('unsuccessful parse error', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {

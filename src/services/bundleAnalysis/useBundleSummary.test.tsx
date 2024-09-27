@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
-import { useBranchBundlesNames } from './useBranchBundlesNames'
+import { useBundleSummary } from './useBundleSummary'
 
 const mockRepoOverview = {
   owner: {
@@ -21,7 +22,7 @@ const mockRepoOverview = {
   },
 }
 
-const mockBranchBundles = {
+const mockBundleSummary = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -29,7 +30,36 @@ const mockBranchBundles = {
         head: {
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
-            bundles: [{ name: 'bundle1' }],
+            bundle: {
+              name: 'bundle1',
+              moduleCount: 10,
+              bundleData: {
+                loadTime: {
+                  threeG: 1000,
+                  highSpeed: 500,
+                },
+                size: {
+                  gzip: 1000,
+                  uncompress: 2000,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+const mockMissingHeadReport = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          bundleAnalysisReport: {
+            __typename: 'MissingHeadReport',
+            message: 'Missing head report',
           },
         },
       },
@@ -77,7 +107,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  jest.resetAllMocks()
+  vi.clearAllMocks()
   queryClient.clear()
   server.resetHandlers()
 })
@@ -91,37 +121,41 @@ interface SetupArgs {
   isOwnerNotActivatedError?: boolean
   isUnsuccessfulParseError?: boolean
   isNullOwner?: boolean
+  missingHeadReport?: boolean
 }
 
-describe('useBranchBundlesNames', () => {
+describe('useBundleSummary', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
     isNullOwner = false,
+    missingHeadReport = false,
   }: SetupArgs) {
-    const passedBranch = jest.fn()
+    const passedBranch = vi.fn()
 
     server.use(
-      graphql.query('BranchBundlesNames', (req, res, ctx) => {
-        if (req.variables?.branch) {
-          passedBranch(req.variables?.branch)
+      graphql.query('BundleSummary', (info) => {
+        if (info.variables?.branch) {
+          passedBranch(info.variables?.branch)
         }
 
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockRepoNotFound))
+          return HttpResponse.json({ data: mockRepoNotFound })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivated))
+          return HttpResponse.json({ data: mockOwnerNotActivated })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
+        } else if (missingHeadReport) {
+          return HttpResponse.json({ data: mockMissingHeadReport })
         }
 
-        return res(ctx.status(200), ctx.data(mockBranchBundles))
+        return HttpResponse.json({ data: mockBundleSummary })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverview))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockRepoOverview })
       })
     )
 
@@ -133,10 +167,12 @@ describe('useBranchBundlesNames', () => {
       const { passedBranch } = setup({})
       renderHook(
         () =>
-          useBranchBundlesNames({
+          useBundleSummary({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
+            branch: 'main',
+            bundle: 'test-bundle',
           }),
         { wrapper }
       )
@@ -151,43 +187,83 @@ describe('useBranchBundlesNames', () => {
       const { passedBranch } = setup({})
       renderHook(
         () =>
-          useBranchBundlesNames({
+          useBundleSummary({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
-            branch: 'cool-branch',
+            bundle: 'test-bundle',
           }),
         { wrapper }
       )
 
       await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(passedBranch).toHaveBeenCalledWith('cool-branch')
-      )
+      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
     })
   })
 
   describe('returns repository typename of repository', () => {
     describe('there is valid data', () => {
-      it('returns the bundle summary', async () => {
-        setup({})
-        const { result } = renderHook(
-          () =>
-            useBranchBundlesNames({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'codecov',
-            }),
-          { wrapper }
-        )
+      describe('there is a bundle report', () => {
+        it('returns the bundle summary', async () => {
+          setup({})
+          const { result } = renderHook(
+            () =>
+              useBundleSummary({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                branch: 'main',
+                bundle: 'test-bundle',
+              }),
+            { wrapper }
+          )
 
-        const expectedResponse = {
-          bundles: ['bundle1'],
-        }
+          const expectedResponse = {
+            bundleSummary: {
+              name: 'bundle1',
+              moduleCount: 10,
+              bundleData: {
+                loadTime: {
+                  highSpeed: 500,
+                  threeG: 1000,
+                },
+                size: {
+                  gzip: 1000,
+                  uncompress: 2000,
+                },
+              },
+            },
+          }
 
-        await waitFor(() =>
-          expect(result.current.data).toStrictEqual(expectedResponse)
-        )
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual(expectedResponse)
+          )
+        })
+      })
+
+      describe('there is a missing head report', () => {
+        it('returns null', async () => {
+          setup({ missingHeadReport: true })
+          const { result } = renderHook(
+            () =>
+              useBundleSummary({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                branch: 'main',
+                bundle: 'test-bundle',
+              }),
+            { wrapper }
+          )
+
+          const expectedResponse = {
+            bundleSummary: null,
+          }
+
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual(expectedResponse)
+          )
+        })
       })
     })
 
@@ -196,16 +272,18 @@ describe('useBranchBundlesNames', () => {
         setup({ isNullOwner: true })
         const { result } = renderHook(
           () =>
-            useBranchBundlesNames({
+            useBundleSummary({
               provider: 'gh',
               owner: 'codecov',
               repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
             }),
           { wrapper }
         )
 
         const expectedResponse = {
-          bundles: [],
+          bundleSummary: null,
         }
 
         await waitFor(() =>
@@ -216,24 +294,26 @@ describe('useBranchBundlesNames', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundlesNames({
+          useBundleSummary({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
+            branch: 'main',
+            bundle: 'test-bundle',
           }),
         { wrapper }
       )
@@ -250,24 +330,26 @@ describe('useBranchBundlesNames', () => {
   })
 
   describe('returns OwnerNotActivatedError __typename', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundlesNames({
+          useBundleSummary({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
+            branch: 'main',
+            bundle: 'test-bundle',
           }),
         { wrapper }
       )
@@ -284,24 +366,26 @@ describe('useBranchBundlesNames', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundlesNames({
+          useBundleSummary({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
+            branch: 'main',
+            bundle: 'test-bundle',
           }),
         { wrapper }
       )
