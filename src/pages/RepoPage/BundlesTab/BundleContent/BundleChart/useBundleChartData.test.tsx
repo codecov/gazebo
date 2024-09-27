@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -131,15 +131,15 @@ afterAll(() => {
 
 describe('useBundleChartData', () => {
   function setup() {
-    const queryVarMock = jest.fn()
+    const queryVarMock = vi.fn()
 
     server.use(
-      graphql.query('GetBundleTrend', (req, res, ctx) => {
-        queryVarMock(req.variables)
-        return res(ctx.status(200), ctx.data(mockBundleTrendData))
+      graphql.query('GetBundleTrend', (info) => {
+        queryVarMock(info.variables)
+        return HttpResponse.json({ data: mockBundleTrendData })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverview))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockRepoOverview })
       })
     )
 
@@ -159,9 +159,6 @@ describe('useBundleChartData', () => {
         }),
       { wrapper: wrapper() }
     )
-
-    await waitFor(() => expect(result.current.isLoading).toBeTruthy())
-    await waitFor(() => expect(result.current.isLoading).toBeFalsy())
 
     const expectedResult = {
       isLoading: false,
@@ -194,12 +191,16 @@ describe('useBundleChartData', () => {
         },
       ],
     }
-    expect(result.current).toStrictEqual(expectedResult)
+    await waitFor(() => expect(result.current).toStrictEqual(expectedResult))
   })
 
   describe('trend param is set', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2024-07-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2024-07-01'))
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
     })
 
     it('should use the trend param to set the query args', async () => {
@@ -241,7 +242,7 @@ describe('useBundleChartData', () => {
 
   describe('types param', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2024-07-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2024-07-01'))
     })
 
     describe('no param set', () => {
