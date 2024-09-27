@@ -1,15 +1,23 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ActivationAlert from './ActivationAlert'
 
-jest.mock('./FreePlanSeatsTakenAlert', () => () => 'FreePlanSeatsTakenAlert')
-jest.mock('./PaidPlanSeatsTakenAlert', () => () => 'PaidPlanSeatsTakenAlert')
-jest.mock('./ActivationRequiredAlert', () => () => 'ActivationRequiredAlert')
-jest.mock('./UnauthorizedRepoDisplay', () => () => 'UnauthorizedRepoDisplay')
+vi.mock('./FreePlanSeatsTakenAlert', () => ({
+  default: () => 'FreePlanSeatsTakenAlert',
+}))
+vi.mock('./PaidPlanSeatsTakenAlert', () => ({
+  default: () => 'PaidPlanSeatsTakenAlert',
+}))
+vi.mock('./ActivationRequiredAlert', () => ({
+  default: () => 'ActivationRequiredAlert',
+}))
+vi.mock('./UnauthorizedRepoDisplay', () => ({
+  default: () => 'UnauthorizedRepoDisplay',
+}))
 
 const queryClient = new QueryClient()
 
@@ -57,10 +65,9 @@ describe('ActivationAlert', () => {
     hasSeatsLeft = true
   ) {
     server.use(
-      graphql.query('GetPlanData', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: privateRepos,
               plan: {
@@ -77,8 +84,8 @@ describe('ActivationAlert', () => {
                 value: 'users-basic',
               },
             },
-          })
-        )
+          },
+        })
       })
     )
   }
