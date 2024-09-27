@@ -1,19 +1,28 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
-import { Route } from 'react-router-dom'
-import useIntersection from 'react-use/lib/useIntersection'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
 
 import CommitsTab from './CommitsTab'
 
-import { repoPageRender, screen, waitFor } from '../repo-jest-setup'
+import { RepoBreadcrumbProvider } from '../context'
 
-jest.mock('react-use/lib/useIntersection')
+const mocks = vi.hoisted(() => ({
+  useIntersection: vi.fn(),
+}))
+
+vi.mock('react-use', async () => {
+  const actual = await vi.importActual('react-use')
+  return {
+    ...actual,
+    useIntersection: mocks.useIntersection,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
@@ -21,16 +30,22 @@ const queryClient = new QueryClient({
 const server = setupServer()
 let testLocation
 
-const Wrapper = ({ children }) => (
+const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <Suspense fallback={<p>loading</p>}>{children}</Suspense>
-    <Route
-      path="*"
-      render={({ location }) => {
-        testLocation = location
-        return null
-      }}
-    />
+    <MemoryRouter initialEntries={['/gh/codecov/gazebo/commits']}>
+      <Route path="/:provider/:owner/:repo/commits">
+        <Suspense fallback={<p>Loading</p>}>
+          <RepoBreadcrumbProvider>{children}</RepoBreadcrumbProvider>
+        </Suspense>
+      </Route>
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation = location
+          return null
+        }}
+      />
+    </MemoryRouter>
   </QueryClientProvider>
 )
 
@@ -54,12 +69,7 @@ const mockBranches = (hasNextPage = false) => ({
       branches: {
         edges: [
           {
-            node: {
-              name: 'main',
-              head: {
-                commitid: '1',
-              },
-            },
+            node: { name: 'main', head: { commitid: '1' } },
           },
         ],
         pageInfo: {
@@ -200,63 +210,62 @@ describe('CommitsTab', () => {
     isPrivate = false,
   }) {
     const user = userEvent.setup()
-    const fetchNextPage = jest.fn()
-    const branchSearch = jest.fn()
-    const commitSearch = jest.fn()
-    const branchName = jest.fn()
+    const fetchNextPage = vi.fn()
+    const branchSearch = vi.fn()
+    const commitSearch = vi.fn()
+    const branchName = vi.fn()
 
     server.use(
-      graphql.query('GetBranches', (req, res, ctx) => {
-        if (!!req?.variables?.after) {
-          fetchNextPage(req?.variables?.after)
+      graphql.query('GetBranches', (info) => {
+        if (!!info?.variables?.after) {
+          fetchNextPage(info?.variables?.after)
         }
 
-        if (!!req?.variables?.filters?.searchValue) {
-          branchSearch(req?.variables?.filters?.searchValue)
+        if (!!info?.variables?.filters?.searchValue) {
+          branchSearch(info?.variables?.filters?.searchValue)
         }
 
         if (hasBranches) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { repository: { branches: null } } })
-          )
+          return HttpResponse.json({
+            data: { owner: { repository: { branches: null } } },
+          })
         }
 
-        return res(ctx.status(200), ctx.data(mockBranches(hasNextPage)))
+        return HttpResponse.json({ data: mockBranches(hasNextPage) })
       }),
-      graphql.query('GetCommits', (req, res, ctx) => {
-        if (!!req?.variables?.filters?.branchName) {
-          branchName(req?.variables?.filters?.branchName)
+      graphql.query('GetCommits', (info) => {
+        if (!!info?.variables?.filters?.branchName) {
+          branchName(info?.variables?.filters?.branchName)
         }
 
-        if (!!req?.variables?.filters?.search) {
-          commitSearch(req?.variables?.filters?.search)
+        if (!!info?.variables?.filters?.search) {
+          commitSearch(info?.variables?.filters?.search)
         }
 
-        return res(ctx.status(200), ctx.data(mockCommits))
+        return HttpResponse.json({ data: mockCommits })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockOverview))
-      ),
-      graphql.query('GetBranch', (req, res, ctx) => {
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockOverview })
+      }),
+      graphql.query('GetBranch', (info) => {
         if (returnBranch) {
-          return res(ctx.status(200), ctx.data(mockBranch(returnBranch)))
+          return HttpResponse.json({ data: mockBranch(returnBranch) })
         }
 
-        return res(ctx.status(200), ctx.data({ owner: null }))
+        return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
-      ),
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+      graphql.query('GetRepo', (info) => {
+        return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('GetBranchCommits', (req, res, ctx) => {
+      graphql.query('GetRepoSettingsTeam', (info) => {
+        return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
+      }),
+      graphql.query('GetBranchCommits', (info) => {
         if (branchHasCommits) {
-          return res(ctx.status(200), ctx.data(mockBranchHasCommits))
-        } else {
-          return res(ctx.status(200), ctx.data(mockBranchHasNoCommits))
+          return HttpResponse.json({ data: mockBranchHasCommits })
         }
+
+        return HttpResponse.json({ data: mockBranchHasNoCommits })
       })
     )
 
@@ -264,7 +273,7 @@ describe('CommitsTab', () => {
   }
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('when rendered', () => {
@@ -272,14 +281,7 @@ describe('CommitsTab', () => {
       describe('when branch has commits', () => {
         it('uses default branch', async () => {
           setup({ hasNextPage: true, returnBranch: 'main' })
-          repoPageRender({
-            renderCommits: () => (
-              <Wrapper>
-                <CommitsTab />
-              </Wrapper>
-            ),
-            initialEntries: ['/gh/codecov/gazebo/commits'],
-          })
+          render(<CommitsTab />, { wrapper })
 
           const selector = await screen.findByRole('button', {
             name: 'Select branch',
@@ -294,14 +296,7 @@ describe('CommitsTab', () => {
       describe('when branch has no commits', () => {
         it('uses returned branch', async () => {
           setup({ branchHasCommits: false, returnBranch: 'main' })
-          repoPageRender({
-            renderCommits: () => (
-              <Wrapper>
-                <CommitsTab />
-              </Wrapper>
-            ),
-            initialEntries: ['/gh/codecov/gazebo/commits'],
-          })
+          render(<CommitsTab />, { wrapper })
 
           const selector = await screen.findByRole('button', {
             name: 'Select branch',
@@ -315,16 +310,9 @@ describe('CommitsTab', () => {
       })
     })
 
-    it('renders ci status mutliselect', async () => {
+    it('renders ci status multiselect', async () => {
       setup({ hasNextPage: true })
-      repoPageRender({
-        renderCommits: () => (
-          <Wrapper>
-            <CommitsTab />
-          </Wrapper>
-        ),
-        initialEntries: ['/gh/codecov/gazebo/commits'],
-      })
+      render(<CommitsTab />, { wrapper })
 
       const multiSelect = await screen.findByRole('button', {
         name: 'Filter by coverage upload status',
@@ -336,14 +324,7 @@ describe('CommitsTab', () => {
   describe('rendering CommitsTable', () => {
     it('renders with table name heading', async () => {
       setup({ hasNextPage: true })
-      repoPageRender({
-        renderCommits: () => (
-          <Wrapper>
-            <CommitsTab />
-          </Wrapper>
-        ),
-        initialEntries: ['/gh/codecov/gazebo/commits'],
-      })
+      render(<CommitsTab />, { wrapper })
 
       const head = await screen.findByText(/Name/)
       expect(head).toBeInTheDocument()
@@ -351,22 +332,19 @@ describe('CommitsTab', () => {
 
     describe('when select onLoadMore is triggered', () => {
       beforeEach(() => {
-        useIntersection.mockReturnValue({
+        mocks.useIntersection.mockReturnValue({
           isIntersecting: true,
         })
+      })
+
+      afterEach(() => {
+        vi.clearAllMocks()
       })
 
       describe('when there is not a next page', () => {
         it('does not call fetchNextPage', async () => {
           const { user, fetchNextPage } = setup({ hasNextPage: false })
-          repoPageRender({
-            renderCommits: () => (
-              <Wrapper>
-                <CommitsTab />
-              </Wrapper>
-            ),
-            initialEntries: ['/gh/codecov/gazebo/commits'],
-          })
+          render(<CommitsTab />, { wrapper })
 
           const select = await screen.findByRole('button', {
             name: 'Select branch',
@@ -380,23 +358,11 @@ describe('CommitsTab', () => {
       describe('when there is a next page', () => {
         it('calls fetchNextPage', async () => {
           const { fetchNextPage, user } = setup({ hasNextPage: true })
-
-          repoPageRender({
-            renderCommits: () => (
-              <Wrapper>
-                <CommitsTab />
-              </Wrapper>
-            ),
-            initialEntries: ['/gh/codecov/gazebo/commits'],
-          })
+          render(<CommitsTab />, { wrapper })
 
           const select = await screen.findByText('Select branch')
           await user.click(select)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
           await waitFor(() =>
             expect(fetchNextPage).toHaveBeenCalledWith('some cursor')
           )
@@ -408,14 +374,7 @@ describe('CommitsTab', () => {
       describe('user selects All branches', () => {
         it('updates the button with the selected branch', async () => {
           const { user } = setup({ hasNextPage: false, returnBranch: 'main' })
-          repoPageRender({
-            renderCommits: () => (
-              <Wrapper>
-                <CommitsTab />
-              </Wrapper>
-            ),
-            initialEntries: ['/gh/codecov/gazebo/commits'],
-          })
+          render(<CommitsTab />, { wrapper })
 
           const select = await screen.findByRole('button', {
             name: 'Select branch',
@@ -457,14 +416,7 @@ describe('CommitsTab', () => {
       describe('user selects a branch', () => {
         it('updates the button with the selected branch', async () => {
           const { user } = setup({ hasNextPage: false, returnBranch: 'main' })
-          repoPageRender({
-            renderCommits: () => (
-              <Wrapper>
-                <CommitsTab />
-              </Wrapper>
-            ),
-            initialEntries: ['/gh/codecov/gazebo/commits'],
-          })
+          render(<CommitsTab />, { wrapper })
 
           const select = await screen.findByRole('button', {
             name: 'Select branch',
@@ -488,14 +440,7 @@ describe('CommitsTab', () => {
     describe('user selects from the CI states multiselect', () => {
       it('selects the option', async () => {
         const { user } = setup({})
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <CommitsTab />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/gazebo/commits'],
-        })
+        render(<CommitsTab />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: 'Filter by coverage upload status',
@@ -516,15 +461,7 @@ describe('CommitsTab', () => {
     describe('user searches for branch', () => {
       it('fetches request with search term', async () => {
         const { branchSearch, user } = setup({ hasNextPage: false })
-
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <CommitsTab />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/gazebo/commits'],
-        })
+        render(<CommitsTab />, { wrapper })
 
         const select = await screen.findByText('Select branch')
         await user.click(select)
@@ -540,15 +477,7 @@ describe('CommitsTab', () => {
 
       it('hides All branches from list', async () => {
         const { branchSearch, user } = setup({ hasNextPage: false })
-
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <CommitsTab />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/gazebo/commits'],
-        })
+        render(<CommitsTab />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: 'Select branch',
@@ -568,15 +497,7 @@ describe('CommitsTab', () => {
     describe('user searches for commit', () => {
       it('fetches commits request with search term', async () => {
         const { commitSearch, user } = setup({ hasNextPage: false })
-
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <CommitsTab />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/gazebo/commits'],
-        })
+        render(<CommitsTab />, { wrapper })
 
         const search = await screen.findByPlaceholderText('Search commits')
         await user.type(search, 'searching for a commit')
@@ -599,14 +520,7 @@ describe('CommitsTab', () => {
             tierValue: TierNames.TEAM,
             isPrivate: true,
           })
-          repoPageRender({
-            renderCommits: () => (
-              <Wrapper>
-                <CommitsTab />
-              </Wrapper>
-            ),
-            initialEntries: ['/gh/codecov/gazebo/commits'],
-          })
+          render(<CommitsTab />, { wrapper })
 
           const select = await screen.findByRole('button', {
             name: 'Select branch',
@@ -634,14 +548,7 @@ describe('CommitsTab', () => {
             tierValue: TierNames.TEAM,
             isPrivate: true,
           })
-          repoPageRender({
-            renderCommits: () => (
-              <Wrapper>
-                <CommitsTab />
-              </Wrapper>
-            ),
-            initialEntries: ['/gh/codecov/gazebo/commits'],
-          })
+          render(<CommitsTab />, { wrapper })
 
           const select = await screen.findByRole('button', {
             name: 'Select branch',
@@ -665,14 +572,7 @@ describe('CommitsTab', () => {
     describe('user selects from the CI states multiselect', () => {
       it('selects the option', async () => {
         const { user } = setup({ tierValue: TierNames.TEAM, isPrivate: true })
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <CommitsTab />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/gazebo/commits'],
-        })
+        render(<CommitsTab />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: 'Filter by coverage upload status',
@@ -697,15 +597,7 @@ describe('CommitsTab', () => {
           tierValue: TierNames.TEAM,
           isPrivate: true,
         })
-
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <CommitsTab />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/gazebo/commits'],
-        })
+        render(<CommitsTab />, { wrapper })
 
         const select = await screen.findByText('Select branch')
         await user.click(select)
@@ -725,15 +617,7 @@ describe('CommitsTab', () => {
           tierValue: TierNames.TEAM,
           isPrivate: true,
         })
-
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <CommitsTab />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/gazebo/commits'],
-        })
+        render(<CommitsTab />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: 'Select branch',
@@ -757,15 +641,7 @@ describe('CommitsTab', () => {
           tierValue: TierNames.TEAM,
           isPrivate: true,
         })
-
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <CommitsTab />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/gazebo/commits'],
-        })
+        render(<CommitsTab />, { wrapper })
 
         const search = await screen.findByPlaceholderText('Search commits')
         await user.type(search, 'searching for a commit')

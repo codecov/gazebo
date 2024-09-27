@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -24,9 +24,7 @@ const mockMainBranchSearch = {
       {
         node: {
           name: 'main',
-          head: {
-            commitid: '321fdsa',
-          },
+          head: { commitid: '321fdsa' },
         },
       },
     ],
@@ -44,17 +42,13 @@ const mockBranches = {
       {
         node: {
           name: 'branch-1',
-          head: {
-            commitid: 'asdf123',
-          },
+          head: { commitid: 'asdf123' },
         },
       },
       {
         node: {
           name: 'main',
-          head: {
-            commitid: '321fdsa',
-          },
+          head: { commitid: '321fdsa' },
         },
       },
     ],
@@ -117,29 +111,27 @@ describe('useCommitsTabBranchSelector', () => {
     hasNoBranches = false
   ) {
     server.use(
-      graphql.query('GetBranch', (req, res, ctx) => {
+      graphql.query('GetBranch', (info) => {
         if (returnBranch) {
-          return res(ctx.status(200), ctx.data(mockBranch(branchName)))
+          return HttpResponse.json({ data: mockBranch(branchName) })
         }
 
-        return res(ctx.status(200), ctx.data({ owner: null }))
+        return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('GetBranches', (req, res, ctx) => {
+      graphql.query('GetBranches', (info) => {
         if (hasNoBranches) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: {} })
         }
 
-        if (req.variables?.filters?.searchValue === 'main') {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { repository: mockMainBranchSearch } })
-          )
+        if (info.variables?.filters?.searchValue === 'main') {
+          return HttpResponse.json({
+            data: { owner: { repository: mockMainBranchSearch } },
+          })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { repository: mockBranches } })
-        )
+        return HttpResponse.json({
+          data: { owner: { repository: mockBranches } },
+        })
       })
     )
   }
