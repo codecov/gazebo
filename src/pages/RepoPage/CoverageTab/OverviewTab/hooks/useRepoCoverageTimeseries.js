@@ -28,8 +28,6 @@ export function useRepoCoverageTimeseries({ branch }, options = {}) {
     return createTimeSeriesQueryVars({ trend, oldestCommit, today })
   }, [overview?.oldestCommitAt, params?.trend, today])
 
-  console.log('here at least')
-
   return useBranchCoverageMeasurements({
     provider,
     owner,
@@ -43,7 +41,6 @@ export function useRepoCoverageTimeseries({ branch }, options = {}) {
       staleTime: 30000,
       keepPreviousData: false,
       select: (data) => {
-        console.log({ data })
         if (data?.measurements?.[0]?.max === null) {
           data.measurements[0].max = 0
         }
