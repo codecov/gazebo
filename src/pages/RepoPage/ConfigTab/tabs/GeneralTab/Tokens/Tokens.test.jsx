@@ -1,14 +1,22 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useFlags } from 'shared/featureFlags'
 
 import Tokens from './Tokens'
 
-jest.mock('shared/featureFlags')
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
+
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -30,20 +38,20 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
+  vi.clearAllMocks()
 })
 afterAll(() => server.close())
 
 describe('Tokens', () => {
   function setup({ showStaticAnalysis = true } = { showStaticAnalysis: true }) {
-    useFlags.mockReturnValue({
+    mocks.useFlags.mockReturnValue({
       staticAnalysisToken: showStaticAnalysis,
     })
 
     server.use(
       graphql.query('GetRepoSettings', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
@@ -60,18 +68,15 @@ describe('Tokens', () => {
                 staticAnalysisToken: 'static analysis token',
               },
             },
-          })
-        )
+          },
+        })
       })
     )
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders Repository upload token component', async () => {
+      setup()
       render(<Tokens />, { wrapper })
 
       const title = await screen.findByText(/Repository upload token/)
@@ -79,6 +84,7 @@ describe('Tokens', () => {
     })
 
     it('renders impact analysis component', async () => {
+      setup()
       render(<Tokens />, { wrapper })
 
       const title = await screen.findByText(/Impact analysis token/)
@@ -86,6 +92,7 @@ describe('Tokens', () => {
     })
 
     it('renders static token component', async () => {
+      setup()
       render(<Tokens />, { wrapper })
 
       const title = await screen.findByText(/Static analysis token/)
@@ -94,11 +101,8 @@ describe('Tokens', () => {
   })
 
   describe('when static analysis flag is disabled', () => {
-    beforeEach(() => {
-      setup({ showStaticAnalysis: false })
-    })
-
     it('does not render static token component', () => {
+      setup({ showStaticAnalysis: false })
       render(<Tokens />, { wrapper })
 
       const title = screen.queryByText(/Static analysis token/)
