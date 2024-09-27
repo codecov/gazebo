@@ -23,7 +23,7 @@ vi.mock('shared/featureFlags', async () => {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: false,
+      retry: true,
       suspense: true,
     },
   },
@@ -61,7 +61,10 @@ afterAll(() => {
 })
 
 describe('CodecovAIPage', () => {
-  function setup(aiFeaturesEnabled = false) {
+  function setup(
+    aiFeaturesEnabled = false,
+    aiEnabledRepos = ['repo-1', 'repo-2']
+  ) {
     server.use(
       graphql.query('GetCodecovAIAppInstallInfo', (info) => {
         return HttpResponse.json({
@@ -76,7 +79,7 @@ describe('CodecovAIPage', () => {
         return HttpResponse.json({
           data: {
             owner: {
-              aiEnabledRepos: ['repo-1', 'repo-2'],
+              aiEnabledRepos,
             },
           },
         })
@@ -186,6 +189,15 @@ describe('CodecovAIPage', () => {
       expect(repo1Link).toBeInTheDocument()
       const repo2Link = await screen.findByText(/repo-1/)
       expect(repo2Link).toBeInTheDocument()
+    })
+
+    describe('No repos returned', () => {
+      it('renders install link', async () => {
+        setup(true, [])
+        render(<CodecovAIPage />, { wrapper })
+        const buttonEl = await screen.findByText(/Install Codecov AI/i)
+        expect(buttonEl).toBeInTheDocument()
+      })
     })
   })
 
