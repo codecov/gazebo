@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -93,21 +93,21 @@ interface SetupArgs {
 
 describe('BundleDetails', () => {
   function setup({ noSummary = false }: SetupArgs) {
-    const queryVars = jest.fn()
+    const queryVars = vi.fn()
 
     server.use(
-      graphql.query('BundleSummary', (req, res, ctx) => {
+      graphql.query('BundleSummary', (info) => {
         if (noSummary) {
-          return res(ctx.status(200), ctx.data(mockNoSummary))
+          return HttpResponse.json({ data: mockNoSummary })
         }
 
-        if (req.variables) {
-          queryVars(req.variables)
+        if (info.variables) {
+          queryVars(info.variables)
         }
-        return res(ctx.status(200), ctx.data(mockBundleSummary))
+        return HttpResponse.json({ data: mockBundleSummary })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverview))
+      graphql.query('GetRepoOverview', () => {
+        return HttpResponse.json({ data: mockRepoOverview })
       })
     )
 
