@@ -1,33 +1,28 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import { RepoBreadcrumbProvider } from './context'
 import RepoPage from './RepoPage'
 
-jest.mock('./BundlesTab', () => () => 'BundlesTab')
-jest.mock('./BundlesTab/BundleOnboarding', () => () => 'BundleOnboarding')
-jest.mock('./CommitsTab', () => () => 'CommitsTab')
-jest.mock('./CoverageTab', () => () => 'CoverageTab')
-jest.mock('./CoverageOnboarding', () => () => 'CoverageOnboarding')
-jest.mock('./PullsTab', () => () => 'PullsTab')
-jest.mock('./ConfigTab', () => () => 'ConfigurationTab')
-jest.mock('shared/featureFlags')
-jest.mock('./ActivationAlert', () => () => 'ActivationAlert')
-jest.mock('./FailedTestsTab', () => () => 'FailedTestsTab')
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  componentTab: boolean
-}>
+vi.mock('./BundlesTab', () => ({ default: () => 'BundlesTab' }))
+vi.mock('./BundlesTab/BundleOnboarding', () => ({
+  default: () => 'BundleOnboarding',
+}))
+vi.mock('./CommitsTab', () => ({ default: () => 'CommitsTab' }))
+vi.mock('./CoverageTab', () => ({ default: () => 'CoverageTab' }))
+vi.mock('./CoverageOnboarding', () => ({ default: () => 'CoverageOnboarding' }))
+vi.mock('./PullsTab', () => ({ default: () => 'PullsTab' }))
+vi.mock('./ConfigTab', () => ({ default: () => 'ConfigurationTab' }))
+vi.mock('./ActivationAlert', () => ({ default: () => 'ActivationAlert' }))
+vi.mock('./FailedTestsTab', () => ({ default: () => 'FailedTestsTab' }))
 
 const mockGetRepo = ({
   noUploadToken = false,
@@ -239,10 +234,6 @@ describe('RepoPage', () => {
       bundleAnalysisEnabled: true,
     }
   ) {
-    mockedUseFlags.mockReturnValue({
-      componentTab: true,
-    })
-
     const user = userEvent.setup()
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -254,55 +245,47 @@ describe('RepoPage', () => {
     })
 
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) => {
+      graphql.query('GetRepo', (info) => {
         if (hasRepoData) {
-          return res(
-            ctx.status(200),
-            ctx.data(
-              mockGetRepo({
-                noUploadToken,
-                isRepoActive,
-                isRepoPrivate,
-                isRepoActivated,
-                isCurrentUserPartOfOrg,
-                isCurrentUserActivated,
-              })
-            )
-          )
+          return HttpResponse.json({
+            data: mockGetRepo({
+              noUploadToken,
+              isRepoActive,
+              isRepoPrivate,
+              isRepoActivated,
+              isCurrentUserPartOfOrg,
+              isCurrentUserActivated,
+            }),
+          })
         }
 
-        return res(ctx.status(200), ctx.data({ owner: {} }))
+        return HttpResponse.json({ data: { owner: {} } })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
+      graphql.query('OwnerTier', (info) => {
         if (tierValue === TierNames.TEAM) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
-          )
+          return HttpResponse.json({
+            data: { owner: { plan: { tierName: TierNames.TEAM } } },
+          })
         }
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
-        )
+        return HttpResponse.json({
+          data: { owner: { plan: { tierName: TierNames.PRO } } },
+        })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(
-            mockRepoOverview({
-              coverageEnabled,
-              bundleAnalysisEnabled,
-              testAnalyticsEnabled,
-              language,
-            })
-          )
-        )
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({
+          data: mockRepoOverview({
+            coverageEnabled,
+            bundleAnalysisEnabled,
+            testAnalyticsEnabled,
+            language,
+          }),
+        })
       }),
-      graphql.query('DetailOwner', (req, res, ctx) => {
-        return res(ctx.data({ owner: mockOwner }))
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({ data: { owner: mockOwner } })
       }),
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockUser))
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: mockUser })
       })
     )
 
