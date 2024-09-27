@@ -1,14 +1,19 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useOwner } from 'services/user'
-
 import ConfigTab from './ConfigTab'
 
-jest.mock('services/user')
-const mockedUseOwner = useOwner as jest.Mock
+const mocks = vi.hoisted(() => ({
+  useOwner: vi.fn(),
+}))
 
-jest.mock('./tabs/ConfigurationManager', () => () => 'Configuration Manager')
+vi.mock('services/user', () => ({
+  useOwner: mocks.useOwner,
+}))
+
+vi.mock('./tabs/ConfigurationManager', () => ({
+  default: () => 'Configuration Manager',
+}))
 
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/gh/codecov/codecov-client/config') =>
@@ -24,7 +29,7 @@ interface SetupArgs {
 
 describe('ConfigTab', () => {
   function setup({ isCurrentUserPartOfOrg = true }: SetupArgs) {
-    mockedUseOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
+    mocks.useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
   }
 
   describe('Render for a repo', () => {
