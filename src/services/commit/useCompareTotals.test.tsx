@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import { useCompareTotals } from './useCompareTotals'
 
@@ -87,17 +88,17 @@ describe('useCompareTotals', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CompareTotals', (req, res, ctx) => {
+      graphql.query('CompareTotals', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else {
-          return res(ctx.status(200), ctx.data(mockResponse))
+          return HttpResponse.json({ data: mockResponse })
         }
       })
     )
@@ -168,12 +169,14 @@ describe('useCompareTotals', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      beforeAll(() => {
-        jest.spyOn(console, 'error')
+      let consoleSpy: MockInstance
+
+      beforeEach(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
       })
 
-      afterAll(() => {
-        jest.resetAllMocks()
+      afterEach(() => {
+        consoleSpy.mockRestore()
       })
 
       it('throws a 404', async () => {
@@ -201,12 +204,14 @@ describe('useCompareTotals', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      beforeAll(() => {
-        jest.spyOn(console, 'error')
+      let consoleSpy: MockInstance
+
+      beforeEach(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
       })
 
-      afterAll(() => {
-        jest.resetAllMocks()
+      afterEach(() => {
+        consoleSpy.mockRestore()
       })
 
       it('throws a 403', async () => {
@@ -234,12 +239,14 @@ describe('useCompareTotals', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      beforeAll(() => {
-        jest.spyOn(console, 'error')
+      let consoleSpy: MockInstance
+
+      beforeEach(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
       })
 
-      afterAll(() => {
-        jest.resetAllMocks()
+      afterEach(() => {
+        consoleSpy.mockRestore()
       })
 
       it('throws a 404', async () => {

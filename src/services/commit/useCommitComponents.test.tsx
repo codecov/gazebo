@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import { useCommitComponents } from './useCommitComponents'
 
@@ -86,17 +87,17 @@ describe('useCommitComponents', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('CommitComponents', (req, res, ctx) => {
+      graphql.query('CommitComponents', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else {
-          return res(ctx.status(200), ctx.data(mockCommitComponentData))
+          return HttpResponse.json({ data: mockCommitComponentData })
         }
       })
     )
@@ -126,14 +127,14 @@ describe('useCommitComponents', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -155,14 +156,14 @@ describe('useCommitComponents', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -186,14 +187,14 @@ describe('useCommitComponents', () => {
   })
 
   describe('returns OwnerNotActivatedError __typename', () => {
-    let oldConsoleError = console.error
+    let consoleSpy: MockInstance
 
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
