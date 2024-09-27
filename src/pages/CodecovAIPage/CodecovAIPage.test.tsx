@@ -187,7 +187,7 @@ describe('CodecovAIPage', () => {
 
       const repo1Link = await screen.findByText(/repo-1/)
       expect(repo1Link).toBeInTheDocument()
-      const repo2Link = await screen.findByText(/repo-1/)
+      const repo2Link = await screen.findByText(/repo-2/)
       expect(repo2Link).toBeInTheDocument()
     })
 
