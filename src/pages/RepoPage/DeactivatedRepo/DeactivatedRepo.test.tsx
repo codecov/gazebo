@@ -1,8 +1,8 @@
 import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import DeactivatedRepo from './DeactivatedRepo'
@@ -12,7 +12,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
       <Route path="/:provider/:owner/:repo">{children}</Route>
@@ -34,10 +34,9 @@ afterAll(() => {
 describe('DeactivatedRepo', () => {
   function setup(isCurrentUserPartOfOrg = true) {
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetRepo', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               isCurrentUserPartOfOrg,
               isAdmin: null,
@@ -55,9 +54,9 @@ describe('DeactivatedRepo', () => {
                 isFirstPullRequest: false,
               },
             },
-          })
-        )
-      )
+          },
+        })
+      })
     )
   }
 
