@@ -85,6 +85,7 @@ describe('CodecovAIPage', () => {
   }
   beforeEach(() => {
     mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: true })
+    setup()
   })
 
   it('renders top section', async () => {
@@ -187,15 +188,16 @@ describe('CodecovAIPage', () => {
       expect(repo2Link).toBeInTheDocument()
     })
   })
-})
 
-describe('flag is off', () => {
-  it('does not render page', async () => {
-    mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: false })
+  describe('flag is off', () => {
+    it('does not render page', async () => {
+      setup(true)
+      mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: false })
 
-    render(<CodecovAIPage />, { wrapper })
+      render(<CodecovAIPage />, { wrapper })
 
-    const topSection = screen.queryByText(/Codecov AI is a/)
-    expect(topSection).not.toBeInTheDocument()
+      const topSection = screen.queryByText(/Codecov AI is a/)
+      expect(topSection).not.toBeInTheDocument()
+    })
   })
 })
