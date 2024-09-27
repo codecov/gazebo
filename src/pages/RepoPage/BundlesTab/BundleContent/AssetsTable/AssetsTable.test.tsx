@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -13,21 +13,11 @@ const mockAssets = (hasNextPage = true) => {
     name: 'asset-1',
     extension: 'js',
     bundleData: {
-      loadTime: {
-        threeG: 2000,
-        highSpeed: 2000,
-      },
-      size: {
-        uncompress: 4000,
-        gzip: 400,
-      },
+      loadTime: { threeG: 2000, highSpeed: 2000 },
+      size: { uncompress: 4000, gzip: 400 },
     },
     measurements: {
-      change: {
-        size: {
-          uncompress: 5,
-        },
-      },
+      change: { size: { uncompress: 5 } },
       measurements: [
         { timestamp: '2022-10-10T11:59:59', avg: 6 },
         { timestamp: '2022-10-11T11:59:59', avg: null },
@@ -39,21 +29,11 @@ const mockAssets = (hasNextPage = true) => {
     name: 'asset-2',
     extension: 'js',
     bundleData: {
-      loadTime: {
-        threeG: 2000,
-        highSpeed: 2000,
-      },
-      size: {
-        uncompress: 2000,
-        gzip: 200,
-      },
+      loadTime: { threeG: 2000, highSpeed: 2000 },
+      size: { uncompress: 2000, gzip: 200 },
     },
     measurements: {
-      change: {
-        size: {
-          uncompress: -5,
-        },
-      },
+      change: { size: { uncompress: -5 } },
       measurements: [
         { timestamp: '2022-10-10T11:59:59', avg: 6 },
         { timestamp: '2022-10-11T11:59:59', avg: null },
@@ -65,14 +45,8 @@ const mockAssets = (hasNextPage = true) => {
     name: 'asset-3',
     extension: 'js',
     bundleData: {
-      loadTime: {
-        threeG: 2000,
-        highSpeed: 2000,
-      },
-      size: {
-        uncompress: 2000,
-        gzip: 200,
-      },
+      loadTime: { threeG: 2000, highSpeed: 2000 },
+      size: { uncompress: 2000, gzip: 200 },
     },
     measurements: null,
   }
@@ -86,16 +60,10 @@ const mockAssets = (hasNextPage = true) => {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
               bundle: {
-                bundleData: {
-                  size: {
-                    uncompress: 6000,
-                  },
-                },
+                bundleData: { size: { uncompress: 6000 } },
                 assetsPaginated: {
                   edges: [
-                    {
-                      node: asset1,
-                    },
+                    { node: asset1 },
                     ...(hasNextPage
                       ? [{ node: asset2 }, { node: asset3 }]
                       : []),
@@ -125,14 +93,8 @@ const mockBundleAssetModules = {
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
             bundle: {
-              bundleData: {
-                size: {
-                  uncompress: 12,
-                },
-              },
-              asset: {
-                modules: [],
-              },
+              bundleData: { size: { uncompress: 12 } },
+              asset: { modules: [] },
             },
           },
         },
@@ -150,17 +112,10 @@ const mockEmptyAssets = {
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
             bundle: {
-              bundleData: {
-                size: {
-                  uncompress: 12,
-                },
-              },
+              bundleData: { size: { uncompress: 12 } },
               assetsPaginated: {
                 edges: [],
-                pageInfo: {
-                  hasNextPage: false,
-                  endCursor: null,
-                },
+                pageInfo: { hasNextPage: false, endCursor: null },
               },
             },
           },
@@ -253,32 +208,32 @@ describe('AssetsTable', () => {
     const mockOrderingDirection = jest.fn()
 
     server.use(
-      graphql.query('BundleAssets', (req, res, ctx) => {
+      graphql.query('BundleAssets', (info) => {
         if (isEmptyBundles) {
-          return res(ctx.status(200), ctx.data(mockEmptyAssets))
+          return HttpResponse.json({ data: mockEmptyAssets })
         } else if (isMissingHeadReport) {
-          return res(ctx.status(200), ctx.data(mockMissingHeadReport))
+          return HttpResponse.json({ data: mockMissingHeadReport })
         }
 
-        if (req.variables?.ordering) {
-          mockOrdering(req.variables.ordering)
+        if (info.variables?.ordering) {
+          mockOrdering(info.variables.ordering)
         }
 
-        if (req.variables?.orderingDirection) {
-          mockOrderingDirection(req.variables.orderingDirection)
+        if (info.variables?.orderingDirection) {
+          mockOrderingDirection(info.variables.orderingDirection)
         }
 
-        if (multipleAssets && req.variables?.after) {
+        if (multipleAssets && info.variables?.after) {
           multipleAssets = true
         }
 
-        return res(ctx.status(200), ctx.data(mockAssets(multipleAssets)))
+        return HttpResponse.json({ data: mockAssets(multipleAssets) })
       }),
-      graphql.query('BundleAssetModules', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBundleAssetModules))
+      graphql.query('BundleAssetModules', (info) => {
+        return HttpResponse.json({ data: mockBundleAssetModules })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverview))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockRepoOverview })
       })
     )
 
