@@ -156,7 +156,7 @@ describe('CoverageChart', () => {
           ctx.status(200),
           ctx.data({
             owner: {
-              repository: { coverageAnalytics: { branchMeasurementsData } },
+              repository: branchMeasurementsData,
             },
           })
         )

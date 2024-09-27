@@ -35,18 +35,7 @@ const GetBranchCoverageMeasurementsSchema = z.object({
         .discriminatedUnion('__typename', [
           z.object({
             __typename: z.literal('Repository'),
-            coverageAnalytics: z
-              .object({
-                measurements: z
-                  .array(
-                    z.object({
-                      timestamp: z.string(),
-                      max: z.number(),
-                    })
-                  )
-                  .optional(),
-              })
-              .optional(),
+            coverageAnalytics: MeasurementsSchema.optional(),
           }),
           RepoNotFoundErrorSchema,
           RepoOwnerNotActivatedErrorSchema,
