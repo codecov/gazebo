@@ -1,14 +1,22 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useAddNotification } from 'services/toastNotification'
 
 import { useSentryToken } from './useSentryToken'
 
-jest.mock('services/toastNotification')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
+
+vi.mock('services/toastNotification', async () => {
+  const original = await vi.importActual('services/toastNotification')
+  return {
+    ...original,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,7 +33,6 @@ const queryClient = new QueryClient({
     log: () => null,
   },
 })
-const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
@@ -35,6 +42,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   </QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
@@ -62,73 +70,63 @@ describe('useSentryToken', () => {
       isUnknownError: false,
     }
   ) {
-    //@ts-ignore
-    const mockAddToast = jest.fn()
-
-    //@ts-ignore
-    useAddNotification.mockReturnValue(mockAddToast)
-
-    const mockRemoveItem = jest.spyOn(
-      window.localStorage.__proto__,
-      'removeItem'
-    )
+    const mockAddToast = vi.fn()
+    mocks.useAddNotification.mockReturnValue(mockAddToast)
+    const mockRemoveItem = vi.spyOn(window.localStorage.__proto__, 'removeItem')
 
     server.use(
-      graphql.mutation('SendSentryToken', (req, res, ctx) => {
+      graphql.mutation('SendSentryToken', (info) => {
         if (isValidationError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               saveSentryState: {
                 error: {
                   __typename: 'ValidationError',
                   message: 'validation error',
                 },
               },
-            })
-          )
+            },
+          })
         }
 
         if (isUnAuthError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               saveSentryState: {
                 error: {
                   __typename: 'UnauthenticatedError',
                   message: 'unauthenticatedError error',
                 },
               },
-            })
-          )
+            },
+          })
         }
 
         if (isUnknownError) {
-          return res(
-            ctx.status(500),
-            ctx.errors([{ message: 'unknown error' }])
+          return HttpResponse.json(
+            { errors: [{ message: 'unknown error' }] },
+            { status: 500 }
           )
         }
 
-        return res(ctx.status(200), ctx.data({ saveSentryState: null }))
+        return HttpResponse.json({ data: { saveSentryState: null } })
       })
     )
 
     return { mockAddToast, mockRemoveItem }
   }
 
-  afterEach(() => jest.resetAllMocks)
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
 
   describe('when called', () => {
     describe('when successful', () => {
       it('does not call addNotification', async () => {
         const { mockAddToast } = setup()
-
         const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         result.current.mutate('super-cool-token')
@@ -138,12 +136,9 @@ describe('useSentryToken', () => {
 
       it('removes item from local storage', async () => {
         const { mockRemoveItem } = setup()
-
         const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         result.current.mutate('super-cool-token')
@@ -158,12 +153,9 @@ describe('useSentryToken', () => {
     describe('when validation error', () => {
       it('calls addNotification', async () => {
         const { mockAddToast } = setup({ isValidationError: true })
-
         const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         result.current.mutate('super-cool-token')
@@ -178,12 +170,9 @@ describe('useSentryToken', () => {
 
       it('removes item from local storage', async () => {
         const { mockRemoveItem } = setup({ isValidationError: true })
-
         const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         result.current.mutate('super-cool-token')
@@ -198,12 +187,9 @@ describe('useSentryToken', () => {
     describe('when unauthenticated error', () => {
       it('calls addNotification', async () => {
         const { mockAddToast } = setup({ isUnAuthError: true })
-
         const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         result.current.mutate('super-cool-token')
@@ -218,12 +204,9 @@ describe('useSentryToken', () => {
 
       it('removes item from local storage', async () => {
         const { mockRemoveItem } = setup({ isUnAuthError: true })
-
         const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         result.current.mutate('super-cool-token')
@@ -238,12 +221,9 @@ describe('useSentryToken', () => {
     describe('when unknown error', () => {
       it('calls addNotification', async () => {
         const { mockAddToast } = setup({ isUnknownError: true })
-
         const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         result.current.mutate('super-cool-token')
@@ -258,12 +238,9 @@ describe('useSentryToken', () => {
 
       it('removes item from local storage', async () => {
         const { mockRemoveItem } = setup({ isUnknownError: true })
-
         const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         result.current.mutate('super-cool-token')

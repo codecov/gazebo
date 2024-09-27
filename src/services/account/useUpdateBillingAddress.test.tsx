@@ -1,19 +1,19 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { useUpdateBillingAddress } from './useUpdateBillingAddress'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -63,33 +63,30 @@ const accountDetails = {
 }
 
 describe('useUpdateBillingAddress', () => {
-  const mockBody = jest.fn()
+  const mockBody = vi.fn()
 
   function setup() {
     server.use(
-      rest.patch(
+      http.patch(
         `/internal/${provider}/${owner}/account-details/update_billing_address`,
-        async (req, res, ctx) => {
-          const body = await req.json()
+        async (info) => {
+          const body = await info.request.json()
           mockBody(body)
 
-          return res(ctx.status(200), ctx.json(accountDetails))
+          return HttpResponse.json(accountDetails)
         }
       )
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
+    beforeEach(() => {})
 
     it('calls with the correct body', async () => {
+      setup()
       const { result } = renderHook(
         () => useUpdateBillingAddress({ provider, owner }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       result.current.mutate(

@@ -1,15 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { invoiceObject } from './mocks'
-import { useInvoices } from './useInvoices'
-
-jest.mock('@stripe/react-stripe-js')
-jest.mock('js-cookie')
+import { useInvoice } from './useInvoice'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -28,28 +25,30 @@ const provider = 'gh'
 const owner = 'codecov'
 
 const server = setupServer()
-
-beforeAll(() => server.listen())
-afterEach(() => {
-  server.resetHandlers()
-  queryClient.clear()
+beforeAll(() => {
+  server.listen()
 })
-afterAll(() => server.close())
 
-describe('useInvoices', () => {
-  const invoices = [invoiceObject, invoiceObject, invoiceObject, invoiceObject]
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
 
+afterAll(() => {
+  server.close()
+})
+
+describe('useInvoice', () => {
   function setup(hasError = false) {
     server.use(
-      graphql.query('Invoices', (req, res, ctx) => {
+      graphql.query('Invoice', (info) => {
         if (hasError) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: {} })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { invoices: [...invoices] } })
-        )
+        return HttpResponse.json({
+          data: { owner: { invoice: invoiceObject } },
+        })
       })
     )
   }
@@ -58,20 +57,30 @@ describe('useInvoices', () => {
     describe('on success', () => {
       it('returns the data', async () => {
         setup()
-        const { result } = renderHook(() => useInvoices({ provider, owner }), {
-          wrapper: wrapper(),
-        })
+        const { result } = renderHook(
+          () => useInvoice({ provider, owner, id: invoiceObject.id }),
+          { wrapper: wrapper() }
+        )
 
-        await waitFor(() => expect(result.current.data).toEqual(invoices))
+        await waitFor(() => expect(result.current.data).toEqual(invoiceObject))
       })
     })
 
     describe('on fail', () => {
+      beforeAll(() => {
+        vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterAll(() => {
+        vi.restoreAllMocks()
+      })
+
       it('fails to parse if bad data', async () => {
         setup(true)
-        const { result } = renderHook(() => useInvoices({ provider, owner }), {
-          wrapper: wrapper(),
-        })
+        const { result } = renderHook(
+          () => useInvoice({ provider, owner, id: 'blah' }),
+          { wrapper: wrapper() }
+        )
 
         await waitFor(() => expect(result.current.error).toBeTruthy())
       })

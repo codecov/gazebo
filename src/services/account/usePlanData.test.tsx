@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { usePlanData } from './usePlanData'
 
@@ -35,12 +35,12 @@ const mockTrialData = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -57,9 +57,9 @@ afterAll(() => {
 describe('usePlanData', () => {
   function setup({ trialData }: { trialData: any }) {
     server.use(
-      graphql.query('GetPlanData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { ...trialData } }))
-      )
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({ data: { owner: { ...trialData } } })
+      })
     )
   }
 
@@ -109,9 +109,16 @@ describe('usePlanData', () => {
     })
 
     describe('there is no plan data', () => {
-      beforeEach(() => setup({ trialData: undefined }))
+      beforeAll(() => {
+        vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterAll(() => {
+        vi.restoreAllMocks()
+      })
 
       it('returns an empty object', async () => {
+        setup({ trialData: undefined })
         const { result } = renderHook(
           () =>
             usePlanData({

@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
@@ -37,45 +37,44 @@ const accountDetails = {
 }
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useCancelPlan', () => {
-  const mockBody = jest.fn()
+  const mockBody = vi.fn()
 
   function setup() {
     server.use(
-      rest.patch(
+      http.patch(
         `/internal/${provider}/${owner}/account-details/`,
-        async (req, res, ctx) => {
-          const body = await req.json()
+        async (info) => {
+          const body = await info.request.json()
           mockBody(body)
 
-          return res(ctx.status(200), ctx.json(accountDetails))
+          return HttpResponse.json(accountDetails)
         }
       )
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('calls with the correct body', async () => {
+      setup()
       const { result } = renderHook(() => useCancelPlan({ provider, owner }), {
         wrapper: wrapper(),
       })
 
       result.current.mutate()
-
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
 
       await waitFor(() => expect(mockBody).toHaveBeenCalled())
       await waitFor(() =>

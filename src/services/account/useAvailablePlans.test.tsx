@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { useAvailablePlans } from './useAvailablePlans'
 
@@ -108,12 +108,12 @@ const mockUnsuccessfulParseError = {}
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -138,13 +138,13 @@ describe('useAvailablePlans', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
+      graphql.query('GetAvailablePlans', (info) => {
         if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else {
-          return res(ctx.status(200), ctx.data(mockAvailablePlansRes))
+          return HttpResponse.json({ data: mockAvailablePlansRes })
         }
       })
     )
@@ -191,11 +191,11 @@ describe('useAvailablePlans', () => {
 
     describe('unsuccessful parse of zod schema', () => {
       beforeEach(() => {
-        jest.spyOn(console, 'error')
+        vi.spyOn(console, 'error').mockImplementation(() => {})
       })
 
       afterEach(() => {
-        jest.resetAllMocks()
+        vi.restoreAllMocks()
       })
 
       it('throws a 404', async () => {
@@ -206,9 +206,7 @@ describe('useAvailablePlans', () => {
               provider: 'gh',
               owner: 'codecov',
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())

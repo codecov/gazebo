@@ -1,13 +1,23 @@
-import { useStripe } from '@stripe/react-stripe-js'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import type { MockInstance } from 'vitest'
 
 import { useUpgradePlan } from './useUpgradePlan'
 
-jest.mock('@stripe/react-stripe-js')
+const mocks = vi.hoisted(() => ({
+  useStripe: vi.fn(),
+}))
+
+vi.mock('@stripe/react-stripe-js', async () => {
+  const original = await vi.importActual('@stripe/react-stripe-js')
+  return {
+    ...original,
+    useStripe: mocks.useStripe,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -38,21 +48,32 @@ const accountDetails = {
 }
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useUpgradePlan', () => {
   let redirectToCheckout: any
 
   function setupStripe() {
-    redirectToCheckout = jest.fn().mockResolvedValue(undefined)
-    const mockedUseStripe = useStripe as jest.Mock
-    mockedUseStripe.mockReturnValue({
+    redirectToCheckout = vi.fn().mockResolvedValue(undefined)
+    mocks.useStripe.mockReturnValue({
       redirectToCheckout,
     })
   }
+
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
 
   function setup() {
     setupStripe()
@@ -60,33 +81,34 @@ describe('useUpgradePlan', () => {
 
   describe('when called', () => {
     beforeEach(() => {
-      setup()
+      server.use(
+        http.patch(
+          `/internal/${provider}/${owner}/account-details/`,
+          (info) => {
+            return HttpResponse.json({
+              ...accountDetails,
+              checkoutSessionId: '1234',
+            })
+          }
+        )
+      )
     })
 
     describe('when calling the mutation, which return a checkoutSessionId', () => {
+      let consoleSpy: MockInstance
       beforeEach(() => {
-        server.use(
-          rest.patch(
-            `/internal/${provider}/${owner}/account-details/`,
-            (req, res, ctx) => {
-              return res(
-                ctx.status(200),
-                ctx.json({
-                  ...accountDetails,
-                  checkoutSessionId: '1234',
-                })
-              )
-            }
-          )
-        )
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterAll(() => {
+        consoleSpy.mockRestore()
       })
 
       it('calls redirectToCheckout on the Stripe client', async () => {
+        setup()
         const { result } = renderHook(
           () => useUpgradePlan({ provider, owner }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         result.current.mutate({
@@ -105,16 +127,13 @@ describe('useUpgradePlan', () => {
     describe('when calling the mutation, which does not return a checkoutSessionId', () => {
       beforeEach(() => {
         server.use(
-          rest.patch(
+          http.patch(
             `/internal/${provider}/${owner}/account-details/`,
-            (req, res, ctx) => {
-              return res(
-                ctx.status(200),
-                ctx.json({
-                  ...accountDetails,
-                  checkoutSessionId: null,
-                })
-              )
+            (info) => {
+              return HttpResponse.json({
+                ...accountDetails,
+                checkoutSessionId: null,
+              })
             }
           )
         )
@@ -123,17 +142,13 @@ describe('useUpgradePlan', () => {
       it('does not call redirectToCheckout on the Stripe client', async () => {
         const { result } = renderHook(
           () => useUpgradePlan({ provider, owner }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         result.current.mutate({
           seats: 12,
           newPlan: 'users-pr-inappy',
         })
-
-        await waitFor(() => result.current.isSuccess)
 
         await waitFor(() => expect(redirectToCheckout).not.toHaveBeenCalled())
       })

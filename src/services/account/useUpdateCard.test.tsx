@@ -1,14 +1,23 @@
-import { useStripe } from '@stripe/react-stripe-js'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useUpdateCard } from './useUpdateCard'
 
-jest.mock('@stripe/react-stripe-js')
+const mocks = vi.hoisted(() => ({
+  useStripe: vi.fn(),
+}))
+
+vi.mock('@stripe/react-stripe-js', async () => {
+  const original = await vi.importActual('@stripe/react-stripe-js')
+  return {
+    ...original,
+    useStripe: mocks.useStripe,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -41,11 +50,17 @@ const accountDetails = {
 const server = setupServer()
 
 beforeAll(() => {
-  // console.error = () => {}
   server.listen()
 })
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useUpdateCard', () => {
   const card = {
@@ -57,8 +72,7 @@ describe('useUpdateCard', () => {
   }: {
     createPaymentMethod: jest.Mock
   }) {
-    const mockedUseStripe = useStripe as jest.Mock
-    mockedUseStripe.mockReturnValue({
+    mocks.useStripe.mockReturnValue({
       createPaymentMethod,
     })
   }
@@ -70,20 +84,16 @@ describe('useUpdateCard', () => {
           createPaymentMethod: jest.fn(
             () =>
               new Promise((resolve) => {
-                resolve({
-                  paymentMethod: {
-                    id: 1,
-                  },
-                })
+                resolve({ paymentMethod: { id: 1 } })
               })
           ),
         })
 
         server.use(
-          rest.patch(
+          http.patch(
             `/internal/${provider}/${owner}/account-details/update_payment`,
-            (req, res, ctx) => {
-              return res(ctx.status(200), ctx.json(accountDetails))
+            (info) => {
+              return HttpResponse.json(accountDetails)
             }
           )
         )
@@ -92,9 +102,7 @@ describe('useUpdateCard', () => {
       it('returns the data from the server', async () => {
         const { result } = renderHook(
           () => useUpdateCard({ provider, owner }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         // @ts-expect-error mutation mock
@@ -105,46 +113,45 @@ describe('useUpdateCard', () => {
     })
 
     describe('when the mutation is not successful', () => {
-      const error = {
-        message: 'not good',
-      }
-
       beforeEach(() => {
+        vi.spyOn(console, 'error').mockImplementation(() => {})
+
         setupStripe({
           createPaymentMethod: jest.fn(
             () =>
               new Promise((resolve) => {
-                resolve({
-                  error,
-                })
+                resolve({ error: { message: 'not good' } })
               })
           ),
         })
 
         server.use(
-          rest.patch(
+          http.patch(
             `/internal/${provider}/${owner}/account-details/update_payment`,
-            (req, res, ctx) => {
-              return res(ctx.status(200), ctx.json(accountDetails))
+            (info) => {
+              return HttpResponse.json(accountDetails)
             }
           )
         )
       })
 
+      afterAll(() => {
+        vi.restoreAllMocks()
+      })
+
       it('does something', async () => {
         const { result } = renderHook(
           () => useUpdateCard({ provider, owner }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         // @ts-expect-error mutation mock
         result.current.mutate(card)
 
         await waitFor(() => result.current.error)
-
-        await waitFor(() => expect(result.current.error).toEqual(error))
+        await waitFor(() =>
+          expect(result.current.error).toEqual({ message: 'not good' })
+        )
       })
     })
   })

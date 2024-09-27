@@ -1,19 +1,26 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useAddNotification } from 'services/toastNotification'
 
 import { useUpdateSelfHostedSettings } from './useUpdateSelfHostedSettings'
 
-jest.mock('services/toastNotification')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
+
+vi.mock('services/toastNotification', async () => {
+  const original = await vi.importActual('services/toastNotification')
+  return {
+    ...original,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper =
   (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
@@ -25,6 +32,7 @@ const wrapper =
     </QueryClientProvider>
   )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -43,46 +51,41 @@ describe('updateSelfHostedSettings', () => {
     isValidationError = false,
     isUnauthenticatedError = false,
   }) {
-    const mockAddToast = jest.fn()
+    const mockAddToast = vi.fn()
+    mocks.useAddNotification.mockReturnValue(mockAddToast)
 
-    //@ts-ignore
-    useAddNotification.mockReturnValue(mockAddToast)
     server.use(
-      graphql.mutation('UpdateSelfHostedSettings', (req, res, ctx) => {
+      graphql.mutation('UpdateSelfHostedSettings', (info) => {
         if (isValidationError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               updateSelfHostedSettings: {
                 error: {
                   __typename: 'ValidationError',
                   message: 'validation error',
                 },
               },
-            })
-          )
+            },
+          })
         }
 
         if (isUnauthenticatedError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               updateSelfHostedSettings: {
                 error: {
                   __typename: 'UnauthenticatedError',
                   message: 'unauthenticated error',
                 },
               },
-            })
-          )
+            },
+          })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({ updateSelfHostedSettings: null })
-        )
+        return HttpResponse.json({ data: { updateSelfHostedSettings: null } })
       })
     )
+
     return { mockAddToast }
   }
 
@@ -95,39 +98,49 @@ describe('updateSelfHostedSettings', () => {
 
       result.current.mutate({ shouldAutoActivate: false })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-      expect(mockAddToast).not.toHaveBeenCalled()
+      await waitFor(() => expect(mockAddToast).not.toHaveBeenCalled())
     })
   })
 
   describe('when user is unauthenticated', () => {
+    beforeAll(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      vi.restoreAllMocks()
+    })
+
     it('returns an unauthenticated response', async () => {
       const { mockAddToast } = setup({ isUnauthenticatedError: true })
       const { result } = renderHook(() => useUpdateSelfHostedSettings(), {
         wrapper: wrapper(),
       })
-      result.current.mutate({ shouldAutoActivate: false })
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
 
-      expect(mockAddToast).toHaveBeenCalled()
+      result.current.mutate({ shouldAutoActivate: false })
+
+      await waitFor(() => expect(mockAddToast).toHaveBeenCalled())
     })
   })
 
   describe('when there is a validation error', () => {
+    beforeAll(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      vi.restoreAllMocks()
+    })
+
     it('returns a validation error response', async () => {
       const { mockAddToast } = setup({ isValidationError: true })
-
       const { result } = renderHook(() => useUpdateSelfHostedSettings(), {
         wrapper: wrapper(),
       })
 
       result.current.mutate({ shouldAutoActivate: false })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-      expect(mockAddToast).toHaveBeenCalled()
+      await waitFor(() => expect(mockAddToast).toHaveBeenCalled())
     })
   })
 })
