@@ -5,10 +5,12 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import YAML from './YAML'
 
-jest.mock('react-ace', () => (props) => <MockReactAce {...props} />)
-jest.mock('ace-builds/src-noconflict/theme-github', () => {})
-jest.mock('ace-builds/src-noconflict/mode-yaml', () => {})
-jest.mock('services/repo')
+vi.mock('react-ace', () => ({
+  default: (props) => <MockReactAce {...props} />,
+}))
+vi.mock('ace-builds/src-noconflict/theme-github', () => ({ default: '' }))
+vi.mock('ace-builds/src-noconflict/mode-yaml', () => ({ default: '' }))
+vi.mock('services/repo')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
