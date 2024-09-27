@@ -1,18 +1,23 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useFlags } from 'shared/featureFlags'
 
 import OtherCI from './OtherCI'
 
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  newRepoFlag: boolean
-}>
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
+
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
+})
 
 const mockGetRepo = {
   owner: {
@@ -81,16 +86,16 @@ interface SetupArgs {
 describe('OtherCI', () => {
   function setup({ hasOrgUploadToken = false }: SetupArgs) {
     const user = userEvent.setup()
-
-    mockedUseFlags.mockReturnValue({
+    mocks.useFlags.mockReturnValue({
       newRepoFlag: hasOrgUploadToken,
     })
+
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetRepo))
-      ),
-      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockGetOrgUploadToken))
+      graphql.query('GetRepo', (info) => {
+        return HttpResponse.json({ data: mockGetRepo })
+      }),
+      graphql.query('GetOrgUploadToken', (info) => {
+        return HttpResponse.json({ data: mockGetOrgUploadToken })
       })
     )
 
