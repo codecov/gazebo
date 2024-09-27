@@ -1,27 +1,12 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ExampleBlurb from './ExampleBlurb'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-    },
-  },
-})
-
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new']}>
-      <Route path={['/:provider/:owner/:repo/new']}>
-        <Suspense fallback={null}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new']}>
+    <Route path={['/:provider/:owner/:repo/new']}>{children}</Route>
+  </MemoryRouter>
 )
 
 describe('ExampleBlurb', () => {
