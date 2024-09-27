@@ -4,8 +4,8 @@ import {
   screen,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -138,17 +138,15 @@ describe('PullsTable', () => {
     const queryClient = new QueryClient()
 
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockRepoOverview(bundleAnalysisEnabled))
-        )
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({
+          data: mockRepoOverview(bundleAnalysisEnabled),
+        })
       }),
-      graphql.query('GetPulls', (req, res, ctx) => {
+      graphql.query('GetPulls', (info) => {
         if (noEntries) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 repository: {
                   __typename: 'Repository',
@@ -161,18 +159,17 @@ describe('PullsTable', () => {
                   },
                 },
               },
-            })
-          )
+            },
+          })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
                 pulls: {
-                  edges: req.variables.after
+                  edges: info.variables.after
                     ? [
                         {
                           node: node3,
@@ -187,16 +184,16 @@ describe('PullsTable', () => {
                         },
                       ],
                   pageInfo: {
-                    hasNextPage: req.variables.after ? false : true,
-                    endCursor: req.variables.after
+                    hasNextPage: info.variables.after ? false : true,
+                    endCursor: info.variables.after
                       ? 'aa'
                       : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
                   },
                 },
               },
             },
-          })
-        )
+          },
+        })
       })
     )
 
