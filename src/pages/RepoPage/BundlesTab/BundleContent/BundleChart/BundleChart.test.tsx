@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { BundleChart } from './BundleChart'
@@ -101,11 +101,11 @@ afterAll(() => {
 describe('BundleChart', () => {
   function setup() {
     server.use(
-      graphql.query('GetBundleTrend', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBundleTrendData))
+      graphql.query('GetBundleTrend', (info) => {
+        return HttpResponse.json({ data: mockBundleTrendData })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverview))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockRepoOverview })
       })
     )
   }
