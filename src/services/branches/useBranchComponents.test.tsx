@@ -1,44 +1,51 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
-import { useBranchHasCommits } from './useBranchHasCommits'
+import { useBranchComponents } from './useBranchComponents'
 
-const mockBranchHasCommits = {
+const mockBranchComponents = {
   owner: {
     repository: {
       __typename: 'Repository',
-      commits: {
-        edges: [
-          {
-            node: {
-              commitid: 'commit-123',
+      branch: {
+        name: 'main',
+        head: {
+          commitid: 'commit-123',
+          components: [
+            {
+              id: 'compOneId',
+              name: 'compOneName',
             },
-          },
-        ],
+            {
+              id: 'compTwoId',
+              name: 'compTwoName',
+            },
+          ],
+        },
       },
     },
   },
 }
 
-const mockBranchHasNoCommits = {
+const mockBranchComponentsFiltered = {
   owner: {
     repository: {
       __typename: 'Repository',
-      commits: {
-        edges: [],
+      branch: {
+        name: 'main',
+        head: {
+          commitid: 'commit-123',
+          components: [
+            {
+              id: 'compOneId',
+              name: 'compOneName',
+            },
+          ],
+        },
       },
-    },
-  },
-}
-
-const mockCommitsIsNull = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      commits: null,
     },
   },
 }
@@ -75,9 +82,7 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <Suspense fallback={<p>loading</p>}>{children}</Suspense>
-  </QueryClientProvider>
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
 beforeAll(() => {
@@ -98,35 +103,31 @@ interface SetupArgs {
   isOwnerNotActivatedError?: boolean
   isUnsuccessfulParseError?: boolean
   isNullOwner?: boolean
-  hasNoCommits?: boolean
-  commitsIsNull?: boolean
+  isFiltered?: boolean
 }
 
-describe('useBranchHasCommits', () => {
+describe('useBranchComponents', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
     isNullOwner = false,
-    hasNoCommits = false,
-    commitsIsNull = false,
+    isFiltered = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBranchCommits', (req, res, ctx) => {
+      graphql.query('GetBranchComponents', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
-        } else if (hasNoCommits) {
-          return res(ctx.status(200), ctx.data(mockBranchHasNoCommits))
-        } else if (commitsIsNull) {
-          return res(ctx.status(200), ctx.data(mockCommitsIsNull))
+          return HttpResponse.json({ data: mockNullOwner })
+        } else if (isFiltered) {
+          return HttpResponse.json({ data: mockBranchComponentsFiltered })
         } else {
-          return res(ctx.status(200), ctx.data(mockBranchHasCommits))
+          return HttpResponse.json({ data: mockBranchComponents })
         }
       })
     )
@@ -134,107 +135,110 @@ describe('useBranchHasCommits', () => {
 
   describe('calling hook', () => {
     describe('returns repository typename of Repository', () => {
-      describe('the branch has commits', () => {
-        it('returns true', async () => {
+      describe('there is valid data', () => {
+        it('fetches the branch data without filtering', async () => {
           setup({})
           const { result } = renderHook(
             () =>
-              useBranchHasCommits({
+              useBranchComponents({
                 provider: 'gh',
                 owner: 'codecov',
                 repo: 'cool-repo',
                 branch: 'main',
-                opts: {
-                  suspense: true,
-                },
               }),
             { wrapper }
           )
 
-          await waitFor(() => expect(result.current.data).toBeTruthy())
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual({
+              branch: {
+                head: {
+                  components: [
+                    {
+                      id: 'compOneId',
+                      name: 'compOneName',
+                    },
+                    {
+                      id: 'compTwoId',
+                      name: 'compTwoName',
+                    },
+                  ],
+                },
+              },
+            })
+          )
         })
-      })
 
-      describe('the branch has no commits', () => {
-        it('returns false', async () => {
-          setup({ hasNoCommits: true })
+        it('fetches the branch data filtering', async () => {
+          setup({ isFiltered: true })
           const { result } = renderHook(
             () =>
-              useBranchHasCommits({
+              useBranchComponents({
                 provider: 'gh',
                 owner: 'codecov',
                 repo: 'cool-repo',
                 branch: 'main',
-                opts: {
-                  suspense: true,
-                },
+                filters: { components: ['componename'] },
               }),
             { wrapper }
           )
 
-          await waitFor(() => expect(result.current.data).toBe(false))
-        })
-      })
-
-      describe('the commits field is null', () => {
-        it('returns false', async () => {
-          setup({ commitsIsNull: true })
-          const { result } = renderHook(
-            () =>
-              useBranchHasCommits({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                branch: 'main',
-                opts: {
-                  suspense: true,
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual({
+              branch: {
+                head: {
+                  components: [
+                    {
+                      id: 'compOneId',
+                      name: 'compOneName',
+                    },
+                  ],
                 },
-              }),
-            { wrapper }
+              },
+            })
           )
-
-          await waitFor(() => expect(result.current.data).toBe(false))
         })
       })
 
       describe('there is a null owner', () => {
-        it('returns false', async () => {
+        it('returns a null value', async () => {
           setup({ isNullOwner: true })
           const { result } = renderHook(
             () =>
-              useBranchHasCommits({
+              useBranchComponents({
                 provider: 'gh',
                 owner: 'codecov',
                 repo: 'cool-repo',
                 branch: 'main',
-                opts: {
-                  suspense: true,
-                },
               }),
             { wrapper }
           )
 
-          await waitFor(() => expect(result.current.data).toBe(false))
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual({
+              branch: null,
+            })
+          )
         })
       })
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
+      let consoleSpy: MockInstance
 
       beforeEach(() => {
-        console.error = () => null
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
       })
 
       afterEach(() => {
-        console.error = oldConsoleError
+        consoleSpy.mockRestore()
       })
 
       it('throws a 404', async () => {
         setup({ isNotFoundError: true })
         const { result } = renderHook(
           () =>
-            useBranchHasCommits({
+            useBranchComponents({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
@@ -255,21 +259,21 @@ describe('useBranchHasCommits', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
+      let consoleSpy: MockInstance
 
       beforeEach(() => {
-        console.error = () => null
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
       })
 
       afterEach(() => {
-        console.error = oldConsoleError
+        consoleSpy.mockRestore()
       })
 
       it('throws a 403', async () => {
         setup({ isOwnerNotActivatedError: true })
         const { result } = renderHook(
           () =>
-            useBranchHasCommits({
+            useBranchComponents({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
@@ -290,21 +294,21 @@ describe('useBranchHasCommits', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
+      let consoleSpy: MockInstance
 
       beforeEach(() => {
-        console.error = () => null
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
       })
 
       afterEach(() => {
-        console.error = oldConsoleError
+        consoleSpy.mockRestore()
       })
 
       it('throws a 404', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
-            useBranchHasCommits({
+            useBranchComponents({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
