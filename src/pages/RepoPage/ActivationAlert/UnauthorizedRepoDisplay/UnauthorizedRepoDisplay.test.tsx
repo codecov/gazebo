@@ -43,6 +43,9 @@ describe('UnauthorizedRepoDisplay', () => {
 
     const img = screen.getByAltText('Forbidden')
     expect(img).toBeInTheDocument()
-    expect(img).toHaveAttribute('src', 'error-upsidedown-umbrella.svg')
+    expect(img).toHaveAttribute(
+      'src',
+      '/src/layouts/shared/NetworkErrorBoundary/assets/error-upsidedown-umbrella.svg'
+    )
   })
 })
