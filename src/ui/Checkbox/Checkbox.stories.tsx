@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { CheckboxNew } from './CheckboxNew'
+import Checkbox from './Checkbox'
 
-const meta: Meta<typeof CheckboxNew> = {
-  title: 'Components/CheckboxNew',
-  component: CheckboxNew,
+const meta: Meta<typeof Checkbox> = {
+  title: 'Components/Checkbox',
+  component: Checkbox,
   argTypes: {
     value: {
       description: 'Controlled state checked status.',
@@ -14,12 +14,12 @@ const meta: Meta<typeof CheckboxNew> = {
 }
 export default meta
 
-type Story = StoryObj<typeof CheckboxNew>
+type Story = StoryObj<typeof Checkbox>
 
 export const Default: Story = {
   render: (args) => (
     <>
-      <CheckboxNew {...args} />
+      <Checkbox {...args} />
     </>
   ),
 }
@@ -27,7 +27,7 @@ export const Default: Story = {
 export const Disabled: Story = {
   render: (args) => (
     <>
-      <CheckboxNew {...args} disabled />
+      <Checkbox {...args} disabled />
     </>
   ),
 }
@@ -35,7 +35,7 @@ export const Disabled: Story = {
 export const DisabledAndChecked: Story = {
   render: () => (
     <>
-      <CheckboxNew disabled checked={true} />
+      <Checkbox disabled checked={true} />
     </>
   ),
 }
@@ -44,5 +44,5 @@ export const ControlledState: Story = {
   args: {
     checked: true,
   },
-  render: (args) => <CheckboxNew {...args} />,
+  render: (args) => <Checkbox {...args} />,
 }
