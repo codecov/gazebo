@@ -1,17 +1,25 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
 
 import GeneralTab from './GeneralTab'
 
-jest.mock('./Tokens/TokensTeam', () => () => 'Tokens Team Component')
-jest.mock('./Tokens/Tokens', () => () => 'Tokens Component')
-jest.mock('./DangerZone', () => () => 'DangerZone Component')
-jest.mock('./DefaultBranch', () => () => 'Default Branch')
+vi.mock('./Tokens/TokensTeam', () => ({
+  default: () => 'Tokens Team Component',
+}))
+vi.mock('./Tokens/Tokens', () => ({
+  default: () => 'Tokens Component',
+}))
+vi.mock('./DangerZone', () => ({
+  default: () => 'DangerZone Component',
+}))
+vi.mock('./DefaultBranch', () => ({
+  default: () => 'Default Branch',
+}))
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -48,11 +56,10 @@ describe('GeneralTab', () => {
     }
   ) {
     server.use(
-      graphql.query('RepoDataTokensTeam', (req, res, ctx) => {
+      graphql.query('RepoDataTokensTeam', (info) => {
         if (hasDefaultBranch) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 repository: {
                   __typename: 'Repository',
@@ -60,12 +67,11 @@ describe('GeneralTab', () => {
                   private: isPrivate,
                 },
               },
-            })
-          )
+            },
+          })
         }
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
@@ -73,17 +79,18 @@ describe('GeneralTab', () => {
                 private: isPrivate,
               },
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
+      graphql.query('OwnerTier', (info) => {
         if (tierValue === TierNames.TEAM) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
-          )
+          return HttpResponse.json({
+            data: { owner: { plan: { tierName: TierNames.TEAM } } },
+          })
         }
-        return res(ctx.status(200), ctx.data({ tierName: TierNames.PRO }))
+        return HttpResponse.json({
+          data: { owner: { plan: { tierName: TierNames.PRO } } },
+        })
       })
     )
   }
