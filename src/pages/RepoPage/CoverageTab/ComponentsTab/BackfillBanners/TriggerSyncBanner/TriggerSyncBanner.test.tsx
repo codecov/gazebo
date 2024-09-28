@@ -1,10 +1,8 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import TriggerSyncBanner from './TriggerSyncBanner'
@@ -41,16 +39,18 @@ afterAll(() => {
 })
 
 describe('TriggerSyncBanner', () => {
-  afterEach(() => jest.resetAllMocks())
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
 
   function setup() {
     const user = userEvent.setup()
-    const mutate = jest.fn()
+    const mutate = vi.fn()
 
     server.use(
-      graphql.mutation('ActivateMeasurements', (req, res, ctx) => {
-        mutate(req.variables)
-        return res(ctx.status(200), ctx.data({}))
+      graphql.mutation('ActivateMeasurements', (info) => {
+        mutate(info.variables)
+        return HttpResponse.json({ data: { activateMeasurements: null } })
       })
     )
     return { mutate, user }
