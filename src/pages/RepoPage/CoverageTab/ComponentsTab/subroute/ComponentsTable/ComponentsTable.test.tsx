@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
@@ -148,29 +148,28 @@ describe('ComponentsTable', () => {
     noReportsUploaded?: boolean
   }) {
     const user = userEvent.setup()
-    const fetchNextPage = jest.fn()
+    const fetchNextPage = vi.fn()
 
     server.use(
-      graphql.query('ComponentMeasurements', (req, res, ctx) => {
+      graphql.query('ComponentMeasurements', (info) => {
         if (noData) {
-          return res(ctx.status(200), ctx.data(mockEmptyComponentMeasurements))
+          return HttpResponse.json({ data: mockEmptyComponentMeasurements })
         }
 
         if (noReportsUploaded) {
-          return res(
-            ctx.status(200),
-            ctx.data(mockNoReportsUploadedMeasurements)
-          )
+          return HttpResponse.json({
+            data: mockNoReportsUploadedMeasurements,
+          })
         }
 
-        return res(ctx.status(200), ctx.data(mockedComponentMeasurements))
+        return HttpResponse.json({ data: mockedComponentMeasurements })
       }),
-      graphql.query('GetRepo', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockGetRepo))
+      graphql.query('GetRepo', (info) => {
+        return HttpResponse.json({ data: mockGetRepo })
       }),
-      graphql.query('RepoConfig', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockRepoConfig))
-      )
+      graphql.query('RepoConfig', (info) => {
+        return HttpResponse.json({ data: mockRepoConfig })
+      })
     )
 
     return { fetchNextPage, user }
@@ -179,11 +178,11 @@ describe('ComponentsTable', () => {
   describe('when rendered', () => {
     beforeEach(() => {
       setup({})
-      jest.useFakeTimers().setSystemTime(new Date('2024-02-02'))
+      vi.useFakeTimers().setSystemTime(new Date('2024-02-02'))
     })
 
     afterAll(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('renders table headers', async () => {
