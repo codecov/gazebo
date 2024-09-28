@@ -1,18 +1,24 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
-import useIntersection from 'react-use/lib/useIntersection'
 
 import BranchSelector from './BranchSelector'
 
-jest.mock('react-use/lib/useIntersection')
-const mockedUseIntersection = useIntersection as unknown as jest.Mock<{
-  isIntersecting: boolean
-}>
+const mocks = vi.hoisted(() => ({
+  useIntersection: vi.fn(),
+}))
+
+vi.mock('react-use', async () => {
+  const actual = await vi.importActual('react-use')
+  return {
+    ...actual,
+    useIntersection: mocks.useIntersection,
+  }
+})
 
 const mockRepoOverview = {
   __typename: 'Repository',
@@ -131,8 +137,8 @@ describe('BranchSelector', () => {
     }
   ) {
     const user = userEvent.setup()
-    const fetchNextPage = jest.fn()
-    const mockSearching = jest.fn()
+    const fetchNextPage = vi.fn()
+    const mockSearching = vi.fn()
 
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -144,56 +150,52 @@ describe('BranchSelector', () => {
     })
 
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
+      graphql.query('GetRepoOverview', (info) => {
         if (nullOverview) {
-          return res(ctx.status(200), ctx.data({ owner: null }))
+          return HttpResponse.json({ data: { owner: null } })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               isCurrentUserActivated: true,
               repository: mockRepoOverview,
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetBranch', (req, res, ctx) => {
+      graphql.query('GetBranch', (info) => {
         let branch = 'main'
-        if (req.variables?.branch) {
-          branch = req.variables?.branch
+        if (info.variables?.branch) {
+          branch = info.variables?.branch
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: { __typename: 'Repository', ...mockBranch(branch) },
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('GetBranches', (req, res, ctx) => {
-        if (req.variables?.after) {
-          fetchNextPage(req.variables?.after)
+      graphql.query('GetBranches', (info) => {
+        if (info.variables?.after) {
+          fetchNextPage(info.variables?.after)
         }
 
-        if (req.variables?.filters?.searchValue === 'main') {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { repository: mockMainBranchSearch } })
-          )
+        if (info.variables?.filters?.searchValue === 'main') {
+          return HttpResponse.json({
+            data: { owner: { repository: mockMainBranchSearch } },
+          })
         }
 
-        if (req.variables?.filters?.searchValue) {
-          mockSearching(req.variables?.filters?.searchValue)
+        if (info.variables?.filters?.searchValue) {
+          mockSearching(info.variables?.filters?.searchValue)
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { repository: mockBranches(hasNextPage) } })
-        )
+        return HttpResponse.json({
+          data: { owner: { repository: mockBranches(hasNextPage) } },
+        })
       })
     )
 
@@ -259,7 +261,7 @@ describe('BranchSelector', () => {
           hasNextPage: false,
         })
 
-        mockedUseIntersection.mockReturnValue({
+        mocks.useIntersection.mockReturnValue({
           isIntersecting: true,
         })
 
@@ -282,7 +284,7 @@ describe('BranchSelector', () => {
           hasNextPage: true,
         })
 
-        mockedUseIntersection.mockReturnValue({
+        mocks.useIntersection.mockReturnValue({
           isIntersecting: true,
         })
 
