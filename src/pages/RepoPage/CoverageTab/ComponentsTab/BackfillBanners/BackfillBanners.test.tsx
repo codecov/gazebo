@@ -1,14 +1,13 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { render, screen } from '@testing-library/react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import BackfillBanners from './BackfillBanners'
 
-jest.mock('./TriggerSyncBanner', () => () => 'TriggerSyncBanner')
-jest.mock('./SyncingBanner', () => () => 'SyncingBanner')
+vi.mock('./TriggerSyncBanner', () => ({ default: () => 'TriggerSyncBanner' }))
+vi.mock('./SyncingBanner', () => ({ default: () => 'SyncingBanner' }))
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -40,9 +39,9 @@ afterAll(() => {
 describe('BackfillBanner', () => {
   function setup(data = {}) {
     server.use(
-      graphql.query('BackfillComponentMemberships', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(data))
-      )
+      graphql.query('BackfillComponentMemberships', (info) => {
+        return HttpResponse.json({ data })
+      })
     )
   }
 
