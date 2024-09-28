@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
@@ -28,10 +28,16 @@ const mockRepoSettingsTeam = {
   },
 }
 
-jest.mock('./OverviewTab', () => () => 'OverviewTab')
-jest.mock('./FlagsTab', () => () => 'FlagsTab')
-jest.mock('./ComponentsTab', () => () => 'ComponentsTab')
-jest.mock('ui/LoadingLogo', () => () => 'Loader')
+vi.mock('./OverviewTab', () => ({
+  default: () => 'OverviewTab',
+}))
+vi.mock('./FlagsTab', () => ({
+  default: () => 'FlagsTab',
+}))
+vi.mock('./ComponentsTab', () => ({
+  default: () => 'ComponentsTab',
+}))
+vi.mock('ui/LoadingLogo', () => ({ default: () => 'Loader' }))
 
 let testLocation: ReturnType<typeof useLocation>
 
@@ -88,11 +94,11 @@ interface SetupArgs {
 describe('CoverageTab', () => {
   function setup({ tierName = TierNames.PRO }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ owner: { plan: { tierName } } }))
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({ data: { owner: { plan: { tierName } } } })
       }),
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettingsTeam))
+      graphql.query('GetRepoSettingsTeam', (info) => {
+        return HttpResponse.json({ data: mockRepoSettingsTeam })
       })
     )
   }
