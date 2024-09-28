@@ -2,13 +2,13 @@ import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import DeleteComponentModal from './DeleteComponentModal'
 
-jest.mock('ui/Avatar', () => () => 'Avatar')
+vi.mock('ui/Avatar', () => ({ default: () => 'Avatar' }))
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -43,9 +43,11 @@ afterAll(() => {
 describe('DeleteComponentModal', () => {
   function setup() {
     server.use(
-      graphql.mutation('deleteComponentMeasurements', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
-      )
+      graphql.mutation('deleteComponentMeasurements', (info) => {
+        return HttpResponse.json({
+          data: { deleteComponentMeasurements: null },
+        })
+      })
     )
 
     return { user: userEvent.setup() }
