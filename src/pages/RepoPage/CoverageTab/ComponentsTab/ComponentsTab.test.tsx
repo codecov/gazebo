@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -10,23 +10,20 @@ import { TierNames, TTierNames } from 'services/tier'
 
 import ComponentsTab from './ComponentsTab'
 
-jest.mock('shared/featureFlags')
-
-jest.mock(
-  './BackfillBanners/TriggerSyncBanner/TriggerSyncBanner.tsx',
-  () => () => 'Trigger Sync Banner'
-)
-jest.mock(
-  './BackfillBanners/SyncingBanner/SyncingBanner.tsx',
-  () => () => 'Syncing Banner'
-)
-jest.mock(
-  './subroute/ComponentsTable/ComponentsTable',
-  () => () => 'Components table'
-)
-jest.mock('./Header', () => ({ children }: { children: React.ReactNode }) => (
-  <p>Components Header Component {children}</p>
-))
+vi.mock('./BackfillBanners/TriggerSyncBanner/TriggerSyncBanner.tsx', () => ({
+  default: () => 'Trigger Sync Banner',
+}))
+vi.mock('./BackfillBanners/SyncingBanner/SyncingBanner.tsx', () => ({
+  default: () => 'Syncing Banner',
+}))
+vi.mock('./subroute/ComponentsTable/ComponentsTable', () => ({
+  default: () => 'Components table',
+}))
+vi.mock('./Header', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <p>Components Header Component {children}</p>
+  ),
+}))
 
 const mockRepoSettings = (
   isPrivate = false,
@@ -167,43 +164,40 @@ describe('Components Tab', () => {
     isCurrentUserPartOfOrg?: boolean
   }) {
     server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
+      graphql.query('OwnerTier', (info) => {
         if (tierValue === TierNames.TEAM) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
-          )
+          return HttpResponse.json({
+            data: { owner: { plan: { tierName: TierNames.TEAM } } },
+          })
         }
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
-        )
+        return HttpResponse.json({
+          data: { owner: { plan: { tierName: TierNames.PRO } } },
+        })
       }),
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockRepoSettings(isPrivate, isCurrentUserPartOfOrg))
-        )
+      graphql.query('GetRepoSettingsTeam', (info) => {
+        return HttpResponse.json({
+          data: mockRepoSettings(isPrivate, isCurrentUserPartOfOrg),
+        })
       }),
-      graphql.query('BackfillComponentMemberships', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(data))
-      ),
-      graphql.query('FlagsSelect', (req, res, ctx) => {
+      graphql.query('BackfillComponentMemberships', (info) => {
+        return HttpResponse.json({ data })
+      }),
+      graphql.query('FlagsSelect', (info) => {
         const dataReturned = {
           owner: {
             repository: {
               __typename: 'Repository',
               flags: {
-                edges: req.variables.after ? [...flags[0]] : [...flags[1]],
+                edges: info.variables.after ? [...flags[0]] : [...flags[1]],
                 pageInfo: {
-                  hasNextPage: !req.variables.after,
-                  endCursor: req.variables.after ? 'aabb' : 'dW5pdA==',
+                  hasNextPage: !info.variables.after,
+                  endCursor: info.variables.after ? 'aabb' : 'dW5pdA==',
                 },
               },
             },
           },
         }
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return HttpResponse.json({ data: dataReturned })
       })
     )
   }
