@@ -1,14 +1,13 @@
-import { render, screen, waitFor } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import Header from './Header'
 
-jest.mock('./BranchSelector', () => () => 'BranchSelector')
+vi.mock('./BranchSelector', () => ({ default: () => 'BranchSelector' }))
 
 const server = setupServer()
 const queryClient = new QueryClient()
@@ -80,20 +79,22 @@ const mockResponse = {
 }
 
 describe('Header', () => {
-  afterEach(() => jest.resetAllMocks())
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
 
   function setup() {
     const user = userEvent.setup()
-    const mockApiVars = jest.fn()
+    const mockApiVars = vi.fn()
 
     server.use(
-      graphql.query('BackfillComponentMemberships', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(backfillData))
-      ),
-      graphql.query('RepoComponentsSelector', (req, res, ctx) => {
-        mockApiVars(req.variables)
+      graphql.query('BackfillComponentMemberships', (info) => {
+        return HttpResponse.json({ data: backfillData })
+      }),
+      graphql.query('RepoComponentsSelector', (info) => {
+        mockApiVars(info.variables)
 
-        return res(ctx.status(200), ctx.data(mockResponse))
+        return HttpResponse.json({ data: mockResponse })
       })
     )
 
