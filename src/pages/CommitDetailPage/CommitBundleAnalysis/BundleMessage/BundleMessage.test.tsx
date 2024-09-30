@@ -12,9 +12,11 @@ const mockSummaryData = (uncompress: number) => ({
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-          bundleChange: { loadTime: { threeG: 0 }, size: { uncompress } },
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: { loadTime: { threeG: 0 }, size: { uncompress } },
+          },
         },
       },
     },
@@ -28,9 +30,11 @@ const mockComparisonError = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'MissingHeadCommit',
-          message: 'Missing head commit',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'MissingHeadCommit',
+            message: 'Missing head commit',
+          },
         },
       },
     },
@@ -42,9 +46,11 @@ const mockFirstPullRequest = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'FirstPullRequest',
-          message: 'First pull request',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'FirstPullRequest',
+            message: 'First pull request',
+          },
         },
       },
     },

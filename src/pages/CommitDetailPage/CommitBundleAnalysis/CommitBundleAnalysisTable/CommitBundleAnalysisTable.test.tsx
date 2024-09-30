@@ -15,34 +15,36 @@ const mockCommitBundleListData = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-          bundles: [
-            {
-              name: 'bundle.js',
-              changeType: 'added',
-              bundleChange: {
-                loadTime: { threeG: 3 },
-                size: { uncompress: 1 },
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundles: [
+              {
+                name: 'bundle.js',
+                changeType: 'added',
+                bundleChange: {
+                  loadTime: { threeG: 3 },
+                  size: { uncompress: 1 },
+                },
+                bundleData: {
+                  loadTime: { threeG: 4 },
+                  size: { uncompress: 3 },
+                },
               },
-              bundleData: {
-                loadTime: { threeG: 4 },
-                size: { uncompress: 3 },
+              {
+                name: 'bundle.css',
+                changeType: 'added',
+                bundleChange: {
+                  loadTime: { threeG: 33 },
+                  size: { uncompress: -1000 },
+                },
+                bundleData: {
+                  loadTime: { threeG: 45 },
+                  size: { uncompress: 3000 },
+                },
               },
-            },
-            {
-              name: 'bundle.css',
-              changeType: 'added',
-              bundleChange: {
-                loadTime: { threeG: 33 },
-                size: { uncompress: -1000 },
-              },
-              bundleData: {
-                loadTime: { threeG: 45 },
-                size: { uncompress: 3000 },
-              },
-            },
-          ],
+            ],
+          },
         },
       },
     },
@@ -54,9 +56,11 @@ const mockEmptyCommitBundleListData = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-          bundles: [],
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundles: [],
+          },
         },
       },
     },
@@ -68,9 +72,11 @@ const mockNonComparisonTypeData = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'FirstPullRequest',
-          message: 'First pull request',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'FirstPullRequest',
+            message: 'First pull request',
+          },
         },
       },
     },

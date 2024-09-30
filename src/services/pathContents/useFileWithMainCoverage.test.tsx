@@ -11,23 +11,25 @@ import { useFileWithMainCoverage } from 'services/pathContents'
 
 const mockCommitDetails = {
   commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-  flagNames: ['a', 'b'],
-  components: [{ id: 'dir_component', name: 'component' }],
-  coverageFile: {
-    hashedPath: 'hashedPath',
-    isCriticalFile: true,
-    content:
-      'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
-    coverage: [
-      { line: 1, coverage: 'H' },
-      { line: 2, coverage: 'H' },
-      { line: 4, coverage: 'H' },
-      { line: 5, coverage: 'H' },
-      { line: 7, coverage: 'H' },
-      { line: 8, coverage: 'H' },
-    ],
-    totals: {
-      percentCovered: 100,
+  coverageAnalytics: {
+    flagNames: ['a', 'b'],
+    components: [{ id: 'dir_component', name: 'component' }],
+    coverageFile: {
+      hashedPath: 'hashedPath',
+      isCriticalFile: true,
+      content:
+        'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
+      coverage: [
+        { line: 1, coverage: 'H' },
+        { line: 2, coverage: 'H' },
+        { line: 4, coverage: 'H' },
+        { line: 5, coverage: 'H' },
+        { line: 7, coverage: 'H' },
+        { line: 8, coverage: 'H' },
+      ],
+      totals: {
+        percentCovered: 100,
+      },
     },
   },
 }
@@ -161,11 +163,13 @@ describe('useFileWithMainCoverage', () => {
 
       await waitFor(() =>
         expect(result.current.data).toEqual({
-          ...mockCommitCoverage.coverageFile,
+          ...mockCommitCoverage.coverageAnalytics.coverageFile,
           totals: 100,
           flagNames: ['a', 'b'],
           componentNames: ['component'],
-          coverage: _.chain(mockCommitCoverage.coverageFile.coverage)
+          coverage: _.chain(
+            mockCommitCoverage.coverageAnalytics.coverageFile.coverage
+          )
             .keyBy('line')
             .mapValues('coverage')
             .value(),
@@ -196,12 +200,14 @@ describe('useFileWithMainCoverage', () => {
 
       await waitFor(() =>
         expect(result.current.data).toEqual({
-          ...mockBranchCoverage.head.coverageFile,
+          ...mockBranchCoverage.head.coverageAnalytics.coverageFile,
           totals: 100,
           flagNames: ['a', 'b'],
           componentNames: ['component'],
           isCriticalFile: true,
-          coverage: _.chain(mockBranchCoverage.head.coverageFile.coverage)
+          coverage: _.chain(
+            mockBranchCoverage.head.coverageAnalytics.coverageFile.coverage
+          )
             .keyBy('line')
             .mapValues('coverage')
             .value(),

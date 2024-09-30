@@ -51,8 +51,10 @@ const RepositorySchema = z.object({
           ]),
         })
         .nullable(),
-      bundleAnalysisCompareWithParent: z.object({
-        __typename: BundleAnalysisComparisonResult,
+      bundleAnalysis: z.object({
+        bundleAnalysisCompareWithParent: z.object({
+          __typename: BundleAnalysisComparisonResult,
+        }),
       }),
     })
     .nullable(),
@@ -90,8 +92,10 @@ query CommitPageData($owner: String!, $repo: String!, $commitId: String!) {
           compareWithParent {
             __typename
           }
-          bundleAnalysisCompareWithParent {
-            __typename
+          bundleAnalysis {
+            bundleAnalysisCompareWithParent {
+              __typename
+            }
           }
         }
       }

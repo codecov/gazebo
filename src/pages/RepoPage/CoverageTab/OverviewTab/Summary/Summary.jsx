@@ -84,23 +84,23 @@ const Summary = () => {
             </p>
           )}
         </SummaryField>
-        {data?.head?.totals?.percentCovered && (
+        {data?.head?.coverageAnalytics?.totals?.percentCovered && (
           <SummaryField>
             <h3 className="min-w-64 text-sm font-semibold  text-ds-gray-octonary">
               Coverage on branch
             </h3>
             <CoverageProgress
               label
-              amount={data?.head?.totals?.percentCovered}
+              amount={data?.head?.coverageAnalytics?.totals?.percentCovered}
               variant="tall"
               color={determineProgressColor({
-                coverage: data?.head?.totals?.percentCovered,
+                coverage: data?.head?.coverageAnalytics?.totals?.percentCovered,
                 ...repoConfigData?.indicationRange,
               })}
             />
             <p className="text-xs">
-              {data?.head?.totals?.hitsCount} of {data?.head?.totals?.lineCount}{' '}
-              lines covered
+              {data?.head?.coverageAnalytics?.totals?.hitsCount} of{' '}
+              {data?.head?.coverageAnalytics?.totals?.lineCount} lines covered
             </p>
           </SummaryField>
         )}

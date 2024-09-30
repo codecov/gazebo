@@ -88,8 +88,10 @@ const mockPull = (overrideComparison?: PullComparison) => ({
             'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
           state: 'complete',
           commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-          totals: {
-            percentCovered: 78.33,
+          coverageAnalytics: {
+            totals: {
+              percentCovered: 78.33,
+            },
           },
           uploads: {
             totalCount: 0,

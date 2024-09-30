@@ -154,15 +154,17 @@ describe('RawFileViewer', () => {
                 __typename: 'Repository',
                 commit: {
                   commitid: '1',
-                  flagNames: ['flag1', 'flag2'],
-                  components: [],
-                  coverageFile: {
-                    hashedPath: 'hashed-path',
-                    isCriticalFile,
-                    content,
-                    coverage,
-                    totals: {
-                      percentCovered: 100,
+                  coverageAnalytics: {
+                    flagNames: ['flag1', 'flag2'],
+                    components: [],
+                    coverageFile: {
+                      hashedPath: 'hashed-path',
+                      isCriticalFile,
+                      content,
+                      coverage,
+                      totals: {
+                        percentCovered: 100,
+                      },
                     },
                   },
                 },

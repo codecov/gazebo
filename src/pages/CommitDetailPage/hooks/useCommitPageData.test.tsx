@@ -18,8 +18,10 @@ const mockCommitData = {
         compareWithParent: {
           __typename: 'Comparison',
         },
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+          },
         },
       },
     },
@@ -135,8 +137,10 @@ describe('useCommitPageData', () => {
               compareWithParent: {
                 __typename: 'Comparison',
               },
-              bundleAnalysisCompareWithParent: {
-                __typename: 'BundleAnalysisComparison',
+              bundleAnalysis: {
+                bundleAnalysisCompareWithParent: {
+                  __typename: 'BundleAnalysisComparison',
+                },
               },
             },
           }

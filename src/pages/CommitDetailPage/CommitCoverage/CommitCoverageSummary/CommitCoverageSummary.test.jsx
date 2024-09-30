@@ -8,7 +8,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import CommitCoverageSummary from './CommitCoverageSummary'
 
 const commit = (state = 'complete') => ({
-  totals: { coverage: 90 },
+  coverageAnalytics: {
+    totals: { coverage: 90 },
+  },
   state,
   commitid: 'ca3fe8ad0632288b67909ba9793b00e5d109547b',
   pullId: 123,
@@ -57,7 +59,9 @@ const commit = (state = 'complete') => ({
   ciPassed: true,
   parent: {
     commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-    totals: { coverage: 100 },
+    coverageAnalytics: {
+      totals: { coverage: 100 },
+    },
   },
   compareWithParent: {
     __typename: 'Comparison',

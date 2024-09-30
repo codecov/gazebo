@@ -43,8 +43,10 @@ const mockPullPageData = (
         },
         head: {
           commitid: '123',
-          bundleAnalysisReport: {
-            __typename: headBundleType,
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: headBundleType,
+            },
           },
         },
         compareWithBase: {

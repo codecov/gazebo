@@ -105,11 +105,13 @@ const mockCommits = {
                   percentCovered: 100,
                 },
               },
-              bundleAnalysisCompareWithParent: {
-                __typename: 'BundleAnalysisComparison',
-                bundleChange: {
-                  size: {
-                    uncompress: 1001,
+              bundleAnalysis: {
+                bundleAnalysisCompareWithParent: {
+                  __typename: 'BundleAnalysisComparison',
+                  bundleChange: {
+                    size: {
+                      uncompress: 1001,
+                    },
                   },
                 },
               },

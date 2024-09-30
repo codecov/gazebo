@@ -12,26 +12,28 @@ const mockBundleAssetModules = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              asset: {
-                modules: [
-                  {
-                    name: 'module1',
-                    extension: 'js',
-                    bundleData: {
-                      loadTime: {
-                        threeG: 100,
-                        highSpeed: 200,
-                      },
-                      size: {
-                        gzip: 50,
-                        uncompress: 100,
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                asset: {
+                  modules: [
+                    {
+                      name: 'module1',
+                      extension: 'js',
+                      bundleData: {
+                        loadTime: {
+                          threeG: 100,
+                          highSpeed: 200,
+                        },
+                        size: {
+                          gzip: 50,
+                          uncompress: 100,
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
             },
           },
@@ -47,9 +49,11 @@ const mockMissingHeadReport = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'MissingHeadReport',
-            message: 'Missing head report',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+              message: 'Missing head report',
+            },
           },
         },
       },

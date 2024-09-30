@@ -57,22 +57,24 @@ const mockAssets = (hasNextPage = true) => {
         __typename: 'Repository',
         branch: {
           head: {
-            bundleAnalysisReport: {
-              __typename: 'BundleAnalysisReport',
-              bundle: {
-                bundleData: { size: { uncompress: 6000 } },
-                assetsPaginated: {
-                  edges: [
-                    { node: asset1 },
-                    ...(hasNextPage
-                      ? [{ node: asset2 }, { node: asset3 }]
-                      : []),
-                  ],
-                  pageInfo: {
-                    hasNextPage: hasNextPage,
-                    endCursor: hasNextPage
-                      ? 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA'
-                      : null,
+            bundleAnalysis: {
+              bundleAnalysisReport: {
+                __typename: 'BundleAnalysisReport',
+                bundle: {
+                  bundleData: { size: { uncompress: 6000 } },
+                  assetsPaginated: {
+                    edges: [
+                      { node: asset1 },
+                      ...(hasNextPage
+                        ? [{ node: asset2 }, { node: asset3 }]
+                        : []),
+                    ],
+                    pageInfo: {
+                      hasNextPage: hasNextPage,
+                      endCursor: hasNextPage
+                        ? 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA'
+                        : null,
+                    },
                   },
                 },
               },
@@ -90,11 +92,13 @@ const mockBundleAssetModules = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              bundleData: { size: { uncompress: 12 } },
-              asset: { modules: [] },
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                bundleData: { size: { uncompress: 12 } },
+                asset: { modules: [] },
+              },
             },
           },
         },
@@ -109,13 +113,15 @@ const mockEmptyAssets = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              bundleData: { size: { uncompress: 12 } },
-              assetsPaginated: {
-                edges: [],
-                pageInfo: { hasNextPage: false, endCursor: null },
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                bundleData: { size: { uncompress: 12 } },
+                assetsPaginated: {
+                  edges: [],
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                },
               },
             },
           },
@@ -131,9 +137,11 @@ const mockMissingHeadReport = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'MissingHeadReport',
-            message: 'Missing head report',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+              message: 'Missing head report',
+            },
           },
         },
       },

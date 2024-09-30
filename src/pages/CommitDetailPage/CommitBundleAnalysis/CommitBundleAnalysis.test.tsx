@@ -37,12 +37,14 @@ const mockCommitPageData = ({
         compareWithParent: {
           __typename: 'Comparison',
         },
-        bundleAnalysisCompareWithParent: {
-          __typename: firstPullRequest
-            ? 'FirstPullRequest'
-            : comparisonError
-              ? 'MissingHeadCommit'
-              : 'BundleAnalysisComparison',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: firstPullRequest
+              ? 'FirstPullRequest'
+              : comparisonError
+                ? 'MissingHeadCommit'
+                : 'BundleAnalysisComparison',
+          },
         },
       },
     },
@@ -54,14 +56,16 @@ const mockSummaryData = (uncompress: number) => ({
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-          bundleChange: {
-            loadTime: {
-              threeG: 2,
-            },
-            size: {
-              uncompress,
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              loadTime: {
+                threeG: 2,
+              },
+              size: {
+                uncompress,
+              },
             },
           },
         },
@@ -77,9 +81,11 @@ const mockFirstPullRequest = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'FirstPullRequest',
-          message: 'First pull request',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'FirstPullRequest',
+            message: 'First pull request',
+          },
         },
       },
     },
@@ -91,9 +97,11 @@ const mockComparisonError = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'MissingHeadCommit',
-          message: 'Missing head commit',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'MissingHeadCommit',
+            message: 'Missing head commit',
+          },
         },
       },
     },

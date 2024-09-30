@@ -382,10 +382,12 @@ graphql.query('CommitBADropdownSummary', (req, res, ctx) => {
         repository: {
           __typename: 'Repository',
           commit: {
-            bundleAnalysisCompareWithParent: {
-              __typename: 'BundleAnalysisComparison',
-              sizeDelta: 1,
-              loadTimeDelta: 2,
+            bundleAnalysis: {
+              bundleAnalysisCompareWithParent: {
+                __typename: 'BundleAnalysisComparison',
+                sizeDelta: 1,
+                loadTimeDelta: 2,
+              },
             },
           },
         },
@@ -425,26 +427,28 @@ graphql.query('CommitBundleList', (req, res, ctx) => {
         repository: {
           __typename: 'Repository',
           commit: {
-            bundleAnalysisCompareWithParent: {
-              __typename: 'BundleAnalysisComparison',
-              bundles: [
-                {
-                  name: 'bundle.js',
-                  changeType: 'added',
-                  sizeDelta: 1,
-                  sizeTotal: 2,
-                  loadTimeDelta: 3,
-                  loadTimeTotal: 4,
-                },
-                {
-                  name: 'bundle.css',
-                  changeType: 'removed',
-                  sizeDelta: 5,
-                  sizeTotal: 6,
-                  loadTimeDelta: 7,
-                  loadTimeTotal: 8,
-                },
-              ],
+            bundleAnalysis: {
+              bundleAnalysisCompareWithParent: {
+                __typename: 'BundleAnalysisComparison',
+                bundles: [
+                  {
+                    name: 'bundle.js',
+                    changeType: 'added',
+                    sizeDelta: 1,
+                    sizeTotal: 2,
+                    loadTimeDelta: 3,
+                    loadTimeTotal: 4,
+                  },
+                  {
+                    name: 'bundle.css',
+                    changeType: 'removed',
+                    sizeDelta: 5,
+                    sizeTotal: 6,
+                    loadTimeDelta: 7,
+                    loadTimeTotal: 8,
+                  },
+                ],
+              },
             },
           },
         },
@@ -461,26 +465,28 @@ graphql.query('PullBundleComparisonList', (req, res, ctx) => {
         repository: {
           __typename: 'Repository',
           commit: {
-            bundleAnalysisCompareWithParent: {
-              __typename: 'BundleAnalysisComparison',
-              bundles: [
-                {
-                  name: 'bundle.js',
-                  changeType: 'added',
-                  sizeDelta: 1,
-                  sizeTotal: 2,
-                  loadTimeDelta: 3,
-                  loadTimeTotal: 4,
-                },
-                {
-                  name: 'bundle.css',
-                  changeType: 'removed',
-                  sizeDelta: 5,
-                  sizeTotal: 6,
-                  loadTimeDelta: 7,
-                  loadTimeTotal: 8,
-                },
-              ],
+            bundleAnalysis: {
+              bundleAnalysisCompareWithParent: {
+                __typename: 'BundleAnalysisComparison',
+                bundles: [
+                  {
+                    name: 'bundle.js',
+                    changeType: 'added',
+                    sizeDelta: 1,
+                    sizeTotal: 2,
+                    loadTimeDelta: 3,
+                    loadTimeTotal: 4,
+                  },
+                  {
+                    name: 'bundle.css',
+                    changeType: 'removed',
+                    sizeDelta: 5,
+                    sizeTotal: 6,
+                    loadTimeDelta: 7,
+                    loadTimeTotal: 8,
+                  },
+                ],
+              },
             },
           },
         },

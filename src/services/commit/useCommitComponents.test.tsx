@@ -12,7 +12,9 @@ const mockCommitComponentData = {
     repository: {
       __typename: 'Repository',
       commit: {
-        components: [{ name: 'component-1' }, { name: 'component-2' }],
+        coverageAnalytics: {
+          components: [{ name: 'component-1' }, { name: 'component-2' }],
+        },
       },
     },
   },

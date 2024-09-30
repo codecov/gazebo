@@ -125,7 +125,9 @@ const CompareWithParentSchema = z.discriminatedUnion('__typename', [
 ])
 
 const CommitSchema = z.object({
-  totals: CoverageObjSchema.nullable(),
+  coverageAnalytics: z.object({
+    totals: CoverageObjSchema.nullable(),
+  }),
   state: z.string().nullable(),
   commitid: z.string(),
   pullId: z.number().nullable(),
@@ -142,7 +144,9 @@ const CommitSchema = z.object({
   parent: z
     .object({
       commitid: z.string(),
-      totals: CoverageObjSchema.nullable(),
+      coverageAnalytics: z.object({
+        totals: CoverageObjSchema.nullable(),
+      }),
     })
     .nullable(),
   compareWithParent: CompareWithParentSchema.nullable(),
@@ -180,8 +184,10 @@ query Commit(
       __typename
       ... on Repository {
         commit(id: $commitid) {
-          totals {
-            coverage: percentCovered # Absolute coverage of the commit
+          coverageAnalytics {
+            totals {
+              coverage: percentCovered # Absolute coverage of the commit
+            }
           }
           state
           commitid
@@ -220,8 +226,10 @@ query Commit(
           ciPassed
           parent {
             commitid # commitid of the parent, used for the comparison
-            totals {
-              coverage: percentCovered # coverage of the parent
+            coverageAnalytics {
+              totals {
+                coverage: percentCovered # coverage of the parent
+              }
             }
           }
           compareWithParent {

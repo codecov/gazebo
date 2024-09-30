@@ -29,69 +29,71 @@ const mockBundleTrendData = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              measurements: [
-                {
-                  assetType: 'JAVASCRIPT_SIZE',
-                  measurements: [
-                    {
-                      timestamp: '2024-06-15T00:00:00+00:00',
-                      avg: null,
-                    },
-                    {
-                      timestamp: '2024-06-16T00:00:00+00:00',
-                      avg: null,
-                    },
-                    {
-                      timestamp: '2024-06-17T00:00:00+00:00',
-                      avg: 10000.8,
-                    },
-                    {
-                      timestamp: '2024-06-18T00:00:00+00:00',
-                      avg: 10500,
-                    },
-                    {
-                      timestamp: '2024-06-19T00:00:00+00:00',
-                      avg: 20000,
-                    },
-                    {
-                      timestamp: '2024-06-20T00:00:00+00:00',
-                      avg: 15000,
-                    },
-                  ],
-                },
-                {
-                  assetType: 'STYLESHEET_SIZE',
-                  measurements: [
-                    {
-                      timestamp: '2024-06-15T00:00:00+00:00',
-                      avg: null,
-                    },
-                    {
-                      timestamp: '2024-06-16T00:00:00+00:00',
-                      avg: null,
-                    },
-                    {
-                      timestamp: '2024-06-17T00:00:00+00:00',
-                      avg: 1000,
-                    },
-                    {
-                      timestamp: '2024-06-18T00:00:00+00:00',
-                      avg: 800,
-                    },
-                    {
-                      timestamp: '2024-06-19T00:00:00+00:00',
-                      avg: 900,
-                    },
-                    {
-                      timestamp: '2024-06-20T00:00:00+00:00',
-                      avg: 950,
-                    },
-                  ],
-                },
-              ],
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                measurements: [
+                  {
+                    assetType: 'JAVASCRIPT_SIZE',
+                    measurements: [
+                      {
+                        timestamp: '2024-06-15T00:00:00+00:00',
+                        avg: null,
+                      },
+                      {
+                        timestamp: '2024-06-16T00:00:00+00:00',
+                        avg: null,
+                      },
+                      {
+                        timestamp: '2024-06-17T00:00:00+00:00',
+                        avg: 10000.8,
+                      },
+                      {
+                        timestamp: '2024-06-18T00:00:00+00:00',
+                        avg: 10500,
+                      },
+                      {
+                        timestamp: '2024-06-19T00:00:00+00:00',
+                        avg: 20000,
+                      },
+                      {
+                        timestamp: '2024-06-20T00:00:00+00:00',
+                        avg: 15000,
+                      },
+                    ],
+                  },
+                  {
+                    assetType: 'STYLESHEET_SIZE',
+                    measurements: [
+                      {
+                        timestamp: '2024-06-15T00:00:00+00:00',
+                        avg: null,
+                      },
+                      {
+                        timestamp: '2024-06-16T00:00:00+00:00',
+                        avg: null,
+                      },
+                      {
+                        timestamp: '2024-06-17T00:00:00+00:00',
+                        avg: 1000,
+                      },
+                      {
+                        timestamp: '2024-06-18T00:00:00+00:00',
+                        avg: 800,
+                      },
+                      {
+                        timestamp: '2024-06-19T00:00:00+00:00',
+                        avg: 900,
+                      },
+                      {
+                        timestamp: '2024-06-20T00:00:00+00:00',
+                        avg: 950,
+                      },
+                    ],
+                  },
+                ],
+              },
             },
           },
         },

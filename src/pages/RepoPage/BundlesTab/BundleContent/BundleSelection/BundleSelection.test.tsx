@@ -62,9 +62,11 @@ const mockBranchBundles = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundles: [{ name: 'bundle1' }, { name: 'bundle2' }],
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundles: [{ name: 'bundle1' }, { name: 'bundle2' }],
+            },
           },
         },
       },

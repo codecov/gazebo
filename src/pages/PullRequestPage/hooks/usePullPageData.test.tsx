@@ -18,8 +18,10 @@ const mockPullData = {
         },
         head: {
           commitid: '123',
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+            },
           },
         },
         compareWithBase: {
@@ -51,8 +53,10 @@ const mockPullDataTeam = {
         },
         head: {
           commitid: '123',
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+            },
           },
         },
         compareWithBase: {
@@ -180,8 +184,10 @@ describe('usePullPageData', () => {
                 },
                 head: {
                   commitid: '123',
-                  bundleAnalysisReport: {
-                    __typename: 'BundleAnalysisReport',
+                  bundleAnalysis: {
+                    bundleAnalysisReport: {
+                      __typename: 'BundleAnalysisReport',
+                    },
                   },
                 },
                 compareWithBase: {
@@ -375,8 +381,10 @@ describe('usePullPageData', () => {
               },
               head: {
                 commitid: '123',
-                bundleAnalysisReport: {
-                  __typename: 'BundleAnalysisReport',
+                bundleAnalysis: {
+                  bundleAnalysisReport: {
+                    __typename: 'BundleAnalysisReport',
+                  },
                 },
               },
               compareWithBase: {

@@ -58,21 +58,23 @@ const CoverageSchema = z.array(
 
 const CoverageForFileSchema = z.object({
   commitid: z.string().nullish(),
-  flagNames: z.array(z.string().nullish()).nullish(),
-  components: z.array(z.object({ id: z.string(), name: z.string() })),
-  coverageFile: z
-    .object({
-      hashedPath: z.string(),
-      isCriticalFile: z.boolean().nullish(),
-      content: z.string().nullish(),
-      coverage: CoverageSchema.nullish(),
-      totals: z
-        .object({
-          percentCovered: z.number().nullish(),
-        })
-        .nullish(),
-    })
-    .nullish(),
+  coverageAnalytics: z.object({
+    flagNames: z.array(z.string().nullish()).nullish(),
+    components: z.array(z.object({ id: z.string(), name: z.string() })),
+    coverageFile: z
+      .object({
+        hashedPath: z.string(),
+        isCriticalFile: z.boolean().nullish(),
+        content: z.string().nullish(),
+        coverage: CoverageSchema.nullish(),
+        totals: z
+          .object({
+            percentCovered: z.number().nullish(),
+          })
+          .nullish(),
+      })
+      .nullish(),
+  }),
 })
 
 export const RepositorySchema = z.object({
@@ -137,21 +139,23 @@ query CoverageForFile(
 
 fragment CoverageForFile on Commit {
   commitid
-  flagNames
-  components {
-    id
-    name
-  }
-  coverageFile(path: $path, flags: $flags, components: $components) {
-    hashedPath
-    isCriticalFile
-    content
-    coverage {
-      line
-      coverage
+  coverageAnalytics {
+    flagNames
+    components {
+      id
+      name
     }
-    totals {
-      percentCovered # Absolute coverage of the commit
+    coverageFile(path: $path, flags: $flags, components: $components) {
+      hashedPath
+      isCriticalFile
+      content
+      coverage {
+        line
+        coverage
+      }
+      totals {
+        percentCovered # Absolute coverage of the commit
+      }
     }
   }
 }`

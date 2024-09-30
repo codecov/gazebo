@@ -104,7 +104,7 @@ const PullBundleAnalysis: React.FC = () => {
   const bundleCompareType =
     data?.pull?.bundleAnalysisCompareWithBase?.__typename
   const headHasBundle =
-    data?.pull?.head?.bundleAnalysisReport?.__typename ===
+    data?.pull?.head?.bundleAnalysis?.bundleAnalysisReport?.__typename ===
     'BundleAnalysisReport'
 
   if (data?.coverageEnabled && data?.bundleAnalysisEnabled) {
