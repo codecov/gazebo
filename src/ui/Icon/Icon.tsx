@@ -79,7 +79,6 @@ function Icon({
   size = 'md',
   label = '',
   className,
-  ...props
 }: IconProps) {
   const IconSvg = get(iconComponentCollection, variant, name)
   if (!IconSvg || !isValidKey(iconClasses, size)) return null
@@ -89,7 +88,6 @@ function Icon({
       data-testid={label}
       data-icon={label}
       className={cn(className, iconClasses[size])}
-      {...props}
     />
   )
 }

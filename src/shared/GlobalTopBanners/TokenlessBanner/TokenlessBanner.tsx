@@ -52,7 +52,7 @@ function OrgUploadTokenTooltip({ orgUploadToken }: { orgUploadToken: string }) {
                   <Icon
                     name={isTokenVisible ? 'eyeOff' : 'eye'}
                     className="text-ds-blue-darker"
-                    data-testid={isTokenVisible ? 'hide-token' : 'show-token'}
+                    label={isTokenVisible ? 'hide-token' : 'show-token'}
                   />
                 </Button>
                 <CopyClipboard
