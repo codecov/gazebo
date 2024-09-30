@@ -13,11 +13,13 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   commit: z
     .object({
-      components: z.array(
-        z.object({
-          name: z.string(),
-        })
-      ),
+      coverageAnalytics: z.object({
+        components: z.array(
+          z.object({
+            name: z.string(),
+          })
+        ),
+      }),
     })
     .nullable(),
 })
@@ -50,8 +52,10 @@ const query = `
         __typename
         ... on Repository {
           commit(id: $commitId) {
-            components (filters: $filters) {
-              name
+            coverageAnalytics {
+              components (filters: $filters) {
+                name
+              }
             }
           }
         }
@@ -157,7 +161,8 @@ export function useCommitComponents({
         }
 
         return {
-          components: data?.owner?.repository?.commit?.components,
+          components:
+            data?.owner?.repository?.commit?.coverageAnalytics?.components,
         }
       }),
     ...options,

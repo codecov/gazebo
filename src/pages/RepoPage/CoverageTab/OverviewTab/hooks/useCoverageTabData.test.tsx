@@ -28,8 +28,10 @@ const mockCoverageTabData = {
       __typename: 'Repository',
       branch: {
         head: {
-          totals: {
-            fileCount: 10,
+          coverageAnalytics: {
+            totals: {
+              fileCount: 10,
+            },
           },
         },
       },
@@ -154,8 +156,10 @@ describe('useCoverageTabData', () => {
           expect(result.current.data).toEqual({
             branch: {
               head: {
-                totals: {
-                  fileCount: 10,
+                coverageAnalytics: {
+                  totals: {
+                    fileCount: 10,
+                  },
                 },
               },
             },
@@ -182,8 +186,10 @@ describe('useCoverageTabData', () => {
           expect(result.current.data).toEqual({
             branch: {
               head: {
-                totals: {
-                  fileCount: 10,
+                coverageAnalytics: {
+                  totals: {
+                    fileCount: 10,
+                  },
                 },
               },
             },

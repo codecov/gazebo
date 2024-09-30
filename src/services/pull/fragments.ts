@@ -21,8 +21,10 @@ fragment SummaryOnPullFragment on Pull {
   behindByCommit
   head {
     commitid
-    totals {
-      percentCovered
+    coverageAnalytics {
+      totals {
+        percentCovered
+      }
     }
     uploads {
       totalCount

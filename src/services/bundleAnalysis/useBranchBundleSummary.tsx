@@ -48,7 +48,9 @@ const RepositorySchema = z.object({
       head: z
         .object({
           commitid: z.string(),
-          bundleAnalysisReport: BundleReportSchema.nullable(),
+          bundleAnalysis: z.object({
+            bundleAnalysisReport: BundleReportSchema.nullable(),
+          }),
         })
         .nullable(),
     })
@@ -81,19 +83,10 @@ const query = `query BranchBundleSummaryData(
         branch(name: $branch) {
           head {
             commitid
-            bundleAnalysisReport {
-              __typename
-              ... on BundleAnalysisReport {
-                bundleData {
-                  loadTime {
-                    threeG
-                  }
-                  size {
-                    uncompress
-                  }
-                }
-                bundles {
-                  name
+            bundleAnalysis {
+              bundleAnalysisReport {
+                __typename
+                ... on BundleAnalysisReport {
                   bundleData {
                     loadTime {
                       threeG
@@ -102,10 +95,21 @@ const query = `query BranchBundleSummaryData(
                       uncompress
                     }
                   }
+                  bundles {
+                    name
+                    bundleData {
+                      loadTime {
+                        threeG
+                      }
+                      size {
+                        uncompress
+                      }
+                    }
+                  }
                 }
-              }
-              ... on MissingHeadReport {
-                message
+                ... on MissingHeadReport {
+                  message
+                }
               }
             }
           }

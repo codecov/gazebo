@@ -50,10 +50,12 @@ const BundleReportSchema = z.object({
 const BranchSchema = z.object({
   head: z
     .object({
-      bundleAnalysisReport: z.discriminatedUnion('__typename', [
-        BundleReportSchema,
-        MissingHeadReportSchema,
-      ]),
+      bundleAnalysis: z.object({
+        bundleAnalysisReport: z.discriminatedUnion('__typename', [
+          BundleReportSchema,
+          MissingHeadReportSchema,
+        ]),
+      }),
     })
     .nullable(),
 })
@@ -92,26 +94,28 @@ query GetBundleTrend(
       ... on Repository {
         branch(name: $branch) {
           head {
-            bundleAnalysisReport {
-              __typename
-              ... on BundleAnalysisReport {
-                bundle(name: $bundle) {
-                  measurements(
-                    interval: $interval
-                    before: $before
-                    after: $after
-                    filters: $filters
-                  ) {
-                    assetType
-                    measurements {
-                      timestamp
-                      avg
+            bundleAnalysis {
+              bundleAnalysisReport {
+                __typename
+                ... on BundleAnalysisReport {
+                  bundle(name: $bundle) {
+                    measurements(
+                      interval: $interval
+                      before: $before
+                      after: $after
+                      filters: $filters
+                    ) {
+                      assetType
+                      measurements {
+                        timestamp
+                        avg
+                      }
                     }
                   }
                 }
-              }
-              ... on MissingHeadReport {
-                message
+                ... on MissingHeadReport {
+                  message
+                }
               }
             }
           }
@@ -227,7 +231,8 @@ export const useBundleTrendData = ({
         }
 
         const bundleReport =
-          data.owner?.repository?.branch?.head?.bundleAnalysisReport
+          data.owner?.repository?.branch?.head?.bundleAnalysis
+            ?.bundleAnalysisReport
 
         if (bundleReport?.__typename === 'BundleAnalysisReport') {
           return bundleReport?.bundle?.measurements

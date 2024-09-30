@@ -34,8 +34,10 @@ const mockPullData = {
         },
         head: {
           commitid: '123',
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+            },
           },
         },
         compareWithBase: {
@@ -68,7 +70,9 @@ const mockFirstPullData = {
         },
         head: {
           commitid: '123',
-          bundleAnalysisReport: null,
+          bundleAnalysis: {
+            bundleAnalysisReport: null,
+          },
         },
         compareWithBase: {
           __typename: 'FirstPullRequest',

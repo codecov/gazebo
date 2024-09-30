@@ -29,17 +29,19 @@ const mockPullBundleList = {
       pull: {
         head: {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundles: [
-              {
-                name: 'bundle1',
-                bundleData: {
-                  loadTime: { threeG: 200 },
-                  size: { uncompress: 100 },
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundles: [
+                {
+                  name: 'bundle1',
+                  bundleData: {
+                    loadTime: { threeG: 200 },
+                    size: { uncompress: 100 },
+                  },
                 },
-              },
-            ],
+              ],
+            },
           },
         },
       },
@@ -147,17 +149,19 @@ describe('usePullBundleHeadList', () => {
         const expectedResponse = {
           pull: {
             head: {
-              bundleAnalysisReport: {
-                __typename: 'BundleAnalysisReport',
-                bundles: [
-                  {
-                    name: 'bundle1',
-                    bundleData: {
-                      loadTime: { threeG: 200 },
-                      size: { uncompress: 100 },
+              bundleAnalysis: {
+                bundleAnalysisReport: {
+                  __typename: 'BundleAnalysisReport',
+                  bundles: [
+                    {
+                      name: 'bundle1',
+                      bundleData: {
+                        loadTime: { threeG: 200 },
+                        size: { uncompress: 100 },
+                      },
                     },
-                  },
-                ],
+                  ],
+                },
               },
             },
           },

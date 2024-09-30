@@ -56,8 +56,10 @@ const mockPullData = (resultType) => {
             },
             head: {
               commitid: '123',
-              bundleAnalysisReport: {
-                __typename: 'MissingHeadReport',
+              bundleAnalysis: {
+                bundleAnalysisReport: {
+                  __typename: 'MissingHeadReport',
+                },
               },
             },
             compareWithBase: {
@@ -83,8 +85,10 @@ const mockPullData = (resultType) => {
           pullId: 1,
           head: {
             commitid: '123',
-            bundleAnalysisReport: {
-              __typename: 'MissingHeadReport',
+            bundleAnalysis: {
+              bundleAnalysisReport: {
+                __typename: 'MissingHeadReport',
+              },
             },
           },
           compareWithBase: {
@@ -115,8 +119,10 @@ const mockPullDataTeam = {
         pullId: 1,
         head: {
           commitid: '123',
-          bundleAnalysisReport: {
-            __typename: 'MissingHeadReport',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+            },
           },
         },
         compareWithBase: {

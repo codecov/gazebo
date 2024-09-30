@@ -18,18 +18,22 @@ const mockFileMainCoverage = (coverage, flagNames) => ({
       __typename: 'Repository',
       commit: {
         commitId: '1',
-        flagNames,
-        components: [],
-        coverageFile: { ...coverage },
+        coverageAnalytics: {
+          flagNames,
+          components: [],
+          coverageFile: { ...coverage },
+        },
       },
       branch: {
         name: 'main',
         head: {
-          flagNames,
           commitId: '1',
-          components: [],
-          coverageFile: {
-            ...coverage,
+          coverageAnalytics: {
+            flagNames,
+            components: [],
+            coverageFile: {
+              ...coverage,
+            },
           },
         },
       },

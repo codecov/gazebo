@@ -15,23 +15,25 @@ const mockData = {
       __typename: 'Repository',
       commit: {
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-        flagNames: ['a', 'b'],
-        components: [],
-        coverageFile: {
-          isCriticalFile: true,
-          hashedPath: 'hashed-path',
-          content:
-            'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
-          coverage: [
-            { line: 1, coverage: 'H' },
-            { line: 2, coverage: 'P' },
-            { line: 4, coverage: 'H' },
-            { line: 5, coverage: 'M' },
-            { line: 7, coverage: 'H' },
-            { line: 8, coverage: 'H' },
-          ],
-          totals: {
-            percentCovered: 66.67,
+        coverageAnalytics: {
+          flagNames: ['a', 'b'],
+          components: [],
+          coverageFile: {
+            isCriticalFile: true,
+            hashedPath: 'hashed-path',
+            content:
+              'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
+            coverage: [
+              { line: 1, coverage: 'H' },
+              { line: 2, coverage: 'P' },
+              { line: 4, coverage: 'H' },
+              { line: 5, coverage: 'M' },
+              { line: 7, coverage: 'H' },
+              { line: 8, coverage: 'H' },
+            ],
+            totals: {
+              percentCovered: 66.67,
+            },
           },
         },
       },

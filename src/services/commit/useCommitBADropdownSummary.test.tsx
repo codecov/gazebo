@@ -10,14 +10,16 @@ const mockCommitBASummaryData = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-          bundleChange: {
-            loadTime: {
-              threeG: 2,
-            },
-            size: {
-              uncompress: 1,
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              loadTime: {
+                threeG: 2,
+              },
+              size: {
+                uncompress: 1,
+              },
             },
           },
         },
@@ -123,14 +125,16 @@ describe('useCommitBADropdownSummary', () => {
 
       const expectedResult = {
         commit: {
-          bundleAnalysisCompareWithParent: {
-            __typename: 'BundleAnalysisComparison',
-            bundleChange: {
-              loadTime: {
-                threeG: 2,
-              },
-              size: {
-                uncompress: 1,
+          bundleAnalysis: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'BundleAnalysisComparison',
+              bundleChange: {
+                loadTime: {
+                  threeG: 2,
+                },
+                size: {
+                  uncompress: 1,
+                },
               },
             },
           },

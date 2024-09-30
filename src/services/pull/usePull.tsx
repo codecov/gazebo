@@ -156,11 +156,13 @@ const PullSchema = z.object({
       ciPassed: z.boolean().nullable(),
       branchName: z.string().nullable(),
       commitid: z.string().nullable(),
-      totals: z
-        .object({
-          percentCovered: z.number().nullable(),
-        })
-        .nullable(),
+      coverageAnalytics: z.object({
+        totals: z
+          .object({
+            percentCovered: z.number().nullable(),
+          })
+          .nullable(),
+      }),
       uploads: UploadsSchema.nullable(),
     })
     .nullable(),
@@ -228,8 +230,10 @@ const query = `query Pull(
             ciPassed
             branchName
             commitid
-            totals {
-              percentCovered
+            coverageAnalytics {
+              totals {
+                percentCovered
+              }
             }
             uploads {
               totalCount

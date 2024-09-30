@@ -57,8 +57,10 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   commit: z
     .object({
-      bundleAnalysisCompareWithParent:
-        BundleAnalysisCompareWithParentSchema.nullable(),
+      bundleAnalysis: z.object({
+        bundleAnalysisCompareWithParent:
+          BundleAnalysisCompareWithParentSchema.nullable(),
+      }),
     })
     .nullable(),
 })
@@ -82,44 +84,46 @@ query CommitBundleList($owner: String!, $repo: String!, $commitid: String!) {
       __typename
       ... on Repository {
         commit(id: $commitid) {
-          bundleAnalysisCompareWithParent {
-            __typename
-            ... on BundleAnalysisComparison {
-              bundles {
-                name
-                changeType
-                bundleChange {
-                  loadTime {
-                    threeG
+          bundleAnalysis {
+            bundleAnalysisCompareWithParent {
+              __typename
+              ... on BundleAnalysisComparison {
+                bundles {
+                  name
+                  changeType
+                  bundleChange {
+                    loadTime {
+                      threeG
+                    }
+                    size {
+                      uncompress
+                    }
                   }
-                  size {
-                    uncompress
-                  }
-                }
-                bundleData {
-                  loadTime {
-                    threeG
-                  }
-                  size {
-                    uncompress
+                  bundleData {
+                    loadTime {
+                      threeG
+                    }
+                    size {
+                      uncompress
+                    }
                   }
                 }
               }
-            }
-            ... on FirstPullRequest {
-              message
-            }
-            ... on MissingBaseCommit {
-              message
-            }
-            ... on MissingHeadCommit {
-              message
-            }
-            ... on MissingBaseReport {
-              message
-            }
-            ... on MissingHeadReport {
-              message
+              ... on FirstPullRequest {
+                message
+              }
+              ... on MissingBaseCommit {
+                message
+              }
+              ... on MissingHeadCommit {
+                message
+              }
+              ... on MissingBaseReport {
+                message
+              }
+              ... on MissingHeadReport {
+                message
+              }
             }
           }
         }

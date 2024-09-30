@@ -44,7 +44,9 @@ const RepositorySchema = z.object({
     .object({
       head: z
         .object({
-          bundleAnalysisReport: BundleReportSchema.nullable(),
+          bundleAnalysis: z.object({
+            bundleAnalysisReport: BundleReportSchema.nullable(),
+          }),
         })
         .nullable(),
     })
@@ -79,26 +81,28 @@ query BundleSummary(
       ... on Repository {
         branch(name: $branch) {
           head {
-            bundleAnalysisReport {
-              __typename
-              ... on BundleAnalysisReport {
-                bundle(name: $bundle, filters: $filters) {
-                  name
-                  moduleCount
-                  bundleData {
-                    loadTime {
-                      threeG
-                      highSpeed
-                    }
-                    size {
-                      gzip
-                      uncompress
+            bundleAnalysis {
+              bundleAnalysisReport {
+                __typename
+                ... on BundleAnalysisReport {
+                  bundle(name: $bundle, filters: $filters) {
+                    name
+                    moduleCount
+                    bundleData {
+                      loadTime {
+                        threeG
+                        highSpeed
+                      }
+                      size {
+                        gzip
+                        uncompress
+                      }
                     }
                   }
                 }
-              }
-              ... on MissingHeadReport {
-                message
+                ... on MissingHeadReport {
+                  message
+                }
               }
             }
           }
@@ -197,11 +201,12 @@ export const useBundleSummary = ({
 
         let bundleSummary = null
         if (
-          data?.owner?.repository?.branch?.head?.bundleAnalysisReport
-            ?.__typename === 'BundleAnalysisReport'
+          data?.owner?.repository?.branch?.head?.bundleAnalysis
+            ?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport'
         ) {
           bundleSummary =
-            data.owner.repository.branch.head.bundleAnalysisReport.bundle
+            data.owner.repository.branch.head.bundleAnalysis
+              .bundleAnalysisReport.bundle
         }
 
         return { bundleSummary }

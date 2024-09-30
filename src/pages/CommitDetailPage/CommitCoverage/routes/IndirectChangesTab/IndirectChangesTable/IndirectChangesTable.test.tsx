@@ -65,8 +65,10 @@ describe('IndirectChangesTable', () => {
               repository: {
                 __typename: 'Repository',
                 commit: {
-                  totals: {
-                    coverage: 100,
+                  coverageAnalytics: {
+                    totals: {
+                      coverage: 100,
+                    },
                   },
                   state,
                   commitid: '123',

@@ -31,7 +31,9 @@ const RepositorySchema = z.object({
     .object({
       head: z
         .object({
-          bundleAnalysisReport: BundleReportSchema.nullable(),
+          bundleAnalysis: z.object({
+            bundleAnalysisReport: BundleReportSchema.nullable(),
+          }),
         })
         .nullable(),
     })
@@ -63,15 +65,17 @@ const query = `query BranchBundlesNames(
       ... on Repository {
         branch(name: $branch) {
           head {
-            bundleAnalysisReport {
-              __typename
-              ... on BundleAnalysisReport {
-                bundles {
-                  name
+            bundleAnalysis {
+              bundleAnalysisReport {
+                __typename
+                ... on BundleAnalysisReport {
+                  bundles {
+                    name
+                  }
                 }
-              }
-              ... on MissingHeadReport {
-                message
+                ... on MissingHeadReport {
+                  message
+                }
               }
             }
           }
@@ -161,11 +165,11 @@ export const useBranchBundlesNames = ({
 
         let bundles: Array<string> = []
         if (
-          data?.owner?.repository?.branch?.head?.bundleAnalysisReport
-            ?.__typename === 'BundleAnalysisReport'
+          data?.owner?.repository?.branch?.head?.bundleAnalysis
+            ?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport'
         ) {
           bundles =
-            data.owner.repository.branch.head.bundleAnalysisReport.bundles?.map(
+            data.owner.repository.branch.head.bundleAnalysis?.bundleAnalysisReport?.bundles?.map(
               ({ name }) => name
             )
         }

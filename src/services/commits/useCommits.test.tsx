@@ -49,9 +49,11 @@ const node1 = {
       percentCovered: 100,
     },
   },
-  bundleAnalysisCompareWithParent: {
-    __typename: 'MissingHeadReport',
-    message: 'Missing head report',
+  bundleAnalysis: {
+    bundleAnalysisCompareWithParent: {
+      __typename: 'MissingHeadReport',
+      message: 'Missing head report',
+    },
   },
 }
 
@@ -72,9 +74,11 @@ const node2 = {
       percentCovered: 100,
     },
   },
-  bundleAnalysisCompareWithParent: {
-    __typename: 'MissingHeadReport',
-    message: 'Missing head report',
+  bundleAnalysis: {
+    bundleAnalysisCompareWithParent: {
+      __typename: 'MissingHeadReport',
+      message: 'Missing head report',
+    },
   },
 }
 
@@ -95,9 +99,11 @@ const node3 = {
       percentCovered: 100,
     },
   },
-  bundleAnalysisCompareWithParent: {
-    __typename: 'MissingHeadReport',
-    message: 'Missing head report',
+  bundleAnalysis: {
+    bundleAnalysisCompareWithParent: {
+      __typename: 'MissingHeadReport',
+      message: 'Missing head report',
+    },
   },
 }
 

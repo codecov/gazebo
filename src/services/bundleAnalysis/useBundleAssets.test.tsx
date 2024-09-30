@@ -81,9 +81,11 @@ const mockMissingHeadReport = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'MissingHeadReport',
-            message: 'Missing head report',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+              message: 'Missing head report',
+            },
           },
         },
       },
@@ -185,25 +187,27 @@ describe('useBundleAssets', () => {
                 __typename: 'Repository',
                 branch: {
                   head: {
-                    bundleAnalysisReport: {
-                      __typename: 'BundleAnalysisReport',
-                      bundle: {
-                        bundleData: {
-                          size: {
-                            uncompress: 12,
+                    bundleAnalysis: {
+                      bundleAnalysisReport: {
+                        __typename: 'BundleAnalysisReport',
+                        bundle: {
+                          bundleData: {
+                            size: {
+                              uncompress: 12,
+                            },
                           },
-                        },
-                        assetsPaginated: {
-                          edges: info.variables.assetsAfter
-                            ? [{ node: node3 }]
-                            : [{ node: node1 }, { node: node2 }],
-                          pageInfo: {
-                            hasNextPage: info.variables.assetsAfter
-                              ? false
-                              : true,
-                            endCursor: info.variables.assetsAfter
-                              ? 'cursor-1'
-                              : 'cursor-2',
+                          assetsPaginated: {
+                            edges: info.variables.assetsAfter
+                              ? [{ node: node3 }]
+                              : [{ node: node1 }, { node: node2 }],
+                            pageInfo: {
+                              hasNextPage: info.variables.assetsAfter
+                                ? false
+                                : true,
+                              endCursor: info.variables.assetsAfter
+                                ? 'cursor-1'
+                                : 'cursor-2',
+                            },
                           },
                         },
                       },

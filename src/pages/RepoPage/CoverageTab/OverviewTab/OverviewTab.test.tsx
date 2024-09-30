@@ -232,8 +232,10 @@ const mockCoverageTabData = (fileCount = 10) => ({
       __typename: 'Repository',
       branch: {
         head: {
-          totals: {
-            fileCount,
+          coverageAnalytics: {
+            totals: {
+              fileCount,
+            },
           },
         },
       },
@@ -249,16 +251,18 @@ const mockBranchComponents = {
         name: 'main',
         head: {
           commitid: 'commit-123',
-          components: [
-            {
-              id: 'compOneId',
-              name: 'compOneName',
-            },
-            {
-              id: 'compTwoId',
-              name: 'compTwoName',
-            },
-          ],
+          coverageAnalytics: {
+            components: [
+              {
+                id: 'compOneId',
+                name: 'compOneName',
+              },
+              {
+                id: 'compTwoId',
+                name: 'compTwoName',
+              },
+            ],
+          },
         },
       },
     },
