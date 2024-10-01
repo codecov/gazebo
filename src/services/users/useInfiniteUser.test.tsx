@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import { useInfiniteUsers } from './useInfiniteUser'
 
@@ -61,17 +62,15 @@ afterAll(() => server.close())
 describe('useInfiniteUser', () => {
   function setup(options = {}) {
     server.use(
-      rest.get('/internal/gh/codecov/users', (req, res, ctx) => {
-        const {
-          url: { searchParams },
-        } = req
+      http.get('/internal/gh/codecov/users', (info) => {
+        const searchParams = new URL(info.request.url).searchParams
         const pageNumber = Number(searchParams.get('page'))
 
         if (pageNumber > 1) {
-          return res(ctx.status(200), ctx.json(mockSecondResponse))
+          return HttpResponse.json(mockSecondResponse)
         }
 
-        return res(ctx.status(200), ctx.json(mockFirstResponse))
+        return HttpResponse.json(mockFirstResponse)
       })
     )
   }
@@ -158,12 +157,19 @@ describe('useInfiniteUser', () => {
   })
 
   describe('when the schema is invalid', () => {
+    let consoleSpy: MockInstance
+
     beforeEach(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       server.use(
-        rest.get('/internal/gh/codecov/users', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ count: 2 }))
+        http.get('/internal/gh/codecov/users', (info) => {
+          return HttpResponse.json({ count: 2 })
         })
       )
+    })
+
+    afterEach(() => {
+      consoleSpy.mockRestore()
     })
 
     it('throws an error', async () => {

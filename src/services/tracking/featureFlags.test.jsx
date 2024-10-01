@@ -1,23 +1,30 @@
 import { renderHook } from '@testing-library/react'
 import Cookie from 'js-cookie'
 
-import { useIdentifyUser } from 'shared/featureFlags'
-
 import { useTrackFeatureFlags } from './featureFlags'
 
-jest.mock('shared/featureFlags', () => ({
-  useIdentifyUser: jest.fn(),
+const mocks = vi.hoisted(() => ({
+  useIdentifyUser: vi.fn(),
 }))
 
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useIdentifyUser: mocks.useIdentifyUser,
+  }
+})
+
 describe('useTrackFeatureFlags', () => {
-  const mockIdentifyUser = jest.fn()
+  const mockIdentifyUser = vi.fn()
 
   describe('normal use', () => {
     beforeEach(() => {
-      useIdentifyUser.mockImplementation(mockIdentifyUser)
+      mocks.useIdentifyUser.mockImplementation(mockIdentifyUser)
     })
+
     afterEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
     })
 
     it('Creates the expected user and key identified', () => {
@@ -63,13 +70,15 @@ describe('useTrackFeatureFlags', () => {
 
   describe('impersonating on github', () => {
     beforeEach(() => {
-      useIdentifyUser.mockImplementation(mockIdentifyUser)
+      mocks.useIdentifyUser.mockImplementation(mockIdentifyUser)
       Cookie.set('staff_user', 'doggo')
     })
+
     afterEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       Cookie.remove('staff_user')
     })
+
     it('Creates the expected user and key identified', () => {
       renderHook(() =>
         useTrackFeatureFlags({
@@ -113,11 +122,12 @@ describe('useTrackFeatureFlags', () => {
 
   describe('impersonating on bitbucket', () => {
     beforeEach(() => {
-      useIdentifyUser.mockImplementation(mockIdentifyUser)
+      mocks.useIdentifyUser.mockImplementation(mockIdentifyUser)
       Cookie.set('staff_user', 'doggo')
     })
+
     afterEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       Cookie.remove('staff_user')
     })
 
@@ -164,13 +174,15 @@ describe('useTrackFeatureFlags', () => {
 
   describe('impersonating on gitlab', () => {
     beforeEach(() => {
-      useIdentifyUser.mockImplementation(mockIdentifyUser)
+      mocks.useIdentifyUser.mockImplementation(mockIdentifyUser)
       Cookie.set('staff_user', 'doggo')
     })
+
     afterEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       Cookie.remove('staff_user')
     })
+
     it('Creates the expected user and key identified', () => {
       renderHook(() =>
         useTrackFeatureFlags({

@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useUsers } from './useUsers'
@@ -55,26 +55,31 @@ const wrapper =
   )
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useUsers', () => {
   function setup() {
     server.use(
-      rest.get(`/internal/:provider/:owner/users`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(users))
+      http.get(`/internal/:provider/:owner/users`, (info) => {
+        return HttpResponse.json(users)
       })
     )
   }
 
   describe('when data is loaded', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('returns the users data', async () => {
+      setup()
       const { result } = renderHook(
         () => useUsers({ provider, owner, query }),
         {

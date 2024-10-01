@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTracking } from './useTracking'
@@ -44,16 +44,16 @@ describe('useTracking', () => {
 
   function setup(user) {
     window.pendo = {
-      initialize: jest.fn(),
-      updateOptions: jest.fn(),
+      initialize: vi.fn(),
+      updateOptions: vi.fn(),
     }
 
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(user))
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: user })
       }),
-      graphql.query('DetailOwner', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ owner: 'codecov' }))
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({ data: { owner: 'codecov' } })
       })
     )
   }
@@ -182,11 +182,15 @@ describe('useTracking', () => {
   })
 
   describe('when user is not logged in', () => {
+    let consoleSpy
     beforeEach(() => {
-      const spy = jest.spyOn(console, 'error')
-      spy.mockImplementation(jest.fn())
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
       setup({ me: null })
+    })
+
+    afterEach(() => {
+      consoleSpy.mockRestore()
     })
 
     it('sets null user in sentry', async () => {

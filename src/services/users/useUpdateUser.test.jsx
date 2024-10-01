@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useUpdateUser } from './useUpdateUser'
@@ -45,12 +45,9 @@ afterAll(() => server.close())
 describe('useUpdateUser', () => {
   function setup({ ownerid, body, opts = {} }) {
     server.use(
-      rest.patch(
-        `/internal/:provider/:owner/users/:ownerid`,
-        (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(body))
-        }
-      )
+      http.patch(`/internal/:provider/:owner/users/:ownerid`, (info) => {
+        return HttpResponse.json(body)
+      })
     )
   }
 
@@ -84,7 +81,7 @@ describe('useUpdateUser', () => {
   })
 
   describe('onSuccess handler', () => {
-    const mockSuccess = jest.fn()
+    const mockSuccess = vi.fn()
     beforeEach(() => {
       // pass mock response
       const mockRes = 'new account details data'
