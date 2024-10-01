@@ -183,7 +183,7 @@
     "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^5.0.1",
     "vitest": "^2.1.1",
-    "webpack": "^5.84.1",
+    "webpack": "^5.94.0",
     "webpackbar": "^6.0.1"
   },
   "engines": {
@@ -214,7 +214,9 @@
     "micromatch": "^4.0.8",
     "express": "^4.21.0",
     "path-to-regexp@^1.7.0": "^1.9.0",
-    "path-to-regexp@^6.2.0": "^6.3.0"
+    "path-to-regexp@^6.2.0": "^6.3.0",
+    "webpack@5": "^5.94.0",
+    "webpack@^5.64.4": "^5.94.0"
   },
   "packageManager": "yarn@4.5.0",
   "engineStrict": false
