@@ -1,25 +1,25 @@
 /* eslint-disable camelcase */
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw2'
 
 const repoUri = '/internal/charts/:provider/:owner/coverage/repository'
 
-export const repoCoverageHandler = rest.post(repoUri, (req, res, ctx) => {
-  return res(ctx.status(200), ctx.json(exampleYearlyRes))
+export const repoCoverageHandler = http.post(repoUri, (info) => {
+  return HttpResponse.json(exampleYearlyRes)
 })
 
-export const repoCoverageHandler404 = rest.post(repoUri, (req, res, ctx) => {
-  return res(ctx.status(404), ctx.json({}))
+export const repoCoverageHandler404 = http.post(repoUri, (info) => {
+  return HttpResponse.json({}, { status: 404 })
 })
 
 const orgUri = '/internal/charts/:provider/:owner/coverage/organization'
 
-export const orgCoverageHandler = rest.get(orgUri, (req, res, ctx) => {
+export const orgCoverageHandler = http.get(orgUri, (info) => {
   // This is maybe a bit redundant atm but I would like to test some data mutation utils later
-  const query = req.url.searchParams
+  const query = new URL(info.request.url).searchParams
   if (query.get('grouping_unit') === 'yearly') {
-    return res(ctx.status(200), ctx.json(exampleYearlyRes))
+    return HttpResponse.json(exampleYearlyRes)
   } else if (query.get('grouping_unit') === 'quarterly') {
-    return res(ctx.status(200), ctx.json(exampleQuarterRes))
+    return HttpResponse.json(exampleQuarterRes)
   }
 })
 
