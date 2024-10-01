@@ -145,7 +145,6 @@ export default function TermsOfService() {
             <div className="bg-ds-gray-primary p-4">
               <RadioInput
                 {...register('customerIntent')}
-                // @ts-expect-error
                 dataMarketing="Personal use"
                 id="customerIntent-personal-use"
                 aria-label="Personal use"
@@ -162,7 +161,6 @@ export default function TermsOfService() {
             <div className="bg-ds-gray-primary p-4">
               <RadioInput
                 {...register('customerIntent')}
-                // @ts-expect-error
                 dataMarketing="Business use"
                 id="customerIntent-business-use"
                 aria-label="Business use"
