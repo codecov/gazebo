@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { useSingularImpactedFileComparison } from './useSingularImpactedFileComparison'
 import { transformImpactedFileData } from './utils'
@@ -123,17 +123,17 @@ describe('useSingularImpactedFileComparison', () => {
     isMissingBaseCommit = false,
   }) {
     server.use(
-      graphql.query('ImpactedFileComparison', (req, res, ctx) => {
+      graphql.query('ImpactedFileComparison', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockIncorrectResponse))
+          return HttpResponse.json({ data: mockIncorrectResponse })
         } else if (isMissingBaseCommit) {
-          return res(ctx.status(200), ctx.data(mockMissingBaseCommitResponse))
+          return HttpResponse.json({ data: mockMissingBaseCommitResponse })
         }
-        return res(ctx.status(200), ctx.data(mockResponse))
+        return HttpResponse.json({ data: mockResponse })
       })
     )
   }

@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import React from 'react'
+import { type MockInstance } from 'vitest'
 
 import { useComparisonForCommitAndParent } from './useComparisonForCommitAndParent'
 
@@ -143,15 +144,15 @@ describe('useComparisonForCommitAndParent', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('ImpactedFileComparedWithParent', (req, res, ctx) => {
+      graphql.query('ImpactedFileComparedWithParent', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else {
-          return res(ctx.status(200), ctx.data(baseMock))
+          return HttpResponse.json({ data: baseMock })
         }
       })
     )
@@ -179,6 +180,16 @@ describe('useComparisonForCommitAndParent', () => {
   })
 
   describe('when called and error', () => {
+    let consoleSpy: MockInstance
+
+    beforeEach(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
+    })
+
+    afterEach(() => {
+      consoleSpy.mockRestore()
+    })
+
     it('can return unsuccessful parse error', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
@@ -204,6 +215,7 @@ describe('useComparisonForCommitAndParent', () => {
         )
       )
     })
+
     it('can return not found error', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
@@ -229,6 +241,7 @@ describe('useComparisonForCommitAndParent', () => {
         )
       )
     })
+
     it('can return owner not activated error', async () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(

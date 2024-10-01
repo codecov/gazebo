@@ -1,20 +1,28 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
-import { usePullCoverageDropdownSummary } from './usePullCoverageDropdownSummary'
+import { usePullBADropdownSummary } from './usePullBADropdownSummary'
 
-const mockPullSummaryData = {
+const mockPullBASummaryData = {
   owner: {
     repository: {
       __typename: 'Repository',
       pull: {
-        compareWithBase: {
-          __typename: 'Comparison',
-          patchTotals: {
-            missesCount: 1,
-            partialsCount: 2,
+        head: {
+          commitid: '2788fb9824b079807f7992f04482450c09774ec7',
+        },
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
+          bundleChange: {
+            size: {
+              uncompress: 1,
+            },
+            loadTime: {
+              threeG: 2,
+            },
           },
         },
       },
@@ -79,7 +87,7 @@ interface SetupArgs {
   isNotFoundError?: boolean
 }
 
-describe('usePullCoverageDropdownSummary', () => {
+describe('usePullBADropdownSummary', () => {
   function setup({
     isUnsuccessfulParseError = false,
     isNullOwner = false,
@@ -87,17 +95,17 @@ describe('usePullCoverageDropdownSummary', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('PullCoverageDropdownSummary', (req, res, ctx) => {
+      graphql.query('PullBADropdownSummary', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else {
-          return res(ctx.status(200), ctx.data(mockPullSummaryData))
+          return HttpResponse.json({ data: mockPullBASummaryData })
         }
       })
     )
@@ -108,7 +116,7 @@ describe('usePullCoverageDropdownSummary', () => {
       setup()
       const { result } = renderHook(
         () =>
-          usePullCoverageDropdownSummary({
+          usePullBADropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -119,11 +127,18 @@ describe('usePullCoverageDropdownSummary', () => {
 
       const expectedResult = {
         pull: {
-          compareWithBase: {
-            __typename: 'Comparison',
-            patchTotals: {
-              missesCount: 1,
-              partialsCount: 2,
+          head: {
+            commitid: '2788fb9824b079807f7992f04482450c09774ec7',
+          },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              loadTime: {
+                threeG: 2,
+              },
+              size: {
+                uncompress: 1,
+              },
             },
           },
         },
@@ -140,7 +155,7 @@ describe('usePullCoverageDropdownSummary', () => {
       setup({ isNullOwner: true })
       const { result } = renderHook(
         () =>
-          usePullCoverageDropdownSummary({
+          usePullBADropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -156,21 +171,20 @@ describe('usePullCoverageDropdownSummary', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
-
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          usePullCoverageDropdownSummary({
+          usePullBADropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -184,7 +198,7 @@ describe('usePullCoverageDropdownSummary', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
-            data: null,
+            data: {},
           })
         )
       )
@@ -192,21 +206,20 @@ describe('usePullCoverageDropdownSummary', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
-    let oldConsoleError = console.error
-
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          usePullCoverageDropdownSummary({
+          usePullBADropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -228,21 +241,20 @@ describe('usePullCoverageDropdownSummary', () => {
   })
 
   describe('returns OwnerNotActivatedError __typename', () => {
-    let oldConsoleError = console.error
-
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          usePullCoverageDropdownSummary({
+          usePullBADropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',

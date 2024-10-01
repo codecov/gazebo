@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePrefetchPullDirEntry } from './usePrefetchPullDirEntry'
@@ -95,17 +95,15 @@ describe('usePrefetchPullDirEntry', () => {
     ownerNotActivated = false,
   }) {
     server.use(
-      graphql.query('PullPathContents', (req, res, ctx) => {
+      graphql.query('PullPathContents', (info) => {
         if (invalidSchema) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: {} })
+        } else if (repositoryNotFound) {
+          return HttpResponse.json({ data: mockDataRepositoryNotFound })
+        } else if (ownerNotActivated) {
+          return HttpResponse.json({ data: mockDataOwnerNotActivated })
         }
-        if (repositoryNotFound) {
-          return res(ctx.status(200), ctx.data(mockDataRepositoryNotFound))
-        }
-        if (ownerNotActivated) {
-          return res(ctx.status(200), ctx.data(mockDataOwnerNotActivated))
-        }
-        return res(ctx.status(200), ctx.data(mockData))
+        return HttpResponse.json({ data: mockData })
       })
     )
   }

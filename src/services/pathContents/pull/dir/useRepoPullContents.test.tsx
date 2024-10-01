@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import { useRepoPullContents } from './useRepoPullContents'
 
@@ -140,23 +141,19 @@ describe('useRepoPullContents', () => {
     isUnknownPath = false,
   }) {
     server.use(
-      graphql.query('PullPathContents', (req, res, ctx) => {
+      graphql.query('PullPathContents', (info) => {
         if (invalidSchema) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: {} })
+        } else if (repositoryNotFound) {
+          return HttpResponse.json({ data: mockDataRepositoryNotFound })
+        } else if (ownerNotActivated) {
+          return HttpResponse.json({ data: mockDataOwnerNotActivated })
+        } else if (isMissingCoverage) {
+          return HttpResponse.json({ data: mockDataMissingCoverage })
+        } else if (isUnknownPath) {
+          return HttpResponse.json({ data: mockDataUnknownPath })
         }
-        if (repositoryNotFound) {
-          return res(ctx.status(200), ctx.data(mockDataRepositoryNotFound))
-        }
-        if (ownerNotActivated) {
-          return res(ctx.status(200), ctx.data(mockDataOwnerNotActivated))
-        }
-        if (isMissingCoverage) {
-          return res(ctx.status(200), ctx.data(mockDataMissingCoverage))
-        }
-        if (isUnknownPath) {
-          return res(ctx.status(200), ctx.data(mockDataUnknownPath))
-        }
-        return res(ctx.status(200), ctx.data(mockData))
+        return HttpResponse.json({ data: mockData })
       })
     )
   }
@@ -272,6 +269,15 @@ describe('useRepoPullContents', () => {
     })
 
     describe('on invalid schema', () => {
+      let consoleSpy: MockInstance
+      beforeEach(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterEach(() => {
+        consoleSpy.mockRestore()
+      })
+
       it('returns 404', async () => {
         setup({ invalidSchema: true })
         const { result } = renderHook(
@@ -300,6 +306,15 @@ describe('useRepoPullContents', () => {
     })
 
     describe('on repository not found', () => {
+      let consoleSpy: MockInstance
+      beforeEach(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterEach(() => {
+        consoleSpy.mockRestore()
+      })
+
       it('returns 404', async () => {
         setup({ repositoryNotFound: true })
         const { result } = renderHook(
@@ -328,6 +343,15 @@ describe('useRepoPullContents', () => {
     })
 
     describe('on owner not activated', () => {
+      let consoleSpy: MockInstance
+      beforeEach(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterEach(() => {
+        consoleSpy.mockRestore()
+      })
+
       it('returns 403', async () => {
         setup({ ownerNotActivated: true })
         const { result } = renderHook(

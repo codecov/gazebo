@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import { usePullTeam } from './usePullTeam'
 
@@ -108,7 +109,6 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  jest.useRealTimers()
   queryClient.clear()
   server.resetHandlers()
 })
@@ -132,21 +132,21 @@ describe('usePullTeam', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetPullTeam', (req, res, ctx) => {
+      graphql.query('GetPullTeam', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else {
-          return res(ctx.status(200), ctx.data(mockPullData))
+          return HttpResponse.json({ data: mockPullData })
         }
       }),
-      graphql.query('GetPullCompareTotalsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCompareData))
+      graphql.query('GetPullCompareTotalsTeam', (info) => {
+        return HttpResponse.json({ data: mockCompareData })
       })
     )
   }
@@ -228,12 +228,13 @@ describe('usePullTeam', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -263,12 +264,13 @@ describe('usePullTeam', () => {
   })
 
   describe('returns OwnerNotActivatedError __typename', () => {
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
@@ -298,12 +300,13 @@ describe('usePullTeam', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -337,17 +340,17 @@ describe('usePullTeam polling', () => {
   function setup() {
     let nbCallCompare = 0
     server.use(
-      graphql.query(`GetPullTeam`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockPullData))
+      graphql.query(`GetPullTeam`, (info) => {
+        return HttpResponse.json({ data: mockPullData })
       }),
-      graphql.query(`GetPullCompareTotalsTeam`, (req, res, ctx) => {
+      graphql.query(`GetPullCompareTotalsTeam`, (info) => {
         nbCallCompare++
 
         if (nbCallCompare < 9) {
-          return res(ctx.status(200), ctx.data(mockPullData))
+          return HttpResponse.json({ data: mockPullData })
         }
 
-        return res(ctx.status(200), ctx.data(mockCompareData))
+        return HttpResponse.json({ data: mockCompareData })
       })
     )
   }

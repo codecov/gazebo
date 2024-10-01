@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import { usePrefetchCommitFileEntry } from './usePrefetchCommitFileEntry'
 
@@ -116,19 +117,19 @@ describe('usePrefetchCommitFileEntry', () => {
     const mockVars = jest.fn()
 
     server.use(
-      graphql.query('CoverageForFile', (req, res, ctx) => {
-        mockVars(req.variables)
+      graphql.query('CoverageForFile', (info) => {
+        mockVars(info.variables)
 
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         } else {
-          return res(ctx.status(200), ctx.data(mockData))
+          return HttpResponse.json({ data: mockData })
         }
       })
     )
@@ -277,12 +278,13 @@ describe('usePrefetchCommitFileEntry', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      jest.restoreAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -314,12 +316,13 @@ describe('usePrefetchCommitFileEntry', () => {
   })
 
   describe('returns OwnerNotActivatedError __typename', () => {
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      jest.restoreAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
@@ -351,12 +354,13 @@ describe('usePrefetchCommitFileEntry', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      jest.spyOn(console, 'error')
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      jest.restoreAllMocks()
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {

@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import { usePrefetchSingleFileComp } from './usePrefetchSingleFileComp'
 
@@ -181,24 +182,24 @@ describe('usePrefetchSingleFileComp', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('ImpactedFileComparison', (req, res, ctx) => {
+      graphql.query('ImpactedFileComparison', (info) => {
         if (isRenamed) {
-          return res(ctx.status(200), ctx.data(mockRenamedFile))
+          return HttpResponse.json({ data: mockRenamedFile })
         } else if (isDeleted) {
-          return res(ctx.status(200), ctx.data(mockDeletedFile))
+          return HttpResponse.json({ data: mockDeletedFile })
         } else if (isUnchanged) {
-          return res(ctx.status(200), ctx.data(mockUnchangedFile))
+          return HttpResponse.json({ data: mockUnchangedFile })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockDataOwnerNotActivated))
+          return HttpResponse.json({ data: mockDataOwnerNotActivated })
         } else if (isRepositoryNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockDataRepositoryNotFound))
+          return HttpResponse.json({ data: mockDataRepositoryNotFound })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         }
 
-        return res(ctx.status(200), ctx.data(mockData))
+        return HttpResponse.json({ data: mockData })
       })
     )
   }
@@ -398,14 +399,13 @@ describe('usePrefetchSingleFileComp', () => {
   })
 
   describe('rejecting request', () => {
-    let oldConsoleError = console.error
-
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('fails to parse bad schema', async () => {

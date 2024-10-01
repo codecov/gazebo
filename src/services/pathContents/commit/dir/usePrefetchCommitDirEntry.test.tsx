@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePrefetchCommitDirEntry } from './usePrefetchCommitDirEntry'
@@ -141,23 +141,19 @@ describe('usePrefetchCommitDirEntry', () => {
     isUnsuccessfulParse = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CommitPathContents', (req, res, ctx) => {
+      graphql.query('CommitPathContents', (info) => {
         if (isMissingCoverage) {
-          return res(ctx.status(200), ctx.data(mockDataMissingCoverage))
+          return HttpResponse.json({ data: mockDataMissingCoverage })
+        } else if (isUnknownPath) {
+          return HttpResponse.json({ data: mockDataUnknownPath })
+        } else if (isNotFoundError) {
+          return HttpResponse.json({ data: mockNotFoundError })
+        } else if (isOwnerNotActivatedError) {
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
+        } else if (isUnsuccessfulParse) {
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }
-        if (isUnknownPath) {
-          return res(ctx.status(200), ctx.data(mockDataUnknownPath))
-        }
-        if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
-        }
-        if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
-        }
-        if (isUnsuccessfulParse) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
-        }
-        return res(ctx.status(200), ctx.data(mockData))
+        return HttpResponse.json({ data: mockData })
       })
     )
   }
