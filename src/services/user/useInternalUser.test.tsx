@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { useInternalUser } from './useInternalUser'
 
@@ -28,20 +28,17 @@ afterAll(() => {
 describe('useInternalUser', () => {
   function setup(hasError = false) {
     server.use(
-      rest.get('/internal/user', (req, res, ctx) => {
+      http.get('/internal/user', (info) => {
         if (hasError) {
-          return res(ctx.status(400), ctx.json({}))
+          return HttpResponse.json({}, { status: 400 })
         }
-        return res(
-          ctx.status(200),
-          ctx.json({
-            email: 'cool@email.com',
-            name: 'cool-user',
-            externalId: '1234',
-            termsAgreement: false,
-            owners: [],
-          })
-        )
+        return HttpResponse.json({
+          email: 'cool@email.com',
+          name: 'cool-user',
+          externalId: '1234',
+          termsAgreement: false,
+          owners: [],
+        })
       })
     )
   }
@@ -49,7 +46,6 @@ describe('useInternalUser', () => {
   describe('calling hook', () => {
     it('returns api response', async () => {
       setup()
-
       const { result } = renderHook(() => useInternalUser({}), { wrapper })
 
       await waitFor(() =>
@@ -67,7 +63,6 @@ describe('useInternalUser', () => {
   describe('when hook call errors', () => {
     it('returns empty object', async () => {
       setup(true)
-
       const { result } = renderHook(() => useInternalUser({}), { wrapper })
 
       await waitFor(() => expect(result.current.data).toStrictEqual({}))

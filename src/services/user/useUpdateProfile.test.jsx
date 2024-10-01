@@ -1,14 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
 import { useUpdateProfile } from './useUpdateProfile'
 
-jest.mock('config')
+vi.mock('config')
 
 const user = {
   username: 'TerrySmithDC',
@@ -21,7 +21,6 @@ const user = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 const wrapper =
   (initialEntries = '/gh') =>
   ({ children }) => (
@@ -32,38 +31,43 @@ const wrapper =
     </QueryClientProvider>
   )
 
-beforeAll(() => server.listen())
+const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useUpdateProfile', () => {
   function setup() {
     server.use(
-      graphql.mutation('UpdateProfile', (req, res, ctx) => {
+      graphql.mutation('UpdateProfile', (info) => {
         const newUser = {
           ...user,
-          name: req.variables.input.name,
-          email: req.variables.input.email,
+          name: info.variables.input.name,
+          email: info.variables.input.email,
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             updateProfile: {
               me: newUser,
             },
-          })
-        )
+          },
+        })
       })
     )
   }
 
   describe('when running in self-hosted', () => {
     beforeEach(() => {
-      setup()
       config.IS_SELF_HOSTED = true
     })
 
@@ -74,11 +78,10 @@ describe('useUpdateProfile', () => {
       }
 
       it('returns success', async () => {
+        setup()
         const { result } = renderHook(
           () => useUpdateProfile({ provider: 'gh' }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         result.current.mutate(newData)
@@ -95,11 +98,10 @@ describe('useUpdateProfile', () => {
       })
 
       it('returns new user', async () => {
+        setup()
         const { result } = renderHook(
           () => useUpdateProfile({ provider: 'gh' }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         result.current.mutate(newData)
@@ -119,7 +121,6 @@ describe('useUpdateProfile', () => {
 
   describe('when not running in self-hosted', () => {
     beforeEach(() => {
-      setup()
       config.IS_SELF_HOSTED = false
     })
 
@@ -130,11 +131,10 @@ describe('useUpdateProfile', () => {
       }
 
       it('returns success', async () => {
+        setup()
         const { result } = renderHook(
           () => useUpdateProfile({ provider: 'gh' }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         result.current.mutate(newData)
@@ -143,11 +143,10 @@ describe('useUpdateProfile', () => {
       })
 
       it('returns new user', async () => {
+        setup()
         const { result } = renderHook(
           () => useUpdateProfile({ provider: 'gh' }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         result.current.mutate(newData)

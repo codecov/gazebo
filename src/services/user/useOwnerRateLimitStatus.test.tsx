@@ -1,25 +1,19 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { MockInstance } from 'vitest'
 
 import { useOwnerRateLimitStatus } from './useOwnerRateLimitStatus'
 
 const mockRateLimitStatus = {
-  me: {
-    owner: {
-      isGithubRateLimited: true,
-    },
-  },
+  me: { owner: { isGithubRateLimited: true } },
 }
 
 const mockUnsuccessfulParseError = {
-  owner: {
-    wrong: 'schema',
-  },
+  owner: { wrong: 'schema' },
 }
 
-const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -28,6 +22,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -48,11 +43,11 @@ interface SetupArgs {
 describe('useOwnerRateLimitStatus', () => {
   function setup({ isUnsuccessfulParseError = false }: SetupArgs) {
     server.use(
-      graphql.query('GetOwnerRateLimitStatus', (req, res, ctx) => {
+      graphql.query('GetOwnerRateLimitStatus', (info) => {
         if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }
-        return res(ctx.status(200), ctx.data(mockRateLimitStatus))
+        return HttpResponse.json({ data: mockRateLimitStatus })
       })
     )
   }
@@ -61,10 +56,7 @@ describe('useOwnerRateLimitStatus', () => {
     it('fetches the owner rate limit status', async () => {
       setup({})
       const { result } = renderHook(
-        () =>
-          useOwnerRateLimitStatus({
-            provider: 'gh',
-          }),
+        () => useOwnerRateLimitStatus({ provider: 'gh' }),
         { wrapper }
       )
 
@@ -77,27 +69,22 @@ describe('useOwnerRateLimitStatus', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
-
-    beforeEach(() => {
-      console.error = () => null
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
-    afterEach(() => {
-      console.error = oldConsoleError
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
-        () =>
-          useOwnerRateLimitStatus({
-            provider: 'gh',
-          }),
+        () => useOwnerRateLimitStatus({ provider: 'gh' }),
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({

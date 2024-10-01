@@ -1,23 +1,23 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import { useMyContexts } from './useMyContexts'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
 const orgList1 = { username: 'org1', avatarUrl: 'http://127.0.0.1/avatar-url' }
-
 const orgList2 = { username: 'org2', avatarUrl: 'http://127.0.0.1/avatar-url' }
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -38,14 +38,14 @@ interface SetupArgs {
 describe('useMyContexts', () => {
   function setup({ badResponse = false }: SetupArgs) {
     server.use(
-      graphql.query('MyContexts', (req, res, ctx) => {
+      graphql.query('MyContexts', (info) => {
         if (badResponse) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({})
         }
 
-        const orgList = !!req.variables?.after ? orgList2 : orgList1
-        const hasNextPage = req.variables?.after ? false : true
-        const endCursor = req.variables?.after ? 'second' : 'first'
+        const orgList = !!info.variables?.after ? orgList2 : orgList1
+        const hasNextPage = info.variables?.after ? false : true
+        const endCursor = info.variables?.after ? 'second' : 'first'
 
         const queryData = {
           me: {
@@ -64,7 +64,7 @@ describe('useMyContexts', () => {
           },
         }
 
-        return res(ctx.status(200), ctx.data(queryData))
+        return HttpResponse.json({ data: queryData })
       })
     )
   }
@@ -75,9 +75,6 @@ describe('useMyContexts', () => {
       const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
         wrapper,
       })
-
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
 
       const expectedData = {
         currentUser: {
@@ -105,15 +102,21 @@ describe('useMyContexts', () => {
     })
 
     describe('and response is bad', () => {
+      let consoleSpy: MockInstance
+      beforeAll(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterAll(() => {
+        consoleSpy.mockRestore()
+      })
+
       it('throws 404 failed to parse', async () => {
         console.error = () => {}
         setup({ badResponse: true })
         const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
           wrapper,
         })
-
-        await waitFor(() => result.current.isFetching)
-        await waitFor(() => !result.current.isFetching)
 
         await waitFor(() =>
           expect(result.current.failureReason).toEqual(
@@ -128,9 +131,8 @@ describe('useMyContexts', () => {
   })
 
   describe('when fetchNextPage is called', () => {
-    beforeEach(() => setup({}))
-
     it('returns combined data set', async () => {
+      setup({})
       const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
         wrapper,
       })

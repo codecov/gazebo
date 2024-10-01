@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { POLLING_INTERVAL, useResyncUser } from './useResyncUser'
@@ -19,15 +19,15 @@ const wrapper =
     </QueryClientProvider>
   )
 
+const invalidateQueriesSpy = vi.spyOn(queryClient, 'invalidateQueries')
+const getQueriesDataSpy = vi.spyOn(queryClient, 'getQueriesData')
+
 const server = setupServer()
-
-const invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries')
-const getQueriesDataSpy = jest.spyOn(queryClient, 'getQueriesData')
-
 beforeAll(() => {
   server.listen()
 })
-beforeEach(() => {
+afterEach(() => {
+  vi.clearAllMocks()
   queryClient.clear()
   server.resetHandlers()
 })
@@ -37,31 +37,18 @@ afterAll(() => {
 
 describe('useResyncUser', () => {
   let syncStatus = false
-
   function setup() {
     server.use(
-      graphql.query('IsSyncing', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            me: {
-              isSyncing: syncStatus,
-            },
-          })
-        )
+      graphql.query('IsSyncing', (info) => {
+        return HttpResponse.json({
+          data: { me: { isSyncing: syncStatus } },
+        })
       }),
-      graphql.mutation('SyncData', (req, res, ctx) => {
+      graphql.mutation('SyncData', (info) => {
         syncStatus = true
-        return res(
-          ctx.status(200),
-          ctx.data({
-            syncWithGitProvider: {
-              me: {
-                isSyncing: syncStatus,
-              },
-            },
-          })
-        )
+        return HttpResponse.json({
+          data: { syncWithGitProvider: { me: { isSyncing: syncStatus } } },
+        })
       })
     )
   }
@@ -69,10 +56,10 @@ describe('useResyncUser', () => {
   describe('when the hook is called and the syncing is not in progress', () => {
     beforeEach(() => {
       syncStatus = false
-      setup()
     })
 
     it('returns syncing false', async () => {
+      setup()
       const { result } = renderHook(() => useResyncUser(), {
         wrapper: wrapper(),
       })
@@ -84,10 +71,10 @@ describe('useResyncUser', () => {
   describe('when the user trigger a sync', () => {
     beforeEach(() => {
       syncStatus = false
-      setup()
     })
 
     it('returns syncing true', async () => {
+      setup()
       const { result } = renderHook(() => useResyncUser(), {
         wrapper: wrapper(),
       })
@@ -113,18 +100,17 @@ describe('useResyncUser', () => {
     })
 
     it('calls invalidate queries on each sync', async () => {
-      jest.useFakeTimers()
+      vi.useFakeTimers()
       const { result } = renderHook(() => useResyncUser(), {
         wrapper: wrapper(),
       })
 
       await waitFor(() => expect(result.current.isSyncing).toBe(true))
-
       await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(2))
 
       // For some reason number of called times is doubling; but when console logging within the queryFn we see
-      // that the loop is being entered the correct number of times. This may be some jest weirdness
-      jest.advanceTimersByTime(POLLING_INTERVAL)
+      // that the loop is being entered the correct number of times. This may be some vi weirdness
+      vi.advanceTimersByTime(POLLING_INTERVAL)
 
       await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(4))
 
@@ -134,12 +120,12 @@ describe('useResyncUser', () => {
         { pages: { repos: Array.from({ length: 20 }) } },
       ])
 
-      jest.advanceTimersByTime(POLLING_INTERVAL)
+      vi.advanceTimersByTime(POLLING_INTERVAL)
 
       await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(5))
 
       // Confirm that we don't call the query anymore after we've reached the page size
-      jest.advanceTimersByTime(POLLING_INTERVAL)
+      vi.advanceTimersByTime(POLLING_INTERVAL)
 
       await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(5))
 
@@ -157,17 +143,17 @@ describe('useResyncUser', () => {
 
       // Call one extra time on success
       await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(6))
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
   })
 
   describe('when a sync finishes', () => {
     beforeEach(() => {
       syncStatus = true
-      setup()
     })
 
     it('returns syncing false', async () => {
+      setup()
       const { result } = renderHook(() => useResyncUser(), {
         wrapper: wrapper(),
       })
@@ -187,6 +173,7 @@ describe('useResyncUser', () => {
     })
 
     it('calls invalidateQueries for repos', async () => {
+      setup()
       const { result } = renderHook(() => useResyncUser(), {
         wrapper: wrapper(),
       })
