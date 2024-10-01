@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react'
 
 import { NONE } from 'shared/utils/extractUploads'
 import A from 'ui/A'
+import { Card } from 'ui/Card'
 
 import Upload from './Upload'
 import { useUploads } from './useUploads'
@@ -15,19 +16,19 @@ function UploadsCard() {
 
   return (
     <>
-      <div className="flex flex-1 flex-col border border-ds-gray-secondary text-ds-gray-octonary">
-        <div className="flex flex-col border-b border-ds-gray-secondary p-4">
-          <div className="flex justify-between text-base">
-            <h2 className="font-semibold">Uploads</h2>
+      <Card className="overflow-x-hidden">
+        <Card.Header>
+          <div className="flex justify-between">
+            <Card.Title size="base">Uploads</Card.Title>
             <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
               <span className="text-xs">view YAML file</span>
             </A>
           </div>
-          <span className="text-ds-gray-quinary">{uploadsOverview}</span>
-        </div>
-        {/* dark:bg-opacity-5 passes linting in TSX files but triggers a warning in JSX. Once this file is converted to TSX, the linter should pass without issues. */}
-        {/* eslint-disable-next-line tailwindcss/migration-from-tailwind-2*/}
-        <div className="flex max-h-64 min-w-96 flex-1 flex-col divide-y divide-solid divide-ds-gray-secondary overflow-auto bg-ds-gray-primary dark:bg-ds-blue-default dark:bg-opacity-5">
+          <Card.Description className="text-ds-gray-quinary">
+            {uploadsOverview}
+          </Card.Description>
+        </Card.Header>
+        <div className="flex max-h-64 min-w-96 flex-1 flex-col divide-y divide-solid divide-ds-gray-secondary overflow-auto bg-ds-gray-primary dark:bg-ds-blue-default/5">
           {uploadsProviderList.map((title) => (
             <Fragment key={title}>
               {title !== NONE && (
@@ -74,7 +75,7 @@ function UploadsCard() {
             </span>
           )}
         </div>
-      </div>
+      </Card>
       <YamlModal
         showYAMLModal={showYAMLModal}
         setShowYAMLModal={setShowYAMLModal}
