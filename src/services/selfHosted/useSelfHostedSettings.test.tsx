@@ -1,15 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import { useSelfHostedSettings } from './useSelfHostedSettings'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const mockResponse = {
   config: {
@@ -27,6 +27,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   </QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -43,11 +44,11 @@ afterAll(() => {
 describe('useSelfHostedSettings', () => {
   function setup({ invalidResponse = false }) {
     server.use(
-      graphql.query('SelfHostedSettings', (req, res, ctx) => {
+      graphql.query('SelfHostedSettings', (info) => {
         if (invalidResponse) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({})
         }
-        return res(ctx.status(200), ctx.data(mockResponse))
+        return HttpResponse.json({ data: mockResponse })
       })
     )
   }
@@ -56,9 +57,6 @@ describe('useSelfHostedSettings', () => {
     it('returns data', async () => {
       setup({})
       const { result } = renderHook(() => useSelfHostedSettings(), { wrapper })
-
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
 
       await waitFor(() =>
         expect(result.current.data).toStrictEqual({
@@ -71,8 +69,14 @@ describe('useSelfHostedSettings', () => {
   })
 
   describe('invalid response', () => {
+    let consoleSpy: MockInstance
+
     beforeAll(() => {
-      console.error = () => {}
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('rejects with 404', async () => {
@@ -81,12 +85,13 @@ describe('useSelfHostedSettings', () => {
         wrapper,
       })
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-      expect(result.current.error).toEqual(
-        expect.objectContaining({
-          status: 404,
-          dev: 'useSelfHostedSettings - 404 schema parsing failed',
-        })
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+            dev: 'useSelfHostedSettings - 404 schema parsing failed',
+          })
+        )
       )
     })
   })

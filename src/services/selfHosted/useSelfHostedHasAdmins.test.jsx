@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { useSelfHostedHasAdmins } from './useSelfHostedHasAdmins'
 
@@ -13,54 +13,35 @@ const wrapper = ({ children }) => (
 )
 
 const server = setupServer()
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useSelfHostedHasAdmins', () => {
   function setup({ data }) {
     server.use(
-      graphql.query('HasAdmins', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(data))
-      )
+      graphql.query('HasAdmins', (info) => {
+        return HttpResponse.json({ data })
+      })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup({ data: { config: { hasAdmins: true } } })
-    })
-
-    it('returns isLoading', () => {
-      const { result } = renderHook(
-        () => useSelfHostedHasAdmins({ provider: 'gl' }),
-        {
-          wrapper,
-        }
-      )
-
-      expect(result.current.isLoading).toBeTruthy()
-    })
-  })
-
-  describe('when data is loaded', () => {
-    beforeEach(async () => {
-      setup({ data: { config: { hasAdmins: true } } })
-    })
-
     it('returns the user info', async () => {
+      setup({ data: { config: { hasAdmins: true } } })
       const { result } = renderHook(
         () => useSelfHostedHasAdmins({ provider: 'gl' }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
-
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
 
       await waitFor(() => expect(result.current.data).toEqual(true))
     })

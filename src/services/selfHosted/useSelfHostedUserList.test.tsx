@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import { useSelfHostedUserList } from './useSelfHostedUserList'
 
@@ -43,7 +44,6 @@ const mockSecondResponse = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 const wrapper =
   (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
@@ -54,6 +54,7 @@ const wrapper =
     </QueryClientProvider>
   )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -70,21 +71,19 @@ afterAll(() => {
 describe('useSelfHostedUserList', () => {
   function setup({ invalidResponse = false }) {
     server.use(
-      rest.get('/internal/users', (req, res, ctx) => {
+      http.get('/internal/users', (info) => {
         if (invalidResponse) {
-          return res(ctx.status(200), ctx.json({}))
+          return HttpResponse.json({})
         }
 
-        const {
-          url: { searchParams },
-        } = req
+        const searchParams = new URL(info.request.url).searchParams
         const pageNumber = Number(searchParams.get('page'))
 
         if (pageNumber > 1) {
-          return res(ctx.status(200), ctx.json(mockSecondResponse))
+          return HttpResponse.json(mockSecondResponse)
         }
 
-        return res(ctx.status(200), ctx.json(mockFirstResponse))
+        return HttpResponse.json(mockFirstResponse)
       })
     )
   }
@@ -118,9 +117,7 @@ describe('useSelfHostedUserList', () => {
         setup({})
         const { result } = renderHook(
           () => useSelfHostedUserList({ search: '' }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         await waitFor(() => result.current.isLoading)
@@ -156,9 +153,7 @@ describe('useSelfHostedUserList', () => {
         setup({})
         const { result } = renderHook(
           () => useSelfHostedUserList({ search: 'codecov' }),
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         await waitFor(() => result.current.isFetching)
@@ -194,8 +189,14 @@ describe('useSelfHostedUserList', () => {
   })
 
   describe('endpoint returns invalid data', () => {
-    beforeEach(() => {
-      console.error = () => {}
+    let consoleSpy: MockInstance
+
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
     })
 
     it('rejects with 404', async () => {
@@ -204,12 +205,13 @@ describe('useSelfHostedUserList', () => {
         wrapper: wrapper(),
       })
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-      expect(result.current.error).toEqual(
-        expect.objectContaining({
-          status: 404,
-          dev: 'useSelfHostedUserList - 404 schema parsing failed',
-        })
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+            dev: 'useSelfHostedUserList - 404 schema parsing failed',
+          })
+        )
       )
     })
   })
