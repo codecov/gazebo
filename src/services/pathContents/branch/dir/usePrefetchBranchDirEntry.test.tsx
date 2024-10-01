@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePrefetchBranchDirEntry } from './usePrefetchBranchDirEntry'
@@ -151,20 +151,20 @@ describe('usePrefetchBranchDirEntry', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('BranchContents', (req, res, ctx) => {
+      graphql.query('BranchContents', (info) => {
         if (isMissingCoverage) {
-          return res(ctx.status(200), ctx.data(mockDataMissingCoverage))
+          return HttpResponse.json({ data: mockDataMissingCoverage })
         } else if (isUnknownPath) {
-          return res(ctx.status(200), ctx.data(mockDataUnknownPath))
+          return HttpResponse.json({ data: mockDataUnknownPath })
         } else if (isRepositoryNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockDataRepositoryNotFound))
+          return HttpResponse.json({ data: mockDataRepositoryNotFound })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockDataOwnerNotActivated))
+          return HttpResponse.json({ data: mockDataOwnerNotActivated })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }
 
-        return res(ctx.status(200), ctx.data(mockData))
+        return HttpResponse.json({ data: mockData })
       })
     )
   }

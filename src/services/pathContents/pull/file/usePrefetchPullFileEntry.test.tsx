@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePrefetchPullFileEntry } from './usePrefetchPullFileEntry'
@@ -31,12 +31,18 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 const server = setupServer()
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const mockData = {
   owner: {
@@ -95,25 +101,17 @@ describe('usePrefetchPullFileEntry', () => {
     nullOwner = false,
   }) {
     server.use(
-      graphql.query('CoverageForFile', (req, res, ctx) => {
+      graphql.query('CoverageForFile', (info) => {
         if (invalidSchema) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({})
+        } else if (repositoryNotFound) {
+          return HttpResponse.json({ data: mockDataRepositoryNotFound })
+        } else if (ownerNotActivated) {
+          return HttpResponse.json({ data: mockDataOwnerNotActivated })
+        } else if (nullOwner) {
+          return HttpResponse.json({ data: { owner: null } })
         }
-        if (repositoryNotFound) {
-          return res(ctx.status(200), ctx.data(mockDataRepositoryNotFound))
-        }
-        if (ownerNotActivated) {
-          return res(ctx.status(200), ctx.data(mockDataOwnerNotActivated))
-        }
-        if (nullOwner) {
-          return res(
-            ctx.status(200),
-            ctx.data({
-              owner: null,
-            })
-          )
-        }
-        return res(ctx.status(200), ctx.data(mockData))
+        return HttpResponse.json({ data: mockData })
       })
     )
   }
