@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import { usePullBundleHeadList } from './usePullBundleHeadList'
 
@@ -86,7 +87,6 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  jest.resetAllMocks()
   queryClient.clear()
   server.resetHandlers()
 })
@@ -110,21 +110,21 @@ describe('usePullBundleHeadList', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullBundleHeadList', (req, res, ctx) => {
+      graphql.query('PullBundleHeadList', (info) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockRepoNotFound))
+          return HttpResponse.json({ data: mockRepoNotFound })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivated))
+          return HttpResponse.json({ data: mockOwnerNotActivated })
         } else if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         }
 
-        return res(ctx.status(200), ctx.data(mockPullBundleList))
+        return HttpResponse.json({ data: mockPullBundleList })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverview))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockRepoOverview })
       })
     )
   }
@@ -195,14 +195,13 @@ describe('usePullBundleHeadList', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
-    let oldConsoleError = console.error
-
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
@@ -230,14 +229,13 @@ describe('usePullBundleHeadList', () => {
   })
 
   describe('returns OwnerNotActivatedError __typename', () => {
-    let oldConsoleError = console.error
-
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 403', async () => {
@@ -265,14 +263,13 @@ describe('usePullBundleHeadList', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
-
+    let consoleSpy: MockInstance
     beforeEach(() => {
-      console.error = () => null
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     })
 
     afterEach(() => {
-      console.error = oldConsoleError
+      consoleSpy.mockRestore()
     })
 
     it('throws a 404', async () => {
