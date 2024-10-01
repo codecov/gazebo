@@ -10,9 +10,11 @@ describe('demo related helpers', () => {
               name: 'gazebo',
               active: true,
               activated: true,
-              lines: 99,
               private: false,
-              coverage: null,
+              coverageAnalytics: {
+                lines: 99,
+                coverage: null,
+              },
               updatedAt: '2021-04-22T14:09:39.822872+00:00',
               author: {
                 username: 'codecov',
