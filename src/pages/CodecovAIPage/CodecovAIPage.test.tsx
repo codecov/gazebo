@@ -136,12 +136,12 @@ describe('CodecovAIPage', () => {
     expect(commandText).toBeInTheDocument()
 
     const commandOneText = await screen.findByText(
-      /the assistant will generate tests/
+      / the assistant will generate tests/
     )
     expect(commandOneText).toBeInTheDocument()
 
     const commandTwoText = await screen.findByText(
-      /the assistant will review the PR/
+      / the assistant will review the PR/
     )
     expect(commandTwoText).toBeInTheDocument()
   })
