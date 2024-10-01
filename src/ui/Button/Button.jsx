@@ -51,6 +51,7 @@ const variantClasses = {
     text-ds-gray-quaternary
 
     hover:text-ds-gray-octonary
+    focus:ring-0
   `,
   listbox: `
     justify-start

@@ -49,6 +49,8 @@ ignore:
   - './src/**/*.svg'
   - './src/**/*.png'
   - './src/**/*.jpg'
+  - ./src/**/*.mocks.js
+  - ./src/**/*.mocks.ts
 
 component_management:
   default_rules:
