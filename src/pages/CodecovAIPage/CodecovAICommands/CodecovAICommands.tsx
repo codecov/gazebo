@@ -14,13 +14,13 @@ const CodecovAICommands: React.FC = () => {
             <li>
               <span className="rounded border border-gray-200 bg-gray-100 px-1 font-semibold">
                 @codecov-ai-reviewer test
-              </span>{' '}
+              </span>
               -- the assistant will generate tests for the PR.
             </li>
             <li>
               <span className="rounded border border-gray-200 bg-gray-100 px-1 font-semibold">
                 @codecov-ai-reviewer review
-              </span>{' '}
+              </span>
               -- the assistant will review the PR and make suggestions.
             </li>
           </ul>
