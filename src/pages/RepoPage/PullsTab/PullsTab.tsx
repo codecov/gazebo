@@ -25,8 +25,10 @@ const Loader = () => (
 )
 
 type Order = keyof typeof orderNames
-type SelectedStatesNames = Array<keyof typeof stateNames>
-type SelectedStatesEnum = Array<keyof typeof stateEnum>
+type SelectedStatesNames = Array<(typeof stateNames)[keyof typeof stateNames]>
+type SelectedStatesEnum = Array<
+  (typeof stateEnum)[keyof typeof stateEnum]['state']
+>
 
 const defaultParams = {
   order: orderingEnum.Newest.order,
@@ -37,7 +39,7 @@ function useControlParams() {
   const { params, updateParams } = useLocationParams(defaultParams)
   const { order, prStates } = params as {
     order: Order
-    prStates: SelectedStatesNames
+    prStates: SelectedStatesEnum
   }
   const paramOrderName = orderNames[order]
 
@@ -47,7 +49,8 @@ function useControlParams() {
   })
 
   const [selectedOrder, setSelectedOrder] = useState(paramOrderName)
-  const [selectedStates, setSelectedStates] = useState(paramStatesNames)
+  const [selectedStates, setSelectedStates] =
+    useState<SelectedStatesNames>(paramStatesNames)
 
   return {
     updateParams,
@@ -83,13 +86,17 @@ function PullsTab() {
   )
 
   const handleStatesChange = useCallback(
-    (selectedStates: SelectedStatesEnum) => {
-      const prStates = selectedStates.map((filter) => {
-        const { state } = stateEnum[filter]
-        return state
-      })
-      setSelectedStates(prStates)
-      updateParams({ prStates })
+    (selectedStates: SelectedStatesNames) => {
+      const states: SelectedStatesEnum = []
+      const names: SelectedStatesNames = []
+
+      for (const filter of selectedStates) {
+        states.push(stateEnum[filter].state)
+        names.push(stateEnum[filter].name)
+      }
+
+      setSelectedStates(names)
+      updateParams({ prStates: states })
     },
     [setSelectedStates, updateParams]
   )
