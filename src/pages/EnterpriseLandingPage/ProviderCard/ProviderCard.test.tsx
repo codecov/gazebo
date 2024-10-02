@@ -136,12 +136,10 @@ describe('ProviderCard', () => {
       })
     })
 
-    describe('InternalProviderButton returns null', () => {
+    it('InternalProviderButton returns null', () => {
       const { container } = render(
         <InternalProviderButton provider={LoginProvidersEnum.OKTA} />,
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       expect(container).toBeEmptyDOMElement()
