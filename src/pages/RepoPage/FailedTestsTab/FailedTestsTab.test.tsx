@@ -1,26 +1,40 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import { useRedirect } from 'shared/useRedirect'
-
 import FailedTestsTab from './FailedTestsTab'
 
-jest.mock('./GitHubActions', () => () => 'GitHub Actions tab')
-jest.mock('./CodecovCLI', () => () => 'Codecov CLI tab')
-jest.mock(
-  './FailedTestsTable/FailedTestsTable.tsx',
-  () => () => 'Failed Tests Table'
-)
-jest.mock('./FailedTestsTable/BranchSelector', () => () => 'Branch Selector')
-jest.mock('../ActivationAlert', () => () => 'Activation Alert')
+const mocks = vi.hoisted(() => ({
+  useRedirect: vi.fn(),
+}))
 
-jest.mock('shared/useRedirect')
-const mockedUseRedirect = useRedirect as jest.Mock
+vi.mock('./GitHubActions', () => ({
+  default: () => 'GitHub Actions tab',
+}))
+vi.mock('./CodecovCLI', () => ({
+  default: () => 'Codecov CLI tab',
+}))
+vi.mock('./FailedTestsTable/FailedTestsTable.tsx', () => ({
+  default: () => 'Failed Tests Table',
+}))
+vi.mock('./FailedTestsTable/BranchSelector', () => ({
+  default: () => 'Branch Selector',
+}))
+vi.mock('../ActivationAlert', () => ({
+  default: () => 'Activation Alert',
+}))
+
+vi.mock('shared/useRedirect', async () => {
+  const actual = await vi.importActual('shared/useRedirect')
+  return {
+    ...actual,
+    useRedirect: mocks.useRedirect,
+  }
+})
 
 let testLocation: ReturnType<typeof useLocation>
 
@@ -97,8 +111,8 @@ const mockRepoOverview = ({
 }
 
 describe('FailedTestsTab', () => {
-  const hardRedirect = jest.fn()
-  mockedUseRedirect.mockImplementation((data) => ({
+  const hardRedirect = vi.fn()
+  mocks.useRedirect.mockImplementation((data) => ({
     hardRedirect: () => hardRedirect(data),
   }))
 
@@ -112,20 +126,17 @@ describe('FailedTestsTab', () => {
     isPrivate?: boolean
   }) {
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
+      graphql.query('GetRepoOverview', (info) => {
         if (testEnabled) {
-          return res(
-            ctx.status(200),
-            ctx.data(
-              mockRepoOverview({
-                testAnalyticsEnabled: true,
-                isCurrentUserActivated,
-                isPrivate,
-              })
-            )
-          )
+          return HttpResponse.json({
+            data: mockRepoOverview({
+              testAnalyticsEnabled: true,
+              isCurrentUserActivated,
+              isPrivate,
+            }),
+          })
         }
-        return res(ctx.status(200), ctx.data(mockRepoOverview({})))
+        return HttpResponse.json({ data: mockRepoOverview({}) })
       })
     )
 

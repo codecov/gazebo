@@ -7,8 +7,7 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import GitHubActions from './GitHubActions'
 
-jest.mock('../FrameworkTabsCard', () => ({
-  __esModule: true,
+vi.mock('../FrameworkTabsCard', () => ({
   FrameworkTabsCard: () => 'FrameworkTabsCard',
 }))
 

@@ -3,8 +3,7 @@ import userEvent from '@testing-library/user-event'
 
 import { FrameworkTabsCard } from './FrameworkTabsCard'
 
-jest.mock('./FrameworkTabs', () => ({
-  __esModule: true,
+vi.mock('./FrameworkTabs', () => ({
   FrameworkTabs: () => 'FrameworkTabs',
 }))
 
