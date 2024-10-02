@@ -2,14 +2,13 @@ import { Redirect, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import { useRepoSettingsTeam } from 'services/repo'
-import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
+import { useRepoFlagsSelect, useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import FlagsNotConfigured from 'shared/FlagsNotConfigured'
 
 import blurredTable from './assets/blurredTable.png'
 import BackfillBanners from './BackfillBanners/BackfillBanners'
-import { useRepoBackfillingStatus } from './BackfillBanners/hooks'
+import { useRepoBackfillingStatus } from './BackfillBanners/useRepoBackfillingStatus'
 import Header from './Header'
 import FlagsTable from './subroute/FlagsTable/FlagsTable'
 import TimescaleDisabled from './TimescaleDisabled'
