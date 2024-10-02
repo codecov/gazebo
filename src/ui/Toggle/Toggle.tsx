@@ -69,7 +69,12 @@ function Toggle({
               'text-toggle-disabled': disabled,
             })}
           >
-            <Icon name={value ? 'check' : 'x'} variant="solid" size="flex" />
+            <Icon
+              name={value ? 'check' : 'x'}
+              label={value ? 'check' : 'x'}
+              variant="solid"
+              size="flex"
+            />
           </div>
         </span>
       </button>

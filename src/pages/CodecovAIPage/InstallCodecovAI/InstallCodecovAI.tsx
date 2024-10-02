@@ -9,7 +9,6 @@ const COPY_APP_INSTALL_STRING =
 
 const InstallCodecovAI: React.FC = () => {
   const { theme } = useThemeContext()
-
   const isDarkMode = theme === Theme.DARK
   const githubImage = loginProviderImage('Github', !isDarkMode)
 

@@ -13,9 +13,13 @@ const RepositorySchema = z
     active: z.boolean(),
     activated: z.boolean().nullable(),
     private: z.boolean(),
-    coverage: z.number().nullish(),
+    coverageAnalytics: z
+      .object({
+        percentCovered: z.number().nullish(),
+        lines: z.number().nullable(),
+      })
+      .nullable(),
     latestCommitAt: z.string().nullable(),
-    lines: z.number().nullable(),
     author: z.object({
       username: z.string().nullable(),
     }),
@@ -70,10 +74,12 @@ const query = `query ReposForOwner(
           active
           activated
           private
-          coverage
+          coverageAnalytics {
+            percentCovered
+            lines
+          }
           updatedAt
           latestCommitAt
-          lines
           author {
             username
           }

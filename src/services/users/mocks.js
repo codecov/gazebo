@@ -1,11 +1,11 @@
 /* eslint-disable camelcase */
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw2'
 
 const usersUri =
   '/internal/:provider/:owner/users/?activated=&is_admin=&ordering=name&search=&page=1&page_size=50'
 
-export const randomUsersHandler = rest.get(usersUri, (req, res, ctx) => {
-  return res(ctx.status(200), ctx.json(usersObject))
+export const randomUsersHandler = http.get(usersUri, (info) => {
+  return HttpResponse.json(usersObject)
 })
 
 const usersObject = {
