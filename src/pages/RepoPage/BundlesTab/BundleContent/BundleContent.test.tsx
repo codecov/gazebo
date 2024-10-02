@@ -1,14 +1,16 @@
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import BundleContent from './BundleContent'
 
-jest.mock('./BundleSelection', () => () => <div>BundleSelection</div>)
+vi.mock('./BundleSelection', () => ({
+  default: () => <div>BundleSelection</div>,
+}))
 
 const mockRepoOverview = {
   owner: {
@@ -279,29 +281,29 @@ describe('BundleContent', () => {
     isEmptyBundleSelection = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('BranchBundleSummaryData', (req, res, ctx) => {
+      graphql.query('BranchBundleSummaryData', (info) => {
         if (isBundleError) {
-          return res(ctx.status(200), ctx.data(mockBranchBundlesError))
+          return HttpResponse.json({ data: mockBranchBundlesError })
         } else if (isEmptyBundleSelection) {
-          return res(ctx.status(200), ctx.data(mockEmptyBundleSelection))
+          return HttpResponse.json({ data: mockEmptyBundleSelection })
         }
-        return res(ctx.status(200), ctx.data(mockBranchBundles))
+        return HttpResponse.json({ data: mockBranchBundles })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverview))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockRepoOverview })
       }),
-      graphql.query('BundleAssets', (req, res, ctx) => {
+      graphql.query('BundleAssets', (info) => {
         if (isBundleError) {
-          return res(ctx.status(200), ctx.data(mockMissingHeadReportAssets))
+          return HttpResponse.json({ data: mockMissingHeadReportAssets })
         }
 
-        return res(ctx.status(200), ctx.data(mockAssets))
+        return HttpResponse.json({ data: mockAssets })
       }),
-      graphql.query('GetBundleTrend', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBundleTrendData))
+      graphql.query('GetBundleTrend', (info) => {
+        return HttpResponse.json({ data: mockBundleTrendData })
       }),
-      graphql.query('BundleSummary', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBundleSummary))
+      graphql.query('BundleSummary', (info) => {
+        return HttpResponse.json({ data: mockBundleSummary })
       })
     )
   }

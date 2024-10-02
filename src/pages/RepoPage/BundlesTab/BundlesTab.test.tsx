@@ -1,19 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import BundlesTab from './BundlesTab'
 
-jest.mock('./BundleContent', () => () => <div>BundleContent</div>)
-jest.mock('./BundleOnboarding', () => () => <div>BundleOnboarding</div>)
+vi.mock('./BundleContent', () => ({ default: () => <div>BundleContent</div> }))
+vi.mock('./BundleOnboarding', () => ({
+  default: () => <div>BundleOnboarding</div>,
+}))
 
 const mockRepoOverview = ({
   coverageEnabled = true,
@@ -99,17 +96,14 @@ describe('BundlesTab', () => {
     language,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(
-            mockRepoOverview({
-              coverageEnabled,
-              bundleAnalysisEnabled,
-              language,
-            })
-          )
-        )
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({
+          data: mockRepoOverview({
+            coverageEnabled,
+            bundleAnalysisEnabled,
+            language,
+          }),
+        })
       })
     )
   }
@@ -132,9 +126,6 @@ describe('BundlesTab', () => {
       render(<BundlesTab />, {
         wrapper: wrapper(),
       })
-
-      const loader = await screen.findByText('Loading')
-      await waitForElementToBeRemoved(loader)
 
       await waitFor(() =>
         expect(testLocation.pathname).toBe('/gh/test-owner/test-repo')

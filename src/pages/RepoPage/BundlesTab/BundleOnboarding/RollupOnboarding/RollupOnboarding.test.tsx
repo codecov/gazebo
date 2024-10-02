@@ -1,12 +1,27 @@
-import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import SvelteKitOnboarding from './SvelteKitOnboarding'
+import RollupOnboarding from './RollupOnboarding'
+
+const mocks = vi.hoisted(() => ({
+  increment: vi.fn(),
+}))
+
+vi.mock('@sentry/react', async () => {
+  const originalModule = await vi.importActual('@sentry/react')
+
+  return {
+    ...originalModule,
+    metrics: {
+      increment: mocks.increment,
+    },
+  }
+})
 
 const mockGetRepo = {
   owner: {
@@ -49,7 +64,9 @@ const server = setupServer()
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles/new']}>
-      <Route path="/:provider/:owner/:repo/bundles/new">{children}</Route>
+      <Route path="/:provider/:owner/:repo/bundles/new">
+        <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+      </Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -67,21 +84,20 @@ afterAll(() => {
   server.close()
 })
 
-describe('SvelteKitOnboarding', () => {
+describe('RollupOnboarding', () => {
   function setup(hasOrgUploadToken: boolean | null) {
     // mock out to clear error
-    window.prompt = jest.fn()
+    window.prompt = vi.fn()
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetRepo))
-      ),
-      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockGetOrgUploadToken(hasOrgUploadToken))
-        )
+      graphql.query('GetRepo', (info) => {
+        return HttpResponse.json({ data: mockGetRepo })
+      }),
+      graphql.query('GetOrgUploadToken', (info) => {
+        return HttpResponse.json({
+          data: mockGetOrgUploadToken(hasOrgUploadToken),
+        })
       })
     )
 
@@ -89,15 +105,15 @@ describe('SvelteKitOnboarding', () => {
   }
 
   describe('rendering onboarding', () => {
-    it('sends sveltekit onboarding metric', async () => {
+    it('sends rollup onboarding metric', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       await waitFor(() =>
-        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+        expect(mocks.increment).toHaveBeenCalledWith(
           'bundles_tab.onboarding.visited_page',
           1,
-          { tags: { bundler: 'sveltekit' } }
+          { tags: { bundler: 'rollup' } }
         )
       )
     })
@@ -106,25 +122,25 @@ describe('SvelteKitOnboarding', () => {
   describe('step 1', () => {
     it('renders header', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const stepText = await screen.findByText(/Step 1:/)
       expect(stepText).toBeInTheDocument()
 
       const headerText = await screen.findByText(
-        /Install the Codecov SvelteKit Plugin/
+        /Install the Codecov Rollup Plugin/
       )
       expect(headerText).toBeInTheDocument()
     })
 
     it('renders body', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const bodyText = await screen.findByText(/To install the/)
       expect(bodyText).toBeInTheDocument()
 
-      const pluginName = await screen.findByText('@codecov/sveltekit-plugin')
+      const pluginName = await screen.findByText('@codecov/rollup-plugin')
       expect(pluginName).toBeInTheDocument()
     })
 
@@ -132,10 +148,10 @@ describe('SvelteKitOnboarding', () => {
       describe('npm', () => {
         it('renders npm install', async () => {
           setup(null)
-          render(<SvelteKitOnboarding />, { wrapper })
+          render(<RollupOnboarding />, { wrapper })
 
           const npmInstallCommand = await screen.findByText(
-            'npm install @codecov/sveltekit-plugin --save-dev'
+            'npm install @codecov/rollup-plugin --save-dev'
           )
           expect(npmInstallCommand).toBeInTheDocument()
         })
@@ -143,11 +159,9 @@ describe('SvelteKitOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(null)
-            render(<SvelteKitOnboarding />, { wrapper })
+            render(<RollupOnboarding />, { wrapper })
 
-            const npmInstall = await screen.findByTestId(
-              'sveltekit-npm-install'
-            )
+            const npmInstall = await screen.findByTestId('rollup-npm-install')
             const npmInstallCopy = await within(npmInstall).findByTestId(
               'clipboard-code-snippet'
             )
@@ -155,10 +169,10 @@ describe('SvelteKitOnboarding', () => {
             await user.click(npmInstallCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.install_command',
                 1,
-                { tags: { package_manager: 'npm', bundler: 'sveltekit' } }
+                { tags: { package_manager: 'npm', bundler: 'rollup' } }
               )
             )
           })
@@ -168,10 +182,10 @@ describe('SvelteKitOnboarding', () => {
       describe('yarn', () => {
         it('renders yarn install', async () => {
           setup(null)
-          render(<SvelteKitOnboarding />, { wrapper })
+          render(<RollupOnboarding />, { wrapper })
 
           const yarnInstallCommand = await screen.findByText(
-            'yarn add @codecov/sveltekit-plugin --dev'
+            'yarn add @codecov/rollup-plugin --dev'
           )
           expect(yarnInstallCommand).toBeInTheDocument()
         })
@@ -179,11 +193,9 @@ describe('SvelteKitOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(null)
-            render(<SvelteKitOnboarding />, { wrapper })
+            render(<RollupOnboarding />, { wrapper })
 
-            const yarnInstall = await screen.findByTestId(
-              'sveltekit-yarn-install'
-            )
+            const yarnInstall = await screen.findByTestId('rollup-yarn-install')
             const yarnInstallCopy = await within(yarnInstall).findByTestId(
               'clipboard-code-snippet'
             )
@@ -191,10 +203,10 @@ describe('SvelteKitOnboarding', () => {
             await user.click(yarnInstallCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.install_command',
                 1,
-                { tags: { package_manager: 'yarn', bundler: 'sveltekit' } }
+                { tags: { package_manager: 'yarn', bundler: 'rollup' } }
               )
             )
           })
@@ -204,10 +216,10 @@ describe('SvelteKitOnboarding', () => {
       describe('pnpm', () => {
         it('renders pnpm install', async () => {
           setup(null)
-          render(<SvelteKitOnboarding />, { wrapper })
+          render(<RollupOnboarding />, { wrapper })
 
           const pnpmInstallCommand = await screen.findByText(
-            'pnpm add @codecov/sveltekit-plugin --save-dev'
+            'pnpm add @codecov/rollup-plugin --save-dev'
           )
           expect(pnpmInstallCommand).toBeInTheDocument()
         })
@@ -215,11 +227,9 @@ describe('SvelteKitOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(null)
-            render(<SvelteKitOnboarding />, { wrapper })
+            render(<RollupOnboarding />, { wrapper })
 
-            const pnpmInstall = await screen.findByTestId(
-              'sveltekit-pnpm-install'
-            )
+            const pnpmInstall = await screen.findByTestId('rollup-pnpm-install')
             const pnpmInstallCopy = await within(pnpmInstall).findByTestId(
               'clipboard-code-snippet'
             )
@@ -227,10 +237,10 @@ describe('SvelteKitOnboarding', () => {
             await user.click(pnpmInstallCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.install_command',
                 1,
-                { tags: { package_manager: 'pnpm', bundler: 'sveltekit' } }
+                { tags: { package_manager: 'pnpm', bundler: 'rollup' } }
               )
             )
           })
@@ -242,7 +252,7 @@ describe('SvelteKitOnboarding', () => {
   describe('step 2', () => {
     it('renders header', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const stepText = await screen.findByText(/Step 2:/)
       expect(stepText).toBeInTheDocument()
@@ -253,7 +263,7 @@ describe('SvelteKitOnboarding', () => {
 
     it('renders body', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const bodyText = await screen.findByText(
         /Set an environment variable in your build environment with the following upload token./
@@ -264,7 +274,7 @@ describe('SvelteKitOnboarding', () => {
     describe('there is an org token', () => {
       it('renders code block with org token', async () => {
         setup(true)
-        render(<SvelteKitOnboarding />, { wrapper })
+        render(<RollupOnboarding />, { wrapper })
 
         const token = await screen.findByText(
           /9e6a6189-20f1-482d-ab62-ecfaa2629290/
@@ -276,7 +286,7 @@ describe('SvelteKitOnboarding', () => {
     describe('there is no org token', () => {
       it('renders code block with repo token', async () => {
         setup(false)
-        render(<SvelteKitOnboarding />, { wrapper })
+        render(<RollupOnboarding />, { wrapper })
 
         const token = await screen.findByText(
           /9e6a6189-20f1-482d-ab62-ecfaa2629295/
@@ -288,9 +298,9 @@ describe('SvelteKitOnboarding', () => {
     describe('user clicks copy button', () => {
       it('sends metric to sentry', async () => {
         const { user } = setup(true)
-        render(<SvelteKitOnboarding />, { wrapper })
+        render(<RollupOnboarding />, { wrapper })
 
-        const uploadToken = await screen.findByTestId('sveltekit-upload-token')
+        const uploadToken = await screen.findByTestId('rollup-upload-token')
         const uploadTokenCopy = await within(uploadToken).findByTestId(
           'clipboard-code-snippet'
         )
@@ -298,10 +308,10 @@ describe('SvelteKitOnboarding', () => {
         await user.click(uploadTokenCopy)
 
         await waitFor(() =>
-          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          expect(mocks.increment).toHaveBeenCalledWith(
             'bundles_tab.onboarding.copied.token',
             1,
-            { tags: { bundler: 'sveltekit' } }
+            { tags: { bundler: 'rollup' } }
           )
         )
       })
@@ -311,7 +321,7 @@ describe('SvelteKitOnboarding', () => {
   describe('step 3', () => {
     it('renders header', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const stepText = await screen.findByText(/Step 3:/)
       expect(stepText).toBeInTheDocument()
@@ -322,33 +332,31 @@ describe('SvelteKitOnboarding', () => {
 
     it('renders body', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const bodyText = await screen.findByText(
-        /Add the plugin to the end of your modules array found inside your/
+        /Import the bundler plugin, and add it to the end of your plugin array found inside your/
       )
       expect(bodyText).toBeInTheDocument()
 
-      const sveltekitConfig = await screen.findByText('vite.config.ts')
-      expect(sveltekitConfig).toBeInTheDocument()
+      const rollupConfig = await screen.findByText('rollup.config.js')
+      expect(rollupConfig).toBeInTheDocument()
     })
 
     it('renders plugin config', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
-      const pluginText = await screen.findByText(/\/\/ vite.config.ts/)
+      const pluginText = await screen.findByText(/\/\/ rollup.config.js/)
       expect(pluginText).toBeInTheDocument()
     })
 
     describe('user clicks copy button', () => {
       it('sends metric to sentry', async () => {
         const { user } = setup(true)
-        render(<SvelteKitOnboarding />, { wrapper })
+        render(<RollupOnboarding />, { wrapper })
 
-        const pluginConfig = await screen.findByTestId(
-          'sveltekit-plugin-config'
-        )
+        const pluginConfig = await screen.findByTestId('rollup-plugin-config')
         const pluginConfigCopy = await within(pluginConfig).findByTestId(
           'clipboard-code-snippet'
         )
@@ -356,10 +364,10 @@ describe('SvelteKitOnboarding', () => {
         await user.click(pluginConfigCopy)
 
         await waitFor(() =>
-          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          expect(mocks.increment).toHaveBeenCalledWith(
             'bundles_tab.onboarding.copied.config',
             1,
-            { tags: { bundler: 'sveltekit' } }
+            { tags: { bundler: 'rollup' } }
           )
         )
       })
@@ -369,7 +377,7 @@ describe('SvelteKitOnboarding', () => {
   describe('step 4', () => {
     it('renders header', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const stepText = await screen.findByText(/Step 4:/)
       expect(stepText).toBeInTheDocument()
@@ -382,7 +390,7 @@ describe('SvelteKitOnboarding', () => {
 
     it('renders body', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const bodyText = await screen.findByText(
         'The plugin requires at least one commit to be made to properly upload bundle analysis information to Codecov.'
@@ -392,7 +400,7 @@ describe('SvelteKitOnboarding', () => {
 
     it('renders git commit', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const gitCommit = await screen.findByText(
         'git add -A && git commit -m "Add Codecov bundler plugin" && git push'
@@ -403,11 +411,9 @@ describe('SvelteKitOnboarding', () => {
     describe('user clicks copy button', () => {
       it('sends metric to sentry', async () => {
         const { user } = setup(true)
-        render(<SvelteKitOnboarding />, { wrapper })
+        render(<RollupOnboarding />, { wrapper })
 
-        const commitCommand = await screen.findByTestId(
-          'sveltekit-commit-command'
-        )
+        const commitCommand = await screen.findByTestId('rollup-commit-command')
         const commitCommandCopy = await within(commitCommand).findByTestId(
           'clipboard-code-snippet'
         )
@@ -415,10 +421,10 @@ describe('SvelteKitOnboarding', () => {
         await user.click(commitCommandCopy)
 
         await waitFor(() =>
-          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          expect(mocks.increment).toHaveBeenCalledWith(
             'bundles_tab.onboarding.copied.commit',
             1,
-            { tags: { bundler: 'sveltekit' } }
+            { tags: { bundler: 'rollup' } }
           )
         )
       })
@@ -428,7 +434,7 @@ describe('SvelteKitOnboarding', () => {
   describe('step 5', () => {
     it('renders header', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const stepText = await screen.findByText(/Step 5:/)
       expect(stepText).toBeInTheDocument()
@@ -439,7 +445,7 @@ describe('SvelteKitOnboarding', () => {
 
     it('renders body', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const bodyText = await screen.findByText(
         'When building your application the plugin will automatically upload the stats information to Codecov.'
@@ -451,7 +457,7 @@ describe('SvelteKitOnboarding', () => {
       describe('npm', () => {
         it('renders npm build', async () => {
           setup(null)
-          render(<SvelteKitOnboarding />, { wrapper })
+          render(<RollupOnboarding />, { wrapper })
 
           const npmBuild = await screen.findByText('npm run build')
           expect(npmBuild).toBeInTheDocument()
@@ -460,11 +466,9 @@ describe('SvelteKitOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(true)
-            render(<SvelteKitOnboarding />, { wrapper })
+            render(<RollupOnboarding />, { wrapper })
 
-            const buildCommand = await screen.findByTestId(
-              'sveltekit-npm-build'
-            )
+            const buildCommand = await screen.findByTestId('rollup-npm-build')
             const buildCommandCopy = await within(buildCommand).findByTestId(
               'clipboard-code-snippet'
             )
@@ -472,10 +476,10 @@ describe('SvelteKitOnboarding', () => {
             await user.click(buildCommandCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.build_command',
                 1,
-                { tags: { package_manager: 'npm', bundler: 'sveltekit' } }
+                { tags: { package_manager: 'npm', bundler: 'rollup' } }
               )
             )
           })
@@ -485,7 +489,7 @@ describe('SvelteKitOnboarding', () => {
       describe('yarn', () => {
         it('renders yarn build', async () => {
           setup(null)
-          render(<SvelteKitOnboarding />, { wrapper })
+          render(<RollupOnboarding />, { wrapper })
 
           const yarnBuild = await screen.findByText('yarn run build')
           expect(yarnBuild).toBeInTheDocument()
@@ -494,11 +498,9 @@ describe('SvelteKitOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(true)
-            render(<SvelteKitOnboarding />, { wrapper })
+            render(<RollupOnboarding />, { wrapper })
 
-            const buildCommand = await screen.findByTestId(
-              'sveltekit-yarn-build'
-            )
+            const buildCommand = await screen.findByTestId('rollup-yarn-build')
             const buildCommandCopy = await within(buildCommand).findByTestId(
               'clipboard-code-snippet'
             )
@@ -506,10 +508,10 @@ describe('SvelteKitOnboarding', () => {
             await user.click(buildCommandCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.build_command',
                 1,
-                { tags: { package_manager: 'yarn', bundler: 'sveltekit' } }
+                { tags: { package_manager: 'yarn', bundler: 'rollup' } }
               )
             )
           })
@@ -519,7 +521,7 @@ describe('SvelteKitOnboarding', () => {
       describe('pnpm', () => {
         it('renders pnpm build', async () => {
           setup(null)
-          render(<SvelteKitOnboarding />, { wrapper })
+          render(<RollupOnboarding />, { wrapper })
 
           const pnpmBuild = await screen.findByText('pnpm run build')
           expect(pnpmBuild).toBeInTheDocument()
@@ -528,11 +530,9 @@ describe('SvelteKitOnboarding', () => {
         describe('user clicks copy button', () => {
           it('sends metric to sentry', async () => {
             const { user } = setup(true)
-            render(<SvelteKitOnboarding />, { wrapper })
+            render(<RollupOnboarding />, { wrapper })
 
-            const buildCommand = await screen.findByTestId(
-              'sveltekit-pnpm-build'
-            )
+            const buildCommand = await screen.findByTestId('rollup-pnpm-build')
             const buildCommandCopy = await within(buildCommand).findByTestId(
               'clipboard-code-snippet'
             )
@@ -540,10 +540,10 @@ describe('SvelteKitOnboarding', () => {
             await user.click(buildCommandCopy)
 
             await waitFor(() =>
-              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+              expect(mocks.increment).toHaveBeenCalledWith(
                 'bundles_tab.onboarding.copied.build_command',
                 1,
-                { tags: { package_manager: 'pnpm', bundler: 'sveltekit' } }
+                { tags: { package_manager: 'pnpm', bundler: 'rollup' } }
               )
             )
           })
@@ -555,7 +555,7 @@ describe('SvelteKitOnboarding', () => {
   describe('linking out to setup feedback', () => {
     it('renders correct preview text', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const text = await screen.findByText(/How was your setup experience\?/)
       expect(text).toBeInTheDocument()
@@ -566,7 +566,7 @@ describe('SvelteKitOnboarding', () => {
 
     it('renders link', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const link = await screen.findByText('this issue')
       expect(link).toBeInTheDocument()
@@ -580,7 +580,7 @@ describe('SvelteKitOnboarding', () => {
   describe('learn more blurb', () => {
     it('renders body', async () => {
       setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
+      render(<RollupOnboarding />, { wrapper })
 
       const body = await screen.findByText(/Visit our guide to/)
       expect(body).toBeInTheDocument()
