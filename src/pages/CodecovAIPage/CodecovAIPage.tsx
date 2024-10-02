@@ -1,8 +1,10 @@
 import { Redirect, useParams } from 'react-router-dom'
 
+import { useCodecovAIInstallation } from 'services/codecovAI/useCodecovAIInstallation'
 import { useFlags } from 'shared/featureFlags'
 
 import CodecovAICommands from './CodecovAICommands/CodecovAICommands'
+import ConfiguredRepositories from './ConfiguredRepositories/ConfiguredRepositories'
 import InstallCodecovAI from './InstallCodecovAI/InstallCodecovAI'
 import LearnMoreBlurb from './LearnMoreBlurb/LearnMoreBlurb'
 import Tabs from './Tabs/Tabs'
@@ -14,9 +16,13 @@ interface URLParams {
 
 const CodecovAIPage: React.FC = () => {
   const { provider, owner } = useParams<URLParams>()
-
   const { codecovAiFeaturesTab } = useFlags({
     codecovAiFeaturesTab: false,
+  })
+
+  const { data: installationData } = useCodecovAIInstallation({
+    owner,
+    provider,
   })
 
   if (!codecovAiFeaturesTab) {
@@ -36,7 +42,11 @@ const CodecovAIPage: React.FC = () => {
         </p>
       </section>
       <div className="flex flex-col gap-4 pt-2 lg:w-3/5">
-        <InstallCodecovAI />
+        {installationData?.aiFeaturesEnabled ? (
+          <ConfiguredRepositories />
+        ) : (
+          <InstallCodecovAI />
+        )}
         <CodecovAICommands />
         <LearnMoreBlurb />
       </div>

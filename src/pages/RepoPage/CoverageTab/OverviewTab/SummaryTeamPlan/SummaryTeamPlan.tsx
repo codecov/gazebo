@@ -58,7 +58,12 @@ const SummaryTeamPlan = () => {
                 items={branchList}
                 buttonIcon={
                   <span className="text-ds-gray-quinary">
-                    <Icon name="branch" size="sm" variant="developer" />
+                    <Icon
+                      name="branch"
+                      label="branch"
+                      size="sm"
+                      variant="developer"
+                    />
                   </span>
                 }
               />
