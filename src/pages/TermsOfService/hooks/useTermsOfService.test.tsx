@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import { useSaveTermsAgreement } from './useTermsOfService'
@@ -54,35 +54,31 @@ interface SetupArgs {
 describe('useSaveTermsAgreement', () => {
   function setup({ apiError = false }: SetupArgs = { apiError: false }) {
     server.use(
-      graphql.mutation('SigningTermsAgreement', (req, res, ctx) => {
+      graphql.mutation('SigningTermsAgreement', (info) => {
         if (apiError) {
-          return res.networkError('Failed to connect')
+          return HttpResponse.json(
+            { errors: [{ message: 'error' }] },
+            { status: 500 }
+          )
         }
-        return res(ctx.status(200), ctx.data({}))
+        return HttpResponse.json({})
       }),
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            me: {
-              username: '123',
-            },
-          })
-        )
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: { me: { username: '123' } } })
       })
     )
   }
 
   afterEach(() => {
-    jest.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('when query resolves', () => {
     describe('basic sign', () => {
       it('makes a mutation', async () => {
         setup()
-        const invalidateQueries = jest.spyOn(queryClient, 'invalidateQueries')
-        const successFn = jest.fn()
+        const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries')
+        const successFn = vi.fn()
         const { result } = renderHook(
           () =>
             useSaveTermsAgreement({
@@ -127,8 +123,8 @@ describe('useSaveTermsAgreement', () => {
     describe('sign with default org', () => {
       it('makes a mutation', async () => {
         setup()
-        const invalidateQueries = jest.spyOn(queryClient, 'invalidateQueries')
-        const successFn = jest.fn()
+        const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries')
+        const successFn = vi.fn()
         const { result } = renderHook(
           () =>
             useSaveTermsAgreement({
@@ -172,8 +168,8 @@ describe('useSaveTermsAgreement', () => {
 
     it('proceeds with mutation on missing email', async () => {
       setup()
-      const invalidateQueries = jest.spyOn(queryClient, 'invalidateQueries')
-      const successFn = jest.fn()
+      const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries')
+      const successFn = vi.fn()
       const { result } = renderHook(
         () =>
           useSaveTermsAgreement({
@@ -202,10 +198,8 @@ describe('useSaveTermsAgreement', () => {
     describe('there is was an api error', () => {
       it('throws an error', async () => {
         setup({ apiError: true })
-        const spy = jest.spyOn(console, 'error')
-        const spyErrorMock = jest.fn()
-        spy.mockImplementation(spyErrorMock)
-        const errorFn = jest.fn()
+        const spy = vi.spyOn(console, 'error')
+        const errorFn = vi.fn()
         const { result } = renderHook(
           () =>
             useSaveTermsAgreement({
@@ -225,9 +219,10 @@ describe('useSaveTermsAgreement', () => {
         })
 
         await waitFor(() =>
-          expect(spyErrorMock).toHaveBeenCalledWith(
-            'POST /graphql/ net::ERR_FAILED'
-          )
+          expect(spy).toHaveBeenCalledWith({
+            data: { errors: [{ message: 'error' }] },
+            status: 500,
+          })
         )
 
         expect(errorFn).toHaveBeenCalledWith('error')
@@ -235,10 +230,10 @@ describe('useSaveTermsAgreement', () => {
 
       it('does not redirect to /', async () => {
         setup({ apiError: true })
-        const spy = jest.spyOn(console, 'error')
-        const spyErrorMock = jest.fn()
+        const spy = vi.spyOn(console, 'error')
+        const spyErrorMock = vi.fn()
         spy.mockImplementation(spyErrorMock)
-        const errorFn = jest.fn()
+        const errorFn = vi.fn()
         const { result } = renderHook(
           () =>
             useSaveTermsAgreement({

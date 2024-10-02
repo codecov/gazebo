@@ -1,26 +1,27 @@
-// ts-ignore
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent, { type UserEvent } from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type Mock } from 'vitest'
 
 import config from 'config'
 
 import { SentryBugReporter } from 'sentry'
 
 import { InternalUserData } from 'services/user/useInternalUser'
-import { useFlags } from 'shared/featureFlags'
 
 import TermsOfService from './TermsOfService'
+
+vi.mock('config')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
-let errorMock: jest.Mock
+let errorMock: Mock
 
 type TestStep = (user: UserEvent, args?: { email: string }) => Promise<void>
 
@@ -53,6 +54,7 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
+  vi.restoreAllMocks()
 })
 afterAll(() => {
   server.close()
@@ -66,8 +68,18 @@ const mockedUserData = {
   termsAgreement: false,
 }
 
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{ termsOfServicePage: boolean }>
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+  mutate: vi.fn(),
+}))
+
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
+})
 
 interface Setup {
   internalUserData?: InternalUserData
@@ -78,8 +90,6 @@ interface Setup {
 }
 
 describe('TermsOfService', () => {
-  beforeEach(() => jest.resetModules())
-
   function setup({
     internalUserData = mockedUserData,
     isValidationError = false,
@@ -87,27 +97,23 @@ describe('TermsOfService', () => {
     isUnknownError = false,
     termsOfServicePageFlag = true,
   }: Setup = {}) {
-    const mockMutationVariables = jest.fn()
+    const mockMutationVariables = vi.fn()
     const user = userEvent.setup()
 
-    mockedUseFlags.mockReturnValue({
+    mocks.useFlags.mockReturnValue({
       termsOfServicePage: termsOfServicePageFlag,
     })
 
     server.use(
-      rest.get('/internal/user', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({ ...mockedUserData, ...internalUserData })
-        )
-      ),
-      graphql.mutation('SigningTermsAgreement', (req, res, ctx) => {
-        mockMutationVariables(req.variables)
+      http.get('/internal/user', (info) => {
+        return HttpResponse.json({ ...mockedUserData, ...internalUserData })
+      }),
+      graphql.mutation('SigningTermsAgreement', (info) => {
+        mockMutationVariables(info.variables)
         if (isUnAuthError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
-              ...(req.variables?.tosInput && {
+          return HttpResponse.json({
+            data: {
+              ...(info.variables?.tosInput && {
                 saveTermsAgreement: {
                   error: {
                     __typename: 'UnauthenticatedError',
@@ -115,14 +121,13 @@ describe('TermsOfService', () => {
                   },
                 },
               }),
-            })
-          )
+            },
+          })
         }
         if (isValidationError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
-              ...(req.variables?.tosInput && {
+          return HttpResponse.json({
+            data: {
+              ...(info.variables?.tosInput && {
                 saveTermsAgreement: {
                   __typename: 'ValidationError',
                   error: {
@@ -130,17 +135,17 @@ describe('TermsOfService', () => {
                   },
                 },
               }),
-            })
-          )
+            },
+          })
         }
 
         if (isUnknownError) {
-          return res(
-            ctx.status(500),
-            ctx.errors([{ message: 'unknown error' }])
+          return HttpResponse.json(
+            { errors: [{ message: 'unknown error' }] },
+            { status: 500 }
           )
         }
-        return res(ctx.status(200), ctx.data({}))
+        return HttpResponse.json({ data: {} })
       })
     )
 
@@ -219,7 +224,7 @@ describe('TermsOfService', () => {
   })
 
   describe('on submit', () => {
-    beforeEach(() => jest.resetAllMocks())
+    beforeEach(() => vi.resetAllMocks())
 
     // Into the realm of testing implementation details, but I want to make sure
     // that the correct inputs are being sent to the server.
@@ -562,8 +567,8 @@ describe('TermsOfService', () => {
       ...steps
     ) => {
       beforeEach(() => {
-        const spy = jest.spyOn(console, 'error')
-        errorMock = jest.fn()
+        const spy = vi.spyOn(console, 'error')
+        errorMock = vi.fn()
         spy.mockImplementation(errorMock)
       })
 
@@ -575,10 +580,6 @@ describe('TermsOfService', () => {
         Has signed in: ${!!initializeTest.internalUserData}
         Has a email via oauth: ${initializeTest.internalUserData?.email}
       `, () => {
-        jest.mock('./hooks/useTermsOfService', () => ({
-          useSaveTermsAgreement: jest.fn(() => ({ data: 'mocked' })),
-        }))
-
         it(`scenario: ${initializeTest.validationDescription}`, async () => {
           const { user } = setup({
             isUnknownError: initializeTest?.isUnknownError,
@@ -610,8 +611,8 @@ describe('TermsOfService', () => {
             termsAgreement: false,
           },
         })
-        const removeFromDom = jest.fn()
-        const createWidget = jest.fn().mockReturnValue({
+        const removeFromDom = vi.fn()
+        const createWidget = vi.fn().mockReturnValue({
           removeFromDom,
         })
         SentryBugReporter.createWidget = createWidget
@@ -637,8 +638,8 @@ describe('TermsOfService', () => {
           },
         })
         config.SENTRY_DSN = 'dsn'
-        const removeFromDom = jest.fn()
-        const createWidget = jest.fn().mockReturnValue({
+        const removeFromDom = vi.fn()
+        const createWidget = vi.fn().mockReturnValue({
           removeFromDom,
         })
         SentryBugReporter.createWidget = createWidget
@@ -663,8 +664,8 @@ describe('TermsOfService', () => {
             },
           })
           config.SENTRY_DSN = 'dsn'
-          const removeFromDom = jest.fn()
-          const createWidget = jest.fn().mockReturnValue({
+          const removeFromDom = vi.fn()
+          const createWidget = vi.fn().mockReturnValue({
             removeFromDom,
           })
           SentryBugReporter.createWidget = createWidget

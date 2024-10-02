@@ -4,7 +4,7 @@ import config from 'config'
 
 import NotFound from './NotFound'
 
-jest.mock('config')
+vi.mock('config')
 
 describe('NotFound', () => {
   function setup(ToRender, isSelfHosted = false) {
