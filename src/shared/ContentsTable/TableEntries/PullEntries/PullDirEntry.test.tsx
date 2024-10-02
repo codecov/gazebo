@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullDirEntry from './PullDirEntry'
@@ -80,9 +80,9 @@ afterAll(() => {
 describe('PullDirEntry', () => {
   function setup() {
     server.use(
-      graphql.query('PullPathContents', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData))
-      )
+      graphql.query('PullPathContents', () => {
+        return HttpResponse.json({ data: mockData })
+      })
     )
   }
 

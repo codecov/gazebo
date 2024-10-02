@@ -1,6 +1,5 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileBreadcrumb from './FileBreadcrumb'
@@ -13,28 +12,21 @@ const queryClient = new QueryClient({
   },
 })
 
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/owner/coolrepo/tree/main/src/tests']}>
+      <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
+        {children}
+      </Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
 describe('FileBreadcrumb', () => {
-  function setup({ entries, path }) {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={entries}>
-          <Route path={path}>
-            <FileBreadcrumb />
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
-  }
-
   describe('path is provided in route', () => {
-    beforeEach(() => {
-      setup({
-        entries: ['/gh/owner/coolrepo/tree/main/src/tests'],
-        path: '/:provider/:owner/:repo/tree/:branch/:path+',
-      })
-    })
-
     it('renders the breadcrumb', () => {
+      render(<FileBreadcrumb />, { wrapper })
+
       const repo = screen.getByRole('link', { name: 'coolrepo' })
       expect(repo).toBeInTheDocument()
       expect(repo).toHaveAttribute('href', '/gh/owner/coolrepo/tree/main/')

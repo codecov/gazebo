@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -72,9 +72,9 @@ afterAll(() => {
 describe('CommitDirEntry', () => {
   function setup() {
     server.use(
-      graphql.query('CommitPathContents', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData))
-      )
+      graphql.query('CommitPathContents', (info) => {
+        return HttpResponse.json({ data: mockData })
+      })
     )
   }
 

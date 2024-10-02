@@ -1,16 +1,18 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { useLocationParams } from 'services/navigation'
 
 import DisplayTypeButton from './DisplayTypeButton'
 
-jest.mock('services/navigation', () => ({
-  ...jest.requireActual('services/navigation'),
-  useLocationParams: jest.fn(),
-}))
+vi.mock('services/navigation', () => {
+  const originalModule = vi.importActual('services/navigation')
+  return {
+    ...originalModule,
+    useLocationParams: vi.fn(),
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,7 +55,7 @@ describe('Coverage Tab', () => {
   function setup(urlParams = mockUrlParams) {
     const user = userEvent.setup()
     useLocationParams.mockReturnValue({
-      updateParams: jest.fn(),
+      updateParams: vi.fn(),
       params: urlParams,
     })
 
