@@ -69,7 +69,8 @@ const ErrorMessage = ({ errorCode, count }: ErrorMessageProps) => {
       <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
         {icon}
         <p className="w-11/12">
-          Upload failed. Please rerun the upload. {renderCount}
+          Processing failed. Please rerun the upload in a new commit.{' '}
+          {renderCount}
         </p>
       </span>
     )
