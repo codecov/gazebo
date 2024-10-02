@@ -1,17 +1,26 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { renderToast } from 'services/toast'
 
 import OwnerPage from './OwnerPage'
 
-jest.mock('./HeaderBanners', () => () => 'HeaderBanners')
-jest.mock('./Tabs', () => () => 'Tabs')
-jest.mock('shared/ListRepo', () => () => 'ListRepo')
-jest.mock('services/toast')
+const mocks = vi.hoisted(() => ({
+  renderToast: vi.fn(),
+}))
+
+vi.mock('services/toast', async () => {
+  const actual = await vi.importActual('services/toast')
+  return {
+    ...actual,
+    renderToast: mocks.renderToast,
+  }
+})
+
+vi.mock('./HeaderBanners', () => ({ default: () => 'HeaderBanners' }))
+vi.mock('./Tabs', () => ({ default: () => 'Tabs' }))
+vi.mock('shared/ListRepo', () => ({ default: () => 'ListRepo' }))
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -53,25 +62,26 @@ describe('OwnerPage', () => {
     }
   ) {
     server.use(
-      graphql.query('OwnerPageData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner }))
-      ),
-      graphql.mutation('SendSentryToken', (req, res, ctx) => {
+      graphql.query('OwnerPageData', (info) => {
+        return HttpResponse.json({ data: { owner } })
+      }),
+      graphql.mutation('SendSentryToken', (info) => {
         if (!successfulMutation) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               saveSentryState: {
                 error: {
                   __typename: 'ValidationError',
                   message: 'validation error',
                 },
               },
-            })
-          )
+            },
+          })
         }
 
-        return res(ctx.status(200), ctx.data({ saveSentryState: null }))
+        return HttpResponse.json({
+          data: { saveSentryState: null },
+        })
       })
     )
   }
@@ -206,7 +216,7 @@ describe('OwnerPage', () => {
       render(<OwnerPage />, { wrapper })
 
       await waitFor(() =>
-        expect(renderToast).toHaveBeenCalledWith({
+        expect(mocks.renderToast).toHaveBeenCalledWith({
           title: '14 day trial has started',
           type: 'generic',
           content: '',
@@ -220,7 +230,7 @@ describe('OwnerPage', () => {
 
     it('removes user started trial from localstorage', async () => {
       localStorage.setItem('user-started-trial', 'true')
-      const mockRemoveItem = jest.spyOn(
+      const mockRemoveItem = vi.spyOn(
         window.localStorage.__proto__,
         'removeItem'
       )

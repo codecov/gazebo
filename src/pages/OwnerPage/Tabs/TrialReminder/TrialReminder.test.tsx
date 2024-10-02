@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -12,8 +12,7 @@ import { Plans } from 'shared/utils/billing'
 
 import TrialReminder from './TrialReminder'
 
-jest.mock('config')
-jest.mock('shared/featureFlags')
+vi.mock('config')
 
 const mockedConfig = config as { IS_SELF_HOSTED: boolean }
 
@@ -91,10 +90,9 @@ describe('TrialReminder', () => {
     mockedConfig.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('GetPlanData', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos,
               plan: {
@@ -105,29 +103,24 @@ describe('TrialReminder', () => {
                 value: planValue,
               },
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.query('DetailOwner', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: {
-              isCurrentUserPartOfOrg: userPartOfOrg,
-            },
-          })
-        )
+      graphql.query('DetailOwner', (info) => {
+        return HttpResponse.json({
+          data: { owner: { isCurrentUserPartOfOrg: userPartOfOrg } },
+        })
       })
     )
   }
 
   describe('user has not started a trial', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2023-01-01'))
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     describe('user is on a free plan', () => {
@@ -196,11 +189,11 @@ describe('TrialReminder', () => {
   describe('user is currently on a trial', () => {
     describe('it is within 4 days remaining on the trial', () => {
       beforeEach(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+        vi.useFakeTimers().setSystemTime(new Date('2023-01-01'))
       })
 
       afterEach(() => {
-        jest.useRealTimers()
+        vi.useRealTimers()
       })
 
       describe('user is part of org', () => {
@@ -246,11 +239,11 @@ describe('TrialReminder', () => {
 
     describe('it is within 3 days remaining on the trial', () => {
       beforeEach(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2023-01-02'))
+        vi.useFakeTimers().setSystemTime(new Date('2023-01-02'))
       })
 
       afterEach(() => {
-        jest.useRealTimers()
+        vi.useRealTimers()
       })
 
       it('does not display the trial upgrade link', async () => {
@@ -273,11 +266,11 @@ describe('TrialReminder', () => {
 
   describe('user has finished the trial', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2023-01-01'))
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     describe('the user is on a free plan', () => {
@@ -344,11 +337,11 @@ describe('TrialReminder', () => {
 
   describe('user cannot trial', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2023-01-01'))
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('does not display upgrade link', async () => {
@@ -389,11 +382,11 @@ describe('TrialReminder', () => {
 
   describe('API returns no information', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2023-01-01'))
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('returns nothing', async () => {
@@ -414,11 +407,11 @@ describe('TrialReminder', () => {
 
   describe('app is running in self hosted', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+      vi.useFakeTimers().setSystemTime(new Date('2023-01-01'))
     })
 
     afterEach(() => {
-      jest.useRealTimers()
+      vi.useRealTimers()
     })
 
     it('renders nothing', async () => {
