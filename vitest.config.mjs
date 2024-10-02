@@ -14,6 +14,7 @@ const EXCLUDE_FROM_TESTING = [
   // Custom exclude patterns
   'src/**/*.spec.*',
   'src/**/*.stories.*',
+  'src/**/*.mocks.*',
 ]
 
 const EXCLUDE_FROM_COVERAGE = [

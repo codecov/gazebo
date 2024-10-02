@@ -35,7 +35,7 @@ const Upload = ({
   return (
     <div className="flex flex-col gap-1 border-r border-ds-gray-secondary px-4 py-2">
       <div className="flex justify-between ">
-        <div className="flex flex-1 flex-wrap items-center">
+        <div className="flex flex-1 flex-wrap items-center gap-2">
           <Checkbox
             checked={checked}
             dataMarketing="toggle-upload-hit-count"
