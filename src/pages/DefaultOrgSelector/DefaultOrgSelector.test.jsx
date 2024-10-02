@@ -1,11 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { useIntersection } from 'react-use'
 
 import config from 'config'
 
@@ -13,9 +12,20 @@ import { SentryBugReporter } from 'sentry'
 
 import DefaultOrgSelector from './DefaultOrgSelector'
 
-jest.mock('react-use/lib/useIntersection')
-jest.mock('./GitHubHelpBanner', () => () => 'GitHubHelpBanner')
-jest.mock('config')
+const mocks = vi.hoisted(() => ({
+  useIntersection: vi.fn(),
+}))
+
+vi.mock('react-use', async () => {
+  const actual = await vi.importActual('react-use')
+  return {
+    ...actual,
+    useIntersection: mocks.useIntersection,
+  }
+})
+
+vi.mock('./GitHubHelpBanner', () => ({ default: () => 'GitHubHelpBanner' }))
+vi.mock('config')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -160,7 +170,7 @@ afterAll(() => {
 })
 
 describe('DefaultOrgSelector', () => {
-  beforeEach(() => jest.resetModules())
+  beforeEach(() => vi.resetModules())
 
   function setup({
     myOrganizationsData,
@@ -170,32 +180,31 @@ describe('DefaultOrgSelector', () => {
     value = 'users-basic',
     privateRepos = true,
   } = {}) {
-    const mockMutationVariables = jest.fn()
-    const mockTrialMutationVariables = jest.fn()
-    const mockMetricMutationVariables = jest.fn()
-    const mockWindow = jest.fn()
+    const mockMutationVariables = vi.fn()
+    const mockTrialMutationVariables = vi.fn()
+    const mockMetricMutationVariables = vi.fn()
+    const mockWindow = vi.fn()
     window.open = mockWindow
-    const fetchNextPage = jest.fn()
+    const fetchNextPage = vi.fn()
     config.SENTRY_DSN = undefined
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('UseMyOrganizations', (req, res, ctx) => {
-        if (!!req.variables.after) {
-          fetchNextPage(req.variables.after)
+      graphql.query('UseMyOrganizations', (info) => {
+        if (!!info.variables.after) {
+          fetchNextPage(info.variables.after)
         }
-        return res(ctx.status(200), ctx.data(myOrganizationsData))
+        return HttpResponse.json({ data: myOrganizationsData })
       }),
-      graphql.query('CurrentUser', (req, res, ctx) => {
+      graphql.query('CurrentUser', (info) => {
         if (!isValidUser) {
-          return res(ctx.status(200), ctx.data({ me: null }))
+          return HttpResponse.json({ data: { me: null } })
         }
-        return res(ctx.status(200), ctx.data(useUserData))
+        return HttpResponse.json({ data: useUserData })
       }),
-      graphql.query('GetPlanData', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: privateRepos,
               plan: {
@@ -212,30 +221,29 @@ describe('DefaultOrgSelector', () => {
                 value: 'users-basic',
               },
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
-        mockMutationVariables(req.variables)
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.mutation('updateDefaultOrganization', (info) => {
+        mockMutationVariables(info.variables)
+        return HttpResponse.json({
+          data: {
             updateDefaultOrganization: {
               defaultOrg: {
                 username: 'criticalRole',
               },
             },
-          })
-        )
+          },
+        })
       }),
-      graphql.mutation('startTrial', (req, res, ctx) => {
-        mockTrialMutationVariables(req?.variables)
+      graphql.mutation('startTrial', (info) => {
+        mockTrialMutationVariables(info?.variables)
 
-        return res(ctx.status(200))
+        return HttpResponse.json({ data: { startTrial: { error: null } } })
       }),
-      graphql.mutation('storeEventMetric', (req, res, ctx) => {
-        mockMetricMutationVariables(req?.variables)
-        return res(ctx.status(200), ctx.data({ storeEventMetric: null }))
+      graphql.mutation('storeEventMetric', (info) => {
+        mockMetricMutationVariables(info?.variables)
+        return HttpResponse.json({ data: { storeEventMetric: null } })
       })
     )
 
@@ -331,7 +339,7 @@ describe('DefaultOrgSelector', () => {
       expect(selfOrg).toBeInTheDocument()
 
       const addNewOrg = screen.getByRole('link', {
-        name: 'plus-circle.svg Install Codecov GitHub app external-link.svg',
+        name: /Install Codecov GitHub app/,
       })
       expect(addNewOrg).toBeInTheDocument()
     })
@@ -379,7 +387,7 @@ describe('DefaultOrgSelector', () => {
       expect(selfOrg).not.toBeInTheDocument()
 
       const addNewOrg = screen.getByRole('link', {
-        name: 'plus-circle.svg Install Codecov GitHub app external-link.svg',
+        name: /Install Codecov GitHub app/,
       })
       expect(addNewOrg).toBeInTheDocument()
     })
@@ -418,7 +426,7 @@ describe('DefaultOrgSelector', () => {
       expect(noOrgsFound).toBeInTheDocument()
 
       const addNewOrg = screen.getByRole('link', {
-        name: 'plus-circle.svg Install Codecov GitHub app external-link.svg',
+        name: /Install Codecov GitHub app/,
       })
       expect(addNewOrg).toBeInTheDocument()
     })
@@ -459,7 +467,7 @@ describe('DefaultOrgSelector', () => {
       expect(orgInList).toBeInTheDocument()
 
       const addNewOrg = screen.queryByRole('link', {
-        name: 'plus-circle.svg Install Codecov GitHub app external-link.svg',
+        name: /Install Codecov GitHub app/,
       })
       expect(addNewOrg).not.toBeInTheDocument()
     })
@@ -497,7 +505,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(selectOrg)
 
       const addNewOrg = screen.getByRole('link', {
-        name: 'plus-circle.svg Install Codecov GitHub app external-link.svg',
+        name: /Install Codecov GitHub app/,
       })
 
       await user.click(addNewOrg)
@@ -565,7 +573,7 @@ describe('DefaultOrgSelector', () => {
   })
 
   describe('on submit', () => {
-    beforeEach(() => jest.resetAllMocks())
+    beforeEach(() => vi.resetAllMocks())
     it('fires update default org mutation', async () => {
       const { user, mockMutationVariables } = setup({
         useUserData: mockUserData,
@@ -672,7 +680,7 @@ describe('DefaultOrgSelector', () => {
   })
 
   describe('on submit with no default org', () => {
-    beforeEach(() => jest.resetAllMocks())
+    beforeEach(() => vi.resetAllMocks())
 
     it('redirects to self org page', async () => {
       const { user, mockMutationVariables } = setup({
@@ -870,7 +878,7 @@ describe('DefaultOrgSelector', () => {
   })
 
   describe('on submit with self org selected', () => {
-    beforeEach(() => jest.resetAllMocks())
+    beforeEach(() => vi.resetAllMocks())
 
     it('fires update default org mutation', async () => {
       const { user, mockMutationVariables } = setup({
@@ -980,7 +988,7 @@ describe('DefaultOrgSelector', () => {
   })
 
   describe('on submit with no default org selected', () => {
-    beforeEach(() => jest.resetAllMocks())
+    beforeEach(() => vi.resetAllMocks())
 
     it('redirects to self org page', async () => {
       const { user, mockMutationVariables } = setup({
@@ -1025,7 +1033,7 @@ describe('DefaultOrgSelector', () => {
   })
 
   describe('on submit with a free basic plan', () => {
-    beforeEach(() => jest.resetAllMocks())
+    beforeEach(() => vi.resetAllMocks())
 
     it('fires trial mutation', async () => {
       const { user, mockTrialMutationVariables } = setup({
@@ -1301,7 +1309,7 @@ describe('DefaultOrgSelector', () => {
       })
 
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
-      useIntersection.mockReturnValue({ isIntersecting: true })
+      mocks.useIntersection.mockReturnValue({ isIntersecting: true })
 
       const selectOrg = await screen.findByRole('button', {
         name: 'Select an organization',
@@ -1316,7 +1324,7 @@ describe('DefaultOrgSelector', () => {
 
   describe('storing codecov metric', () => {
     it('fires update metric mutation variables', async () => {
-      const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+      const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
       mockGetItem.mockReturnValue(null)
       const { user, mockMetricMutationVariables } = setup({
         useUserData: mockUserData,
@@ -1380,8 +1388,8 @@ describe('DefaultOrgSelector', () => {
             },
           },
         })
-        const removeFromDom = jest.fn()
-        const createWidget = jest.fn().mockReturnValue({
+        const removeFromDom = vi.fn()
+        const createWidget = vi.fn().mockReturnValue({
           removeFromDom,
         })
         SentryBugReporter.createWidget = createWidget
@@ -1411,8 +1419,8 @@ describe('DefaultOrgSelector', () => {
           },
         })
         config.SENTRY_DSN = 'dsn'
-        const removeFromDom = jest.fn()
-        const createWidget = jest.fn().mockReturnValue({
+        const removeFromDom = vi.fn()
+        const createWidget = vi.fn().mockReturnValue({
           removeFromDom,
         })
         SentryBugReporter.createWidget = createWidget
@@ -1441,8 +1449,8 @@ describe('DefaultOrgSelector', () => {
             },
           })
           config.SENTRY_DSN = 'dsn'
-          const removeFromDom = jest.fn()
-          const createWidget = jest.fn().mockReturnValue({
+          const removeFromDom = vi.fn()
+          const createWidget = vi.fn().mockReturnValue({
             removeFromDom,
           })
           SentryBugReporter.createWidget = createWidget

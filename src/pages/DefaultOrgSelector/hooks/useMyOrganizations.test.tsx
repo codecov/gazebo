@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import type { MyOrganizationsData } from './useMyOrganizations'
@@ -25,13 +25,18 @@ const wrapper: WrapperClosure =
   )
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+})
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
-beforeEach(() => {
+afterEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useMyOrganizations', () => {
   interface Setup {
@@ -42,16 +47,21 @@ describe('useMyOrganizations', () => {
     MyOrganizationsData = { me: null },
     apiError = false,
   }: Setup) {
-    const spy = jest.spyOn(console, 'error')
-    const thrownMock = jest.fn()
+    const spy = vi.spyOn(console, 'error')
+    const thrownMock = vi.fn()
     spy.mockImplementation(thrownMock)
 
     server.use(
-      graphql.query('UseMyOrganizations', (req, res, ctx) => {
+      graphql.query('UseMyOrganizations', (info) => {
         if (apiError) {
-          return res.networkError('Failed to connect')
+          return HttpResponse.json(
+            {
+              errors: [{ message: 'Failed to connect' }],
+            },
+            { status: 500 }
+          )
         }
-        return res(ctx.status(200), ctx.data(MyOrganizationsData))
+        return HttpResponse.json({ data: MyOrganizationsData })
       })
     )
 
@@ -208,9 +218,12 @@ describe('useMyOrganizations', () => {
         await waitFor(() => expect(result.current.isSuccess).toBeFalsy())
 
         await waitFor(() =>
-          expect(thrownMock).toHaveBeenCalledWith(
-            'POST /graphql/gh net::ERR_FAILED'
-          )
+          expect(thrownMock).toHaveBeenCalledWith({
+            data: {
+              errors: [{ message: 'Failed to connect' }],
+            },
+            status: 500,
+          })
         )
       })
     })
