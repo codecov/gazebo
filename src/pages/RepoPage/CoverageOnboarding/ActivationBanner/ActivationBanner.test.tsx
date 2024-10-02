@@ -1,15 +1,23 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ActivationBanner from './ActivationBanner'
 
-jest.mock('./TrialEligibleBanner', () => () => 'TrialEligibleBanner')
-jest.mock('./ActivationRequiredBanner', () => () => 'ActivationRequiredBanner')
-jest.mock('./FreePlanSeatsLimitBanner', () => () => 'FreePlanSeatsLimitBanner')
-jest.mock('./PaidPlanSeatsLimitBanner', () => () => 'PaidPlanSeatsLimitBanner')
+vi.mock('./TrialEligibleBanner', () => ({
+  default: () => 'TrialEligibleBanner',
+}))
+vi.mock('./ActivationRequiredBanner', () => ({
+  default: () => 'ActivationRequiredBanner',
+}))
+vi.mock('./FreePlanSeatsLimitBanner', () => ({
+  default: () => 'FreePlanSeatsLimitBanner',
+}))
+vi.mock('./PaidPlanSeatsLimitBanner', () => ({
+  default: () => 'PaidPlanSeatsLimitBanner',
+}))
 
 const queryClient = new QueryClient()
 
@@ -58,10 +66,9 @@ describe('ActivationBanner', () => {
     hasSeatsLeft = true
   ) {
     server.use(
-      graphql.query('GetPlanData', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetPlanData', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               hasPrivateRepos: privateRepos,
               plan: {
@@ -79,8 +86,8 @@ describe('ActivationBanner', () => {
                 value: 'users-basic',
               },
             },
-          })
-        )
+          },
+        })
       })
     )
   }

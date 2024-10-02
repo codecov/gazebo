@@ -1,19 +1,24 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import CircleCI from './CircleCI'
 
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  newRepoFlag: boolean
-}>
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
+
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
+})
 
 const mockGetRepo = {
   owner: {
@@ -80,23 +85,23 @@ interface SetupArgs {
 
 describe('CircleCI', () => {
   function setup({ hasOrgUploadToken = false }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
+    mocks.useFlags.mockReturnValue({
       newRepoFlag: hasOrgUploadToken,
     })
-    const mockMetricMutationVariables = jest.fn()
-    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    const mockMetricMutationVariables = vi.fn()
+    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
     mockGetItem.mockReturnValue(null)
 
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetRepo))
-      ),
-      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockGetOrgUploadToken))
+      graphql.query('GetRepo', (info) => {
+        return HttpResponse.json({ data: mockGetRepo })
       }),
-      graphql.mutation('storeEventMetric', (req, res, ctx) => {
-        mockMetricMutationVariables(req?.variables)
-        return res(ctx.status(200), ctx.data({ storeEventMetric: null }))
+      graphql.query('GetOrgUploadToken', (info) => {
+        return HttpResponse.json({ data: mockGetOrgUploadToken })
+      }),
+      graphql.mutation('storeEventMetric', (info) => {
+        mockMetricMutationVariables(info?.variables)
+        return HttpResponse.json({ data: { storeEventMetric: null } })
       })
     )
     return { mockMetricMutationVariables }

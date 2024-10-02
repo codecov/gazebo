@@ -1,21 +1,29 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import { useRedirect } from 'shared/useRedirect'
-
 import NewRepoTab from './NewRepoTab'
 
-jest.mock('shared/useRedirect')
-const mockedUseRedirect = useRedirect as jest.Mock
-jest.mock('./GitHubActions', () => () => 'GitHubActions')
-jest.mock('./CircleCI', () => () => 'CircleCI')
-jest.mock('./OtherCI', () => () => 'OtherCI')
-jest.mock('./ActivationBanner', () => () => 'ActivationBanner')
+const mocks = vi.hoisted(() => ({
+  useRedirect: vi.fn(),
+}))
+
+vi.mock('shared/useRedirect', async () => {
+  const actual = await vi.importActual('shared/useRedirect')
+  return {
+    ...actual,
+    useRedirect: mocks.useRedirect,
+  }
+})
+
+vi.mock('./GitHubActions', () => ({ default: () => 'GitHubActions' }))
+vi.mock('./CircleCI', () => ({ default: () => 'CircleCI' }))
+vi.mock('./OtherCI', () => ({ default: () => 'OtherCI' }))
+vi.mock('./ActivationBanner', () => ({ default: () => 'ActivationBanner' }))
 
 const mockCurrentUser = {
   me: {
@@ -112,34 +120,31 @@ describe('NewRepoTab', () => {
     isPrivate = false,
   }: SetupArgs) {
     const user = userEvent.setup()
-    const hardRedirect = jest.fn()
-    mockedUseRedirect.mockImplementation((data) => ({
+    const hardRedirect = vi.fn()
+    mocks.useRedirect.mockImplementation((data) => ({
       hardRedirect: () => hardRedirect(data),
     }))
-    const mockMetricMutationVariables = jest.fn()
-    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    const mockMetricMutationVariables = vi.fn()
+    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
     mockGetItem.mockReturnValue(null)
 
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data(
-            mockGetRepo(
-              noUploadToken,
-              hasCommits,
-              isCurrentUserActivated,
-              isPrivate
-            )
-          )
-        )
-      ),
-      graphql.query('CurrentUser', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockCurrentUser))
-      ),
-      graphql.mutation('storeEventMetric', (req, res, ctx) => {
-        mockMetricMutationVariables(req?.variables)
-        return res(ctx.status(200), ctx.data({ storeEventMetric: null }))
+      graphql.query('GetRepo', (info) => {
+        return HttpResponse.json({
+          data: mockGetRepo(
+            noUploadToken,
+            hasCommits,
+            isCurrentUserActivated,
+            isPrivate
+          ),
+        })
+      }),
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: mockCurrentUser })
+      }),
+      graphql.mutation('storeEventMetric', (info) => {
+        mockMetricMutationVariables(info?.variables)
+        return HttpResponse.json({ data: { storeEventMetric: null } })
       })
     )
 
