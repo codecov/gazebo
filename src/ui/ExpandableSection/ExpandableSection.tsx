@@ -21,7 +21,6 @@ ExpandableSectionRoot.displayName = 'ExpandableSectionRoot'
 
 interface ExpandableSectionTriggerProps
   extends React.ComponentPropsWithoutRef<typeof Collapsible.Trigger> {
-  isExpanded?: boolean
   children: ReactNode
 }
 
