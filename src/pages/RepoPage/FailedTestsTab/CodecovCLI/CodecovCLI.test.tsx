@@ -19,8 +19,7 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
     </ThemeContextProvider>
   )
 
-jest.mock('../FrameworkTabsCard', () => ({
-  __esModule: true,
+vi.mock('../FrameworkTabsCard', () => ({
   FrameworkTabsCard: () => 'FrameworkTabsCard',
 }))
 
