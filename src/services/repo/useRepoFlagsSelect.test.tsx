@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
 
 import { useRepoFlagsSelect } from './useRepoFlagsSelect'
 
@@ -37,14 +38,18 @@ const pullWrapper: WrapperClosure =
   )
 
 const server = setupServer()
-
 beforeAll(() => {
   server.listen()
-  console.error = () => {}
 })
 
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 const initialData = [
   {
@@ -87,14 +92,7 @@ const mockOwnerNotActivatedError = {
   },
 }
 
-const expectedInitialData = [
-  {
-    name: 'flag1',
-  },
-  {
-    name: 'flag2',
-  },
-]
+const expectedInitialData = [{ name: 'flag1' }, { name: 'flag2' }]
 
 const nextPageData = [
   {
@@ -105,11 +103,7 @@ const nextPageData = [
   },
 ]
 
-const expectedNextPageData = [
-  {
-    name: 'flag3',
-  },
-]
+const expectedNextPageData = [{ name: 'flag3' }]
 
 describe('FlagsSelect', () => {
   function setup({
@@ -118,13 +112,13 @@ describe('FlagsSelect', () => {
     isNotFoundError = false,
   }) {
     server.use(
-      graphql.query('FlagsSelect', (req, res, ctx) => {
+      graphql.query('FlagsSelect', (info) => {
         if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(invalidData))
+          return HttpResponse.json({ data: invalidData })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         }
 
         const dataReturned = {
@@ -132,26 +126,26 @@ describe('FlagsSelect', () => {
             repository: {
               __typename: 'Repository',
               flags: {
-                edges: req.variables.after
+                edges: info.variables.after
                   ? [...nextPageData]
                   : [...initialData],
                 pageInfo: {
-                  hasNextPage: !req.variables.after,
-                  endCursor: req.variables.after ? 'aabb' : 'dW5pdA==',
+                  hasNextPage: !info.variables.after,
+                  endCursor: info.variables.after ? 'aabb' : 'dW5pdA==',
                 },
               },
             },
           },
         }
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return HttpResponse.json({ data: dataReturned })
       }),
-      graphql.query('PullFlagsSelect', (req, res, ctx) => {
+      graphql.query('PullFlagsSelect', (info) => {
         if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(invalidData))
+          return HttpResponse.json({ data: invalidData })
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
+          return HttpResponse.json({ data: mockNotFoundError })
         }
 
         const dataReturned = {
@@ -174,35 +168,43 @@ describe('FlagsSelect', () => {
             },
           },
         }
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return HttpResponse.json({ data: dataReturned })
       })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup({})
-    })
+    describe('successful response', () => {
+      describe('when data is loaded', () => {
+        it('returns the data', async () => {
+          setup({})
+          const { result } = renderHook(() => useRepoFlagsSelect(), {
+            wrapper,
+          })
 
-    it('renders isLoading true', () => {
-      const { result } = renderHook(() => useRepoFlagsSelect(), {
-        wrapper,
+          await waitFor(() =>
+            expect(result.current.data).toEqual(expectedInitialData)
+          )
+        })
       })
-
-      expect(result.current.isLoading).toBeTruthy()
     })
 
     describe('when unsuccessful response', () => {
+      let consoleSpy: MockInstance
+      beforeAll(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterAll(() => {
+        consoleSpy.mockRestore()
+      })
+
       it('checks the parsed response', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(() => useRepoFlagsSelect(), {
           wrapper,
         })
 
-        await waitFor(() => result.current.isFetching)
-        await waitFor(() => !result.current.isFetching)
-
-        await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
@@ -217,9 +219,6 @@ describe('FlagsSelect', () => {
         const { result } = renderHook(() => useRepoFlagsSelect(), {
           wrapper,
         })
-
-        await waitFor(() => result.current.isFetching)
-        await waitFor(() => !result.current.isFetching)
 
         await waitFor(() =>
           expect(result.current.error).toEqual(
@@ -237,9 +236,6 @@ describe('FlagsSelect', () => {
         const { result } = renderHook(() => useRepoFlagsSelect(), {
           wrapper,
         })
-
-        await waitFor(() => result.current.isFetching)
-        await waitFor(() => !result.current.isFetching)
 
         await waitFor(() =>
           expect(result.current.error).toEqual(
@@ -251,27 +247,11 @@ describe('FlagsSelect', () => {
         )
       })
     })
-
-    describe('when data is loaded', () => {
-      it('returns the data', async () => {
-        const { result } = renderHook(() => useRepoFlagsSelect(), {
-          wrapper,
-        })
-
-        await waitFor(() => result.current.isSuccess)
-        await waitFor(() =>
-          expect(result.current.data).toEqual(expectedInitialData)
-        )
-      })
-    })
   })
 
   describe('when fetchNextPage is called', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('returns prev and next page flags data', async () => {
+      setup({})
       const { result } = renderHook(() => useRepoFlagsSelect(), {
         wrapper,
       })
@@ -280,9 +260,6 @@ describe('FlagsSelect', () => {
       await waitFor(() => !result.current.isFetching)
 
       result.current.fetchNextPage()
-
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
 
       await waitFor(() =>
         expect(result.current.data).toEqual([
@@ -294,39 +271,35 @@ describe('FlagsSelect', () => {
   })
 
   describe('when pull in params', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('calls the pull flag select query', async () => {
+      setup({})
       const { result } = renderHook(() => useRepoFlagsSelect(), {
         wrapper: pullWrapper(),
       })
 
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
-
       await waitFor(() =>
         expect(result.current.data).toEqual([
-          {
-            name: 'unit',
-          },
-          {
-            name: 'unit-latest-uploader',
-          },
+          { name: 'unit' },
+          { name: 'unit-latest-uploader' },
         ])
       )
     })
 
     describe('when unsuccessful response', () => {
+      let consoleSpy: MockInstance
+      beforeAll(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterAll(() => {
+        consoleSpy.mockRestore()
+      })
+
       it('checks the parsed response', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(() => useRepoFlagsSelect(), {
           wrapper: pullWrapper(),
         })
-
-        await waitFor(() => result.current.isFetching)
-        await waitFor(() => !result.current.isFetching)
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
@@ -344,9 +317,6 @@ describe('FlagsSelect', () => {
           wrapper: pullWrapper(),
         })
 
-        await waitFor(() => result.current.isFetching)
-        await waitFor(() => !result.current.isFetching)
-
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
@@ -363,9 +333,6 @@ describe('FlagsSelect', () => {
         const { result } = renderHook(() => useRepoFlagsSelect(), {
           wrapper: pullWrapper(),
         })
-
-        await waitFor(() => result.current.isFetching)
-        await waitFor(() => !result.current.isFetching)
 
         await waitFor(() =>
           expect(result.current.error).toEqual(

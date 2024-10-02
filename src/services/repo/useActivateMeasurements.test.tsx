@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { type MockInstance } from 'vitest'
 
 import { MEASUREMENT_TYPE, useActivateMeasurements } from './index'
 
@@ -22,24 +23,16 @@ afterAll(() => server.close())
 describe('useActivateMeasurements', () => {
   function setup() {
     server.use(
-      graphql.mutation('ActivateMeasurements', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            activateMeasurements: null,
-          })
-        )
+      graphql.mutation('ActivateMeasurements', (info) => {
+        return HttpResponse.json({ data: { activateMeasurements: null } })
       })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     describe('When success', () => {
       it('returns expected output', async () => {
+        setup()
         const { result } = renderHook(
           () =>
             useActivateMeasurements({
@@ -66,20 +59,28 @@ describe('useActivateMeasurements', () => {
     })
 
     describe('When error', () => {
+      let consoleSpy: MockInstance
+      beforeAll(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterAll(() => {
+        consoleSpy.mockRestore()
+      })
+
       it('returns expected output', async () => {
         server.use(
-          graphql.mutation('ActivateMeasurements', (req, res, ctx) => {
-            return res(
-              ctx.status(200),
-              ctx.data({
+          graphql.mutation('ActivateMeasurements', (info) => {
+            return HttpResponse.json({
+              data: {
                 activateMeasurements: {
                   error: {
                     __typename: 'ValidationError',
                     message: 'Some error message',
                   },
                 },
-              })
-            )
+              },
+            })
           })
         )
 
@@ -105,20 +106,28 @@ describe('useActivateMeasurements', () => {
     })
 
     describe('when schema validation fails', () => {
+      let consoleSpy: MockInstance
+      beforeAll(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      })
+
+      afterAll(() => {
+        consoleSpy.mockRestore()
+      })
+
       it('returns expected output', async () => {
         server.use(
-          graphql.mutation('ActivateMeasurements', (req, res, ctx) => {
-            return res(
-              ctx.status(200),
-              ctx.data({
+          graphql.mutation('ActivateMeasurements', (info) => {
+            return HttpResponse.json({
+              data: {
                 activateMeasurements: {
                   error: {
                     __typename: 'ValidationError',
                     message: 123,
                   },
                 },
-              })
-            )
+              },
+            })
           })
         )
 

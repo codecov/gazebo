@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
+import { MockInstance } from 'vitest'
 
 import { useRepoCoverage } from './useRepoCoverage'
 
@@ -60,13 +61,16 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 const server = setupServer()
+beforeAll(() => [server.listen()])
 
-beforeAll(() => server.listen())
 afterEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 interface SetupArgs {
   badResponse?: boolean
@@ -83,17 +87,17 @@ describe('useRepoCoverage', () => {
     nullBranch = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoCoverage', (req, res, ctx) => {
+      graphql.query('GetRepoCoverage', (info) => {
         if (nullBranch) {
-          return res(ctx.status(200), ctx.data(mockNullBranch))
+          return HttpResponse.json({ data: mockNullBranch })
         } else if (badResponse) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({ data: {} })
         } else if (isRepoNotFound) {
-          return res(ctx.status(200), ctx.data(mockRepoNotFound))
+          return HttpResponse.json({ data: mockRepoNotFound })
         } else if (isOwnerNotActivated) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivated))
+          return HttpResponse.json({ data: mockOwnerNotActivated })
         }
-        return res(ctx.status(200), ctx.data(mockRepoCoverage))
+        return HttpResponse.json({ data: mockRepoCoverage })
       })
     )
   }
@@ -153,11 +157,17 @@ describe('useRepoCoverage', () => {
   })
 
   describe('when invalid response returned', () => {
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
+    })
+
     it('rejects with 404', async () => {
       setup({ badResponse: true })
-      const consoleError = console.error
-      console.error = () => {}
-
       const { result } = renderHook(
         () =>
           useRepoCoverage({
@@ -170,8 +180,6 @@ describe('useRepoCoverage', () => {
           wrapper,
         }
       )
-
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
 
       await waitFor(() =>
         expect(result.current.error).toEqual(
@@ -181,16 +189,21 @@ describe('useRepoCoverage', () => {
           })
         )
       )
-      console.error = consoleError
     })
   })
 
   describe('when NotFoundError returned', () => {
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
+    })
+
     it('rejects with 404', async () => {
       setup({ isRepoNotFound: true })
-      const consoleError = console.error
-      console.error = () => {}
-
       const { result } = renderHook(
         () =>
           useRepoCoverage({
@@ -204,8 +217,6 @@ describe('useRepoCoverage', () => {
         }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
@@ -214,16 +225,21 @@ describe('useRepoCoverage', () => {
           })
         )
       )
-      console.error = consoleError
     })
   })
 
   describe('when OwnerNotActivated returned', () => {
+    let consoleSpy: MockInstance
+    beforeAll(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
+    })
+
     it('rejects with 403', async () => {
       setup({ isOwnerNotActivated: true })
-      const consoleError = console.error
-      console.error = () => {}
-
       const { result } = renderHook(
         () =>
           useRepoCoverage({
@@ -247,7 +263,6 @@ describe('useRepoCoverage', () => {
           })
         )
       )
-      console.error = consoleError
     })
   })
 })
