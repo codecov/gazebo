@@ -14,20 +14,6 @@ export default defineConfig((config) => {
   }
 
   const plugins = []
-  if (
-    process.env.CODECOV_API_URL &&
-    process.env.CODECOV_ORG_TOKEN &&
-    process.env.UPLOAD_CODECOV_BUNDLE_STATS
-  ) {
-    plugins.push(
-      codecovVitePlugin({
-        enableBundleAnalysis: true,
-        bundleName: process.env.CODECOV_BUNDLE_NAME,
-        apiUrl: process.env.CODECOV_API_URL,
-        uploadToken: process.env.CODECOV_ORG_TOKEN,
-      })
-    )
-  }
 
   const runSentryPlugin =
     config.mode === 'production' && !!process.env.SENTRY_AUTH_TOKEN
@@ -45,6 +31,21 @@ export default defineConfig((config) => {
               process.env.REACT_APP_SENTRY_ENVIRONMENT || process.env.NODE_ENV,
           },
         },
+      })
+    )
+  }
+
+  if (
+    process.env.CODECOV_API_URL &&
+    process.env.CODECOV_ORG_TOKEN &&
+    process.env.UPLOAD_CODECOV_BUNDLE_STATS
+  ) {
+    plugins.push(
+      codecovVitePlugin({
+        enableBundleAnalysis: true,
+        bundleName: process.env.CODECOV_BUNDLE_NAME,
+        apiUrl: process.env.CODECOV_API_URL,
+        uploadToken: process.env.CODECOV_ORG_TOKEN,
       })
     )
   }
