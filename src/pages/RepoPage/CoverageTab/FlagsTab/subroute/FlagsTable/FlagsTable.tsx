@@ -113,7 +113,7 @@ function createTableData({
                 }
                 className="text-ds-gray-tertiary hover:text-ds-gray-senary"
               >
-                <Icon size="md" name="trash" variant="outline" />
+                <Icon size="md" name="trash" label="trash" variant="outline" />
               </button>
             </div>
           ) : null,

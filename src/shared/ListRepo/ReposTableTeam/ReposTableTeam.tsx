@@ -92,7 +92,7 @@ const getColumns = ({
   if (inactive) {
     return [
       nameColumn,
-      columnHelper.accessor('lines', {
+      columnHelper.accessor('coverageAnalytics.lines', {
         header: '',
         id: 'lines',
         cell: (info) => {
@@ -123,13 +123,14 @@ const getColumns = ({
         )
       },
     }),
-    columnHelper.accessor('lines', {
+    columnHelper.accessor('coverageAnalytics.lines', {
       header: 'Tracked lines',
       id: 'lines',
       cell: (info) => {
         const repo = info.row.original
-        return typeof repo?.lines === 'number' && !!repo?.active ? (
-          <span>{repo.lines}</span>
+        return typeof repo?.coverageAnalytics?.lines === 'number' &&
+          !!repo?.active ? (
+          <span>{repo.coverageAnalytics?.lines}</span>
         ) : (
           <InactiveRepo
             owner={repo?.author?.username ?? ''}

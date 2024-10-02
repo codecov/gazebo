@@ -14,7 +14,11 @@ const RepositorySchema = z
     activated: z.boolean().nullable(),
     private: z.boolean(),
     latestCommitAt: z.string().nullable(),
-    lines: z.number().nullable(),
+    coverageAnalytics: z
+      .object({
+        lines: z.number().nullable(),
+      })
+      .nullable(),
     author: z.object({
       username: z.string().nullable(),
     }),
@@ -70,7 +74,9 @@ const query = `query GetReposTeam(
           activated
           private
           latestCommitAt
-          lines
+          coverageAnalytics {
+            lines
+          }
           author {
             username
           }
