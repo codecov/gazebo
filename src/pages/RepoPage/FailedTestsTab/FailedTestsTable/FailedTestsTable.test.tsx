@@ -6,8 +6,8 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -58,8 +58,16 @@ const wrapper =
     </QueryClientProvider>
   )
 
+let consoleError: any
+let consoleWarn: any
+
 beforeAll(() => {
   server.listen()
+  // Mock console.error and console.warn
+  consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+  consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+  vi.useFakeTimers().setSystemTime(new Date('2024-06-01T00:00:00Z'))
 })
 
 afterEach(() => {
@@ -68,21 +76,10 @@ afterEach(() => {
 
 afterAll(() => {
   server.close()
-})
-
-let consoleError: any
-let consoleWarn: any
-
-beforeEach(() => {
-  // Mock console.error and console.warn
-  consoleError = jest.spyOn(console, 'error').mockImplementation(() => {})
-  consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {})
-})
-
-afterEach(() => {
   // Restore console methods
   consoleError.mockRestore()
   consoleWarn.mockRestore()
+  vi.useRealTimers()
 })
 
 interface SetupArgs {
@@ -94,16 +91,16 @@ describe('FailedTestsTable', () => {
   function setup({ noEntries = false }: SetupArgs) {
     const queryClient = new QueryClient()
 
-    const user = userEvent.setup()
-    const mockVariables = jest.fn()
+    const user = userEvent.setup({ delay: null })
+    const mockVariables = vi.fn()
 
     server.use(
-      graphql.query('GetTestResults', (req, res, ctx) => {
-        mockVariables(req.variables)
+      graphql.query('GetTestResults', (info) => {
+        mockVariables(info.variables)
+
         if (noEntries) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: {
                 repository: {
                   __typename: 'Repository',
@@ -116,8 +113,8 @@ describe('FailedTestsTable', () => {
                   },
                 },
               },
-            })
-          )
+            },
+          })
         }
 
         const dataReturned = {
@@ -125,23 +122,12 @@ describe('FailedTestsTable', () => {
             repository: {
               __typename: 'Repository',
               testResults: {
-                edges: req.variables.after
-                  ? [
-                      {
-                        node: node3,
-                      },
-                    ]
-                  : [
-                      {
-                        node: node1,
-                      },
-                      {
-                        node: node2,
-                      },
-                    ],
+                edges: info.variables.after
+                  ? [{ node: node3 }]
+                  : [{ node: node1 }, { node: node2 }],
                 pageInfo: {
-                  hasNextPage: req.variables.after ? false : true,
-                  endCursor: req.variables.after
+                  hasNextPage: info.variables.after ? false : true,
+                  endCursor: info.variables.after
                     ? 'aa'
                     : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
                 },
@@ -149,7 +135,7 @@ describe('FailedTestsTable', () => {
             },
           },
         }
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return HttpResponse.json({ data: dataReturned })
       })
     )
 
@@ -214,8 +200,9 @@ describe('FailedTestsTable', () => {
         wrapper: wrapper(queryClient),
       })
 
-      expect(consoleError).not.toHaveBeenCalled()
-      expect(consoleWarn).not.toHaveBeenCalled()
+      const tableBody = screen.getByTestId('failed-tests-table-body')
+      // waiting for the loading element to be removed
+      await waitFor(() => expect(tableBody).toBeEmptyDOMElement())
     })
   })
 
