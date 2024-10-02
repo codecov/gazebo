@@ -15,8 +15,8 @@ describe('TokenRequiredModal', () => {
   function setup() {
     return {
       user: userEvent.setup(),
-      closeModal: jest.fn(),
-      setTokenRequired: jest.fn(),
+      closeModal: vi.fn(),
+      setTokenRequired: vi.fn(),
     }
   }
 

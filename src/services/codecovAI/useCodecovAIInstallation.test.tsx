@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { useCodecovAIInstallation } from './useCodecovAIInstallation'
 
@@ -46,11 +46,11 @@ interface SetupArgs {
 describe('useCodecovAIInstallation', () => {
   function setup({ isUnsuccessfulParseError = false }: SetupArgs) {
     server.use(
-      graphql.query('GetCodecovAIAppInstallInfo', (req, res, ctx) => {
+      graphql.query('GetCodecovAIAppInstallInfo', (info) => {
         if (isUnsuccessfulParseError) {
-          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+          return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }
-        return res(ctx.status(200), ctx.data(mockAiFeaturesEnabled))
+        return HttpResponse.json({ data: mockAiFeaturesEnabled })
       })
     )
   }
