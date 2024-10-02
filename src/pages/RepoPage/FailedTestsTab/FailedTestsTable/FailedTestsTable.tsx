@@ -228,7 +228,7 @@ const FailedTestsTable = () => {
               </tr>
             ))}
           </thead>
-          <tbody>
+          <tbody data-testid="failed-tests-table-body">
             {isLoading ? (
               <tr>
                 <td colSpan={table.getAllColumns().length}>
