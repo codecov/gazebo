@@ -24,7 +24,9 @@ const repo1 = {
   activated: true,
   private: false,
   latestCommitAt: '2021-04-22T14:09:39.826948+00:00',
-  lines: 99,
+  coverageAnalytics: {
+    lines: 99,
+  },
   author: {
     username: 'codecov',
   },
@@ -38,7 +40,9 @@ const repo2 = {
   activated: true,
   private: false,
   latestCommitAt: '2021-04-22T14:09:39.826948+00:00',
-  lines: 99,
+  coverageAnalytics: {
+    lines: 99,
+  },
   author: {
     username: 'codecov',
   },
@@ -52,7 +56,9 @@ const repo3 = {
   activated: true,
   private: false,
   latestCommitAt: '2021-04-22T14:09:39.826948+00:00',
-  lines: 99,
+  coverageAnalytics: {
+    lines: 99,
+  },
   author: {
     username: 'codecov',
   },
@@ -66,7 +72,9 @@ const repo4 = {
   activated: true,
   private: false,
   latestCommitAt: '2021-04-22T14:09:39.826948+00:00',
-  lines: 99,
+  coverageAnalytics: {
+    lines: 99,
+  },
   author: {
     username: 'codecov',
   },

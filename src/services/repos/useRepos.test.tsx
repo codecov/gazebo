@@ -24,9 +24,11 @@ const repo1 = {
   name: 'codecov-bash',
   active: true,
   activated: true,
-  lines: 99,
+  coverageAnalytics: {
+    lines: 99,
+    percentCovered: null,
+  },
   private: false,
-  coverage: null,
   updatedAt: '2021-04-22T14:09:39.822872+00:00',
   author: {
     username: 'codecov',
@@ -46,9 +48,11 @@ const repo2 = {
   name: 'codecov-circleci-orb',
   active: false,
   activated: true,
-  lines: 99,
+  coverageAnalytics: {
+    lines: 99,
+    percentCovered: null,
+  },
   private: false,
-  coverage: null,
   updatedAt: '2021-04-22T14:09:39.826948+00:00',
   author: {
     username: 'codecov',
