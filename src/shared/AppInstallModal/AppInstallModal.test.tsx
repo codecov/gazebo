@@ -4,12 +4,12 @@ import { userEvent } from '@testing-library/user-event'
 import AppInstallModal from './AppInstallModal'
 
 afterEach(() => {
-  jest.resetAllMocks()
+  vi.resetAllMocks()
 })
 
 describe('AppInstallModal', () => {
-  const onClose = jest.fn()
-  const onComplete = jest.fn()
+  const onClose = vi.fn()
+  const onComplete = vi.fn()
 
   describe('when isOpen is false', () => {
     it('does not render', async () => {
