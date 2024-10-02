@@ -5,8 +5,14 @@ import A from 'ui/A'
 
 import deactivatedRepo from './assets/deactivatedRepo.svg'
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
 function DeactivatedRepo() {
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo } = useParams<URLParams>()
   const { data: repoData } = useRepo({
     provider,
     owner,
@@ -28,8 +34,15 @@ function DeactivatedRepo() {
           {isCurrentUserPartOfOrg ? (
             <>
               To reactivate the repo go to{' '}
-              <A to={{ pageName: 'settings' }}> Settings </A> or upload a
-              coverage report and it will be automatically re-activated.
+              <A
+                to={{ pageName: 'settings' }}
+                isExternal={false}
+                hook="link-to-settings"
+              >
+                Settings{' '}
+              </A>{' '}
+              or upload a coverage report and it will be automatically
+              re-activated.
             </>
           ) : (
             'Contact an administrator of your git organization to grant write-permissions in your git-provider for this repository.'

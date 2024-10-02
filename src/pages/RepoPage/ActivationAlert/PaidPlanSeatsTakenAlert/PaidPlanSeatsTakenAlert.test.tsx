@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import ActivationRequiredAlert from './ActivationRequiredAlert'
+import PaidPlanSeatsTakenAlert from './PaidPlanSeatsTakenAlert'
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo/new']}>
@@ -9,40 +9,43 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   </MemoryRouter>
 )
 
-describe('ActivationRequiredAlert', () => {
+describe('PaidPlanSeatsTakenAlert', () => {
   it('renders the banner with correct heading', () => {
-    render(<ActivationRequiredAlert />, { wrapper })
+    render(<PaidPlanSeatsTakenAlert />, { wrapper })
 
     const bannerHeading = screen.getByRole('heading', {
-      name: /Activation Required/,
+      name: /Seats Limit Reached/,
     })
     expect(bannerHeading).toBeInTheDocument()
   })
 
   it('renders the banner with correct description', () => {
-    render(<ActivationRequiredAlert />, { wrapper })
+    render(<PaidPlanSeatsTakenAlert />, { wrapper })
 
     const description = screen.getByText(
-      /You have available seats, but activation is needed./
+      /Your organization has utilized all available seats on this plan/
     )
     expect(description).toBeInTheDocument()
   })
 
   it('renders the banner with correct link', () => {
-    render(<ActivationRequiredAlert />, { wrapper })
+    render(<PaidPlanSeatsTakenAlert />, { wrapper })
 
     const link = screen.getByRole('link', {
-      name: /Manage members/,
+      name: /Increase seat count/,
     })
     expect(link).toBeInTheDocument()
-    expect(link).toHaveAttribute('href', '/members/gh/codecov')
+    expect(link).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
   })
 
   it('renders the correct img', () => {
-    render(<ActivationRequiredAlert />, { wrapper })
+    render(<PaidPlanSeatsTakenAlert />, { wrapper })
 
     const img = screen.getByAltText('Forbidden')
     expect(img).toBeInTheDocument()
-    expect(img).toHaveAttribute('src', 'error-upsidedown-umbrella.svg')
+    expect(img).toHaveAttribute(
+      'src',
+      '/src/layouts/shared/NetworkErrorBoundary/assets/error-upsidedown-umbrella.svg'
+    )
   })
 })

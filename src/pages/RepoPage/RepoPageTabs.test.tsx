@@ -6,20 +6,14 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames, TTierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import RepoPageTabs, { useRepoTabs } from './RepoPageTabs'
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  componentTab?: boolean
-}>
 
 const mockRepoOverview = ({
   language = '',
@@ -144,33 +138,24 @@ describe('RepoPageTabs', () => {
     componentTab = true,
     testAnalyticsEnabled = false,
   }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      componentTab,
-    })
-
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(
-            mockRepoOverview({
-              language,
-              isRepoPrivate,
-              coverageEnabled,
-              bundleAnalysisEnabled,
-              testAnalyticsEnabled,
-            })
-          )
-        )
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({
+          data: mockRepoOverview({
+            language,
+            isRepoPrivate,
+            coverageEnabled,
+            bundleAnalysisEnabled,
+            testAnalyticsEnabled,
+          }),
+        })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ owner: { plan: { tierName } } }))
+
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({ data: { owner: { plan: { tierName } } } })
       }),
-      graphql.query('GetRepo', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockRepo({ isCurrentUserPartOfOrg }))
-        )
+      graphql.query('GetRepo', (info) => {
+        return HttpResponse.json({ data: mockRepo({ isCurrentUserPartOfOrg }) })
       })
     )
   }
@@ -460,33 +445,23 @@ describe('useRepoTabs', () => {
     tierName = TierNames.PRO,
     isCurrentUserPartOfOrg = true,
   }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      componentTab: true,
-    })
-
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(
-            mockRepoOverview({
-              language,
-              isRepoPrivate,
-              coverageEnabled,
-              bundleAnalysisEnabled,
-              testAnalyticsEnabled,
-            })
-          )
-        )
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({
+          data: mockRepoOverview({
+            language,
+            isRepoPrivate,
+            coverageEnabled,
+            bundleAnalysisEnabled,
+            testAnalyticsEnabled,
+          }),
+        })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ owner: { plan: { tierName } } }))
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({ data: { owner: { plan: { tierName } } } })
       }),
-      graphql.query('GetRepo', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data(mockRepo({ isCurrentUserPartOfOrg }))
-        )
+      graphql.query('GetRepo', (info) => {
+        return HttpResponse.json({ data: mockRepo({ isCurrentUserPartOfOrg }) })
       })
     )
   }

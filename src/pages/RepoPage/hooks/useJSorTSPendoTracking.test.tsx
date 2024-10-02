@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { Link, MemoryRouter, Route } from 'react-router-dom'
 
 import { useJSorTSPendoTracking } from './useJSorTSPendoTracking'
@@ -124,28 +124,18 @@ interface SetupArgs {
 describe('useJSorTSPendoTracking', () => {
   function setup({ enablePendo = false, language = 'javascript' }: SetupArgs) {
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockUser))
+      graphql.query('CurrentUser', (info) => {
+        return HttpResponse.json({ data: mockUser })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOverview(language)))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({ data: mockOverview(language) })
       }),
-      graphql.query('DetailOwner', (req, res, ctx) => {
-        if (req.variables.username === 'second-owner') {
-          return res(
-            ctx.status(200),
-            ctx.data({
-              owner: mockOwner2,
-            })
-          )
+      graphql.query('DetailOwner', (info) => {
+        if (info.variables.username === 'second-owner') {
+          return HttpResponse.json({ data: { owner: mockOwner2 } })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: mockOwner1,
-          })
-        )
+        return HttpResponse.json({ data: { owner: mockOwner1 } })
       })
     )
 
