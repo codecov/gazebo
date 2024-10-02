@@ -9,7 +9,7 @@
     "dev": "yarn start",
     "start": "craco start",
     "build": "yarn generate-icons:webpack && craco build --config craco.config.cjs",
-    "build:stats": "craco build --config craco.stats.config.cjs",
+    "build:stats": "yarn generate-icons:vite && tsc -b && vite build",
     "test": "craco test",
     "test:ci": "craco test --collectCoverage --reporters=default --reporters=jest-junit",
     "test:vite": "yarn generate-icons:vite && vitest run --changed --config ./vitest.config.mjs",
