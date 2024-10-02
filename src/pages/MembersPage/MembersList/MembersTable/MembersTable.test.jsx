@@ -1,18 +1,27 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { accountDetailsParsedObj } from 'services/account/mocks'
-import { useImage } from 'services/image'
 import { Plans } from 'shared/utils/billing'
 
 import MembersTable from './MembersTable'
 
-jest.mock('services/image')
+const mocks = vi.hoisted(() => ({
+  useImage: vi.fn(),
+}))
+
+vi.mock('services/image', async () => {
+  const actual = await vi.importActual('services/image')
+  return {
+    ...actual,
+    useImage: mocks.useImage,
+  }
+})
 
 const mockBaseUserRequest = ({ student = false } = { student: false }) => ({
   count: 2,
@@ -115,23 +124,26 @@ describe('MembersTable', () => {
     }
   ) {
     const user = userEvent.setup()
-    useImage.mockReturnValue({ src: 'mocked-avatar-url' })
+    mocks.useImage.mockReturnValue({ src: 'mocked-avatar-url' })
     server.use(
-      rest.get('/internal/:proivder/codecov/account-details', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(accountDetails))
+      http.get(
+        '/internal/:provider/codecov/account-details',
+        (req, res, ctx) => {
+          return HttpResponse.json(accountDetails)
+        }
       ),
-      rest.get('/internal/:provider/codecov/users', (req, res, ctx) => {
-        requestSearchParams = req.url.searchParams
+      http.get('/internal/:provider/codecov/users', (info) => {
+        requestSearchParams = new URL(info.request.url).searchParams
 
         if (usePaginatedRequest) {
           const pageNum = Number(requestSearchParams.get('page'))
           if (pageNum > 1) {
-            return res(ctx.status(200), ctx.json(mockSecondResponse))
+            return HttpResponse.json(mockSecondResponse)
           }
-          return res(ctx.status(200), ctx.json(mockedFirstResponse))
+          return HttpResponse.json(mockedFirstResponse)
         }
 
-        return res(ctx.status(200), ctx.json(mockUserRequest))
+        return HttpResponse.json(mockUserRequest)
       })
     )
 
@@ -549,6 +561,8 @@ describe('MembersTable', () => {
       mockAllIsIntersecting(true)
 
       await waitFor(() => expect(requestSearchParams.get('page')).toBe('2'))
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
       const user2 = await screen.findByText('user2-codecov')
       expect(user2).toBeInTheDocument()

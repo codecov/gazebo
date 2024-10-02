@@ -4,16 +4,27 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useOwner } from 'services/user'
-
 import MembersPage from './MembersPage'
 
-jest.mock('services/user')
-jest.mock('./Tabs', () => () => 'Tabs')
-jest.mock('./MembersActivation', () => () => 'MemberActivation')
-jest.mock('./MissingMemberBanner', () => () => 'MissingMemberBanner')
-jest.mock('./MembersList', () => () => 'MembersList')
-jest.mock('config')
+const mocks = vi.hoisted(() => ({
+  useOwner: vi.fn(),
+}))
+
+vi.mock('config')
+vi.mock('services/user', async () => {
+  const actual = await vi.importActual('services/user')
+  return {
+    ...actual,
+    useOwner: mocks.useOwner,
+  }
+})
+
+vi.mock('./Tabs', () => ({ default: () => 'Tabs' }))
+vi.mock('./MembersActivation', () => ({ default: () => 'MemberActivation' }))
+vi.mock('./MissingMemberBanner', () => ({
+  default: () => 'MissingMemberBanner',
+}))
+vi.mock('./MembersList', () => ({ default: () => 'MembersList' }))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +39,7 @@ describe('MembersPage', () => {
   function setup({ owner = null, isSelfHosted = false }) {
     config.IS_SELF_HOSTED = isSelfHosted
 
-    useOwner.mockReturnValue({
+    mocks.useOwner.mockReturnValue({
       data: owner,
     })
     render(
