@@ -2,11 +2,12 @@ import { render, screen } from 'custom-testing-library'
 
 import GlobalBanners from './GlobalBanners'
 
-jest.mock('./MissingDesignatedAdmins', () => () => 'MissingDesignatedAdmins')
-jest.mock(
-  './SelfHostedLicenseExpiration',
-  () => () => 'SelfHostedLicenseExpiration'
-)
+vi.mock('./MissingDesignatedAdmins', () => ({
+  default: () => 'MissingDesignatedAdmins',
+}))
+vi.mock('./SelfHostedLicenseExpiration', () => ({
+  default: () => 'SelfHostedLicenseExpiration',
+}))
 
 describe('GlobalBanners', () => {
   describe('Successful render', () => {
