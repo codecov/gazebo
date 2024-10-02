@@ -5,8 +5,6 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import LoginButton from './LoginButton'
 
-jest.mock('shared/featureFlags')
-
 const wrapper =
   ({ initialEntries, path }) =>
   ({ children }) => (
