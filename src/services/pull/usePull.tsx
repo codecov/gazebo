@@ -322,7 +322,7 @@ export function usePull({
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: null,
+            data: {},
           })
         }
 
