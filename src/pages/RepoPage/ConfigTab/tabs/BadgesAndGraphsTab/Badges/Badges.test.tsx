@@ -1,23 +1,26 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { useIntersection } from 'react-use'
 
 import config from 'config'
 
 import Badges from './Badges'
 
-jest.mock('config')
-jest.mock('react-use/lib/useIntersection')
-const mockedUseIntersection = useIntersection as jest.Mock
+const mocks = vi.hoisted(() => ({
+  useIntersection: vi.fn().mockReturnValue({ isIntersecting: false }),
+}))
+
+vi.mock('config')
+vi.mock('react-use', async () => {
+  const actual = await vi.importActual('react-use')
+  return {
+    ...actual,
+    useIntersection: mocks.useIntersection,
+  }
+})
 
 const mockNoBranches = {
   __typename: 'Repository',
@@ -37,9 +40,7 @@ const mockBranches = (hasNextPage = false) => ({
       {
         node: {
           name: 'branch-1',
-          head: {
-            commitid: 'asdf123',
-          },
+          head: { commitid: 'asdf123' },
         },
       },
       {
@@ -80,12 +81,12 @@ const queryClient = new QueryClient({
 })
 
 beforeAll(() => {
-  jest.clearAllMocks()
   server.listen()
 })
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
+  vi.clearAllMocks()
 })
 afterAll(() => {
   server.close()
@@ -98,34 +99,32 @@ type SetupArgs = {
 
 describe('Badges', () => {
   function setup({ noBranches = false, hasNextPage = false }: SetupArgs) {
-    const fetchNextPage = jest.fn()
-    const mockSearching = jest.fn()
+    const fetchNextPage = vi.fn()
+    const mockSearching = vi.fn()
     config.BASE_URL = 'https://stage-web.codecov.dev'
     server.use(
-      graphql.query('GetBranches', (req, res, ctx) => {
-        if (req.variables?.after) {
-          fetchNextPage()
+      graphql.query('GetBranches', (info) => {
+        if (!!info.variables?.after) {
+          fetchNextPage(info.variables?.after)
         }
 
-        if (req.variables?.filters?.searchValue) {
-          mockSearching(req.variables?.filters?.searchValue)
+        if (info.variables?.filters?.searchValue) {
+          mockSearching(info.variables?.filters?.searchValue)
         }
 
         if (noBranches) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               owner: { repository: mockNoBranches },
-            })
-          )
+            },
+          })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             owner: { repository: mockBranches(hasNextPage) },
-          })
-        )
+          },
+        })
       })
     )
 
@@ -203,12 +202,10 @@ describe('Badges', () => {
 
       const button = await screen.findByText('Default branch')
       expect(button).toBeInTheDocument()
-      user.click(button)
+      await user.click(button)
 
       const branch = await screen.findByText('branch-2')
-      user.click(branch)
-
-      await waitForElementToBeRemoved(branch)
+      await user.click(branch)
 
       const baseUrl = await screen.findByText(
         '[![codecov](https://stage-web.codecov.dev/gh/codecov/codecov-client/branch/branch-2/graph/badge.svg?token=WIO9JXFGE)](https://stage-web.codecov.dev/gh/codecov/codecov-client)'
@@ -224,7 +221,7 @@ describe('Badges', () => {
 
       const button = await screen.findByText('Default branch')
       expect(button).toBeInTheDocument()
-      user.click(button)
+      await user.click(button)
 
       const loading = await screen.findByText('Loading more items...')
       expect(loading).toBeInTheDocument()
@@ -238,7 +235,7 @@ describe('Badges', () => {
 
       const button = await screen.findByText('Default branch')
       expect(button).toBeInTheDocument()
-      user.click(button)
+      await user.click(button)
 
       await waitFor(() =>
         expect(screen.queryAllByText('Default branch')).toHaveLength(2)
@@ -246,7 +243,7 @@ describe('Badges', () => {
     })
 
     it('tries to load more', async () => {
-      mockedUseIntersection.mockReturnValue({ isIntersecting: true })
+      mocks.useIntersection.mockReturnValue({ isIntersecting: true })
       const { user, fetchNextPage } = setup({ hasNextPage: true })
       render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
@@ -254,24 +251,22 @@ describe('Badges', () => {
 
       const button = await screen.findByText('Default branch')
       expect(button).toBeInTheDocument()
-      user.click(button)
+      await user.click(button)
 
-      expect(await screen.findByText('Search')).toBeInTheDocument()
-
-      await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(fetchNextPage).toHaveBeenCalledWith('end-cursor')
+      )
     })
 
     it('handles searching', async () => {
-      const { user, mockSearching } = setup({ hasNextPage: true })
+      const { user, mockSearching } = setup({ hasNextPage: false })
       render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
 
       const button = await screen.findByText('Default branch')
       expect(button).toBeInTheDocument()
-      user.click(button)
-
-      expect(await screen.findByText('Search')).toBeInTheDocument()
+      await user.click(button)
 
       const searchField = await screen.findByPlaceholderText('Search')
       await user.type(searchField, 'branch-3')

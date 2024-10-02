@@ -4,7 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import CurrentRepoSettings from './CurrentRepoSettings'
 
-jest.mock('services/repo')
+vi.mock('services/repo')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },

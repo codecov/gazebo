@@ -1,14 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
-import Tokens from './Tokens'
-
-jest.mock('shared/featureFlags')
+import Tokens from './TokensTeam'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -33,42 +29,38 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('Tokens', () => {
-  function setup({ showStaticAnalysis = true } = { showStaticAnalysis: true }) {
-    useFlags.mockReturnValue({
-      staticAnalysisToken: showStaticAnalysis,
-    })
-
+describe('TokensTeam', () => {
+  function setup() {
     server.use(
-      graphql.query('GetRepoSettings', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('GetRepoSettingsTeam', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
+              isCurrentUserPartOfOrg: true,
               repository: {
                 __typename: 'Repository',
                 activated: true,
                 defaultBranch: 'master',
                 private: true,
                 uploadToken: 'upload token',
+                profilingToken: 'profiling token',
+                staticAnalysisToken: 'static analysis token',
                 graphToken: 'graph token',
                 yaml: 'yaml',
                 bot: {
                   username: 'test',
                 },
-                profilingToken: 'profiling token',
-                staticAnalysisToken: 'static analysis token',
               },
             },
-          })
-        )
+          },
+        })
       })
     )
   }
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup()
+      setup({ showStaticAnalysis: false })
     })
 
     it('renders Repository upload token component', async () => {
@@ -78,24 +70,18 @@ describe('Tokens', () => {
       expect(title).toBeInTheDocument()
     })
 
-    it('renders impact analysis component', async () => {
+    it('renders graph token component', async () => {
       render(<Tokens />, { wrapper })
 
-      const title = await screen.findByText(/Impact analysis token/)
+      const title = await screen.findByText(/Graphing token/)
       expect(title).toBeInTheDocument()
     })
 
-    it('renders static token component', async () => {
+    it('does not render impact analysis component', () => {
       render(<Tokens />, { wrapper })
 
-      const title = await screen.findByText(/Static analysis token/)
-      expect(title).toBeInTheDocument()
-    })
-  })
-
-  describe('when static analysis flag is disabled', () => {
-    beforeEach(() => {
-      setup({ showStaticAnalysis: false })
+      const title = screen.queryByText(/Impact analysis token/)
+      expect(title).not.toBeInTheDocument()
     })
 
     it('does not render static token component', () => {

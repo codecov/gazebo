@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 
 import { useRepoConfigurationStatus } from './useRepoConfigurationStatus'
 
@@ -82,17 +82,17 @@ describe('useRepoConfigurationStatus', () => {
     nullOwner: nullResponse = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoConfigurationStatus', (req, res, ctx) => {
+      graphql.query('GetRepoConfigurationStatus', (info) => {
         if (badResponse) {
-          return res(ctx.status(200), ctx.data({}))
+          return HttpResponse.json({})
         } else if (repoNotFound) {
-          return res(ctx.status(200), ctx.data(mockRepoNotFound))
+          return HttpResponse.json({ data: mockRepoNotFound })
         } else if (ownerNotActivated) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivated))
+          return HttpResponse.json({ data: mockOwnerNotActivated })
         } else if (nullResponse) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
+          return HttpResponse.json({ data: mockNullOwner })
         }
-        return res(ctx.status(200), ctx.data(mockGoodResponse))
+        return HttpResponse.json({ data: mockGoodResponse })
       })
     )
   }

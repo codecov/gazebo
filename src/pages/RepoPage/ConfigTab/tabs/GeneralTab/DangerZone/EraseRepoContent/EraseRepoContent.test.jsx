@@ -2,15 +2,23 @@ import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { delay, graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useAddNotification } from 'services/toastNotification'
 
 import EraseRepoContent from './EraseRepoContent'
 
-jest.mock('services/toastNotification')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
+
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -70,24 +78,25 @@ describe('EraseRepoContent', () => {
     }
   ) {
     const user = userEvent.setup()
-    const mutate = jest.fn()
-    const addNotification = jest.fn()
-    useAddNotification.mockReturnValue(addNotification)
+    const mutate = vi.fn()
+    const addNotification = vi.fn()
+    mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      graphql.mutation('EraseRepository', (req, res, ctx) => {
+      graphql.mutation('EraseRepository', async (info) => {
         mutate()
         if (isLoading) {
-          // https://cathalmacdonnacha.com/mocking-error-empty-and-loading-states-with-msw
-          return res(ctx.status(200), ctx.data(mockResponse), ctx.delay(100))
+          // https://mswjs.io/docs/api/delay/
+          await delay('infinite')
+          return HttpResponse.json({ data: mockResponse })
         }
         if (failedMutation) {
-          return res(ctx.status(200), ctx.data(mockErrorResponse))
+          return HttpResponse.json({ data: mockErrorResponse })
         }
         if (unauthorized) {
-          return res(ctx.status(200), ctx.data(mockUnauthorized))
+          return HttpResponse.json({ data: mockUnauthorized })
         }
-        return res(ctx.status(200), ctx.data(mockResponse))
+        return HttpResponse.json({ data: mockResponse })
       })
     )
 

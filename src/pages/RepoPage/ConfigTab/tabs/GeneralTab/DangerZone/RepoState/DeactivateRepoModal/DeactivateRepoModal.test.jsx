@@ -12,8 +12,8 @@ describe('DeactivateRepoModal component', () => {
   }
   describe('renders the component correctly', () => {
     it('renders modal title', () => {
-      const closeModalMock = jest.fn()
-      const deactivateRepoMock = jest.fn()
+      const closeModalMock = vi.fn()
+      const deactivateRepoMock = vi.fn()
 
       render(
         <DeactivateRepoModal
@@ -31,8 +31,8 @@ describe('DeactivateRepoModal component', () => {
     })
 
     it('renders modal body', () => {
-      const closeModalMock = jest.fn()
-      const deactivateRepoMock = jest.fn()
+      const closeModalMock = vi.fn()
+      const deactivateRepoMock = vi.fn()
 
       render(
         <DeactivateRepoModal
@@ -50,8 +50,8 @@ describe('DeactivateRepoModal component', () => {
     })
 
     it('renders cancel button', () => {
-      const closeModalMock = jest.fn()
-      const deactivateRepoMock = jest.fn()
+      const closeModalMock = vi.fn()
+      const deactivateRepoMock = vi.fn()
 
       render(
         <DeactivateRepoModal
@@ -67,8 +67,8 @@ describe('DeactivateRepoModal component', () => {
     })
 
     it('renders deactivate button', () => {
-      const closeModalMock = jest.fn()
-      const deactivateRepoMock = jest.fn()
+      const closeModalMock = vi.fn()
+      const deactivateRepoMock = vi.fn()
 
       render(
         <DeactivateRepoModal
@@ -87,8 +87,8 @@ describe('DeactivateRepoModal component', () => {
 
     it('closes modal when cancel is clicked', async () => {
       const { user } = setup()
-      const closeModalMock = jest.fn()
-      const deactivateRepoMock = jest.fn()
+      const closeModalMock = vi.fn()
+      const deactivateRepoMock = vi.fn()
 
       render(
         <DeactivateRepoModal
@@ -107,8 +107,8 @@ describe('DeactivateRepoModal component', () => {
 
     it('calls deactivate when deactivate button is clicked', async () => {
       const { user } = setup()
-      const closeModalMock = jest.fn()
-      const deactivateRepoMock = jest.fn()
+      const closeModalMock = vi.fn()
+      const deactivateRepoMock = vi.fn()
 
       render(
         <DeactivateRepoModal
@@ -129,8 +129,8 @@ describe('DeactivateRepoModal component', () => {
 
   it('renders correctly when repo is deactivated', async () => {
     const { user } = setup()
-    const closeModalMock = jest.fn()
-    const deactivateRepoMock = jest.fn()
+    const closeModalMock = vi.fn()
+    const deactivateRepoMock = vi.fn()
 
     render(
       <DeactivateRepoModal

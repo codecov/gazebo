@@ -2,15 +2,23 @@ import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useAddNotification } from 'services/toastNotification'
 
 import RepoUploadToken from './RepoUploadToken'
 
-jest.mock('services/toastNotification')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
+
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -34,7 +42,7 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
-  jest.resetAllMocks()
+  vi.resetAllMocks()
 })
 afterAll(() => {
   server.close()
@@ -48,35 +56,33 @@ describe('RepoUploadToken', () => {
     }
   ) {
     const user = userEvent.setup()
-    const mutate = jest.fn()
-    const addNotification = jest.fn()
+    const mutate = vi.fn()
+    const addNotification = vi.fn()
 
-    useAddNotification.mockReturnValue(addNotification)
+    mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      graphql.mutation('RegenerateRepositoryUploadToken', (req, res, ctx) => {
-        mutate(req.variables)
+      graphql.mutation('RegenerateRepositoryUploadToken', (info) => {
+        mutate(info.request.variables)
         if (triggerError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               regenerateRepositoryUploadToken: {
                 error: {
                   __typename: 'ValidationError',
                 },
               },
-            })
-          )
+            },
+          })
         }
 
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             regenerateRepositoryUploadToken: {
               value: 'test',
             },
-          })
-        )
+          },
+        })
       })
     )
 
@@ -85,7 +91,7 @@ describe('RepoUploadToken', () => {
 
   describe('renders RepoUploadToken component', () => {
     beforeEach(() => setup())
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => vi.resetAllMocks())
 
     it('renders title', () => {
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
@@ -124,7 +130,7 @@ describe('RepoUploadToken', () => {
   })
 
   describe('when the user clicks on regenerate button', () => {
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => vi.resetAllMocks())
 
     it('displays the regenerate upload token modal', async () => {
       const { user } = setup()
@@ -152,7 +158,7 @@ describe('RepoUploadToken', () => {
   })
 
   describe('when user clicks on Cancel button', () => {
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => vi.resetAllMocks())
 
     it('does not call the mutation', async () => {
       const { mutate, user } = setup()
@@ -178,7 +184,7 @@ describe('RepoUploadToken', () => {
   })
 
   describe('when user clicks on Generate New Token button', () => {
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => vi.resetAllMocks())
 
     it('calls the mutation', async () => {
       const tokenName = 'new token'
@@ -213,7 +219,7 @@ describe('RepoUploadToken', () => {
   })
 
   describe('when mutation is not successful', () => {
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => vi.resetAllMocks())
 
     it('adds an error notification', async () => {
       const tokenName = 'new token'
@@ -241,7 +247,7 @@ describe('RepoUploadToken', () => {
   })
 
   describe('when render with no token', () => {
-    afterEach(() => jest.resetAllMocks())
+    afterEach(() => vi.resetAllMocks())
 
     it('does not render component', () => {
       render(<RepoUploadToken uploadToken={null} />, { wrapper })

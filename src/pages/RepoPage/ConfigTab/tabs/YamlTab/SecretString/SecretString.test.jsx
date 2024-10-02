@@ -1,22 +1,37 @@
-import { render, screen, waitFor } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useAddNotification } from 'services/toastNotification'
 
 import SecretString from './SecretString'
 
-jest.mock('services/toastNotification')
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
+
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -33,33 +48,32 @@ const wrapper = ({ children }) => (
 describe('SecretString', () => {
   function setup(value = '', isError = false) {
     const user = userEvent.setup()
-    const addNotification = jest.fn()
-    const mutation = jest.fn()
+    const addNotification = vi.fn()
+    const mutation = vi.fn()
 
-    useAddNotification.mockReturnValue(addNotification)
+    mocks.useAddNotification.mockReturnValue(addNotification)
+
     server.use(
-      graphql.mutation('EncodeSecretString', (req, res, ctx) => {
-        mutation(req.variables)
+      graphql.mutation('EncodeSecretString', (info) => {
+        mutation(info.variables)
         if (isError) {
-          return res(
-            ctx.status(200),
-            ctx.data({
+          return HttpResponse.json({
+            data: {
               encodeSecretString: {
                 error: {
                   __typename: 'ValidationError',
                 },
               },
-            })
-          )
+            },
+          })
         }
-        return res(
-          ctx.status(200),
-          ctx.data({
+        return HttpResponse.json({
+          data: {
             encodeSecretString: {
               value,
             },
-          })
-        )
+          },
+        })
       })
     )
 

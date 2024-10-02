@@ -2,18 +2,25 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useEncodeString, useRepoSettings } from 'services/repo'
-
 import YamlTab from './YamlTab'
 
-jest.mock('services/repo')
+const mocks = vi.hoisted(() => ({
+  useEncodeString: vi.fn(),
+  useRepoSettings: vi.fn(),
+}))
+
+vi.mock('services/repo', () => ({
+  useEncodeString: mocks.useEncodeString,
+  useRepoSettings: mocks.useRepoSettings,
+}))
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
 describe('YamlTab', () => {
   function setup() {
-    useRepoSettings.mockReturnValue({
+    mocks.useRepoSettings.mockReturnValue({
       data: {
         repository: {
           yaml: 'test',
@@ -23,7 +30,7 @@ describe('YamlTab', () => {
       },
     })
 
-    useEncodeString.mockReturnValue({
+    mocks.useEncodeString.mockReturnValue({
       data: {
         value: '',
       },
