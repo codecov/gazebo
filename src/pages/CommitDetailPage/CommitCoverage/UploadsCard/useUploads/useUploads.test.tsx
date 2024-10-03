@@ -86,7 +86,7 @@ describe('useUploads', () => {
 
     describe('when data is loaded', () => {
       it('returns groupedUploads', () => {
-        const { result } = renderHook(() => useUploads(), {
+        const { result } = renderHook(() => useUploads({}), {
           wrapper,
         })
 
@@ -94,7 +94,7 @@ describe('useUploads', () => {
       })
 
       it('returns a uploadsProviderList', () => {
-        const { result } = renderHook(() => useUploads(), {
+        const { result } = renderHook(() => useUploads({}), {
           wrapper,
         })
 
@@ -102,7 +102,7 @@ describe('useUploads', () => {
       })
 
       it('returns a hasNoUploads', () => {
-        const { result } = renderHook(() => useUploads(), {
+        const { result } = renderHook(() => useUploads({}), {
           wrapper,
         })
 
@@ -122,7 +122,7 @@ describe('useUploads', () => {
 
     describe('when data is loaded', () => {
       it('returns uploadsOverview', async () => {
-        const { result } = renderHook(() => useUploads(), {
+        const { result } = renderHook(() => useUploads({}), {
           wrapper,
         })
 
@@ -138,7 +138,7 @@ describe('useUploads', () => {
       })
 
       it('returns groupedUploads', async () => {
-        const { result } = renderHook(() => useUploads(), {
+        const { result } = renderHook(() => useUploads({}), {
           wrapper,
         })
 
@@ -152,6 +152,16 @@ describe('useUploads', () => {
 
         expect(result.current.groupedUploads).toMatchObject({
           'github actions': [
+            {
+              createdAt: '2020-08-25T16:36:25.820340+00:00',
+              errors: [],
+              flags: ['front-end'],
+              jobCode: '1234',
+              provider: 'github actions',
+              state: 'PROCESSED',
+              updatedAt: '2020-08-25T16:36:25.859889+00:00',
+              uploadType: 'UPLOADED',
+            },
             {
               buildCode: '1234',
               ciUrl: 'https://example.com',
@@ -174,32 +184,29 @@ describe('useUploads', () => {
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
               uploadType: 'UPLOADED',
             },
-            {
-              createdAt: '2020-08-25T16:36:25.820340+00:00',
-              errors: [],
-              flags: ['front-end'],
-              jobCode: '1234',
-              provider: 'github actions',
-              state: 'PROCESSED',
-              updatedAt: '2020-08-25T16:36:25.859889+00:00',
-              uploadType: 'UPLOADED',
-            },
           ],
           travis: [
             {
               buildCode: '1234',
-              ciUrl: 'https://example.com',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
               downloadUrl: '/test.txt',
-              errors: [
-                {
-                  errorCode: 'REPORT_EMPTY',
-                },
-              ],
-              flags: ['unit'],
+              errors: [],
+              flags: ['backend', 'front-end'],
               jobCode: '1234',
               provider: 'travis',
-              state: 'ERROR',
+              state: 'STARTED',
+              updatedAt: '2020-08-25T16:36:19.679868+00:00',
+              uploadType: 'UPLOADED',
+            },
+            {
+              buildCode: '1234',
+              createdAt: '2020-08-25T16:36:19.559474+00:00',
+              downloadUrl: '/test.txt',
+              errors: [],
+              flags: ['backend', 'front-end'],
+              jobCode: '1234',
+              provider: 'travis',
+              state: 'STARTED',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
               uploadType: 'UPLOADED',
             },
@@ -217,25 +224,18 @@ describe('useUploads', () => {
             },
             {
               buildCode: '1234',
+              ciUrl: 'https://example.com',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
               downloadUrl: '/test.txt',
-              errors: [],
-              flags: ['backend', 'front-end'],
+              errors: [
+                {
+                  errorCode: 'REPORT_EMPTY',
+                },
+              ],
+              flags: ['unit'],
               jobCode: '1234',
               provider: 'travis',
-              state: 'STARTED',
-              updatedAt: '2020-08-25T16:36:19.679868+00:00',
-              uploadType: 'UPLOADED',
-            },
-            {
-              buildCode: '1234',
-              createdAt: '2020-08-25T16:36:19.559474+00:00',
-              downloadUrl: '/test.txt',
-              errors: [],
-              flags: ['backend', 'front-end'],
-              jobCode: '1234',
-              provider: 'travis',
-              state: 'STARTED',
+              state: 'ERROR',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
               uploadType: 'UPLOADED',
             },
@@ -244,7 +244,7 @@ describe('useUploads', () => {
       })
 
       it('returns a uploadsProviderList', async () => {
-        const { result } = renderHook(() => useUploads(), {
+        const { result } = renderHook(() => useUploads({}), {
           wrapper,
         })
 
@@ -263,7 +263,7 @@ describe('useUploads', () => {
       })
 
       it('returns a hasNoUploads', async () => {
-        const { result } = renderHook(() => useUploads(), {
+        const { result } = renderHook(() => useUploads({}), {
           wrapper,
         })
 
@@ -289,7 +289,7 @@ describe('useUploads', () => {
       })
 
       it('returns uploadsOverview', async () => {
-        const { result } = renderHook(() => useUploads(), {
+        const { result } = renderHook(() => useUploads({}), {
           wrapper,
         })
 
@@ -313,7 +313,7 @@ describe('useUploads', () => {
       })
 
       it('returns uploadsOverview', async () => {
-        const { result } = renderHook(() => useUploads(), {
+        const { result } = renderHook(() => useUploads({}), {
           wrapper,
         })
 
@@ -340,7 +340,7 @@ describe('useUploads', () => {
     })
 
     it('skips fetching flag related data', async () => {
-      const { result } = renderHook(() => useUploads(), {
+      const { result } = renderHook(() => useUploads({}), {
         wrapper,
       })
       const initUploadsOverview = result.current.uploadsOverview

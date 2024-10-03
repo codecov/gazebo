@@ -1,14 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query'
 import without from 'lodash/without'
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import {
-  ErrorCodeEnum,
-  UploadStateEnum,
-  UploadTypeEnum,
-} from 'shared/utils/commit'
+import { UploadTypeEnum } from 'shared/utils/commit'
 import { formatTimeToNow } from 'shared/utils/dates'
+import { Upload } from 'shared/utils/extractUploads'
 import A from 'ui/A'
 import Checkbox from 'ui/Checkbox'
 import Icon from 'ui/Icon'
@@ -16,18 +12,24 @@ import Icon from 'ui/Icon'
 import RenderError from './RenderError'
 import UploadReference from './UploadReference'
 
-const Upload = ({
-  ciUrl,
-  buildCode = 'build code not found',
-  createdAt,
-  flags = [],
-  downloadUrl,
-  errors = [],
-  uploadType,
-  state,
-  name,
-  id,
-}) => {
+interface UploadProps {
+  upload: Upload
+}
+
+const UploadItem = ({
+  upload: {
+    ciUrl,
+    buildCode,
+    createdAt,
+    flags,
+    downloadUrl,
+    errors,
+    uploadType,
+    state,
+    name,
+    id,
+  },
+}: UploadProps) => {
   const [checked, setChecked] = useState(true)
   const queryClient = useQueryClient()
   const isCarriedForward = uploadType === UploadTypeEnum.CARRIED_FORWARD
@@ -38,17 +40,18 @@ const Upload = ({
         <div className="flex flex-1 flex-wrap items-center gap-2">
           <Checkbox
             checked={checked}
-            dataMarketing="toggle-upload-hit-count"
+            data-marketing="toggle-upload-hit-count"
             onClick={() => {
-              if (checked) {
+              if (checked && id != null) {
                 // User is unchecking
-                queryClient.setQueryData(['IgnoredUploadIds'], (oldData) => [
-                  ...(oldData ?? []),
-                  id,
-                ])
-              } else {
-                queryClient.setQueryData(['IgnoredUploadIds'], (oldData) =>
-                  without(oldData, id)
+                queryClient.setQueryData(
+                  ['IgnoredUploadIds'],
+                  (oldData?: number[]) => [...(oldData ?? []), id]
+                )
+              } else if (id != null) {
+                queryClient.setQueryData(
+                  ['IgnoredUploadIds'],
+                  (oldData?: number[]) => without(oldData, id)
                 )
               }
 
@@ -66,17 +69,20 @@ const Upload = ({
       </div>
       <div className="flex justify-between pl-5">
         <div className="flex flex-col flex-wrap gap-2 md:flex-row">
-          {flags.map((flag, i) => (
-            <span key={`${flag}-${i}`} className="flex">
-              <Icon variant="solid" size="sm" name="flag" />
-              <span className="ml-1 text-xs">{flag}</span>
-            </span>
-          ))}
+          {flags
+            ? flags.map((flag, i) => (
+                <span key={`${flag}-${i}`} className="flex">
+                  <Icon variant="solid" size="sm" name="flag" />
+                  <span className="ml-1 text-xs">{flag}</span>
+                </span>
+              ))
+            : null}
           {isCarriedForward && (
             <span className="text-xs text-ds-gray-quinary">carry-forward</span>
           )}
         </div>
         {downloadUrl && (
+          // @ts-expect-error
           <A href={downloadUrl} hook="download report" download isExternal>
             Download
           </A>
@@ -87,31 +93,4 @@ const Upload = ({
   )
 }
 
-Upload.propTypes = {
-  state: PropTypes.oneOf([
-    UploadStateEnum.error,
-    UploadStateEnum.uploaded,
-    UploadStateEnum.processed,
-    UploadStateEnum.complete,
-  ]),
-  ciUrl: PropTypes.string,
-  createdAt: PropTypes.string,
-  downloadUrl: PropTypes.string,
-  flags: PropTypes.arrayOf(PropTypes.string),
-  buildCode: PropTypes.string,
-  uploadType: PropTypes.string,
-  name: PropTypes.string,
-  errors: PropTypes.arrayOf(
-    PropTypes.shape({
-      errorCode: PropTypes.oneOf([
-        ErrorCodeEnum.fileNotFoundInStorage,
-        ErrorCodeEnum.reportEmpty,
-        ErrorCodeEnum.reportExpired,
-      ]),
-    })
-  ),
-  id: PropTypes.number,
-  setIgnoredIds: PropTypes.func,
-}
-
-export default Upload
+export default UploadItem
