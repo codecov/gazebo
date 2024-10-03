@@ -30,9 +30,7 @@ export interface Upload {
 
 export const NONE = 'none'
 
-function humanReadableOverview(
-  state: (typeof UploadStateEnum)[keyof typeof UploadStateEnum]
-) {
+function humanReadableOverview(state: string) {
   switch (state) {
     case UploadStateEnum.error:
       return 'errored'
@@ -44,6 +42,8 @@ function humanReadableOverview(
       return 'carried forward'
     case UploadStateEnum.started:
       return 'started'
+    default:
+      return 'unknown'
   }
 }
 
