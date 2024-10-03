@@ -42,8 +42,6 @@ function humanReadableOverview(state: string) {
       return 'carried forward'
     case UploadStateEnum.started:
       return 'started'
-    default:
-      return 'unknown'
   }
 }
 
