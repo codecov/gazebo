@@ -352,8 +352,10 @@ describe('Components Tab', () => {
           owner: {
             repository: {
               __typename: 'Repository',
-              componentsMeasurementsActive: false,
-              componentsMeasurementsBackfilled: false,
+              coverageAnalytics: {
+                componentsMeasurementsActive: false,
+                componentsMeasurementsBackfilled: false,
+              },
             },
           },
         },
