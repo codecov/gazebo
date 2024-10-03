@@ -200,15 +200,6 @@ describe('UploadsCard', () => {
   })
 
   describe('rendering errors', () => {
-<<<<<<<< HEAD:src/pages/CommitDetailPage/CommitCoverage/UploadsCard/Upload.test.jsx
-    let consoleSpy
-    beforeAll(() => {
-      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    })
-
-    afterAll(() => {
-      consoleSpy.mockRestore()
-========
     beforeEach(() => {
       // Suppress prop-type warnings.
       vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -246,7 +237,6 @@ describe('UploadsCard', () => {
 
       const upload = screen.getByText('721065746')
       expect(upload).toBeInTheDocument()
->>>>>>>> 4f12ec4a5 (Add search and filter to uploads list):src/pages/CommitDetailPage/CommitCoverage/UploadsCard/UploadItem.test.tsx
     })
 
     it('fileNotFoundInStorage error', () => {
