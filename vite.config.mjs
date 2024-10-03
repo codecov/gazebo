@@ -7,14 +7,18 @@ import { ViteEjsPlugin } from 'vite-plugin-ejs'
 import svgr from 'vite-plugin-svgr'
 
 export default defineConfig((config) => {
-  const env = loadEnv(config.mode, process.cwd(), 'REACT_APP')
+  // this will only load the env variables that start with REACT_APP_ that are in the .env file
+  let env = loadEnv(config.mode, process.cwd(), 'REACT_APP')
 
-  const envWithProcessPrefix = {
-    'process.env': `${JSON.stringify(env)}`,
+  // If we are building in CI, where there is no .env file, we need to merge the env with the process.env
+  if (process && process.env) {
+    env = {
+      ...env,
+      ...process.env,
+    }
   }
 
   const plugins = []
-
   const runSentryPlugin =
     config.mode === 'production' && !!process.env.SENTRY_AUTH_TOKEN
   if (runSentryPlugin) {
@@ -59,7 +63,10 @@ export default defineConfig((config) => {
       outDir: 'build',
       sourcemap: runSentryPlugin,
     },
-    define: envWithProcessPrefix,
+    define: {
+      // We use this to inject the env variables into the application
+      'process.env': `${JSON.stringify(env)}`,
+    },
     plugins: [
       ViteEjsPlugin({
         isProduction: config.mode === 'production',
