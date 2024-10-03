@@ -110,66 +110,71 @@ function UploadsFilters({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-start justify-between">
-        <div className="flex flex-col gap-2">
-          {flagErrorUploadCount ? (
-            <div className="flex items-center gap-2">
-              <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
-                <Icon name="exclamation" size="sm" variant="solid" />
-                {flagErrorUploadCount} flag errors
+        {flagErrorUploadCount || erroredUploadCount ? (
+          <div className="flex flex-col gap-2">
+            {flagErrorUploadCount ? (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
+                  <Icon name="exclamation" size="sm" variant="solid" />
+                  {flagErrorUploadCount} flag errors
+                </div>
+                {uploadFilters.flagErrors ? (
+                  <button
+                    className="text-xs font-semibold text-ds-blue-default hover:underline"
+                    onClick={() => {
+                      setUploadFilters({ ...uploadFilters, flagErrors: false })
+                    }}
+                    data-testid="flag-errors-filter"
+                  >
+                    clear
+                  </button>
+                ) : (
+                  <button
+                    className="text-xs text-ds-blue-default hover:underline"
+                    onClick={() => {
+                      setUploadFilters({ ...uploadFilters, flagErrors: true })
+                    }}
+                    data-testid="flag-errors-filter"
+                  >
+                    view
+                  </button>
+                )}
               </div>
-              {uploadFilters.flagErrors ? (
-                <button
-                  className="text-xs font-semibold text-ds-blue-default hover:underline"
-                  onClick={() => {
-                    setUploadFilters({ ...uploadFilters, flagErrors: false })
-                  }}
-                  data-testid="flag-errors-filter"
-                >
-                  clear
-                </button>
-              ) : (
-                <button
-                  className="text-xs text-ds-blue-default hover:underline"
-                  onClick={() => {
-                    setUploadFilters({ ...uploadFilters, flagErrors: true })
-                  }}
-                  data-testid="flag-errors-filter"
-                >
-                  view
-                </button>
-              )}
-            </div>
-          ) : null}
-          {erroredUploadCount ? (
-            <div className="flex items-center gap-2">
-              <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
-                <Icon name="exclamation" size="sm" variant="solid" />
-                {erroredUploadCount} upload errors
+            ) : null}
+            {erroredUploadCount ? (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
+                  <Icon name="exclamation" size="sm" variant="solid" />
+                  {erroredUploadCount} upload errors
+                </div>
+                {uploadFilters.uploadErrors ? (
+                  <button
+                    className="text-xs font-semibold text-ds-blue-default hover:underline"
+                    onClick={() =>
+                      setUploadFilters({
+                        ...uploadFilters,
+                        uploadErrors: false,
+                      })
+                    }
+                    data-testid="upload-errors-filter"
+                  >
+                    clear
+                  </button>
+                ) : (
+                  <button
+                    className="text-xs text-ds-blue-default hover:underline"
+                    onClick={() =>
+                      setUploadFilters({ ...uploadFilters, uploadErrors: true })
+                    }
+                    data-testid="upload-errors-filter"
+                  >
+                    view
+                  </button>
+                )}
               </div>
-              {uploadFilters.uploadErrors ? (
-                <button
-                  className="text-xs font-semibold text-ds-blue-default hover:underline"
-                  onClick={() =>
-                    setUploadFilters({ ...uploadFilters, uploadErrors: false })
-                  }
-                  data-testid="upload-errors-filter"
-                >
-                  clear
-                </button>
-              ) : (
-                <button
-                  className="text-xs text-ds-blue-default hover:underline"
-                  onClick={() =>
-                    setUploadFilters({ ...uploadFilters, uploadErrors: true })
-                  }
-                  data-testid="upload-errors-filter"
-                >
-                  view
-                </button>
-              )}
-            </div>
-          ) : null}
-        </div>
+            ) : null}
+          </div>
+        ) : null}
         {uploadFilters.uploadErrors ||
         uploadFilters.flagErrors ||
         uploadFilters.searchTerm ? (
