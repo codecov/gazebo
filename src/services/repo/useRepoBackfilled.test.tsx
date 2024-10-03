@@ -106,11 +106,8 @@ describe('useRepoBackfilled', () => {
         })
 
         const expectedResponse = {
-          __typename: 'Repository',
-          coverageAnalytics: {
-            flagsMeasurementsActive: true,
-            flagsMeasurementsBackfilled: true,
-          },
+          flagsMeasurementsActive: true,
+          flagsMeasurementsBackfilled: true,
         }
         await waitFor(() =>
           expect(result.current.data).toEqual(expectedResponse)

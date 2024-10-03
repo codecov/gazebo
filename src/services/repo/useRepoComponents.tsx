@@ -67,7 +67,11 @@ export const ComponentEdgeSchema = z.object({
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  components: z.array(ComponentEdgeSchema),
+  coverageAnalytics: z
+    .object({
+      components: z.array(ComponentEdgeSchema),
+    })
+    .nullable(),
 })
 
 const RequestSchema = z.object({
@@ -168,7 +172,7 @@ function fetchRepoComponents({
 
     // This returns something else 2
     return {
-      components: data?.owner?.repository?.components,
+      components: data?.owner?.repository?.coverageAnalytics?.components,
     }
   })
 }

@@ -74,11 +74,8 @@ describe('useComponentsBackfilled', () => {
         })
 
         const expectedResponse = {
-          __typename: 'Repository',
-          coverageAnalytics: {
-            componentsMeasurementsActive: true,
-            componentsMeasurementsBackfilled: true,
-          },
+          componentsMeasurementsActive: true,
+          componentsMeasurementsBackfilled: true,
         }
         await waitFor(() =>
           expect(result.current.data).toEqual(expectedResponse)

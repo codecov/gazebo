@@ -121,7 +121,7 @@ export function useComponentsBackfilled() {
 
         return {
           ...data?.config,
-          ...data?.owner?.repository,
+          ...data?.owner?.repository?.coverageAnalytics,
         }
       }),
   })

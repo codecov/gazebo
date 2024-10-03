@@ -43,17 +43,19 @@ const mockFirstResponse = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flags: {
-        edges: [
-          {
-            node: {
-              name: 'flag-1',
+      coverageAnalytics: {
+        flags: {
+          edges: [
+            {
+              node: {
+                name: 'flag-1',
+              },
             },
+          ],
+          pageInfo: {
+            hasNextPage: true,
+            endCursor: '1-flag-1',
           },
-        ],
-        pageInfo: {
-          hasNextPage: true,
-          endCursor: '1-flag-1',
         },
       },
     },
@@ -64,17 +66,19 @@ const mockSecondResponse = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flags: {
-        edges: [
-          {
-            node: {
-              name: 'flag-2',
+      coverageAnalytics: {
+        flags: {
+          edges: [
+            {
+              node: {
+                name: 'flag-2',
+              },
             },
+          ],
+          pageInfo: {
+            hasNextPage: false,
+            endCursor: null,
           },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: null,
         },
       },
     },

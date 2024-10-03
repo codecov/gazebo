@@ -3,10 +3,9 @@ import { useComponentsBackfilled } from 'services/repo'
 export function useRepoBackfillingStatus() {
   const { data } = useComponentsBackfilled()
 
-  const componentsMeasurementsActive =
-    data?.coverageAnalytics?.componentsMeasurementsActive
+  const componentsMeasurementsActive = data?.componentsMeasurementsActive
   const componentsMeasurementsBackfilled =
-    data?.coverageAnalytics?.componentsMeasurementsBackfilled
+    data?.componentsMeasurementsBackfilled
   const isTimescaleEnabled = data?.isTimescaleEnabled
   const isRepoBackfilling =
     componentsMeasurementsActive && !componentsMeasurementsBackfilled

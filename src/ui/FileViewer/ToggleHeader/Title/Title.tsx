@@ -97,6 +97,8 @@ export const TitleFlags = ({ commitDetailView = false }: TitleFlagsProps) => {
     'sm:w-60': !commitDetailView,
   })
 
+  console.log({ flagNames })
+
   return (
     <div className={selectorClasses}>
       <MultiSelect
