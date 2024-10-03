@@ -108,78 +108,76 @@ function UploadsFilters({
   setUploadFilters,
 }: UploadsFiltersProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       <div className="flex items-start justify-between">
-        {flagErrorUploadCount || erroredUploadCount ? (
-          <div className="flex flex-col gap-2">
-            {flagErrorUploadCount ? (
-              <div className="flex items-center gap-2">
-                <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
-                  <Icon name="exclamation" size="sm" variant="solid" />
-                  {flagErrorUploadCount} flag errors
-                </div>
-                {uploadFilters.flagErrors ? (
-                  <button
-                    className="text-xs font-semibold text-ds-blue-default hover:underline"
-                    onClick={() => {
-                      setUploadFilters({ ...uploadFilters, flagErrors: false })
-                    }}
-                    data-testid="flag-errors-filter"
-                  >
-                    clear
-                  </button>
-                ) : (
-                  <button
-                    className="text-xs text-ds-blue-default hover:underline"
-                    onClick={() => {
-                      setUploadFilters({ ...uploadFilters, flagErrors: true })
-                    }}
-                    data-testid="flag-errors-filter"
-                  >
-                    view
-                  </button>
-                )}
+        <div className="flex flex-col">
+          {flagErrorUploadCount ? (
+            <div className="flex items-center gap-2 pb-2">
+              <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
+                <Icon name="exclamation" size="sm" variant="solid" />
+                {flagErrorUploadCount} flag errors
               </div>
-            ) : null}
-            {erroredUploadCount ? (
-              <div className="flex items-center gap-2">
-                <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
-                  <Icon name="exclamation" size="sm" variant="solid" />
-                  {erroredUploadCount} upload errors
-                </div>
-                {uploadFilters.uploadErrors ? (
-                  <button
-                    className="text-xs font-semibold text-ds-blue-default hover:underline"
-                    onClick={() =>
-                      setUploadFilters({
-                        ...uploadFilters,
-                        uploadErrors: false,
-                      })
-                    }
-                    data-testid="upload-errors-filter"
-                  >
-                    clear
-                  </button>
-                ) : (
-                  <button
-                    className="text-xs text-ds-blue-default hover:underline"
-                    onClick={() =>
-                      setUploadFilters({ ...uploadFilters, uploadErrors: true })
-                    }
-                    data-testid="upload-errors-filter"
-                  >
-                    view
-                  </button>
-                )}
+              {uploadFilters.flagErrors ? (
+                <button
+                  className="text-xs font-semibold text-ds-blue-default hover:underline"
+                  onClick={() => {
+                    setUploadFilters({ ...uploadFilters, flagErrors: false })
+                  }}
+                  data-testid="flag-errors-filter"
+                >
+                  clear
+                </button>
+              ) : (
+                <button
+                  className="text-xs text-ds-blue-default hover:underline"
+                  onClick={() => {
+                    setUploadFilters({ ...uploadFilters, flagErrors: true })
+                  }}
+                  data-testid="flag-errors-filter"
+                >
+                  view
+                </button>
+              )}
+            </div>
+          ) : null}
+          {erroredUploadCount ? (
+            <div className="flex items-center gap-2 pb-2">
+              <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
+                <Icon name="exclamation" size="sm" variant="solid" />
+                {erroredUploadCount} upload errors
               </div>
-            ) : null}
-          </div>
-        ) : null}
+              {uploadFilters.uploadErrors ? (
+                <button
+                  className="text-xs font-semibold text-ds-blue-default hover:underline"
+                  onClick={() =>
+                    setUploadFilters({
+                      ...uploadFilters,
+                      uploadErrors: false,
+                    })
+                  }
+                  data-testid="upload-errors-filter"
+                >
+                  clear
+                </button>
+              ) : (
+                <button
+                  className="text-xs text-ds-blue-default hover:underline"
+                  onClick={() =>
+                    setUploadFilters({ ...uploadFilters, uploadErrors: true })
+                  }
+                  data-testid="upload-errors-filter"
+                >
+                  view
+                </button>
+              )}
+            </div>
+          ) : null}
+        </div>
         {uploadFilters.uploadErrors ||
         uploadFilters.flagErrors ||
         uploadFilters.searchTerm ? (
           <button
-            className="text-xs font-semibold text-ds-blue-default hover:underline"
+            className="pb-2 text-xs font-semibold text-ds-blue-default hover:underline"
             onClick={() =>
               setUploadFilters({
                 flagErrors: false,
