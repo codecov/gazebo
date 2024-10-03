@@ -226,8 +226,6 @@ describe('TitleFlags', () => {
 
     server.use(
       graphql.query('FlagsSelect', (info) => {
-        console.log(JSON.stringify(backfillData))
-
         mockApiVars(info.variables)
 
         if (!!info.variables?.after || noNextPage) {
