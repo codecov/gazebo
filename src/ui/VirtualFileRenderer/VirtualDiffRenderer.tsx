@@ -14,11 +14,7 @@
  * scroll horizontally in sync with the text area.
  */
 import * as Sentry from '@sentry/react'
-import {
-  useWindowVirtualizer,
-  type VirtualItem,
-  type Virtualizer,
-} from '@tanstack/react-virtual'
+import { useWindowVirtualizer } from '@tanstack/react-virtual'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -26,23 +22,14 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
 import { cn } from 'shared/utils/cn'
 import { prismLanguageMapper } from 'shared/utils/prism/prismLanguageMapper'
-import Icon from 'ui/Icon'
 
 import { ColorBar } from './ColorBar'
+import { LINE_ROW_HEIGHT } from './constants'
+import { LineNumber } from './LineNumber'
+import { CoverageValue, Token } from './types'
 
 import './VirtualFileRenderer.css'
 import 'shared/utils/prism/prismTheme.css'
-
-const LINE_ROW_HEIGHT = 18 as const
-
-// copied from prism-react-renderer since they don't export it
-type Token = {
-  types: string[]
-  content: string
-  empty?: boolean
-}
-
-type CoverageValue = 'H' | 'M' | 'P' | null | undefined
 
 export interface LineData {
   headNumber: string | null
@@ -50,83 +37,6 @@ export interface LineData {
   headCoverage: CoverageValue
   baseCoverage: CoverageValue
   hitCount: number | undefined
-}
-
-interface LineNumberProps {
-  index: number
-  virtualizer: Virtualizer<Window, Element>
-  lineNumber: string | null | undefined
-  item: VirtualItem<Element>
-  isHighlighted: boolean
-  coverageValue: CoverageValue
-  onClick: () => void
-}
-
-const LineNumber = ({
-  index,
-  virtualizer,
-  lineNumber,
-  item,
-  isHighlighted,
-  coverageValue,
-  onClick,
-}: LineNumberProps) => {
-  return (
-    <div
-      ref={virtualizer.measureElement}
-      key={index}
-      data-index={index}
-      style={{
-        height: `${item.size}px`,
-        transform: `translateY(${
-          item.start - virtualizer.options.scrollMargin
-        }px)`,
-      }}
-      className={cn(
-        'absolute left-0 top-0 w-full select-none border-r border-ds-gray-tertiary bg-ds-container pl-2 pr-4 text-right text-ds-gray-senary hover:text-ds-secondary-text',
-        lineNumber && 'hover:cursor-pointer',
-        coverageValue === 'H' && 'bg-ds-coverage-covered',
-        coverageValue === 'M' &&
-          'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
-        coverageValue === 'P' &&
-          'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow',
-        // this needs to come last as it overrides the coverage colors
-        isHighlighted && 'bg-ds-blue-medium/25'
-      )}
-      onClick={onClick}
-    >
-      <div
-        className="flex items-center justify-between"
-        style={{
-          height: `${LINE_ROW_HEIGHT}px`,
-          lineHeight: `${LINE_ROW_HEIGHT}px`,
-        }}
-      >
-        <span
-          className={cn({
-            'text-ds-primary-red': coverageValue === 'M',
-            'text-ds-primary-yellow pl-1': coverageValue === 'P',
-          })}
-        >
-          {coverageValue === 'M' ? (
-            <Icon
-              name="exclamationTriangle"
-              size="sm"
-              variant="outline"
-              className="inline"
-              label="missing-coverage-icon"
-            />
-          ) : coverageValue === 'P' ? (
-            <span data-testid="partial-coverage-icon">!</span>
-          ) : null}
-        </span>
-        <span>
-          {isHighlighted ? '#' : null}
-          {lineNumber}
-        </span>
-      </div>
-    </div>
-  )
 }
 
 interface CoverageHitCounterProps {
