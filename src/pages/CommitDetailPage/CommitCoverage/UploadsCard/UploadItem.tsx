@@ -81,12 +81,10 @@ const UploadItem = ({
             <span className="text-xs text-ds-gray-quinary">carry-forward</span>
           )}
         </div>
-        {downloadUrl && (
-          // @ts-expect-error
-          <A href={downloadUrl} hook="download report" download isExternal>
-            Download
-          </A>
-        )}
+        {/* @ts-expect-error */}
+        <A href={downloadUrl} hook="download report" download isExternal>
+          Download
+        </A>
       </div>
       <RenderError errors={errors} state={state} />
     </div>

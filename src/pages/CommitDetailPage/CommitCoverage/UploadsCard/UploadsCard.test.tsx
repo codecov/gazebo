@@ -89,6 +89,7 @@ describe('UploadsCard', () => {
           travis: [
             {
               id: 0,
+              name: null,
               state: 'PROCESSED',
               provider: 'travis',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
@@ -104,6 +105,7 @@ describe('UploadsCard', () => {
             },
             {
               id: 1,
+              name: null,
               state: 'PROCESSED',
               provider: 'travis',
               createdAt: '2020-08-25T16:36:25.820340+00:00',
@@ -121,6 +123,7 @@ describe('UploadsCard', () => {
           circleci: [
             {
               id: 2,
+              name: null,
               state: 'PROCESSED',
               provider: 'circleci',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
@@ -136,6 +139,7 @@ describe('UploadsCard', () => {
             },
             {
               id: 3,
+              name: null,
               state: 'COMPLETE',
               provider: 'circleci',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
@@ -152,7 +156,9 @@ describe('UploadsCard', () => {
           ],
           null: [
             {
+              id: 4,
               state: 'PROCESSED',
+              name: null,
               provider: 'null',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -373,6 +379,7 @@ describe('UploadsCard', () => {
           ],
           null: [
             {
+              id: 4,
               state: 'PROCESSED',
               provider: 'null',
               createdAt: '2020-08-25T16:36:19.559474+00:00',

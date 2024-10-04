@@ -113,7 +113,7 @@ const ErrorMessage = ({ errorCode, count }: ErrorMessageProps) => {
 
 interface RenderErrorProps {
   errors: (UploadErrorObject | null)[]
-  state?: (typeof UploadStateEnum)[keyof typeof UploadStateEnum]
+  state: (typeof UploadStateEnum)[keyof typeof UploadStateEnum]
 }
 
 const RenderError = ({ errors, state }: RenderErrorProps) => {
@@ -128,14 +128,12 @@ const RenderError = ({ errors, state }: RenderErrorProps) => {
           count={count}
         />
       ))}
-      {errors?.length === 0 &&
-        typeof state === 'string' &&
-        state?.toUpperCase() === UploadStateEnum.error && (
-          <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
-            <Icon size="sm" name="exclamation" variant="solid" />
-            Unknown error
-          </span>
-        )}
+      {errors?.length === 0 && state === UploadStateEnum.error ? (
+        <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
+          <Icon size="sm" name="exclamation" variant="solid" />
+          Unknown error
+        </span>
+      ) : null}
     </>
   )
 }

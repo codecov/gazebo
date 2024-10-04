@@ -118,7 +118,7 @@ describe('UploadsCard', () => {
     it('does not link to the build if no url provided', () => {
       render(
         <UploadItem
-          upload={{ ...mockUpload, buildCode: '1234', ciUrl: undefined }}
+          upload={{ ...mockUpload, buildCode: '1234', ciUrl: null }}
         />,
         {
           wrapper,
@@ -132,7 +132,7 @@ describe('UploadsCard', () => {
 
   describe('missing data renders', () => {
     it('does not link to the build if no url provided', () => {
-      render(<UploadItem upload={{ ...mockUpload, ciUrl: undefined }} />, {
+      render(<UploadItem upload={{ ...mockUpload, ciUrl: null }} />, {
         wrapper,
       })
 
@@ -141,22 +141,12 @@ describe('UploadsCard', () => {
       })
       expect(noBuildLink).not.toBeInTheDocument()
     })
-
-    it('Does not show a download link if there is no available download', () => {
-      render(
-        <UploadItem upload={{ ...mockUpload, downloadUrl: undefined }} />,
-        { wrapper }
-      )
-
-      const noDownloadLink = screen.queryByRole('link', { name: /Download/ })
-      expect(noDownloadLink).not.toBeInTheDocument()
-    })
   })
 
   describe('rendering flags', () => {
-    it('undefined flags', () => {
+    it('null flags', () => {
       // just making sure it renders without breaking
-      render(<UploadItem upload={{ ...mockUpload, flags: undefined }} />, {
+      render(<UploadItem upload={{ ...mockUpload, flags: null }} />, {
         wrapper,
       })
 
@@ -218,7 +208,7 @@ describe('UploadsCard', () => {
       expect(upload).toBeInTheDocument()
     })
 
-    it('handles null/undefined errorCode', () => {
+    it('handles null errorCode', () => {
       render(
         <UploadItem
           upload={{
@@ -415,16 +405,6 @@ describe('UploadsCard', () => {
       expect(unknownError).toBeInTheDocument()
     })
 
-    it('If no state is provided and no errors received do not show an error', () => {
-      render(
-        <UploadItem upload={{ ...mockUpload, state: undefined, errors: [] }} />,
-        { wrapper }
-      )
-
-      const unknownError = screen.queryByText(/Unknown error/)
-      expect(unknownError).not.toBeInTheDocument()
-    })
-
     it('removes duplicate errors', () => {
       render(
         <UploadItem
@@ -516,13 +496,12 @@ describe('UploadsCard', () => {
       expect(queryClient.getQueryData(['IgnoredUploadIds'])).toStrictEqual([])
     })
 
-    it('handles undefined id gracefully', async () => {
+    it('handles null id gracefully', async () => {
       const { props, user } = setup()
 
-      render(
-        <UploadItem upload={{ ...mockUpload, ...props, id: undefined }} />,
-        { wrapper }
-      )
+      render(<UploadItem upload={{ ...mockUpload, ...props, id: null }} />, {
+        wrapper,
+      })
 
       const checkbox = screen.getByRole('checkbox')
       await user.click(checkbox)
