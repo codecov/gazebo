@@ -405,9 +405,12 @@ describe('extractUploads', () => {
 
   describe('deleteDuplicateCFFUploads', () => {
     it('returns total filtered uploads', () => {
-      const uploads = [
+      const uploads: Upload[] = [
         {
           state: UploadStateEnum.complete,
+          id: 123,
+          jobCode: '123',
+          buildCode: '123',
           provider: 'circleci',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -421,6 +424,9 @@ describe('extractUploads', () => {
         },
         {
           state: UploadStateEnum.complete,
+          id: 234,
+          jobCode: '234',
+          buildCode: '234',
           provider: 'circleci',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -434,6 +440,9 @@ describe('extractUploads', () => {
         },
         {
           state: UploadStateEnum.complete,
+          id: 345,
+          jobCode: '345',
+          buildCode: '345',
           provider: 'circleci',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -447,6 +456,9 @@ describe('extractUploads', () => {
         },
         {
           state: UploadStateEnum.processed,
+          id: 456,
+          jobCode: '456',
+          buildCode: '456',
           provider: 'circleci',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
