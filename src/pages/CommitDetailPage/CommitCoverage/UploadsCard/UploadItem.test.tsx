@@ -10,6 +10,7 @@ import UploadItem from './UploadItem'
 
 const mockUpload: Upload = {
   id: 0,
+  name: null,
   state: 'PROCESSED',
   provider: 'travis',
   createdAt: '2020-08-25T16:36:19.559474+00:00',
