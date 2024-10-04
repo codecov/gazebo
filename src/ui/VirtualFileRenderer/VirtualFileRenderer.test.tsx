@@ -424,7 +424,7 @@ describe('VirtualFileRenderer', () => {
 
         const bar = await screen.findByTestId('highlighted-bar')
         expect(bar).toBeInTheDocument()
-        await waitFor(() => expect(bar).toHaveClass('bg-ds-blue-medium'))
+        await waitFor(() => expect(bar).toHaveClass('bg-ds-blue-medium/25'))
       })
 
       it('removes highlighting when clicking on highlighted line', async () => {
