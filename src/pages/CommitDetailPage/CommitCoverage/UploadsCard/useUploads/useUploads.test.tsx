@@ -133,7 +133,7 @@ describe('useUploads', () => {
         )
 
         expect(result.current.uploadsOverview).toEqual(
-          '2 errored, 3 started, 1 successful'
+          '3 started, 2 errored, 1 successful'
         )
       })
 

@@ -200,11 +200,6 @@ describe('UploadsCard', () => {
   })
 
   describe('rendering errors', () => {
-    beforeEach(() => {
-      // Suppress prop-type warnings.
-      vi.spyOn(console, 'error').mockImplementation(() => {})
-    })
-
     it('handles null error', () => {
       render(
         <UploadItem

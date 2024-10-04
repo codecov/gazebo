@@ -6,31 +6,35 @@ import {
   UploadStateEnumSchema,
   UploadTypeEnumSchema,
 } from 'services/commit'
-import { UploadStateEnum, UploadTypeEnum } from 'shared/utils/commit'
+import {
+  UploadErrorStates,
+  UploadStateEnum,
+  UploadTypeEnum,
+} from 'shared/utils/commit'
 
 export interface UploadErrorObject {
   errorCode: z.infer<typeof UploadErrorCodeEnumSchema> | null
 }
 
 export interface Upload {
-  id?: number | null
-  state?: z.infer<typeof UploadStateEnumSchema>
-  provider?: string | null
-  createdAt?: string
-  updatedAt?: string
-  flags?: string[] | null
-  jobCode?: string | null
-  downloadUrl?: string
-  ciUrl?: string | null
-  uploadType?: z.infer<typeof UploadTypeEnumSchema>
-  buildCode?: string | null
-  name?: string | null
+  id: number | null
+  state: z.infer<typeof UploadStateEnumSchema>
+  provider: string | null
+  createdAt: string
+  updatedAt: string
+  flags: string[] | null
+  jobCode: string | null
+  downloadUrl: string
+  ciUrl: string | null
+  uploadType: z.infer<typeof UploadTypeEnumSchema>
+  buildCode: string | null
+  name: string | null
   errors: (UploadErrorObject | null)[]
 }
 
 export const NONE = 'none'
 
-function humanReadableOverview(state: string) {
+function humanReadableOverview(state: (typeof UploadErrorStates)[number]) {
   switch (state) {
     case UploadStateEnum.error:
       return 'errored'
@@ -68,6 +72,10 @@ export function deleteDuplicateCFFUploads({ uploads }: { uploads: Upload[] }) {
   )
 }
 
+type StateCounts = {
+  [Property in (typeof UploadErrorStates)[number]]?: number
+}
+
 const createUploadGroups = ({
   uploads,
   filters,
@@ -75,7 +83,7 @@ const createUploadGroups = ({
   uploads: Upload[]
   filters: UploadFilters
 }) => {
-  const stateCounts: Record<string, number> = {}
+  const stateCounts: StateCounts = {}
   const providerGroups: Record<string, Upload[]> = {}
   const errorProviderGroups: Record<string, Upload[]> = {}
   const flagErrorUploads: Record<string, Upload[]> = {}
@@ -83,27 +91,27 @@ const createUploadGroups = ({
 
   uploads.forEach((upload) => {
     // Count the occurrences of each state
-    if (upload.state) {
-      stateCounts[upload.state] = (stateCounts[upload.state] || 0) + 1
-    }
+    stateCounts[upload.state] = (stateCounts[upload.state] || 0) + 1
 
-    if (upload.provider == null) {
+    if (upload.provider === null) {
       upload.provider = NONE
     }
 
     if (upload.state === UploadStateEnum.error) {
-      if (!errorProviderGroups[upload.provider]) {
-        errorProviderGroups[upload.provider] = [upload]
+      const errorProviderGroup = errorProviderGroups[upload.provider]
+      if (errorProviderGroup) {
+        errorProviderGroup.unshift(upload)
       } else {
-        errorProviderGroups[upload.provider]!.unshift(upload)
+        errorProviderGroups[upload.provider] = [upload]
       }
     }
 
     if (upload.flags?.length && upload.flags.length > 1) {
-      if (!flagErrorUploads[upload.provider]) {
-        flagErrorUploads[upload.provider] = [upload]
+      const flagErrorUploadGroup = flagErrorUploads[upload.provider]
+      if (flagErrorUploadGroup) {
+        flagErrorUploadGroup.unshift(upload)
       } else {
-        flagErrorUploads[upload.provider]!.unshift(upload)
+        flagErrorUploads[upload.provider] = [upload]
       }
     }
 
@@ -116,17 +124,22 @@ const createUploadGroups = ({
     ) {
       filteredUploads.unshift(upload)
 
-      if (!providerGroups[upload.provider]) {
-        providerGroups[upload.provider] = [upload]
+      const providerGroup = providerGroups[upload.provider]
+      if (providerGroup) {
+        providerGroup.unshift(upload)
       } else {
-        providerGroups[upload.provider]!.unshift(upload)
+        providerGroups[upload.provider] = [upload]
       }
     }
   })
 
-  const uploadsOverview = Object.entries(stateCounts)
-    .map(([state, count]) => `${count} ${humanReadableOverview(state)}`)
-    .join(', ')
+  const uploadsOverview = UploadErrorStates.reduce((acc, state) => {
+    const count = stateCounts[state]
+    if (count) {
+      return `${acc}, ${count} ${humanReadableOverview(state)}`
+    }
+    return acc
+  }, '').slice(2)
 
   return {
     uploadsOverview,

@@ -75,13 +75,13 @@ const noProviderObject = {
   buildCode: 'ok',
   name: 'noProvider',
   state: UploadStateEnum.error,
-  provider: undefined,
+  provider: null,
   createdAt: '2020-08-26T16:36:19.559474+00:00',
   updatedAt: '2020-08-26T16:36:19.679868+00:00',
   flags: ['flag1', 'flag2'],
   downloadUrl:
     '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
-  ciUrl: undefined,
+  ciUrl: null,
   uploadType: UploadTypeEnum.UPLOADED,
   errors: [],
 }
@@ -91,13 +91,13 @@ const noProviderObject2 = {
   buildCode: 'ok',
   name: 'noProvider',
   state: UploadStateEnum.uploaded,
-  provider: undefined,
+  provider: null,
   createdAt: '2020-08-26T16:37:19.559474+00:00',
   updatedAt: '2020-08-26T16:37:19.679868+00:00',
   flags: ['flag1'],
   downloadUrl:
     '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
-  ciUrl: undefined,
+  ciUrl: null,
   uploadType: UploadTypeEnum.UPLOADED,
   errors: [],
 }
@@ -106,14 +106,14 @@ const noProviderObject3 = {
   jobCode: '123',
   buildCode: 'ok',
   name: 'noProvider',
-  state: undefined,
-  provider: undefined,
+  state: UploadStateEnum.uploaded,
+  provider: null,
   createdAt: '2020-08-26T16:37:19.559474+00:00',
   updatedAt: '2020-08-26T16:37:19.679868+00:00',
   flags: ['flag1'],
   downloadUrl:
     '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
-  ciUrl: undefined,
+  ciUrl: null,
   uploadType: UploadTypeEnum.UPLOADED,
   errors: [],
 }
@@ -156,7 +156,7 @@ describe('extractUploads', () => {
       })
 
       expect(uploadsOverview).toEqual(
-        '1 successful, 1 started, 3 errored, 1 uploaded'
+        '2 uploaded, 1 started, 3 errored, 1 successful'
       )
     })
 
