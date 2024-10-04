@@ -248,8 +248,7 @@ const CodeBody = ({
               <div className="grid">
                 <div className="z-[-1] col-start-1 row-start-1">
                   <ColorBar
-                    lineNumber={lineNumber}
-                    locationHash={location.hash}
+                    isHighlighted={location.hash === `#L${lineNumber}`}
                     coverage={coverage?.[lineNumber]}
                   />
                 </div>
