@@ -31,7 +31,7 @@ describe('ColorBar', () => {
 
       const bar = screen.getByTestId('covered-bar')
       expect(bar).toBeInTheDocument()
-      expect(bar).toHaveClass('bg-ds-coverage-covered')
+      expect(bar).toHaveClass('bg-ds-coverage-covered/50')
     })
   })
 
@@ -41,7 +41,7 @@ describe('ColorBar', () => {
 
       const bar = screen.getByTestId('uncovered-bar')
       expect(bar).toBeInTheDocument()
-      expect(bar).toHaveClass('bg-ds-coverage-uncovered')
+      expect(bar).toHaveClass('bg-ds-coverage-uncovered/75')
     })
   })
 
@@ -51,7 +51,7 @@ describe('ColorBar', () => {
 
       const bar = screen.getByTestId('partial-bar')
       expect(bar).toBeInTheDocument()
-      expect(bar).toHaveClass('bg-ds-coverage-partial')
+      expect(bar).toHaveClass('bg-ds-coverage-partial/50')
     })
   })
 
@@ -61,7 +61,7 @@ describe('ColorBar', () => {
 
       const bar = screen.getByTestId('highlighted-bar')
       expect(bar).toBeInTheDocument()
-      expect(bar).toHaveClass('bg-ds-blue-medium')
+      expect(bar).toHaveClass('bg-ds-blue-medium/25')
     })
   })
 

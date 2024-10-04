@@ -36,7 +36,7 @@ export const ColorBar = ({
     return (
       <div
         data-testid="highlighted-bar"
-        className="pointer-events-none absolute left-[-72px] h-full w-[calc(100%+72px)] bg-ds-blue-medium opacity-25"
+        className="pointer-events-none absolute left-[-72px] h-full w-[calc(100%+72px)] bg-ds-blue-medium/25"
       />
     )
   }
@@ -55,10 +55,10 @@ export const ColorBar = ({
             : 'partial-bar'
       }
       className={cn(
-        'pointer-events-none absolute left-[-72px] h-full w-[calc(100%+72px)] opacity-25',
-        coverageType === 'H' && 'bg-ds-coverage-covered',
-        coverageType === 'M' && 'bg-ds-coverage-uncovered',
-        coverageType === 'P' && 'bg-ds-coverage-partial'
+        'pointer-events-none absolute left-[-72px] h-full w-[calc(100%+72px)]',
+        coverageType === 'H' && 'bg-ds-coverage-covered/50',
+        coverageType === 'M' && 'bg-ds-coverage-uncovered/75',
+        coverageType === 'P' && 'bg-ds-coverage-partial/50'
       )}
     />
   )

@@ -204,15 +204,15 @@ function CommitCoverage() {
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
       {rateLimit?.isGithubRateLimited && <GitHubRateLimitExceededBanner />}
-      <div className="flex flex-col gap-4 lg:flex-row-reverse lg:gap-8">
+      <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
+        <article className="flex flex-1 flex-col">
+          <CommitCoverageRoutes />
+        </article>
         <aside className="flex w-full flex-1 flex-col gap-6 self-start py-3 lg:sticky lg:top-16 lg:max-w-sm">
           <Suspense fallback={<Loader />}>
             <UploadsCard />
           </Suspense>
         </aside>
-        <article className="flex flex-1 flex-col">
-          <CommitCoverageRoutes />
-        </article>
       </div>
     </div>
   )

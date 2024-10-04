@@ -245,22 +245,26 @@ const CodeBody = ({
               }}
               className="absolute left-0 top-0 pl-[94px]"
             >
-              <ColorBar
-                lineNumber={lineNumber}
-                locationHash={location.hash}
-                coverage={coverage?.[lineNumber]}
-              />
-              <div
-                className="w-full"
-                style={{
-                  ...lineStyle,
-                  height: `${LINE_ROW_HEIGHT}px`,
-                  lineHeight: `${LINE_ROW_HEIGHT}px`,
-                }}
-              >
-                {tokens[item.index]?.map((token: Token, key: React.Key) => (
-                  <span {...getTokenProps({ token, key })} key={key} />
-                ))}
+              <div className="grid">
+                <div className="z-[-1] col-start-1 row-start-1">
+                  <ColorBar
+                    lineNumber={lineNumber}
+                    locationHash={location.hash}
+                    coverage={coverage?.[lineNumber]}
+                  />
+                </div>
+                <div
+                  className="col-start-1 row-start-1"
+                  style={{
+                    ...lineStyle,
+                    height: `${LINE_ROW_HEIGHT}px`,
+                    lineHeight: `${LINE_ROW_HEIGHT}px`,
+                  }}
+                >
+                  {tokens[item.index]?.map((token: Token, key: React.Key) => (
+                    <span {...getTokenProps({ token, key })} key={key} />
+                  ))}
+                </div>
               </div>
             </div>
           )
@@ -434,7 +438,7 @@ function VirtualFileRendererComponent({
           overscrollBehaviorX: 'none',
           lineHeight: `${LINE_ROW_HEIGHT}px`,
         }}
-        className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[94px] pt-px font-mono text-transparent outline-none"
+        className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[94px] font-mono text-transparent outline-none"
         // Directly setting the value of the text area to the code content
         value={code}
         // need to set to true since we're setting a value without an onChange handler
