@@ -1,13 +1,13 @@
-import { useState } from 'react'
-
 import testsPRComment from 'assets/svg/onboardingTests/testsPRComment.svg'
+import testsPRCommentDark from 'assets/svg/onboardingTests/testsPRCommentDark.svg'
 import testsRunning from 'assets/svg/onboardingTests/testsRunning.svg'
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import { ExpandableSection } from 'ui/ExpandableSection/ExpandableSection'
 
-import { FrameworkTabs } from './FrameworkTabs'
+import { FrameworkTabsCard } from '../FrameworkTabsCard'
 
 function GitHubActions() {
   return (
@@ -21,24 +21,7 @@ function GitHubActions() {
   )
 }
 
-function Step1() {
-  return (
-    <Card>
-      <Card.Header>
-        <Card.Title size="base">
-          Step 1: Output a JUnit XML file in your CI
-        </Card.Title>
-      </Card.Header>
-      <Card.Content className="flex flex-col gap-4">
-        <p>
-          Select the framework below to generate a JUnit XML file that contains
-          the results of your test run.
-        </p>
-        <FrameworkTabs />
-      </Card.Content>
-    </Card>
-  )
-}
+const Step1 = FrameworkTabsCard
 
 const Step2Script = `- name: Upload test results to Codecov
   if: \${{ !cancelled() }}
@@ -78,8 +61,6 @@ const JobsScript = `jobs:
           token: \${{ secrets.CODECOV_TOKEN }}`
 
 function Step2() {
-  const [isExpanded, setIsExpanded] = useState(false)
-
   return (
     <div>
       <Card>
@@ -104,12 +85,9 @@ function Step2() {
           </p>
         </Card.Content>
       </Card>
-      <ExpandableSection className="mt-[-1px]">
-        <ExpandableSection.Trigger
-          isExpanded={isExpanded}
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <p className="font-normal">
+      <ExpandableSection className="-mt-px">
+        <ExpandableSection.Trigger>
+          <p>
             Your final <span className="text-codecov-code">ci.yaml</span> file
             for a project using{' '}
             <span className="text-codecov-code">pytest</span> could look
@@ -125,7 +103,10 @@ function Step2() {
 }
 
 function Step3() {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const { theme } = useThemeContext()
+
+  const testPRsImageSource =
+    theme === Theme.LIGHT ? testsPRComment : testsPRCommentDark
 
   return (
     <div>
@@ -145,19 +126,16 @@ function Step3() {
           </p>
         </Card.Content>
       </Card>
-      <ExpandableSection className="mt-[-1px]">
-        <ExpandableSection.Trigger
-          isExpanded={isExpanded}
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <p className="font-normal">
+      <ExpandableSection className="-mt-px">
+        <ExpandableSection.Trigger>
+          <p>
             Here are examples of failed test reports in PR comments. Comment
             generation may take time.
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content>
           <img
-            src={testsPRComment.toString()}
+            src={testPRsImageSource.toString()}
             alt="Tests in PR comment"
             className="w-full"
           />

@@ -1,6 +1,5 @@
 import { graphql } from 'msw'
 
-import { randomAccountDetailsHandler } from 'services/account/mocks'
 import { repoCoverageHandler } from 'services/charts/mocks'
 import { commitErrored } from 'services/commit/mocks'
 import {
@@ -12,7 +11,6 @@ import { randomUsersHandler } from 'services/users/mocks'
 
 export const handlers = [
   repoCoverageHandler,
-  randomAccountDetailsHandler,
   randomUsersHandler,
   commitErrored,
   flagsSelectHandler,
@@ -152,38 +150,74 @@ graphql.query('Pull', (req, res, ctx) => {
       owner: {
         isCurrentUserPartOfOrg: true,
         repository: {
+          __typename: 'Repository',
           defaultBranch: 'master',
           private: true,
           pull: {
-            commits: { edges: [] },
-            compareWithBase: {
-              __typename: 'Comparison',
-              flagComparisons: [],
-              patchTotals: null,
-              baseTotals: { percentCovered: 94.79 },
-              headTotals: { percentCovered: 94.97 },
-              impactedFiles: [],
-              changeCoverage: 0.18,
-              hasDifferentNumberOfHeadAndBaseReports: false,
-            },
+            behindBy: null,
+            behindByCommit: null,
             pullId: 1506,
             title: 'Remove unused resolvers and mutations',
             state: 'OPEN',
+            updatestamp: '2023-04-25T15:38:48.046832',
             author: { username: 'scott-codecov' },
             head: {
+              state: 'complete',
               ciPassed: true,
               branchName: 'scott/cleanup',
-              state: 'complete',
               commitid: '04362ea9b08bcc61e3542c6a51eb65d586956bcc',
               totals: { percentCovered: 94.97 },
-              uploads: { totalCount: 1 },
+              uploads: {
+                totalCount: 1,
+                edges: [
+                  {
+                    node: {
+                      uploadType: 'UPLOADED',
+                      flags: ['unit'],
+                    },
+                  },
+                ],
+              },
             },
-            updatestamp: '2023-04-25T15:38:48.046832',
-            behindBy: null,
-            behindByCommit: null,
             comparedTo: {
               commitid: '7f548fb6b2efab479ac0d74f097d939bd4bdb368',
-              uploads: { totalCount: 1 },
+              uploads: {
+                totalCount: 1,
+                edges: [
+                  {
+                    node: {
+                      uploadType: 'UPLOADED',
+                      flags: ['unit'],
+                    },
+                  },
+                ],
+              },
+            },
+            commits: {
+              edges: [
+                {
+                  node: {
+                    state: 'complete',
+                    commitid: '04362ea9b08bcc61e3542c6a51eb65d586956bcc',
+                    message: 'Remove unused resolvers and mutations',
+                    author: { username: 'scott-codecov' },
+                  },
+                },
+              ],
+            },
+            compareWithBase: {
+              __typename: 'Comparison',
+              state: 'processed',
+              flagComparisons: [],
+              patchTotals: { percentCovered: 100 },
+              baseTotals: { percentCovered: 94.79 },
+              headTotals: { percentCovered: 94.97 },
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: [],
+              },
+              changeCoverage: 0.18,
+              hasDifferentNumberOfHeadAndBaseReports: false,
             },
           },
         },
@@ -199,38 +233,74 @@ graphql.query('Pull2', (req, res, ctx) => {
       owner: {
         isCurrentUserPartOfOrg: true,
         repository: {
+          __typename: 'Repository',
           defaultBranch: 'master',
           private: true,
           pull: {
-            commits: { edges: [] },
-            compareWithBase: {
-              __typename: 'Comparison',
-              flagComparisons: [],
-              patchTotals: null,
-              baseTotals: { percentCovered: 94.79 },
-              headTotals: { percentCovered: 94.97 },
-              impactedFiles: [],
-              changeCoverage: 0.18,
-              hasDifferentNumberOfHeadAndBaseReports: false,
-            },
+            behindBy: null,
+            behindByCommit: null,
             pullId: 1506,
             title: 'Remove unused resolvers and mutations',
             state: 'OPEN',
+            updatestamp: '2023-04-25T15:38:48.046832',
             author: { username: 'scott-codecov' },
             head: {
+              state: 'complete',
               ciPassed: true,
               branchName: 'scott/cleanup',
-              state: 'complete',
               commitid: '04362ea9b08bcc61e3542c6a51eb65d586956bcc',
               totals: { percentCovered: 94.97 },
-              uploads: { totalCount: 1 },
+              uploads: {
+                totalCount: 1,
+                edges: [
+                  {
+                    node: {
+                      uploadType: 'UPLOADED',
+                      flags: ['unit'],
+                    },
+                  },
+                ],
+              },
             },
-            updatestamp: '2023-04-25T15:38:48.046832',
-            behindBy: null,
-            behindByCommit: null,
             comparedTo: {
               commitid: '7f548fb6b2efab479ac0d74f097d939bd4bdb368',
-              uploads: { totalCount: 1 },
+              uploads: {
+                totalCount: 1,
+                edges: [
+                  {
+                    node: {
+                      uploadType: 'UPLOADED',
+                      flags: ['unit'],
+                    },
+                  },
+                ],
+              },
+            },
+            commits: {
+              edges: [
+                {
+                  node: {
+                    state: 'complete',
+                    commitid: '04362ea9b08bcc61e3542c6a51eb65d586956bcc',
+                    message: 'Remove unused resolvers and mutations',
+                    author: { username: 'scott-codecov' },
+                  },
+                },
+              ],
+            },
+            compareWithBase: {
+              __typename: 'Comparison',
+              state: 'processed',
+              flagComparisons: [],
+              patchTotals: { percentCovered: 100 },
+              baseTotals: { percentCovered: 94.79 },
+              headTotals: { percentCovered: 94.97 },
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: [],
+              },
+              changeCoverage: 0.18,
+              hasDifferentNumberOfHeadAndBaseReports: false,
             },
           },
         },

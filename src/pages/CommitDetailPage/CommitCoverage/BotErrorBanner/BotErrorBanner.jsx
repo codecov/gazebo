@@ -41,12 +41,12 @@ const BotErrorContent = () => {
   if (ghWithNoApp) {
     return (
       <p>
-        <span>
-          The bot posts the coverage report comment on pull requests. If
-          you&apos;re using GitHub, the best way to integrate with Codecov.io is
-          to Install
-        </span>
-        <A to={{ pageName: 'codecovGithubApp' }}> Codecov&apos;s GitHub App.</A>
+        The bot posts the coverage report comment on pull requests. If
+        you&apos;re using GitHub, the best way to integrate with Codecov.io is
+        to Install{' '}
+        <A to={{ pageName: 'codecovGithubAppSelectTarget' }}>
+          Codecov&apos;s GitHub App.
+        </A>
       </p>
     )
   }
@@ -89,7 +89,7 @@ const BotErrorHeading = () => {
 
   return (
     <p className="font-semibold">
-      <A to={{ pageName: 'teamBot' }}>Team bot </A> is missing
+      <A to={{ pageName: 'teamBot' }}>Team bot</A> is missing
     </p>
   )
 }

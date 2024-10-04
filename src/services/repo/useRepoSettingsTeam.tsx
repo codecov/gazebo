@@ -4,10 +4,8 @@ import { z } from 'zod'
 
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
-import A from 'ui/A'
 
 import { RepoNotFoundErrorSchema } from './schemas/RepoNotFoundError'
-import { RepoOwnerNotActivatedErrorSchema } from './schemas/RepoOwnerNotActivatedError'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
@@ -34,11 +32,11 @@ interface FetchRepoSettingsTeamArgs {
 const RequestSchema = z.object({
   owner: z
     .object({
+      isCurrentUserPartOfOrg: z.boolean().nullable(),
       repository: z
         .discriminatedUnion('__typename', [
           RepositorySchema,
           RepoNotFoundErrorSchema,
-          RepoOwnerNotActivatedErrorSchema,
         ])
         .nullable(),
     })
@@ -48,6 +46,7 @@ const RequestSchema = z.object({
 const query = `
 query GetRepoSettingsTeam($name: String!, $repo: String!) {
   owner(username:$name) {
+    isCurrentUserPartOfOrg
     repository(name:$repo) {
       __typename
       ... on Repository {
@@ -62,9 +61,6 @@ query GetRepoSettingsTeam($name: String!, $repo: String!) {
         }
       }
       ... on NotFoundError {
-        message
-      }
-      ... on OwnerNotActivatedError {
         message
       }
     }
@@ -106,27 +102,11 @@ function fetchRepoSettingsDetails({
       })
     }
 
-    if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-      return Promise.reject({
-        status: 403,
-        data: {
-          detail: (
-            <p>
-              Activation is required to view this repo, please{' '}
-              {/* @ts-expect-error */}
-              <A to={{ pageName: 'membersTab' }}>click here </A> to activate
-              your account.
-            </p>
-          ),
-        },
-        dev: 'useRepoSettingsTeam - 403 owner not activated error',
-      })
-    }
-
     const repository = data.owner?.repository
 
     return {
       repository,
+      isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg,
     }
   })
 }

@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-const baseClass = `bg-ds-gray-primary text-ds-gray-octonary p-4`
+const baseClass = `bg-ds-blue-nonary text-ds-gray-octonary p-4 dark:bg-opacity-20`
 
 const variantClasses = {
   default: `border-l-4 border-ds-blue-quinary`,

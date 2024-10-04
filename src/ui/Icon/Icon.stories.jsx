@@ -15,7 +15,7 @@ function Description() {
           href="https://heroicons.com/"
           target="_blank"
           rel="noreferrer"
-          className="text-ds-blue"
+          className="text-ds-blue-default"
         >
           https://heroicons.com/
         </a>{' '}
@@ -24,7 +24,7 @@ function Description() {
           href="https://gitlab-org.gitlab.io/gitlab-svgs/"
           target="_blank"
           rel="noreferrer"
-          className="text-ds-blue"
+          className="text-ds-blue-default"
         >
           https://gitlab-org.gitlab.io/gitlab-svgs/
         </a>
@@ -46,7 +46,10 @@ export const AllOutlineIcons = (args) => {
       <div className="flex w-full flex-wrap">
         {options.map((iconName) => {
           return (
-            <div key={iconName} className="flex border border-gray-200 p-3">
+            <div
+              key={iconName}
+              className="flex border border-ds-gray-secondary p-3"
+            >
               <Icon name={iconName} {...args} />
               <p className="ml-2">{kebabCase(iconName)}</p>
             </div>
@@ -70,7 +73,10 @@ export const AllSolidIcons = (args) => {
       <div className="flex w-full flex-wrap">
         {options.map((iconName) => {
           return (
-            <div key={iconName} className="flex border border-gray-200 p-3">
+            <div
+              key={iconName}
+              className="flex border border-ds-gray-secondary p-3"
+            >
               <Icon name={iconName} {...args} />
               <p className="ml-2">{iconName}</p>
             </div>
@@ -94,7 +100,10 @@ export const AllDeveloperIcons = (args) => {
       <div className="flex w-full flex-wrap">
         {options.map((iconName) => {
           return (
-            <div key={iconName} className="flex border border-gray-200 p-3">
+            <div
+              key={iconName}
+              className="flex border border-ds-gray-secondary p-3"
+            >
               <Icon name={iconName} {...args} />
               <p className="ml-2">{kebabCase(iconName)}</p>
             </div>

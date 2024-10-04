@@ -73,7 +73,7 @@ function getColumns({ commitId }: { commitId: string }) {
               className={cs(
                 'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
                 {
-                  'text-ds-blue': row.getIsExpanded(),
+                  'text-ds-blue-default': row.getIsExpanded(),
                 }
               )}
               {...{
@@ -165,8 +165,12 @@ export default function FilesChangedTableTeam() {
   })
 
   const filesChanged = useMemo(() => {
-    if (commitData?.commit?.compareWithParent?.__typename === 'Comparison') {
-      return commitData?.commit?.compareWithParent?.impactedFiles
+    if (
+      commitData?.commit?.compareWithParent?.__typename === 'Comparison' &&
+      commitData?.commit?.compareWithParent?.impactedFiles?.__typename ===
+        'ImpactedFiles'
+    ) {
+      return commitData?.commit?.compareWithParent?.impactedFiles?.results
     }
 
     return []

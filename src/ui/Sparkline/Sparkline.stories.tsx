@@ -8,7 +8,7 @@ export default {
 } as Meta
 
 const renderTemplate = (args: SparklineProps) => (
-  <div className="flex h-[50px] w-[50%]">
+  <div className="flex h-[50px] w-1/2">
     {/* Sparkline conforms to the width and height of it's parent.  */}
     <Sparkline {...args} />
   </div>
@@ -25,7 +25,7 @@ const renderManyTemplate = (args: SparklineProps) => {
         .fill(0)
         .map((_, i) => {
           return (
-            <div key={`short-${i}`} className="flex h-[20px] w-[100%]">
+            <div key={`short-${i}`} className="flex h-[20px] w-full">
               <Sparkline {...args} datum={largeDataSetWithReusedData} />
             </div>
           )

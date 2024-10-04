@@ -12,23 +12,28 @@ const baseClass = `
   focus:ring-2
 `
 const variantClasses = {
-  default: `text-ds-blue`,
-  header: `font-semibold text-ds-gray-secondary`,
-  guestHeader: `font-semibold text-ds-gray-senary`,
+  default: `text-ds-blue-default`,
+  header: `font-semibold`,
+  headerDeprecated: `font-semibold text-ds-gray-secondary`,
+  guestHeader: `font-semibold text-ds-gray-senary dark:text-ds-default-text`,
   link: `text-ds-blue-darker`,
-  semibold: 'text-ds-blue-darker font-semibold',
-  code: `font-mono text-ds-blue-darker`,
+  semibold: 'text-ds-blue-darker font-semibold dark:text-ds-blue-default',
+  medium: 'text-ds-blue-darker font-medium dark:text-ds-blue-default',
+  code: `font-mono text-ds-blue-default`,
   cardLink: `text-ds-grey-octinary font-semibold truncate`,
   greyOctinary: `text-ds-gray-octinary`,
   grayQuinary: `text-ds-gray-quinary`,
-  headerHighlight: `font-semibold text-ds-pink`,
-  upDirectory: `flex flex-grow text-ds-blue hover:no-underline focus:ring-0 w-full`,
-  black: `text-black`,
+  headerHighlight: `font-semibold text-ds-pink-default`,
+  upDirectory: `flex flex-grow text-ds-blue-default hover:no-underline focus:ring-0 w-full`,
+  black: `text-ds-secondary-text`,
   blueSeptenary: `text-ds-blue-septenary`,
-  configure: `rounded bg-ds-blue px-4 py-1 font-semibold text-gray-100`,
+  configure: `rounded bg-ds-blue-default px-4 py-1 font-semibold text-ds-gray-primary dark:text-white dark:bg-ds-blue-nonary`,
 }
 
-const getHostnameFromRegex = (url) => {
+export const getHostnameFromRegex = (url) => {
+  if (!url) {
+    return 'app.codecov.io'
+  }
   // run against regex
   const matches = url.match(/^https?:\/\/([^/?#]+)(?:[/?#]|$)/i)
   // extract hostname (will be null if no match is found)
@@ -104,12 +109,14 @@ A.propTypes = {
   variant: PropTypes.oneOf([
     'default',
     'header',
+    'headerDeprecated',
     'guestHeader',
     'link',
     'code',
     'cardLink',
     'fileViewHeader',
     'semibold',
+    'medium',
     'grayQuinary',
     'greyOctinary',
     'headerHighlight',

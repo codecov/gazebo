@@ -1,4 +1,4 @@
-import { sanitize } from 'dompurify'
+import dompurify from 'dompurify'
 import noop from 'lodash/noop'
 import PropTypes from 'prop-types'
 import { Controller, useForm } from 'react-hook-form'
@@ -16,7 +16,18 @@ function YAML({ owner }) {
   const { mutateAsync } = useUpdateYaml({
     username: owner,
   })
-  const { control, handleSubmit, formState, setError, reset } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: {
+      isDirty,
+      isSubmitSuccessful,
+      isSubmitting,
+      errors: formErrors,
+    },
+    setError,
+    reset,
+  } = useForm({
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     defaultValues: { editor: yamlConfig },
@@ -32,7 +43,7 @@ function YAML({ owner }) {
   }
 
   const onSubmit = handleSubmit((formData) => {
-    return mutateAsync({ yaml: sanitize(formData.editor) })
+    return mutateAsync({ yaml: dompurify.sanitize(formData.editor) })
       .then(({ data, errors }) => {
         if (data?.setYamlOnOwner?.error) {
           formError(data?.setYamlOnOwner?.error.message)
@@ -47,7 +58,7 @@ function YAML({ owner }) {
     <div className="lg:w-3/4">
       <form onSubmit={onSubmit}>
         <SuccessModal
-          isOpen={formState.isSubmitSuccessful}
+          isOpen={isSubmitSuccessful}
           closeModal={() => reset({}, { keepValues: true })}
           owner={owner}
         />
@@ -57,7 +68,7 @@ function YAML({ owner }) {
             Changes made to the Global YAML are applied to all repositories in
             the org if they do not have a repo level YAML.{' '}
             <a
-              className="text-ds-blue hover:underline"
+              className="text-ds-blue-default hover:underline"
               href="https://docs.codecov.io/docs/codecov-yaml"
               target="_blank"
               rel="noreferrer"
@@ -67,9 +78,9 @@ function YAML({ owner }) {
           </p>
         </div>
         <div>
-          {formState.errors.editor && (
+          {formErrors.editor && (
             <div className="my-4 rounded border border-ds-primary-red bg-ds-coverage-uncovered p-2 text-ds-primary-red">
-              <p>{formState.errors.editor.message}</p>
+              <p>{formErrors.editor.message}</p>
             </div>
           )}
           <Controller
@@ -86,8 +97,8 @@ function YAML({ owner }) {
           <div className="float-right mt-4">
             <Button
               hook="save-yaml"
-              disabled={!formState.isDirty}
-              isLoading={formState.isSubmitting}
+              disabled={!isDirty}
+              isLoading={isSubmitting}
               variant="primary"
             >
               Save Changes

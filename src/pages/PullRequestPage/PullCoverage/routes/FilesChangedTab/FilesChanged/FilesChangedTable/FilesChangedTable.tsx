@@ -27,7 +27,7 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-const PullFileDiff = lazy(() => import('../../shared/FileDiff'))
+const PullFileDiff = lazy(() => import('../FileDiff'))
 
 const columnHelper = createColumnHelper<ImpactedFile>()
 
@@ -102,7 +102,7 @@ function getColumns({ pullId }: { pullId: string }) {
                 className={cs(
                   'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
                   {
-                    'text-ds-blue': row.getIsExpanded(),
+                    'text-ds-blue-default': row.getIsExpanded(),
                   }
                 )}
                 onClick={row.getToggleExpandedHandler()}

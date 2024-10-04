@@ -3,7 +3,7 @@
 }
 
 .tableui table {
-  @apply min-w-full divide-y divide-ds-gray-tertiary border-t border-ds-gray-tertiary;
+  @apply min-w-full divide-y divide-ds-gray-tertiary border-t border-ds-border-line;
 }
 
 .tableui thead {
@@ -15,7 +15,7 @@
 }
 
 .tableui tr {
-  @apply text-left border-b border-gray-200 last:border-b-0;
+  @apply text-left border-b border-ds-border-line last:border-b-0;
 }
 
 .tableui th {
@@ -67,4 +67,19 @@
 /* <element data-expanded="false"> */
 .tableui [data-expanded='false'] {
   @apply hidden;
+}
+
+/* Scrollbar styling */
+.tableui::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.tableui::-webkit-scrollbar-track {
+  @apply bg-ds-gray-primary dark:bg-ds-gray-primary;
+}
+.tableui::-webkit-scrollbar-thumb {
+  @apply rounded-lg bg-ds-gray-secondary dark:bg-ds-gray-senary;
+}
+.tableui::-webkit-scrollbar-thumb:hover {
+  @apply bg-ds-gray-tertiary dark:bg-ds-gray-quinary;
 }

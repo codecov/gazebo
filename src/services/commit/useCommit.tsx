@@ -2,6 +2,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ParsedQs } from 'qs'
 import { z } from 'zod'
 
+import { OrderingDirection } from 'types'
+
 import {
   FirstPullRequestSchema,
   MissingBaseCommitSchema,
@@ -30,11 +32,11 @@ const CoverageObjSchema = z.object({
   coverage: z.number().nullable(),
 })
 
-const UploadTypeEnumSchema = z.nativeEnum(UploadTypeEnum)
+export const UploadTypeEnumSchema = z.nativeEnum(UploadTypeEnum)
 
-const UploadStateEnumSchema = z.nativeEnum(UploadStateEnum)
+export const UploadStateEnumSchema = z.nativeEnum(UploadStateEnum)
 
-const UploadErrorCodeEnumSchema = z.nativeEnum(ErrorCodeEnum)
+export const UploadErrorCodeEnumSchema = z.nativeEnum(ErrorCodeEnum)
 
 const UploadErrorSchema = z.object({
   errorCode: UploadErrorCodeEnumSchema.nullable(),
@@ -300,7 +302,7 @@ interface UseCommitArgs {
     flags?: Array<string> | Array<ParsedQs>
     components?: Array<string> | Array<ParsedQs>
     ordering?: {
-      direction?: 'DESC' | 'ASC'
+      direction?: OrderingDirection
       parameter?:
         | 'FILE_NAME'
         | 'CHANGE_COVERAGE'

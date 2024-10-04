@@ -5,16 +5,11 @@ const defaultConfig = {
   STRIPE_KEY: '',
   SENTRY_ENVIRONMENT: 'staging',
   SENTRY_TRACING_SAMPLE_RATE: 1.0,
+  SENTRY_PROFILING_SAMPLE_RATE: 0.1,
   SENTRY_SESSION_SAMPLE_RATE: 0.1,
   SENTRY_ERROR_SAMPLE_RATE: 1,
   GH_APP: 'sun-codecov-self-hosted',
 }
-
-export const LOCAL_STORAGE_SESSION_EXPIRED_KEY = 'expired-session'
-export const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
-
-export const COOKIE_SESSION_EXPIRY = 'session_expiry'
-export const COOKIE_SESSION_ID = 'sessionid'
 
 export function removeReactAppPrefix(obj) {
   // in .env file, the variable must start with REACT_APP_
@@ -38,6 +33,12 @@ export function removeReactAppPrefix(obj) {
   if ('SENTRY_TRACING_SAMPLE_RATE' in keys) {
     keys['SENTRY_TRACING_SAMPLE_RATE'] = parseFloat(
       keys['SENTRY_TRACING_SAMPLE_RATE']
+    )
+  }
+
+  if ('SENTRY_PROFILING_SAMPLE_RATE' in keys) {
+    keys['SENTRY_PROFILING_SAMPLE_RATE'] = parseFloat(
+      keys['SENTRY_PROFILING_SAMPLE_RATE']
     )
   }
 

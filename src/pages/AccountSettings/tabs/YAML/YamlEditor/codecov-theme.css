@@ -1,5 +1,5 @@
 .ace-github {
-  @apply text-base text-ds-gray-octonary font-mono border-ds-gray-secondary border border-solid;
+  @apply text-base text-ds-gray-octonary font-mono border-ds-gray-secondary border border-solid bg-ds-background;
 }
 
 .ace_text-input,
@@ -27,9 +27,18 @@
 }
 
 .ace_meta {
-  @apply text-ds-pink;
+  @apply text-ds-pink-default;
 }
 
 .ace_scroller[style] {
   left: 4rem !important;
+}
+
+.ace-github .ace_cursor {
+  @apply border-ds-secondary-text;
+}
+
+/* this is to better indicate that the user cannot edit and is read-only */
+.useReadOnlyCursor .ace_cursor {
+  opacity: 0;
 }

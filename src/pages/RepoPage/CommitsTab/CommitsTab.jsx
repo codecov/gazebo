@@ -1,15 +1,12 @@
-import {
-  lazy,
-  Suspense,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
-import { useParams } from 'react-router-dom'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
 
 import { useBranchHasCommits } from 'services/branches'
-import { useLocationParams } from 'services/navigation'
+import {
+  ALL_BRANCHES,
+  useLocationParams,
+  useNavLinks,
+} from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
@@ -17,12 +14,9 @@ import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
 
-import { filterItems, statusEnum, statusNames } from './enums'
+import { filterItems, statusEnum } from './enums'
 import { useCommitsTabBranchSelector } from './hooks'
 
-import { useSetCrumbs } from '../context'
-
-const ALL_BRANCHES = 'All branches'
 const CommitsTable = lazy(() => import('./CommitsTable'))
 
 const Loader = () => (
@@ -31,21 +25,46 @@ const Loader = () => (
   </div>
 )
 
-const useControlParams = ({ defaultBranch }) => {
-  const initialRenderDone = useRef(false)
-  const { provider, owner, repo } = useParams()
+const useControlParams = () => {
   const defaultParams = {
-    branch: defaultBranch,
+    coverageStatus: [],
     states: [],
     search: '',
   }
 
   const { params, updateParams } = useLocationParams(defaultParams)
-  let { branch: selectedBranch, states, search } = params
+  let { coverageStatus, search } = params
 
-  const paramStatesNames = states.map((filter) => statusNames[filter])
+  const paramStatesNames = coverageStatus.map((filter) => statusEnum[filter])
 
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
+
+  return {
+    params,
+    updateParams,
+    selectedStates,
+    setSelectedStates,
+    search,
+  }
+}
+
+function CommitsTab() {
+  const history = useHistory()
+
+  const { provider, owner, repo, branch: branchParam } = useParams()
+  const { commits } = useNavLinks()
+
+  const { data: overview } = useRepoOverview({
+    provider,
+    repo,
+    owner,
+  })
+
+  const [selectedBranch, setSelectedBranch] = useState(
+    branchParam ?? overview?.defaultBranch
+  )
+
+  const initialRenderDone = useRef(false)
 
   const { data: branchHasCommits } = useBranchHasCommits({
     provider,
@@ -65,49 +84,16 @@ const useControlParams = ({ defaultBranch }) => {
       !initialRenderDone.current
     ) {
       initialRenderDone.current = true
-      updateParams({ branch: ALL_BRANCHES })
+      setSelectedBranch(ALL_BRANCHES)
     }
-  }, [branchHasCommits, selectedBranch, updateParams])
+  }, [branchHasCommits, selectedBranch])
 
-  let branch = selectedBranch
-  if (branch === ALL_BRANCHES) {
-    branch = ''
-  }
-
-  return {
-    params,
-    branch,
-    selectedBranch,
-    updateParams,
-    selectedStates,
-    setSelectedStates,
-    search,
-  }
-}
-
-function CommitsTab() {
-  const setCrumbs = useSetCrumbs()
-  const { provider, owner, repo } = useParams()
-
-  const { data: overview } = useRepoOverview({
-    provider,
-    repo,
-    owner,
-  })
-
-  const {
-    branch,
-    selectedBranch,
-    updateParams,
-    selectedStates,
-    setSelectedStates,
-    search,
-  } = useControlParams({ defaultBranch: overview?.defaultBranch })
+  const { updateParams, selectedStates, setSelectedStates, search } =
+    useControlParams()
 
   const {
     branchList,
     branchSelectorProps,
-    currentBranchSelected,
     branchesFetchNextPage,
     branchListIsFetching,
     branchListHasNextPage,
@@ -115,34 +101,17 @@ function CommitsTab() {
     setBranchSearchTerm,
     isSearching,
   } = useCommitsTabBranchSelector({
-    passedBranch: branch,
+    passedBranch: selectedBranch,
     defaultBranch: overview?.defaultBranch,
     isAllCommits: selectedBranch === ALL_BRANCHES,
   })
 
-  useLayoutEffect(() => {
-    setCrumbs([
-      {
-        pageName: '',
-        readOnly: true,
-        children: (
-          <span className="inline-flex items-center gap-1">
-            <Icon name="branch" variant="developer" size="sm" />
-            {currentBranchSelected}
-          </span>
-        ),
-      },
-    ])
-  }, [currentBranchSelected, setCrumbs])
-
   const newBranches = [...(isSearching ? [] : [ALL_BRANCHES]), ...branchList]
 
   const handleStatusChange = (selectStates) => {
-    const commitStates = selectStates?.map(
-      (filter) => statusEnum[filter].status
-    )
+    const commitStates = selectStates?.map(({ status }) => statusEnum[status])
     setSelectedStates(commitStates)
-    updateParams({ states: commitStates })
+    updateParams({ coverageStatus: commitStates?.map((state) => state.status) })
   }
 
   return (
@@ -156,7 +125,7 @@ function CommitsTab() {
               </span>
               Branch Context
             </h2>
-            <div className="min-w-[13rem] lg:min-w-[16rem]">
+            <div className="min-w-52 lg:min-w-64">
               <Select
                 {...branchSelectorProps}
                 dataMarketing="branch-selector-commits-page"
@@ -165,7 +134,12 @@ function CommitsTab() {
                 resourceName="branch"
                 isLoading={branchListIsFetching}
                 onChange={(branch) => {
-                  updateParams({ branch: branch })
+                  setSelectedBranch(branch)
+                  history.push(
+                    commits.path({
+                      branch: encodeURIComponent(branch),
+                    })
+                  )
                 }}
                 onLoadMore={() => {
                   if (branchListHasNextPage) {
@@ -179,14 +153,15 @@ function CommitsTab() {
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <h2 className="font-semibold">CI status</h2>
-            <div className="min-w-[13rem] lg:min-w-[16rem]">
+            <h2 className="font-semibold">Coverage upload status</h2>
+            <div className="min-w-52 lg:min-w-64">
               <MultiSelect
-                dataMarketing="commits-filter-by-status"
-                ariaName="Filter by CI states"
+                dataMarketing="commits-filter-by-coverage-status"
+                ariaName="Filter by coverage upload status"
                 value={selectedStates}
                 items={filterItems}
-                resourceName="CI States"
+                renderItem={(item) => item.option}
+                resourceName="upload"
                 onChange={handleStatusChange}
               />
             </div>
@@ -204,8 +179,8 @@ function CommitsTab() {
       </div>
       <Suspense fallback={<Loader />}>
         <CommitsTable
-          branch={branch}
-          states={selectedStates?.map((state) => state?.toUpperCase())}
+          branch={selectedBranch === ALL_BRANCHES ? '' : selectedBranch}
+          coverageStatus={selectedStates?.map((state) => state?.status)}
           search={search}
         />
       </Suspense>

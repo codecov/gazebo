@@ -29,7 +29,7 @@ const TruncatedMessage: React.FC<React.PropsWithChildren> = ({ children }) => {
 
       {canTruncate && (
         <button
-          className="text-ds-blue hover:underline"
+          className="text-ds-blue-default hover:underline"
           onClick={() =>
             setLabel(
               label === TruncateStates.EXPAND

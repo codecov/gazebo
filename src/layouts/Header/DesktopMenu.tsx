@@ -1,13 +1,7 @@
-import config from 'config'
-
 import { CodecovIcon } from 'assets/svg/codecov'
 import { useUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
-
-import AdminLink from './AdminLink'
-import Dropdown from './Dropdown'
-import SeatDetails from './SeatDetails'
 
 export function LoginPrompt() {
   const to = window.location.href
@@ -67,7 +61,9 @@ export const LogoButton = ({
 
 function DesktopMenu() {
   const { data: currentUser } = useUser({
-    suspense: false,
+    options: {
+      suspense: false,
+    },
   })
   const defaultOrg =
     currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
@@ -75,21 +71,9 @@ function DesktopMenu() {
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center gap-4">
-        <LogoButton defaultOrg={defaultOrg} fillColor="white" />
+        <LogoButton defaultOrg={defaultOrg as string} fillColor="white" />
       </div>
-      {!!currentUser ? (
-        <div className="mx-2 flex items-center gap-4 md:mx-4">
-          {config.IS_SELF_HOSTED && (
-            <>
-              <SeatDetails />
-              <AdminLink />
-            </>
-          )}
-          <Dropdown currentUser={currentUser} />
-        </div>
-      ) : (
-        <LoginPrompt />
-      )}
+      <LoginPrompt />
     </>
   )
 }

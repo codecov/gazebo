@@ -35,28 +35,28 @@ const Upload = ({
   return (
     <div className="flex flex-col gap-1 border-r border-ds-gray-secondary px-4 py-2">
       <div className="flex justify-between ">
-        <div className="flex flex-1 flex-wrap items-center">
+        <div className="flex flex-1 flex-wrap items-center gap-2">
           <Checkbox
             checked={checked}
             dataMarketing="toggle-upload-hit-count"
-            onChange={(e) => {
-              if (!!e.target.checked) {
-                queryClient.setQueryData(['IgnoredUploadIds'], (oldData) =>
-                  without(oldData, id)
-                )
-              } else {
+            onClick={() => {
+              if (checked) {
+                // User is unchecking
                 queryClient.setQueryData(['IgnoredUploadIds'], (oldData) => [
                   ...(oldData ?? []),
                   id,
                 ])
+              } else {
+                queryClient.setQueryData(['IgnoredUploadIds'], (oldData) =>
+                  without(oldData, id)
+                )
               }
 
-              setChecked((c) => !c)
+              setChecked(!checked)
             }}
           />
 
           <UploadReference ciUrl={ciUrl} name={name} buildCode={buildCode} />
-          <RenderError errors={errors} state={state} />
         </div>
         {createdAt && (
           <span className="text-xs text-ds-gray-quinary">
@@ -82,6 +82,7 @@ const Upload = ({
           </A>
         )}
       </div>
+      <RenderError errors={errors} state={state} />
     </div>
   )
 }

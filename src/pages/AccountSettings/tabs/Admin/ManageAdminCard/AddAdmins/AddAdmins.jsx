@@ -15,12 +15,12 @@ import TextInput from 'ui/TextInput'
 const styles = {
   listResult: (isOpen) =>
     cs(
-      'overflow-hidden rounded-b-md bg-white border border-gray-200 outline-none absolute z-10 ',
+      'overflow-hidden rounded-b-md bg-ds-container border border-ds-gray-secondary outline-none absolute z-10 ',
       { hidden: !isOpen }
     ),
   item: (highlighted) =>
-    cs('flex p-2 text-sm border-t border-gray-200', {
-      'bg-gray-100': highlighted,
+    cs('flex p-2 text-sm border-t border-ds-gray-secondary', {
+      'bg-ds-gray-primary': highlighted,
     }),
   input: (isOpen) => cs({ 'rounded-b-none': isOpen }),
 }

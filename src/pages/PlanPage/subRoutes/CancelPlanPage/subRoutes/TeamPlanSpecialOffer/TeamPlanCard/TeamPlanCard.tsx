@@ -19,7 +19,22 @@ const TeamPlanCard: React.FC = () => {
 
   return (
     <div className="flex flex-col border">
-      <h2 className="p-4 font-semibold">{teamPlanYear?.marketingName} plan</h2>
+      <div className="flex justify-between p-4">
+        <h2 className="font-semibold">{teamPlanYear?.marketingName} plan</h2>
+        <div className="flex self-start">
+          <Button
+            to={{
+              pageName: 'upgradeOrgPlan',
+              options: { params: { plan: TierNames.TEAM } },
+            }}
+            variant="primary"
+            disabled={undefined}
+            hook="upgrade plan"
+          >
+            Change to Team plan
+          </Button>
+        </div>
+      </div>
       <hr />
       <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
         <div className="flex flex-col gap-2">
@@ -27,33 +42,20 @@ const TeamPlanCard: React.FC = () => {
           <BenefitList
             benefits={teamPlanYear?.benefits}
             iconName="check"
-            iconColor="text-ds-pink-quinary"
+            iconColor="text-ds-pink-default"
           />
         </div>
-        <div className="flex flex-col gap-3 border-t pt-2 sm:border-0 sm:p-0">
+        <div className="flex flex-col gap-2 border-t pt-2 sm:border-0 sm:p-0">
           <p className="text-xs font-semibold">Pricing</p>
           <div>
             <p className="font-semibold">
-              <span className="text-2xl">${teamPlanYear?.baseUnitPrice}</span>
+              <span className="text-2xl">${teamPlanYear?.baseUnitPrice}</span>{' '}
               per user/month
             </p>
             <p className="text-ds-gray-senary">
               billed annually, or ${teamPlanMonth?.baseUnitPrice} per user
               billing monthly
             </p>
-          </div>
-          <div className="flex self-start">
-            <Button
-              to={{
-                pageName: 'upgradeOrgPlan',
-                options: { params: { plan: TierNames.TEAM } },
-              }}
-              variant="primary"
-              disabled={undefined}
-              hook="upgrade plan"
-            >
-              Change to Team plan
-            </Button>
           </div>
         </div>
       </div>

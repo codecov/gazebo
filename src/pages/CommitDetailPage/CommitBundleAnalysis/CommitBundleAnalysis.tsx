@@ -2,12 +2,13 @@ import { lazy, Suspense, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepoOverview } from 'services/repo'
+import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
+import { ReportUploadType } from 'shared/utils/comparison'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
 import BundleMessage from './BundleMessage'
 import EmptyTable from './EmptyTable'
-import ErrorBanner from './ErrorBanner'
 import FirstPullBanner from './FirstPullBanner'
 
 import { TBundleAnalysisComparisonResult, useCommitPageData } from '../hooks'
@@ -46,7 +47,10 @@ const BundleContent: React.FC<BundleContentProps> = ({ bundleCompareType }) => {
   if (bundleCompareType !== 'BundleAnalysisComparison') {
     return (
       <>
-        <ErrorBanner errorType={bundleCompareType} />
+        <ComparisonErrorBanner
+          errorType={bundleCompareType}
+          reportType={ReportUploadType.BUNDLE_ANALYSIS}
+        />
         <EmptyTable />
       </>
     )

@@ -1,10 +1,11 @@
 /* eslint-disable camelcase */
-import isString from 'lodash/isString'
 
 import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
+import githubLogoWhite from 'assets/providers/github-icon-white.svg'
 import githubLogo from 'assets/providers/github-icon.svg'
 import gitlabLogo from 'assets/providers/gitlab-icon.svg'
 import oktaLogo from 'assets/providers/okta-icon.svg'
+import sentryLogoWhite from 'assets/providers/sentry-icon-white.svg'
 import sentryLogo from 'assets/providers/sentry-icon.svg'
 
 export const LoginProvidersEnum = {
@@ -59,22 +60,13 @@ export const LOGIN_PROVIDER_SHORT_NAMES = {
 } as const
 
 export function loginProviderToShortName(loginProvider?: string) {
-  if (!isString(loginProvider)) {
+  if (!loginProvider) {
     return undefined
   }
 
-  const providerName = loginProvider.toLowerCase()
-  const keys = Object.keys(LOGIN_PROVIDER_SHORT_NAMES) as Array<
-    keyof typeof LOGIN_PROVIDER_SHORT_NAMES
-  >
-
-  for (const key of keys) {
-    if (key === providerName) {
-      return LOGIN_PROVIDER_SHORT_NAMES[providerName]
-    }
-  }
-
-  return undefined
+  const providerName =
+    loginProvider.toLowerCase() as keyof typeof LOGIN_PROVIDER_SHORT_NAMES
+  return LOGIN_PROVIDER_SHORT_NAMES[providerName] ?? undefined
 }
 
 export const LOGIN_PROVIDER_NAMES = {
@@ -95,22 +87,13 @@ export const LOGIN_PROVIDER_NAMES = {
 } as const
 
 export function loginProviderToName(loginProvider?: string) {
-  if (!isString(loginProvider)) {
+  if (!loginProvider) {
     return undefined
   }
 
-  const providerName = loginProvider.toLowerCase()
-  const keys = Object.keys(LOGIN_PROVIDER_NAMES) as Array<
-    keyof typeof LOGIN_PROVIDER_NAMES
-  >
-
-  for (const key of keys) {
-    if (key === providerName) {
-      return LOGIN_PROVIDER_NAMES[providerName]
-    }
-  }
-
-  return undefined
+  const providerName =
+    loginProvider.toLowerCase() as keyof typeof LOGIN_PROVIDER_NAMES
+  return LOGIN_PROVIDER_NAMES[providerName] ?? undefined
 }
 
 export const LOGIN_PROVIDER_IMAGES = {
@@ -124,21 +107,33 @@ export const LOGIN_PROVIDER_IMAGES = {
   Okta: oktaLogo,
 } as const
 
-export function loginProviderImage(loginProvider?: string) {
-  if (!isString(loginProvider)) {
+export const LOGIN_PROVIDER_DARK_MODE_IMAGES = {
+  Github: githubLogoWhite,
+  Gitlab: gitlabLogo,
+  BitBucket: bitbucketLogo,
+  'Github Enterprise': githubLogoWhite,
+  'Gitlab Enterprise': gitlabLogo,
+  'BitBucket Server': bitbucketLogo,
+  Sentry: sentryLogoWhite,
+  Okta: oktaLogo,
+} as const
+
+export function loginProviderImage(
+  loginProvider?: string,
+  isDarkMode?: boolean
+) {
+  if (!loginProvider) {
     return undefined
   }
 
-  const providerName = loginProviderToName(loginProvider)
-  const keys = Object.keys(LOGIN_PROVIDER_IMAGES) as Array<
-    keyof typeof LOGIN_PROVIDER_IMAGES
-  >
+  let imagesToUse = LOGIN_PROVIDER_IMAGES
 
-  for (const key of keys) {
-    if (key === providerName) {
-      return LOGIN_PROVIDER_IMAGES[providerName]
-    }
+  if (isDarkMode) {
+    imagesToUse = LOGIN_PROVIDER_DARK_MODE_IMAGES
   }
 
-  return undefined
+  const providerName = loginProviderToName(
+    loginProvider
+  ) as keyof typeof imagesToUse
+  return imagesToUse[providerName] ?? undefined
 }

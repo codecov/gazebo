@@ -3,7 +3,7 @@ import React from 'react'
 
 import { cn } from 'shared/utils/cn'
 
-const card = cva(['border border-ds-gray-secondary'])
+const card = cva(['border border-ds-gray-secondary bg-ds-container'])
 interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof card> {}
@@ -32,6 +32,7 @@ const title = cva(['font-semibold'], {
     size: {
       base: ['text-base'],
       lg: ['text-lg'],
+      xl: ['text-xl'],
     },
   },
   defaultVariants: {
@@ -42,7 +43,7 @@ interface TitleProps
   extends React.HTMLAttributes<HTMLHeadingElement>,
     VariantProps<typeof title> {}
 
-const Title = React.forwardRef<HTMLParagraphElement, TitleProps>(
+const Title = React.forwardRef<HTMLHeadingElement, TitleProps>(
   ({ className, size, children, ...props }, ref) => (
     <h3 ref={ref} className={cn(title({ className, size }))} {...props}>
       {children}

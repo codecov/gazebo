@@ -139,7 +139,7 @@ export default function AdminTable() {
                 </Button>
               </>
             ),
-          } as AdminTableColumn)
+          }) as AdminTableColumn
       ),
     [provider, data, isUpdatingUser, mutate]
   )

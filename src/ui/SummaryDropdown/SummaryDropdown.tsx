@@ -43,7 +43,7 @@ const SummaryItem = forwardRef<
 SummaryItem.displayName = 'SummaryItem'
 
 const trigger = cva(
-  'flex w-full items-center gap-2 bg-ds-gray-primary px-2 py-4 [&[data-state=open]>span:first-child]:rotate-90'
+  'flex w-full items-center gap-2 bg-ds-summary-container px-2 py-4 [&[data-state=open]>span:first-child]:rotate-90'
 )
 
 interface TriggerProps
@@ -70,7 +70,7 @@ const SummaryTrigger = forwardRef<
 SummaryTrigger.displayName = 'SummaryTrigger'
 
 const content = cva(
-  'overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown'
+  'data-[state=closed]:overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown'
 )
 
 interface ContentProps

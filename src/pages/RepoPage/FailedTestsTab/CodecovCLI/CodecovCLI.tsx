@@ -1,11 +1,13 @@
-import { useState } from 'react'
-
 import testsPRComment from 'assets/svg/onboardingTests/testsPRComment.svg'
+import testsPRCommentDark from 'assets/svg/onboardingTests/testsPRCommentDark.svg'
 import testsRunning from 'assets/svg/onboardingTests/testsRunning.svg'
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import { ExpandableSection } from 'ui/ExpandableSection/ExpandableSection'
+
+import { FrameworkTabsCard } from '../FrameworkTabsCard'
 
 function CodecovCLI() {
   return (
@@ -23,50 +25,19 @@ function CodecovCLI() {
 
 const Step1Script = 'pip install codecov-cli'
 
-function Step1() {
-  return (
-    <Card>
-      <Card.Header>
-        <Card.Title size="base">
-          Step 1: Install Codecov&apos;s CLI in your CI
-        </Card.Title>
-      </Card.Header>
-      <Card.Content className="flex flex-col gap-4">
-        <p>Here&apos;s an example using pip</p>
-        <CodeSnippet clipboard={Step1Script}>{Step1Script}</CodeSnippet>
-      </Card.Content>
-    </Card>
-  )
-}
-
-const Step2Script = `pytest  <other_args> --junitxml=<report_name>.junit.xml
-
-pytest  --cov --junitxml=<report_name>.junit.xml`
+const Step1 = FrameworkTabsCard
 
 function Step2() {
   return (
     <Card>
       <Card.Header>
-        <Card.Title size="base">Step 2: Output a JUnit XML file</Card.Title>
+        <Card.Title size="base">
+          Step 2: Install Codecov&apos;s CLI in your CI
+        </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
-        <p>
-          Codecov will need the output of your test run. If you&apos;re building
-          on Python, simply do the following when you&apos;re calling pytest in
-          your CI.
-        </p>
-        <CodeSnippet clipboard={Step2Script}>{Step2Script}</CodeSnippet>
-        <p>
-          The above snippet instructs{' '}
-          <span className="text-codecov-code">pytest</span> to collect the
-          result of all tests that are executed in this run and store as{' '}
-          <span className="text-codecov-code">
-            &lt;report_name&gt;.junit.xml
-          </span>
-          . Be sure to replace{' '}
-          <span className="text-codecov-code">&lt;report_name&gt;</span> with
-          your own filename
-        </p>
+        <p>Here&apos;s an example using pip</p>
+        <CodeSnippet clipboard={Step1Script}>{Step1Script}</CodeSnippet>
       </Card.Content>
     </Card>
   )
@@ -139,7 +110,10 @@ function Step4() {
 }
 
 function Step5() {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const { theme } = useThemeContext()
+
+  const testPRsImageSource =
+    theme === Theme.LIGHT ? testsPRComment : testsPRCommentDark
 
   return (
     <div>
@@ -159,19 +133,16 @@ function Step5() {
           </p>
         </Card.Content>
       </Card>
-      <ExpandableSection className="mt-[-1px]">
-        <ExpandableSection.Trigger
-          isExpanded={isExpanded}
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <p className="font-normal">
+      <ExpandableSection className="-mt-px">
+        <ExpandableSection.Trigger>
+          <p>
             Here are examples of failed test reports in PR comments. Comment
             generation may take time.
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content>
           <img
-            src={testsPRComment.toString()}
+            src={testPRsImageSource.toString()}
             alt="Tests in PR comment"
             className="w-full"
           />

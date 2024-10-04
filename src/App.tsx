@@ -12,16 +12,16 @@ import EnterpriseLoginLayout from 'layouts/EnterpriseLoginLayout'
 import LoginLayout from 'layouts/LoginLayout'
 import { useLocationParams } from 'services/navigation'
 import { ToastNotificationProvider } from 'services/toastNotification'
-import { useUTM } from 'services/tracking/utm'
 import { useInternalUser, useUser } from 'services/user'
 import { isProvider } from 'shared/api/helpers'
-
 import 'ui/Table/Table.css'
 import 'ui/FileList/FileList.css'
+import { ThemeContextProvider } from 'shared/ThemeContext'
 
-const AccountSettings = lazy(() => import('./pages/AccountSettings'))
-const AdminSettings = lazy(() => import('./pages/AdminSettings'))
+import AccountSettings from './pages/AccountSettings'
+import AdminSettings from './pages/AdminSettings'
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
+const CodecovAIPage = lazy(() => import('./pages/CodecovAIPage'))
 const CommitDetailPage = lazy(() => import('./pages/CommitDetailPage'))
 const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -121,6 +121,11 @@ const MainAppRoutes = () => (
         <AnalyticsPage />
       </BaseLayout>
     </SentryRoute>
+    <SentryRoute path="/codecovai/:provider/:owner" exact>
+      <BaseLayout>
+        <CodecovAIPage />
+      </BaseLayout>
+    </SentryRoute>
     <SentryRoute path="/:provider" exact>
       <BaseLayout>
         <HomePageRedirect />
@@ -155,7 +160,19 @@ const MainAppRoutes = () => (
         <CommitDetailPage />
       </BaseLayout>
     </SentryRoute>
-    <SentryRoute path="/:provider/:owner/:repo">
+    <SentryRoute
+      path={[
+        '/:provider/:owner/:repo/commits/:branch',
+        '/:provider/:owner/:repo/tree/:branch',
+        '/:provider/:owner/:repo/flags/:branch',
+        '/:provider/:owner/:repo/components/:branch',
+        '/:provider/:owner/:repo/bundles/:branch',
+        '/:provider/:owner/:repo/tests/:branch',
+        // paths above are for grabbing branch for components in tree between here and RepoPage
+        // where there is another set of SentryRoute matching
+        '/:provider/:owner/:repo',
+      ]}
+    >
       <BaseLayout>
         <RepoPage />
       </BaseLayout>
@@ -176,15 +193,15 @@ const MainAppRoutes = () => (
 )
 
 function App() {
-  useUTM()
-
   return (
     <>
-      <ToastNotificationProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
-        <MainAppRoutes />
-      </ToastNotificationProvider>
-      <Toaster />
+      <ThemeContextProvider>
+        <ToastNotificationProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+          <MainAppRoutes />
+        </ToastNotificationProvider>
+        <Toaster />
+      </ThemeContextProvider>
     </>
   )
 }

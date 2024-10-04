@@ -2,11 +2,9 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from './schemas'
+import { RepoNotFoundErrorSchema } from './schemas'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
@@ -22,10 +20,10 @@ const RepositorySchema = z.object({
 const RequestSchema = z.object({
   owner: z
     .object({
+      isCurrentUserActivated: z.boolean().nullable(),
       repository: z.discriminatedUnion('__typename', [
         RepositorySchema,
         RepoNotFoundErrorSchema,
-        RepoOwnerNotActivatedErrorSchema,
       ]),
     })
     .nullable(),
@@ -33,6 +31,7 @@ const RequestSchema = z.object({
 
 const query = `query GetRepoOverview($owner: String!, $repo: String!) {
   owner(username: $owner) {
+    isCurrentUserActivated
     repository(name: $repo) {
       __typename
       ... on Repository {
@@ -45,9 +44,6 @@ const query = `query GetRepoOverview($owner: String!, $repo: String!) {
         languages
       }
       ... on NotFoundError {
-        message
-      }
-      ... on OwnerNotActivatedError {
         message
       }
     }
@@ -92,7 +88,8 @@ export function useRepoOverview({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useRepoOverview - 404 failed to parse',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedData.data
@@ -101,11 +98,8 @@ export function useRepoOverview({
           return Promise.reject({
             status: 404,
             data: {},
-          })
-        }
-
-        if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return null
+            dev: 'useRepoOverview - 404 NotFoundError',
+          } satisfies NetworkErrorObject)
         }
 
         if (!data?.owner?.repository) {
@@ -122,6 +116,7 @@ export function useRepoOverview({
         }
 
         const coverageEnabled = data.owner.repository.coverageEnabled ?? false
+        const isPrivate = data.owner.repository.private ?? true
         const bundleAnalysisEnabled =
           data.owner.repository.bundleAnalysisEnabled ?? false
         const testAnalyticsEnabled =
@@ -130,9 +125,11 @@ export function useRepoOverview({
         return {
           ...data.owner.repository,
           coverageEnabled,
+          private: isPrivate,
           bundleAnalysisEnabled,
           jsOrTsPresent,
           testAnalyticsEnabled,
+          isCurrentUserActivated: data.owner.isCurrentUserActivated,
         }
       })
     },

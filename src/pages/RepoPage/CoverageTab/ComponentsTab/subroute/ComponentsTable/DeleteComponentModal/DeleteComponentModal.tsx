@@ -49,7 +49,7 @@ const DeleteComponentModal = ({
       footer={
         <div className="flex gap-2">
           <button
-            className="flex-none font-semibold text-ds-blue"
+            className="flex-none font-semibold text-ds-blue-default"
             onClick={() => {
               closeModal()
             }}

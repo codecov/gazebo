@@ -41,6 +41,7 @@ export function useUpdateDefaultOrganization() {
         )
       } else {
         queryClient.invalidateQueries(['DetailOwner'])
+        queryClient.invalidateQueries(['currentUser'])
       }
     },
     onError: (e: any) => {

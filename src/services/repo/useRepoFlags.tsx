@@ -2,6 +2,8 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import z from 'zod'
 
+import { OrderingDirection } from 'types'
+
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -103,7 +105,7 @@ interface FetchRepoFlagsArgs {
     flagNames?: string[]
     ter?: string
   }
-  orderingDirection: 'ASC' | 'DESC'
+  orderingDirection: OrderingDirection
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
   afterDate: string
   beforeDate: string
@@ -193,7 +195,7 @@ interface UseRepoFlagsArgs {
     flagNames?: string[]
     term?: string
   }
-  orderingDirection?: 'ASC' | 'DESC'
+  orderingDirection?: OrderingDirection
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
   afterDate: string
   beforeDate: string

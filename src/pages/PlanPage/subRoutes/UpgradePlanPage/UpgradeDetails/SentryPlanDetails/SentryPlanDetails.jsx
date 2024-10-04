@@ -44,7 +44,7 @@ function SentryPlanDetails() {
           <p className="mb-2 text-xs font-semibold">Includes</p>
           <BenefitList
             iconName="check"
-            iconColor="text-ds-pink-quinary"
+            iconColor="text-ds-pink-default"
             benefits={sentryPlanYear?.benefits}
           />
         </div>

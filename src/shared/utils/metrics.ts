@@ -72,6 +72,7 @@ type IncrementKeys = {
       '401': string
       '403': string
       '404': string
+      '429': string
       '500': string
     }
     graphql: {
@@ -91,6 +92,12 @@ type IncrementKeys = {
     user: {
       visited_page: string
       checkout_from_page: string
+    }
+  }
+  button_clicked: {
+    theme: {
+      light: string
+      dark: string
     }
   }
 }

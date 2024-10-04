@@ -33,11 +33,10 @@ const GetBranchCoverageMeasurementsSchema = z.object({
     .object({
       repository: z
         .discriminatedUnion('__typename', [
-          z
-            .object({
-              __typename: z.literal('Repository'),
-            })
-            .merge(MeasurementsSchema),
+          z.object({
+            __typename: z.literal('Repository'),
+            coverageAnalytics: MeasurementsSchema.nullable(),
+          }),
           RepoNotFoundErrorSchema,
           RepoOwnerNotActivatedErrorSchema,
         ])
@@ -46,26 +45,29 @@ const GetBranchCoverageMeasurementsSchema = z.object({
     .nullable(),
 })
 
-const query = `query GetBranchCoverageMeasurements(
+const query = `
+query GetBranchCoverageMeasurements(
   $owner: String!
   $repo: String!
   $branch: String
-  $after: DateTime!
-  $before: DateTime!
+  $after: DateTime
+  $before: DateTime
   $interval: MeasurementInterval!
 ) {
   owner(username: $owner) {
     repository: repository(name: $repo) {
       __typename
       ... on Repository {
-        measurements(
-          interval: $interval
-          after: $after
-          before: $before
-          branch: $branch
-        ) {
-          timestamp
-          max
+        coverageAnalytics{
+          measurements(
+            interval: $interval
+            after: $after
+            before: $before
+            branch: $branch
+          ) {
+            timestamp
+            max
+          }
         }
       }
       ... on NotFoundError {
@@ -166,7 +168,8 @@ export const useBranchCoverageMeasurements = ({
         }
 
         return {
-          measurements: data?.owner?.repository?.measurements ?? [],
+          measurements:
+            data?.owner?.repository?.coverageAnalytics?.measurements ?? [],
         }
       }),
     ...opts,

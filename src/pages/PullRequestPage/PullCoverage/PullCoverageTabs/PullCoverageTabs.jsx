@@ -7,7 +7,6 @@ import {
 } from 'pages/PullRequestPage/utils'
 import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import TabNavigation from 'ui/TabNavigation'
 
 import { useTabsCounts } from './hooks'
@@ -15,9 +14,6 @@ import { useTabsCounts } from './hooks'
 function PullCoverageTabs() {
   const { provider, owner, repo, pullId } = useParams()
   const { pathname, search } = useLocation()
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
 
   const {
     flagsCount,
@@ -55,7 +51,7 @@ function PullCoverageTabs() {
     return null
   }
 
-  if (multipleTiers && tierData === TierNames.TEAM && overview?.private) {
+  if (tierData === TierNames.TEAM && overview?.private) {
     return (
       <TabNavigation
         tabs={[

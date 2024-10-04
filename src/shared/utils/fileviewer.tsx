@@ -83,7 +83,7 @@ export const lineStateToLabel = {
 
 export const CODE_RENDERER_TYPE = {
   DIFF: 'DIFF',
-  SINGLE_LINE: 'SINGLE-LINE',
+  SINGLE_LINE: 'SINGLE_LINE',
 } as const
 
 export const CODE_RENDERER_INFO = {

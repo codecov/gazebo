@@ -31,13 +31,27 @@ const ProfiledApp = Sentry.withProfiler(FeatureFlagApp)
 
 const history = createBrowserHistory()
 
+const TOO_MANY_REQUESTS_ERROR_CODE = 429
+
 setupSentry({ history })
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: true,
-      retry: 3,
+      retry: (failureCount, error) => {
+        // Do not retry if the response status is 429
+        if (
+          typeof error === 'object' &&
+          error !== null &&
+          'status' in error &&
+          error.status === TOO_MANY_REQUESTS_ERROR_CODE
+        ) {
+          return false
+        }
+        // Otherwise, retry up to 3 times
+        return failureCount < 3
+      },
       refetchOnWindowFocus: false,
     },
   },

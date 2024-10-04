@@ -22,7 +22,7 @@ function Header() {
           to={{
             pageName: 'root',
           }}
-          variant="header"
+          variant="headerDeprecated"
           data-testid="homepage-link"
           hook="homepage-link"
           isExternal

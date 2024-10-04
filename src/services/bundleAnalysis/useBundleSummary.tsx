@@ -71,6 +71,7 @@ query BundleSummary(
   $repo: String!
   $branch: String!
   $bundle: String!
+  $filters: BundleAnalysisReportFilters
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
@@ -81,7 +82,7 @@ query BundleSummary(
             bundleAnalysisReport {
               __typename
               ... on BundleAnalysisReport {
-                bundle(name: $bundle) {
+                bundle(name: $bundle, filters: $filters) {
                   name
                   moduleCount
                   bundleData {
@@ -119,6 +120,10 @@ interface UseBundleSummaryArgs {
   repo: string
   branch?: string
   bundle: string
+  filters?: {
+    reportGroups?: string[]
+    loadTypes?: string[]
+  }
   opts?: {
     enabled?: boolean
   }
@@ -130,6 +135,7 @@ export const useBundleSummary = ({
   repo,
   branch: branchParam,
   bundle,
+  filters = {},
   opts = {},
 }: UseBundleSummaryArgs) => {
   const { data: overview } = useRepoOverview({
@@ -144,13 +150,13 @@ export const useBundleSummary = ({
   const branch = branchParam ?? overview?.defaultBranch
 
   return useQuery({
-    queryKey: ['BundleSummary', provider, owner, repo, branch, bundle],
+    queryKey: ['BundleSummary', provider, owner, repo, branch, bundle, filters],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
         query,
         signal,
-        variables: { owner, repo, branch, bundle },
+        variables: { owner, repo, branch, bundle, filters },
       }).then((res) => {
         const parsedData = RequestSchema.safeParse(res?.data)
 

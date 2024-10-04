@@ -1,6 +1,4 @@
 [![codecov](https://codecov.io/gh/codecov/gazebo/branch/main/graph/badge.svg?token=UAP786D58M)](https://codecov.io/gh/codecov/gazebo)
-[![Storybook](https://raw.githubusercontent.com/storybookjs/brand/master/badge/badge-storybook.svg)](https://5fa9228f77839a00217f8a45-bkjyepljyt.chromatic.com/)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/128d65e5-70a2-4179-b216-4f16683513da/deploy-status)](https://app.netlify.com/sites/gazebo/deploys)
 
 # Gazebo
 
@@ -26,11 +24,11 @@ In order to use the Makefile to build a Docker image, you'll need to set an envi
 To run the project in development mode
 
 ```bash
-> npm install
-> npm run start
+> yarn
+> yarn start
 ```
 
-Note: The first run of `npm run start` may take 5-10 minutes to finish building.
+Note: The first run of `yarn start` may take 5-10 minutes to finish building.
 
 The page will reload when you make edits. There is a local proxy to the staging API so you can develop against it. You can overwrite it by creating a `.env.local` file with it with the following:
 
@@ -43,67 +41,25 @@ PROXY_TO=http://localhost:5100
 You can run the tests with
 
 ```bash
-> npm run test
+> yarn test
 ```
 
 This script is using Jest, so any valid Jest options can be added to the command.
 
 We are using the [Testing Library](https://testing-library.com/docs/react-testing-library/intro) to test the React components.
 
-## Mutation testing
-
-##### NOTE: Mutation testing is not yet configured to auto run or added to the CI/CD, _running mutation tests app wide is extremely slow_ so it's limited for now but you can run them on any code you want.
-
-You can run to default configuration of mutation tests. (Located in mutate ket in `stryker.conf.js` file)
-
-```bash
-> npx stryker run
-```
-
-Alternatively you can look at the mutation score of a specific file you're working on. This will run mutation tests both on your
-file and where ever your file is being used.
-
-```bash
-> npx stryker run --mutate src/shared/utils/url.js
-```
-
-### Reading the result
-
-##### TODO: Write a proper guide on stryker in confluence and link it here
-
-Once the mutation suite is complete it should output a table with the results as well as a link to view a html report.
-
-> example: `file:///Users/ts/dev/gazebo/reports/mutation/html/index.html`
-
-From the html report you can view the mutates or specific tests and click on the round dots for more information on the result.
-
-"Mutants" are copies of our source code which have been tampered with, we expect good tests to have failed (killed) if the source code
-failed, if they still pass the mutant is considered to have survived.
-
-The mutation score is a highlevel estimation of the health/bugs in the codebase, it's not possible to automatically have a 100%
-score due to some edge cases not yet detectable, so we dont need to be shooting for 100%.
-
-Killed is **good**, survived is **bad**, timeouts are **fine** (because the test suite didn't falsely say it was a success).
-
 ## Linting
 
 ```bash
-> npm run lint
+> yarn lint
 ```
 
 will lint the whole project.
 
-We have some extra rules to keep the code more maintainable:
-
-- Complexity of max 5 per function: to prevent functions with a lot of of different outcome
-- 10 max statements per function: to prevent a function doing too much
-- 2 level of nested callbacks: to prevent complexity within nested functions
-- Mandatory prop-types: as we don't have a Type system, this rule will help us have documented components
-
 ## Build the application for production
 
 ```bash
-> npm run build
+> yarn build
 ```
 
 will build the application in the `build` folder. We currently use Netlify for deployment, which will be subject to change.
@@ -118,11 +74,11 @@ The config are centralized in one place in the file `config.js`. The file merges
 
 ### process.env
 
-Gazebo supports [env files](https://create-react-app.dev/docs/adding-custom-environment-variables) by default which become enviornment variables at build-time.
+Gazebo supports [env files](https://create-react-app.dev/docs/adding-custom-environment-variables) by default which become environment variables at build-time.
 
-To override enviornment variables when working locally create a `.env.local` file, this file is ignored by git.
+To override environment variables when working locally create a `.env.local` file, this file is ignored by git.
 
-You must prepend env variables with `REACT_APP_`.
+You must prepend env variables with `REACT_APP`.
 
 `.env.local`
 

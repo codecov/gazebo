@@ -14,6 +14,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { UploadTypeEnum } from 'shared/utils/commit'
 import { userHasAccess } from 'shared/utils/user'
 import A from 'ui/A'
 
@@ -113,6 +114,24 @@ const CommitSchema = z.object({
     .nullable(),
 })
 
+const UploadTypeEnumSchema = z.nativeEnum(UploadTypeEnum)
+
+const UploadSchema = z.object({
+  uploadType: UploadTypeEnumSchema,
+  flags: z.array(z.string()).nullish(),
+})
+
+const UploadsSchema = z.object({
+  totalCount: z.number().nullable(),
+  edges: z.array(
+    z
+      .object({
+        node: UploadSchema,
+      })
+      .nullable()
+  ),
+})
+
 const PullSchema = z.object({
   behindBy: z.number().nullable(),
   behindByCommit: z.string().nullable(),
@@ -128,11 +147,7 @@ const PullSchema = z.object({
   comparedTo: z
     .object({
       commitid: z.string().nullable(),
-      uploads: z
-        .object({
-          totalCount: z.number().nullable(),
-        })
-        .nullable(),
+      uploads: UploadsSchema.nullable(),
     })
     .nullable(),
   head: z
@@ -146,11 +161,7 @@ const PullSchema = z.object({
           percentCovered: z.number().nullable(),
         })
         .nullable(),
-      uploads: z
-        .object({
-          totalCount: z.number().nullable(),
-        })
-        .nullable(),
+      uploads: UploadsSchema.nullable(),
     })
     .nullable(),
   commits: z
@@ -222,12 +233,24 @@ const query = `query Pull(
             }
             uploads {
               totalCount
+              edges {
+                node {
+                  uploadType
+                  flags
+                }
+              }
             }
           }
           comparedTo {
             commitid
             uploads {
               totalCount
+              edges {
+                node {
+                  uploadType
+                  flags
+                }
+              }
             }
           }
           commits {
@@ -299,7 +322,7 @@ export function usePull({
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: null,
+            data: {},
           })
         }
 

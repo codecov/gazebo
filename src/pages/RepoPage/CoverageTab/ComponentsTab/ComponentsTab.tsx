@@ -6,7 +6,7 @@ import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 
 import BackfillBanners from './BackfillBanners/BackfillBanners'
-import { useRepoBackfillingStatus } from './BackfillBanners/hooks'
+import { useRepoBackfillingStatus } from './BackfillBanners/useRepoBackfillingStatus'
 import Header from './Header'
 import ComponentsTable from './subroute/ComponentsTable/ComponentsTable'
 import TimescaleDisabled from './TimescaleDisabled'
@@ -66,14 +66,27 @@ function ComponentsTab() {
           })
         }
       >
-        <BackfillBanners />
+        {repoSettings?.isCurrentUserPartOfOrg ? (
+          <BackfillBanners />
+        ) : (
+          <div className="mt-3 text-center">
+            <hr />
+            <p className="mt-4 p-3">Component analytics is disabled.</p>
+          </div>
+        )}
       </Header>
       <div className="flex flex-1 flex-col gap-4">
         {showComponentsTable({
           componentsMeasurementsActive,
           componentsMeasurementsBackfilled,
         }) && (
-          <SentryRoute path="/:provider/:owner/:repo/components" exact>
+          <SentryRoute
+            path={[
+              '/:provider/:owner/:repo/components',
+              '/:provider/:owner/:repo/components/:branch',
+            ]}
+            exact
+          >
             <ComponentsTable />
           </SentryRoute>
         )}

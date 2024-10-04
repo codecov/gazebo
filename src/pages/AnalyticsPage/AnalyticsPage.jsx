@@ -10,7 +10,6 @@ import LoadingLogo from 'ui/LoadingLogo'
 
 import ChartSelectors from './ChartSelectors'
 import './analytics.css'
-import Header from './Header'
 import Tabs from './Tabs'
 
 const Chart = lazy(() => import('./Chart'))
@@ -51,9 +50,8 @@ function AnalyticsPage() {
   }
 
   return (
-    <div className="mt-2 flex flex-col gap-4">
-      <Header />
-      <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
+    <div className="flex flex-col gap-4">
+      {ownerData?.isCurrentUserPartOfOrg ? <Tabs /> : null}
       <ChartSelectors
         params={params}
         updateParams={updateParams}
@@ -67,6 +65,7 @@ function AnalyticsPage() {
         owner={owner}
         searchValue={params?.search}
         filterValues={params?.repositories}
+        mayIncludeDemo={false}
       />
     </div>
   )

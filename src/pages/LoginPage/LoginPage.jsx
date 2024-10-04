@@ -37,8 +37,11 @@ function LoginPage() {
           <hr />
         </div>
         <p>
-          If you are using GitHub Enterprise, GitLab EE/CE, or Bitbucket Server
-          please view our <A to={{ pageName: 'enterprise' }}>self hosted</A>{' '}
+          If you are using GitHub Enterprise Server, GitLab EE/CE, or Bitbucket
+          Server please view our{' '}
+          <A to={{ pageName: 'dedicatedEnterpriseCloudGuide' }}>
+            Dedicated Enterprise Cloud
+          </A>{' '}
           option.
         </p>
       </div>

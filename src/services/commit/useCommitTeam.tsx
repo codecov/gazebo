@@ -100,13 +100,24 @@ const ImpactedFileSchema = z
 
 export type ImpactedFile = z.infer<typeof ImpactedFileSchema>
 
+const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
+  z.object({
+    __typename: z.literal('ImpactedFiles'),
+    results: z.array(ImpactedFileSchema),
+  }),
+  z.object({
+    __typename: z.literal('UnknownFlags'),
+    message: z.string(),
+  }),
+])
+
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
   indirectChangedFilesCount: z.number(),
   directChangedFilesCount: z.number(),
   state: z.string(),
   patchTotals: CoverageObjSchema.nullable(),
-  impactedFiles: z.array(ImpactedFileSchema),
+  impactedFiles: ImpactedFilesSchema,
 })
 
 const CompareWithParentSchema = z.discriminatedUnion('__typename', [
@@ -208,11 +219,19 @@ const query = `query GetCommitTeam(
               patchTotals {
                 coverage: percentCovered
               }
-              impactedFiles: impactedFilesDeprecated(filters: $filters) {
-                headName
-                missesCount
-                patchCoverage {
-                  coverage: percentCovered
+              impactedFiles(filters: $filters) {
+                __typename
+                ... on ImpactedFiles {
+                  results {
+                    headName
+                    missesCount
+                    patchCoverage {
+                      coverage: percentCovered
+                    }
+                  }
+                }
+                ... on UnknownFlags {
+                  message
                 }
               }
             }

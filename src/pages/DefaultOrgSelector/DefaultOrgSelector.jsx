@@ -1,14 +1,22 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Redirect, useHistory, useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import config from 'config'
+
+import { SentryBugReporter } from 'sentry'
+
 import { TrialStatuses, usePlanData } from 'services/account'
+import {
+  EVENT_METRICS,
+  useStoreCodecovEventMetric,
+} from 'services/codecovEventMetrics'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useStaticNavLinks } from 'services/navigation'
 import { useStartTrial } from 'services/trial'
-import { useUser } from 'services/user'
+import { CustomerIntent, useUser } from 'services/user'
 import { isBasicPlan } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import { providerToName } from 'shared/utils/provider'
@@ -28,12 +36,20 @@ const FormSchema = z.object({
 const renderItem = ({ item }) => {
   if (!item) return null
 
+  if (item?.isDisabled) {
+    return (
+      <div className="flex h-8 items-center gap-2 text-ds-gray-quaternary">
+        No organizations found
+      </div>
+    )
+  }
+
   if (item?.isProvider) {
     return (
       <div className="flex h-8 items-center gap-2">
-        <A pathname={{ pageName: 'codecovAppInstallation' }}>
+        <A to={{ pageName: 'codecovAppInstallation' }}>
           <Icon name="plus-circle" />
-          <span>Add GitHub organization</span>
+          <span>Install Codecov GitHub app</span>
         </A>
       </div>
     )
@@ -63,6 +79,7 @@ function DefaultOrgSelector() {
 
   const { data: currentUser, isLoading: userIsLoading } = useUser()
   const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
+  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
 
   const selectedOrg = orgValue?.org?.username ?? currentUser?.user?.username
 
@@ -73,7 +90,6 @@ function DefaultOrgSelector() {
   const { mutate: fireTrial } = useStartTrial()
 
   const isNewTrial = planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED
-
   const {
     data: myOrganizations,
     hasNextPage,
@@ -98,9 +114,24 @@ function DefaultOrgSelector() {
     },
   })
 
+  const isBusinessIntent =
+    currentUser?.user?.customerIntent === CustomerIntent.BUSINESS
+
+  useLayoutEffect(() => {
+    if (!config.SENTRY_DSN) {
+      return
+    }
+    const widget = SentryBugReporter.createWidget()
+    return widget.removeFromDom
+  }, [])
+
   const onSubmit = () => {
     updateDefaultOrg({ username: selectedOrg })
-
+    storeEventMetric({
+      owner: selectedOrg,
+      event: EVENT_METRICS.CLICKED_BUTTON,
+      jsonPayload: { action: 'Selected Default Org' },
+    })
     if (
       isBasicPlan(planData?.plan?.value) &&
       selectedOrg !== currentUser?.user?.username &&
@@ -110,16 +141,22 @@ function DefaultOrgSelector() {
       fireTrial({ owner: selectedOrg })
     }
 
-    return history.push(`/${provider}/${selectedOrg}`)
+    return history.push(`/${provider}/${selectedOrg}?source=onboarding`)
   }
 
   if (userIsLoading) return null
   if (!userIsLoading && !currentUser) return <Redirect to="/login" />
 
+  const filteredOrganizations =
+    isBusinessIntent &&
+    myOrganizations[0]?.org?.username === currentUser?.user?.username
+      ? myOrganizations.slice(1)
+      : myOrganizations
+
   return (
     <div className="mx-auto w-full max-w-[38rem]">
       <h1 className="pb-3 pt-20 text-2xl font-semibold">
-        Which organization are you using today?
+        Which organization are you working with today?
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="my-4 flex flex-col gap-4 border-y border-ds-gray-tertiary py-6">
@@ -133,7 +170,9 @@ function DefaultOrgSelector() {
                 required
                 placeholder="Select organization"
                 items={[
-                  ...myOrganizations,
+                  ...(filteredOrganizations.length > 0
+                    ? filteredOrganizations
+                    : [{ org: {}, isDisabled: true }]),
                   ...(isGh ? [{ org: {}, isProvider: true }] : []),
                 ]}
                 renderItem={(item) => renderItem({ item })}
@@ -158,9 +197,17 @@ function DefaultOrgSelector() {
           />
           <GitHubHelpBanner />
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <Button
+            to={{ pageName: 'login' }}
+            variant="plain"
+            disabled={false}
+            hook="org-select-cancel-button"
+          >
+            Cancel
+          </Button>
           <Button hook="user selects org, continues to app" type="submit">
-            Continue
+            Continue to Codecov
           </Button>
         </div>
       </form>

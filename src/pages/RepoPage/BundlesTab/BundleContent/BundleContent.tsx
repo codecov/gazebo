@@ -6,12 +6,16 @@ import { SentryRoute } from 'sentry'
 import { useBranchBundleSummary } from 'services/bundleAnalysis'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
+import { ToggleElement } from 'ui/ToggleElement'
 
 import AssetsTable from './AssetsTable'
-import BundleSummary from './BundleSummary'
+import { EmptyTable as AssetEmptyTable } from './AssetsTable/EmptyTable'
+import { BundleChart } from './BundleChart'
+import { BundleDetails, NoDetails } from './BundleDetails'
+import BundleSelection from './BundleSelection'
 import InfoBanner from './InfoBanner'
+import { TrendDropdown } from './TrendDropdown'
 
-const AssetEmptyTable = lazy(() => import('./AssetsTable/EmptyTable'))
 const ErrorBanner = lazy(() => import('./ErrorBanner'))
 
 interface URLParams {
@@ -41,12 +45,25 @@ const BundleContent: React.FC = () => {
 
   return (
     <div>
-      <BundleSummary />
+      <BundleSelection />
+      <Suspense fallback={<NoDetails />}>
+        <BundleDetails />
+      </Suspense>
       <Suspense fallback={<Loader />}>
         {bundleType === 'BundleAnalysisReport' ? (
           <Switch>
             <SentryRoute path="/:provider/:owner/:repo/bundles/:branch/:bundle">
-              <AssetsTable />
+              <ToggleElement
+                showButtonContent="Show chart"
+                hideButtonContent="Hide chart"
+                localStorageKey="is-bundle-chart-hidden"
+                toggleRowElement={<TrendDropdown />}
+              >
+                <BundleChart />
+              </ToggleElement>
+              <Suspense fallback={<Loader />}>
+                <AssetsTable />
+              </Suspense>
             </SentryRoute>
             <SentryRoute
               path={[

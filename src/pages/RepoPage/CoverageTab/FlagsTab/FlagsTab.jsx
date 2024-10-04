@@ -2,14 +2,13 @@ import { Redirect, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import { useRepoSettingsTeam } from 'services/repo'
-import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
+import { useRepoFlagsSelect, useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import FlagsNotConfigured from 'shared/FlagsNotConfigured'
 
 import blurredTable from './assets/blurredTable.png'
 import BackfillBanners from './BackfillBanners/BackfillBanners'
-import { useRepoBackfillingStatus } from './BackfillBanners/hooks'
+import { useRepoBackfillingStatus } from './BackfillBanners/useRepoBackfillingStatus'
 import Header from './Header'
 import FlagsTable from './subroute/FlagsTable/FlagsTable'
 import TimescaleDisabled from './TimescaleDisabled'
@@ -61,14 +60,27 @@ function FlagsTab() {
           isRepoBackfilling,
         })}
       >
-        <BackfillBanners />
+        {repoSettings?.isCurrentUserPartOfOrg ? (
+          <BackfillBanners />
+        ) : (
+          <div className="mt-3 text-center">
+            <hr />
+            <p className="mt-4 p-3">Flag analytics is disabled.</p>
+          </div>
+        )}
       </Header>
       <div className="flex flex-1 flex-col gap-4">
         {showFlagsTable({
           flagsMeasurementsActive,
           flagsMeasurementsBackfilled,
         }) ? (
-          <SentryRoute path="/:provider/:owner/:repo/flags" exact>
+          <SentryRoute
+            path={[
+              '/:provider/:owner/:repo/flags',
+              '/:provider/:owner/:repo/flags/:branch',
+            ]}
+            exact
+          >
             <FlagsTable />
           </SentryRoute>
         ) : (

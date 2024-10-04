@@ -18,7 +18,9 @@ export const getReposColumnsHelper = ({
   isCurrentUserPartOfOrg: boolean
   owner: string
 }) => {
-  const columnHelper = createColumnHelper<RepositoryResult>()
+  const columnHelper = createColumnHelper<
+    RepositoryResult & { isDemo?: boolean }
+  >()
   const nameColumn = columnHelper.accessor('name', {
     header: 'Name',
     id: 'name',
@@ -26,7 +28,9 @@ export const getReposColumnsHelper = ({
       const repo = info.row.original
 
       let pageName = 'new'
-      if (!!repo?.coverageEnabled) {
+      if (!!repo?.isDemo) {
+        pageName = 'demoRepo'
+      } else if (!!repo?.coverageEnabled) {
         pageName = 'repo'
       } else if (!!repo?.bundleAnalysisEnabled) {
         pageName = 'bundles'
@@ -77,26 +81,28 @@ export const getReposColumnsHelper = ({
         )
       },
     }),
-    columnHelper.accessor('lines', {
+    columnHelper.accessor('coverageAnalytics.lines', {
       header: 'Tracked lines',
       id: 'lines',
       cell: (info) => {
         const repo = info.row.original
         return (
           <>
-            <div className="mr-5 text-right">{repo?.lines}</div>
+            <div className="mr-5 text-right">
+              {repo?.coverageAnalytics?.lines}
+            </div>
           </>
         )
       },
     }),
-    columnHelper.accessor('coverage', {
+    columnHelper.accessor('coverageAnalytics.percentCovered', {
       header: 'Test coverage',
       id: 'coverage',
       cell: (info) => {
         const repo = info.row.original
-        return typeof repo?.coverage === 'number' ? (
+        return typeof repo?.coverageAnalytics?.percentCovered === 'number' ? (
           <TotalsNumber
-            value={repo.coverage}
+            value={repo.coverageAnalytics?.percentCovered}
             plain={true}
             light={false}
             showChange={false}

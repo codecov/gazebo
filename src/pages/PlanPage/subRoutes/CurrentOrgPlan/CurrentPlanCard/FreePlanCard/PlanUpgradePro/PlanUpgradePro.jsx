@@ -56,9 +56,12 @@ function PlanUpgradePro({ isSentryUpgrade, plans }) {
 
   return (
     <div className="flex flex-col border">
-      <div className="p-4">
-        <h2 className="font-semibold">{upgradeToPlan?.marketingName} plan</h2>
-        <ProPlanSubheading />
+      <div className="flex justify-between p-4">
+        <div>
+          <h2 className="font-semibold">{upgradeToPlan?.marketingName} plan</h2>
+          <ProPlanSubheading />
+        </div>
+        <ActionsBilling />
       </div>
       <hr />
       <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
@@ -67,11 +70,11 @@ function PlanUpgradePro({ isSentryUpgrade, plans }) {
           <BenefitList
             benefits={upgradeToPlan?.benefits}
             iconName="check"
-            iconColor="text-ds-pink-quinary"
+            iconColor="text-ds-pink-default"
           />
         </div>
-        <div className="flex flex-col gap-4">
-          <p className="border-t pt-2 text-xs font-semibold sm:border-0 sm:p-0">
+        <div className="flex flex-col">
+          <p className="mb-2 border-t pt-2 text-xs font-semibold sm:border-0 sm:p-0">
             Pricing
           </p>
           <PlanDetails
@@ -80,7 +83,6 @@ function PlanUpgradePro({ isSentryUpgrade, plans }) {
             proMonthlyUnitPrice={proPlanMonth?.baseUnitPrice}
             proYearlyUnitPrice={proPlanYear?.baseUnitPrice}
           />
-          <ActionsBilling />
         </div>
       </div>
     </div>

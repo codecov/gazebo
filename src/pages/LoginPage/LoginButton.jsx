@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 
 import { useNavLinks } from 'services/navigation'
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import {
   loginProviderImage,
   loginProviderToName,
@@ -8,10 +9,12 @@ import {
 
 function LoginButton({ provider }) {
   const { signIn } = useNavLinks()
+  const { theme } = useThemeContext()
 
+  const isDarkMode = theme === Theme.DARK
   const to = `${window.location.protocol}//${window.location.host}/${provider}`
   const providerName = loginProviderToName(provider)
-  const providerImage = loginProviderImage(provider)
+  const providerImage = loginProviderImage(provider, isDarkMode)
 
   return (
     <a
@@ -20,7 +23,7 @@ function LoginButton({ provider }) {
       data-cy={'login-button'}
     >
       <img
-        alt={`Logo of ${providerName}`}
+        alt={`${providerName} logo`}
         className="mx-4 w-6"
         src={providerImage}
       />

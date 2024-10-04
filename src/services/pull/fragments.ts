@@ -225,10 +225,6 @@ fragment FileComparisonWithBase on Pull {
                 baseCoverage
                 headCoverage
                 content
-                coverageInfo {
-                  hitCount
-                  hitUploadIds
-                }
               }
             }
           }
@@ -296,10 +292,6 @@ export const ComparisonSchema = z.object({
                 baseCoverage: CoverageLineSchema.nullable(),
                 headCoverage: CoverageLineSchema.nullable(),
                 content: z.string().nullable(),
-                coverageInfo: z.object({
-                  hitCount: z.number().nullable(),
-                  hitUploadIds: z.array(z.number()).nullable(),
-                }),
               })
             ),
           })

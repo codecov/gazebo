@@ -1,16 +1,14 @@
 import { Suspense } from 'react'
-
-import { LOCAL_STORAGE_SESSION_EXPIRED_KEY } from 'config'
+import { useLocation } from 'react-router-dom'
 
 import Footer from 'layouts/Footer'
+// import GuestHeader from 'layouts/Header/components/GuestHeader'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
 import SessionExpiredBanner from 'pages/LoginPage/SessionExpiredBanner'
 import GlobalBanners from 'shared/GlobalBanners'
 import LoadingLogo from 'ui/LoadingLogo'
-
-import Header from './Header'
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -19,13 +17,12 @@ const FullPageLoader = () => (
 )
 
 function EnterpriseLoginLayout({ children }: { children: React.ReactNode }) {
-  const showExpiryBanner = localStorage.getItem(
-    LOCAL_STORAGE_SESSION_EXPIRED_KEY
-  )
+  const location = useLocation()
+
   return (
     <>
-      <Header />
-      {showExpiryBanner && <SessionExpiredBanner />}
+      {/* <GuestHeader /> */}
+      {location.search.includes('expired') && <SessionExpiredBanner />}
       <Suspense fallback={<FullPageLoader />}>
         <ErrorBoundary sentryScopes={[['layout', 'base']]}>
           <NetworkErrorBoundary>

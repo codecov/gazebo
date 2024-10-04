@@ -22,7 +22,7 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
             onClick={() => setIsFormOpen(true)}
             hook="edit-card"
           >
-            Edit card <Icon name="chevronRight" size="sm" variant="solid" />
+            Edit <Icon name="chevronRight" size="sm" variant="solid" />
           </A>
         )}
       </div>

@@ -7,7 +7,17 @@
     "plugin:react/recommended",
     "plugin:import/recommended",
     "prettier",
-    "plugin:storybook/recommended"
+    "plugin:storybook/recommended",
+    "plugin:tailwindcss/recommended"
+  ],
+  "plugins": ["@vitest"],
+  "globals": {
+    "vi": true
+  },
+  "ignorePatterns": [
+    "!src/**/*.{js,jsx,ts,tsx}",
+    "src/old_ui/Icon/svg/*.jsx",
+    "src/ui/Icon/svg/**/*.jsx"
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",
@@ -19,13 +29,10 @@
     "testing-library/prefer-find-by": "warn",
     "testing-library/await-fire-event": "warn",
     "testing-library/no-global-regexp-flag-in-query": "warn",
-    "testing-library/no-manual-cleanup": "warn",
+    "testing-library/no-manual-cleanup": "off",
     "testing-library/prefer-user-event": "warn",
     "testing-library/prefer-wait-for": "warn",
     "testing-library/prefer-explicit-assert": "warn",
-    "complexity": "off",
-    "max-statements": "off",
-    "max-nested-callbacks": ["error", 2],
     "react/prefer-stateless-function": ["error"],
     "react/prop-types": [
       "warn",
@@ -120,6 +127,11 @@
             "pattern": "sentry",
             "group": "internal",
             "position": "before"
+          },
+          {
+            "pattern": "types",
+            "group": "internal",
+            "position": "before"
           }
         ],
         "alphabetize": {
@@ -127,24 +139,6 @@
           "caseInsensitive": true
         },
         "newlines-between": "always"
-      }
-    ],
-    "tailwindcss/no-custom-classname": [
-      "warn",
-      {
-        "callees": ["classnames", "clsx", "ctl"],
-        "config": "tailwind.config.js",
-        "cssFiles": [
-          "**/*.css",
-          "!**/node_modules",
-          "!**/.*",
-          "!**/dist",
-          "!**/build"
-        ],
-        "cssFilesRefreshRate": 5000,
-        "skipClassAttribute": false,
-        "tags": [],
-        "whitelist": []
       }
     ]
   },
@@ -266,7 +260,6 @@
         "*.test.tsx"
       ],
       "rules": {
-        "max-nested-callbacks": "off",
         "react/display-name": "off",
         "camelcase": "off"
       }
@@ -294,10 +287,19 @@
           ["assets", "./src/assets"],
           ["custom-testing-library", "./src/custom-testing-library"],
           ["config", "./src/config"],
-          ["sentry", "./src/sentry"]
+          ["sentry", "./src/sentry"],
+          ["types", "./src/types"]
         ],
         "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
       }
+    },
+    "tailwindcss": {
+      "callees": ["classnames", "clsx", "ctl", "cn"],
+      "config": "tailwind.config.js",
+      "cssFiles": ["src/**/*.css"],
+      "cssFilesRefreshRate": 5000,
+      "removeDuplicates": true,
+      "skipClassAttribute": false
     }
   }
 }

@@ -10,8 +10,7 @@ import { SentryRoute } from 'sentry'
 import { usePlanPageData } from 'pages/PlanPage/hooks'
 import LoadingLogo from 'ui/LoadingLogo'
 
-import { PlanBreadcrumbProvider } from './context'
-import Header from './Header'
+import { PlanProvider } from './context'
 import PlanBreadcrumb from './PlanBreadcrumb'
 import Tabs from './Tabs'
 
@@ -41,11 +40,10 @@ function PlanPage() {
   }
 
   return (
-    <div className="mt-2 flex flex-col gap-4">
-      <Header />
+    <div className="flex flex-col gap-4">
       <Tabs />
       <Elements stripe={stripePromise}>
-        <PlanBreadcrumbProvider>
+        <PlanProvider>
           <PlanBreadcrumb />
           <Suspense fallback={<Loader />}>
             <Switch>
@@ -70,7 +68,7 @@ function PlanPage() {
               />
             </Switch>
           </Suspense>
-        </PlanBreadcrumbProvider>
+        </PlanProvider>
       </Elements>
     </div>
   )

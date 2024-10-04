@@ -1,4 +1,5 @@
 import { EnterpriseLoginProviders } from 'services/config/useLoginProviders'
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import {
   loginProviderImage,
   LoginProvidersEnum,
@@ -65,6 +66,7 @@ export const InternalProviderButton: React.FC<InternalProviderButtonProps> = ({
 }
 
 const ProviderCard: React.FC<ProviderCardProps> = ({ provider, providers }) => {
+  const { theme } = useThemeContext()
   const isExternalProvider = providers.includes(provider?.external)
 
   let isInternalProvider = false
@@ -72,12 +74,15 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ provider, providers }) => {
     isInternalProvider = providers.includes(provider.selfHosted)
   }
 
-  const logo = loginProviderImage(provider.provider) as string | undefined
+  const isDarkMode = theme === Theme.DARK
+  const logo = loginProviderImage(provider.provider, isDarkMode) as
+    | string
+    | undefined
 
   return (
     <div className="flex flex-col items-center">
       <div className="flex w-64 flex-row items-center justify-center gap-2 pb-2">
-        <img alt={`Logo of ${provider.name}`} className="h-6 w-6" src={logo} />
+        <img alt={`Logo of ${provider.name}`} className="size-6" src={logo} />
         <h2 className="text-2xl">{provider.name}</h2>
       </div>
       <div className="flex w-64 flex-col gap-2">

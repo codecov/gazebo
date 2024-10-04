@@ -41,8 +41,10 @@ const useUserAccessGate = () => {
     isFetching: userIsFetching,
     isSuccess: userIsSuccess,
   } = useUser({
-    suspense: false,
-    enabled: !!provider && !config.IS_SELF_HOSTED,
+    options: {
+      suspense: false,
+      enabled: !!provider && !config.IS_SELF_HOSTED,
+    },
   })
   const { mutate: updateDefaultOrg, isLoading: isMutationLoading } =
     useUpdateDefaultOrganization()
@@ -59,12 +61,16 @@ const useUserAccessGate = () => {
   })
 
   useEffect(() => {
-    if (userData?.user?.customerIntent === CustomerIntent.PERSONAL) {
+    if (
+      userData?.user?.customerIntent === CustomerIntent.PERSONAL &&
+      !userData?.owner?.defaultOrgUsername
+    ) {
       updateDefaultOrg({ username: userData?.user?.username })
     }
   }, [
     userData?.user?.customerIntent,
     userData?.user?.username,
+    userData?.owner?.defaultOrgUsername,
     updateDefaultOrg,
   ])
 

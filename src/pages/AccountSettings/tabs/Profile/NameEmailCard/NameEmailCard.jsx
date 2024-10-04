@@ -1,7 +1,7 @@
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
-import * as yup from 'yup'
+import { z } from 'zod'
 
 import Card from 'old_ui/Card'
 import { useAddNotification } from 'services/toastNotification'
@@ -10,19 +10,24 @@ import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
 
 function getSchema() {
-  return yup.object().shape({
-    name: yup.string().required('Name is required'),
-    email: yup
+  return z.object({
+    name: z.string().min(1, { message: 'Name is required' }),
+    email: z
       .string()
       .email('Not a valid email')
-      .required('Email is required'),
+      .min(1, { message: 'Email is required' }),
   })
 }
 
 function NameEmailCard({ currentUser, provider }) {
   const addToast = useAddNotification()
-  const { register, handleSubmit, formState, reset } = useForm({
-    resolver: yupResolver(getSchema()),
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty, errors: formErrors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(getSchema()),
     defaultValues: {
       email: currentUser?.email,
       name: currentUser?.name,
@@ -31,7 +36,7 @@ function NameEmailCard({ currentUser, provider }) {
 
   const { mutate, isLoading } = useUpdateProfile({ provider })
 
-  const isButtonDisabled = !formState.isDirty || isLoading
+  const isButtonDisabled = !isDirty || isLoading
 
   function submit(formData) {
     mutate(formData, {
@@ -80,9 +85,9 @@ function NameEmailCard({ currentUser, provider }) {
               disabled={isLoading}
               {...register('name', { required: true })}
             />
-            {formState?.errors.name && (
-              <p className="mt-1 text-error-900">
-                {formState?.errors.name?.message}
+            {formErrors.name && (
+              <p className="mt-1 text-ds-error-nonary">
+                {formErrors.name.message}
               </p>
             )}
           </div>
@@ -97,9 +102,9 @@ function NameEmailCard({ currentUser, provider }) {
               disabled={isLoading}
               {...register('email', { required: true })}
             />
-            {formState.errors.email && (
-              <p className="mt-1 text-error-900">
-                {formState.errors.email?.message}
+            {formErrors.email && (
+              <p className="mt-1 text-ds-error-nonary">
+                {formErrors.email.message}
               </p>
             )}
           </div>

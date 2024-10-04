@@ -1,7 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
+
+import config from 'config'
+
+import { SentryBugReporter } from 'sentry'
 
 import umbrellaSvg from 'assets/svg/umbrella.svg'
 import { CustomerIntent, useInternalUser } from 'services/user'
@@ -59,7 +63,7 @@ function EmailInput({
           dataMarketing="Email to receive updates"
         />
         {marketingEmailMessage && (
-          <p className="mt-1 text-codecov-red">{marketingEmailMessage}</p>
+          <p className="mt-1 text-ds-primary-red">{marketingEmailMessage}</p>
         )}
       </div>
     </div>
@@ -67,11 +71,17 @@ function EmailInput({
 }
 
 export default function TermsOfService() {
-  const { register, handleSubmit, formState, setError, watch, unregister } =
-    useForm({
-      resolver: zodResolver(FormSchema),
-      mode: 'onChange',
-    })
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty, isValid, errors: formErrors },
+    setError,
+    watch,
+    unregister,
+  } = useForm({
+    resolver: zodResolver(FormSchema),
+    mode: 'onChange',
+  })
   const { mutate, isLoading: isMutationLoading } = useSaveTermsAgreement({
     onSuccess: ({ data }) => {
       if (data?.saveTermsAgreement?.error) {
@@ -82,6 +92,14 @@ export default function TermsOfService() {
     onError: (error) => setError('apiError', error),
   })
   const { data: currentUser, isLoading: userIsLoading } = useInternalUser({})
+
+  useLayoutEffect(() => {
+    if (!config.SENTRY_DSN) {
+      return
+    }
+    const widget = SentryBugReporter.createWidget()
+    return widget.removeFromDom
+  }, [])
 
   interface FormValues {
     marketingEmail?: string
@@ -127,7 +145,6 @@ export default function TermsOfService() {
             <div className="bg-ds-gray-primary p-4">
               <RadioInput
                 {...register('customerIntent')}
-                // @ts-expect-error
                 dataMarketing="Personal use"
                 id="customerIntent-personal-use"
                 aria-label="Personal use"
@@ -144,7 +161,6 @@ export default function TermsOfService() {
             <div className="bg-ds-gray-primary p-4">
               <RadioInput
                 {...register('customerIntent')}
-                // @ts-expect-error
                 dataMarketing="Business use"
                 id="customerIntent-business-use"
                 aria-label="Business use"
@@ -180,7 +196,7 @@ export default function TermsOfService() {
             <EmailInput
               register={register}
               // @ts-expect-error
-              marketingEmailMessage={formState.errors?.marketingEmail?.message}
+              marketingEmailMessage={formErrors?.marketingEmail?.message}
               showEmailRequired={
                 watch('marketingConsent') && !currentUser?.email
               }
@@ -220,15 +236,15 @@ export default function TermsOfService() {
                 <small className="text-xs">required</small>
               </label>
             </div>
-            {formState.errors?.tos && (
-              <p className="text-codecov-red">
+            {formErrors?.tos && (
+              <p className="text-ds-primary-red">
                 You must accept Terms and Conditions.
               </p>
             )}
           </div>
         </div>
-        {formState?.errors?.apiError && (
-          <p className="mb-3 text-codecov-red">
+        {formErrors?.apiError && (
+          <p className="mb-3 text-ds-primary-red">
             We&apos;re sorry for the inconvenience, there was an error with our
             servers. Please try again later or{' '}
             <A to={{ pageName: 'support' }} hook="support-link" isExternal>
@@ -237,11 +253,19 @@ export default function TermsOfService() {
             .
           </p>
         )}
-        <div className="mt-3 flex justify-end">
+        <div className="mt-3 flex justify-end gap-2">
+          <Button
+            to={{ pageName: 'login' }}
+            variant="plain"
+            disabled={false}
+            hook="tos-back-button"
+          >
+            Back
+          </Button>
           <Button
             disabled={isDisabled({
-              isValid: formState.isValid,
-              isDirty: formState.isDirty,
+              isValid,
+              isDirty,
               isMutationLoading,
             })}
             type="submit"

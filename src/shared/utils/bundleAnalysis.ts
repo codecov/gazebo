@@ -14,6 +14,7 @@ export const formatSizeToString = (bytes: number) => {
   if (positiveBytes < KILOBYTE) {
     return Intl.NumberFormat('en-US', {
       ...formatSettings,
+      maximumFractionDigits: 0,
       unit: 'byte',
     }).format(bytes)
   }
@@ -56,4 +57,29 @@ export const formatTimeToString = (milliseconds: number) => {
     ...formatSettings,
     unit: 'millisecond',
   }).format(milliseconds)
+}
+
+export const formatBundlePercentage = (percentage: number) => {
+  return Intl.NumberFormat('en-US', {
+    style: 'percent',
+    maximumFractionDigits: 2,
+  }).format(percentage)
+}
+
+export const findBundleMultiplier = (bytes: number) => {
+  const positiveBytes = Math.abs(bytes)
+
+  if (positiveBytes < KILOBYTE) {
+    return 1
+  }
+
+  if (positiveBytes >= KILOBYTE && positiveBytes < MEGABYTE) {
+    return KILOBYTE
+  }
+
+  if (positiveBytes >= MEGABYTE && positiveBytes < GIGABYTE) {
+    return MEGABYTE
+  }
+
+  return GIGABYTE
 }

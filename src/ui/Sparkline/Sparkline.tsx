@@ -23,6 +23,11 @@ export interface SparklineProps {
   dataTemplate: (value: NumberOrNullOrUndefined) => string
   select?: (data: any) => NumberOrNullOrUndefined
   lineSize?: number
+  // allows overriding the FALLBACK_LINE_POS value
+  lineFallBack?: number
+  // this tapers the sparkline to the fallback line y-axis value which doesn't
+  // work in all cases, so this lets you override the value
+  taperEndPoint?: boolean
 }
 
 const Sparkline: React.FC<SparklineProps> = ({
@@ -31,6 +36,8 @@ const Sparkline: React.FC<SparklineProps> = ({
   dataTemplate,
   select = (data) => data,
   lineSize = 1,
+  lineFallBack = FALLBACK_LINE_POS,
+  taperEndPoint = true,
 }) => {
   const data: SparklineData[] = useMemo(
     () =>
@@ -52,9 +59,13 @@ const Sparkline: React.FC<SparklineProps> = ({
             start: select(curr) ? select(curr) : previousPoint?.end,
             /* 
               End is the next entry's value.
-              Used to draw a line from point a to b
+              Used to draw a line from point a to b.
             */
-            end: nextEntry ? select(nextEntry) : nextEntry,
+            end: nextEntry
+              ? select(nextEntry)
+              : taperEndPoint
+                ? nextEntry
+                : previousPoint?.end,
             /* 
               Sets the rendering mode of the line.
             */
@@ -62,7 +73,7 @@ const Sparkline: React.FC<SparklineProps> = ({
           },
         ]
       }, []),
-    [datum, select]
+    [datum, select, taperEndPoint]
   )
 
   let yPadding
@@ -97,23 +108,22 @@ const Sparkline: React.FC<SparklineProps> = ({
     >
       <caption className="sr-only">{description}</caption>
       <tbody className="flex flex-1 flex-row">
-        {data.map(({ start, end, mode, value }) => {
+        {data.map(({ start, end, mode, value }, i) => {
           // Inline styles are not performant but because this is memoized it should be ok.
           const properties = {
             '--start': start
               ? yScale(start).toFixed(2)
-              : FALLBACK_LINE_POS.toString(),
-            '--size': end
-              ? yScale(end).toFixed(2)
-              : FALLBACK_LINE_POS.toString(),
+              : lineFallBack.toString(),
+            '--size': end ? yScale(end).toFixed(2) : lineFallBack.toString(),
           }
+
           return (
             <tr
               className="relative flex flex-1 flex-row justify-start"
               key={uniqueId(dataTemplate + description)}
             >
               <td
-                className="line absolute inset-0 flex flex-1 p-0 before:absolute before:inset-0 before:bg-ds-gray-senary before:content-[''] after:absolute after:inset-0 after:bg-gradient-to-b after:from-ds-blue-darker after:to-white after:opacity-40 after:content-['']"
+                className="line absolute inset-0 flex flex-1 p-0 before:absolute before:inset-0 before:bg-ds-chart-area-stroke before:content-[''] after:absolute after:inset-0 after:bg-ds-blue-darker/10 after:content-['']"
                 style={properties as TableCustomCSSProperties}
                 data-mode={mode}
               >

@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import PropType from 'prop-types'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
@@ -10,8 +9,11 @@ import {
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
-import { canApplySentryUpgrade, isTeamPlan } from 'shared/utils/billing'
+import {
+  canApplySentryUpgrade,
+  getNextBillingDate,
+  isTeamPlan,
+} from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
   getSchema,
@@ -23,6 +25,7 @@ import { NewPlanType } from './constants'
 import Controller from './Controllers/Controller'
 import { useUpgradeControls } from './hooks'
 import PlanTypeOptions from './PlanTypeOptions'
+import UpdateBlurb from './UpdateBlurb/UpdateBlurb'
 import UpdateButton from './UpdateButton'
 
 type URLParams = {
@@ -43,14 +46,12 @@ export type UpgradeFormFields = {
 function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const currentPlan = accountDetails?.plan
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
   const { upgradePlan } = useUpgradeControls()
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
   const isSentryUpgrade = canApplySentryUpgrade({
-    plan: accountDetails?.plan?.value,
+    plan: currentPlan?.value,
     plans,
   })
   const minSeats =
@@ -94,7 +95,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
 
   return (
     <form
-      className="flex flex-col gap-6 border p-4 text-ds-gray-nonary md:w-2/3"
+      className="flex flex-col gap-6 border p-4 text-ds-gray-default md:w-2/3"
       onSubmit={handleSubmit(upgradePlan)}
     >
       <div className="flex flex-col gap-1">
@@ -103,7 +104,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
       </div>
       <PlanTypeOptions
         setFormValue={setFormValue}
-        multipleTiers={multipleTiers}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
       />
@@ -116,16 +116,16 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         register={register}
         errors={errors}
       />
+      <UpdateBlurb
+        currentPlan={currentPlan}
+        selectedPlan={selectedPlan}
+        newPlanName={newPlan}
+        seats={Number(seats)}
+        nextBillingDate={getNextBillingDate(accountDetails)!}
+      />
       <UpdateButton isValid={isValid} newPlan={newPlan} seats={seats} />
     </form>
   )
 }
 
 export default UpgradeForm
-
-UpgradeForm.propTypes = {
-  selectedPlan: PropType.shape({
-    value: PropType.string.isRequired,
-  }).isRequired,
-  setSelectedPlan: PropType.func.isRequired,
-}

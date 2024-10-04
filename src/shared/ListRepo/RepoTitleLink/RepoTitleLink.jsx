@@ -5,7 +5,7 @@ import Icon from 'ui/Icon'
 
 function Badge({ children }) {
   return (
-    <span className="ml-2 h-min rounded border border-ds-gray-tertiary px-1 py-0.5 text-xs text-ds-gray-senary">
+    <span className="ml-2 h-min rounded border border-ds-gray-tertiary px-1 py-0.5 text-xs text-ds-gray-senary dark:bg-ds-gray-tertiary dark:text-ds-secondary-text">
       {children}
     </span>
   )
@@ -31,7 +31,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
             variant="solid"
             name={getRepoIconName({ activated, isRepoPrivate, active })}
           />
-          <span className="ml-2.5 text-sm text-black">
+          <span className="ml-2.5 text-sm text-ds-secondary-text">
             {showRepoOwner && `${repo?.author?.username} / `}
             <span className="font-semibold">{repo.name}</span>
           </span>
@@ -54,13 +54,14 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
           variant="solid"
           name={getRepoIconName({ activated, isRepoPrivate, active })}
         />
-        <span className="ml-2.5 text-sm text-black">
+        <span className="ml-2.5 mr-1.5 text-sm text-ds-secondary-text">
           {showRepoOwner && `${repo?.author?.username} / `}
           <span className="font-semibold">{repo.name}</span>
         </span>
       </AppLink>
       {isRepoPrivate && <Badge>Private</Badge>}
       {active && !activated && <Badge>Deactivated</Badge>}
+      {repo?.isDemo && <Badge>System generated</Badge>}
     </div>
   )
 }
@@ -74,6 +75,7 @@ RepoTitleLink.propTypes = {
       username: PropTypes.string,
     }),
     name: PropTypes.string,
+    isDemo: PropTypes.bool,
   }),
   showRepoOwner: PropTypes.bool.isRequired,
   pageName: PropTypes.string.isRequired,

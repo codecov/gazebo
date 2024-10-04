@@ -1,5 +1,7 @@
 import config from 'config'
 
+import { DEMO_REPO } from 'shared/utils/demo'
+
 // Links that aren't tied to the route or runtime variables.
 export function useStaticNavLinks() {
   return {
@@ -88,6 +90,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    aboutCodeCoverage: {
+      text: 'About Code Coverage',
+      path: () => 'https://docs.codecov.com/docs/about-code-coverage',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     oauthTroubleshoot: {
       text: 'OAuth Troubleshoot',
       path: () =>
@@ -104,6 +112,12 @@ export function useStaticNavLinks() {
     },
     codecovAppInstallation: {
       text: 'Install Codecov app for an org',
+      path: () => `https://github.com/apps/${config.GH_APP}/installations/new`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    codecovAIAppInstallation: {
+      text: 'Install the Codecov AI app for an org',
       path: () => `https://github.com/apps/${config.GH_APP}/installations/new`,
       isExternalLink: true,
       openNewTab: true,
@@ -185,6 +199,13 @@ export function useStaticNavLinks() {
       text: 'Codecov Github App',
       openNewTab: true,
     },
+    githubRateLimitExceeded: {
+      path: () =>
+        'https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api',
+      isExternalLink: true,
+      text: 'Github documentation',
+      openNewTab: true,
+    },
     teamBot: {
       path: () => 'https://docs.codecov.com/docs/team-bot',
       isExternalLink: true,
@@ -243,6 +264,12 @@ export function useStaticNavLinks() {
     repoYaml: {
       text: 'Repository Yaml',
       path: () => 'https://docs.codecov.com/docs/codecov-yaml#repository-yaml',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    statusChecks: {
+      text: 'Status Checks',
+      path: () => 'https://docs.codecov.com/docs/commit-status',
       isExternalLink: true,
       openNewTab: true,
     },
@@ -393,6 +420,18 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    codecovBrowserExtension: {
+      text: 'Codecov Browser Extension',
+      path: () => 'https://docs.codecov.com/docs/the-codecov-browser-extension',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    codecovSlackApp: {
+      text: 'Codecov Slack App',
+      path: () => 'https://notifications.codecov.io/slack/install',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     installSelfHosted: {
       text: 'Codecov Self-Hosted Installation Guide',
       path: () =>
@@ -403,6 +442,11 @@ export function useStaticNavLinks() {
     login: {
       text: 'Login',
       path: () => {
+        // Enterprise login page is at different url than Cloud; see App.tsx
+        if (config.IS_SELF_HOSTED) {
+          return '/'
+        }
+
         return `/login`
       },
       isExternalLink: false,
@@ -413,6 +457,42 @@ export function useStaticNavLinks() {
         'https://docs.codecov.com/docs/test-result-ingestion-beta#failed-test-reporting',
       isExternalLink: true,
       openNewTab: true,
+    },
+    expiredReports: {
+      text: 'Expired Reports',
+      path: () =>
+        'https://docs.codecov.com/docs/codecov-yaml#section-expired-reports',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    unusableReports: {
+      text: 'Unusable Reports',
+      path: () =>
+        'https://docs.codecov.com/docs/error-reference#unusable-reports',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    demoRepo: {
+      text: DEMO_REPO.displayName,
+      path: () => `/${DEMO_REPO.provider}/${DEMO_REPO.owner}/${DEMO_REPO.repo}`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    teamPlanFeedbackSurvey: {
+      path: () =>
+        `https://docs.google.com/forms/d/e/1FAIpQLSeoMHPyECewV7X3UaT-uUxZCmYy1T6hEX_aecCD2ppPHGSvUw/viewform`,
+      text: 'Team plan feedback survey',
+      isExternalLink: true,
+    },
+    proPlanFeedbackSurvey: {
+      path: () => `https://forms.gle/nf37sRAtyQeXVTdr8`,
+      text: 'Pro plan feedback survey',
+      isExternalLink: true,
+    },
+    bundleFeedbackSurvey: {
+      path: () => `https://forms.gle/8fzZrwWEaBRz4ufD9`,
+      text: 'Bundle analysis feedback survey',
+      isExternalLink: true,
     },
   }
 }

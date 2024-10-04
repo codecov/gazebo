@@ -1,17 +1,17 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useLayoutEffect, useState } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
 import { useRepo, useRepoOverview } from 'services/repo'
-import { useFlags } from 'shared/featureFlags'
+import Icon from 'ui/Icon'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import ActivationAlert from './ActivationAlert'
-import { RepoBreadcrumbProvider } from './context'
+import { useCrumbs } from './context'
 import DeactivatedRepo from './DeactivatedRepo'
-import RepoBreadcrumb from './RepoBreadcrumb'
+import { useJSorTSPendoTracking } from './hooks/useJSorTSPendoTracking'
 import RepoPageTabs from './RepoPageTabs'
 
 const BundlesTab = lazy(() => import('./BundlesTab'))
@@ -20,7 +20,7 @@ const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./CoverageOnboarding'))
 const PullsTab = lazy(() => import('./PullsTab'))
-const SettingsTab = lazy(() => import('./SettingsTab'))
+const ConfigTab = lazy(() => import('./ConfigTab'))
 const FailedTestsTab = lazy(() => import('./FailedTestsTab'))
 
 const path = '/:provider/:owner/:repo'
@@ -38,6 +38,7 @@ interface URLParams {
 }
 
 interface RoutesProps {
+  isCurrentUserPartOfOrg: boolean
   isRepoActivated: boolean
   isRepoActive: boolean
   coverageEnabled?: boolean
@@ -49,6 +50,7 @@ interface RoutesProps {
 }
 
 function Routes({
+  isCurrentUserPartOfOrg,
   isRepoActivated,
   isRepoActive,
   coverageEnabled,
@@ -58,12 +60,8 @@ function Routes({
   isCurrentUserActivated,
   testAnalyticsEnabled,
 }: RoutesProps) {
-  const { onboardingFailedTests } = useFlags({
-    bundleAnalysisPrAndCommitPages: false,
-    onboardingFailedTests: false,
-  })
-
-  const productEnabled = coverageEnabled || bundleAnalysisEnabled
+  const productEnabled =
+    coverageEnabled || bundleAnalysisEnabled || testAnalyticsEnabled
   const userAuthorizedtoViewRepo =
     (isRepoPrivate && isCurrentUserActivated) || !isRepoPrivate
   const showUnauthorizedMessageCoverage =
@@ -79,7 +77,11 @@ function Routes({
             path={[
               path,
               `${path}/flags`,
+              /* flags tab does not actually do anything with the branch but since it is one of multiple tabs
+              in the coverage page, it is better user experience to persist the selected branch */
+              `${path}/flags/:branch`,
               `${path}/components`,
+              `${path}/components/:branch`,
               `${path}/blob/:ref/:path+`,
               `${path}/tree/:branch`,
               `${path}/tree/:branch/:path+`,
@@ -125,22 +127,34 @@ function Routes({
               `${path}/bundles/new`,
               `${path}/bundles/new/rollup`,
               `${path}/bundles/new/webpack`,
+              `${path}/bundles/new/remix-vite`,
+              `${path}/bundles/new/nuxt`,
+              `${path}/bundles/new/sveltekit`,
+              `${path}/bundles/new/solidstart`,
             ]}
             exact
           >
             <BundleOnboarding />
           </SentryRoute>
         ) : null}
-        {onboardingFailedTests && !testAnalyticsEnabled ? (
+        {isCurrentUserPartOfOrg || testAnalyticsEnabled ? (
           <SentryRoute
-            path={[`${path}/tests/new`, `${path}/tests/new/codecov-cli`]}
+            path={[
+              `${path}/tests`,
+              `${path}/tests/new`,
+              `${path}/tests/new/codecov-cli`,
+              `${path}/tests/:branch`,
+            ]}
             exact
           >
             <FailedTestsTab />
           </SentryRoute>
         ) : null}
         {productEnabled && userAuthorizedtoViewRepo ? (
-          <SentryRoute path={`${path}/commits`} exact>
+          <SentryRoute
+            path={[`${path}/commits`, `${path}/commits/:branch`]}
+            exact
+          >
             <CommitsTab />
           </SentryRoute>
         ) : null}
@@ -152,8 +166,8 @@ function Routes({
         {productEnabled && userAuthorizedtoViewRepo ? (
           <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
         ) : null}
-        <SentryRoute path={`${path}/settings`}>
-          <SettingsTab />
+        <SentryRoute path={`${path}/config`}>
+          <ConfigTab />
         </SentryRoute>
         {/* need to do these individual returns as the redirects won't work with a react fragment */}
         {!bundleAnalysisEnabled && jsOrTsPresent ? (
@@ -162,9 +176,7 @@ function Routes({
         {!bundleAnalysisEnabled && jsOrTsPresent ? (
           <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
         ) : null}
-        {onboardingFailedTests && !testAnalyticsEnabled ? (
-          <Redirect from={`${path}/tests`} to={`${path}/tests/new`} />
-        ) : null}
+        <Redirect from={`${path}/tests/new/*`} to={`${path}/tests/new`} />
         {!coverageEnabled ? <Redirect from={path} to={`${path}/new`} /> : null}
         {!coverageEnabled ? (
           <Redirect from={`${path}/*`} to={`${path}/new`} />
@@ -181,8 +193,8 @@ function Routes({
   if (isRepoActive) {
     return (
       <Switch>
-        <SentryRoute path={`${path}/settings`}>
-          <SettingsTab />
+        <SentryRoute path={`${path}/config`}>
+          <ConfigTab />
         </SentryRoute>
         <SentryRoute path={[path, `${path}/bundles`]}>
           <DeactivatedRepo />
@@ -199,9 +211,14 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
-      {onboardingFailedTests && !testAnalyticsEnabled ? (
+      {isCurrentUserPartOfOrg || testAnalyticsEnabled ? (
         <SentryRoute
-          path={[`${path}/tests/new`, `${path}/tests/new/codecov-cli`]}
+          path={[
+            `${path}/tests`,
+            `${path}/tests/new`,
+            `${path}/tests/new/codecov-cli`,
+            `${path}/tests/:branch`,
+          ]}
           exact
         >
           <FailedTestsTab />
@@ -213,20 +230,22 @@ function Routes({
             `${path}/bundles/new`,
             `${path}/bundles/new/rollup`,
             `${path}/bundles/new/webpack`,
+            `${path}/bundles/new/remix-vite`,
+            `${path}/bundles/new/nuxt`,
+            `${path}/bundles/new/sveltekit`,
+            `${path}/bundles/new/solidstart`,
           ]}
           exact
         >
           <BundleOnboarding />
         </SentryRoute>
       ) : null}
-      <SentryRoute path={`${path}/settings`}>
-        <SettingsTab />
+      <SentryRoute path={`${path}/config`}>
+        <ConfigTab />
       </SentryRoute>
       <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
       <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
-      {onboardingFailedTests && !testAnalyticsEnabled ? (
-        <Redirect from={`${path}/tests`} to={`${path}/tests/new`} />
-      ) : null}
+      <Redirect from={`${path}/tests/new/*`} to={`${path}/tests/new`} />
       <Redirect from={path} to={`${path}/new`} />
       <Redirect from={`${path}/*`} to={`${path}/new`} />
     </Switch>
@@ -245,6 +264,29 @@ function RepoPage() {
       refetchOnWindowFocus: refetchEnabled,
     },
   })
+  const { setBaseCrumbs } = useCrumbs()
+
+  useJSorTSPendoTracking()
+
+  useLayoutEffect(() => {
+    setBaseCrumbs([
+      { pageName: 'owner', text: owner },
+      {
+        pageName: 'repo',
+        children: (
+          <div
+            className="inline-flex items-center gap-1"
+            data-testid="breadcrumb-repo"
+          >
+            {repoData?.repository?.private && (
+              <Icon name="lockClosed" variant="solid" size="sm" />
+            )}
+            {repo}
+          </div>
+        ),
+      },
+    ])
+  }, [owner, repo, repoData, setBaseCrumbs])
 
   const coverageEnabled =
     repoOverview?.coverageEnabled ?? repoData?.isCoverageEnabled
@@ -255,31 +297,29 @@ function RepoPage() {
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
   const isRepoPrivate =
-    !!repoData?.repository?.private ?? repoData?.isRepoPrivate
+    !!repoData?.repository?.private || !!repoData?.isRepoPrivate
   if (!refetchEnabled && !isRepoActivated) {
     setRefetchEnabled(true)
   }
   if (!repoData) return <NotFound />
 
   return (
-    <RepoBreadcrumbProvider>
-      <div>
-        <RepoBreadcrumb />
-        <RepoPageTabs refetchEnabled={refetchEnabled} />
-        <Suspense fallback={<Loader />}>
-          <Routes
-            isRepoActive={isRepoActive || false}
-            isRepoActivated={isRepoActivated || false}
-            coverageEnabled={coverageEnabled}
-            bundleAnalysisEnabled={bundleAnalysisEnabled}
-            jsOrTsPresent={jsOrTsPresent}
-            isRepoPrivate={isRepoPrivate}
-            isCurrentUserActivated={isCurrentUserActivated}
-            testAnalyticsEnabled={repoOverview?.testAnalyticsEnabled}
-          />
-        </Suspense>
-      </div>
-    </RepoBreadcrumbProvider>
+    <div>
+      <RepoPageTabs refetchEnabled={refetchEnabled} />
+      <Suspense fallback={<Loader />}>
+        <Routes
+          isRepoActive={isRepoActive || false}
+          isRepoActivated={isRepoActivated || false}
+          coverageEnabled={coverageEnabled}
+          bundleAnalysisEnabled={bundleAnalysisEnabled}
+          jsOrTsPresent={jsOrTsPresent}
+          isRepoPrivate={isRepoPrivate}
+          isCurrentUserActivated={isCurrentUserActivated}
+          testAnalyticsEnabled={repoOverview?.testAnalyticsEnabled}
+          isCurrentUserPartOfOrg={!!repoData?.isCurrentUserPartOfOrg}
+        />
+      </Suspense>
+    </div>
   )
 }
 

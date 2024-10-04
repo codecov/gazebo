@@ -6,9 +6,12 @@ import { SentryRoute } from 'sentry'
 
 import { useCommit } from 'services/commit'
 import { useCommitErrors } from 'services/commitErrors'
-import { useRepoOverview } from 'services/repo'
+import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner } from 'services/user'
+import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
+import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
+import { ReportUploadType } from 'shared/utils/comparison'
 import { extractUploads } from 'shared/utils/extractUploads'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
@@ -16,18 +19,17 @@ import Spinner from 'ui/Spinner'
 import BotErrorBanner from './BotErrorBanner'
 import CommitCoverageSummarySkeleton from './CommitCoverageSummary/CommitCoverageSummarySkeleton'
 import CommitCoverageTabs from './CommitCoverageTabs'
-import ErrorBanner from './ErrorBanner'
 import ErroredUploads from './ErroredUploads'
 import FirstPullBanner from './FirstPullBanner'
 import YamlErrorBanner from './YamlErrorBanner'
 
 import { useCommitPageData } from '../hooks'
 
-const CommitDetailFileExplorer = lazy(() =>
-  import('./routes/CommitDetailFileExplorer')
+const CommitDetailFileExplorer = lazy(
+  () => import('./routes/CommitDetailFileExplorer')
 )
-const CommitDetailFileViewer = lazy(() =>
-  import('./routes/CommitDetailFileViewer')
+const CommitDetailFileViewer = lazy(
+  () => import('./routes/CommitDetailFileViewer')
 )
 const FilesChangedTab = lazy(() => import('./routes/FilesChangedTab'))
 const IndirectChangesTab = lazy(() => import('./routes/IndirectChangesTab'))
@@ -52,12 +54,23 @@ function CommitRoutes() {
   })
 
   const compareTypeName = commitPageData?.commit?.compareWithParent?.__typename
+  const ErrorBannerComponent = (
+    <ComparisonErrorBanner
+      errorType={compareTypeName}
+      reportType={ReportUploadType.COVERAGE}
+    />
+  )
   if (
     compareTypeName !== 'Comparison' &&
-    compareTypeName !== 'FirstPullRequest'
+    compareTypeName !== 'FirstPullRequest' &&
+    compareTypeName !== 'MissingBaseCommit'
   ) {
-    return <ErrorBanner errorType={compareTypeName} />
+    return ErrorBannerComponent
   }
+
+  // we still want to show file explorer when missing base commit since the file structure
+  // is still useful info to the user
+  const isMissingBaseCommit = compareTypeName === 'MissingBaseCommit'
 
   const showIndirectChanges = !(overview.private && tierName === TierNames.TEAM)
 
@@ -73,17 +86,25 @@ function CommitRoutes() {
           <CommitDetailFileExplorer />
         </SentryRoute>
         <SentryRoute path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
-          <CommitDetailFileViewer />
+          {isMissingBaseCommit ? (
+            ErrorBannerComponent
+          ) : (
+            <CommitDetailFileViewer />
+          )}
         </SentryRoute>
         <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
-          <FilesChangedTab />
+          {isMissingBaseCommit ? ErrorBannerComponent : <FilesChangedTab />}
         </SentryRoute>
         {showIndirectChanges && (
           <SentryRoute
             path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
             exact
           >
-            <IndirectChangesTab />
+            {isMissingBaseCommit ? (
+              ErrorBannerComponent
+            ) : (
+              <IndirectChangesTab />
+            )}
           </SentryRoute>
         )}
         <Redirect
@@ -153,6 +174,7 @@ function CommitCoverage() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const { data: tierName } = useTier({ owner, provider })
   const { data: overview } = useRepoOverview({ provider, owner, repo })
+  const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
   const { data: commitPageData } = useCommitPageData({
     provider,
     owner,
@@ -171,7 +193,6 @@ function CommitCoverage() {
   const showCommitSummary = !(overview.private && tierName === TierNames.TEAM)
   const showFirstPullBanner =
     commitPageData?.commit?.compareWithParent?.__typename === 'FirstPullRequest'
-
   return (
     <div className="flex flex-col gap-4 px-3 sm:px-0">
       {showCommitSummary ? (
@@ -182,8 +203,9 @@ function CommitCoverage() {
       {showFirstPullBanner ? <FirstPullBanner /> : null}
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
-      <div className="flex flex-col gap-8 md:flex-row-reverse">
-        <aside className="flex flex-1 flex-col gap-6 self-start md:sticky md:top-1.5 md:max-w-sm">
+      {rateLimit?.isGithubRateLimited && <GitHubRateLimitExceededBanner />}
+      <div className="flex flex-col gap-4 lg:flex-row-reverse lg:gap-8">
+        <aside className="flex w-full flex-1 flex-col gap-6 self-start py-3 lg:sticky lg:top-16 lg:max-w-sm">
           <Suspense fallback={<Loader />}>
             <UploadsCard />
           </Suspense>

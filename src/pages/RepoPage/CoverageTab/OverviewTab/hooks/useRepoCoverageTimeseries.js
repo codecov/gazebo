@@ -7,9 +7,9 @@ import { useBranchCoverageMeasurements } from 'services/charts/useBranchCoverage
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import {
+  createTimeSeriesQueryVars,
   getTrendEnum,
   TimeseriesInterval,
-  timeseriesRepoCoverageQuery,
 } from 'shared/utils/timeseriesCharts'
 
 export function useRepoCoverageTimeseries({ branch }, options = {}) {
@@ -21,16 +21,11 @@ export function useRepoCoverageTimeseries({ branch }, options = {}) {
   const today = useMemo(() => new Date(), [])
 
   const queryVars = useMemo(() => {
-    let oldestCommit
-    if (overview?.oldestCommitAt) {
-      oldestCommit = new Date(overview?.oldestCommitAt)
-    }
-
-    return timeseriesRepoCoverageQuery({
-      trend: getTrendEnum(params?.trend),
-      oldestCommit,
-      today,
-    })
+    const trend = getTrendEnum(params?.trend) ?? '3 months'
+    const oldestCommit = overview?.oldestCommitAt
+      ? new Date(overview?.oldestCommitAt)
+      : null
+    return createTimeSeriesQueryVars({ trend, oldestCommit, today })
   }, [overview?.oldestCommitAt, params?.trend, today])
 
   return useBranchCoverageMeasurements({
@@ -38,7 +33,7 @@ export function useRepoCoverageTimeseries({ branch }, options = {}) {
     owner,
     repo,
     branch,
-    after: queryVars?.startDate,
+    after: queryVars?.after,
     before: today,
     interval: queryVars.interval,
     opts: {

@@ -24,7 +24,7 @@ export const Default: Story = {
     <div className="flex items-center gap-8">
       <CopyClipboard {...args} />
       <textarea
-        className="border border-solid border-ds-gray"
+        className="border border-solid border-ds-gray-default"
         rows={4}
         cols={50}
         placeholder="You can paste your clipboard here"

@@ -32,9 +32,24 @@ function PlanUpgradeTeam() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col border">
-        <div className="flex flex-row gap-2 p-4">
-          <h2 className="font-semibold">{monthlyMarketingName} plan</h2>
-          <A to={{ pageName: 'teamPlanAbout' }}>Learn more</A>
+        <div className="flex justify-between p-4">
+          <div className="flex max-h-5 flex-row gap-2">
+            <h2 className="font-semibold">{monthlyMarketingName} plan</h2>
+            <A to={{ pageName: 'teamPlanAbout' }}>Learn more</A>
+          </div>
+          <div className="flex self-start">
+            <Button
+              to={{
+                pageName: 'upgradeOrgPlan',
+                options: {
+                  params: { plan: TierNames.TEAM },
+                },
+              }}
+              variant="primary"
+            >
+              {buttonText}
+            </Button>
+          </div>
         </div>
         <hr />
         <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
@@ -43,10 +58,10 @@ function PlanUpgradeTeam() {
             <BenefitList
               benefits={monthlyTeamBenefits}
               iconName="check"
-              iconColor="text-ds-pink-quinary"
+              iconColor="text-ds-pink-default"
             />
           </div>
-          <div className="flex flex-col gap-3 border-t pt-2 sm:border-0 sm:p-0">
+          <div className="flex flex-col gap-2 border-t pt-2 sm:border-0 sm:p-0">
             <p className="text-xs font-semibold">Pricing</p>
             <div className="text-xs">
               <p className="font-semibold">
@@ -56,19 +71,6 @@ function PlanUpgradeTeam() {
               <p className="text-ds-gray-senary">
                 billed annually, or ${monthlyUnitPrice} per user billing monthly
               </p>
-            </div>
-            <div className="flex self-start">
-              <Button
-                to={{
-                  pageName: 'upgradeOrgPlan',
-                  options: {
-                    params: { plan: TierNames.TEAM },
-                  },
-                }}
-                variant="primary"
-              >
-                {buttonText}
-              </Button>
             </div>
           </div>
         </div>

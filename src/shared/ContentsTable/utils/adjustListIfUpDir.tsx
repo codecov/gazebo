@@ -33,8 +33,12 @@ export function adjustListIfUpDir({
   displayType: 'LIST' | 'TREE'
   rawTableRows: Row[]
 }) {
-  if (treePaths.length > 1 && displayType === displayTypeParameter.tree) {
-    const upDir = treePaths?.at(-2)
+  if (
+    Array.isArray(treePaths) &&
+    treePaths.length > 1 &&
+    displayType === displayTypeParameter.tree
+  ) {
+    const upDir = treePaths.at(-2)
     const items = [
       {
         name: (

@@ -9,10 +9,8 @@ import config from 'config'
 import A from 'ui/A'
 import Button from 'ui/Button'
 
-import img401 from './assets/error-401.svg'
-import img403 from './assets/error-403.svg'
-import img404 from './assets/error-404.svg'
-import img500 from './assets/error-500.svg'
+import openUmbrella from './assets/error-open-umbrella.svg'
+import upsideDownUmbrella from './assets/error-upsidedown-umbrella.svg'
 import styles from './NetworkErrorBoundary.module.css'
 import {
   sendGraphQLErrorMetrics,
@@ -21,38 +19,48 @@ import {
 
 const errorToUI = {
   401: {
-    illustration: img401,
+    illustration: openUmbrella,
     title: <a href="/login">Please log in.</a>,
     description: (data) => data.detail,
+    showDocs: true,
   },
   403: {
-    illustration: img403,
+    illustration: upsideDownUmbrella,
     title: 'Unauthorized',
     description: (data) => data.detail,
+    showDocs: true,
   },
   404: {
-    illustration: img404,
+    illustration: upsideDownUmbrella,
     title: 'Not found',
     description: null,
+    showDocs: true,
+  },
+  429: {
+    illustration: upsideDownUmbrella,
+    title: 'Rate limit exceeded',
+    description: (data) => data.detail,
+    showDocs: false,
   },
   500: {
-    illustration: img500,
+    illustration: upsideDownUmbrella,
     title: 'Server error',
     description: null,
+    showDocs: true,
   },
 }
 
 const graphQLErrorToUI = {
   UnauthenticatedError: {
-    illustration: img401,
+    illustration: openUmbrella,
     title: <a href="/login">Please log in.</a>,
   },
   UnauthorizedError: {
-    illustration: img403,
+    illustration: upsideDownUmbrella,
     title: 'Unauthorized',
   },
   NotFoundError: {
-    illustration: img404,
+    illustration: upsideDownUmbrella,
     title: 'Not found',
   },
 }
@@ -64,7 +72,7 @@ export const NetworkErrorMessage = () => {
         Please see{' '}
         <A
           rel="noreferrer"
-          className="text-blue-400"
+          className="text-ds-blue-default"
           href="https://docs.codecov.io/"
           isExternal={true}
           hook="docs"
@@ -81,7 +89,7 @@ export const NetworkErrorMessage = () => {
       Check on{' '}
       <A
         rel="noreferrer"
-        className="text-blue-400"
+        className="text-ds-blue-default"
         href="https://status.codecov.io/"
         isExternal={true}
         hook="status"
@@ -91,7 +99,7 @@ export const NetworkErrorMessage = () => {
       or see{' '}
       <A
         rel="noreferrer"
-        className="text-blue-400"
+        className="text-ds-blue-default"
         href="https://docs.codecov.io/"
         isExternal={true}
         hook="docs"
@@ -103,7 +111,7 @@ export const NetworkErrorMessage = () => {
   )
 }
 
-function ResetHandler({ reset }) {
+function ResetHandler({ logoutUser = false, reset }) {
   const queryClient = useQueryClient()
   const history = useHistory()
 
@@ -121,16 +129,26 @@ function ResetHandler({ reset }) {
     }
   }, [history, queryClient, reset])
 
+  const handleSignOut = async () => {
+    queryClient.clear()
+    reset()
+    await fetch(`${config.API_URL}/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+    history.replace('/login')
+  }
+
+  const handleReset = () => {
+    queryClient.clear()
+    history.goBack()
+    reset()
+  }
+
   return (
     <div className="my-4">
-      <Button
-        onClick={() => {
-          queryClient.clear()
-          history.goBack()
-          reset()
-        }}
-      >
-        Return to previous page
+      <Button onClick={logoutUser ? handleSignOut : handleReset}>
+        {logoutUser ? 'Return to login' : 'Return to previous page'}
       </Button>
     </div>
   )
@@ -138,6 +156,7 @@ function ResetHandler({ reset }) {
 
 ResetHandler.propTypes = {
   reset: PropTypes.func,
+  logoutUser: PropTypes.bool,
 }
 
 class NetworkErrorBoundary extends Component {
@@ -199,7 +218,7 @@ class NetworkErrorBoundary extends Component {
 
   renderError() {
     const { status, data } = this.state.error
-    const { illustration, title, description } = errorToUI[status]
+    const { illustration, title, description, showDocs } = errorToUI[status]
 
     return (
       <article className="mx-auto flex h-full flex-col items-center justify-center">
@@ -209,12 +228,15 @@ class NetworkErrorBoundary extends Component {
           src={illustration}
         />
         <h1 className="mt-6 text-2xl">{title}</h1>
-        {description && <p className="mt-6">{description(data)}</p>}
-        <NetworkErrorMessage />
+        {description ? <p className="mt-2">{description(data)}</p> : null}
+        {showDocs ? <NetworkErrorMessage /> : null}
         <p>
           <strong>Error {status}</strong>
         </p>
-        <ResetHandler reset={this.resetErrorBoundary} />
+        <ResetHandler
+          logoutUser={status === 429}
+          reset={this.resetErrorBoundary}
+        />
       </article>
     )
   }

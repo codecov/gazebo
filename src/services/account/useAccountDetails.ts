@@ -45,31 +45,37 @@ const InvoiceSchema = z
   })
   .nullable()
 
+export const AddressSchema = z
+  .object({
+    city: z.string().nullable(),
+    country: z.string().nullable(),
+    line1: z.string().nullable(),
+    line2: z.string().nullable(),
+    postalCode: z.string().nullable(),
+    state: z.string().nullable(),
+  })
+  .nullable()
+
+export const BillingDetailsSchema = z
+  .object({
+    address: AddressSchema.nullable(),
+    email: z.string().nullable(),
+    name: z.string().nullable(),
+    phone: z.string().nullable(),
+  })
+  .nullable()
+
 export const PaymentMethodSchema = z
   .object({
-    card: z.object({
-      brand: z.string(),
-      expMonth: z.number(),
-      expYear: z.number(),
-      last4: z.string(),
-    }),
-    billingDetails: z
+    card: z
       .object({
-        address: z
-          .object({
-            city: z.string().nullable(),
-            country: z.string().nullable(),
-            line1: z.string().nullable(),
-            line2: z.string().nullable(),
-            postalCode: z.string().nullable(),
-            state: z.string().nullable(),
-          })
-          .nullable(),
-        email: z.string().nullable(),
-        name: z.string().nullable(),
-        phone: z.string().nullable(),
+        brand: z.string(),
+        expMonth: z.number(),
+        expYear: z.number(),
+        last4: z.string(),
       })
       .nullish(),
+    billingDetails: BillingDetailsSchema.nullable(),
   })
   .nullable()
 
@@ -94,7 +100,15 @@ export const SubscriptionDetailSchema = z
       .nullable(),
     defaultPaymentMethod: PaymentMethodSchema.nullable(),
     latestInvoice: InvoiceSchema,
-    trialEnd: z.number().nullish(),
+    taxIds: z.array(
+      z
+        .object({
+          type: z.string(),
+          value: z.string(),
+        })
+        .nullish()
+    ),
+    trialEnd: z.number().nullable(),
   })
   .nullable()
 
@@ -115,6 +129,7 @@ export const AccountDetailsSchema = z.object({
   activatedStudentCount: z.number(),
   activatedUserCount: z.number(),
   checkoutSessionId: z.string().nullable(),
+  delinquent: z.boolean().nullable(),
   email: z.string().nullable(),
   inactiveUserCount: z.number(),
   integrationId: z.number().nullable(),
@@ -131,11 +146,13 @@ export const AccountDetailsSchema = z.object({
     .nullable(),
   scheduleDetail: z
     .object({
-      scheduledPhase: z.object({
-        quantity: z.number(),
-        plan: z.string(),
-        startDate: z.number(),
-      }),
+      scheduledPhase: z
+        .object({
+          quantity: z.number(),
+          plan: z.string(),
+          startDate: z.number(),
+        })
+        .nullable(),
     })
     .nullable(),
   studentCount: z.number(),

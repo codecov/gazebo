@@ -9,7 +9,6 @@ import {
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import {
@@ -32,9 +31,6 @@ function FreePlanCard({ plan, scheduledPhase }) {
     owner,
   })
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
 
   const uploadsNumber = ownerData?.numberOfUploads
   const trialOngoing =
@@ -58,7 +54,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
       <div className="flex flex-col border">
         <div className="p-4">
           <h2 className="font-semibold">{marketingName} plan</h2>
-          <span className="text-gray-500">
+          <span className="text-ds-gray-quinary">
             {trialOngoing
               ? "You'll be downgraded to the Developer plan when your trial expires."
               : 'Current plan'}
@@ -71,12 +67,14 @@ function FreePlanCard({ plan, scheduledPhase }) {
             <BenefitList
               benefits={benefits}
               iconName="check"
-              iconColor="text-ds-pink-quinary"
+              iconColor="text-ds-pink-default"
             />
           </div>
-          <div className="flex flex-col gap-3 border-t pt-2 sm:border-0 sm:p-0">
-            <p className="text-xs font-semibold">Pricing</p>
-            <PlanPricing value={planValue} baseUnitPrice={baseUnitPrice} />
+          <div className="flex flex-col border-t pt-2 sm:border-0 sm:p-0">
+            <p className="mb-2 text-xs font-semibold">Pricing</p>
+            <div className="mb-4">
+              <PlanPricing value={planValue} baseUnitPrice={baseUnitPrice} />
+            </div>
             <div>
               {isNumber(uploadsNumber) && (
                 <p className="mt-4 text-xs text-ds-gray-senary">
@@ -90,7 +88,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
           </div>
         </div>
       </div>
-      {shouldDisplayTeamCard({ plans }) && multipleTiers && <PlanUpgradeTeam />}
+      {shouldDisplayTeamCard({ plans }) && <PlanUpgradeTeam />}
       <PlanUpgradePro
         isSentryUpgrade={canApplySentryUpgrade({ plan, plans })}
         plans={plans}

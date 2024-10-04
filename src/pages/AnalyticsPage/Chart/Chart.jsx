@@ -38,7 +38,7 @@ function Chart({ params }) {
 
   return (
     <>
-      <p className="flex items-center gap-1 self-end text-sm text-ds-gray-senary">
+      <p className="flex items-center gap-1 self-end text-sm text-ds-gray-quinary">
         <Icon name="informationCircle" size="sm" />
         Data is average of selected repos
       </p>

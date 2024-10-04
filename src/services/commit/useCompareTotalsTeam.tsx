@@ -20,16 +20,29 @@ const CoverageObjSchema = z.object({
   coverage: z.number().nullable(),
 })
 
+const ImpactedFileSchema = z
+  .object({
+    headName: z.string().nullable(),
+    patchCoverage: CoverageObjSchema.nullable(),
+  })
+  .nullable()
+
+const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
+  z.object({
+    __typename: z.literal('ImpactedFiles'),
+    results: z.array(ImpactedFileSchema),
+  }),
+  z.object({
+    __typename: z.literal('UnknownFlags'),
+    message: z.string(),
+  }),
+])
+
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
   state: z.string(),
   patchTotals: CoverageObjSchema.nullable(),
-  impactedFiles: z.array(
-    z.object({
-      headName: z.string().nullable(),
-      patchCoverage: CoverageObjSchema.nullable(),
-    })
-  ),
+  impactedFiles: ImpactedFilesSchema,
 })
 
 const CompareWithParentSchema = z
@@ -83,10 +96,18 @@ query GetCompareTotalsTeam(
               patchTotals {
                 coverage: percentCovered
               }
-              impactedFiles: impactedFilesDeprecated(filters: $filters) {
-                headName
-                patchCoverage {
-                  coverage: percentCovered
+              impactedFiles(filters: $filters) {
+                __typename
+                ... on ImpactedFiles {
+                  results {
+                    headName
+                    patchCoverage {
+                      coverage: percentCovered
+                    }
+                  }
+                }
+                ... on UnknownFlags {
+                  message
                 }
               }
             }
@@ -119,7 +140,8 @@ query GetCompareTotalsTeam(
       }
     }
   }
-}`
+}
+`
 
 interface UseCompareTotalsTeamArgs {
   provider: string

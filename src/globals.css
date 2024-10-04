@@ -15,7 +15,7 @@
     @apply flex flex-col h-full;
   }
 
-  :root {
+  .lightMode {
     --color-ds-pink-default: 240, 31, 122;
     --color-ds-pink-secondary: 255, 74, 137;
     --color-ds-pink-tertiary: 209, 13, 98;
@@ -28,6 +28,7 @@
     --color-ds-blue-senary: 0, 45, 77;
     --color-ds-blue-selected: 230, 241, 255;
     --color-ds-blue-septenary: 34, 47, 61;
+    --color-ds-blue-nonary: 242, 248, 253;
 
     --color-ds-gray-default: 14, 27, 41;
     --color-ds-gray-primary: 247, 248, 251;
@@ -40,8 +41,11 @@
 
     --color-gray-300: 199, 203, 209;
 
-    --color-orange-100: 255, 237, 213;
+    --color-orange-100: 255, 248, 233;
     --color-orange-500: 249, 115, 22;
+
+    --color-green-100: 242, 252, 243;
+    --color-green-500: 66, 159, 73;
 
     --color-ds-primary-green: 33, 181, 119;
     --color-ds-primary-red: 245, 32, 32;
@@ -49,7 +53,9 @@
     --color-ds-primary-yellow: 244, 176, 27;
     --color-ds-primary-base: 14, 27, 41;
 
+    --color-ds-coverage-uncovered: 255, 247, 247;
     --color-ds-coverage-partial: 255, 249, 216;
+    --color-ds-coverage-covered: 222, 255, 232;
 
     --color-ds-error-quinary: 255, 155, 155;
     --color-ds-error-nonary: 89, 8, 8;
@@ -65,22 +71,236 @@
     --color-success-500: 115, 255, 158;
     --color-success-100: 222, 255, 232;
 
-    --color-error-100: 255, 237, 240;
+    --color-error-100: 255, 247, 247;
 
     --color-info-100: 223, 242, 255;
     --color-info-500: 163, 217, 255;
     --color-info-900: 1, 59, 101;
 
     --color-github: 51, 51, 51;
+    --color-github-text: 255, 255, 255;
     --color-gitlab: 252, 109, 38;
     --color-bitbucket: 0, 82, 204;
     /* --color-okta: 0, 41, 122; */
     --color-okta: 25, 25, 25;
+    --color-okta-text: 255, 255, 255;
+    /* modal colors */
+    --color-modal-header: 255, 255, 255;
+    --color-modal-footer: 247, 248, 251;
+
+    --color-app-background: 255, 255, 255;
+    --color-app-container: 255, 255, 255;
+    --color-app-text-primary: 14, 27, 41;
+    --color-app-text-secondary: 0, 0, 0;
+    --color-app-border-line: 216, 220, 226;
+    --color-app-sub-background: 234, 235, 239;
+    --color-app-sub-hover-background: 199, 203, 209;
+
+    --color-toggle-active: var(--color-ds-primary-base);
+    --color-toggle-inactive: var(--color-ds-gray-quinary);
+    --color-toggle-disabled: var(--color-ds-gray-quaternary);
+
+    /* Sentry User Feedback widget styles */
+    --widget-accent-background: rgb(var(--color-ds-blue-darker));
+    --widget-background-hover: rgb(var(--color-ds-blue-quinary));
+    --widget-font-family: 'Poppins', sans-serif;
+
+    /* chart color styles */
+    --chart-area-coverage: var(--color-ds-gray-senary);
+    --chart-area-bundle-tab: 205, 100%, 38%;
+    --chart-1: 205, 100%, 50%;
+    --chart-2: 205, 99%, 30%;
+    --chart-3: 41, 91%, 53%;
+    --chart-4: 286, 61%, 52%;
+    --chart-5: 0, 100%, 80%;
+    --color-chart-area-stroke: var(--color-ds-gray-senary);
+
+    /* summary dropdown */
+    --color-ds-summary-dropdown: 247, 248, 251;
+
+    /* code viewer */
+    --color-code-key: 1, 88, 150;
+    --color-code-keyword: var(--color-ds-blue-quinary);
+    --color-code-line-number: var(--color-ds-gray-octonary);
+    --color-code-default: var(--color-ds-gray-default);
+    --color-code-comment: var(--color-ds-gray-quaternary);
+    --color-code-punctuation: 153, 153, 153;
+    --color-code-function: var(--color-ds-gray-senary);
+    --color-code-property: var(--color-ds-gray-quinary);
+    --color-code-operator: 166, 127, 89;
   }
+
+  .darkMode {
+    --color-ds-pink-default: 240, 31, 122;
+    --color-ds-pink-secondary: 255, 74, 137;
+    --color-ds-pink-tertiary: 209, 13, 98;
+
+    --color-ds-blue-default: 92, 187, 255;
+    --color-ds-blue-light: 82, 183, 255;
+    --color-ds-blue-medium: 0, 149, 255;
+    --color-ds-blue-darker: 59, 130, 246;
+    --color-ds-blue-quinary: 1, 88, 150;
+    --color-ds-blue-senary: 0, 45, 77;
+    --color-ds-blue-selected: 230, 241, 255;
+    --color-ds-blue-septenary: 34, 47, 61;
+    --color-ds-blue-nonary: 0, 113, 194;
+
+    --color-ds-gray-default: 234, 235, 239;
+    --color-ds-gray-primary: 47, 51, 60;
+    --color-ds-gray-secondary: 47, 51, 60;
+    --color-ds-gray-tertiary: 47, 51, 60;
+    --color-ds-gray-quaternary: 153, 159, 167;
+    --color-ds-gray-quinary: 173, 179, 194;
+    --color-ds-gray-senary: 153, 159, 167;
+    --color-ds-gray-octonary: 234, 235, 239;
+
+    --color-gray-300: 199, 203, 209;
+
+    --color-orange-100: 249, 115, 22;
+    --color-orange-500: 249, 115, 22;
+
+    --color-green-100: 66, 159, 73;
+    --color-green-500: 66, 159, 73;
+
+    --color-ds-primary-green: 33, 181, 119;
+    --color-ds-primary-red: 245, 32, 32;
+    --color-ds-primary-purple: 172, 57, 207;
+    --color-ds-primary-yellow: 244, 176, 27;
+    --color-ds-primary-base: 47, 51, 60;
+
+    --color-ds-coverage-uncovered: 78, 9, 9;
+    --color-ds-coverage-partial: 128, 108, 4;
+    --color-ds-coverage-covered: 0, 64, 37;
+
+    --color-ds-error-quinary: 255, 155, 155;
+    --color-ds-error-nonary: 89, 8, 8;
+
+    --color-codecov-red: 206, 32, 25;
+    --color-codecov-orange: 255, 194, 115;
+    --color-codecov-footer: 7, 17, 27;
+    --color-codecov-code: 166, 127, 89;
+
+    --color-warning-100: 255, 235, 210;
+    --color-warning-900: 71, 54, 16;
+
+    --color-success-500: 115, 255, 158;
+    --color-success-100: 222, 255, 232;
+
+    --color-error-100: 245, 32, 32;
+
+    --color-info-100: 223, 242, 255;
+    --color-info-500: 163, 217, 255;
+    --color-info-900: 1, 59, 101;
+
+    --color-github: 255, 255, 255;
+    --color-github-text: 14, 27, 41;
+    --color-gitlab: 242, 98, 42;
+    --color-bitbucket: 2, 75, 186;
+    --color-okta: 255, 255, 255;
+    --color-okta-text: 14, 27, 41;
+    /* modal colors */
+    --color-modal-header: 47, 51, 62;
+    --color-modal-footer: 47, 51, 62;
+
+    --color-app-background: 27, 30, 36;
+    --color-app-container: 22, 24, 29;
+    --color-app-text-primary: 210, 212, 215;
+    --color-app-text-secondary: 173, 179, 194;
+    --color-app-border-line: 47, 51, 60;
+    --color-app-sub-background: 22, 24, 29;
+    --color-app-sub-hover-background: 153, 161, 179;
+
+    --color-toggle-active: var(--color-ds-blue-darker);
+    --color-toggle-inactive: var(--color-ds-gray-quinary);
+    --color-toggle-disabled: var(--color-ds-gray-quaternary);
+
+    /* Sentry User Feedback widget styles */
+    --widget-accent-background: rgb(var(--color-ds-blue-quinary));
+    --widget-background-hover: rgb(var(--color-ds-blue-quinary));
+    --widget-font-family: 'Poppins', sans-serif;
+
+    /* chart color styles */
+    --chart-area-coverage: var(--color-ds-gray-senary);
+    --chart-area-bundle-tab: 205, 100%, 38%;
+    --chart-1: 205, 100%, 50%;
+    --chart-2: 205, 99%, 30%;
+    --chart-3: 41, 91%, 53%;
+    --chart-4: 286, 61%, 52%;
+    --chart-5: 0, 100%, 80%;
+    --color-chart-area-stroke: 20, 157, 255;
+
+    /* summary dropdown */
+    --color-ds-summary-dropdown: 22, 24, 29;
+
+    /* code viewer */
+    --color-code-default: 210, 212, 215;
+    --color-code-keyword: 93, 230, 255;
+    --color-code-line-number: var(--color-ds-gray-quinary);
+    --color-code-comment: 225, 232, 248;
+    --color-code-punctuation: 145, 113, 248;
+    --color-code-function: 234, 235, 239;
+    --color-code-property: 218, 143, 255;
+    --color-code-operator: 219 178, 89;
+  }
+
+  body {
+    @apply lightMode;
+  }
+
+  body.dark {
+    @apply darkMode;
+  }
+
+  /* new body theme can be applied here
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      @apply darkMode;
+    }
+
+    body.light {
+      @apply lightMode;
+    }
+
+     new body theme added above should be applied here as well to cover specificity
+  } */
 }
 
 #sentry-feedback {
-  --accent-background: rgb(var(--color-ds-blue-darker));
-  --accent-background-hover: rgb(var(--color-ds-blue-quinary));
-  --font-family: 'Poppins', sans-serif;
+  --accent-background: var(--widget-accent-background);
+  --accent-background-hover: var(--widget-background-hover);
+  --font-family: var(--widget-font-family);
+}
+
+@layer components {
+  .widget {
+    --inset: 32px 44px auto auto;
+  }
+
+  .sm-widget {
+    --inset: 32px calc(50% - 276px) auto auto;
+  }
+
+  .md-widget {
+    --inset: 32px calc(50% - 340px) auto auto;
+  }
+
+  .lg-widget {
+    --inset: 32px calc(50% - 468px) auto auto;
+  }
+
+  .xl-widget {
+    --inset: 32px calc(50% - 596px) auto auto;
+  }
+
+  .twoxl-widget {
+    --inset: 32px calc(50% - 724px) auto auto;
+  }
+}
+
+#help-dropdown-widget {
+  --accent-background: var(--widget-accent-background);
+  --accent-background-hover: var(--widget-background-hover);
+  --font-family: var(--widget-font-family);
+  @apply widget sm:sm-widget md:md-widget lg:lg-widget xl:xl-widget 2xl:twoxl-widget;
 }

@@ -1,7 +1,5 @@
-import { useLayoutEffect } from 'react'
 import { Redirect } from 'react-router-dom'
 
-import { useSetCrumbs } from 'pages/RepoPage/context'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
@@ -14,7 +12,6 @@ const YAML_STATE = Object.freeze({
 })
 
 const SummaryTeamPlan = () => {
-  const setCrumbs = useSetCrumbs()
   const { setNewPath, redirectState } = useCoverageRedirect()
 
   const {
@@ -29,21 +26,6 @@ const SummaryTeamPlan = () => {
     setBranchSearchTerm,
   } = useSummary()
 
-  useLayoutEffect(() => {
-    setCrumbs([
-      {
-        pageName: '',
-        readOnly: true,
-        children: (
-          <span className="inline-flex items-center gap-1">
-            <Icon name="branch" variant="developer" size="sm" />
-            {currentBranchSelected?.name}
-          </span>
-        ),
-      },
-    ])
-  }, [currentBranchSelected?.name, setCrumbs])
-
   const onChangeHandler = ({ name }: { name: string }) => {
     setNewPath(name)
   }
@@ -56,7 +38,7 @@ const SummaryTeamPlan = () => {
       <SummaryRoot>
         <SummaryField>
           <div className="flex flex-row items-center gap-2">
-            <span className="min-w-[16rem] text-sm">
+            <span className="min-w-64 text-sm">
               <Select
                 dataMarketing="branch-selector-repo-page"
                 {...branchSelectorProps}
@@ -76,7 +58,12 @@ const SummaryTeamPlan = () => {
                 items={branchList}
                 buttonIcon={
                   <span className="text-ds-gray-quinary">
-                    <Icon name="branch" size="sm" variant="developer" />
+                    <Icon
+                      name="branch"
+                      label="branch"
+                      size="sm"
+                      variant="developer"
+                    />
                   </span>
                 }
               />

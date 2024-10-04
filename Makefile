@@ -1,5 +1,5 @@
 sha := $(shell git rev-parse --short=7 HEAD)
-release_version := '24.6.12'
+release_version := '24.10.1'
 build_date ?= $(shell git show -s --date=iso8601-strict --pretty=format:%cd $$sha)
 dockerhub_image := sunci/self-hosted-frontend
 ENV ?= ENTERPRISE

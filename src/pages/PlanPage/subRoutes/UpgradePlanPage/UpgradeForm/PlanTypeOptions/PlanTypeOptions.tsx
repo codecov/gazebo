@@ -6,6 +6,8 @@ import {
   useAccountDetails,
   useAvailablePlans,
 } from 'services/account'
+import { useLocationParams } from 'services/navigation'
+import { TierNames } from 'services/tier'
 import {
   canApplySentryUpgrade,
   findProPlans,
@@ -19,17 +21,16 @@ import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
 
 import { TierName } from '../constants'
+import { usePlanParams } from '../hooks/usePlanParams'
 import { UpgradeFormFields } from '../UpgradeForm'
 
 interface PlanTypeOptionsProps {
-  multipleTiers: boolean
   setFormValue: UseFormSetValue<UpgradeFormFields>
   setSelectedPlan: (x: IndividualPlan) => void
   newPlan: string
 }
 
 const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
-  multipleTiers,
   setFormValue,
   setSelectedPlan,
   newPlan,
@@ -38,6 +39,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { proPlanYear, proPlanMonth } = findProPlans({ plans })
+  const planParam = usePlanParams()
 
   const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({
@@ -52,15 +54,21 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const monthlyProPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
 
   const currentFormValue = newPlan
+  const monthlyPlan = isMonthlyPlan(currentFormValue)
+
   let planOption = null
-  if (isTeamPlan(currentFormValue)) {
+  if (
+    (hasTeamPlans && planParam === TierNames.TEAM) ||
+    isTeamPlan(currentFormValue)
+  ) {
     planOption = TierName.TEAM
   } else {
     planOption = TierName.PRO
   }
 
-  const monthlyPlan = isMonthlyPlan(currentFormValue)
-  if (hasTeamPlans && multipleTiers) {
+  const { updateParams } = useLocationParams({ plan: planOption })
+
+  if (hasTeamPlans) {
     return (
       <div className="flex w-fit flex-col gap-2">
         <h3 className="font-semibold">Choose a plan</h3>
@@ -77,6 +85,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
                   setSelectedPlan(yearlyProPlan)
                   setFormValue('newPlan', yearlyProPlan?.value)
                 }
+                updateParams({ plan: TierNames.PRO })
               } else {
                 if (monthlyPlan) {
                   setSelectedPlan(teamPlanMonth)
@@ -85,6 +94,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
                   setSelectedPlan(teamPlanYear)
                   setFormValue('newPlan', teamPlanYear?.value)
                 }
+                updateParams({ plan: TierNames.TEAM })
               }
             }}
             options={[

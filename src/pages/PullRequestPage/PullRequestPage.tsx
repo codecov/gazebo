@@ -1,12 +1,12 @@
 import qs from 'qs'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useLayoutEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
+import { useCrumbs } from 'pages/RepoPage/context'
 import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
-import Breadcrumb from 'ui/Breadcrumb'
+import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import SummaryDropdown from 'ui/SummaryDropdown'
 
@@ -42,15 +42,11 @@ const Loader = () => (
 function PullRequestPage() {
   const location = useLocation()
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
 
   const { data: overview } = useRepoOverview({ provider, owner, repo })
 
   const { data: tierData } = useTier({ provider, owner })
-  const isTeamPlan =
-    multipleTiers && tierData === TierNames.TEAM && overview?.private
+  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
   const { data, isLoading } = usePullPageData({
     provider,
@@ -59,6 +55,37 @@ function PullRequestPage() {
     pullId,
     isTeamPlan,
   })
+
+  const { setBreadcrumbs, setBaseCrumbs } = useCrumbs()
+  useLayoutEffect(() => {
+    setBaseCrumbs([
+      { pageName: 'owner', text: owner },
+      {
+        pageName: 'repo',
+        children: (
+          <div
+            className="inline-flex items-center gap-1"
+            data-testid="breadcrumb-repo"
+          >
+            {overview?.private && (
+              <Icon name="lockClosed" variant="solid" size="sm" />
+            )}
+            {repo}
+          </div>
+        ),
+      },
+    ])
+    setBreadcrumbs([
+      { pageName: 'pulls', text: 'pulls' },
+      {
+        pageName: 'pullDetail',
+        options: { pullId },
+        readOnly: true,
+        text: pullId,
+      },
+    ])
+    return () => setBreadcrumbs([])
+  }, [setBreadcrumbs, pullId, setBaseCrumbs, owner, repo, overview])
 
   if (!isLoading && !data?.pull) {
     return <NotFound />
@@ -85,20 +112,7 @@ function PullRequestPage() {
   }
 
   return (
-    <div className="mx-4 flex flex-col gap-4 md:mx-0">
-      <Breadcrumb
-        paths={[
-          { pageName: 'owner', text: owner },
-          { pageName: 'repo', text: repo },
-          { pageName: 'pulls', text: 'Pulls' },
-          {
-            pageName: 'pullDetail',
-            options: { pullId },
-            readOnly: true,
-            text: pullId,
-          },
-        ]}
-      />
+    <div className="mx-4 flex flex-col md:mx-0">
       <Header />
       {displayMode === DISPLAY_MODE.BOTH ? (
         <SummaryDropdown type="multiple" defaultValue={defaultDropdown}>
@@ -118,9 +132,11 @@ function PullRequestPage() {
           <PullBundleAnalysis />
         </Suspense>
       ) : (
-        <Suspense fallback={<Loader />}>
-          <PullCoverage />
-        </Suspense>
+        <div className="pt-2">
+          <Suspense fallback={<Loader />}>
+            <PullCoverage />
+          </Suspense>
+        </div>
       )}
     </div>
   )

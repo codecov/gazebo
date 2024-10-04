@@ -1,4 +1,3 @@
-import Cookie from 'js-cookie'
 import qs from 'qs'
 import { useParams } from 'react-router-dom'
 
@@ -6,8 +5,10 @@ import config from 'config'
 
 // Note to Terry, when we have more time automate all paths to pass through query search params.
 
+export const ALL_BRANCHES = 'All branches'
 export function useNavLinks() {
   const {
+    branch: b,
     provider: p,
     owner: o,
     repo: r,
@@ -16,11 +17,6 @@ export function useNavLinks() {
     commit: c,
     path: pa,
   } = useParams()
-
-  const utmCookie = Cookie.get('utmParams')
-  const utmCookieObj = qs.parse(utmCookie, {
-    ignoreQueryPrefix: true,
-  })
 
   return {
     signOut: {
@@ -33,35 +29,40 @@ export function useNavLinks() {
     signIn: {
       text: 'Log in',
       path: ({ provider = p, to } = { provider: p }) => {
-        const query = qs.stringify(
-          {
-            to,
-            ...utmCookieObj,
-          },
-          { addQueryPrefix: true }
-        )
+        const query = qs.stringify({ to }, { addQueryPrefix: true })
         return `${config.API_URL}/login/${provider}${query}`
       },
       isExternalLink: true,
     },
     signUp: {
       text: 'Sign Up',
-      path: () => {
-        const params = qs.stringify(utmCookieObj, {
-          addQueryPrefix: true,
-        })
-        return `${config.MARKETING_BASE_URL}/sign-up/${params}`
+      path: () => `${config.MARKETING_BASE_URL}/sign-up/`,
+      isExternalLink: true,
+    },
+    oktaLogin: {
+      text: 'Authenticate with Okta',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) => {
+        return `${config.API_URL}/login/okta/${provider}/${owner}`
       },
       isExternalLink: true,
     },
     owner: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/${provider}/${owner}`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) => {
+        if (provider && owner) {
+          return `/${provider}/${owner}`
+        }
+        return '/'
+      },
       isExternalLink: false,
     },
     analytics: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/analytics/${provider}/${owner}`,
+      isExternalLink: false,
+    },
+    codecovAI: {
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/codecovai/${provider}/${owner}`,
       isExternalLink: false,
     },
     repo: {
@@ -164,12 +165,20 @@ export function useNavLinks() {
     },
     commits: {
       path: (
-        { provider = p, owner = o, repo = r } = {
+        { provider = p, owner = o, repo = r, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
+          branch: b,
         }
-      ) => `/${provider}/${owner}/${repo}/commits`,
+      ) => {
+        if (branch) {
+          return branch === ALL_BRANCHES
+            ? `/${provider}/${owner}/${repo}/commits/${encodeURIComponent(ALL_BRANCHES)}`
+            : `/${provider}/${owner}/${repo}/commits/${branch}`
+        }
+        return `/${provider}/${owner}/${repo}/commits`
+      },
       text: 'Commits',
     },
     commit: {
@@ -342,26 +351,33 @@ export function useNavLinks() {
     },
     overview: {
       path: (
-        { provider = p, owner = o, repo = r } = {
+        { provider = p, owner = o, repo = r, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
+          branch: b,
         }
-      ) => `/${provider}/${owner}/${repo}`,
+      ) =>
+        `/${provider}/${owner}/${repo}${branch && branch !== ALL_BRANCHES ? `/tree/${branch}` : ''}`,
       text: 'Overview',
     },
     coverage: {
       path: (
-        { provider = p, owner = o, repo = r, queryParams = {} } = {
+        { provider = p, owner = o, repo = r, queryParams = {}, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
           queryParams: {},
+          branch: b,
         }
       ) => {
         let query = ''
         if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+
+        if (branch && branch !== ALL_BRANCHES) {
+          return `/${provider}/${owner}/${repo}/tree/${branch}${query}`
         }
 
         return `/${provider}/${owner}/${repo}${query}`
@@ -371,25 +387,28 @@ export function useNavLinks() {
     },
     flagsTab: {
       path: (
-        { provider = p, owner = o, repo = r } = {
+        { provider = p, owner = o, repo = r, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
+          branch: b,
         }
-      ) => `/${provider}/${owner}/${repo}/flags`,
+      ) =>
+        `/${provider}/${owner}/${repo}/flags${branch && branch !== ALL_BRANCHES ? `/${branch}` : ''}`,
       isExternalLink: false,
       text: 'Flags',
     },
     componentsTab: {
       path: (
-        { provider = p, owner = o, repo = r, branch = undefined } = {
+        { provider = p, owner = o, repo = r, branch = b } = {
           provider: p,
           owner: o,
           repo: r,
+          branch: b,
         }
       ) => {
-        if (branch) {
-          return `/${provider}/${owner}/${repo}/components?branch=${branch}`
+        if (branch && branch !== ALL_BRANCHES) {
+          return `/${provider}/${owner}/${repo}/components/${branch}`
         }
         return `/${provider}/${owner}/${repo}/components`
       },
@@ -435,37 +454,37 @@ export function useNavLinks() {
       },
       text: 'Files changed',
     },
-    settings: {
+    configuration: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/settings`,
-      text: 'Settings',
+      ) => `/${provider}/${owner}/${repo}/config`,
+      text: 'Configuration',
     },
-    settingsGeneral: {
+    configGeneral: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/settings`,
+      ) => `/${provider}/${owner}/${repo}/config/general`,
       text: 'General',
     },
-    settingsYaml: {
+    configYaml: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/settings/yaml`,
+      ) => `/${provider}/${owner}/${repo}/config/yaml`,
       text: 'Yaml',
     },
-    settingsBadge: {
+    configBadge: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
@@ -473,7 +492,7 @@ export function useNavLinks() {
 
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/settings/badge`,
+      ) => `/${provider}/${owner}/${repo}/config/badge`,
       text: 'Badges & Graphs',
     },
     prevLink: {
@@ -721,7 +740,7 @@ export function useNavLinks() {
           provider = p,
           owner = o,
           repo = r,
-          branch = undefined,
+          branch = b,
           bundle = undefined,
         } = {
           provider: p,
@@ -729,11 +748,11 @@ export function useNavLinks() {
           repo: r,
         }
       ) => {
-        if (branch && bundle) {
+        if (branch && branch !== ALL_BRANCHES && bundle) {
           return `/${provider}/${owner}/${repo}/bundles/${branch}/${bundle}`
         }
 
-        if (branch) {
+        if (branch && branch !== ALL_BRANCHES) {
           return `/${provider}/${owner}/${repo}/bundles/${branch}`
         }
 
@@ -771,11 +790,62 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/bundles/new/webpack`,
       text: 'Webpack',
     },
-    teamPlanFeedbackSurvey: {
-      path: () =>
-        `https://docs.google.com/forms/d/e/1FAIpQLSeoMHPyECewV7X3UaT-uUxZCmYy1T6hEX_aecCD2ppPHGSvUw/viewform`,
-      text: 'Team plan feedback survey',
-      isExternalLink: true,
+    bundleRemixOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/remix-vite`,
+      text: 'Remix (Vite)',
+    },
+    bundleNuxtOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/nuxt`,
+      text: 'Nuxt',
+    },
+    bundleSvelteKitOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/sveltekit`,
+      text: 'SvelteKit',
+    },
+    bundleSolidStartOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/solidstart`,
+      text: 'SolidStart',
+    },
+    failedTests: {
+      path: (
+        { provider = p, owner = o, repo = r, branch = b } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          branch: b,
+        }
+      ) => {
+        if (branch && branch !== ALL_BRANCHES) {
+          return `/${provider}/${owner}/${repo}/tests/${branch}`
+        }
+
+        return `/${provider}/${owner}/${repo}/tests`
+      },
+      text: 'Failed Tests',
     },
     failedTestsOnboarding: {
       path: (
@@ -801,6 +871,18 @@ export function useNavLinks() {
         return `/${provider}/${owner}/${repo}/tests/new/codecov-cli`
       },
       text: 'Codecov CLI',
+      isExternalLink: false,
+    },
+    oktaAccess: {
+      path: (
+        { provider = p, owner = o } = {
+          provider: p,
+          owner: o,
+        }
+      ) => {
+        return `/account/${provider}/${owner}/okta-access`
+      },
+      text: 'Okta access',
       isExternalLink: false,
     },
   }

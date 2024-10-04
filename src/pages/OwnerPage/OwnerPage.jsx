@@ -1,6 +1,7 @@
-import { useEffect, useLayoutEffect } from 'react'
+import { Suspense, useEffect, useLayoutEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
+import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
 import { useSentryToken } from 'services/account'
@@ -9,7 +10,7 @@ import { renderToast } from 'services/toast'
 import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
 
-import Header from './Header'
+import HeaderBanners from './HeaderBanners'
 import Tabs from './Tabs'
 
 export const LOCAL_STORAGE_USER_STARTED_TRIAL_KEY = 'user-started-trial'
@@ -66,9 +67,12 @@ function OwnerPage() {
   }
 
   return (
-    // mt-2 temporary till we stick this header
-    <div className="mt-2 flex flex-col gap-4">
-      <Header />
+    <div>
+      <Suspense fallback={null}>
+        <SilentNetworkErrorWrapper>
+          <HeaderBanners />
+        </SilentNetworkErrorWrapper>
+      </Suspense>
       <div>
         {ownerData?.isCurrentUserPartOfOrg && (
           <Tabs owner={ownerData} provider={provider} />

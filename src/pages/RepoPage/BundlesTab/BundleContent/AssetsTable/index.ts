@@ -1,1 +1,3 @@
-export { default } from './AssetsTable'
+import { AssetsTable } from './AssetsTable'
+
+export default AssetsTable

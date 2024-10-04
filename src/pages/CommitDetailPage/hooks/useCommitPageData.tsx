@@ -32,6 +32,7 @@ export type TBundleAnalysisComparisonResult = z.infer<
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
+  private: z.boolean().nullable(),
   bundleAnalysisEnabled: z.boolean().nullable(),
   coverageEnabled: z.boolean().nullable(),
   commit: z
@@ -81,6 +82,7 @@ query CommitPageData($owner: String!, $repo: String!, $commitId: String!) {
     repository(name: $repo) {
       __typename
       ... on Repository {
+        private
         bundleAnalysisEnabled
         coverageEnabled
         commit(id: $commitId) {
@@ -166,6 +168,7 @@ export const useCommitPageData = ({
 
         const isCurrentUserPartOfOrg =
           data?.owner?.isCurrentUserPartOfOrg ?? null
+        const isPrivate = data?.owner?.repository?.private ?? null
         const bundleAnalysisEnabled =
           data?.owner?.repository?.bundleAnalysisEnabled ?? null
         const coverageEnabled = data?.owner?.repository?.coverageEnabled ?? null
@@ -173,6 +176,7 @@ export const useCommitPageData = ({
 
         return {
           isCurrentUserPartOfOrg,
+          private: isPrivate,
           bundleAnalysisEnabled,
           coverageEnabled,
           commit,

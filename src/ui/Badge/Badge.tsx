@@ -1,7 +1,9 @@
 import cs from 'classnames'
 
 const BadgeVariants = {
-  default: 'bg-ds-pink text-white',
+  default: 'bg-ds-pink-default text-white',
+  danger: 'text-ds-primary-red border border-ds-primary-red',
+  success: 'text-success-700 border border-success-700',
 } as const
 
 const SizeVariants = {

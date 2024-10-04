@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react'
 
+import { NONE } from 'shared/utils/extractUploads'
 import A from 'ui/A'
 
 import Upload from './Upload'
@@ -7,11 +8,9 @@ import { useUploads } from './useUploads'
 
 import YamlModal from '../YamlModal'
 
-const NULL = 'null'
-
 function UploadsCard() {
   const [showYAMLModal, setShowYAMLModal] = useState(false)
-  const { uploadsProviderList, uploadsOverview, sortedUploads, hasNoUploads } =
+  const { uploadsProviderList, uploadsOverview, groupedUploads, hasNoUploads } =
     useUploads()
 
   return (
@@ -26,15 +25,17 @@ function UploadsCard() {
           </div>
           <span className="text-ds-gray-quinary">{uploadsOverview}</span>
         </div>
-        <div className="flex max-h-64 min-w-[24rem] flex-1 flex-col divide-y divide-solid divide-ds-gray-secondary overflow-auto bg-ds-gray-primary">
+        {/* dark:bg-opacity-5 passes linting in TSX files but triggers a warning in JSX. Once this file is converted to TSX, the linter should pass without issues. */}
+        {/* eslint-disable-next-line tailwindcss/migration-from-tailwind-2*/}
+        <div className="flex max-h-64 min-w-96 flex-1 flex-col divide-y divide-solid divide-ds-gray-secondary overflow-auto bg-ds-gray-primary dark:bg-ds-blue-default dark:bg-opacity-5">
           {uploadsProviderList.map((title) => (
             <Fragment key={title}>
-              {title !== NULL && (
+              {title !== NONE && (
                 <span className="sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary px-4 py-1 text-sm font-semibold">
                   {title}
                 </span>
               )}
-              {sortedUploads[title].map(
+              {groupedUploads[title].map(
                 (
                   {
                     ciUrl,

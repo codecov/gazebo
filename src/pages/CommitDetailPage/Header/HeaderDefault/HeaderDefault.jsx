@@ -37,7 +37,7 @@ function HeaderDefault() {
   })
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 border-b border-ds-gray-secondary pb-2">
       <div className="flex flex-col">
         {headerData?.commit?.message && (
           <TruncatedMessage>{headerData?.commit?.message}</TruncatedMessage>
@@ -81,7 +81,6 @@ function HeaderDefault() {
           />
         </div>
       </div>
-      <hr />
     </div>
   )
 }

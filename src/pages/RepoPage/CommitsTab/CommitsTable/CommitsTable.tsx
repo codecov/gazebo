@@ -10,7 +10,7 @@ import { useEffect, useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
-import { type CommitStatsEnum, useCommits } from 'services/commits/useCommits'
+import { CommitStatuses, useCommits } from 'services/commits/useCommits'
 import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 
@@ -22,11 +22,11 @@ const Loader = () => (
   </div>
 )
 
-function LoadMoreTrigger({
-  intersectionRef,
-}: {
+interface LoadMoreTriggerProps {
   intersectionRef: React.Ref<HTMLSpanElement>
-}) {
+}
+
+function LoadMoreTrigger({ intersectionRef }: LoadMoreTriggerProps) {
   return (
     <span
       ref={intersectionRef}
@@ -66,13 +66,13 @@ interface URLParams {
 interface CommitsTableProps {
   branch: string
   search: string
-  states: Array<CommitStatsEnum>
+  coverageStatus: Array<CommitStatuses>
 }
 
 const CommitsTable: React.FC<CommitsTableProps> = ({
   branch,
   search,
-  states,
+  coverageStatus,
 }) => {
   const { provider, owner, repo } = useParams<URLParams>()
   const { ref, inView } = useInView()
@@ -89,8 +89,8 @@ const CommitsTable: React.FC<CommitsTableProps> = ({
     owner,
     repo,
     filters: {
-      branchName: branch,
-      states: states,
+      branchName: decodeURIComponent(branch),
+      coverageStatus: coverageStatus,
       search: search,
     },
   })

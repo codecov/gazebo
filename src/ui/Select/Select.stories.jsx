@@ -58,8 +58,8 @@ SimpleSelectWithRenderSelected.args = {
   ),
 }
 
-export const complexSelectWithAll = Template.bind({})
-complexSelectWithAll.args = {
+export const ComplexSelectWithAll = Template.bind({})
+ComplexSelectWithAll.args = {
   ...SimpleSelect.args,
   items: [
     { foo: 'Hello', bar: '!' },
@@ -72,8 +72,8 @@ complexSelectWithAll.args = {
   renderSelected: (obj) => <span>‍Passed: {JSON.stringify(obj)}</span>,
 }
 
-export const complexSelect = Template.bind({})
-complexSelect.args = {
+export const ComplexSelect = Template.bind({})
+ComplexSelect.args = {
   ...SimpleSelect.args,
   items: [
     { foo: 'Hello', bar: '!' },

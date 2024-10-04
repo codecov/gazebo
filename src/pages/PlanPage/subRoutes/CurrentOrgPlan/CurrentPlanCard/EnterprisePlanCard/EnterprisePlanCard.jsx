@@ -10,7 +10,7 @@ function EnterprisePlanCard({ plan, scheduledPhase }) {
     <div className="flex flex-col border">
       <div className="p-4">
         <h2 className="font-semibold">{plan?.marketingName} plan</h2>
-        <span className="text-gray-500">Current plan</span>
+        <span className="text-ds-gray-quinary">Current plan</span>
       </div>
       <hr />
       <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
@@ -19,7 +19,7 @@ function EnterprisePlanCard({ plan, scheduledPhase }) {
           <BenefitList
             benefits={plan?.benefits}
             iconName="check"
-            iconColor="text-ds-pink-quinary"
+            iconColor="text-ds-pink-default"
           />
         </div>
         {scheduledPhase && (

@@ -3,6 +3,7 @@ import cs from 'classnames'
 import { useState } from 'react'
 
 import { useUpdateCard } from 'services/account'
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import Button from 'ui/Button'
 
 interface CreditCardFormProps {
@@ -13,6 +14,8 @@ interface CreditCardFormProps {
 
 function CreditCardForm({ closeForm, provider, owner }: CreditCardFormProps) {
   const [errorState, setErrorState] = useState('')
+  const { theme } = useThemeContext()
+  const isDarkMode = theme === Theme.DARK
 
   const elements = useElements()
   const {
@@ -49,10 +52,18 @@ function CreditCardForm({ closeForm, provider, owner }: CreditCardFormProps) {
               disableLink: true,
               hidePostalCode: true,
               classes: {
-                empty: 'rounded border-ds-gray-tertiary border-2',
-                focus: 'rounded !border-ds-blue-darker border-4',
-                base: 'px-4 py-3',
-                invalid: 'rounded !border-ds-primary-red border-4',
+                empty:
+                  'rounded border-ds-gray-tertiary border-2 bg-ds-container',
+                focus:
+                  'rounded !border-ds-blue-darker border-4 bg-ds-container',
+                base: 'px-4 py-3 bg-ds-container',
+                invalid:
+                  'rounded !border-ds-primary-red border-4 bg-ds-container',
+              },
+              style: {
+                base: {
+                  color: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
+                },
               },
             }}
           />
@@ -66,7 +77,7 @@ function CreditCardForm({ closeForm, provider, owner }: CreditCardFormProps) {
             type="submit"
             variant="primary"
             disabled={isLoading}
-            to=""
+            to={undefined}
           >
             Update
           </Button>
@@ -76,7 +87,7 @@ function CreditCardForm({ closeForm, provider, owner }: CreditCardFormProps) {
             variant="plain"
             disabled={isLoading}
             onClick={closeForm}
-            to=""
+            to={undefined}
           >
             Cancel
           </Button>

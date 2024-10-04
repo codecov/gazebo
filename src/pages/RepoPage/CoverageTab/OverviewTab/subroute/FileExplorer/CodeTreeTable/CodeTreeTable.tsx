@@ -87,6 +87,8 @@ const baseColumns = [
   }),
 ]
 
+type ColumnType = (typeof baseColumns)[number]
+
 function CodeTreeTable() {
   const [sorting, setSorting] = useTableDefaultSort()
   const ordering = getOrderingDirection(sorting)
@@ -110,6 +112,33 @@ function CodeTreeTable() {
     onSortingChange: setSorting,
     manualSorting: true,
   })
+
+  const subtotalRow = (column: ColumnType) => {
+    const columnId = column.id as keyof Row
+
+    if (columnId === 'name') {
+      return <p className="pl-1">Subtotal</p>
+    }
+
+    const columnsToSum = ['lines', 'hits', 'partials', 'misses']
+
+    if (columnsToSum.includes(columnId)) {
+      return calculateColumnTotal(columnId)
+    }
+
+    return null
+  }
+
+  const calculateColumnTotal = (columnId: keyof Row) => {
+    const total = data.reduce((sum, row) => {
+      const value = row[columnId]
+      const numericValue =
+        typeof value === 'string' ? parseInt(value, 10) || 0 : 0
+      return sum + numericValue
+    }, 0)
+
+    return total
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -165,25 +194,42 @@ function CodeTreeTable() {
                 </td>
               </tr>
             ) : (
-              table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-100">
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className={cs({
-                        'w-2/12': cell.column.id === 'percentCovered',
-                        'text-right w-1/12': cell.column.id !== 'name',
-                        'w-4/12': cell.column.id === 'name',
-                      })}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))
+              <>
+                {table.getRowModel().rows.map((row) => (
+                  <tr key={row.id} className="hover:bg-ds-gray-primary">
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className={cs({
+                          'w-2/12': cell.column.id === 'percentCovered',
+                          'text-right w-1/12': cell.column.id !== 'name',
+                          'w-4/12': cell.column.id === 'name',
+                        })}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                {data.length >= 2 && (
+                  <tr className="bg-ds-gray-secondary">
+                    {baseColumns.map((column) => (
+                      <td
+                        key={column.id}
+                        className={cs({
+                          'text-right w-1/12': column.id !== 'name',
+                          'w-4/12 ml-6': column.id === 'name',
+                        })}
+                      >
+                        {subtotalRow(column)}
+                      </td>
+                    ))}
+                  </tr>
+                )}
+              </>
             )}
           </tbody>
         </table>

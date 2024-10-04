@@ -4,6 +4,8 @@ import {
 } from '@tanstack/react-query'
 import { z } from 'zod'
 
+import { OrderingDirection } from 'types'
+
 import {
   FirstPullRequestSchema,
   MissingBaseCommitSchema,
@@ -26,6 +28,16 @@ const PullStatesSchema = z.union([
   z.literal('MERGED'),
 ])
 
+export const COMMIT_STATUS_COMPLETED = 'COMPLETED'
+export const COMMIT_STATUS_ERROR = 'ERROR'
+export const COMMIT_STATUS_PENDING = 'PENDING'
+
+const CommitStatusSchema = z.union([
+  z.literal(COMMIT_STATUS_COMPLETED),
+  z.literal(COMMIT_STATUS_ERROR),
+  z.literal(COMMIT_STATUS_PENDING),
+])
+
 type PullStates = z.infer<typeof PullStatesSchema>
 
 const PullSchema = z
@@ -42,18 +54,26 @@ const PullSchema = z
       .nullable(),
     head: z
       .object({
-        totals: z
-          .object({
-            percentCovered: z.number().nullable(),
-          })
-          .nullable(),
-        bundleAnalysisReport: z
-          .discriminatedUnion('__typename', [
-            z.object({ __typename: z.literal('BundleAnalysisReport') }),
-            z.object({ __typename: z.literal('MissingHeadReport') }),
-          ])
-          .nullable(),
+        bundleStatus: CommitStatusSchema.nullable(),
+        coverageStatus: CommitStatusSchema.nullable(),
       })
+      .nullable(),
+    bundleAnalysisCompareWithBase: z
+      .discriminatedUnion('__typename', [
+        z.object({
+          __typename: z.literal('BundleAnalysisComparison'),
+          bundleChange: z.object({
+            size: z.object({
+              uncompress: z.number(),
+            }),
+          }),
+        }),
+        FirstPullRequestSchema,
+        MissingBaseCommitSchema,
+        MissingBaseReportSchema,
+        MissingHeadCommitSchema,
+        MissingHeadReportSchema,
+      ])
       .nullable(),
     compareWithBase: z
       .discriminatedUnion('__typename', [
@@ -64,7 +84,6 @@ const PullSchema = z
               percentCovered: z.number().nullable(),
             })
             .nullable(),
-          changeCoverage: z.number().nullable(),
         }),
         FirstPullRequestSchema,
         MissingBaseCommitSchema,
@@ -141,11 +160,32 @@ query GetPulls(
                 avatarUrl
               }
               head {
-                totals {
-                  percentCovered
+                bundleStatus
+                coverageStatus
+              }
+              bundleAnalysisCompareWithBase {
+                __typename
+                ... on BundleAnalysisComparison {
+                  bundleChange {
+                    size {
+                      uncompress
+                    }
+                  }
                 }
-                bundleAnalysisReport {
-                  __typename
+                ... on FirstPullRequest {
+                  message
+                }
+                ... on MissingBaseCommit {
+                  message
+                }
+                ... on MissingHeadCommit {
+                  message
+                }
+                ... on MissingBaseReport {
+                  message
+                }
+                ... on MissingHeadReport {
+                  message
                 }
               }
               compareWithBase {
@@ -154,7 +194,6 @@ query GetPulls(
                   patchTotals {
                     percentCovered
                   }
-                  changeCoverage
                 }
                 ... on FirstPullRequest {
                   message
@@ -202,7 +241,7 @@ interface UsePullArgs {
   filters: {
     state: PullStates
   }
-  orderingDirection: 'ASC' | 'DESC'
+  orderingDirection: OrderingDirection
   opts?: UseInfiniteQueryOptions<GetPullsReturn>
 }
 

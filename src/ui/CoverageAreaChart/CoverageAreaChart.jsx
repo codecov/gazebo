@@ -1,13 +1,10 @@
-import { format } from 'date-fns'
 import PropTypes from 'prop-types'
 import {
-  createContainer,
   VictoryAccessibleGroup,
   VictoryArea,
   VictoryAxis,
   VictoryChart,
   VictoryClipContainer,
-  VictoryTooltip,
 } from 'victory'
 
 import './chart.css'
@@ -24,28 +21,26 @@ const defaultStyles = {
     left: 0,
     right: 15,
   },
-  coverageAxisLabels: { fontSize: 4, padding: 1 },
-  dateAxisLabels: { fontSize: 4, padding: 0 },
+  coverageAxisLabels: {
+    fontSize: 4,
+    padding: 1,
+    fill: 'rgb(var(--color-app-text-secondary))',
+  },
+  dateAxisLabels: {
+    fontSize: 4,
+    padding: 0,
+    fill: 'rgb(var(--color-app-text-secondary))',
+  },
 }
 
 // These theme accessors shouldn't be functions but something in the
 // tailwind config is wrong and that requires a much larger theme lift.
 const ColorMap = Object.freeze({
-  default: 'rgb(var(--color-ds-gray-senary))',
+  default: 'rgb(var(--color-chart-area-stroke))',
   primary: 'rgb(var(--color-ds-primary-green))',
   warning: 'rgb(var(--color-ds-primary-yellow))',
   danger: 'rgb(var(--color-ds-primary-red))',
 })
-
-const GradientColorMap = Object.freeze({
-  default: 'rgb(var(--color-ds-gray-secondary))',
-  primary: 'rgb(var(--color-ds-primary-green))',
-  warning: 'rgb(var(--color-ds-primary-yellow))',
-  danger: 'rgb(var(--color-ds-primary-red))',
-})
-
-const VictoryVoronoiContainer = createContainer('voronoi')
-
 function Chart({
   data,
   axisLabelFunc,
@@ -96,8 +91,10 @@ function Chart({
             </feComponentTransfer>
           </filter>
           <linearGradient id="myGradient" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor={GradientColorMap[color]} />
-            <stop offset="100%" stopColor="white" />
+            <stop
+              offset="0%"
+              stopColor="rgb(var(--color-ds-blue-darker), 0.1)"
+            />
           </linearGradient>
         </defs>
       </svg>
@@ -110,39 +107,6 @@ function Chart({
           singleQuadrantDomainPadding={{ x: false }}
           // Custom padding tightens the whitespace around the chart.
           padding={defaultStyles.chartPadding}
-          containerComponent={
-            // Veronoi is a algorithm that defines invisible mouse hover regions for data points.
-            // For line charts this is a better tooltip then using a normal hover target
-            // which is hard/tiny to hit.
-            // Reference: https://en.wikipedia.org/wiki/Voronoi_diagram
-            <VictoryVoronoiContainer
-              className="coverageAreaChart"
-              title={title}
-              desc={desc}
-              voronoiDimension="x"
-              /* labels not testable. */
-              labels={({ datum }) => `Coverage: ${Math.floor(
-                datum.coverage,
-                2
-              )}%
-                ${format(new Date(datum.date), 'MMM dd, h:mmaaa, yyy')}`}
-              labelComponent={
-                <VictoryTooltip
-                  groupComponent={
-                    <VictoryAccessibleGroup
-                      className="chart-tooltip"
-                      aria-label="coverage tooltip"
-                    />
-                  }
-                  flyoutPadding={defaultStyles.tooltip.flyout}
-                  style={defaultStyles.tooltip.style}
-                  constrainToVisibleArea
-                  cornerRadius={0}
-                  pointerLength={0}
-                />
-              }
-            />
-          }
         >
           <NoData dataPointCount={data?.length} />
           <VictoryAxis

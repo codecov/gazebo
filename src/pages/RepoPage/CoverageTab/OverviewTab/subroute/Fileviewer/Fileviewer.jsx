@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import RawFileviewer from 'shared/RawFileviewer'
+import RawFileViewer from 'shared/RawFileViewer'
 import { useTreePaths } from 'shared/treePaths'
 import { STICKY_PADDING_SIZES } from 'shared/utils/fileviewer'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -20,7 +20,7 @@ function FileView() {
 
   return (
     <>
-      <RawFileviewer
+      <RawFileViewer
         title={
           <div className="text-sm font-normal">
             <Breadcrumb paths={treePaths} />

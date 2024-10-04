@@ -5,7 +5,7 @@ import isEqual from 'lodash/isEqual'
 import pluralize from 'pluralize'
 import PropTypes from 'prop-types'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
-import useIntersection from 'react-use/lib/useIntersection'
+import { useIntersection } from 'react-use'
 
 import { dataMarketingType } from 'shared/propTypes'
 
@@ -15,9 +15,9 @@ import Spinner from '../Spinner'
 
 const SelectClasses = {
   button:
-    'flex justify-between items-center w-full border border-ds-gray-tertiary rounded bg-white text-left px-3 h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1 whitespace-nowrap',
+    'flex justify-between items-center w-full border border-ds-gray-tertiary rounded bg-ds-container text-left px-3 h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1 whitespace-nowrap',
   listContainer:
-    'overflow-hidden rounded-bl rounded-br bg-white border-ds-gray-tertiary absolute w-full z-20 max-h-80 min-w-fit',
+    'overflow-hidden rounded-bl rounded-br bg-ds-container border-ds-gray-tertiary absolute w-full z-40 max-h-80 min-w-fit',
   listItem: 'block cursor-pointer py-1 px-3 text-sm',
   loadMoreTrigger: 'relative top-[-65px] invisible block leading-[0]',
 }
@@ -100,7 +100,7 @@ function DropdownList({
           {listItems.map((item, index) => (
             <li
               className={cs(SelectClasses.listItem, {
-                'px-2 font-bold border-l-4 border-l-black':
+                'px-2 font-bold border-l-4 border-l-ds-secondary-text':
                   isItemSelected(item, selectedItems) ||
                   (isAllButton(item) && selectedItems.length === 0),
                 'bg-ds-gray-secondary': highlightedIndex === index,
@@ -110,7 +110,9 @@ function DropdownList({
               {...getItemProps({ item, index })}
             >
               {isAllButton(item)
-                ? `All ${pluralize(resourceName)}`
+                ? selectedItems.length === 0
+                  ? `All ${pluralize(resourceName)}`
+                  : 'Clear selected'
                 : renderItem(item)}
             </li>
           ))}
@@ -281,7 +283,7 @@ const MultiSelect = forwardRef(
             />
           </button>
           <div
-            className={cs(!onSearch && 'hidden', 'absolute', 'inset-x-0 z-10')}
+            className={cs(!onSearch && 'hidden', 'absolute', 'inset-x-0 z-50')}
           >
             <div className={cs(!isOpen && 'hidden')}>
               <SearchField

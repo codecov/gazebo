@@ -70,7 +70,7 @@ function SessionsTable({ sessions }: SessionsTableProps) {
             {s.ip}
           </p>
         ),
-        lastSeen: s.lastseen ? formatTimeToNow(s.lastseen) ?? '-' : '-',
+        lastSeen: s.lastseen ? (formatTimeToNow(s.lastseen) ?? '-') : '-',
         userAgent: s.useragent ?? '-',
         revokeBtn: (
           <Button

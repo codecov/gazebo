@@ -18,3 +18,13 @@ jest.mock('@sentry/react', () => {
     },
   }
 })
+
+global.matchMedia = (query) => {
+  return {
+    matches: false,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  }
+}

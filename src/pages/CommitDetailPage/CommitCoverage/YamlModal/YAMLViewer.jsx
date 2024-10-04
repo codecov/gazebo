@@ -3,7 +3,7 @@ import Highlight, { defaultProps } from 'prism-react-renderer'
 import { useParams } from 'react-router-dom'
 
 import { useCommitYaml } from 'services/commit'
-import 'shared/utils/prisimTheme.css'
+import 'shared/utils/prism/prismTheme.css'
 
 import './YAMLViewer.css'
 

@@ -166,7 +166,7 @@ function FileListTable() {
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-100">
+                <tr key={row.id} className="hover:bg-ds-gray-primary">
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}

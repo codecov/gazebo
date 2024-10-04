@@ -52,6 +52,7 @@ export const InvoiceSchema = z.object({
   periodStart: z.number(),
   status: z.string().nullable(),
   subtotal: z.number(),
+  taxIds: z.array(z.object({ value: z.string() }).nullable()),
   total: z.number(),
 })
 
@@ -89,6 +90,9 @@ query Invoices($owner: String!) {
       periodStart
       status
       subtotal
+      taxIds {
+        value
+      }
       total
       defaultPaymentMethod {
         card {

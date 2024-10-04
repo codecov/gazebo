@@ -7,7 +7,7 @@
 }
 
 .coverageAreaChart .coverage-line path {
-  @apply text-ds-pink stroke-current !important;
+  @apply text-ds-pink-default stroke-current !important;
 }
 
 .coverageAreaChart .chart-tooltip path {

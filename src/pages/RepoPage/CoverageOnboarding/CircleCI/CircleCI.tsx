@@ -1,5 +1,9 @@
 import { useParams } from 'react-router-dom'
 
+import {
+  EVENT_METRICS,
+  useStoreCodecovEventMetric,
+} from 'services/codecovEventMetrics'
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
@@ -9,6 +13,7 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 
 import ExampleBlurb from '../ExampleBlurb'
+import LearnMoreBlurb from '../LearnMoreBlurb'
 
 const orbsString = `orbs:
   codecov: codecov/codecov@4.0.1
@@ -51,6 +56,7 @@ function CircleCI() {
       <Step2 defaultBranch={data?.repository?.defaultBranch ?? ''} />
       <Step3 />
       <FeedbackCTA />
+      <LearnMoreBlurb />
     </div>
   )
 }
@@ -64,6 +70,8 @@ interface Step1Props {
 }
 
 function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {
+  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
+  const { owner } = useParams<URLParams>()
   return (
     <Card>
       <Card.Header>
@@ -89,7 +97,17 @@ function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {
           <CodeSnippet className="basis-1/3" clipboard="CODECOV_TOKEN">
             CODECOV_TOKEN
           </CodeSnippet>
-          <CodeSnippet className="basis-2/3" clipboard={uploadToken}>
+          <CodeSnippet
+            className="basis-2/3"
+            clipboard={uploadToken}
+            clipboardOnClick={() =>
+              storeEventMetric({
+                owner,
+                event: EVENT_METRICS.COPIED_TEXT,
+                jsonPayload: { text: 'Step 1 CircleCI' },
+              })
+            }
+          >
             {uploadToken}
           </CodeSnippet>
         </div>
@@ -103,6 +121,8 @@ interface Step2Props {
 }
 
 function Step2({ defaultBranch }: Step2Props) {
+  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
+  const { owner } = useParams<URLParams>()
   return (
     <Card>
       <Card.Header>
@@ -125,7 +145,18 @@ function Step2({ defaultBranch }: Step2Props) {
           Add the following to your .circleci/config.yaml and push changes to
           repository.
         </p>
-        <CodeSnippet clipboard={orbsString}>{orbsString}</CodeSnippet>
+        <CodeSnippet
+          clipboard={orbsString}
+          clipboardOnClick={() =>
+            storeEventMetric({
+              owner,
+              event: EVENT_METRICS.COPIED_TEXT,
+              jsonPayload: { text: 'Step 2 CircleCI' },
+            })
+          }
+        >
+          {orbsString}
+        </CodeSnippet>
         <ExampleBlurb />
       </Card.Content>
     </Card>
@@ -144,7 +175,7 @@ function Step3() {
         <p>
           Once merged to your default branch, subsequent pull requests will have
           Codecov checks and comments. Additionally, you’ll find your repo
-          coverage dashboard here. If you have merged try reloading the page.
+          coverage dashboard here. If you have merged, try reloading the page.
         </p>
       </Card.Content>
     </Card>

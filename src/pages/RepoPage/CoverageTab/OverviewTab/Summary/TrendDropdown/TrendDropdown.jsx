@@ -11,7 +11,7 @@ function TrendDropdown() {
 
   const items = Object.values(Trend)
   return (
-    <h3 className="flex min-w-[10rem] items-center text-sm font-semibold text-ds-gray-octonary">
+    <h3 className="flex min-w-40 items-center text-sm font-semibold text-ds-gray-octonary">
       <Select
         dataMarketing="coverage-trend-selector"
         ariaName="select coverage over time range"

@@ -41,7 +41,7 @@ function Access() {
             rel="noreferrer"
             target="_blank"
             href="https://docs.codecov.com/reference/overview"
-            className="text-ds-blue"
+            className="text-ds-blue-default"
           >
             learn more
           </a>

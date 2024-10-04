@@ -6,8 +6,9 @@ import { useParams } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
+import { useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
-import { useFlags } from 'shared/featureFlags'
+import { Alert } from 'ui/Alert'
 import Spinner from 'ui/Spinner'
 
 import OrgControlTable from './OrgControlTable'
@@ -31,11 +32,13 @@ function ListRepo({ canRefetch }) {
   const { provider, owner } = useParams()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { data: tierData } = useTier({ provider, owner })
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
+  const { data: currentUser } = useUser({
+    options: {
+      suspense: false,
+    },
   })
 
-  const showTeamRepos = tierData === TierNames.TEAM && multipleTiers
+  const showTeamRepos = tierData === TierNames.TEAM
 
   const repoDisplay = useContext(ActiveContext)
 
@@ -50,6 +53,10 @@ function ListRepo({ canRefetch }) {
       <Spinner />
     </div>
   )
+
+  const cameFromOnboarding = params['source'] === 'onboarding'
+  const isMyOwnerPage = currentUser?.user?.username === owner
+  const showDemoAlert = cameFromOnboarding && isMyOwnerPage
 
   return (
     <>
@@ -66,6 +73,19 @@ function ListRepo({ canRefetch }) {
         }}
         canRefetch={canRefetch}
       />
+
+      {showDemoAlert ? (
+        <div className="mb-6">
+          <Alert variant="info" customIconName="sparkles">
+            <Alert.Title>Welcome to Codecov!</Alert.Title>
+            <Alert.Description>
+              {`We've added you to our Codecov repo to show you a real-world
+            coverage example. You can now see how we use the tool.`}
+            </Alert.Description>
+          </Alert>
+        </div>
+      ) : null}
+
       <Suspense fallback={loadingState}>
         {showTeamRepos ? (
           <ReposTableTeam searchValue={params.search} />
@@ -74,6 +94,7 @@ function ListRepo({ canRefetch }) {
             sortItem={sortItem}
             owner={owner}
             searchValue={params.search}
+            mayIncludeDemo
           />
         )}
       </Suspense>

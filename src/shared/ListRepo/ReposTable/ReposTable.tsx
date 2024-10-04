@@ -11,10 +11,13 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { OrderingDirection, useRepos } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
+import { DEMO_REPO, formatDemoRepos, isNotNull } from 'shared/utils/demo'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
@@ -31,6 +34,7 @@ interface ReposTableProps {
   searchValue: string
   owner: string
   filterValues?: string[]
+  mayIncludeDemo?: boolean
 }
 
 function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
@@ -85,6 +89,7 @@ const ReposTable = ({
   searchValue,
   owner,
   filterValues = [],
+  mayIncludeDemo = false,
 }: ReposTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([
     {
@@ -97,15 +102,20 @@ const ReposTable = ({
 
   const { provider } = useParams<URLParams>()
 
-  const { data: userData } = useUser()
+  const { data: currentUser } = useUser({
+    options: {
+      suspense: false,
+    },
+  })
+
   const { data: ownerData } = useOwner({
-    username: owner || userData?.user?.username,
+    username: owner,
   })
   const isCurrentUserPartOfOrg = ownerData?.isCurrentUserPartOfOrg
 
   const { data: tierName } = useTier({
     provider,
-    owner: owner || userData?.user?.username,
+    owner,
   })
   const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
@@ -117,11 +127,12 @@ const ReposTable = ({
         .toUpperCase() as keyof typeof repoDisplayOptions
     ]?.status
 
+  // fetch owner repos
   const {
     data: reposData,
     fetchNextPage,
     hasNextPage,
-    isLoading,
+    isLoading: isReposLoading,
     isFetchingNextPage,
   } = useRepos({
     provider,
@@ -133,10 +144,27 @@ const ReposTable = ({
     isPublic: shouldDisplayPublicReposOnly,
   })
 
+  // fetch demo repo(s)
+  const { data: demoReposData } = useRepos({
+    provider: DEMO_REPO.provider,
+    owner: DEMO_REPO.owner,
+    activated,
+    repoNames: [DEMO_REPO.repo],
+  })
+
+  const isMyOwnerPage = currentUser?.user?.username === owner
+  const includeDemo = mayIncludeDemo && !config.IS_SELF_HOSTED && isMyOwnerPage
+
   const tableData = useMemo(() => {
-    const data = reposData?.pages?.map((page) => page?.repos).flat()
-    return data ?? []
-  }, [reposData?.pages])
+    const repos =
+      reposData?.pages.flatMap((page) => page?.repos).filter(isNotNull) ?? []
+
+    const demoRepos = includeDemo
+      ? formatDemoRepos(demoReposData, searchValue)
+      : []
+
+    return [...demoRepos, ...repos]
+  }, [reposData?.pages, demoReposData, includeDemo, searchValue])
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -159,7 +187,7 @@ const ReposTable = ({
     getSortedRowModel: getSortedRowModel(),
   })
 
-  if (!isLoading && isEmpty(tableData)) {
+  if (!isReposLoading && isEmpty(tableData)) {
     return <NoReposBlock searchValue={searchValue} />
   }
 
@@ -205,7 +233,7 @@ const ReposTable = ({
             ))}
           </thead>
           <tbody>
-            {isLoading ? (
+            {isReposLoading ? (
               <tr>
                 <td colSpan={table.getAllColumns().length}>
                   <Loader />

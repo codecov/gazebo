@@ -4,14 +4,14 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
-import { useRepoOverview } from 'services/repo'
+import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
-import { ComparisonReturnType } from 'shared/utils/comparison'
+import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
+import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
+import { ComparisonReturnType, ReportUploadType } from 'shared/utils/comparison'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
-import ErrorBanner from './ErrorBanner'
 import PullCoverageTabs from './PullCoverageTabs'
 import CompareSummarySkeleton from './Summary/CompareSummary/CompareSummarySkeleton'
 
@@ -38,9 +38,6 @@ function PullCoverageContent() {
   const { owner, repo, pullId, provider } = useParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: tierData } = useTier({ provider, owner })
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
 
   useEffect(() => {
     if (overview?.bundleAnalysisEnabled && overview?.coverageEnabled) {
@@ -50,8 +47,7 @@ function PullCoverageContent() {
     }
   }, [overview?.bundleAnalysisEnabled, overview?.coverageEnabled])
 
-  const isTeamPlan =
-    multipleTiers && tierData === TierNames.TEAM && overview?.private
+  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
   const { data } = usePullPageData({
     provider,
@@ -67,7 +63,10 @@ function PullCoverageContent() {
     <Suspense fallback={<Loader />}>
       {resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON &&
       resultType !== ComparisonReturnType.FIRST_PULL_REQUEST ? (
-        <ErrorBanner errorType={resultType} />
+        <ComparisonErrorBanner
+          errorType={resultType}
+          reportType={ReportUploadType.COVERAGE}
+        />
       ) : null}
       <Switch>
         <SentryRoute
@@ -134,11 +133,8 @@ function PullCoverageContent() {
 function PullCoverage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
   const { data: tierData } = useTier({ provider, owner })
-
+  const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
   useEffect(() => {
     if (overview?.bundleAnalysisEnabled && overview?.coverageEnabled) {
       metrics.increment('pull_request_page.coverage_dropdown.opened', 1)
@@ -147,8 +143,7 @@ function PullCoverage() {
     }
   }, [overview?.bundleAnalysisEnabled, overview?.coverageEnabled])
 
-  const isTeamPlan =
-    multipleTiers && tierData === TierNames.TEAM && overview?.private
+  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
   const { data } = usePullPageData({
     provider,
@@ -168,6 +163,7 @@ function PullCoverage() {
       </Suspense>
       <div className="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">
         <article className="col-span-2 flex flex-col gap-3 md:gap-0">
+          {rateLimit?.isGithubRateLimited && <GitHubRateLimitExceededBanner />}
           <PullCoverageTabs />
           <PullCoverageContent />
         </article>

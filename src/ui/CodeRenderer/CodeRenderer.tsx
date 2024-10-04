@@ -1,10 +1,11 @@
+import * as Sentry from '@sentry/react'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 import { useLayoutEffect, useRef } from 'react'
 
 import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
-import 'shared/utils/prisimTheme.css'
-import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
+import 'shared/utils/prism/prismTheme.css'
+import { prismLanguageMapper } from 'shared/utils/prism/prismLanguageMapper'
 
 import './CodeRenderer.css'
 
@@ -103,4 +104,6 @@ function CodeRenderer({
   )
 }
 
-export default CodeRenderer
+export default Sentry.withProfiler(CodeRenderer, {
+  name: 'CodeRenderer',
+})

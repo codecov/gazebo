@@ -9,25 +9,27 @@ const modalSizes = Object.freeze({
 })
 
 export interface ModalProps {
-  isOpen: boolean
-  onClose: () => void
   body: ReactElement | string
+  customHeaderClassname?: string
+  isOpen: boolean
   footer?: ReactElement
-  title: ReactElement | string
-  subtitle?: ReactElement | string
   hasCloseButton?: boolean
+  onClose: () => void
   size?: 'medium' | 'small'
+  subtitle?: ReactElement | string
+  title: ReactElement | string
 }
 
 const Modal: React.FC<ModalProps> = ({
+  body,
+  customHeaderClassname,
+  footer,
+  hasCloseButton = true,
   isOpen,
   onClose,
-  body,
-  footer,
-  title,
-  subtitle,
-  hasCloseButton = true,
   size = 'medium',
+  subtitle,
+  title,
   ...rest
 }) => {
   if (!isOpen) return null
@@ -42,12 +44,13 @@ const Modal: React.FC<ModalProps> = ({
     >
       <div className={modalSizes[size]}>
         <BaseModal
-          title={title}
-          hasCloseButton={hasCloseButton}
-          subtitle={subtitle}
           body={body}
+          customHeaderClassname={customHeaderClassname}
           footer={footer}
+          hasCloseButton={hasCloseButton}
           onClose={onClose}
+          subtitle={subtitle}
+          title={title}
         />
       </div>
     </ReactModal>

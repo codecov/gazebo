@@ -1,15 +1,19 @@
-import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 import { useImage } from 'services/image'
+import { cn } from 'shared/utils/cn'
 
 import AvatarSVG from './AvatarSVG'
 
-let baseClasses = 'rounded-full h-6 w-6 flex items-center justify-center'
-let borderedClasses = 'border-ds-grey-secondary border-2'
+const baseClasses = 'rounded-full h-6 w-6 flex items-center justify-center'
+const borderClasses = {
+  none: '',
+  light: 'border-ds-gray-secondary border-2',
+  dark: 'border-ds-gray-octonary border-2',
+}
 
-function Avatar({ user, bordered, ariaLabel }) {
-  const classes = cs(baseClasses, bordered ? borderedClasses : '')
+function Avatar({ user, border = 'none', ariaLabel, className = '' }) {
+  const classes = cn(baseClasses, borderClasses[border], className)
 
   const { src, error, isLoading } = useImage({
     src: user?.avatarUrl,
@@ -20,7 +24,7 @@ function Avatar({ user, bordered, ariaLabel }) {
 
   if (isLoading) {
     return (
-      <div className="h-6 w-6 rounded-full bg-ds-gray-tertiary motion-safe:animate-pulse" />
+      <div className="size-6 rounded-full bg-ds-gray-tertiary motion-safe:animate-pulse" />
     )
   }
 
@@ -36,7 +40,7 @@ Avatar.propTypes = {
     username: PropTypes.string.isRequired,
     avatarUrl: PropTypes.string,
   }),
-  bordered: PropTypes.bool,
+  border: PropTypes.oneOf(['light', 'dark', 'none']),
   ariaLabel: PropTypes.string,
 }
 

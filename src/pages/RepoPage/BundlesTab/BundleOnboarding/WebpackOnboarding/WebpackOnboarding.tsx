@@ -7,6 +7,7 @@ import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 
+import LearnMoreBlurb from '../LearnMoreBlurb'
 import {
   copiedBuildCommandMetric,
   copiedCommitMetric,
@@ -178,7 +179,7 @@ const StepFour: React.FC = () => {
       <Card.Content className="flex flex-col gap-4">
         <p>
           The plugin requires at least one commit to be made to properly upload
-          bundle analysis information up to Codecov.
+          bundle analysis information to Codecov.
         </p>
         <CodeSnippet
           clipboard={commitString}
@@ -282,6 +283,7 @@ const WebpackOnboarding: React.FC = () => {
       <StepFour />
       <StepFive />
       <FeedbackCTA />
+      <LearnMoreBlurb />
     </div>
   )
 }

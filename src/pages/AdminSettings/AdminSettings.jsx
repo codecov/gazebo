@@ -8,7 +8,6 @@ import { useSelfHostedCurrentUser } from 'services/selfHosted'
 import LoadingLogo from 'ui/LoadingLogo'
 import Spinner from 'ui/Spinner'
 
-import AdminSettingsHeader from './AdminSettingsHeader'
 import AdminSettingsSidebar from './AdminSettingsSidebar'
 
 const AdminAccess = lazy(() => import('./AdminAccess'))
@@ -36,7 +35,6 @@ function AdminSettings() {
     <Suspense fallback={Loader}>
       {data?.isAdmin ? (
         <>
-          <AdminSettingsHeader />
           <SidebarLayout sidebar={<AdminSettingsSidebar />}>
             <Suspense fallback={SpinnerLoader}>
               <Switch>
