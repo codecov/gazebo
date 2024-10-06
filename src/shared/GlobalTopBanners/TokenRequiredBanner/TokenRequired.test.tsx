@@ -8,7 +8,7 @@ import ResizeObserver from 'resize-observer-polyfill'
 
 import { useFlags } from 'shared/featureFlags'
 
-import TokenlessBanner from './TokenlessBanner'
+import TokenRequiredBanner from './TokenRequiredBanner'
 
 vi.mock('shared/featureFlags')
 global.ResizeObserver = ResizeObserver
@@ -29,14 +29,6 @@ beforeEach(() => {
 })
 afterAll(() => server.close())
 
-const mockOwner = {
-  ownerid: 1,
-  username: 'codecov',
-  avatarUrl: 'http://127.0.0.1/avatar-url',
-  isCurrentUserPartOfOrg: true,
-  isAdmin: true,
-}
-
 const wrapper =
   (
     initialEntries = ['/gh/codecov'],
@@ -50,29 +42,26 @@ const wrapper =
     </QueryClientProvider>
   )
 
-describe('TokenlessBanner', () => {
+describe('TokenRequiredBanner', () => {
   function setup({
     isAdmin = true,
     orgUploadToken = 'mock-token',
-  }: { isAdmin?: boolean; orgUploadToken?: string | null } = {}) {
+    uploadTokenRequired = true,
+  }: {
+    isAdmin?: boolean
+    orgUploadToken?: string | null
+    uploadTokenRequired?: boolean
+  } = {}) {
     mockedUseFlags.mockReturnValue({ tokenlessSection: true })
 
     server.use(
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('GetUploadTokenRequired', () => {
         return HttpResponse.json({
           data: {
             owner: {
-              ...mockOwner,
-              isAdmin: isAdmin,
-            },
-          },
-        })
-      }),
-      graphql.query('GetOrgUploadToken', (info) => {
-        return HttpResponse.json({
-          data: {
-            owner: {
-              orgUploadToken: orgUploadToken,
+              orgUploadToken,
+              uploadTokenRequired,
+              isAdmin,
             },
           },
         })
@@ -84,7 +73,7 @@ describe('TokenlessBanner', () => {
 
   it('should return null if no owner is provided', () => {
     setup()
-    const { container } = render(<TokenlessBanner />, {
+    const { container } = render(<TokenRequiredBanner />, {
       wrapper: wrapper(['/gh/'], '/:provider'),
     })
 
@@ -92,27 +81,27 @@ describe('TokenlessBanner', () => {
   })
 
   describe('when user is admin', () => {
-    it('should render content of AdminTokenlessBanner', async () => {
+    it('should render content of AdminTokenRequiredBanner', async () => {
       setup({ isAdmin: true })
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
       const content = await screen.findByText(
-        /Uploading with the token is now required./
+        /You must now upload using a token./
       )
       expect(content).toBeInTheDocument()
     })
 
     it('should return token copy without tooltip if token is not provided', async () => {
       setup({ orgUploadToken: null })
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
-      const token = await screen.findByText(/the token. /)
+      const token = await screen.findByText(/the global upload token/)
       expect(token).toBeInTheDocument()
     })
 
     it('should render token tooltip', async () => {
       setup({ isAdmin: true })
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
       const trigger = await screen.findByTestId(/token-trigger/)
       expect(trigger).toBeInTheDocument()
@@ -120,7 +109,7 @@ describe('TokenlessBanner', () => {
 
     it('should render link to global upload token settings', async () => {
       setup({ isAdmin: true })
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
       const link = await screen.findByRole('link', {
         name: /global upload token settings./,
@@ -135,27 +124,27 @@ describe('TokenlessBanner', () => {
   })
 
   describe('when user is not admin', () => {
-    it('should render content of MemberTokenlessBanner', async () => {
+    it('should render content of MemberTokenRequiredBanner', async () => {
       setup({ isAdmin: false })
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
       const content = await screen.findByText(
-        /Uploading with the token is now required./
+        /You must now upload using a token./
       )
       expect(content).toBeInTheDocument()
     })
 
     it('should return token copy without tooltip if token is not provided', async () => {
       setup({ isAdmin: false, orgUploadToken: null })
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
-      const token = await screen.findByText(/the token. /)
+      const token = await screen.findByText(/the global upload token/)
       expect(token).toBeInTheDocument()
     })
 
     it('should render token tooltip', async () => {
       setup({ isAdmin: false })
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
       const trigger = await screen.findByTestId(/token-trigger/)
       expect(trigger).toBeInTheDocument()
@@ -163,7 +152,7 @@ describe('TokenlessBanner', () => {
 
     it('should render reach to admin copy', async () => {
       setup({ isAdmin: false })
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
       const copy = await screen.findByText(
         /Contact your admins to manage the upload token settings./
@@ -175,15 +164,15 @@ describe('TokenlessBanner', () => {
   describe('org upload token tooltip', () => {
     it('should render the tooltip', async () => {
       setup()
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
-      const tooltip = await screen.findByText(/the token. /)
+      const tooltip = await screen.findByText(/the global upload token/)
       expect(tooltip).toBeInTheDocument()
     })
 
-    it('should render the content6 of the tooltip on hover', async () => {
+    it('should render the content of the tooltip on hover', async () => {
       const { user } = setup()
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
       await waitFor(() => screen.findByTestId(/token-trigger/))
       const trigger = screen.getByTestId(/token-trigger/)
@@ -196,7 +185,7 @@ describe('TokenlessBanner', () => {
 
     it('should be rendered with eye off icon', async () => {
       const { user } = setup()
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
       await waitFor(() => screen.findByTestId(/token-trigger/))
       const trigger = screen.getByTestId(/token-trigger/)
@@ -209,7 +198,7 @@ describe('TokenlessBanner', () => {
 
     it('switches to eye on icon on click', async () => {
       const { user } = setup()
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
       await waitFor(() => screen.findByTestId(/token-trigger/))
       const trigger = screen.getByTestId(/token-trigger/)
@@ -225,9 +214,9 @@ describe('TokenlessBanner', () => {
       expect(eyeOnIcon).toBeInTheDocument()
     })
 
-    it('renders endcoded token on eye icon click', async () => {
+    it('renders encoded token on eye icon click', async () => {
       const { user } = setup()
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
       await waitFor(() => screen.findByTestId(/token-trigger/))
       const trigger = screen.getByTestId(/token-trigger/)
@@ -247,7 +236,7 @@ describe('TokenlessBanner', () => {
 
     it('renders copy token to clipboard', async () => {
       const { user } = setup()
-      render(<TokenlessBanner />, { wrapper: wrapper() })
+      render(<TokenRequiredBanner />, { wrapper: wrapper() })
 
       await waitFor(() => screen.findByTestId(/token-trigger/))
       const trigger = screen.getByTestId(/token-trigger/)

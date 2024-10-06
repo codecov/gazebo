@@ -20,8 +20,11 @@ vi.mock('./BundleFeedbackBanner', () => ({
 vi.mock('./OktaBanners', () => ({
   default: () => 'OktaBanners',
 }))
-vi.mock('./TokenlessBanner', () => ({
-  default: () => 'TokenlessBanner',
+vi.mock('./TokenRequiredBanner', () => ({
+  default: () => 'TokenRequiredBanner',
+}))
+vi.mock('./TokenNotRequiredBanner', () => ({
+  default: () => 'TokenNotRequiredBanner',
 }))
 
 describe('GlobalTopBanners', () => {
@@ -67,10 +70,17 @@ describe('GlobalTopBanners', () => {
     expect(banner).toBeInTheDocument()
   })
 
-  it('renders tokenless banner', async () => {
+  it('renders token required banner', async () => {
     render(<GlobalTopBanners />)
 
-    const banner = await screen.findByText(/TokenlessBanner/)
+    const banner = await screen.findByText(/TokenRequiredBanner/)
+    expect(banner).toBeInTheDocument()
+  })
+
+  it('renders token not required banner', async () => {
+    render(<GlobalTopBanners />)
+
+    const banner = await screen.findByText(/TokenNotRequiredBanner/)
     expect(banner).toBeInTheDocument()
   })
 })

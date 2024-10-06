@@ -8,7 +8,8 @@ const TrialBanner = lazy(() => import('./TrialBanner'))
 const TeamPlanFeedbackBanner = lazy(() => import('./TeamPlanFeedbackBanner'))
 const ProPlanFeedbackBanner = lazy(() => import('./ProPlanFeedbackBanner'))
 const OktaBanners = lazy(() => import('./OktaBanners'))
-const TokenlessBanner = lazy(() => import('./TokenlessBanner'))
+const TokenRequiredBanner = lazy(() => import('./TokenRequiredBanner'))
+const TokenNotRequiredBanner = lazy(() => import('./TokenNotRequiredBanner'))
 
 const GlobalTopBanners: React.FC = () => {
   return (
@@ -20,7 +21,8 @@ const GlobalTopBanners: React.FC = () => {
         <TeamPlanFeedbackBanner />
         <ProPlanFeedbackBanner />
         <BundleFeedbackBanner />
-        <TokenlessBanner />
+        <TokenRequiredBanner />
+        <TokenNotRequiredBanner />
       </div>
     </SilentNetworkErrorWrapper>
   )

@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useParams } from 'react-router'
 
-import { useOrgUploadToken } from 'services/orgUploadToken'
-import { useOwner } from 'services/user'
+import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -12,10 +11,11 @@ import { Tooltip } from 'ui/Tooltip'
 import TopBanner from 'ui/TopBanner'
 
 interface UseParams {
+  provider: string
   owner: string
 }
 
-interface UseOrgUploadTokenParams {
+interface UseUploadTokenRequiredParams {
   provider: string
   owner: string
 }
@@ -32,7 +32,7 @@ function OrgUploadTokenTooltip({ orgUploadToken }: { orgUploadToken: string }) {
           className="font-semibold underline decoration-dotted decoration-1 underline-offset-4"
           data-testid="token-trigger"
         >
-          the token.
+          the global upload token
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content
@@ -69,28 +69,29 @@ function OrgUploadTokenTooltip({ orgUploadToken }: { orgUploadToken: string }) {
   )
 }
 
-function AdminTokenlessBanner() {
-  const { provider, owner } = useParams<UseOrgUploadTokenParams>()
-  const { data: orgUploadToken } = useOrgUploadToken({
+function AdminTokenRequiredBanner() {
+  const { provider, owner } = useParams<UseUploadTokenRequiredParams>()
+  const { data } = useUploadTokenRequired({
     provider,
     owner,
   })
+  const orgUploadToken = data?.orgUploadToken
 
   return (
-    <TopBanner>
+    <TopBanner localStorageKey="admin-token-required-banner">
       <TopBanner.Start>
         <p className="items-center gap-1 md:flex">
           <span className="flex items-center gap-1 font-semibold">
             <Icon name="informationCircle" />
-            Uploading with the token is now required.
+            You must now upload using a token.
           </span>
-          You must upload with{' '}
+          Upload with either{' '}
           {typeof orgUploadToken === 'string' ? (
             <OrgUploadTokenTooltip orgUploadToken={orgUploadToken} />
           ) : (
-            'the token. '
+            'the global upload token '
           )}
-          Admins can manage the
+          or the repo upload token. Admins can manage the
           <A
             to={{
               pageName: 'orgUploadToken',
@@ -109,28 +110,31 @@ function AdminTokenlessBanner() {
   )
 }
 
-function MemberTokenlessBanner() {
-  const { provider, owner } = useParams<UseOrgUploadTokenParams>()
-  const { data: orgUploadToken } = useOrgUploadToken({
+function MemberTokenRequiredBanner() {
+  const { provider, owner } = useParams<UseUploadTokenRequiredParams>()
+  const { data } = useUploadTokenRequired({
     provider,
     owner,
   })
 
+  const orgUploadToken = data?.orgUploadToken
+
   return (
-    <TopBanner>
+    <TopBanner localStorageKey="member-token-required-banner">
       <TopBanner.Start>
         <p className="items-center gap-1 md:flex">
           <span className="flex items-center gap-1 font-semibold">
             <Icon name="informationCircle" />
-            Uploading with the token is now required.
+            You must now upload using a token.
           </span>
-          You must upload with
+          Upload with either{' '}
           {typeof orgUploadToken === 'string' ? (
             <OrgUploadTokenTooltip orgUploadToken={orgUploadToken} />
           ) : (
-            'the token. '
+            'the global upload token '
           )}
-          Contact your admins to manage the upload token settings.
+          or the repo upload token. Contact your admins to manage the upload
+          token settings.
         </p>
       </TopBanner.Start>
       <TopBanner.End>
@@ -140,20 +144,20 @@ function MemberTokenlessBanner() {
   )
 }
 
-function TokenlessBanner() {
+function TokenRequiredBanner() {
   const { tokenlessSection } = useFlags({
     tokenlessSection: false,
   })
-  const { owner } = useParams<UseParams>()
+  const { provider, owner } = useParams<UseParams>()
 
-  const { data } = useOwner({
-    username: owner,
-    opts: { enabled: !!owner },
-  })
+  const { data } = useUploadTokenRequired({ provider, owner, enabled: !!owner })
+  if (!tokenlessSection || !owner || !data?.uploadTokenRequired) return null
 
-  if (!owner || !tokenlessSection) return null // TODO: check for token if required for owner
-
-  return !!data?.isAdmin ? <AdminTokenlessBanner /> : <MemberTokenlessBanner />
+  return data?.isAdmin ? (
+    <AdminTokenRequiredBanner />
+  ) : (
+    <MemberTokenRequiredBanner />
+  )
 }
 
-export default TokenlessBanner
+export default TokenRequiredBanner
