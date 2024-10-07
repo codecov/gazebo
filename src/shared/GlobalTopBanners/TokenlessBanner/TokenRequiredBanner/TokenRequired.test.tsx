@@ -91,6 +91,17 @@ describe('TokenRequiredBanner', () => {
       expect(trigger).toBeInTheDocument()
     })
 
+    it('should render global upload token copy without tooltip if token is not provided', async () => {
+      setup({ isAdmin: true, orgUploadToken: null })
+      render(<TokenRequiredBanner />, { wrapper })
+
+      const token = await screen.findByText(/the global upload token/)
+      expect(token).toBeInTheDocument()
+
+      const trigger = screen.queryByTestId(/token-trigger/)
+      expect(trigger).not.toBeInTheDocument()
+    })
+
     it('should render link to global upload token settings', async () => {
       setup({ isAdmin: true })
       render(<TokenRequiredBanner />, { wrapper })
