@@ -110,6 +110,7 @@ const dataReturned = {
                 buildCode: null,
               },
             },
+            null,
           ],
         },
         message: 'paths test',
