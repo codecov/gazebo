@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
@@ -29,24 +29,16 @@ beforeEach(() => {
 })
 afterAll(() => server.close())
 
-const wrapper =
-  (
-    initialEntries = ['/gh/codecov'],
-    path = '/:provider/:owner'
-  ): React.FC<React.PropsWithChildren> =>
-  ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path={path}>{children}</Route>
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov']}>
+      <Route path="/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 describe('TokenNotRequiredBanner', () => {
-  function setup({
-    isAdmin = true,
-    uploadTokenRequired = false,
-  }: { isAdmin?: boolean; uploadTokenRequired?: boolean } = {}) {
+  function setup({ isAdmin = true }: { isAdmin?: boolean } = {}) {
     mockedUseFlags.mockReturnValue({ tokenlessSection: true })
 
     server.use(
@@ -54,8 +46,9 @@ describe('TokenNotRequiredBanner', () => {
         return HttpResponse.json({
           data: {
             owner: {
-              uploadTokenRequired,
+              orgUploadToken: 'test-mock-org-upload-token',
               isAdmin,
+              uploadTokenRequired: false,
             },
           },
         })
@@ -65,19 +58,10 @@ describe('TokenNotRequiredBanner', () => {
     return { user: userEvent.setup() }
   }
 
-  it('should return null if no owner is provided', () => {
-    setup()
-    const { container } = render(<TokenNotRequiredBanner />, {
-      wrapper: wrapper(['/gh/'], '/:provider'),
-    })
-
-    expect(container).toBeEmptyDOMElement()
-  })
-
   describe('when user is admin', () => {
     it('should render content of AdminTokenNotRequiredBanner', async () => {
       setup({ isAdmin: true })
-      render(<TokenNotRequiredBanner />, { wrapper: wrapper() })
+      render(<TokenNotRequiredBanner />, { wrapper })
 
       const content = await screen.findByText(
         /Your org no longer requires upload tokens./
@@ -87,7 +71,7 @@ describe('TokenNotRequiredBanner', () => {
 
     it('should render link to global upload token settings', async () => {
       setup({ isAdmin: true })
-      render(<TokenNotRequiredBanner />, { wrapper: wrapper() })
+      render(<TokenNotRequiredBanner />, { wrapper })
 
       const link = await screen.findByRole('link', {
         name: /global upload token settings./,
@@ -104,7 +88,7 @@ describe('TokenNotRequiredBanner', () => {
   describe('when user is not admin', () => {
     it('should render content of MemberTokenNotRequiredBanner', async () => {
       setup({ isAdmin: false })
-      render(<TokenNotRequiredBanner />, { wrapper: wrapper() })
+      render(<TokenNotRequiredBanner />, { wrapper })
 
       const content = await screen.findByText(
         /Your org no longer requires upload tokens./
@@ -114,7 +98,7 @@ describe('TokenNotRequiredBanner', () => {
 
     it('should render reach to admin copy', async () => {
       setup({ isAdmin: false })
-      render(<TokenNotRequiredBanner />, { wrapper: wrapper() })
+      render(<TokenNotRequiredBanner />, { wrapper })
 
       const copy = await screen.findByText(
         /Contact your admins to manage the global upload token settings./
@@ -123,20 +107,9 @@ describe('TokenNotRequiredBanner', () => {
     })
   })
 
-  it('should not render when uploadTokenRequired is true', async () => {
-    setup({ uploadTokenRequired: true })
-    const { container } = render(<TokenNotRequiredBanner />, {
-      wrapper: wrapper(),
-    })
-
-    await waitFor(() => {
-      expect(container).toBeEmptyDOMElement()
-    })
-  })
-
   it('should render dismiss button', async () => {
     setup()
-    render(<TokenNotRequiredBanner />, { wrapper: wrapper() })
+    render(<TokenNotRequiredBanner />, { wrapper })
 
     const dismissButton = await screen.findByRole('button', { name: /Dismiss/ })
     expect(dismissButton).toBeInTheDocument()

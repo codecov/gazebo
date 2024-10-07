@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useParams } from 'react-router'
 
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
-import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import { CopyClipboard } from 'ui/CopyClipboard'
@@ -20,7 +19,9 @@ interface UseUploadTokenRequiredParams {
   owner: string
 }
 
-function OrgUploadTokenTooltip({ orgUploadToken }: { orgUploadToken: string }) {
+const OrgUploadTokenTooltip: React.FC<{ orgUploadToken: string }> = ({
+  orgUploadToken,
+}) => {
   const [isTokenVisible, setIsTokenVisible] = useState(true)
   const encodedToken = orgUploadToken.replace(/\w|[^-]/g, 'x')
   const formattedToken = isTokenVisible ? orgUploadToken : encodedToken
@@ -69,7 +70,7 @@ function OrgUploadTokenTooltip({ orgUploadToken }: { orgUploadToken: string }) {
   )
 }
 
-function AdminTokenRequiredBanner() {
+const AdminTokenRequiredBanner: React.FC = () => {
   const { provider, owner } = useParams<UseUploadTokenRequiredParams>()
   const { data } = useUploadTokenRequired({
     provider,
@@ -110,7 +111,7 @@ function AdminTokenRequiredBanner() {
   )
 }
 
-function MemberTokenRequiredBanner() {
+const MemberTokenRequiredBanner: React.FC = () => {
   const { provider, owner } = useParams<UseUploadTokenRequiredParams>()
   const { data } = useUploadTokenRequired({
     provider,
@@ -144,14 +145,10 @@ function MemberTokenRequiredBanner() {
   )
 }
 
-function TokenRequiredBanner() {
-  const { tokenlessSection } = useFlags({
-    tokenlessSection: false,
-  })
+const TokenRequiredBanner: React.FC = () => {
   const { provider, owner } = useParams<UseParams>()
 
   const { data } = useUploadTokenRequired({ provider, owner, enabled: !!owner })
-  if (!tokenlessSection || !owner || !data?.uploadTokenRequired) return null
 
   return data?.isAdmin ? (
     <AdminTokenRequiredBanner />

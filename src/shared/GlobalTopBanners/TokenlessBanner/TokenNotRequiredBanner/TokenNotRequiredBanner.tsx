@@ -1,7 +1,7 @@
+import React from 'react'
 import { useParams } from 'react-router'
 
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
-import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import TopBanner from 'ui/TopBanner'
@@ -11,7 +11,7 @@ interface UseParams {
   owner: string
 }
 
-function AdminTokenNotRequiredBanner() {
+const AdminTokenNotRequiredBanner: React.FC = () => {
   return (
     <TopBanner localStorageKey="admin-token-not-required-banner">
       <TopBanner.Start>
@@ -39,7 +39,7 @@ function AdminTokenNotRequiredBanner() {
   )
 }
 
-function MemberTokenNotRequiredBanner() {
+const MemberTokenNotRequiredBanner: React.FC = () => {
   return (
     <TopBanner localStorageKey="member-token-not-required-banner">
       <TopBanner.Start>
@@ -59,15 +59,9 @@ function MemberTokenNotRequiredBanner() {
   )
 }
 
-function TokenNotRequiredBanner() {
-  const { tokenlessSection } = useFlags({
-    tokenlessSection: false,
-  })
-
+const TokenNotRequiredBanner: React.FC = () => {
   const { provider, owner } = useParams<UseParams>()
-
   const { data } = useUploadTokenRequired({ provider, owner, enabled: !!owner })
-  if (!tokenlessSection || !owner || data?.uploadTokenRequired) return null
 
   return data?.isAdmin ? (
     <AdminTokenNotRequiredBanner />
