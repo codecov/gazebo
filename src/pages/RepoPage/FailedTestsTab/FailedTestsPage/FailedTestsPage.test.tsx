@@ -1,18 +1,21 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FailedTestsPage from './FailedTestsPage'
 
-jest.mock('./SelectorSection/SelectorSection', () => () => 'Selector Section')
-jest.mock('./MetricsSection/MetricsSection', () => () => 'Metrics Section')
-jest.mock(
-  './FailedTestsTable/FailedTestsTable',
-  () => () => 'Failed Tests Table'
-)
+vi.mock('./SelectorSection/SelectorSection', () => ({
+  default: () => 'Selector Section',
+}))
+vi.mock('./MetricsSection/MetricsSection', () => ({
+  default: () => 'Metrics Section',
+}))
+vi.mock('./FailedTestsTable/FailedTestsTable', () => ({
+  default: () => 'Failed Tests Table',
+}))
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -60,8 +63,8 @@ afterAll(() => {
 describe('FailedTestsPage', () => {
   function setup() {
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+      graphql.query('GetRepoOverview', (info) => {
+        return HttpResponse.json({})
       })
     )
   }

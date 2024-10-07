@@ -18,7 +18,7 @@ vi.mock('./GitHubActions', () => ({
 vi.mock('./CodecovCLI', () => ({
   default: () => 'Codecov CLI tab',
 }))
-vi.mock('./FailedTestsTable/FailedTestsTable.tsx', () => ({
+vi.mock('./FailedTestsTable/FailedTestsTable', () => ({
   default: () => 'Failed Tests Table',
 }))
 vi.mock('./FailedTestsTable/BranchSelector', () => ({
@@ -26,6 +26,9 @@ vi.mock('./FailedTestsTable/BranchSelector', () => ({
 }))
 vi.mock('../ActivationAlert', () => ({
   default: () => 'Activation Alert',
+}))
+vi.mock('./FailedTestsPage/FailedTestsPage', () => ({
+  default: () => 'Failed Tests Page',
 }))
 
 vi.mock('shared/useRedirect', async () => {
@@ -286,8 +289,8 @@ describe('FailedTestsTab', () => {
         wrapper: wrapper('/gh/codecov/cool-repo/tests'),
       })
 
-      const activationAlert = await screen.findByText(/Failed Tests Page/)
-      expect(activationAlert).toBeInTheDocument()
+      const page = await screen.findByText(/Failed Tests Page/)
+      expect(page).toBeInTheDocument()
     })
   })
 })
