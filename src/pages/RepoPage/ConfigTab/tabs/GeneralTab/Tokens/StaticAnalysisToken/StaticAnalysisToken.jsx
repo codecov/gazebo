@@ -10,7 +10,7 @@ import RegenerateStaticTokenModal from './RegenerateStaticTokenModal'
 function StaticAnalysisToken({ staticAnalysisToken }) {
   const [showModal, setShowModal] = useState(false)
 
-  if (!staticAnalysisToken) {
+  if (typeof staticAnalysisToken !== 'string') {
     return null
   }
 

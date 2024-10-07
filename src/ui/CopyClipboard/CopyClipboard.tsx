@@ -44,11 +44,11 @@ const CopyClipboard = React.forwardRef<HTMLButtonElement, CopyClipboardProps>(
       >
         {showSuccess ? (
           <div className="text-ds-primary-green">
-            <Icon name="check" />
+            <Icon name="check" label="check" />
           </div>
         ) : (
           <div className={cn(copyClipboard({ className, variant }))}>
-            <Icon name="clipboardCopy" />
+            <Icon name="clipboardCopy" label="clipboardCopy" />
           </div>
         )}
       </button>
