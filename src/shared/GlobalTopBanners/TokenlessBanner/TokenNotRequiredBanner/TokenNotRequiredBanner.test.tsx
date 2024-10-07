@@ -38,7 +38,13 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 describe('TokenNotRequiredBanner', () => {
-  function setup({ isAdmin = true }: { isAdmin?: boolean } = {}) {
+  function setup({
+    isAdmin = true,
+    orgUploadToken = 'test-mock-org-upload-token',
+  }: {
+    isAdmin?: boolean
+    orgUploadToken?: string | null
+  } = {}) {
     mockedUseFlags.mockReturnValue({ tokenlessSection: true })
 
     server.use(
@@ -46,7 +52,7 @@ describe('TokenNotRequiredBanner', () => {
         return HttpResponse.json({
           data: {
             owner: {
-              orgUploadToken: 'test-mock-org-upload-token',
+              orgUploadToken,
               isAdmin,
               uploadTokenRequired: false,
             },
@@ -82,6 +88,17 @@ describe('TokenNotRequiredBanner', () => {
         'href',
         '/account/gh/codecov/org-upload-token'
       )
+    })
+
+    it('should render "the global upload token" copy without tooltip when orgUploadToken is null', async () => {
+      setup({ isAdmin: true, orgUploadToken: null })
+      render(<TokenNotRequiredBanner />, { wrapper })
+
+      const globalTokenText = await screen.findByText(/the global upload token/)
+      expect(globalTokenText).toBeInTheDocument()
+
+      const trigger = screen.queryByTestId(/token-trigger/)
+      expect(trigger).not.toBeInTheDocument()
     })
   })
 
