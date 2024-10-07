@@ -44,8 +44,10 @@ function CoverageConfiguration({ repoConfiguration }: ConfigurationGroupProps) {
   const isTeamPlan = repoConfiguration?.plan?.tierName === TierNames.TEAM
   const yaml = repoConfiguration?.repository?.yaml
   const hasProjectStatus = !!yaml && yaml.includes('project:')
-  const hasFlags = !!repoConfiguration?.repository?.flagsCount
-  const hasComponents = !!repoConfiguration?.repository?.componentsCount
+  const hasFlags =
+    !!repoConfiguration?.repository?.coverageAnalytics?.flagsCount
+  const hasComponents =
+    !!repoConfiguration?.repository?.coverageAnalytics?.componentsCount
 
   return (
     <FeatureGroup

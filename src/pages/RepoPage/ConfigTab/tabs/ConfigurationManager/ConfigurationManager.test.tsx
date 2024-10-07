@@ -38,13 +38,15 @@ function mockRepoConfig({
     },
     repository: {
       __typename: 'Repository',
-      flagsCount: flags ? 1 : 0,
-      componentsCount: components ? 1 : 0,
       coverageEnabled: coverage,
       bundleAnalysisEnabled: bundleAnalysis,
       testAnalyticsEnabled: testAnalytics,
       yaml,
       languages,
+      coverageAnalytics: {
+        flagsCount: flags ? 1 : 0,
+        componentsCount: components ? 1 : 0,
+      },
     },
   }
 }
