@@ -359,13 +359,13 @@ describe('CommitFileDiff', () => {
         )
         expect(textArea).toBeInTheDocument()
 
-        const calculator = await await within(textArea).findByText(/Calculator/)
+        const calculator = await within(textArea).findByText(/Calculator/)
         expect(calculator).toBeInTheDocument()
 
-        const value = await await within(textArea).findByText(/value/)
+        const value = await within(textArea).findByText(/value/)
         expect(value).toBeInTheDocument()
 
-        const calcMode = await await within(textArea).findByText(/calcMode/)
+        const calcMode = await within(textArea).findByText(/calcMode/)
         expect(calcMode).toBeInTheDocument()
       })
 
