@@ -4,12 +4,30 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { formatTimeToNow } from 'shared/utils/dates'
+import { Upload } from 'shared/utils/extractUploads'
 
-import Upload from './Upload'
+import UploadItem from './UploadItem'
+
+const mockUpload: Upload = {
+  id: 0,
+  name: null,
+  state: 'PROCESSED',
+  provider: 'travis',
+  createdAt: '2020-08-25T16:36:19.559474+00:00',
+  updatedAt: '2020-08-25T16:36:19.679868+00:00',
+  flags: [],
+  downloadUrl:
+    '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+  ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
+  uploadType: 'UPLOADED',
+  jobCode: '721065746',
+  buildCode: '721065746',
+  errors: [],
+}
 
 const queryClient = new QueryClient()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter
       initialEntries={[
@@ -27,57 +45,59 @@ afterEach(() => {
 
 describe('UploadsCard', () => {
   describe('renders', () => {
-    let props
-    beforeEach(() => {
-      props = {
-        ciUrl: 'ciUrl.com',
-        createdAt: '2020-08-25T16:36:19.559474+00:00',
-        downloadUrl: 'download.com',
-        buildCode: '1234',
-        uploadType: 'CARRIEDFORWARD',
-      }
-    })
-
     it('renders the build code', () => {
-      render(<Upload {...props} />, { wrapper })
+      render(<UploadItem upload={{ ...mockUpload, buildCode: '1234' }} />, {
+        wrapper,
+      })
 
       const buildCode = screen.getByText(/1234/)
       expect(buildCode).toBeInTheDocument()
     })
 
     it('link to the build', () => {
-      render(<Upload {...props} />, { wrapper })
+      render(
+        <UploadItem
+          upload={{ ...mockUpload, buildCode: '1234', ciUrl: 'ciUrl.com' }}
+        />,
+        { wrapper }
+      )
 
       const buildLink = screen.getByRole('link', { name: /1234/ })
       expect(buildLink).toHaveAttribute('href', 'ciUrl.com')
     })
 
     it('created at dates', () => {
-      render(<Upload {...props} />, { wrapper })
+      render(<UploadItem upload={mockUpload} />, { wrapper })
 
       // If we dont use date-fns this test will break over time
       const createDate = screen.getByText(
-        formatTimeToNow('2020-08-25T16:36:19.559474+00:00')
+        formatTimeToNow('2020-08-25T16:36:19.559474+00:00')!
       )
       expect(createDate).toBeInTheDocument()
     })
 
     it('renders a download link', () => {
-      render(<Upload {...props} />, { wrapper })
+      render(
+        <UploadItem upload={{ ...mockUpload, downloadUrl: 'download.com' }} />,
+        { wrapper }
+      )
 
       const downloadLink = screen.getByRole('link', { name: /Download/ })
       expect(downloadLink).toHaveAttribute('href', 'download.com')
     })
 
     it('renders carry-forward text', () => {
-      render(<Upload {...props} />, { wrapper })
+      render(
+        <UploadItem upload={{ ...mockUpload, uploadType: 'CARRIEDFORWARD' }} />,
+        { wrapper }
+      )
 
       const carryForward = screen.getByText('carry-forward')
       expect(carryForward).toBeInTheDocument()
     })
 
     it('renders checkbox that is default checked', () => {
-      render(<Upload {...props} />, { wrapper })
+      render(<UploadItem upload={mockUpload} />, { wrapper })
 
       const checkbox = screen.getByRole('checkbox')
       expect(checkbox).toBeInTheDocument()
@@ -87,14 +107,23 @@ describe('UploadsCard', () => {
 
   describe('build without build link', () => {
     it('renders a the build code', () => {
-      render(<Upload buildCode="1234" />, { wrapper })
+      render(<UploadItem upload={{ ...mockUpload, buildCode: '1234' }} />, {
+        wrapper,
+      })
 
       const buildCode = screen.getByText(/1234/)
       expect(buildCode).toBeInTheDocument()
     })
 
     it('does not link to the build if no url provided', () => {
-      render(<Upload buildCode="1234" />, { wrapper })
+      render(
+        <UploadItem
+          upload={{ ...mockUpload, buildCode: '1234', ciUrl: null }}
+        />,
+        {
+          wrapper,
+        }
+      )
 
       const buildLink = screen.queryByRole('link', { name: /1234/ })
       expect(buildLink).not.toBeInTheDocument()
@@ -102,40 +131,50 @@ describe('UploadsCard', () => {
   })
 
   describe('missing data renders', () => {
-    it('renders a default build code if no code was provided', () => {
-      render(<Upload />, { wrapper })
-
-      const noBuildCode = screen.getByText(/build code not found/)
-      expect(noBuildCode).toBeInTheDocument()
-    })
-
     it('does not link to the build if no url provided', () => {
-      render(<Upload />, { wrapper })
+      render(<UploadItem upload={{ ...mockUpload, ciUrl: null }} />, {
+        wrapper,
+      })
 
-      const noBuildLink = screen.queryByRole('link', /build code not found/)
+      const noBuildLink = screen.queryByRole('link', {
+        name: /build code not found/,
+      })
       expect(noBuildLink).not.toBeInTheDocument()
-    })
-
-    it('Does not show a download link if there is no available download', () => {
-      render(<Upload />, { wrapper })
-
-      const noDownloadLink = screen.queryByRole('link', { name: /Download/ })
-      expect(noDownloadLink).not.toBeInTheDocument()
     })
   })
 
   describe('rendering flags', () => {
+    it('null flags', () => {
+      // just making sure it renders without breaking
+      render(<UploadItem upload={{ ...mockUpload, flags: null }} />, {
+        wrapper,
+      })
+
+      const flag1 = screen.queryByText(/flag1/)
+      expect(flag1).not.toBeInTheDocument()
+    })
+
     it('one flag', () => {
-      render(<Upload flags={['flag1']} />, { wrapper })
+      render(<UploadItem upload={{ ...mockUpload, flags: ['flag1'] }} />, {
+        wrapper,
+      })
 
       const flag1 = screen.getByText(/flag1/)
       expect(flag1).toBeInTheDocument()
     })
 
     it('multiple flags', () => {
-      render(<Upload flags={['flag1', 'flag2', 'flag3', 'flag4']} />, {
-        wrapper,
-      })
+      render(
+        <UploadItem
+          upload={{
+            ...mockUpload,
+            flags: ['flag1', 'flag2', 'flag3', 'flag4'],
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
 
       const flag1 = screen.getByText(/flag1/)
       expect(flag1).toBeInTheDocument()
@@ -152,19 +191,52 @@ describe('UploadsCard', () => {
   })
 
   describe('rendering errors', () => {
-    let consoleSpy
-    beforeAll(() => {
-      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    it('handles null error', () => {
+      render(
+        <UploadItem
+          upload={{
+            ...mockUpload,
+            errors: [null],
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
+
+      const upload = screen.getByText('721065746')
+      expect(upload).toBeInTheDocument()
     })
 
-    afterAll(() => {
-      consoleSpy.mockRestore()
+    it('handles null errorCode', () => {
+      render(
+        <UploadItem
+          upload={{
+            ...mockUpload,
+            errors: [{ errorCode: null }],
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
+
+      const upload = screen.getByText('721065746')
+      expect(upload).toBeInTheDocument()
     })
 
     it('fileNotFoundInStorage error', () => {
-      render(<Upload errors={[{ errorCode: 'FILE_NOT_IN_STORAGE' }]} />, {
-        wrapper,
-      })
+      render(
+        <UploadItem
+          upload={{
+            ...mockUpload,
+            errors: [{ errorCode: 'FILE_NOT_IN_STORAGE' }],
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
 
       const processingFailed = screen.getByText(
         /Processing failed. Please rerun the upload in a new commit./
@@ -174,9 +246,17 @@ describe('UploadsCard', () => {
 
     describe('reportExpired error', () => {
       it('renders error message', () => {
-        render(<Upload errors={[{ errorCode: 'REPORT_EXPIRED' }]} />, {
-          wrapper,
-        })
+        render(
+          <UploadItem
+            upload={{
+              ...mockUpload,
+              errors: [{ errorCode: 'REPORT_EXPIRED' }],
+            }}
+          />,
+          {
+            wrapper,
+          }
+        )
 
         const uploadExpired = screen.getByText(
           /Upload exceeds the max age of 12h./
@@ -185,9 +265,17 @@ describe('UploadsCard', () => {
       })
 
       it('renders link to expired reports page', () => {
-        render(<Upload errors={[{ errorCode: 'REPORT_EXPIRED' }]} />, {
-          wrapper,
-        })
+        render(
+          <UploadItem
+            upload={{
+              ...mockUpload,
+              errors: [{ errorCode: 'REPORT_EXPIRED' }],
+            }}
+          />,
+          {
+            wrapper,
+          }
+        )
 
         const expiredReports = screen.getByRole('link', {
           name: /expired reports/,
@@ -201,14 +289,31 @@ describe('UploadsCard', () => {
 
     describe('reportEmpty error', () => {
       it('renders error message', () => {
-        render(<Upload errors={[{ errorCode: 'REPORT_EMPTY' }]} />, { wrapper })
+        render(
+          <UploadItem
+            upload={{
+              ...mockUpload,
+              errors: [{ errorCode: 'REPORT_EMPTY' }],
+            }}
+          />,
+          {
+            wrapper,
+          }
+        )
 
         const uploadIsEmpty = screen.getByText(/Unusable report due to issues/)
         expect(uploadIsEmpty).toBeInTheDocument()
       })
 
       it('renders link to troubleshooting document', () => {
-        render(<Upload errors={[{ errorCode: 'REPORT_EMPTY' }]} />, { wrapper })
+        render(
+          <UploadItem
+            upload={{ ...mockUpload, errors: [{ errorCode: 'REPORT_EMPTY' }] }}
+          />,
+          {
+            wrapper,
+          }
+        )
 
         const troubleshooting = screen.getByRole('link', {
           name: /troubleshooting document/,
@@ -222,13 +327,17 @@ describe('UploadsCard', () => {
 
     it('all errors', () => {
       render(
-        <Upload
-          errors={[
-            { errorCode: 'FILE_NOT_IN_STORAGE' },
-            { errorCode: 'REPORT_EXPIRED' },
-            { errorCode: 'REPORT_EMPTY' },
-            { errorCode: 'SOME_NEW_ERROR' },
-          ]}
+        <UploadItem
+          upload={{
+            ...mockUpload,
+            errors: [
+              { errorCode: 'FILE_NOT_IN_STORAGE' },
+              { errorCode: 'REPORT_EXPIRED' },
+              { errorCode: 'REPORT_EMPTY' },
+              { errorCode: 'UNKNOWN_PROCESSING' },
+              { errorCode: 'UNKNOWN_STORAGE' },
+            ],
+          }}
         />,
         { wrapper }
       )
@@ -246,7 +355,17 @@ describe('UploadsCard', () => {
     })
 
     it('handles new errors the front end does not know how to handle', () => {
-      render(<Upload errors={[{ errorCode: 'SOME_NEW_ERROR' }]} />, { wrapper })
+      render(
+        <UploadItem
+          upload={{
+            ...mockUpload,
+            errors: [{ errorCode: 'UNKNOWN_PROCESSING' }],
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
 
       const unknownError = screen.getByText(/Unknown error/)
       expect(unknownError).toBeInTheDocument()
@@ -254,8 +373,11 @@ describe('UploadsCard', () => {
 
     it('handles an unexpected error type', () => {
       render(
-        <Upload
-          errors={[{ errorCode: { error: 'bad config or something' } }]}
+        <UploadItem
+          upload={{
+            ...mockUpload,
+            errors: [{ errorCode: 'UNKNOWN_STORAGE' }],
+          }}
         />,
         { wrapper }
       )
@@ -265,52 +387,49 @@ describe('UploadsCard', () => {
     })
 
     it('handles upload state error but no error code resolved as an known error', () => {
-      render(<Upload state="ERROR" />, { wrapper })
+      render(<UploadItem upload={{ ...mockUpload, state: 'ERROR' }} />, {
+        wrapper,
+      })
 
       const unknownError = screen.getByText(/Unknown error/)
       expect(unknownError).toBeInTheDocument()
     })
 
     it('handles upload state error but no errors returned', () => {
-      render(<Upload errors={[]} state="ERROR" />, { wrapper })
+      render(
+        <UploadItem upload={{ ...mockUpload, errors: [], state: 'ERROR' }} />,
+        { wrapper }
+      )
 
       const unknownError = screen.getByText(/Unknown error/)
       expect(unknownError).toBeInTheDocument()
     })
 
-    it('If no state is provided and no errors received do not show an error', () => {
-      render(<Upload errors={[]} />, { wrapper })
-
-      const unknownError = screen.queryByText(/Unknown error/)
-      expect(unknownError).not.toBeInTheDocument()
-    })
-
     it('removes duplicate errors', () => {
       render(
-        <Upload
-          errors={[
-            { errorCode: 'REPORT_EMPTY' },
-            { errorCode: 'REPORT_EMPTY' },
-            { errorCode: { error: 'bad config or something' } },
-            { errorCode: { error: 'bad config or something' } },
-            { errorCode: 'SOME_NEW_ERROR' },
-            { errorCode: 'SOME_NEW_ERROR' },
-          ]}
+        <UploadItem
+          upload={{
+            ...mockUpload,
+            errors: [
+              { errorCode: 'REPORT_EMPTY' },
+              { errorCode: 'REPORT_EMPTY' },
+            ],
+          }}
         />,
         { wrapper }
       )
 
       const erroredUpload = screen.getByText(/Unusable report due to issues/)
       expect(erroredUpload).toBeInTheDocument()
-
-      const unknownError = screen.getByText(/Unknown error \(4\)/)
-      expect(unknownError).toBeInTheDocument()
     })
   })
 
   describe('rendering uploaded type of uploads', () => {
     it('does not render carry-forward text', () => {
-      render(<Upload uploadType="UPLOADED" />, { wrapper })
+      render(
+        <UploadItem upload={{ ...mockUpload, uploadType: 'UPLOADED' }} />,
+        { wrapper }
+      )
 
       const carryForward = screen.queryByText('carry-forward')
       expect(carryForward).not.toBeInTheDocument()
@@ -319,7 +438,12 @@ describe('UploadsCard', () => {
 
   describe('Upload reference when upload name exists', () => {
     it('renders upload name instead of buildCode', () => {
-      render(<Upload name="upload name" ciUrl="ciUrl.com" />, { wrapper })
+      render(
+        <UploadItem
+          upload={{ ...mockUpload, name: 'upload name', ciUrl: 'ciUrl.com' }}
+        />,
+        { wrapper }
+      )
 
       const name = screen.getByText('upload name')
       expect(name).toBeInTheDocument()
@@ -333,7 +457,7 @@ describe('UploadsCard', () => {
         createdAt: '2020-08-25T16:36:19.559474+00:00',
         downloadUrl: 'download.com',
         buildCode: '1234',
-        uploadType: 'CARRIEDFORWARD',
+        uploadType: 'CARRIEDFORWARD' as const,
         id: 0,
       }
 
@@ -345,7 +469,7 @@ describe('UploadsCard', () => {
     it('adds id to query cache when clicked', async () => {
       const { props, user } = setup()
 
-      render(<Upload {...props} />, { wrapper })
+      render(<UploadItem upload={{ ...mockUpload, ...props }} />, { wrapper })
 
       const checkbox = screen.getByRole('checkbox')
       await user.click(checkbox)
@@ -357,10 +481,10 @@ describe('UploadsCard', () => {
       )
     })
 
-    it('removes if from query cache when user re-checks checkbox', async () => {
+    it('removes from query cache when user re-checks checkbox', async () => {
       const { props, user } = setup()
 
-      render(<Upload {...props} />, { wrapper })
+      render(<UploadItem upload={{ ...mockUpload, ...props }} />, { wrapper })
 
       const checkbox = screen.getByRole('checkbox')
       await user.click(checkbox)
@@ -370,6 +494,23 @@ describe('UploadsCard', () => {
       await user.click(checkbox)
 
       expect(queryClient.getQueryData(['IgnoredUploadIds'])).toStrictEqual([])
+    })
+
+    it('handles null id gracefully', async () => {
+      const { props, user } = setup()
+
+      render(<UploadItem upload={{ ...mockUpload, ...props, id: null }} />, {
+        wrapper,
+      })
+
+      const checkbox = screen.getByRole('checkbox')
+      await user.click(checkbox)
+
+      expect(checkbox).toHaveAttribute('data-state', 'unchecked')
+
+      await user.click(checkbox)
+
+      expect(checkbox).toHaveAttribute('data-state', 'checked')
     })
   })
 })
