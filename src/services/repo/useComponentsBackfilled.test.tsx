@@ -45,8 +45,10 @@ const dataReturned = {
   owner: {
     repository: {
       __typename: 'Repository',
-      componentsMeasurementsActive: true,
-      componentsMeasurementsBackfilled: true,
+      coverageAnalytics: {
+        componentsMeasurementsActive: true,
+        componentsMeasurementsBackfilled: true,
+      },
     },
   },
 }
@@ -72,7 +74,6 @@ describe('useComponentsBackfilled', () => {
         })
 
         const expectedResponse = {
-          __typename: 'Repository',
           componentsMeasurementsActive: true,
           componentsMeasurementsBackfilled: true,
         }

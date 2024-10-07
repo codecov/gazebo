@@ -111,7 +111,9 @@ describe('ComponentMeasurements', () => {
             owner: {
               repository: {
                 __typename: 'Repository',
-                components: expectedData,
+                coverageAnalytics: {
+                  components: expectedData,
+                },
               },
             },
           },

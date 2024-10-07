@@ -43,8 +43,10 @@ describe('useRepoBackfilled', () => {
     owner: {
       repository: {
         __typename: 'Repository',
-        flagsMeasurementsActive: true,
-        flagsMeasurementsBackfilled: true,
+        coverageAnalytics: {
+          flagsMeasurementsActive: true,
+          flagsMeasurementsBackfilled: true,
+        },
       },
     },
   }
@@ -104,7 +106,6 @@ describe('useRepoBackfilled', () => {
         })
 
         const expectedResponse = {
-          __typename: 'Repository',
           flagsMeasurementsActive: true,
           flagsMeasurementsBackfilled: true,
         }
