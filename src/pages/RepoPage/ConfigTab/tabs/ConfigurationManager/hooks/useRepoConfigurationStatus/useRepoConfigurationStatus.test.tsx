@@ -36,13 +36,15 @@ const mockGoodResponse = {
     },
     repository: {
       __typename: 'Repository',
-      flagsCount: 2,
-      componentsCount: 3,
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       testAnalyticsEnabled: true,
       yaml: 'yaml',
       languages: ['typescript'],
+      coverageAnalytics: {
+        flagsCount: 2,
+        componentsCount: 3,
+      },
     },
   },
 }
@@ -212,13 +214,15 @@ describe('useRepoConfigurationStatus', () => {
         },
         repository: {
           __typename: 'Repository',
-          flagsCount: 2,
-          componentsCount: 3,
           coverageEnabled: true,
           bundleAnalysisEnabled: true,
           testAnalyticsEnabled: true,
           yaml: 'yaml',
           languages: ['typescript'],
+          coverageAnalytics: {
+            flagsCount: 2,
+            componentsCount: 3,
+          },
         },
       })
     )

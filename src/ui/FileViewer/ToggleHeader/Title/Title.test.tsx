@@ -25,17 +25,19 @@ const mockFirstResponse = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flags: {
-        edges: [
-          {
-            node: {
-              name: 'flag-1',
+      coverageAnalytics: {
+        flags: {
+          edges: [
+            {
+              node: {
+                name: 'flag-1',
+              },
             },
+          ],
+          pageInfo: {
+            hasNextPage: true,
+            endCursor: '1-flag-1',
           },
-        ],
-        pageInfo: {
-          hasNextPage: true,
-          endCursor: '1-flag-1',
         },
       },
     },
@@ -46,17 +48,19 @@ const mockSecondResponse = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flags: {
-        edges: [
-          {
-            node: {
-              name: 'flag-2',
+      coverageAnalytics: {
+        flags: {
+          edges: [
+            {
+              node: {
+                name: 'flag-2',
+              },
             },
+          ],
+          pageInfo: {
+            hasNextPage: false,
+            endCursor: null,
           },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: null,
         },
       },
     },
@@ -70,9 +74,11 @@ const mockBackfillHasFlagsAndActive = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flagsMeasurementsActive: true,
-      flagsMeasurementsBackfilled: true,
-      flagsCount: 4,
+      coverageAnalytics: {
+        flagsMeasurementsActive: true,
+        flagsMeasurementsBackfilled: true,
+        flagsCount: 4,
+      },
     },
   },
 }
@@ -84,9 +90,11 @@ const mockBackfillTimeScaleDisabled = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flagsMeasurementsActive: true,
-      flagsMeasurementsBackfilled: true,
-      flagsCount: 4,
+      coverageAnalytics: {
+        flagsMeasurementsActive: true,
+        flagsMeasurementsBackfilled: true,
+        flagsCount: 4,
+      },
     },
   },
 }
@@ -98,9 +106,11 @@ const mockBackfillNoFlagsPresent = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flagsMeasurementsActive: true,
-      flagsMeasurementsBackfilled: true,
-      flagsCount: 0,
+      coverageAnalytics: {
+        flagsMeasurementsActive: true,
+        flagsMeasurementsBackfilled: true,
+        flagsCount: 0,
+      },
     },
   },
 }
@@ -112,9 +122,11 @@ const mockBackfillFlagMeasureNotActive = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flagsMeasurementsActive: false,
-      flagsMeasurementsBackfilled: true,
-      flagsCount: 4,
+      coverageAnalytics: {
+        flagsMeasurementsActive: false,
+        flagsMeasurementsBackfilled: true,
+        flagsCount: 4,
+      },
     },
   },
 }

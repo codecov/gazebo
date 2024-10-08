@@ -20,9 +20,11 @@ query BackfillFlagMemberships($name: String!, $repo: String!) {
     repository(name:$repo) {
       __typename
       ... on Repository {
-      flagsMeasurementsActive
-      flagsMeasurementsBackfilled
-      flagsCount
+        coverageAnalytics {
+          flagsMeasurementsActive
+          flagsMeasurementsBackfilled
+          flagsCount
+        }
       }
       ... on NotFoundError {
         message
@@ -37,9 +39,13 @@ query BackfillFlagMemberships($name: String!, $repo: String!) {
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  flagsMeasurementsActive: z.boolean().nullish(),
-  flagsMeasurementsBackfilled: z.boolean().nullish(),
-  flagsCount: z.number().nullish(),
+  coverageAnalytics: z
+    .object({
+      flagsMeasurementsActive: z.boolean().nullish(),
+      flagsMeasurementsBackfilled: z.boolean().nullish(),
+      flagsCount: z.number().nullish(),
+    })
+    .nullable(),
 })
 
 const RepoBackfilledSchema = z.object({
@@ -120,7 +126,7 @@ export function useRepoBackfilled() {
 
         return {
           ...data?.config,
-          ...data?.owner?.repository,
+          ...data?.owner?.repository?.coverageAnalytics,
         }
       }),
   })

@@ -28,27 +28,29 @@ query FlagMeasurements(
     repository(name: $repo) {
       __typename
       ... on Repository {
-        flags(
-          filters: $filters
-          orderingDirection: $orderingDirection
-          after: $after
-          first: 15
-        ) {
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-          edges {
-            node {
-              name
-              percentCovered
-              percentChange
-              measurements(
-                interval: $interval
-                after: $afterDate
-                before: $beforeDate
-              ) {
-                avg
+        coverageAnalytics {
+          flags(
+            filters: $filters
+            orderingDirection: $orderingDirection
+            after: $after
+            first: 15
+          ) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            edges {
+              node {
+                name
+                percentCovered
+                percentChange
+                measurements(
+                  interval: $interval
+                  after: $afterDate
+                  before: $beforeDate
+                ) {
+                  avg
+                }
               }
             }
           }
@@ -72,17 +74,21 @@ export const FlagEdgeSchema = z.object({
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  flags: z.object({
-    pageInfo: z.object({
-      hasNextPage: z.boolean(),
-      endCursor: z.string().nullable(),
-    }),
-    edges: z.array(
-      z.object({
-        node: FlagEdgeSchema.nullable(),
-      })
-    ),
-  }),
+  coverageAnalytics: z
+    .object({
+      flags: z.object({
+        pageInfo: z.object({
+          hasNextPage: z.boolean(),
+          endCursor: z.string().nullable(),
+        }),
+        edges: z.array(
+          z.object({
+            node: FlagEdgeSchema.nullable(),
+          })
+        ),
+      }),
+    })
+    .nullable(),
 })
 
 const RequestSchema = z.object({
@@ -182,7 +188,7 @@ function fetchRepoFlags({
       } satisfies NetworkErrorObject)
     }
 
-    const flags = data?.owner?.repository?.flags
+    const flags = data?.owner?.repository?.coverageAnalytics?.flags
     return {
       flags: mapEdges(flags),
       pageInfo: flags?.pageInfo,

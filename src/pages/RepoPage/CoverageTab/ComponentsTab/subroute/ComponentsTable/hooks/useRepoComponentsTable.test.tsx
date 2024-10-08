@@ -82,24 +82,26 @@ const mockedComponentMeasurements = {
   owner: {
     repository: {
       __typename: 'Repository',
-      components: [
-        {
-          name: 'component1',
-          componentId: 'component1Id',
-          percentCovered: 93.26,
-          percentChange: 1.65,
-          lastUploaded: null,
-          measurements: [],
-        },
-        {
-          name: 'component2',
-          componentId: 'component2Id',
-          percentCovered: 91.74,
-          percentChange: 2.65,
-          lastUploaded: null,
-          measurements: [],
-        },
-      ],
+      coverageAnalytics: {
+        components: [
+          {
+            name: 'component1',
+            componentId: 'component1Id',
+            percentCovered: 93.26,
+            percentChange: 1.65,
+            lastUploaded: null,
+            measurements: [],
+          },
+          {
+            name: 'component2',
+            componentId: 'component2Id',
+            percentCovered: 91.74,
+            percentChange: 2.65,
+            lastUploaded: null,
+            measurements: [],
+          },
+        ],
+      },
     },
   },
 }

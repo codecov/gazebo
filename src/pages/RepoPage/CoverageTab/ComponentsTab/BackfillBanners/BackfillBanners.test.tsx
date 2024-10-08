@@ -55,9 +55,11 @@ describe('BackfillBanner', () => {
           owner: {
             repository: {
               __typename: 'Repository',
-              componentsMeasurementsActive: false,
-              componentsMeasurementsBackfilled: true,
-              componentsCount: 0,
+              coverageAnalytics: {
+                componentsMeasurementsActive: false,
+                componentsMeasurementsBackfilled: true,
+                componentsCount: 0,
+              },
             },
           },
         })
@@ -75,9 +77,11 @@ describe('BackfillBanner', () => {
           owner: {
             repository: {
               __typename: 'Repository',
-              componentsMeasurementsActive: true,
-              componentsMeasurementsBackfilled: false,
-              componentsCount: 0,
+              coverageAnalytics: {
+                componentsMeasurementsActive: true,
+                componentsMeasurementsBackfilled: false,
+                componentsCount: 0,
+              },
             },
           },
         })
