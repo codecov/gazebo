@@ -10,7 +10,7 @@ const mockTestResults = {
     repository: {
       __typename: 'Repository',
       testAnalytics: {
-        results: {
+        testResults: {
           edges: [
             {
               node: {
