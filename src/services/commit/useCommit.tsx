@@ -23,6 +23,7 @@ import {
   UploadStateEnum,
   UploadTypeEnum,
 } from 'shared/utils/commit'
+import { Upload } from 'shared/utils/extractUploads'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
@@ -58,7 +59,7 @@ const UploadSchema = z.object({
   provider: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
-  flags: z.array(z.string()).nullish(),
+  flags: z.array(z.string()).nullable(),
   jobCode: z.string().nullable(),
   downloadUrl: z.string(),
   ciUrl: z.string().nullable(),
@@ -388,13 +389,17 @@ export function useCommit({
         const commit = data?.owner?.repository?.commit
         const uploadEdges = data?.owner?.repository?.commit?.uploads
 
-        const uploads = mapEdges(uploadEdges).map((upload) => {
-          const errors = mapEdges(upload?.errors)
+        const uploads: Upload[] = []
+        mapEdges(uploadEdges).forEach((upload) => {
+          if (upload === null) {
+            return
+          }
+          const errors = mapEdges(upload.errors)
 
-          return {
+          uploads.push({
             ...upload,
             errors: errors,
-          }
+          })
         })
 
         if (!commit) {

@@ -19,7 +19,7 @@ describe('ColorBar', () => {
   describe('when there is no coverage data', () => {
     it('does not render', () => {
       const { container } = render(
-        <ColorBar coverage={undefined} locationHash="" lineNumber={0} />
+        <ColorBar coverage={undefined} isHighlighted={false} />
       )
       expect(container).toBeEmptyDOMElement()
     })
@@ -27,41 +27,41 @@ describe('ColorBar', () => {
 
   describe('coverage value is H', () => {
     it('renders with covered color', () => {
-      render(<ColorBar coverage={'H'} locationHash="" lineNumber={0} />)
+      render(<ColorBar coverage={'H'} isHighlighted={false} />)
 
       const bar = screen.getByTestId('covered-bar')
       expect(bar).toBeInTheDocument()
-      expect(bar).toHaveClass('bg-ds-coverage-covered')
+      expect(bar).toHaveClass('bg-ds-coverage-covered/50')
     })
   })
 
   describe('coverage value is M', () => {
     it('renders with uncovered color', () => {
-      render(<ColorBar coverage={'M'} locationHash="" lineNumber={0} />)
+      render(<ColorBar coverage={'M'} isHighlighted={false} />)
 
       const bar = screen.getByTestId('uncovered-bar')
       expect(bar).toBeInTheDocument()
-      expect(bar).toHaveClass('bg-ds-coverage-uncovered')
+      expect(bar).toHaveClass('bg-ds-coverage-uncovered/75')
     })
   })
 
   describe('coverage value is P', () => {
     it('renders with partial color', () => {
-      render(<ColorBar coverage={'P'} locationHash="" lineNumber={0} />)
+      render(<ColorBar coverage={'P'} isHighlighted={false} />)
 
       const bar = screen.getByTestId('partial-bar')
       expect(bar).toBeInTheDocument()
-      expect(bar).toHaveClass('bg-ds-coverage-partial')
+      expect(bar).toHaveClass('bg-ds-coverage-partial/50')
     })
   })
 
   describe('highlighted line', () => {
     it('renders with highlighted color', () => {
-      render(<ColorBar coverage={'P'} locationHash="#L18" lineNumber={18} />)
+      render(<ColorBar coverage={'P'} isHighlighted={true} />)
 
       const bar = screen.getByTestId('highlighted-bar')
       expect(bar).toBeInTheDocument()
-      expect(bar).toHaveClass('bg-ds-blue-medium')
+      expect(bar).toHaveClass('bg-ds-blue-medium/25')
     })
   })
 
@@ -69,7 +69,7 @@ describe('ColorBar', () => {
     it('renders empty body', () => {
       const { container } = render(
         // @ts-expect-error - testing invalid value
-        <ColorBar coverage={'X'} locationHash="" lineNumber={0} />
+        <ColorBar coverage={'X'} isHighlighted={false} />
       )
       expect(container).toBeEmptyDOMElement()
     })

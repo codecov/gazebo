@@ -5,6 +5,7 @@ import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { ViteEjsPlugin } from 'vite-plugin-ejs'
 import svgr from 'vite-plugin-svgr'
+import legacy from '@vitejs/plugin-legacy'
 
 export default defineConfig((config) => {
   const env = loadEnv(config.mode, process.cwd(), 'REACT_APP')
@@ -50,7 +51,6 @@ export default defineConfig((config) => {
   }
 
   return {
-    base: env.REACT_APP_BASE_URL,
     server: {
       port: 3000,
     },
@@ -61,10 +61,13 @@ export default defineConfig((config) => {
     define: envWithProcessPrefix,
     plugins: [
       ViteEjsPlugin({
-        isProduction: config.mode === 'production',
+        isProduction: process.env.REACT_APP_ENV === "production",
         REACT_APP_PENDO_KEY: process.env.REACT_APP_PENDO_KEY,
       }),
       tsconfigPaths(),
+      legacy({
+        targets: ['>0.2%', 'not dead', 'not op_mini all'],
+      }),
       react(),
       svgr(),
       ...plugins,

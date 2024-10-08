@@ -43,33 +43,35 @@ const mockedComponentMeasurements = {
   owner: {
     repository: {
       __typename: 'Repository',
-      components: [
-        {
-          componentId: 'components1_id',
-          name: 'components1',
-          percentCovered: 93.26,
-          percentChange: -1.56,
-          lastUploaded: '2021-09-30T00:00:00Z',
-          measurements: [{ avg: 51.78 }, { avg: 93.356 }],
-        },
-        {
-          componentId: 'components2_id',
-          name: 'component2',
-          percentCovered: 91.74,
-          percentChange: null,
-          lastUploaded: null,
-          measurements: [{ avg: null }, { avg: null }],
-        },
+      coverageAnalytics: {
+        components: [
+          {
+            componentId: 'components1_id',
+            name: 'components1',
+            percentCovered: 93.26,
+            percentChange: -1.56,
+            lastUploaded: '2021-09-30T00:00:00Z',
+            measurements: [{ avg: 51.78 }, { avg: 93.356 }],
+          },
+          {
+            componentId: 'components2_id',
+            name: 'component2',
+            percentCovered: 91.74,
+            percentChange: null,
+            lastUploaded: null,
+            measurements: [{ avg: null }, { avg: null }],
+          },
 
-        {
-          componentId: 'testtest_id',
-          name: 'testtest',
-          percentCovered: 1.0,
-          percentChange: 1.0,
-          lastUploaded: null,
-          measurements: [{ avg: 51.78 }, { avg: 93.356 }],
-        },
-      ],
+          {
+            componentId: 'testtest_id',
+            name: 'testtest',
+            percentCovered: 1.0,
+            percentChange: 1.0,
+            lastUploaded: null,
+            measurements: [{ avg: 51.78 }, { avg: 93.356 }],
+          },
+        ],
+      },
     },
   },
 }
@@ -78,16 +80,18 @@ const mockNoReportsUploadedMeasurements = {
   owner: {
     repository: {
       __typename: 'Repository',
-      components: [
-        {
-          name: 'components1',
-          componentId: 'components1_id',
-          percentCovered: null,
-          percentChange: null,
-          lastUploaded: null,
-          measurements: [],
-        },
-      ],
+      coverageAnalytics: {
+        components: [
+          {
+            name: 'components1',
+            componentId: 'components1_id',
+            percentCovered: null,
+            percentChange: null,
+            lastUploaded: null,
+            measurements: [],
+          },
+        ],
+      },
     },
   },
 }
@@ -96,7 +100,9 @@ const mockEmptyComponentMeasurements = {
   owner: {
     repository: {
       __typename: 'Repository',
-      components: [],
+      coverageAnalytics: {
+        components: [],
+      },
     },
   },
 }

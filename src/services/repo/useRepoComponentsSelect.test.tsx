@@ -43,16 +43,18 @@ const dataReturned = {
   owner: {
     repository: {
       __typename: 'Repository',
-      componentsYaml: [
-        {
-          name: 'foo',
-          id: '1',
-        },
-        {
-          name: 'bar',
-          id: '2',
-        },
-      ],
+      coverageAnalytics: {
+        componentsYaml: [
+          {
+            name: 'foo',
+            id: '1',
+          },
+          {
+            name: 'bar',
+            id: '2',
+          },
+        ],
+      },
     },
   },
 }
@@ -116,7 +118,8 @@ describe('RepoComponentsYamlSelector', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
-            components: dataReturned.owner.repository.componentsYaml,
+            components:
+              dataReturned.owner.repository.coverageAnalytics.componentsYaml,
           })
         )
       })
