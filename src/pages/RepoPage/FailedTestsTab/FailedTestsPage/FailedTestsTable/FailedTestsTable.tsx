@@ -69,6 +69,10 @@ export function getSortingOption(
       parameter = OrderingParameter.FAILURE_RATE
     }
 
+    if (state.id === 'flakeRate') {
+      parameter = OrderingParameter.FLAKE_RATE
+    }
+
     if (state.id === 'commitsFailed') {
       parameter = OrderingParameter.COMMITS_WHERE_FAIL
     }
@@ -106,7 +110,7 @@ const columns = [
     cell: (info) => info.renderValue(),
   }),
   columnHelper.accessor('avgDuration', {
-    header: () => 'Last duration',
+    header: () => 'Avg duration',
     cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
   }),
   columnHelper.accessor('failureRate', {
@@ -129,11 +133,14 @@ const columns = [
       </div>
     ),
     cell: (info) => {
+      const value = (info.renderValue() ?? 0) * 100
+      const isInt = Number.isInteger(info.renderValue())
+
       return (
         <Tooltip delayDuration={0} skipDelayDuration={100}>
           <Tooltip.Root>
             <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
-              {info.renderValue() ? `${info.renderValue()}%` : '9%'}
+              {isInt ? `${value}%` : `${value.toFixed(2)}%`}
             </Tooltip.Trigger>
             <Tooltip.Portal>
               <Tooltip.Content

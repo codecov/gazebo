@@ -20,6 +20,7 @@ const node1 = {
   name: 'test-1',
   commitsFailed: 1,
   failureRate: 0.1,
+  flakeRate: 0.0,
   avgDuration: 10,
 }
 
@@ -28,6 +29,7 @@ const node2 = {
   name: 'test-2',
   commitsFailed: 2,
   failureRate: 0.2,
+  flakeRate: 0.2,
   avgDuration: 20,
 }
 
@@ -36,6 +38,7 @@ const node3 = {
   name: 'test-3',
   commitsFailed: 3,
   failureRate: 0.3,
+  flakeRate: 0.1,
   avgDuration: 30,
 }
 
@@ -152,7 +155,7 @@ describe('FailedTestsTable', () => {
       const nameColumn = await screen.findByText('Test name')
       expect(nameColumn).toBeInTheDocument()
 
-      const durationColumn = await screen.findByText('Last duration')
+      const durationColumn = await screen.findByText('Avg duration')
       expect(durationColumn).toBeInTheDocument()
 
       const failureRateColumn = await screen.findByText('Failure rate')
@@ -213,7 +216,7 @@ describe('FailedTestsTable', () => {
         wrapper: wrapper(queryClient),
       })
 
-      const durationColumn = await screen.findByText('Last duration')
+      const durationColumn = await screen.findByText('Avg duration')
       await user.click(durationColumn)
 
       await waitFor(() => {
@@ -269,6 +272,40 @@ describe('FailedTestsTable', () => {
             ordering: {
               direction: OrderingDirection.ASC,
               parameter: OrderingParameter.FAILURE_RATE,
+            },
+          })
+        )
+      })
+    })
+
+    it('can sort on flake rate column', async () => {
+      const { queryClient, user, mockVariables } = setup({ noEntries: true })
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const flakeRateColumn = await screen.findByText('Flake rate')
+      await user.click(flakeRateColumn)
+
+      await waitFor(() => {
+        expect(mockVariables).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.DESC,
+              parameter: OrderingParameter.FLAKE_RATE,
+            },
+          })
+        )
+      })
+
+      await user.click(flakeRateColumn)
+
+      await waitFor(() => {
+        expect(mockVariables).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.ASC,
+              parameter: OrderingParameter.FLAKE_RATE,
             },
           })
         )
