@@ -1,35 +1,18 @@
-import { ReactComponent as angleDown } from './angleDown.svg'
-import { ReactComponent as angleUp } from './angleUp.svg'
-import { ReactComponent as arrowLeft } from './arrowLeft.svg'
-import { ReactComponent as ban } from './ban.svg'
-import { ReactComponent as check } from './check.svg'
-import { ReactComponent as chevronLeft } from './chevronLeft.svg'
-import { ReactComponent as chevronRight } from './chevronRight.svg'
-import { ReactComponent as creditCard } from './creditCard.svg'
-import { ReactComponent as exclamationCircle } from './exclamationCircle.svg'
-import { ReactComponent as fileAlt } from './fileAlt.svg'
-import { ReactComponent as hamburger } from './hamburger.svg'
-import { ReactComponent as infoCircle } from './infoCircle.svg'
-import { ReactComponent as search } from './search.svg'
-import { ReactComponent as setting } from './setting.svg'
-import { ReactComponent as signOut } from './signOut.svg'
-import { ReactComponent as times } from './times.svg'
+import angleDown from './angleDown.svg?react'
+import angleUp from './angleUp.svg?react'
+import arrowLeft from './arrowLeft.svg?react'
+import ban from './ban.svg?react'
+import check from './check.svg?react'
+import chevronLeft from './chevronLeft.svg?react'
+import chevronRight from './chevronRight.svg?react'
+import creditCard from './creditCard.svg?react'
+import exclamationCircle from './exclamationCircle.svg?react'
+import fileAlt from './fileAlt.svg?react'
+import hamburger from './hamburger.svg?react'
+import infoCircle from './infoCircle.svg?react'
+import search from './search.svg?react'
+import setting from './setting.svg?react'
+import signOut from './signOut.svg?react'
+import times from './times.svg?react'
 
-export {
-  angleDown,
-  angleUp,
-  arrowLeft,
-  ban,
-  check,
-  chevronLeft,
-  chevronRight,
-  creditCard,
-  exclamationCircle,
-  fileAlt,
-  hamburger,
-  infoCircle,
-  search,
-  setting,
-  signOut,
-  times,
-}
+export { angleDown, angleUp, arrowLeft, ban, check, chevronLeft, chevronRight, creditCard, exclamationCircle, fileAlt, hamburger, infoCircle, search, setting, signOut, times }
