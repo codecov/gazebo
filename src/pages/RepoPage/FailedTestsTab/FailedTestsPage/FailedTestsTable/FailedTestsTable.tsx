@@ -61,12 +61,16 @@ export function getSortingOption(
     let parameter: keyof typeof OrderingParameter =
       OrderingParameter.COMMITS_WHERE_FAIL
 
-    if (state.id === 'avgDuration') {
-      parameter = OrderingParameter.AVG_DURATION
+    if (state.id === 'lastDuration') {
+      parameter = OrderingParameter.LAST_DURATION
     }
 
     if (state.id === 'failureRate') {
       parameter = OrderingParameter.FAILURE_RATE
+    }
+
+    if (state.id === 'flakeRate') {
+      parameter = OrderingParameter.FLAKE_RATE
     }
 
     if (state.id === 'commitsFailed') {
@@ -84,14 +88,14 @@ export function getSortingOption(
 }
 
 const isNumericValue = (value: string) =>
-  value === 'avgDuration' ||
+  value === 'lastDuration' ||
   value === 'failureRate' ||
   value === 'commitsFailed' ||
   value === 'flakeRate'
 
 interface FailedTestsColumns {
   name: string
-  avgDuration: number | null
+  lastDuration: number | null
   failureRate: number | null
   flakeRate?: number | null
   commitsFailed: number | null
@@ -105,7 +109,7 @@ const columns = [
     header: () => 'Test name',
     cell: (info) => info.renderValue(),
   }),
-  columnHelper.accessor('avgDuration', {
+  columnHelper.accessor('lastDuration', {
     header: () => 'Last duration',
     cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
   }),
@@ -129,11 +133,14 @@ const columns = [
       </div>
     ),
     cell: (info) => {
+      const value = (info.renderValue() ?? 0) * 100
+      const isInt = Number.isInteger(info.renderValue())
+
       return (
         <Tooltip delayDuration={0} skipDelayDuration={100}>
           <Tooltip.Root>
             <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
-              {info.renderValue() ? `${info.renderValue()}%` : '9%'}
+              {isInt ? `${value}%` : `${value.toFixed(2)}%`}
             </Tooltip.Trigger>
             <Tooltip.Portal>
               <Tooltip.Content
