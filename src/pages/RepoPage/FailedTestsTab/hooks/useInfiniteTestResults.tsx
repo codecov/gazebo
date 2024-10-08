@@ -49,7 +49,7 @@ const GetTestResultsSchema = z.object({
           __typename: z.literal('Repository'),
           testAnalytics: z
             .object({
-              results: z.object({
+              testResults: z.object({
                 edges: z.array(
                   z.object({
                     node: TestResultSchema,
@@ -86,7 +86,7 @@ query GetTestResults(
       __typename
       ... on Repository {
         testAnalytics {
-          results(
+          testResults(
             filters: $filters
             ordering: $ordering
             first: $first
@@ -220,9 +220,9 @@ export const useInfiniteTestResults = ({
 
         return {
           testResults: mapEdges(
-            data?.owner?.repository?.testAnalytics?.results
+            data?.owner?.repository?.testAnalytics?.testResults
           ).filter((item): item is TestResult => item !== null),
-          pageInfo: data?.owner?.repository?.testAnalytics?.results
+          pageInfo: data?.owner?.repository?.testAnalytics?.testResults
             ?.pageInfo ?? {
             hasNextPage: false,
             endCursor: null,

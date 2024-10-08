@@ -105,7 +105,7 @@ describe('FailedTestsTable', () => {
                 repository: {
                   __typename: 'Repository',
                   testAnalytics: {
-                    results: {
+                    testResults: {
                       edges: [],
                       pageInfo: {
                         hasNextPage: false,
@@ -124,7 +124,7 @@ describe('FailedTestsTable', () => {
             repository: {
               __typename: 'Repository',
               testAnalytics: {
-                results: {
+                testResults: {
                   edges: info.variables.after
                     ? [{ node: node3 }]
                     : [{ node: node1 }, { node: node2 }],
