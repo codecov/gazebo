@@ -18,7 +18,7 @@ const mockTestResults = {
               commitsFailed: 1,
               failureRate: 0.1,
               flakeRate: 0.0,
-              lastDuration: 10,
+              avgDuration: 10,
             },
           },
           {
@@ -28,7 +28,7 @@ const mockTestResults = {
               commitsFailed: 2,
               failureRate: 0.2,
               flakeRate: 0.0,
-              lastDuration: 20,
+              avgDuration: 20,
             },
           },
           {
@@ -38,7 +38,7 @@ const mockTestResults = {
               commitsFailed: 3,
               failureRate: 0.2,
               flakeRate: 0.1,
-              lastDuration: 30,
+              avgDuration: 30,
             },
           },
         ],
@@ -150,7 +150,7 @@ describe('useInfiniteTestResults', () => {
                 commitsFailed: 1,
                 failureRate: 0.1,
                 flakeRate: 0.0,
-                lastDuration: 10,
+                avgDuration: 10,
               },
               {
                 updatedAt: '2023-01-02T00:00:00Z',
@@ -158,7 +158,7 @@ describe('useInfiniteTestResults', () => {
                 commitsFailed: 2,
                 failureRate: 0.2,
                 flakeRate: 0.0,
-                lastDuration: 20,
+                avgDuration: 20,
               },
               {
                 updatedAt: '2023-01-03T00:00:00Z',
@@ -166,7 +166,7 @@ describe('useInfiniteTestResults', () => {
                 commitsFailed: 3,
                 failureRate: 0.2,
                 flakeRate: 0.1,
-                lastDuration: 30,
+                avgDuration: 30,
               },
             ])
           )

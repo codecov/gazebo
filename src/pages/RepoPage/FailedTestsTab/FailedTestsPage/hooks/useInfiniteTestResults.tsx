@@ -20,7 +20,7 @@ const TestResultSchema = z.object({
   commitsFailed: z.number().nullable(),
   failureRate: z.number().nullable(),
   flakeRate: z.number().nullable(),
-  lastDuration: z.number().nullable(),
+  avgDuration: z.number().nullable(),
 })
 
 export const OrderingDirection = {
@@ -29,7 +29,7 @@ export const OrderingDirection = {
 } as const
 
 export const OrderingParameter = {
-  LAST_DURATION: 'LAST_DURATION',
+  AVG_DURATION: 'AVG_DURATION',
   FLAKE_RATE: 'FLAKE_RATE',
   FAILURE_RATE: 'FAILURE_RATE',
   COMMITS_WHERE_FAIL: 'COMMITS_WHERE_FAIL',
@@ -94,7 +94,7 @@ query GetTestResults(
           edges {
             node {
               updatedAt
-              lastDuration
+              avgDuration
               name
               failureRate
               flakeRate

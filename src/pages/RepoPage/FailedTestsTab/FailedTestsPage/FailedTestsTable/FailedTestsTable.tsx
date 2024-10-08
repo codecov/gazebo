@@ -61,8 +61,8 @@ export function getSortingOption(
     let parameter: keyof typeof OrderingParameter =
       OrderingParameter.COMMITS_WHERE_FAIL
 
-    if (state.id === 'lastDuration') {
-      parameter = OrderingParameter.LAST_DURATION
+    if (state.id === 'avgDuration') {
+      parameter = OrderingParameter.AVG_DURATION
     }
 
     if (state.id === 'failureRate') {
@@ -88,14 +88,14 @@ export function getSortingOption(
 }
 
 const isNumericValue = (value: string) =>
-  value === 'lastDuration' ||
+  value === 'avgDuration' ||
   value === 'failureRate' ||
   value === 'commitsFailed' ||
   value === 'flakeRate'
 
 interface FailedTestsColumns {
   name: string
-  lastDuration: number | null
+  avgDuration: number | null
   failureRate: number | null
   flakeRate?: number | null
   commitsFailed: number | null
@@ -109,8 +109,8 @@ const columns = [
     header: () => 'Test name',
     cell: (info) => info.renderValue(),
   }),
-  columnHelper.accessor('lastDuration', {
-    header: () => 'Last duration',
+  columnHelper.accessor('avgDuration', {
+    header: () => 'Avg duration',
     cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
   }),
   columnHelper.accessor('failureRate', {
