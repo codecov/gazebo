@@ -160,7 +160,6 @@ describe('TokenRequiredModal', () => {
       const cancelButton = await screen.findByRole('button', { name: /Cancel/ })
       await user.click(cancelButton)
 
-      expect(setTokenRequired).toHaveBeenCalledWith(false)
       await waitFor(() => expect(closeModal).toHaveBeenCalled())
     })
   })

@@ -1,25 +1,50 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
+import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 
-import TokenlessModal from './TokenRequiredModal'
+import TokenRequiredModal from './TokenRequiredModal'
+import { useSetUploadTokenRequired } from './useSetUploadTokenRequired'
 
 const AUTHENTICATION_OPTIONS = {
   NotRequired: 'not-required',
   Required: 'required',
 } as const
 
-function TokenlessSection() {
-  const [showModal, setShowModal] = useState(false)
-  const [tokenRequired, setTokenRequired] = useState(false) // TODO: get from API
+interface UseParams {
+  provider: string
+  owner: string
+}
+
+const TokenlessSection: React.FC = () => {
+  const { provider, owner } = useParams<UseParams>()
+  const {
+    data: uploadTokenRequiredData,
+    isLoading: isUploadTokenRequiredLoading,
+  } = useUploadTokenRequired({ provider, owner })
+  const { mutate, isLoading: isSetUploadTokenRequiredLoading } =
+    useSetUploadTokenRequired()
+
+  const [showModal, setShowModal] = useState<boolean>(false)
+  const [tokenRequired, setTokenRequiredState] = useState<
+    boolean | undefined | null
+  >(uploadTokenRequiredData?.uploadTokenRequired)
+
+  useEffect(() => {
+    if (uploadTokenRequiredData && !isUploadTokenRequiredLoading) {
+      setTokenRequiredState(uploadTokenRequiredData.uploadTokenRequired)
+    }
+  }, [uploadTokenRequiredData, isUploadTokenRequiredLoading])
 
   const handleValueChange = (value: string) => {
     if (value === AUTHENTICATION_OPTIONS.Required) {
       setShowModal(true)
     } else {
-      setTokenRequired(false)
+      setTokenRequiredState(false)
+      mutate(false)
     }
   }
 
@@ -30,7 +55,7 @@ function TokenlessSection() {
           <h2 className="text-sm font-semibold">Token authentication</h2>
           <A
             to={{
-              pageName: 'aboutCodeCoverage', // TODO: replace with actual pageName
+              pageName: 'tokenlessDocs',
             }}
             hook="tokenless-docs"
             isExternal={true}
@@ -75,10 +100,13 @@ function TokenlessSection() {
           </RadioTileGroup.Item>
         </RadioTileGroup>
         {showModal && (
-          <TokenlessModal
+          <TokenRequiredModal
             closeModal={() => setShowModal(false)}
-            setTokenRequired={setTokenRequired}
-            isLoading={false} // TODO: get from API
+            setTokenRequired={(value) => {
+              setTokenRequiredState(value)
+              mutate(true)
+            }}
+            isLoading={isSetUploadTokenRequiredLoading}
           />
         )}
       </Card.Content>

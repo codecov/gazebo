@@ -1,61 +1,129 @@
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useAddNotification } from 'services/toastNotification'
+import { useFlags } from 'shared/featureFlags'
 
 import TokenlessSection from './TokenlessSection'
 
-const Wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/account/github/codecov/org-upload-token']}>
-    <Route path="/account/:provider/:owner/org-upload-token">{children}</Route>
-  </MemoryRouter>
+vi.mock('shared/featureFlags')
+vi.mock('services/toastNotification')
+
+const mockedUseFlags = useFlags as jest.Mock
+const mockedUseAddNotification = useAddNotification as jest.Mock
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const server = setupServer()
+
+beforeAll(() => {
+  console.error = () => {}
+  server.listen()
+})
+
+beforeEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
+
+afterAll(() => server.close())
+
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/account/gh/codecov/org-upload-token']}>
+      <Route path="/account/:provider/:owner/org-upload-token">
+        {children}
+      </Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 describe('TokenlessSection', () => {
-  const setup = () => {
+  function setup({
+    isAdmin = true,
+    orgUploadToken = 'test-mock-org-upload-token',
+    uploadTokenRequired = false,
+  } = {}) {
+    mockedUseFlags.mockReturnValue({ tokenlessSection: true })
+    mockedUseAddNotification.mockReturnValue(vi.fn())
+    const mutate = vi.fn()
     const user = userEvent.setup()
 
-    return { user }
+    server.use(
+      graphql.query('GetUploadTokenRequired', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              orgUploadToken,
+              isAdmin,
+              uploadTokenRequired,
+            },
+          },
+        })
+      }),
+      graphql.mutation('SetUploadTokenRequired', (info) => {
+        mutate(info.variables.input.uploadTokenRequired)
+
+        return HttpResponse.json({
+          data: {
+            setUploadTokenRequired: {
+              error: null,
+            },
+          },
+        })
+      })
+    )
+
+    return { user, mutate }
   }
 
-  it('renders the token authentication title', () => {
-    render(<TokenlessSection />, { wrapper: Wrapper })
+  it('renders the token authentication title', async () => {
     setup()
+    render(<TokenlessSection />, { wrapper })
 
-    const title = screen.getByText('Token authentication')
+    const title = await screen.findByText('Token authentication')
     expect(title).toBeInTheDocument()
   })
 
-  it('renders the learn more link', () => {
-    render(<TokenlessSection />, { wrapper: Wrapper })
+  it('renders the learn more link', async () => {
     setup()
+    render(<TokenlessSection />, { wrapper })
 
-    const learnMoreLink = screen.getByText('learn more')
+    const learnMoreLink = await screen.findByText('learn more')
     expect(learnMoreLink).toBeInTheDocument()
   })
 
-  it('renders the authentication option selection text', () => {
-    render(<TokenlessSection />, { wrapper: Wrapper })
+  it('renders the authentication option selection text', async () => {
     setup()
+    render(<TokenlessSection />, { wrapper })
 
-    const optionText = screen.getByText('Select an authentication option')
+    const optionText = await screen.findByText(
+      'Select an authentication option'
+    )
     expect(optionText).toBeInTheDocument()
   })
 
-  it('renders "Not required" option description', () => {
-    render(<TokenlessSection />, { wrapper: Wrapper })
+  it('renders "Not required" option description', async () => {
     setup()
+    render(<TokenlessSection />, { wrapper })
 
-    const notRequiredDescription = screen.getByText(
+    const notRequiredDescription = await screen.findByText(
       'When a token is not required, your team can upload coverage reports without one. Existing tokens will still work, and no action is needed for past uploads. Designed for public open-source projects.'
     )
     expect(notRequiredDescription).toBeInTheDocument()
   })
 
-  it('renders "Required" option description', () => {
-    render(<TokenlessSection />, { wrapper: Wrapper })
+  it('renders "Required" option description', async () => {
     setup()
+    render(<TokenlessSection />, { wrapper })
 
-    const requiredDescription = screen.getByText(
+    const requiredDescription = await screen.findByText(
       'When a token is required, your team must use a global or repo-specific token for uploads. Designed for private repositories and closed-source projects.'
     )
     expect(requiredDescription).toBeInTheDocument()
@@ -63,77 +131,101 @@ describe('TokenlessSection', () => {
 
   describe('when "Required" option is selected', () => {
     it('renders the "Cancel" button', async () => {
-      render(<TokenlessSection />, { wrapper: Wrapper })
       const { user } = setup()
+      render(<TokenlessSection />, { wrapper })
 
-      const requiredOption = screen.getByLabelText('Required')
+      const requiredOption = await screen.findByLabelText('Required')
       await user.click(requiredOption)
 
-      const cancelButton = screen.getByRole('button', { name: /Cancel/ })
+      const cancelButton = await screen.findByRole('button', { name: /Cancel/ })
       expect(cancelButton).toBeInTheDocument()
     })
 
     it('renders the "Require token for upload" button', async () => {
-      render(<TokenlessSection />, { wrapper: Wrapper })
       const { user } = setup()
+      render(<TokenlessSection />, { wrapper })
 
-      const requiredOption = screen.getByLabelText('Required')
+      const requiredOption = await screen.findByLabelText('Required')
       await user.click(requiredOption)
 
-      const requireTokenButton = screen.getByRole('button', {
+      const requireTokenButton = await screen.findByRole('button', {
         name: /Require token for upload/,
       })
       expect(requireTokenButton).toBeInTheDocument()
     })
 
     it('removes modal and defaults to not required when "Cancel" button is clicked', async () => {
-      render(<TokenlessSection />, { wrapper: Wrapper })
       const { user } = setup()
+      render(<TokenlessSection />, { wrapper })
 
-      const requiredOption = screen.getByLabelText('Required')
+      const requiredOption = await screen.findByLabelText('Required')
       await user.click(requiredOption)
 
-      const cancelButton = screen.getByRole('button', { name: /Cancel/ })
+      const cancelButton = await screen.findByRole('button', { name: /Cancel/ })
       await user.click(cancelButton)
 
-      const notRequiredOption = screen.getByLabelText('Not required')
+      const notRequiredOption = await screen.findByLabelText('Not required')
       expect(notRequiredOption).toBeChecked()
     })
 
-    it('removes modal and switches to required when "Require token for upload" button is clicked', async () => {
-      render(<TokenlessSection />, { wrapper: Wrapper })
-      const { user } = setup()
+    describe('when "Require token for upload" button is clicked', () => {
+      it('removes modal and switches to required when "Require token for upload" button is clicked', async () => {
+        const { user } = setup()
+        render(<TokenlessSection />, { wrapper })
 
-      const requiredOption = screen.getByLabelText('Required')
-      await user.click(requiredOption)
+        const requiredOption = await screen.findByLabelText('Required')
+        await user.click(requiredOption)
 
-      const requireTokenButton = screen.getByRole('button', {
-        name: /Require token for upload/,
+        const requireTokenButton = await screen.findByRole('button', {
+          name: /Require token for upload/,
+        })
+        expect(requireTokenButton).toBeInTheDocument()
       })
-      await user.click(requireTokenButton)
 
-      const requiredOptionAfterClick = screen.getByLabelText('Required')
-      expect(requiredOptionAfterClick).toBeChecked()
+      it('switches to required', async () => {
+        const { user } = setup()
+        render(<TokenlessSection />, { wrapper })
+
+        const requiredOption = await screen.findByLabelText('Required')
+        await user.click(requiredOption)
+
+        const requireTokenButton = await screen.findByRole('button', {
+          name: /Require token for upload/,
+        })
+        await user.click(requireTokenButton)
+
+        const requiredOptionAfterClick =
+          await screen.findByLabelText('Required')
+        expect(requiredOptionAfterClick).toBeChecked()
+      })
     })
   })
 
-  it("switches to 'Not required' option when not required is selected", async () => {
-    render(<TokenlessSection />, { wrapper: Wrapper })
-    const { user } = setup()
+  describe('when switching to "Not required" option', () => {
+    it('switches to "Not required" option', async () => {
+      const { user } = setup({ uploadTokenRequired: true })
+      render(<TokenlessSection />, { wrapper })
 
-    const requiredOption = screen.getByLabelText('Required')
-    await user.click(requiredOption)
+      const requiredOption = await screen.findByLabelText('Required')
+      await waitFor(() => {
+        expect(requiredOption).toBeChecked()
+      })
 
-    const requireTokenButton = screen.getByRole('button', {
-      name: /Require token for upload/,
+      const notRequiredOption = await screen.findByLabelText('Not required')
+      await user.click(notRequiredOption)
+
+      expect(notRequiredOption).toBeChecked()
     })
 
-    await user.click(requireTokenButton)
-    expect(requiredOption).toBeChecked()
-    const notRequiredOption = screen.getByLabelText('Not required')
-    expect(notRequiredOption).not.toBeChecked()
+    it('calls mutate with false', async () => {
+      const { user, mutate } = setup({ uploadTokenRequired: true })
+      render(<TokenlessSection />, { wrapper })
 
-    await user.click(notRequiredOption)
-    expect(notRequiredOption).toBeChecked()
+      const notRequiredOption = await screen.findByLabelText('Not required')
+      await user.click(notRequiredOption)
+
+      expect(mutate).toHaveBeenCalledTimes(1)
+      expect(mutate).toHaveBeenCalledWith(false)
+    })
   })
 })

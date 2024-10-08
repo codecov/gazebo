@@ -493,5 +493,12 @@ export function useStaticNavLinks() {
       text: 'Bundle analysis feedback survey',
       isExternalLink: true,
     },
+    tokenlessDocs: {
+      text: 'Tokenless Uploads',
+      path: () =>
+        'https://docs.codecov.com/docs/codecov-tokens#uploading-without-a-token',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
