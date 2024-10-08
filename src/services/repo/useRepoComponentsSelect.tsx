@@ -20,9 +20,11 @@ query RepoComponentsSelector(
     repository(name: $repo) {
       __typename
       ... on Repository {
-        componentsYaml(termId: $termId) {
-          name
-          id
+        coverageAnalytics {
+          componentsYaml(termId: $termId) {
+            name
+            id
+          }
         }
       }
       ... on NotFoundError {
@@ -38,13 +40,17 @@ query RepoComponentsSelector(
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  componentsYaml: z
-    .array(
-      z.object({
-        name: z.string(),
-        id: z.string(),
-      })
-    )
+  coverageAnalytics: z
+    .object({
+      componentsYaml: z
+        .array(
+          z.object({
+            name: z.string(),
+            id: z.string(),
+          })
+        )
+        .nullable(),
+    })
     .nullable(),
 })
 
@@ -134,7 +140,10 @@ export function useRepoComponentsSelect({
           } satisfies NetworkErrorObject)
         }
 
-        return { components: data?.owner?.repository?.componentsYaml || [] }
+        return {
+          components:
+            data?.owner?.repository?.coverageAnalytics?.componentsYaml || [],
+        }
       }),
     ...opts,
   })

@@ -53,9 +53,11 @@ const backfillData = {
   owner: {
     repository: {
       __typename: 'Repository',
-      componentsMeasurementsActive: true,
-      componentsMeasurementsBackfilled: true,
-      componentsCount: 99,
+      coverageAnalytics: {
+        componentsMeasurementsActive: true,
+        componentsMeasurementsBackfilled: true,
+        componentsCount: 99,
+      },
     },
   },
 }
@@ -64,16 +66,18 @@ const mockResponse = {
   owner: {
     repository: {
       __typename: 'Repository',
-      componentsYaml: [
-        {
-          id: 'component1',
-          name: 'Component 1',
-        },
-        {
-          id: 'component2',
-          name: 'Component 2',
-        },
-      ],
+      coverageAnalytics: {
+        componentsYaml: [
+          {
+            id: 'component1',
+            name: 'Component 1',
+          },
+          {
+            id: 'component2',
+            name: 'Component 2',
+          },
+        ],
+      },
     },
   },
 }

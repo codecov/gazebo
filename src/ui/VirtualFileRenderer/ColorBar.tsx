@@ -5,8 +5,8 @@ import { cn } from 'shared/utils/cn'
 function exhaustive(_x: never): void {}
 
 // exporting for testing purposes
-export function findCoverage(type: 'H' | 'M' | 'P' | undefined) {
-  if (type === undefined) return // valid
+export function findCoverage(type: 'H' | 'M' | 'P' | null | undefined) {
+  if (type === null || type === undefined) return // valid
 
   switch (type) {
     case 'H':
@@ -22,17 +22,12 @@ export function findCoverage(type: 'H' | 'M' | 'P' | undefined) {
 }
 
 interface CoverageBarProps {
-  locationHash?: string
-  lineNumber: number
-  coverage?: 'H' | 'M' | 'P'
+  isHighlighted: boolean
+  coverage: 'H' | 'M' | 'P' | null | undefined
 }
 
-export const ColorBar = ({
-  coverage,
-  locationHash,
-  lineNumber,
-}: CoverageBarProps) => {
-  if (locationHash === `#L${lineNumber}`) {
+export const ColorBar = ({ coverage, isHighlighted }: CoverageBarProps) => {
+  if (isHighlighted) {
     return (
       <div
         data-testid="highlighted-bar"
