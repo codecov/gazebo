@@ -51,7 +51,6 @@ export default defineConfig((config) => {
   }
 
   return {
-    base: env.REACT_APP_BASE_URL,
     server: {
       port: 3000,
     },
