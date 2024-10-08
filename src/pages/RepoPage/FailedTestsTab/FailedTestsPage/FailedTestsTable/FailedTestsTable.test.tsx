@@ -155,7 +155,7 @@ describe('FailedTestsTable', () => {
       const nameColumn = await screen.findByText('Test name')
       expect(nameColumn).toBeInTheDocument()
 
-      const durationColumn = await screen.findByText('Last duration')
+      const durationColumn = await screen.findByText('Avg duration')
       expect(durationColumn).toBeInTheDocument()
 
       const failureRateColumn = await screen.findByText('Failure rate')
