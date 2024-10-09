@@ -23,23 +23,15 @@ import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
-import { cn } from 'shared/utils/cn'
 import { prismLanguageMapper } from 'shared/utils/prism/prismLanguageMapper'
-import Icon from 'ui/Icon'
 
 import { ColorBar } from './ColorBar'
+import { LINE_ROW_HEIGHT } from './constants'
+import { LineNumber } from './LineNumber'
+import { Token } from './types'
 
 import './VirtualFileRenderer.css'
 import 'shared/utils/prism/prismTheme.css'
-
-const LINE_ROW_HEIGHT = 18 as const
-
-// copied from prism-react-renderer since they don't export it
-type Token = {
-  types: string[]
-  content: string
-  empty?: boolean
-}
 
 interface CodeBodyProps {
   tokens: Token[][]
@@ -156,63 +148,20 @@ const CodeBody = ({
           const coverageValue = coverage?.[lineNumber]
 
           return (
-            <div
-              ref={virtualizer.measureElement}
+            <LineNumber
               key={item.index}
-              data-index={item.index}
-              style={{
-                height: `${item.size}px`,
-                transform: `translateY(${
-                  item.start - virtualizer.options.scrollMargin
-                }px)`,
-              }}
-              className={cn(
-                'absolute left-0 top-0 w-full select-none border-r border-ds-gray-tertiary bg-ds-container pl-2 pr-4 text-right text-ds-gray-senary hover:cursor-pointer hover:text-ds-secondary-text',
-                coverageValue === 'H' && 'bg-ds-coverage-covered',
-                coverageValue === 'M' &&
-                  'bg-ds-coverage-uncovered after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-ds-primary-red',
-                coverageValue === 'P' &&
-                  'bg-ds-coverage-partial after:absolute after:inset-y-0 after:right-0 after:border-r-2 after:border-dotted after:border-ds-primary-yellow',
-                // this needs to come last as it overrides the coverage colors
-                location.hash === `#L${lineNumber}` && 'bg-ds-blue-medium/25'
-              )}
+              index={item.index}
+              virtualizer={virtualizer}
+              lineNumber={lineNumber.toString()}
+              item={item}
+              isHighlighted={location.hash === `#L${lineNumber}`}
+              coverageValue={coverageValue}
               onClick={() => {
                 location.hash =
                   location.hash === `#L${lineNumber}` ? '' : `#L${lineNumber}`
                 history.push(location)
               }}
-            >
-              <div
-                className="flex items-center justify-between"
-                style={{
-                  height: `${LINE_ROW_HEIGHT}px`,
-                  lineHeight: `${LINE_ROW_HEIGHT}px`,
-                }}
-              >
-                <span
-                  className={cn({
-                    'text-ds-primary-red': coverageValue === 'M',
-                    'text-ds-primary-yellow pl-1': coverageValue === 'P',
-                  })}
-                >
-                  {coverageValue === 'M' ? (
-                    <Icon
-                      name="exclamationTriangle"
-                      size="sm"
-                      variant="outline"
-                      className="inline"
-                      label="missing-coverage-icon"
-                    />
-                  ) : coverageValue === 'P' ? (
-                    <span data-testid="partial-coverage-icon">!</span>
-                  ) : null}
-                </span>
-                <span>
-                  {location.hash === `#L${lineNumber}` ? '#' : null}
-                  {lineNumber}
-                </span>
-              </div>
-            </div>
+            />
           )
         })}
       </div>
@@ -248,8 +197,7 @@ const CodeBody = ({
               <div className="grid">
                 <div className="z-[-1] col-start-1 row-start-1">
                   <ColorBar
-                    lineNumber={lineNumber}
-                    locationHash={location.hash}
+                    isHighlighted={location.hash === `#L${lineNumber}`}
                     coverage={coverage?.[lineNumber]}
                   />
                 </div>

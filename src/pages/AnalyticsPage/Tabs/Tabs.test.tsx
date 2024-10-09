@@ -1,6 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
@@ -31,18 +30,8 @@ const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </QueryClientProvider>
 )
 
-const server = setupServer()
-beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'warn' })
-})
-
 beforeEach(() => {
   queryClient.clear()
-  server.resetHandlers()
-})
-
-afterAll(() => {
-  server.close()
 })
 
 describe('Tabs', () => {
