@@ -13,7 +13,10 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FailedTestsTable from './FailedTestsTable'
 
-import { OrderingDirection, OrderingParameter } from '../hooks'
+import {
+  OrderingDirection,
+  OrderingParameter,
+} from '../hooks/useInfiniteTestResults'
 
 const node1 = {
   updatedAt: '2023-01-01T00:00:00Z',

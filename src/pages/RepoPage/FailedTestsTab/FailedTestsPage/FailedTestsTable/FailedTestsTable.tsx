@@ -21,7 +21,7 @@ import {
   OrderingDirection,
   OrderingParameter,
   useInfiniteTestResults,
-} from '../hooks'
+} from '../hooks/useInfiniteTestResults'
 import { TooltipWithIcon } from '../MetricsSection/MetricsSection'
 
 const getDecodedBranch = (branch?: string) =>
