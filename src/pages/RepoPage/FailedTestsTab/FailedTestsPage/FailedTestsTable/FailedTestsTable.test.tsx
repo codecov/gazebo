@@ -110,11 +110,13 @@ describe('FailedTestsTable', () => {
               owner: {
                 repository: {
                   __typename: 'Repository',
-                  testResults: {
-                    edges: [],
-                    pageInfo: {
-                      hasNextPage: false,
-                      endCursor: null,
+                  testAnalytics: {
+                    testResults: {
+                      edges: [],
+                      pageInfo: {
+                        hasNextPage: false,
+                        endCursor: null,
+                      },
                     },
                   },
                 },
@@ -127,15 +129,17 @@ describe('FailedTestsTable', () => {
           owner: {
             repository: {
               __typename: 'Repository',
-              testResults: {
-                edges: info.variables.after
-                  ? [{ node: node3 }]
-                  : [{ node: node1 }, { node: node2 }],
-                pageInfo: {
-                  hasNextPage: info.variables.after ? false : true,
-                  endCursor: info.variables.after
-                    ? 'aa'
-                    : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+              testAnalytics: {
+                testResults: {
+                  edges: info.variables.after
+                    ? [{ node: node3 }]
+                    : [{ node: node1 }, { node: node2 }],
+                  pageInfo: {
+                    hasNextPage: info.variables.after ? false : true,
+                    endCursor: info.variables.after
+                      ? 'aa'
+                      : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+                  },
                 },
               },
             },
