@@ -9,30 +9,32 @@ const mockTestResults = {
   owner: {
     repository: {
       __typename: 'Repository',
-      testResults: {
-        edges: [
-          {
-            node: {
-              updatedAt: '2023-01-01T00:00:00Z',
-              name: 'test-1',
-              commitsFailed: 1,
-              failureRate: 0.1,
-              avgDuration: 10,
+      testAnalytics: {
+        testResults: {
+          edges: [
+            {
+              node: {
+                updatedAt: '2023-01-01T00:00:00Z',
+                name: 'test-1',
+                commitsFailed: 1,
+                failureRate: 0.1,
+                avgDuration: 10,
+              },
             },
-          },
-          {
-            node: {
-              updatedAt: '2023-01-02T00:00:00Z',
-              name: 'test-2',
-              commitsFailed: 2,
-              failureRate: 0.2,
-              avgDuration: 20,
+            {
+              node: {
+                updatedAt: '2023-01-02T00:00:00Z',
+                name: 'test-2',
+                commitsFailed: 2,
+                failureRate: 0.2,
+                avgDuration: 20,
+              },
             },
+          ],
+          pageInfo: {
+            endCursor: 'cursor-2',
+            hasNextPage: true,
           },
-        ],
-        pageInfo: {
-          endCursor: 'cursor-2',
-          hasNextPage: true,
         },
       },
     },
