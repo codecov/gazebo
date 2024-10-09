@@ -53,23 +53,11 @@ export const useSetUploadTokenRequired = () => {
       queryClient.invalidateQueries(['GetUploadTokenRequired'])
       const error = data?.setUploadTokenRequired?.error
       if (error) {
-        if (
-          error.__typename === 'ValidationError' ||
-          error.__typename === 'UnauthorizedError' ||
-          error.__typename === 'UnauthenticatedError'
-        ) {
-          addToast({
-            type: 'error',
-            text: error.message || 'Failed to set upload token requirement',
-            disappearAfter: TOAST_DURATION,
-          })
-        } else {
-          addToast({
-            type: 'error',
-            text: 'Failed to set upload token requirement',
-            disappearAfter: TOAST_DURATION,
-          })
-        }
+        addToast({
+          type: 'error',
+          text: error?.message || 'Failed to set upload token requirement',
+          disappearAfter: TOAST_DURATION,
+        })
       } else {
         addToast({
           type: 'success',

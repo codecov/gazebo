@@ -153,6 +153,25 @@ describe('useSetUploadTokenRequired', () => {
           )
         })
       })
+
+      it('does not fire a success toast when isSuccess is falsy', async () => {
+        const { mockAddToast } = setup({})
+
+        const { result } = renderHook(() => useSetUploadTokenRequired(), {
+          wrapper,
+        })
+
+        result.current.mutate(false)
+        await waitFor(() => expect(result.current.isSuccess).toBeFalsy())
+
+        await waitFor(() =>
+          expect(mockAddToast).not.toHaveBeenCalledWith({
+            type: 'error',
+            text: 'An error occurred while updating upload token requirement',
+            disappearAfter: 10000,
+          })
+        )
+      })
     })
   })
 })
