@@ -21,6 +21,8 @@ function CommitCoverageTabs({
   const { data: tierName } = useTier({ owner, provider })
   const { data: repoData } = useRepoSettingsTeam()
 
+  console.log('HERE COMMITCOVERAGETABS')
+
   const showIndirectChanges = !(
     repoData?.repository?.private && tierName === TierNames.TEAM
   )

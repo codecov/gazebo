@@ -314,6 +314,7 @@ interface UseCommitArgs {
   }
   refetchInterval?: number
   isTeamPlan?: boolean
+  forceFail?: boolean
 }
 
 export function useCommit({
@@ -324,6 +325,7 @@ export function useCommit({
   filters = {},
   refetchInterval = 2000,
   isTeamPlan = false,
+  forceFail = false,
 }: UseCommitArgs) {
   const queryClient = useQueryClient()
   const tempKey = [
@@ -354,10 +356,20 @@ export function useCommit({
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
 
+        console.log({ parsedRes })
+
+        if (forceFail) {
+          console.log('FORCE FAIL')
+          return Promise.reject({
+            status: 404,
+            data: parsedRes.error,
+          })
+        }
+
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: null,
+            data: parsedRes.error,
           })
         }
 

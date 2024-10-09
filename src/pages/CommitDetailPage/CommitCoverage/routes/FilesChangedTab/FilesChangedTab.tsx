@@ -5,6 +5,7 @@ import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeade
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import Spinner from 'ui/Spinner'
+// import { ErrorBoundary } from '@sentry/react'
 
 const FilesChangedTable = lazy(() => import('./FilesChangedTable'))
 const FilesChangedTableTeam = lazy(() => import('./FilesChangedTableTeam'))
@@ -26,6 +27,8 @@ function FilesChanged() {
 
   const { data: tierData } = useTier({ provider, owner })
 
+  console.log('FILES CHANGED TAB')
+
   if (tierData === TierNames.TEAM && !!repoSettings?.repository?.private) {
     return (
       <Suspense fallback={<Loader />}>
@@ -36,10 +39,13 @@ function FilesChanged() {
   }
 
   return (
+    // some suspense handler here?
+    // <ErrorBoundary fallback={<div>There was an error!</div>}>
     <Suspense fallback={<Loader />}>
       <ToggleHeader />
       <FilesChangedTable />
     </Suspense>
+    // </ErrorBoundary>
   )
 }
 
