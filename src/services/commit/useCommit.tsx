@@ -82,7 +82,7 @@ const UploadsSchema = z.object({
 const ImpactedFileSchema = z
   .object({
     headName: z.string().nullable(),
-    isCriticalFile: z.boolean(),
+    isCriticalFile: z.boolean().nullable(),
     patchCoverage: CoverageObjSchema.nullable(),
     baseCoverage: CoverageObjSchema.nullable(),
     headCoverage: CoverageObjSchema.nullable(),

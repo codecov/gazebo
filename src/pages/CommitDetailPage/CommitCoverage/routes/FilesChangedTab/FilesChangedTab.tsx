@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@sentry/react'
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -5,7 +6,6 @@ import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeade
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import Spinner from 'ui/Spinner'
-// import { ErrorBoundary } from '@sentry/react'
 
 const FilesChangedTable = lazy(() => import('./FilesChangedTable'))
 const FilesChangedTableTeam = lazy(() => import('./FilesChangedTableTeam'))
@@ -40,12 +40,19 @@ function FilesChanged() {
 
   return (
     // some suspense handler here?
-    // <ErrorBoundary fallback={<div>There was an error!</div>}>
-    <Suspense fallback={<Loader />}>
-      <ToggleHeader />
-      <FilesChangedTable />
-    </Suspense>
-    // </ErrorBoundary>
+    <ErrorBoundary
+      fallback={
+        <p className="m-4">
+          There was an error fetching the changed files. Please try refreshing
+          the page. If the error persists, please contact support@codecov.io.
+        </p>
+      }
+    >
+      <Suspense fallback={<Loader />}>
+        <ToggleHeader />
+        <FilesChangedTable />
+      </Suspense>
+    </ErrorBoundary>
   )
 }
 
