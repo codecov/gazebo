@@ -111,11 +111,11 @@ Mocks are located in `src/mocks/handlers`
 Example:
 
 ```js
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw2'
 
 export const handlers = [
-  rest.get('internal/user', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({ mock: 'data' }))
+  http.get('internal/user', (req, res, ctx) => {
+    return HttpResponse.json({ data: { mock: 'data' } })
   }),
 ]
 ```
