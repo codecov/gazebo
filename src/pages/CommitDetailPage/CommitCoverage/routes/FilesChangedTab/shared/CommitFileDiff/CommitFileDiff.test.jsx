@@ -338,5 +338,13 @@ describe('CommitFileDiff', () => {
       )
       expect(criticalFile).toBeInTheDocument()
     })
+
+    it('renders a login link', async () => {
+      render(<CommitFileDiff path={'random/path'} />, { wrapper })
+
+      const link = await screen.findByText(/logging in/)
+      expect(link).toBeVisible()
+      expect(link).toHaveAttribute('href', '/login')
+    })
   })
 })
