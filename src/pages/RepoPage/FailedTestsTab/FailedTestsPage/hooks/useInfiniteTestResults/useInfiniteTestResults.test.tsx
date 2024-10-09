@@ -32,6 +32,16 @@ const mockTestResults = {
                 avgDuration: 20,
               },
             },
+            {
+              node: {
+                updatedAt: '2023-01-03T00:00:00Z',
+                name: 'test-3',
+                commitsFailed: 3,
+                failureRate: 0.2,
+                flakeRate: 0.1,
+                avgDuration: 30,
+              },
+            },
           ],
           pageInfo: {
             endCursor: 'cursor-2',
