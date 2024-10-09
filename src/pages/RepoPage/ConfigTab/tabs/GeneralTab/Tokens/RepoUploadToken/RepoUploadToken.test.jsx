@@ -50,18 +50,34 @@ afterAll(() => {
 
 describe('RepoUploadToken', () => {
   function setup(
-    { uploadToken = undefined, triggerError = false } = {
+    {
+      uploadToken = undefined,
+      triggerError = false,
+      uploadTokenRequired = false,
+    } = {
       uploadToken: undefined,
       triggerError: false,
+      uploadTokenRequired: false,
     }
   ) {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     const mutate = vi.fn()
     const addNotification = vi.fn()
 
     mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
+      graphql.query('GetUploadTokenRequired', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              orgUploadToken: 'test-mock-org-upload-token',
+              isAdmin: true,
+              uploadTokenRequired,
+            },
+          },
+        })
+      }),
       graphql.mutation('RegenerateRepositoryUploadToken', (info) => {
         mutate(info.request.variables)
         if (triggerError) {
@@ -126,6 +142,28 @@ describe('RepoUploadToken', () => {
 
       const regenerate = screen.getByRole('button', { name: 'Regenerate' })
       expect(regenerate).toBeInTheDocument()
+    })
+
+    it('renders upload token required message when uploadTokenRequired is false', async () => {
+      setup({ uploadTokenRequired: false, uploadToken: 'some-random-token' })
+      render(<RepoUploadToken uploadToken="old token" />, { wrapper })
+
+      const message = await screen.findByText(
+        'Uploading with token is now not required. You can upload without a token. Contact your admins to manage the global upload token settings.'
+      )
+      expect(message).toBeInTheDocument()
+    })
+
+    it('does not render upload token required message when uploadTokenRequired is true', async () => {
+      setup({ uploadTokenRequired: true, uploadToken: 'some-random-token' })
+      render(<RepoUploadToken uploadToken="old token" />, { wrapper })
+
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+      const message = screen.queryByText(
+        'Uploading with token is now not required. You can upload without a token. Contact your admins to manage the global upload token settings.'
+      )
+      expect(message).not.toBeInTheDocument()
     })
   })
 
