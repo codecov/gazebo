@@ -56,6 +56,13 @@
     <link rel="manifest" href="/manifest.json" />
 
     <title>Codecov</title>
+
+    <script>
+      window.addEventListener('vite:preloadError', (event) => {
+        window.location.reload()
+      })
+    </script>
+
     <% if(isProduction) { %>
     <script>
       ;(function (apiKey) {
