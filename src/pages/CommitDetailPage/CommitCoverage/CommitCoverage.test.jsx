@@ -203,9 +203,11 @@ const mockRepoBackfilledData = {
   },
   owner: {
     repository: {
-      flagsMeasurementsActive: false,
-      flagsMeasurementsBackfilled: false,
-      flagsCount: 0,
+      coverageAnalytics: {
+        flagsMeasurementsActive: false,
+        flagsMeasurementsBackfilled: false,
+        flagsCount: 0,
+      },
     },
   },
 }

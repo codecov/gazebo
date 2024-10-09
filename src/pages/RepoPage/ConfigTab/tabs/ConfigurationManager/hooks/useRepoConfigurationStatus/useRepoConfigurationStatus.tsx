@@ -12,13 +12,17 @@ import A from 'ui/A'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  flagsCount: z.number(),
-  componentsCount: z.number(),
   coverageEnabled: z.boolean().nullable(),
   bundleAnalysisEnabled: z.boolean().nullable(),
   testAnalyticsEnabled: z.boolean().nullable(),
   yaml: z.string().nullable(),
   languages: z.array(z.string()).nullable(),
+  coverageAnalytics: z
+    .object({
+      flagsCount: z.number(),
+      componentsCount: z.number(),
+    })
+    .nullable(),
 })
 
 const PlanSchema = z
@@ -55,13 +59,15 @@ const query = `query GetRepoConfigurationStatus($owner: String!, $repo: String!)
     repository(name:$repo) {
       __typename
       ... on Repository {
-        flagsCount
-        componentsCount
         coverageEnabled
         bundleAnalysisEnabled
         testAnalyticsEnabled
         yaml
         languages
+        coverageAnalytics {
+          flagsCount
+          componentsCount
+        }
       }
       ... on NotFoundError {
         message

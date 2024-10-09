@@ -290,8 +290,10 @@ const mockBackfillFlag = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flagsMeasurementsActive: true,
-      flagsMeasurementsBackfilled: true,
+      coverageAnalytics: {
+        flagsMeasurementsActive: true,
+        flagsMeasurementsBackfilled: true,
+      },
     },
   },
 }

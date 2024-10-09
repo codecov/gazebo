@@ -34,19 +34,23 @@ interface FetchRepoFlagsArgs {
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  flags: z.object({
-    pageInfo: z.object({
-      hasNextPage: z.boolean(),
-      endCursor: z.string().nullable(),
-    }),
-    edges: z.array(
-      z.object({
-        node: z.object({
-          name: z.string(),
+  coverageAnalytics: z
+    .object({
+      flags: z.object({
+        pageInfo: z.object({
+          hasNextPage: z.boolean(),
+          endCursor: z.string().nullable(),
         }),
-      })
-    ),
-  }),
+        edges: z.array(
+          z.object({
+            node: z.object({
+              name: z.string(),
+            }),
+          })
+        ),
+      }),
+    })
+    .nullable(),
 })
 
 const FetchRepoFlagsSchema = z.object({
@@ -72,14 +76,16 @@ const flagsSelectQuery = `
       repository(name: $repo) {
         __typename
         ... on Repository {
-          flags(filters: $filters, after: $after) {
-            pageInfo {
-              hasNextPage
-              endCursor
-            }
-            edges {
-              node {
-                name
+          coverageAnalytics {
+            flags(filters: $filters, after: $after) {
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+              edges {
+                node {
+                  name
+                }
               }
             }
           }
@@ -155,7 +161,7 @@ function fetchRepoFlags({
       } satisfies NetworkErrorObject)
     }
 
-    const flags = data?.owner?.repository?.flags
+    const flags = data?.owner?.repository?.coverageAnalytics?.flags
     const pageInfo = flags?.pageInfo ?? null
 
     return {

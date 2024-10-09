@@ -5,6 +5,8 @@ import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { extractUploads } from 'shared/utils/extractUploads'
 
+import { UploadFilters } from '../UploadsCard'
+
 interface URLParams {
   provider: string
   owner: string
@@ -12,7 +14,11 @@ interface URLParams {
   commit: string
 }
 
-export function useUploads() {
+interface UseUploadsArgs {
+  filters?: UploadFilters
+}
+
+export function useUploads({ filters }: UseUploadsArgs) {
   const { provider, owner, repo, commit } = useParams<URLParams>()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: tierData } = useTier({ provider, owner })
@@ -28,13 +34,23 @@ export function useUploads() {
     isTeamPlan,
   })
 
-  const { uploadsOverview, groupedUploads, uploadsProviderList, hasNoUploads } =
-    extractUploads({ unfilteredUploads: data?.commit?.uploads })
+  const {
+    uploadsOverview,
+    groupedUploads,
+    uploadsProviderList,
+    hasNoUploads,
+    erroredUploads,
+    flagErrorUploads,
+    searchResults,
+  } = extractUploads({ unfilteredUploads: data?.commit?.uploads, filters })
 
   return {
     uploadsOverview,
     groupedUploads,
     uploadsProviderList,
     hasNoUploads,
+    erroredUploads,
+    flagErrorUploads,
+    searchResults,
   }
 }

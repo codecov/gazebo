@@ -47,17 +47,21 @@ const GetTestResultsSchema = z.object({
       repository: z.discriminatedUnion('__typename', [
         z.object({
           __typename: z.literal('Repository'),
-          testResults: z.object({
-            edges: z.array(
-              z.object({
-                node: TestResultSchema,
-              })
-            ),
-            pageInfo: z.object({
-              endCursor: z.string().nullable(),
-              hasNextPage: z.boolean(),
-            }),
-          }),
+          testAnalytics: z
+            .object({
+              testResults: z.object({
+                edges: z.array(
+                  z.object({
+                    node: TestResultSchema,
+                  })
+                ),
+                pageInfo: z.object({
+                  endCursor: z.string().nullable(),
+                  hasNextPage: z.boolean(),
+                }),
+              }),
+            })
+            .nullable(),
         }),
         RepoNotFoundErrorSchema,
         RepoOwnerNotActivatedErrorSchema,
@@ -81,26 +85,28 @@ query GetTestResults(
     repository: repository(name: $repo) {
       __typename
       ... on Repository {
-        testResults(
-          filters: $filters
-          ordering: $ordering
-          first: $first
-          after: $after
-          last: $last
-          before: $before
-        ) {
-          edges {
-            node {
-              updatedAt
-              avgDuration
-              name
-              failureRate
-              commitsFailed
+        testAnalytics {
+          testResults(
+            filters: $filters
+            ordering: $ordering
+            first: $first
+            after: $after
+            last: $last
+            before: $before
+          ) {
+            edges {
+              node {
+                updatedAt
+                avgDuration
+                name
+                failureRate
+                commitsFailed
+              }
             }
-          }
-          pageInfo {
-            endCursor
-            hasNextPage
+            pageInfo {
+              endCursor
+              hasNextPage
+            }
           }
         }
       }
@@ -213,10 +219,11 @@ export const useInfiniteTestResults = ({
         }
 
         return {
-          testResults: mapEdges(data?.owner?.repository?.testResults).filter(
-            (item): item is TestResult => item !== null
-          ),
-          pageInfo: data?.owner?.repository?.testResults?.pageInfo ?? {
+          testResults: mapEdges(
+            data?.owner?.repository?.testAnalytics?.testResults
+          ).filter((item): item is TestResult => item !== null),
+          pageInfo: data?.owner?.repository?.testAnalytics?.testResults
+            ?.pageInfo ?? {
             hasNextPage: false,
             endCursor: null,
           },
