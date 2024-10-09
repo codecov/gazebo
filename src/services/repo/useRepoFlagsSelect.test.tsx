@@ -125,13 +125,15 @@ describe('FlagsSelect', () => {
           owner: {
             repository: {
               __typename: 'Repository',
-              flags: {
-                edges: info.variables.after
-                  ? [...nextPageData]
-                  : [...initialData],
-                pageInfo: {
-                  hasNextPage: !info.variables.after,
-                  endCursor: info.variables.after ? 'aabb' : 'dW5pdA==',
+              coverageAnalytics: {
+                flags: {
+                  edges: info.variables.after
+                    ? [...nextPageData]
+                    : [...initialData],
+                  pageInfo: {
+                    hasNextPage: !info.variables.after,
+                    endCursor: info.variables.after ? 'aabb' : 'dW5pdA==',
+                  },
                 },
               },
             },

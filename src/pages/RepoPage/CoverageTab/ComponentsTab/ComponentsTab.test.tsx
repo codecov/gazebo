@@ -88,8 +88,10 @@ const backfillDataCompleted = {
   owner: {
     repository: {
       __typename: 'Repository',
-      componentsMeasurementsActive: true,
-      componentsMeasurementsBackfilled: true,
+      coverageAnalytics: {
+        componentsMeasurementsActive: true,
+        componentsMeasurementsBackfilled: true,
+      },
     },
   },
 }
@@ -101,8 +103,10 @@ const backfillDataNotStarted = {
   owner: {
     repository: {
       __typename: 'Repository',
-      componentsMeasurementsActive: false,
-      componentsMeasurementsBackfilled: false,
+      coverageAnalytics: {
+        componentsMeasurementsActive: false,
+        componentsMeasurementsBackfilled: false,
+      },
     },
   },
 }
@@ -114,8 +118,10 @@ const backfillDataInProgress = {
   owner: {
     repository: {
       __typename: 'Repository',
-      componentsMeasurementsActive: true,
-      componentsMeasurementsBackfilled: false,
+      coverageAnalytics: {
+        componentsMeasurementsActive: true,
+        componentsMeasurementsBackfilled: false,
+      },
     },
   },
 }
@@ -127,8 +133,10 @@ const backfillDataTimeseriesNotEnabled = {
   owner: {
     repository: {
       __typename: 'Repository',
-      componentsMeasurementsActive: false,
-      componentsMeasurementsBackfilled: false,
+      coverageAnalytics: {
+        componentsMeasurementsActive: false,
+        componentsMeasurementsBackfilled: false,
+      },
     },
   },
 }
@@ -187,11 +195,13 @@ describe('Components Tab', () => {
           owner: {
             repository: {
               __typename: 'Repository',
-              flags: {
-                edges: info.variables.after ? [...flags[0]] : [...flags[1]],
-                pageInfo: {
-                  hasNextPage: !info.variables.after,
-                  endCursor: info.variables.after ? 'aabb' : 'dW5pdA==',
+              coverageAnalytics: {
+                flags: {
+                  edges: info.variables.after ? [...flags[0]] : [...flags[1]],
+                  pageInfo: {
+                    hasNextPage: !info.variables.after,
+                    endCursor: info.variables.after ? 'aabb' : 'dW5pdA==',
+                  },
                 },
               },
             },
@@ -342,8 +352,10 @@ describe('Components Tab', () => {
           owner: {
             repository: {
               __typename: 'Repository',
-              componentsMeasurementsActive: false,
-              componentsMeasurementsBackfilled: false,
+              coverageAnalytics: {
+                componentsMeasurementsActive: false,
+                componentsMeasurementsBackfilled: false,
+              },
             },
           },
         },

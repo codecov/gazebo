@@ -44,8 +44,10 @@ const mockBackfillComplete = {
   owner: {
     repository: {
       __typename: 'Repository',
-      componentsMeasurementsActive: true,
-      componentsMeasurementsBackfilled: true,
+      coverageAnalytics: {
+        componentsMeasurementsActive: true,
+        componentsMeasurementsBackfilled: true,
+      },
     },
   },
 }
@@ -57,8 +59,10 @@ const mockBackfillInProgress = {
   owner: {
     repository: {
       __typename: 'Repository',
-      componentsMeasurementsActive: true,
-      componentsMeasurementsBackfilled: false,
+      coverageAnalytics: {
+        componentsMeasurementsActive: true,
+        componentsMeasurementsBackfilled: false,
+      },
     },
   },
 }
