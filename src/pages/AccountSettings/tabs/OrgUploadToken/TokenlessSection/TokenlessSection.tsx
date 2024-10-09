@@ -29,12 +29,14 @@ const TokenlessSection: React.FC = () => {
     useSetUploadTokenRequired()
 
   const [showModal, setShowModal] = useState<boolean>(false)
-  const [tokenRequired, setTokenRequiredState] = useState<
-    boolean | undefined | null
-  >(uploadTokenRequiredData?.uploadTokenRequired)
+  const [tokenRequired, setTokenRequiredState] = useState<boolean>(true)
 
   useEffect(() => {
-    if (uploadTokenRequiredData && !isUploadTokenRequiredLoading) {
+    if (
+      !isUploadTokenRequiredLoading &&
+      uploadTokenRequiredData &&
+      uploadTokenRequiredData?.uploadTokenRequired !== null
+    ) {
       setTokenRequiredState(uploadTokenRequiredData.uploadTokenRequired)
     }
   }, [uploadTokenRequiredData, isUploadTokenRequiredLoading])
