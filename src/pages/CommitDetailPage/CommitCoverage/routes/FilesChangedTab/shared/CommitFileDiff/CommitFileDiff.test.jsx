@@ -161,7 +161,7 @@ describe('CommitFileDiff', () => {
   ) {
     mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
-      handleClick: jest.fn(),
+      handleClick: vi.fn(),
       targeted: false,
     }))
 

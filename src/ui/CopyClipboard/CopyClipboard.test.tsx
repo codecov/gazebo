@@ -15,13 +15,6 @@ describe('CopyClipboard', () => {
   })
 
   function setup() {
-    // This is a bit of a hack to get Vitest fake timers setup with userEvents properly
-    // GH Issue: https://github.com/testing-library/react-testing-library/issues/1197#issuecomment-1693824628
-    globalThis.jest = {
-      ...globalThis.jest,
-      advanceTimersByTime: vi.advanceTimersByTime.bind(vi),
-    }
-
     const user = userEvent.setup({
       advanceTimers: globalThis.jest.advanceTimersByTime,
     })

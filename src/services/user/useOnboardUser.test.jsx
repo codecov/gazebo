@@ -96,7 +96,7 @@ describe('useOnboardUser', () => {
   describe('when called with opts', () => {
     it('returns onSuccess from opts', async () => {
       setup()
-      const onSuccessFn = jest.fn()
+      const onSuccessFn = vi.fn()
       const { result } = renderHook(
         () => useOnboardUser({ onSuccess: onSuccessFn }),
         { wrapper: wrapper() }

@@ -63,7 +63,7 @@ describe('DeleteComponentModal', () => {
         <DeleteComponentModal
           componentId="component-123"
           name="componentName"
-          closeModal={jest.fn()}
+          closeModal={vi.fn()}
           isOpen
         />,
         {
@@ -86,7 +86,7 @@ describe('DeleteComponentModal', () => {
         <DeleteComponentModal
           componentId="component-123"
           name="componentName"
-          closeModal={jest.fn()}
+          closeModal={vi.fn()}
           isOpen
         />,
         {
@@ -106,7 +106,7 @@ describe('DeleteComponentModal', () => {
         <DeleteComponentModal
           componentId="component-123"
           name="componentName"
-          closeModal={jest.fn()}
+          closeModal={vi.fn()}
           isOpen
         />,
         {
@@ -121,7 +121,7 @@ describe('DeleteComponentModal', () => {
   describe('when clicking delete button', () => {
     it('selects a default organization', async () => {
       const { user } = setup()
-      const closeModal = jest.fn()
+      const closeModal = vi.fn()
       render(
         <DeleteComponentModal
           componentId="component-123"
@@ -145,7 +145,7 @@ describe('DeleteComponentModal', () => {
   describe('when clicking cancel button', () => {
     it('closes the modal', async () => {
       const { user } = setup()
-      const closeModal = jest.fn()
+      const closeModal = vi.fn()
       render(
         <DeleteComponentModal
           componentId="component-123"

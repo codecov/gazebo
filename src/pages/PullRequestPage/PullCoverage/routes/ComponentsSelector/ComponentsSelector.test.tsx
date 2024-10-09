@@ -71,7 +71,7 @@ describe('ComponentsSelector', () => {
     }
   ) {
     const user = userEvent.setup()
-    const mockApiVars = jest.fn()
+    const mockApiVars = vi.fn()
 
     server.use(
       graphql.query('PullComponentsSelector', (info) => {

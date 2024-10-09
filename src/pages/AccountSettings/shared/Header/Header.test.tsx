@@ -4,15 +4,17 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 import Header from './Header'
+
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
 
 vi.mock('config')
 vi.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
-vi.mock('shared/featureFlags')
-
-const mockedUseFlags = useFlags as jest.Mock
+vi.mock('shared/featureFlags', () => ({
+  useFlags: mocks.useFlags,
+}))
 
 const queryClient = new QueryClient()
 
@@ -34,7 +36,7 @@ beforeEach(() => {
 describe('Header', () => {
   function setup(isSelfHosted: boolean = false) {
     config.IS_SELF_HOSTED = isSelfHosted
-    mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: true })
+    mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: true })
   }
 
   describe('when users is part of the org', () => {
@@ -120,7 +122,7 @@ describe('Header', () => {
 
   describe('ai features tab', () => {
     it('does not render tab when flag is off', () => {
-      mockedUseFlags.mockReturnValue({ codecovAiFeaturesTab: false })
+      mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: false })
       render(<Header />, { wrapper })
 
       expect(
