@@ -10,8 +10,18 @@ import { useFlags } from 'shared/featureFlags'
 
 import TokenlessSection from './TokenlessSection'
 
+const mocks = vi.hoisted(() => ({
+  useAddNotification: vi.fn(),
+}))
+
 vi.mock('shared/featureFlags')
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification', async () => {
+  const actual = await vi.importActual('services/toastNotification')
+  return {
+    ...actual,
+    useAddNotification: mocks.useAddNotification,
+  }
+})
 
 const mockedUseFlags = useFlags as jest.Mock
 const mockedUseAddNotification = useAddNotification as jest.Mock
