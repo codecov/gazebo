@@ -358,13 +358,13 @@ export function useCommit({
 
         console.log({ parsedRes })
 
-        if (forceFail) {
-          console.log('FORCE FAIL')
-          return Promise.reject({
-            status: 404,
-            data: parsedRes.error,
-          })
-        }
+        // if (forceFail) {
+        //   console.log('FORCE FAIL')
+        //   return Promise.reject({
+        //     status: 404,
+        //     data: parsedRes.error,
+        //   })
+        // }
 
         if (!parsedRes.success) {
           return Promise.reject({
@@ -428,13 +428,13 @@ export function useCommit({
       }),
   })
 
-  let shouldPoll = false
-  if (
-    commitQuery?.data?.commit?.compareWithParent?.__typename === 'Comparison'
-  ) {
-    shouldPoll =
-      commitQuery?.data?.commit?.compareWithParent?.state === 'pending'
-  }
+  // let shouldPoll = false
+  // if (
+  //   commitQuery?.data?.commit?.compareWithParent?.__typename === 'Comparison'
+  // ) {
+  //   shouldPoll =
+  //     commitQuery?.data?.commit?.compareWithParent?.state === 'pending'
+  // }
 
   useCompareTotals({
     provider,
@@ -443,8 +443,10 @@ export function useCommit({
     commitid,
     filters,
     opts: {
-      refetchInterval,
-      enabled: shouldPoll,
+      // refetchInterval,
+      retry: 2,
+      refetchOnWindowFocus: true,
+      enabled: forceFail,
       onSuccess: (data) => {
         let compareWithParent
         if (data?.owner?.repository?.__typename === 'Repository') {
@@ -459,7 +461,10 @@ export function useCommit({
           },
         }
         queryClient.setQueryData(tempKey, impactedFileData)
+
+        shouldPoll = false
       },
+      suspense: true,
     },
   })
 
