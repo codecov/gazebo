@@ -11860,6 +11860,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-testing-library@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "eslint-plugin-testing-library@npm:6.3.0"
+  dependencies:
+    "@typescript-eslint/utils": "npm:^5.58.0"
+  peerDependencies:
+    eslint: ^7.5.0 || ^8.0.0
+  checksum: 10c0/9f388cb9101a38f30a8be9b0ddb6765fc69faccaf7b9ac02b5d662505b72023468f0c99d1a83fd18750e70a1b3d67d3cabc6e4f531fee0a753e35499e7f7461b
+  languageName: node
+  linkType: hard
+
 "eslint-scope@npm:5.1.1, eslint-scope@npm:^5.1.1":
   version: 5.1.1
   resolution: "eslint-scope@npm:5.1.1"
@@ -12787,6 +12798,7 @@ __metadata:
     eslint-plugin-import: "npm:^2.25.4"
     eslint-plugin-storybook: "npm:^0.8.0"
     eslint-plugin-tailwindcss: "npm:^3.17.4"
+    eslint-plugin-testing-library: "npm:^6.3.0"
     http-proxy-middleware: "npm:^2.0.6"
     husky: "npm:^9.1.4"
     js-cookie: "npm:^3.0.5"

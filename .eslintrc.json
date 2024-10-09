@@ -1,7 +1,6 @@
 {
   "extends": [
     "react-app",
-    "react-app/jest",
     "plugin:tailwindcss/recommended",
     "plugin:@tanstack/eslint-plugin-query/recommended",
     "plugin:react/recommended",
@@ -10,7 +9,7 @@
     "plugin:storybook/recommended",
     "plugin:tailwindcss/recommended"
   ],
-  "plugins": ["@vitest"],
+  "plugins": ["@vitest", "testing-library"],
   "globals": {
     "vi": true
   },
