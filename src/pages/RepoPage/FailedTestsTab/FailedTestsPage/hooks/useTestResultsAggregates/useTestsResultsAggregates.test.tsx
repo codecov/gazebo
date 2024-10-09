@@ -43,15 +43,6 @@ const mockNotFoundError = {
   },
 }
 
-const mockOwnerNotActivatedError = {
-  owner: {
-    repository: {
-      __typename: 'OwnerNotActivatedError',
-      message: 'owner not activated',
-    },
-  },
-}
-
 const mockIncorrectResponse = {
   owner: {
     repository: {
@@ -81,15 +72,12 @@ const mockResponse = {
 describe('useTestResultsAggregates', () => {
   function setup({
     isNotFoundError = false,
-    isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
   }) {
     server.use(
       graphql.query('GetTestResultsAggregates', (info) => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
-        } else if (isOwnerNotActivatedError) {
-          return HttpResponse.json({ data: mockOwnerNotActivatedError })
         } else if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockIncorrectResponse })
         }
@@ -173,32 +161,6 @@ describe('useTestResultsAggregates', () => {
           expect.objectContaining({
             status: 404,
             data: {},
-          })
-        )
-      )
-    })
-  })
-
-  describe('when owner is not activated', () => {
-    let consoleSpy: MockInstance
-    beforeAll(() => {
-      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    })
-
-    afterAll(() => {
-      consoleSpy.mockRestore()
-    })
-
-    it('returns an owner not activated error', async () => {
-      setup({ isOwnerNotActivatedError: true })
-      const { result } = renderHook(() => useTestResultsAggregates(), {
-        wrapper,
-      })
-
-      await waitFor(() =>
-        expect(result.current.error).toEqual(
-          expect.objectContaining({
-            status: 403,
           })
         )
       )
