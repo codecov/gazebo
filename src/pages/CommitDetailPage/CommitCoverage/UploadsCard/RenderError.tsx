@@ -111,16 +111,27 @@ const ErrorMessage = ({ errorCode, count }: ErrorMessageProps) => {
   )
 }
 
+const FlagError = () => (
+  <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
+    <Icon size="sm" name="exclamation" variant="solid" className="mt-[2px]" />
+    <p className="w-11/12">
+      Multiple flags detected. Please ensure one flag per upload.
+    </p>
+  </span>
+)
+
 interface RenderErrorProps {
   errors: (UploadErrorObject | null)[]
   state: (typeof UploadStateEnum)[keyof typeof UploadStateEnum]
+  flags: string[] | null
 }
 
-const RenderError = ({ errors, state }: RenderErrorProps) => {
+const RenderError = ({ errors, state, flags }: RenderErrorProps) => {
   const filteredErrors = useDuplicatedErrors({ errors })
 
   return (
     <>
+      {flags?.length && flags.length >= 2 ? <FlagError /> : null}
       {filteredErrors?.map(({ errorCode, count }, i) => (
         <ErrorMessage
           key={`errorCode-${errorCode}-${i}`}
