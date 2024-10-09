@@ -60,7 +60,7 @@ describe('RepoUploadToken', () => {
       uploadTokenRequired: false,
     }
   ) {
-    const user = userEvent.setup({ delay: null })
+    const user = userEvent.setup()
     const mutate = vi.fn()
     const addNotification = vi.fn()
 
