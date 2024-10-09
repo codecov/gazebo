@@ -7,8 +7,8 @@ import {
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
+import { graphql, HttpResponse } from 'msw2'
+import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import UploadsCard from './UploadsCard'
@@ -61,10 +61,9 @@ describe('UploadsCard', () => {
     })
 
     server.use(
-      graphql.query('CommitYaml', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
+      graphql.query('CommitYaml', (info) => {
+        return HttpResponse.json({
+          data: {
             owner: {
               repository: {
                 __typename: 'Repository',
@@ -74,8 +73,8 @@ describe('UploadsCard', () => {
                 },
               },
             },
-          })
-        )
+          },
+        })
       })
     )
   }
