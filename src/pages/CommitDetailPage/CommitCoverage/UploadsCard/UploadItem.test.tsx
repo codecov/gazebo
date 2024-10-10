@@ -325,6 +325,28 @@ describe('UploadsCard', () => {
       })
     })
 
+    describe('Multiple flags error', () => {
+      it('renders error message', () => {
+        render(
+          <UploadItem
+            upload={{
+              ...mockUpload,
+              flags: ['flag1', 'flag2'],
+              errors: [],
+            }}
+          />,
+          {
+            wrapper,
+          }
+        )
+
+        const multipleFlags = screen.getByText(
+          /Multiple flags detected. Please ensure one flag per upload./
+        )
+        expect(multipleFlags).toBeInTheDocument()
+      })
+    })
+
     it('all errors', () => {
       render(
         <UploadItem
