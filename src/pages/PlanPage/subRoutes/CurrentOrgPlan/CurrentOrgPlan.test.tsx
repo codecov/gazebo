@@ -16,6 +16,7 @@ import { useEnterpriseAccountDetails } from './hooks/useEnterpriseAccountDetails
 vi.mock('./BillingDetails', () => ({ default: () => 'BillingDetails' }))
 vi.mock('./CurrentPlanCard', () => ({ default: () => 'CurrentPlanCard' }))
 vi.mock('./LatestInvoiceCard', () => ({ default: () => 'LatestInvoiceCard' }))
+vi.mock('./AccountOrgs', () => ({ default: () => 'AccountOrgs' }))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -416,6 +417,14 @@ describe('CurrentOrgPlan', () => {
         )
         expect(banner).toBeInTheDocument()
       })
+    })
+
+    it('renders AccountOrgs', async () => {
+      setup({ enterpriseAccountDetails: mockEnterpriseAccountDetails })
+      render(<CurrentOrgPlan />, { wrapper })
+
+      const accountOrgs = await screen.findByText(/AccountOrgs/)
+      expect(accountOrgs).toBeInTheDocument()
     })
   })
 })

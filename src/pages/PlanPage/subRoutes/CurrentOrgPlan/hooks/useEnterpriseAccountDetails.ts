@@ -4,19 +4,21 @@ import { z } from 'zod'
 import Api from 'shared/api/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 
+const AccountSchema = z.object({
+  name: z.string(),
+  totalSeatCount: z.number(),
+  activatedUserCount: z.number(),
+  organizations: z.object({
+    totalCount: z.number(),
+  }),
+})
+
+export type Account = z.infer<typeof AccountSchema>
+
 const RequestSchema = z.object({
   owner: z
     .object({
-      account: z
-        .object({
-          name: z.string(),
-          totalSeatCount: z.number(),
-          activatedUserCount: z.number(),
-          organizations: z.object({
-            totalCount: z.number(),
-          }),
-        })
-        .nullable(),
+      account: AccountSchema.nullable(),
     })
     .nullable(),
 })
