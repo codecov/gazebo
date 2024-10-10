@@ -16,7 +16,7 @@ describe('CopyClipboard', () => {
 
   function setup() {
     const user = userEvent.setup({
-      advanceTimers: globalThis.jest.advanceTimersByTime,
+      advanceTimers: vi.advanceTimersByTime,
     })
 
     return { user }
