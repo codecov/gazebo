@@ -20,6 +20,9 @@ const mockTestResults = {
                 failureRate: 0.1,
                 flakeRate: 0.0,
                 avgDuration: 10,
+                totalFailCount: 5,
+                totalPassCount: 6,
+                totalSkipCount: 7,
               },
             },
             {
@@ -30,6 +33,9 @@ const mockTestResults = {
                 failureRate: 0.2,
                 flakeRate: 0.0,
                 avgDuration: 20,
+                totalFailCount: 8,
+                totalPassCount: 9,
+                totalSkipCount: 10,
               },
             },
             {
@@ -40,6 +46,9 @@ const mockTestResults = {
                 failureRate: 0.2,
                 flakeRate: 0.1,
                 avgDuration: 30,
+                totalFailCount: 11,
+                totalPassCount: 12,
+                totalSkipCount: 13,
               },
             },
           ],
@@ -153,6 +162,9 @@ describe('useInfiniteTestResults', () => {
                 failureRate: 0.1,
                 flakeRate: 0.0,
                 avgDuration: 10,
+                totalFailCount: 5,
+                totalPassCount: 6,
+                totalSkipCount: 7,
               },
               {
                 updatedAt: '2023-01-02T00:00:00Z',
@@ -161,6 +173,9 @@ describe('useInfiniteTestResults', () => {
                 failureRate: 0.2,
                 flakeRate: 0.0,
                 avgDuration: 20,
+                totalFailCount: 8,
+                totalPassCount: 9,
+                totalSkipCount: 10,
               },
               {
                 updatedAt: '2023-01-03T00:00:00Z',
@@ -169,6 +184,9 @@ describe('useInfiniteTestResults', () => {
                 failureRate: 0.2,
                 flakeRate: 0.1,
                 avgDuration: 30,
+                totalFailCount: 11,
+                totalPassCount: 12,
+                totalSkipCount: 13,
               },
             ])
           )

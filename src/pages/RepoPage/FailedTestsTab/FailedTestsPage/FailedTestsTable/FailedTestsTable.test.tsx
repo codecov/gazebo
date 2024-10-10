@@ -25,6 +25,9 @@ const node1 = {
   failureRate: 0.1,
   flakeRate: 0.0,
   avgDuration: 10,
+  totalFailCount: 5,
+  totalPassCount: 6,
+  totalSkipCount: 7,
 }
 
 const node2 = {
@@ -34,6 +37,9 @@ const node2 = {
   failureRate: 0.2,
   flakeRate: 0.2,
   avgDuration: 20,
+  totalFailCount: 8,
+  totalPassCount: 9,
+  totalSkipCount: 10,
 }
 
 const node3 = {
@@ -43,6 +49,9 @@ const node3 = {
   failureRate: 0.3,
   flakeRate: 0.1,
   avgDuration: 30,
+  totalFailCount: 11,
+  totalPassCount: 12,
+  totalSkipCount: 13,
 }
 
 const server = setupServer()
@@ -168,6 +177,9 @@ describe('FailedTestsTable', () => {
       const failureRateColumn = await screen.findByText('Failure rate')
       expect(failureRateColumn).toBeInTheDocument()
 
+      const flakeRateColumn = await screen.findByText('Flake rate')
+      expect(flakeRateColumn).toBeInTheDocument()
+
       const commitFailedColumn = await screen.findByText('Commits failed')
       expect(commitFailedColumn).toBeInTheDocument()
 
@@ -194,6 +206,9 @@ describe('FailedTestsTable', () => {
 
       const failureRateColumn = await screen.findByText('10.00%')
       expect(failureRateColumn).toBeInTheDocument()
+
+      const flakeRateColumn = await screen.findByText('0%')
+      expect(flakeRateColumn).toBeInTheDocument()
 
       const commitFailedColumn = await screen.findByText('1')
       expect(commitFailedColumn).toBeInTheDocument()
