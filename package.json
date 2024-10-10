@@ -16,7 +16,7 @@
     "test:ci:vite": "yarn generate-icons:vite && vitest run --config ./vitest.config.mjs --coverage",
     "preview-coverage": "npx vite preview --open --outDir coverage",
     "eject": "craco eject",
-    "lint": "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json",
+    "lint": "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.cjs",
     "storybook": "yarn generate-icons:vite && storybook dev -p 6006",
     "build-storybook": "yarn generate-icons:vite && storybook build",
     "chromatic": "npx chromatic --exit-zero-on-changes -ci",
@@ -33,7 +33,7 @@
       "prettier --write"
     ],
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix --no-ignore --max-warnings=0 -c .eslintrc.json"
+      "eslint --fix --no-ignore --max-warnings=0 -c .eslintrc.cjs"
     ]
   },
   "browserslist": {
