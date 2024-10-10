@@ -160,6 +160,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    enterpriseSupport: {
+      text: 'Enterprise Support',
+      path: () => 'https://codecoventerprise.zendesk.com/hc/en-us',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     legacyUI: {
       path: ({ pathname }) => config.BASE_URL + pathname,
       isExternalLink: true,
