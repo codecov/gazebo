@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import MetricsSection from './MetricsSection'
@@ -45,12 +45,7 @@ const mockAggResponse = {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      suspense: false,
-    },
-  },
+  defaultOptions: { queries: { suspense: true, retry: false } },
 })
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
@@ -58,11 +53,14 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider/:owner/:repo/tests" exact>
-          {children}
-        </Route>
-        <Route path="/:provider/:owner/:repo/tests/:branch" exact>
-          {children}
+        <Route
+          path={[
+            '/:provider/:owner/:repo/tests',
+            '/:provider/:owner/:repo/tests/:branch',
+          ]}
+          exact
+        >
+          <Suspense fallback={null}>{children}</Suspense>
         </Route>
       </MemoryRouter>
     </QueryClientProvider>
@@ -85,25 +83,23 @@ describe('MetricsSection', () => {
   function setup() {
     server.use(
       graphql.query('GetRepoOverview', (info) => {
-        console.log('Mock for GetRepoOverview called')
         return HttpResponse.json({ data: mockOverview })
       }),
       graphql.query('GetTestResultsAggregates', (info) => {
-        console.log('Mock for GetTestResultsAggregates called')
         return HttpResponse.json({ data: mockAggResponse })
       })
     )
   }
 
   describe('when on default branch', () => {
-    it('renders subheaders', () => {
+    it('renders subheaders', async () => {
       setup()
       render(<MetricsSection />, {
         wrapper: wrapper('/gh/owner/repo/tests/main'),
       })
 
-      const runEfficiency = screen.getByText('Improve CI Run Efficiency')
-      const testPerf = screen.getByText('Improve Test Performance')
+      const runEfficiency = await screen.findByText('Improve CI Run Efficiency')
+      const testPerf = await screen.findByText('Improve Test Performance')
       expect(runEfficiency).toBeInTheDocument()
       expect(testPerf).toBeInTheDocument()
     })

@@ -231,9 +231,7 @@ const getDecodedBranch = (branch?: string) =>
 function MetricsSection() {
   const { provider, owner, repo, branch } = useParams<URLParams>()
 
-  console.log('Params:', { provider, owner, repo, branch })
-
-  const { data: overview, error } = useRepoOverview({
+  const { data: overview } = useRepoOverview({
     provider,
     owner,
     repo,
@@ -243,13 +241,6 @@ function MetricsSection() {
 
   const decodedBranch = getDecodedBranch(branch)
   const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
-
-  console.log({
-    error,
-    overview,
-    selectedBranch,
-    default: overview?.defaultBranch,
-  })
 
   if (selectedBranch !== overview?.defaultBranch) {
     return null

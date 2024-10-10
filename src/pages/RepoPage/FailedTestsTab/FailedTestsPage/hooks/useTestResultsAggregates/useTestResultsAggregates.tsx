@@ -85,8 +85,6 @@ export const useTestResultsAggregates = () => {
       }).then((res) => {
         const parsedData = TestResultsAggregatesSchema.safeParse(res?.data)
 
-        console.log({ parsedData })
-
         if (!parsedData.success) {
           return Promise.reject({
             status: 404,
