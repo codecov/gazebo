@@ -217,6 +217,9 @@ describe('CurrentOrgPlan', () => {
         } as z.infer<typeof AccountDetailsSchema>,
       })
       render(<CurrentOrgPlan />, { wrapper: noUpdatedPlanWrapper })
+      const currentPlanCard = await screen.findByText(/CurrentPlanCard/i)
+      expect(currentPlanCard).toBeInTheDocument()
+
       expect(
         screen.queryByText('Plan successfully updated.')
       ).not.toBeInTheDocument()
