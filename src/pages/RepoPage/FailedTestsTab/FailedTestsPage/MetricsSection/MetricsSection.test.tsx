@@ -29,7 +29,7 @@ const mockAggResponse = {
       __typename: 'Repository',
       testAnalytics: {
         testResultsAggregates: {
-          totalDuration: 1.0,
+          totalDuration: 1.1,
           totalDurationPercentChange: 25.0,
           slowestTestsDuration: 111.11,
           slowestTestsDurationPercentChange: 0.0,
@@ -91,6 +91,20 @@ describe('MetricsSection', () => {
     )
   }
 
+  describe('when not on default branch', () => {
+    it('does not render component', () => {
+      setup()
+      render(<MetricsSection />, {
+        wrapper: wrapper('/gh/owner/repo/tests/ight'),
+      })
+
+      const runEfficiency = screen.queryByText('Improve CI Run Efficiency')
+      const testPerf = screen.queryByText('Improve Test Performance')
+      expect(runEfficiency).not.toBeInTheDocument()
+      expect(testPerf).not.toBeInTheDocument()
+    })
+  })
+
   describe('when on default branch', () => {
     it('renders subheaders', async () => {
       setup()
@@ -102,6 +116,108 @@ describe('MetricsSection', () => {
       const testPerf = await screen.findByText('Improve Test Performance')
       expect(runEfficiency).toBeInTheDocument()
       expect(testPerf).toBeInTheDocument()
+    })
+
+    it('renders total test runtime card', async () => {
+      setup()
+      render(<MetricsSection />, {
+        wrapper: wrapper('/gh/owner/repo/tests/main'),
+      })
+
+      const title = await screen.findByText('Test run time')
+      const context = await screen.findByText(1.1)
+      const description = await screen.findByText(
+        'Increased by [12.5hr] in the last [30 days]'
+      )
+
+      expect(title).toBeInTheDocument()
+      expect(context).toBeInTheDocument()
+      expect(description).toBeInTheDocument()
+    })
+
+    it('renders slowest tests card', async () => {
+      setup()
+      render(<MetricsSection />, {
+        wrapper: wrapper('/gh/owner/repo/tests/main'),
+      })
+
+      const title = await screen.findByText('Slowest tests')
+      const context = await screen.findByText(6)
+      const description = await screen.findByText(
+        'The slowest 6 tests take 111.11 to run.'
+      )
+
+      expect(title).toBeInTheDocument()
+      expect(context).toBeInTheDocument()
+      expect(description).toBeInTheDocument()
+    })
+
+    it('renders total flaky tests card', async () => {
+      setup()
+      render(<MetricsSection />, {
+        wrapper: wrapper('/gh/owner/repo/tests/main'),
+      })
+
+      const title = await screen.findByText('Flaky tests')
+      const context = await screen.findByText(88)
+      const description = await screen.findByText(
+        '*The total rerun time for flaky tests is [50hr].'
+      )
+
+      expect(title).toBeInTheDocument()
+      expect(context).toBeInTheDocument()
+      expect(description).toBeInTheDocument()
+    })
+
+    it('renders average flake rate card', async () => {
+      setup()
+      render(<MetricsSection />, {
+        wrapper: wrapper('/gh/owner/repo/tests/main'),
+      })
+
+      const title = await screen.findByText('Avg. flake rate')
+      const context = await screen.findByText('8%')
+      const description = await screen.findByText(
+        'On average, a flaky test ran [20] times before it passed.'
+      )
+
+      expect(title).toBeInTheDocument()
+      expect(context).toBeInTheDocument()
+      expect(description).toBeInTheDocument()
+    })
+
+    it('renders total failures card', async () => {
+      setup()
+      render(<MetricsSection />, {
+        wrapper: wrapper('/gh/owner/repo/tests/main'),
+      })
+
+      const title = await screen.findByText('Failures')
+      const context = await screen.findByText(1)
+      const description = await screen.findByText(
+        'The number of test failures across all branches.'
+      )
+
+      expect(title).toBeInTheDocument()
+      expect(context).toBeInTheDocument()
+      expect(description).toBeInTheDocument()
+    })
+
+    it('renders total skips card', async () => {
+      setup()
+      render(<MetricsSection />, {
+        wrapper: wrapper('/gh/owner/repo/tests/main'),
+      })
+
+      const title = await screen.findByText('Skipped tests')
+      const context = await screen.findByText(20)
+      const description = await screen.findByText(
+        'The number of skipped tests in your test suite.'
+      )
+
+      expect(title).toBeInTheDocument()
+      expect(context).toBeInTheDocument()
+      expect(description).toBeInTheDocument()
     })
   })
 })
