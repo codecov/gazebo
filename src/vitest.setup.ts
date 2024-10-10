@@ -3,7 +3,7 @@ import { cleanup } from '@testing-library/react'
 import '@testing-library/jest-dom/vitest'
 
 // not sure why this lint is being fired here so I'm disabling it
-// eslint-disable-next-line testing-library/await-fire-event
+// eslint-disable-next-line testing-library/await-async-events
 expect.extend(matchers)
 
 // Prevent timezone differences between local and CI/CD

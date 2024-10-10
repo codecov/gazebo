@@ -1,5 +1,5 @@
 /* eslint-disable testing-library/prefer-user-event */
-/* eslint-disable testing-library/await-fire-event */
+/* eslint-disable testing-library/await-async-events */
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import RadioInput from './RadioInput'
