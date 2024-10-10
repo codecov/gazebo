@@ -137,7 +137,7 @@ describe('FilesChangedTab', () => {
       }))
     })
 
-    it.only('displays error message', async () => {
+    it('displays error message', async () => {
       setup({ planValue: TierNames.PRO, isPrivate: false })
       render(<FilesChangedTab />, { wrapper })
 
