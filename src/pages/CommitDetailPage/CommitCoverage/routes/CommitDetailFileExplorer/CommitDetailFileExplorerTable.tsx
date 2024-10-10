@@ -73,8 +73,6 @@ function CommitDetailFileExplorerTable() {
     manualSorting: true,
   })
 
-  console.log('COMMIT DETAIL FILE EXPLORER TABLE')
-
   if (pathContentsType === 'UnknownPath') {
     return (
       <p className="flex flex-1 justify-center">

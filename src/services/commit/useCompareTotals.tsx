@@ -17,13 +17,12 @@ import Api from 'shared/api'
 import A from 'ui/A'
 
 const CoverageObjSchema = z.object({
-  percentCovered: z.number().nullish(),
+  percentCovered: z.number().nullable(),
 })
 
 const ImpactedFileSchema = z
   .object({
     headName: z.string().nullable(),
-    // isCriticalFile: z.boolean().nullable(),
     patchCoverage: CoverageObjSchema.nullable(),
     baseCoverage: CoverageObjSchema.nullable(),
     headCoverage: CoverageObjSchema.nullable(),
@@ -197,13 +196,12 @@ export function useCompareTotals({
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
 
-        console.log('USE COMPARE TOTALS', JSON.stringify(parsedRes))
-        // if (!parsedRes.success) {
-        return Promise.reject({
-          status: 404,
-          data: parsedRes.error,
-        })
-        // }
+        if (!parsedRes.success) {
+          return Promise.reject({
+            status: 404,
+            data: parsedRes.error,
+          })
+        }
 
         const data = parsedRes.data
 

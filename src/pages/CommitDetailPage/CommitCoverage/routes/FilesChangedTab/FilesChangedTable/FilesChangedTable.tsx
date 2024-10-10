@@ -244,8 +244,6 @@ export default function FilesChangedTable() {
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
   const location = useLocation()
 
-  console.log('FILES CHANGED TABLE')
-
   const queryParams = qs.parse(location.search, {
     ignoreQueryPrefix: true,
     depth: 1,
@@ -272,10 +270,7 @@ export default function FilesChangedTable() {
       components: components,
       ordering: getFilter(sorting),
     },
-    forceFail: true,
   })
-
-  console.log(commitData, isLoading)
 
   const commit = commitData?.commit
 

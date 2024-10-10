@@ -43,8 +43,6 @@ const CommitDetailPage: React.FC = () => {
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
   const shortSHA = commitSha?.slice(0, 7)
 
-  console.log('HERE')
-
   // reset cache when user navigates to the commit detail page
   const queryClient = useQueryClient()
   queryClient.setQueryData(['IgnoredUploadIds'], [])
@@ -148,11 +146,9 @@ const CommitDetailPage: React.FC = () => {
         </Suspense>
       ) : (
         <div className="pt-2">
-          <>
-            <Suspense fallback={<Loader />}>
-              <CommitCoverage />
-            </Suspense>
-          </>
+          <Suspense fallback={<Loader />}>
+            <CommitCoverage />
+          </Suspense>
         </div>
       )}
     </div>

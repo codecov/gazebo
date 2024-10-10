@@ -5,8 +5,8 @@ import { useParams } from 'react-router-dom'
 import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import Spinner from 'ui/Spinner'
 import A from 'ui/A'
+import Spinner from 'ui/Spinner'
 
 const FilesChangedTable = lazy(() => import('./FilesChangedTable'))
 const FilesChangedTableTeam = lazy(() => import('./FilesChangedTableTeam'))
@@ -28,8 +28,6 @@ function FilesChanged() {
 
   const { data: tierData } = useTier({ provider, owner })
 
-  console.log('FILES CHANGED TAB')
-
   if (tierData === TierNames.TEAM && !!repoSettings?.repository?.private) {
     return (
       <Suspense fallback={<Loader />}>
@@ -42,7 +40,7 @@ function FilesChanged() {
   return (
     <ErrorBoundary
       fallback={
-        <p className="m-4">
+        <p className="m-4" data-testid="files-changed-table-error">
           There was an error fetching the changed files. Please try refreshing
           the page. If the error persists, please{' '}
           <A

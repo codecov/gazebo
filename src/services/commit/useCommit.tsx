@@ -82,7 +82,7 @@ const UploadsSchema = z.object({
 const ImpactedFileSchema = z
   .object({
     headName: z.string().nullable(),
-    isCriticalFile: z.boolean().nullable(),
+    isCriticalFile: z.boolean(),
     patchCoverage: CoverageObjSchema.nullable(),
     baseCoverage: CoverageObjSchema.nullable(),
     headCoverage: CoverageObjSchema.nullable(),
@@ -314,7 +314,6 @@ interface UseCommitArgs {
   }
   refetchInterval?: number
   isTeamPlan?: boolean
-  forceFail?: boolean
 }
 
 export function useCommit({
@@ -325,7 +324,6 @@ export function useCommit({
   filters = {},
   refetchInterval = 2000,
   isTeamPlan = false,
-  forceFail = false,
 }: UseCommitArgs) {
   const queryClient = useQueryClient()
   const tempKey = [
@@ -356,20 +354,10 @@ export function useCommit({
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
 
-        console.log({ parsedRes })
-
-        // if (forceFail) {
-        //   console.log('FORCE FAIL')
-        //   return Promise.reject({
-        //     status: 404,
-        //     data: parsedRes.error,
-        //   })
-        // }
-
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: parsedRes.error,
+            data: null,
           })
         }
 
@@ -436,8 +424,6 @@ export function useCommit({
       commitQuery?.data?.commit?.compareWithParent?.state === 'pending'
   }
 
-  console.log('SHOULD POLL? ', shouldPoll)
-
   useCompareTotals({
     provider,
     owner,
@@ -446,7 +432,7 @@ export function useCommit({
     filters,
     opts: {
       refetchInterval,
-      enabled: forceFail,
+      enabled: shouldPoll,
       onSuccess: (data) => {
         let compareWithParent
         if (data?.owner?.repository?.__typename === 'Repository') {

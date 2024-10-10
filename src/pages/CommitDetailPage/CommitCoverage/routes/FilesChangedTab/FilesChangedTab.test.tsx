@@ -126,4 +126,25 @@ describe('FilesChangedTab', () => {
       })
     })
   })
+
+  describe('when there is an error rendering the Files Changed Table', () => {
+    beforeAll(() => {
+      vi.mock('./FilesChangedTable', () => ({
+        // return a component that throws error
+        default: () => {
+          throw new Error('this is an expected error')
+        },
+      }))
+    })
+
+    it.only('displays error message', async () => {
+      setup({ planValue: TierNames.PRO, isPrivate: false })
+      render(<FilesChangedTab />, { wrapper })
+
+      const errorMessage = await screen.findByTestId(
+        'files-changed-table-error'
+      )
+      expect(errorMessage).toBeInTheDocument()
+    })
+  })
 })

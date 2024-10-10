@@ -75,7 +75,6 @@ function CommitRoutes() {
   const showIndirectChanges = !(overview.private && tierName === TierNames.TEAM)
 
   return (
-    // missing a fallack for suspense here?
     <Suspense fallback={<Loader />}>
       <Switch>
         <SentryRoute
@@ -146,8 +145,6 @@ function CommitCoverageRoutes() {
     commitid: commitSha,
   })
 
-  console.log('HERE COMMIT COVERAGE ROUTES')
-
   const { erroredUploads } = extractUploads({
     unfilteredUploads: commitData?.commit?.uploads,
   })
@@ -184,8 +181,6 @@ function CommitCoverage() {
     repo,
     commitId: commitSha,
   })
-
-  console.log('HERE COMMITCOVERAGE')
 
   useEffect(() => {
     if (overview.bundleAnalysisEnabled && overview.coverageEnabled) {
