@@ -43,6 +43,7 @@ describe('useStaticNavLinks', () => {
       ${links.termsOfService}                | ${`${config.MARKETING_BASE_URL}/terms-of-service`}
       ${links.githubMarketplace}             | ${`https://github.com/marketplace/codecov`}
       ${links.support}                       | ${`https://codecovpro.zendesk.com/hc/en-us`}
+      ${links.enterpriseSupport}             | ${`https://codecoventerprise.zendesk.com/hc/en-us`}
       ${links.docs}                          | ${`https://docs.codecov.io/`}
       ${links.oauthTroubleshoot}             | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
       ${links.teamPlanAbout}                 | ${'https://about.codecov.io/team-plan-compare'}
