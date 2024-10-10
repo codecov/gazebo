@@ -9,7 +9,7 @@ module.exports = {
     'plugin:storybook/recommended',
     'plugin:tailwindcss/recommended',
   ],
-  plugins: ['@vitest', 'testing-library'],
+  plugins: ['@vitest'],
   globals: {
     vi: true,
   },
@@ -132,8 +132,24 @@ module.exports = {
   overrides: [
     // Testing Library
     {
+      extends: ['plugin:testing-library/react'],
       files: ['**/__tests__/**/*', '**/*.{spec,test}.*'],
       rules: {
+        // previous rules we had set already in Gazebo
+        'testing-library/no-node-access': 'warn',
+        'testing-library/prefer-screen-queries': 'warn',
+        'testing-library/no-render-in-setup': 'warn',
+        'testing-library/no-unnecessary-act': 'warn',
+        'testing-library/await-async-utils': 'warn',
+        'testing-library/prefer-find-by': 'warn',
+        'testing-library/await-fire-event': 'warn',
+        'testing-library/no-global-regexp-flag-in-query': 'warn',
+        'testing-library/no-manual-cleanup': 'off',
+        'testing-library/prefer-user-event': 'warn',
+        'testing-library/prefer-wait-for': 'warn',
+        'testing-library/prefer-explicit-assert': 'warn',
+
+        // copied from https://github.com/facebook/create-react-app/blob/main/packages/eslint-config-react-app/jest.js
         'testing-library/await-async-query': 'error',
         'testing-library/no-await-sync-query': 'error',
         'testing-library/no-container': 'error',
@@ -147,18 +163,6 @@ module.exports = {
         'testing-library/prefer-presence-queries': 'error',
         'testing-library/prefer-query-by-disappearance': 'error',
         'testing-library/render-result-naming-convention': 'error',
-        'testing-library/no-node-access': 'warn',
-        'testing-library/prefer-screen-queries': 'warn',
-        'testing-library/no-render-in-setup': 'warn',
-        'testing-library/no-unnecessary-act': 'warn',
-        'testing-library/await-async-utils': 'warn',
-        'testing-library/prefer-find-by': 'warn',
-        'testing-library/await-fire-event': 'warn',
-        'testing-library/no-global-regexp-flag-in-query': 'warn',
-        'testing-library/no-manual-cleanup': 'off',
-        'testing-library/prefer-user-event': 'warn',
-        'testing-library/prefer-wait-for': 'warn',
-        'testing-library/prefer-explicit-assert': 'warn',
       },
     },
     // UI Rules
