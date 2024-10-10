@@ -3,10 +3,12 @@ import { useParams } from 'react-router-dom'
 import { usePlanUpdatedNotification } from 'pages/PlanPage/context'
 import { useAccountDetails } from 'services/account'
 import { getScheduleStart } from 'shared/plan/ScheduledPlanDetails/ScheduledPlanDetails'
+import A from 'ui/A'
 import { Alert } from 'ui/Alert'
 
 import BillingDetails from './BillingDetails'
 import CurrentPlanCard from './CurrentPlanCard'
+import { useEnterpriseAccountDetails } from './hooks/useEnterpriseAccountDetails'
 import InfoMessageCancellation from './InfoMessageCancellation'
 import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 import LatestInvoiceCard from './LatestInvoiceCard'
@@ -19,6 +21,10 @@ interface URLParams {
 function CurrentOrgPlan() {
   const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({
+    provider,
+    owner,
+  })
+  const { data: enterpriseDetails } = useEnterpriseAccountDetails({
     provider,
     owner,
   })
@@ -35,6 +41,8 @@ function CurrentOrgPlan() {
     accountDetails?.usesInvoice
 
   const planUpdatedNotification = usePlanUpdatedNotification()
+
+  const account = enterpriseDetails?.owner?.account
 
   return (
     <div className="w-full lg:w-4/5">
@@ -64,6 +72,12 @@ function CurrentOrgPlan() {
               )}
             </Alert>
           ) : null}
+          {account ? (
+            <AccountUsageAlert
+              totalSeats={account.totalSeatCount}
+              activatedUsers={account.activatedUserCount}
+            />
+          ) : null}
           <CurrentPlanCard />
           {shouldRenderBillingDetails ? (
             <>
@@ -75,6 +89,43 @@ function CurrentOrgPlan() {
       ) : null}
     </div>
   )
+}
+
+const AccountUsageAlert = ({
+  totalSeats,
+  activatedUsers,
+}: {
+  totalSeats: number
+  activatedUsers: number
+}) => {
+  const percentUsed = activatedUsers / totalSeats
+  if (percentUsed === 1) {
+    return (
+      <Alert variant="warning">
+        <Alert.Title>Your account is using 100% of its seats</Alert.Title>
+        <Alert.Description>
+          You might want to add more seats for your team to ensure availability.{' '}
+          {/* @ts-expect-error */}
+          <A to={{ pageName: 'enterpriseSupport' }}>Contact support</A> to
+          update your plan.
+        </Alert.Description>
+      </Alert>
+    )
+  } else if (percentUsed >= 0.9) {
+    return (
+      <Alert variant="info">
+        <Alert.Title>Your account is using 90% of its seats</Alert.Title>
+        <Alert.Description>
+          You might want to add more seats for your team to ensure availability.{' '}
+          {/* @ts-expect-error */}
+          <A to={{ pageName: 'enterpriseSupport' }}>Contact support</A> to
+          update your plan.
+        </Alert.Description>
+      </Alert>
+    )
+  }
+
+  return null
 }
 
 const DelinquentAlert = () => {
