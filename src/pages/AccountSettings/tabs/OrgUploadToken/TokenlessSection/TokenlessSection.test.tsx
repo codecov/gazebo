@@ -5,16 +5,13 @@ import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useAddNotification } from 'services/toastNotification'
-import { useFlags } from 'shared/featureFlags'
-
 import TokenlessSection from './TokenlessSection'
 
 const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
+  useFlags: vi.fn(),
 }))
 
-vi.mock('shared/featureFlags')
 vi.mock('services/toastNotification', async () => {
   const actual = await vi.importActual('services/toastNotification')
   return {
@@ -23,8 +20,13 @@ vi.mock('services/toastNotification', async () => {
   }
 })
 
-const mockedUseFlags = useFlags as jest.Mock
-const mockedUseAddNotification = useAddNotification as jest.Mock
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -60,8 +62,8 @@ describe('TokenlessSection', () => {
     orgUploadToken = 'test-mock-org-upload-token',
     uploadTokenRequired = false,
   } = {}) {
-    mockedUseFlags.mockReturnValue({ tokenlessSection: true })
-    mockedUseAddNotification.mockReturnValue(vi.fn())
+    mocks.useFlags.mockReturnValue({ tokenlessSection: true })
+    mocks.useAddNotification.mockReturnValue(vi.fn())
     const mutate = vi.fn()
     const user = userEvent.setup()
 
