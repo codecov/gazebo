@@ -65,6 +65,7 @@ export function useRepoOverview({
   repo,
   opts = {},
 }: UseRepoOverviewArgs) {
+  console.log('ENTERING HERE')
   let enabled = true
   if (opts?.enabled !== undefined) {
     enabled = opts.enabled
@@ -73,6 +74,7 @@ export function useRepoOverview({
   return useQuery({
     queryKey: ['GetRepoOverview', provider, owner, repo],
     queryFn: ({ signal }) => {
+      console.log('STARTING QUERY', provider, owner, repo)
       return Api.graphql({
         provider,
         signal,
@@ -82,6 +84,7 @@ export function useRepoOverview({
           repo,
         },
       }).then((res) => {
+        console.log({ res })
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
