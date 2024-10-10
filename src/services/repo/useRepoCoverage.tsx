@@ -12,15 +12,17 @@ import {
 
 const CommitSchema = z.object({
   yamlState: z.literal('DEFAULT').nullable(),
-  coverageAnalytics: z.object({
-    totals: z
-      .object({
-        percentCovered: z.number().nullable(),
-        lineCount: z.number().nullable(),
-        hitsCount: z.number().nullable(),
-      })
-      .nullable(),
-  }),
+  coverageAnalytics: z
+    .object({
+      totals: z
+        .object({
+          percentCovered: z.number().nullable(),
+          lineCount: z.number().nullable(),
+          hitsCount: z.number().nullable(),
+        })
+        .nullable(),
+    })
+    .nullable(),
 })
 
 const BranchSchema = z.object({

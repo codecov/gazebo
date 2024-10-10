@@ -50,12 +50,14 @@ const BundleReportSchema = z.object({
 const BranchSchema = z.object({
   head: z
     .object({
-      bundleAnalysis: z.object({
-        bundleAnalysisReport: z.discriminatedUnion('__typename', [
-          BundleReportSchema,
-          MissingHeadReportSchema,
-        ]),
-      }),
+      bundleAnalysis: z
+        .object({
+          bundleAnalysisReport: z.discriminatedUnion('__typename', [
+            BundleReportSchema,
+            MissingHeadReportSchema,
+          ]),
+        })
+        .nullable(),
     })
     .nullable(),
 })

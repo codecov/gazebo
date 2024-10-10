@@ -156,13 +156,15 @@ const PullSchema = z.object({
       ciPassed: z.boolean().nullable(),
       branchName: z.string().nullable(),
       commitid: z.string().nullable(),
-      coverageAnalytics: z.object({
-        totals: z
-          .object({
-            percentCovered: z.number().nullable(),
-          })
-          .nullable(),
-      }),
+      coverageAnalytics: z
+        .object({
+          totals: z
+            .object({
+              percentCovered: z.number().nullable(),
+            })
+            .nullable(),
+        })
+        .nullable(),
       uploads: UploadsSchema.nullable(),
     })
     .nullable(),

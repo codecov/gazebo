@@ -125,9 +125,11 @@ const CompareWithParentSchema = z.discriminatedUnion('__typename', [
 ])
 
 const CommitSchema = z.object({
-  coverageAnalytics: z.object({
-    totals: CoverageObjSchema.nullable(),
-  }),
+  coverageAnalytics: z
+    .object({
+      totals: CoverageObjSchema.nullable(),
+    })
+    .nullable(),
   state: z.string().nullable(),
   commitid: z.string(),
   pullId: z.number().nullable(),
@@ -144,9 +146,11 @@ const CommitSchema = z.object({
   parent: z
     .object({
       commitid: z.string(),
-      coverageAnalytics: z.object({
-        totals: CoverageObjSchema.nullable(),
-      }),
+      coverageAnalytics: z
+        .object({
+          totals: CoverageObjSchema.nullable(),
+        })
+        .nullable(),
     })
     .nullable(),
   compareWithParent: CompareWithParentSchema.nullable(),

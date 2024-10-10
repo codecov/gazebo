@@ -58,23 +58,25 @@ const CoverageSchema = z.array(
 
 const CoverageForFileSchema = z.object({
   commitid: z.string().nullish(),
-  coverageAnalytics: z.object({
-    flagNames: z.array(z.string().nullish()).nullish(),
-    components: z.array(z.object({ id: z.string(), name: z.string() })),
-    coverageFile: z
-      .object({
-        hashedPath: z.string(),
-        isCriticalFile: z.boolean().nullish(),
-        content: z.string().nullish(),
-        coverage: CoverageSchema.nullish(),
-        totals: z
-          .object({
-            percentCovered: z.number().nullish(),
-          })
-          .nullish(),
-      })
-      .nullish(),
-  }),
+  coverageAnalytics: z
+    .object({
+      flagNames: z.array(z.string().nullish()).nullish(),
+      components: z.array(z.object({ id: z.string(), name: z.string() })),
+      coverageFile: z
+        .object({
+          hashedPath: z.string(),
+          isCriticalFile: z.boolean().nullish(),
+          content: z.string().nullish(),
+          coverage: CoverageSchema.nullish(),
+          totals: z
+            .object({
+              percentCovered: z.number().nullish(),
+            })
+            .nullish(),
+        })
+        .nullish(),
+    })
+    .nullable(),
 })
 
 export const RepositorySchema = z.object({

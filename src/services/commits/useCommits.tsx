@@ -46,25 +46,27 @@ const CommitSchema = z.object({
   author: AuthorSchema.nullable(),
   bundleStatus: CommitStatusSchema.nullable(),
   coverageStatus: CommitStatusSchema.nullable(),
-  bundleAnalysis: z.object({
-    bundleAnalysisCompareWithParent: z
-      .discriminatedUnion('__typename', [
-        z.object({
-          __typename: z.literal('BundleAnalysisComparison'),
-          bundleChange: z.object({
-            size: z.object({
-              uncompress: z.number(),
+  bundleAnalysis: z
+    .object({
+      bundleAnalysisCompareWithParent: z
+        .discriminatedUnion('__typename', [
+          z.object({
+            __typename: z.literal('BundleAnalysisComparison'),
+            bundleChange: z.object({
+              size: z.object({
+                uncompress: z.number(),
+              }),
             }),
           }),
-        }),
-        FirstPullRequestSchema,
-        MissingBaseCommitSchema,
-        MissingBaseReportSchema,
-        MissingHeadCommitSchema,
-        MissingHeadReportSchema,
-      ])
-      .nullable(),
-  }),
+          FirstPullRequestSchema,
+          MissingBaseCommitSchema,
+          MissingBaseReportSchema,
+          MissingHeadCommitSchema,
+          MissingHeadReportSchema,
+        ])
+        .nullable(),
+    })
+    .nullable(),
   compareWithParent: z
     .discriminatedUnion('__typename', [
       z.object({

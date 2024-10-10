@@ -31,9 +31,11 @@ const RepositorySchema = z.object({
     .object({
       head: z
         .object({
-          bundleAnalysis: z.object({
-            bundleAnalysisReport: BundleReportSchema.nullable(),
-          }),
+          bundleAnalysis: z
+            .object({
+              bundleAnalysisReport: BundleReportSchema.nullable(),
+            })
+            .nullable(),
         })
         .nullable(),
     })

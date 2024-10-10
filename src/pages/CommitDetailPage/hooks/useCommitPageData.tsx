@@ -51,11 +51,13 @@ const RepositorySchema = z.object({
           ]),
         })
         .nullable(),
-      bundleAnalysis: z.object({
-        bundleAnalysisCompareWithParent: z.object({
-          __typename: BundleAnalysisComparisonResult,
-        }),
-      }),
+      bundleAnalysis: z
+        .object({
+          bundleAnalysisCompareWithParent: z.object({
+            __typename: BundleAnalysisComparisonResult,
+          }),
+        })
+        .nullable(),
     })
     .nullable(),
 })

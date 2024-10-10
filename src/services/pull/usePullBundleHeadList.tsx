@@ -27,20 +27,22 @@ const RepositorySchema = z.object({
     .object({
       head: z
         .object({
-          bundleAnalysis: z.object({
-            bundleAnalysisReport: z
-              .discriminatedUnion('__typename', [
-                z.object({
-                  __typename: z.literal('BundleAnalysisReport'),
-                  bundles: z.array(BundleSchema),
-                }),
-                z.object({
-                  __typename: z.literal('MissingHeadReport'),
-                  message: z.string(),
-                }),
-              ])
-              .nullable(),
-          }),
+          bundleAnalysis: z
+            .object({
+              bundleAnalysisReport: z
+                .discriminatedUnion('__typename', [
+                  z.object({
+                    __typename: z.literal('BundleAnalysisReport'),
+                    bundles: z.array(BundleSchema),
+                  }),
+                  z.object({
+                    __typename: z.literal('MissingHeadReport'),
+                    message: z.string(),
+                  }),
+                ])
+                .nullable(),
+            })
+            .nullable(),
         })
         .nullable(),
     })

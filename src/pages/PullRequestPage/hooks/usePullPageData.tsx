@@ -45,14 +45,16 @@ const RepositorySchema = z.object({
       head: z
         .object({
           commitid: z.string(),
-          bundleAnalysis: z.object({
-            bundleAnalysisReport: z
-              .discriminatedUnion('__typename', [
-                z.object({ __typename: z.literal('BundleAnalysisReport') }),
-                z.object({ __typename: z.literal('MissingHeadReport') }),
-              ])
-              .nullable(),
-          }),
+          bundleAnalysis: z
+            .object({
+              bundleAnalysisReport: z
+                .discriminatedUnion('__typename', [
+                  z.object({ __typename: z.literal('BundleAnalysisReport') }),
+                  z.object({ __typename: z.literal('MissingHeadReport') }),
+                ])
+                .nullable(),
+            })
+            .nullable(),
         })
         .nullable(),
       compareWithBase: z

@@ -14,13 +14,15 @@ const BranchSchema = z
   .object({
     head: z
       .object({
-        coverageAnalytics: z.object({
-          totals: z
-            .object({
-              fileCount: z.number().nullable(),
-            })
-            .nullable(),
-        }),
+        coverageAnalytics: z
+          .object({
+            totals: z
+              .object({
+                fileCount: z.number().nullable(),
+              })
+              .nullable(),
+          })
+          .nullable(),
       })
       .nullable(),
   })

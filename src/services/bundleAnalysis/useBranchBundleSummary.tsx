@@ -48,9 +48,11 @@ const RepositorySchema = z.object({
       head: z
         .object({
           commitid: z.string(),
-          bundleAnalysis: z.object({
-            bundleAnalysisReport: BundleReportSchema.nullable(),
-          }),
+          bundleAnalysis: z
+            .object({
+              bundleAnalysisReport: BundleReportSchema.nullable(),
+            })
+            .nullable(),
         })
         .nullable(),
     })

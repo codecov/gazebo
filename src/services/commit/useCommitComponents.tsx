@@ -13,13 +13,15 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   commit: z
     .object({
-      coverageAnalytics: z.object({
-        components: z.array(
-          z.object({
-            name: z.string(),
-          })
-        ),
-      }),
+      coverageAnalytics: z
+        .object({
+          components: z.array(
+            z.object({
+              name: z.string(),
+            })
+          ),
+        })
+        .nullable(),
     })
     .nullable(),
 })

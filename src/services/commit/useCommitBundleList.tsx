@@ -57,10 +57,12 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   commit: z
     .object({
-      bundleAnalysis: z.object({
-        bundleAnalysisCompareWithParent:
-          BundleAnalysisCompareWithParentSchema.nullable(),
-      }),
+      bundleAnalysis: z
+        .object({
+          bundleAnalysisCompareWithParent:
+            BundleAnalysisCompareWithParentSchema.nullable(),
+        })
+        .nullable(),
     })
     .nullable(),
 })
