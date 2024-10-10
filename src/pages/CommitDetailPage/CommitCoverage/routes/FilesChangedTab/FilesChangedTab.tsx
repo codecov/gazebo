@@ -6,6 +6,7 @@ import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeade
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import Spinner from 'ui/Spinner'
+import A from 'ui/A'
 
 const FilesChangedTable = lazy(() => import('./FilesChangedTable'))
 const FilesChangedTableTeam = lazy(() => import('./FilesChangedTableTeam'))
@@ -39,12 +40,19 @@ function FilesChanged() {
   }
 
   return (
-    // some suspense handler here?
     <ErrorBoundary
       fallback={
         <p className="m-4">
           There was an error fetching the changed files. Please try refreshing
-          the page. If the error persists, please contact support@codecov.io.
+          the page. If the error persists, please{' '}
+          <A
+            to={{ pageName: 'support' }}
+            hook="contact-support-link"
+            isExternal
+          >
+            contact support
+          </A>
+          {'.'}
         </p>
       }
     >

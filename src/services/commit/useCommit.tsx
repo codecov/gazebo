@@ -428,13 +428,15 @@ export function useCommit({
       }),
   })
 
-  // let shouldPoll = false
-  // if (
-  //   commitQuery?.data?.commit?.compareWithParent?.__typename === 'Comparison'
-  // ) {
-  //   shouldPoll =
-  //     commitQuery?.data?.commit?.compareWithParent?.state === 'pending'
-  // }
+  let shouldPoll = false
+  if (
+    commitQuery?.data?.commit?.compareWithParent?.__typename === 'Comparison'
+  ) {
+    shouldPoll =
+      commitQuery?.data?.commit?.compareWithParent?.state === 'pending'
+  }
+
+  console.log('SHOULD POLL? ', shouldPoll)
 
   useCompareTotals({
     provider,
@@ -443,9 +445,7 @@ export function useCommit({
     commitid,
     filters,
     opts: {
-      // refetchInterval,
-      retry: 2,
-      refetchOnWindowFocus: true,
+      refetchInterval,
       enabled: forceFail,
       onSuccess: (data) => {
         let compareWithParent
@@ -461,10 +461,7 @@ export function useCommit({
           },
         }
         queryClient.setQueryData(tempKey, impactedFileData)
-
-        shouldPoll = false
       },
-      suspense: true,
     },
   })
 
