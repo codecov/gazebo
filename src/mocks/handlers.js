@@ -1,4 +1,4 @@
-import { graphql } from 'msw'
+import { graphql, HttpResponse } from 'msw2'
 
 import { repoCoverageHandler } from 'services/charts/mocks'
 import { commitErrored } from 'services/commit/mocks'
@@ -19,10 +19,9 @@ export const handlers = [
 ]
 
 // pr page that never is left hanging in a "no files covered" when its stuck in a pending state
-graphql.query('CurrentUser', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('CurrentUser', (info) => {
+  return HttpResponse.json({
+    data: {
       me: {
         owner: { defaultOrgUsername: null },
         email: 'terry@codecov.io',
@@ -61,14 +60,13 @@ graphql.query('CurrentUser', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('DetailOwner', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('DetailOwner', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         orgUploadToken: '9a9f1bb6-43e9-4766-b48b-aa16b449fbb1',
         ownerid: 5537,
@@ -77,14 +75,13 @@ graphql.query('DetailOwner', (req, res, ctx) => {
         isCurrentUserPartOfOrg: true,
         isAdmin: true,
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('DetailOwner2', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('DetailOwner2', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         orgUploadToken: '9a9f1bb6-43e9-4766-b48b-aa16b449fbb1',
         ownerid: 5537,
@@ -93,14 +90,13 @@ graphql.query('DetailOwner2', (req, res, ctx) => {
         isCurrentUserPartOfOrg: true,
         isAdmin: true,
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('PullPageData', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('PullPageData', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         isCurrentUserPartOfOrg: true,
         repository: {
@@ -119,14 +115,13 @@ graphql.query('PullPageData', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('PullHeadData', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('PullHeadData', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         repository: {
           pull: {
@@ -139,14 +134,13 @@ graphql.query('PullHeadData', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('Pull', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('Pull', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         isCurrentUserPartOfOrg: true,
         repository: {
@@ -222,14 +216,13 @@ graphql.query('Pull', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('Pull2', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('Pull2', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         isCurrentUserPartOfOrg: true,
         repository: {
@@ -305,14 +298,13 @@ graphql.query('Pull2', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('GetCommits', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('GetCommits', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         repository: {
           commits: {
@@ -322,18 +314,17 @@ graphql.query('GetCommits', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('CurrentUser', (req, res, ctx) => {
-  return res(ctx.status(200), ctx.data())
+graphql.query('CurrentUser', (info) => {
+  return HttpResponse.json({ data: {} })
 })
 
-graphql.query('CommitDropdownSummary', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('CommitDropdownSummary', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         repository: {
           __typename: 'Repository',
@@ -348,14 +339,13 @@ graphql.query('CommitDropdownSummary', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('PullDropdownSummary', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('PullDropdownSummary', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         repository: {
           __typename: 'Repository',
@@ -370,14 +360,13 @@ graphql.query('PullDropdownSummary', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('CommitBADropdownSummary', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('CommitBADropdownSummary', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         repository: {
           __typename: 'Repository',
@@ -390,14 +379,13 @@ graphql.query('CommitBADropdownSummary', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('PullBADropdownSummary', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('PullBADropdownSummary', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         repository: {
           __typename: 'Repository',
@@ -413,14 +401,13 @@ graphql.query('PullBADropdownSummary', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('CommitBundleList', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('CommitBundleList', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         repository: {
           __typename: 'Repository',
@@ -449,14 +436,13 @@ graphql.query('CommitBundleList', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })
 
-graphql.query('PullBundleComparisonList', (req, res, ctx) => {
-  return res(
-    ctx.status(200),
-    ctx.data({
+graphql.query('PullBundleComparisonList', (info) => {
+  return HttpResponse.json({
+    data: {
       owner: {
         repository: {
           __typename: 'Repository',
@@ -485,6 +471,6 @@ graphql.query('PullBundleComparisonList', (req, res, ctx) => {
           },
         },
       },
-    })
-  )
+    },
+  })
 })

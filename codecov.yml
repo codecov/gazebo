@@ -23,7 +23,7 @@ comment:
   require_changes: false
   require_base: false
   require_head: true
-  after_n_builds: 10 # ceil(number of test files / 80). See ci.yml for more details.
+  after_n_builds: 9 # ceil(number of test files / 80). See ci.yml for more details.
 
 ignore:
   - ./src/**/*.stories.js
@@ -43,6 +43,7 @@ ignore:
   - ./src/mocks/*.js
   - ./src/**/flags/**/*.js
   - ./src/**/mocks.js
+  - ./src/**/mocks.ts
   - ./src/pages/RepoPage/repo-jest-setup.js
   - ./src/ui/SunburstChart/*.jsx
   - ./src/ui/SunburstChart/*.js

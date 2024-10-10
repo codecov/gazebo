@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { forwardRef, useState } from 'react'
+import { forwardRef, useEffect, useRef, useState } from 'react'
 import { useDebounce } from 'react-use'
 
 import { dataMarketingType } from 'shared/propTypes'
@@ -19,9 +19,22 @@ const SearchField = forwardRef(
     const [search, setSearch] = useState(searchValue)
     const { className, value, onChange, icon, ...newProps } = rest
 
+    // bit of a hack to allow resetting searchValue value from parent.
+    const debouncing = useRef(false)
+    useEffect(() => {
+      debouncing.current = true
+    }, [search])
+
+    useEffect(() => {
+      if (!debouncing.current && searchValue === '' && search !== '') {
+        setSearch(searchValue)
+      }
+    }, [searchValue, search])
+
     useDebounce(
       () => {
         setSearchValue(search)
+        debouncing.current = false
       },
       500,
       [search]

@@ -1,10 +1,12 @@
 export const UploadStateEnum = {
-  error: 'ERROR',
   uploaded: 'UPLOADED',
-  processed: 'PROCESSED',
-  complete: 'COMPLETE',
   started: 'STARTED',
+  complete: 'COMPLETE',
+  error: 'ERROR',
+  processed: 'PROCESSED',
 } as const
+
+export const UploadErrorStates = Object.values(UploadStateEnum)
 
 export const CommitStateEnum = {
   ERROR: 'error',

@@ -1,4 +1,4 @@
-import { setupWorker } from 'msw'
+import { setupWorker } from 'msw2'
 
 import { handlers } from './handlers'
 

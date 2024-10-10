@@ -1,39 +1,52 @@
 import { z } from 'zod'
 
+import { UploadFilters } from 'pages/CommitDetailPage/CommitCoverage/UploadsCard/UploadsCard'
 import {
   UploadErrorCodeEnumSchema,
   UploadStateEnumSchema,
   UploadTypeEnumSchema,
 } from 'services/commit'
-import { UploadStateEnum, UploadTypeEnum } from 'shared/utils/commit'
+import {
+  UploadErrorStates,
+  UploadStateEnum,
+  UploadTypeEnum,
+} from 'shared/utils/commit'
 
-interface ErrorObject {
+export interface UploadErrorObject {
   errorCode: z.infer<typeof UploadErrorCodeEnumSchema> | null
 }
 
 export interface Upload {
-  id?: number | null
-  state?: z.infer<typeof UploadStateEnumSchema>
-  provider?: string | null
-  createdAt?: string
-  updatedAt?: string
-  flags?: string[] | null
-  jobCode?: string | null
-  downloadUrl?: string
-  ciUrl?: string | null
-  uploadType?: z.infer<typeof UploadTypeEnumSchema>
-  buildCode?: string | null
-  name?: string | null
-  errors: (ErrorObject | null)[]
+  id: number | null
+  state: z.infer<typeof UploadStateEnumSchema>
+  provider: string | null
+  createdAt: string
+  updatedAt: string
+  flags: string[] | null
+  jobCode: string | null
+  downloadUrl: string
+  ciUrl: string | null
+  uploadType: z.infer<typeof UploadTypeEnumSchema>
+  buildCode: string | null
+  name: string | null
+  errors: (UploadErrorObject | null)[]
 }
 
 export const NONE = 'none'
 
-function humanReadableOverview(state: string) {
-  if (state === UploadStateEnum.error) return 'errored'
-  if (state === UploadStateEnum.processed) return 'successful'
-  if (state === UploadStateEnum.complete) return 'carried forward'
-  if (state === UploadStateEnum.started) return 'started'
+function humanReadableOverview(state: (typeof UploadErrorStates)[number]) {
+  switch (state) {
+    case UploadStateEnum.error:
+      return 'errored'
+    case UploadStateEnum.uploaded:
+      return 'uploaded'
+    case UploadStateEnum.processed:
+      return 'successful'
+    case UploadStateEnum.complete:
+      return 'carried forward'
+    case UploadStateEnum.started:
+      return 'started'
+  }
 }
 
 export function deleteDuplicateCFFUploads({ uploads }: { uploads: Upload[] }) {
@@ -59,58 +72,129 @@ export function deleteDuplicateCFFUploads({ uploads }: { uploads: Upload[] }) {
   )
 }
 
-const createUploadGroups = ({ uploads }: { uploads: Upload[] }) => {
-  const stateCounts: Record<string, number> = {}
+type StateCounts = {
+  [Property in (typeof UploadErrorStates)[number]]?: number
+}
+
+const createUploadGroups = ({
+  uploads,
+  filters,
+}: {
+  uploads: Upload[]
+  filters: UploadFilters
+}) => {
+  const stateCounts: StateCounts = {}
   const providerGroups: Record<string, Upload[]> = {}
   const errorProviderGroups: Record<string, Upload[]> = {}
+  const flagErrorUploads: Record<string, Upload[]> = {}
+  const filteredUploads: Upload[] = []
 
   uploads.forEach((upload) => {
     // Count the occurrences of each state
-    if (upload.state) {
-      stateCounts[upload.state] = (stateCounts[upload.state] || 0) + 1
-    }
+    stateCounts[upload.state] = (stateCounts[upload.state] || 0) + 1
 
-    if (upload.provider === null || upload.provider === undefined) {
+    if (upload.provider === null) {
       upload.provider = NONE
     }
 
-    if (!providerGroups[upload.provider]) {
-      providerGroups[upload.provider] = [upload]
-    } else {
-      providerGroups[upload.provider]!.push(upload)
+    if (upload.state === UploadStateEnum.error) {
+      const errorProviderGroup = errorProviderGroups[upload.provider]
+      if (errorProviderGroup) {
+        errorProviderGroup.unshift(upload)
+      } else {
+        errorProviderGroups[upload.provider] = [upload]
+      }
     }
 
-    if (upload.state === UploadStateEnum.error) {
-      if (!errorProviderGroups[upload.provider]) {
-        errorProviderGroups[upload.provider] = [upload]
+    if (upload.flags?.length && upload.flags.length > 1) {
+      const flagErrorUploadGroup = flagErrorUploads[upload.provider]
+      if (flagErrorUploadGroup) {
+        flagErrorUploadGroup.unshift(upload)
       } else {
-        errorProviderGroups[upload.provider]!.push(upload)
+        flagErrorUploads[upload.provider] = [upload]
+      }
+    }
+
+    if (
+      (!filters.flagErrors && !filters.uploadErrors) ||
+      (filters.flagErrors &&
+        upload.flags?.length != null &&
+        upload.flags.length >= 2) ||
+      (filters.uploadErrors && upload.state === UploadStateEnum.error)
+    ) {
+      filteredUploads.unshift(upload)
+
+      const providerGroup = providerGroups[upload.provider]
+      if (providerGroup) {
+        providerGroup.unshift(upload)
+      } else {
+        providerGroups[upload.provider] = [upload]
       }
     }
   })
 
-  const uploadsOverview = Object.entries(stateCounts)
-    .map(([state, count]) => `${count} ${humanReadableOverview(state)}`)
-    .join(', ')
+  const uploadsOverview = UploadErrorStates.reduce((acc, state) => {
+    const count = stateCounts[state]
+    if (count) {
+      return `${acc}, ${count} ${humanReadableOverview(state)}`
+    }
+    return acc
+  }, '').slice(2)
 
   return {
     uploadsOverview,
     providerGroups,
     errorProviderGroups,
+    flagErrorUploads,
+    searchResults: searchUploads({
+      uploads: filteredUploads,
+      search: filters.searchTerm,
+    }).reverse(),
   }
+}
+
+function searchUploads({
+  uploads,
+  search,
+}: {
+  uploads: Upload[]
+  search: string
+}): Upload[] {
+  if (search === '') {
+    return []
+  }
+
+  const getSearchScore = (upload: Upload) => {
+    // Add 1 point for each match of `search` in name, jobCode, flags, and provider.
+    let score = 0
+    score += upload.name?.match(search)?.length ?? 0
+    score += upload.jobCode?.match(search)?.length ?? 0
+    upload.flags?.forEach((flag) => (score += flag.match(search)?.length ?? 0))
+    score += upload.provider?.match(search)?.length ?? 0
+    return score
+  }
+
+  return uploads
+    .filter((upload) => getSearchScore(upload) > 0)
+    .sort((a: Upload, b: Upload) => {
+      return getSearchScore(a) - getSearchScore(b)
+    })
 }
 
 export const extractUploads = ({
   unfilteredUploads,
+  filters = { flagErrors: false, uploadErrors: false, searchTerm: '' },
 }: {
   unfilteredUploads?: Upload[]
+  filters?: UploadFilters
 }) => {
   if (!unfilteredUploads) {
     return {
-      groupedUploads: {},
+      groupedUploads: {} as Record<string, Upload[]>,
       uploadsProviderList: [],
       uploadsOverview: '',
-      erroredUploads: [],
+      erroredUploads: {} as Record<string, Upload[]>,
+      flagErrorUploads: {} as Record<string, Upload[]>,
       hasNoUploads: true,
     }
   }
@@ -122,7 +206,9 @@ export const extractUploads = ({
     uploadsOverview,
     providerGroups: groupedUploads,
     errorProviderGroups: erroredUploads,
-  } = createUploadGroups({ uploads })
+    flagErrorUploads,
+    searchResults,
+  } = createUploadGroups({ uploads, filters })
 
   const uploadsProviderList = Object.keys(groupedUploads)
 
@@ -132,5 +218,7 @@ export const extractUploads = ({
     hasNoUploads,
     uploadsOverview,
     erroredUploads,
+    flagErrorUploads,
+    searchResults,
   }
 }

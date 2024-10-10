@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 
 import { ErrorCodeEnum, UploadStateEnum } from 'shared/utils/commit'
+import { UploadErrorObject } from 'shared/utils/extractUploads'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
@@ -9,14 +10,20 @@ type ErrorCodeType =
   | 'UNKNOWN_ERROR'
 
 interface UseDuplicatedErrorsProps {
-  errors: Array<{ errorCode: ErrorCodeType }>
+  errors: (UploadErrorObject | null)[]
 }
 
 const useDuplicatedErrors = ({ errors }: UseDuplicatedErrorsProps) =>
   useMemo(() => {
     const errorMap = new Map<ErrorCodeType, number>()
 
-    errors?.forEach(({ errorCode }) => {
+    errors?.forEach((error) => {
+      if (!error || !error.errorCode) {
+        return
+      }
+
+      const { errorCode } = error
+
       if (errorMap.has(errorCode)) {
         errorMap.set(errorCode, errorMap.get(errorCode)! + 1)
       } else if (
@@ -69,7 +76,8 @@ const ErrorMessage = ({ errorCode, count }: ErrorMessageProps) => {
       <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
         {icon}
         <p className="w-11/12">
-          Upload failed. Please rerun the upload. {renderCount}
+          Processing failed. Please rerun the upload in a new commit.{' '}
+          {renderCount}
         </p>
       </span>
     )
@@ -103,16 +111,27 @@ const ErrorMessage = ({ errorCode, count }: ErrorMessageProps) => {
   )
 }
 
+const FlagError = () => (
+  <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
+    <Icon size="sm" name="exclamation" variant="solid" className="mt-[2px]" />
+    <p className="w-11/12">
+      Multiple flags detected. Please ensure one flag per upload.
+    </p>
+  </span>
+)
+
 interface RenderErrorProps {
-  errors: Array<{ errorCode: ErrorCodeType }>
-  state?: (typeof UploadStateEnum)[keyof typeof UploadStateEnum]
+  errors: (UploadErrorObject | null)[]
+  state: (typeof UploadStateEnum)[keyof typeof UploadStateEnum]
+  flags: string[] | null
 }
 
-const RenderError = ({ errors = [], state }: RenderErrorProps) => {
+const RenderError = ({ errors, state, flags }: RenderErrorProps) => {
   const filteredErrors = useDuplicatedErrors({ errors })
 
   return (
     <>
+      {flags?.length && flags.length >= 2 ? <FlagError /> : null}
       {filteredErrors?.map(({ errorCode, count }, i) => (
         <ErrorMessage
           key={`errorCode-${errorCode}-${i}`}
@@ -120,14 +139,12 @@ const RenderError = ({ errors = [], state }: RenderErrorProps) => {
           count={count}
         />
       ))}
-      {errors?.length === 0 &&
-        typeof state === 'string' &&
-        state?.toUpperCase() === UploadStateEnum.error && (
-          <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
-            <Icon size="sm" name="exclamation" variant="solid" />
-            Unknown error
-          </span>
-        )}
+      {errors?.length === 0 && state === UploadStateEnum.error ? (
+        <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
+          <Icon size="sm" name="exclamation" variant="solid" />
+          Unknown error
+        </span>
+      ) : null}
     </>
   )
 }
