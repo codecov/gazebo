@@ -6,6 +6,25 @@ import Icon from 'ui/Icon'
 import { MetricCard } from 'ui/MetricCard'
 import { Tooltip } from 'ui/Tooltip'
 
+import { useTestResultsAggregates } from '../hooks/useTestResultsAggregates'
+
+const PercentBadge = ({ value }: { value: number }) => {
+  let variant: 'success' | 'danger' = 'success'
+  let prefix = ''
+
+  if (value > 0) {
+    variant = 'danger'
+    prefix = '+'
+  }
+
+  return (
+    <Badge variant={variant}>
+      {prefix}
+      {value.toFixed(2)}%
+    </Badge>
+  )
+}
+
 export const TooltipWithIcon = ({
   children,
 }: {
@@ -33,7 +52,13 @@ export const TooltipWithIcon = ({
   )
 }
 
-const TotalTestsRunTimeCard = () => {
+const TotalTestsRunTimeCard = ({
+  totalDuration,
+  totalDurationPercentChange,
+}: {
+  totalDuration?: number
+  totalDurationPercentChange?: number | null
+}) => {
   return (
     <MetricCard>
       <MetricCard.Header>
@@ -46,8 +71,10 @@ const TotalTestsRunTimeCard = () => {
       </MetricCard.Header>
 
       <MetricCard.Content>
-        125 hr
-        <Badge variant="danger">+10%</Badge>
+        {totalDuration}
+        {totalDurationPercentChange ? (
+          <PercentBadge value={totalDurationPercentChange} />
+        ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
         Increased by [12.5hr] in the last [30 days]
@@ -56,7 +83,13 @@ const TotalTestsRunTimeCard = () => {
   )
 }
 
-const SlowestTestsCard = () => {
+const SlowestTestsCard = ({
+  slowestTests,
+  slowestTestsDuration,
+}: {
+  slowestTests?: number
+  slowestTestsDuration?: number | null
+}) => {
   return (
     <MetricCard>
       <MetricCard.Header>
@@ -68,9 +101,9 @@ const SlowestTestsCard = () => {
         </MetricCard.Title>
       </MetricCard.Header>
 
-      <MetricCard.Content>6</MetricCard.Content>
+      <MetricCard.Content>{slowestTests}</MetricCard.Content>
       <MetricCard.Description>
-        The slowest [6 tests] take [2.5hr] to run.
+        The slowest {slowestTests} tests take {slowestTestsDuration} to run.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -123,7 +156,13 @@ const AverageFlakeRateCard = () => {
   )
 }
 
-const TotalFailuresCard = () => {
+const TotalFailuresCard = ({
+  totalFails,
+  totalFailsPercentChange,
+}: {
+  totalFails?: number
+  totalFailsPercentChange?: number | null
+}) => {
   return (
     <MetricCard>
       <MetricCard.Header>
@@ -135,7 +174,12 @@ const TotalFailuresCard = () => {
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
-      <MetricCard.Content>6</MetricCard.Content>
+      <MetricCard.Content>
+        {totalFails}
+        {totalFailsPercentChange ? (
+          <PercentBadge value={totalFailsPercentChange} />
+        ) : null}
+      </MetricCard.Content>
       <MetricCard.Description>
         The number of test failures across all branches.
       </MetricCard.Description>
@@ -143,7 +187,13 @@ const TotalFailuresCard = () => {
   )
 }
 
-const TotalSkippedTestsCard = () => {
+const TotalSkippedTestsCard = ({
+  totalSkips,
+  totalSkipsPercentChange,
+}: {
+  totalSkips?: number
+  totalSkipsPercentChange?: number | null
+}) => {
   return (
     <MetricCard>
       <MetricCard.Header>
@@ -155,7 +205,12 @@ const TotalSkippedTestsCard = () => {
         </MetricCard.Title>
       </MetricCard.Header>
 
-      <MetricCard.Content>55</MetricCard.Content>
+      <MetricCard.Content>
+        {totalSkips}
+        {totalSkipsPercentChange ? (
+          <PercentBadge value={totalSkipsPercentChange} />
+        ) : null}
+      </MetricCard.Content>
       <MetricCard.Description>
         The number of skipped tests in your test suite.
       </MetricCard.Description>
@@ -182,6 +237,8 @@ function MetricsSection() {
     repo,
   })
 
+  const { data: aggregates } = useTestResultsAggregates()
+
   const decodedBranch = getDecodedBranch(branch)
   const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
 
@@ -198,8 +255,16 @@ function MetricsSection() {
             Improve CI Run Efficiency
           </p>
           <div className="flex">
-            <TotalTestsRunTimeCard />
-            <SlowestTestsCard />
+            <TotalTestsRunTimeCard
+              totalDuration={aggregates?.totalDuration}
+              totalDurationPercentChange={
+                aggregates?.totalDurationPercentChange
+              }
+            />
+            <SlowestTestsCard
+              slowestTests={6}
+              slowestTestsDuration={aggregates?.slowestTestsDuration}
+            />
           </div>
         </div>
         <div className="flex flex-col gap-3">
@@ -209,8 +274,14 @@ function MetricsSection() {
           <div className="flex">
             <TotalFlakyTestsCard />
             <AverageFlakeRateCard />
-            <TotalFailuresCard />
-            <TotalSkippedTestsCard />
+            <TotalFailuresCard
+              totalFails={aggregates?.totalFails}
+              totalFailsPercentChange={aggregates?.totalFailsPercentChange}
+            />
+            <TotalSkippedTestsCard
+              totalSkips={aggregates?.totalSkips}
+              totalSkipsPercentChange={aggregates?.totalSkipsPercentChange}
+            />
           </div>
         </div>
       </div>

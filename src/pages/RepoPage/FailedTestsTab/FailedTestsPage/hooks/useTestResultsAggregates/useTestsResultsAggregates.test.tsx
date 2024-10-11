@@ -55,15 +55,17 @@ const mockResponse = {
   owner: {
     repository: {
       __typename: 'Repository',
-      testResultsAggregates: {
-        totalDuration: 1.0,
-        totalDurationPercentChange: 25.0,
-        slowestTestsDuration: 111.11,
-        slowestTestsDurationPercentChange: 0.0,
-        totalFails: 1,
-        totalFailsPercentChange: 100.0,
-        totalSkips: 20,
-        totalSkipsPercentChange: 0.0,
+      testAnalytics: {
+        testResultsAggregates: {
+          totalDuration: 1.0,
+          totalDurationPercentChange: 25.0,
+          slowestTestsDuration: 111.11,
+          slowestTestsDurationPercentChange: 0.0,
+          totalFails: 1,
+          totalFailsPercentChange: 100.0,
+          totalSkips: 20,
+          totalSkipsPercentChange: 0.0,
+        },
       },
     },
   },
