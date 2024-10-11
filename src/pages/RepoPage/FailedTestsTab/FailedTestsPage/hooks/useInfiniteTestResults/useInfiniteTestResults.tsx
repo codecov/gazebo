@@ -2,7 +2,6 @@ import {
   useInfiniteQuery,
   type UseInfiniteQueryOptions,
 } from '@tanstack/react-query'
-import { ParsedQs } from 'qs'
 import { useMemo } from 'react'
 import { z } from 'zod'
 
@@ -152,7 +151,7 @@ interface UseTestResultsArgs {
     history?: MEASUREMENT_INTERVAL_TYPE
     parameter?: TestResultsFilterParameterType
     term?: string
-    testSuites?: string[] | ParsedQs[]
+    test_suites?: string[]
   }
   ordering?: z.infer<typeof TestResultsOrdering>
   first?: number

@@ -196,7 +196,8 @@ const FailedTestsTable = () => {
     filters: {
       branch: branch ? getDecodedBranch(branch) : undefined,
       flags: flags as string[],
-      testSuites: testSuites as string[],
+      // eslint-disable-next-line camelcase
+      test_suites: testSuites as string[],
       parameter: queryParams?.parameter as TestResultsFilterParameterType,
       history: queryParams?.historicalTrend as MEASUREMENT_INTERVAL_TYPE,
     },
