@@ -26,6 +26,20 @@ function ErrorDisplayMessage() {
     <p className="border border-solid border-ds-gray-tertiary p-4">
       There was a problem getting the source code from your provider. Unable to
       show line by line coverage.
+      <br />
+      <span>
+        If you continue to experience this issue, please try{' '}
+        <A
+          to={{
+            pageName: 'login',
+          }}
+          hook={undefined}
+          isExternal={undefined}
+        >
+          logging in
+        </A>{' '}
+        again to refresh your credentials.
+      </span>
     </p>
   )
 }
