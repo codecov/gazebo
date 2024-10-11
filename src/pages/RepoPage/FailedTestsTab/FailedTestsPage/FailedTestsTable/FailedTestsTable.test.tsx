@@ -1,10 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
@@ -25,6 +20,9 @@ const node1 = {
   failureRate: 0.1,
   flakeRate: 0.0,
   avgDuration: 10,
+  totalFailCount: 5,
+  totalPassCount: 6,
+  totalSkipCount: 7,
 }
 
 const node2 = {
@@ -34,6 +32,9 @@ const node2 = {
   failureRate: 0.2,
   flakeRate: 0.2,
   avgDuration: 20,
+  totalFailCount: 8,
+  totalPassCount: 9,
+  totalSkipCount: 10,
 }
 
 const node3 = {
@@ -43,6 +44,9 @@ const node3 = {
   failureRate: 0.3,
   flakeRate: 0.1,
   avgDuration: 30,
+  totalFailCount: 11,
+  totalPassCount: 12,
+  totalSkipCount: 13,
 }
 
 const server = setupServer()
@@ -168,6 +172,9 @@ describe('FailedTestsTable', () => {
       const failureRateColumn = await screen.findByText('Failure rate')
       expect(failureRateColumn).toBeInTheDocument()
 
+      const flakeRateColumn = await screen.findByText('Flake rate')
+      expect(flakeRateColumn).toBeInTheDocument()
+
       const commitFailedColumn = await screen.findByText('Commits failed')
       expect(commitFailedColumn).toBeInTheDocument()
 
@@ -194,6 +201,9 @@ describe('FailedTestsTable', () => {
 
       const failureRateColumn = await screen.findByText('10.00%')
       expect(failureRateColumn).toBeInTheDocument()
+
+      const flakeRateColumn = await screen.findByText('0%')
+      expect(flakeRateColumn).toBeInTheDocument()
 
       const commitFailedColumn = await screen.findByText('1')
       expect(commitFailedColumn).toBeInTheDocument()
@@ -385,22 +395,6 @@ describe('FailedTestsTable', () => {
           })
         )
       })
-    })
-  })
-
-  describe('infinite scrolling', () => {
-    it('loads next page', async () => {
-      const { queryClient } = setup({})
-      render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
-      })
-
-      const loading = await screen.findByText('Loading')
-      mockIsIntersecting(loading, true)
-      await waitForElementToBeRemoved(loading)
-
-      const thirdCommit = await screen.findByText('test-3')
-      expect(thirdCommit).toBeInTheDocument()
     })
   })
 

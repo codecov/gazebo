@@ -97,7 +97,7 @@ interface FailedTestsColumns {
   name: string
   avgDuration: number | null
   failureRate: number | null
-  flakeRate?: number | null
+  flakeRate?: React.ReactNode
   commitsFailed: number | null
   updatedAt: string
 }
@@ -132,29 +132,7 @@ const columns = [
         </TooltipWithIcon>
       </div>
     ),
-    cell: (info) => {
-      const value = (info.renderValue() ?? 0) * 100
-      const isInt = Number.isInteger(info.renderValue())
-
-      return (
-        <Tooltip delayDuration={0} skipDelayDuration={100}>
-          <Tooltip.Root>
-            <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
-              {isInt ? `${value}%` : `${value.toFixed(2)}%`}
-            </Tooltip.Trigger>
-            <Tooltip.Portal>
-              <Tooltip.Content
-                className="bg-ds-gray-primary p-2 text-xs text-ds-gray-octonary"
-                side="right"
-              >
-                Passed 2,999, failed 100
-                <Tooltip.Arrow className="size-4 fill-ds-gray-primary" />
-              </Tooltip.Content>
-            </Tooltip.Portal>
-          </Tooltip.Root>
-        </Tooltip>
-      )
-    },
+    cell: (info) => info.renderValue(),
   }),
   columnHelper.accessor('commitsFailed', {
     header: () => 'Commits failed',
@@ -203,7 +181,39 @@ const FailedTestsTable = () => {
   })
 
   const tableData = useMemo(() => {
-    return testData?.testResults
+    return testData?.testResults.map((result) => {
+      const value = (result.flakeRate ?? 0) * 100
+      const isFlakeInt = Number.isInteger(value)
+
+      return {
+        name: result.name,
+        avgDuration: result.avgDuration,
+        failureRate: result.failureRate,
+        flakeRate: (
+          <>
+            <Tooltip delayDuration={0} skipDelayDuration={100}>
+              <Tooltip.Root>
+                <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
+                  {isFlakeInt ? `${value}%` : `${value.toFixed(2)}%`}
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content
+                    className="bg-ds-gray-primary p-2 text-xs text-ds-gray-octonary"
+                    side="right"
+                  >
+                    Passed {result.totalPassCount}, Failed{' '}
+                    {result.totalFailCount}, Skipped {result.totalSkipCount}
+                    <Tooltip.Arrow className="size-4 fill-ds-gray-primary" />
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip>
+          </>
+        ),
+        commitsFailed: result.commitsFailed,
+        updatedAt: result.updatedAt,
+      }
+    })
   }, [testData])
 
   const table = useReactTable({
@@ -215,7 +225,6 @@ const FailedTestsTable = () => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // debugAll: true,
   })
 
   useEffect(() => {

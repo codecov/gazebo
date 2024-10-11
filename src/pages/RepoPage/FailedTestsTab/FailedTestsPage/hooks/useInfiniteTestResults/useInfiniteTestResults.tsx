@@ -21,6 +21,9 @@ const TestResultSchema = z.object({
   failureRate: z.number().nullable(),
   flakeRate: z.number().nullable(),
   avgDuration: z.number().nullable(),
+  totalFailCount: z.number(),
+  totalSkipCount: z.number(),
+  totalPassCount: z.number(),
 })
 
 export const OrderingDirection = {
@@ -104,6 +107,9 @@ query GetTestResults(
                 failureRate
                 flakeRate
                 commitsFailed
+                totalFailCount
+                totalSkipCount
+                totalPassCount
               }
             }
             pageInfo {
