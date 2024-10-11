@@ -8,18 +8,6 @@ import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import SelectorSection from './SelectorSection'
 
-const mocks = vi.hoisted(() => ({
-  useIntersection: vi.fn(),
-}))
-
-vi.mock('react-use', async () => {
-  const actual = await vi.importActual('react-use')
-  return {
-    ...actual,
-    useIntersection: mocks.useIntersection,
-  }
-})
-
 const mockRepoOverview = {
   owner: {
     isCurrentUserActivated: true,
@@ -113,7 +101,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('FlagMultiSelect', () => {
+describe('SelectorSection', () => {
   function setup() {
     const user = userEvent.setup()
 
