@@ -38,7 +38,7 @@ function generateImports(path, oldIcons = []) {
 
   const exportLines = names.map((i) => i).join(', ')
   const exportDefault = `export { ${exportLines} }`
-  const output = `${joinedLines}\n\n${exportDefault}`
+  const output = `/* eslint-disable import/no-unresolved */\n${joinedLines}\n\n${exportDefault}`
 
   const nameFile = path + '/index.jsx'
   fs.writeFileSync(nameFile, output)
