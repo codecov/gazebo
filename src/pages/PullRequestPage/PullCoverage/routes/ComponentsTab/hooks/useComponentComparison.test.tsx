@@ -90,7 +90,7 @@ describe('useComponentComparison', () => {
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
-    const componentsMock = jest.fn()
+    const componentsMock = vi.fn()
 
     server.use(
       graphql.query('PullComponentComparison', (info) => {

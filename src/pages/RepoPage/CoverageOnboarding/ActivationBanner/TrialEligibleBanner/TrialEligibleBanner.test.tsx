@@ -32,7 +32,7 @@ afterAll(() => {
 
 describe('TrialEligibleBanner', () => {
   function setup() {
-    const mockTrialMutationVariables = jest.fn()
+    const mockTrialMutationVariables = vi.fn()
     const user = userEvent.setup()
     server.use(
       graphql.mutation('startTrial', (info) => {

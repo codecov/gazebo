@@ -129,10 +129,10 @@ describe('DefaultBranch', () => {
     }
   ) {
     const user = userEvent.setup()
-    const mutate = jest.fn()
-    const addNotification = jest.fn()
-    const fetchesNextPage = jest.fn()
-    const fetchFilters = jest.fn()
+    const mutate = vi.fn()
+    const addNotification = vi.fn()
+    const fetchesNextPage = vi.fn()
+    const fetchFilters = vi.fn()
 
     server.use(
       graphql.query('GetBranches', (info) => {

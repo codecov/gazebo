@@ -112,15 +112,15 @@ describe('Error Boundary', () => {
 
   describe.skip('You can set the scope to sent to Sentry.io', () => {
     beforeEach(() => {
-      const spySentry = jest.spyOn(Sentry, 'withScope')
+      const spySentry = vi.spyOn(Sentry, 'withScope')
       spySentry.mockImplementation((callback) => {
         callback({ setTag: sentryMockScope })
       })
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
-      jest.unmock('@sentry/browser')
+      vi.resetAllMocks()
+      vi.unmock('@sentry/browser')
     })
 
     it('The beforeCapture prop correctly sets tags.', () => {
