@@ -86,7 +86,7 @@ const UploadItem = ({
           Download
         </A>
       </div>
-      <RenderError errors={errors} state={state} />
+      <RenderError errors={errors} state={state} flags={flags} />
     </div>
   )
 }
