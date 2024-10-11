@@ -283,9 +283,9 @@ jobs:
       <ExpandableSection className="-mt-px">
         <ExpandableSection.Trigger>
           <p className="font-normal">
-            Your final GitHub Actions workflow for a project using 
-            <span className="text-codecov-code">{framework}</span>
-             could look something like this:
+            Your final GitHub Actions workflow for a project using{' '}
+            <span className="text-codecov-code">{framework}</span> could look
+            something like this:
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content>
