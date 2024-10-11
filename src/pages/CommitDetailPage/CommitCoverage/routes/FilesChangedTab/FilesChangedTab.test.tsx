@@ -8,8 +8,14 @@ import { TierNames } from 'services/tier'
 
 import FilesChangedTab from './FilesChangedTab'
 
+const mocks = vi.hoisted(() => {
+  return {
+    filesChangedTable: vi.fn(),
+  }
+})
+
 vi.mock('./FilesChangedTable', () => ({
-  default: () => 'FilesChangedTable',
+  default: mocks.filesChangedTable,
 }))
 vi.mock('./FilesChangedTableTeam', () => ({
   default: () => 'FilesChangedTableTeam',
@@ -94,6 +100,10 @@ describe('FilesChangedTab', () => {
     )
   }
 
+  beforeEach(() => {
+    mocks.filesChangedTable.mockImplementation(() => 'FilesChangedTable')
+  })
+
   describe('user has pro tier', () => {
     it('renders files changed table', async () => {
       setup({ planValue: TierNames.PRO })
@@ -124,6 +134,22 @@ describe('FilesChangedTab', () => {
         const table = await screen.findByText('FilesChangedTable')
         expect(table).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('when there is an error rendering the Files Changed Table', () => {
+    it('displays error message', async () => {
+      mocks.filesChangedTable.mockImplementation(() => {
+        throw new Error('this is an expected error')
+      })
+
+      setup({ planValue: TierNames.PRO, isPrivate: false })
+      render(<FilesChangedTab />, { wrapper })
+
+      const errorMessage = await screen.findByTestId(
+        'files-changed-table-error'
+      )
+      expect(errorMessage).toBeInTheDocument()
     })
   })
 })
