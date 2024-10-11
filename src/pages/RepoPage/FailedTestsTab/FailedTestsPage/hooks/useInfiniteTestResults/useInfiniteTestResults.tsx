@@ -2,9 +2,11 @@ import {
   useInfiniteQuery,
   type UseInfiniteQueryOptions,
 } from '@tanstack/react-query'
+import { ParsedQs } from 'qs'
 import { useMemo } from 'react'
 import { z } from 'zod'
 
+import { MEASUREMENT_INTERVAL_TYPE } from 'pages/RepoPage/shared/constants'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -38,6 +40,16 @@ export const OrderingParameter = {
   COMMITS_WHERE_FAIL: 'COMMITS_WHERE_FAIL',
   UPDATED_AT: 'UPDATED_AT',
 } as const
+
+export const TestResultsFilterParameter = {
+  FLAKY_TESTS: 'FLAKY_TESTS',
+  FAILED_TESTS: 'FAILED_TESTS',
+  SLOWEST_TESTS: 'SLOWEST_TESTS',
+  SKIPPED_TESTS: 'SKIPPED_TESTS',
+} as const
+
+export type TestResultsFilterParameterType =
+  keyof typeof TestResultsFilterParameter
 
 export const TestResultsOrdering = z.object({
   direction: z.nativeEnum(OrderingDirection),
@@ -136,6 +148,11 @@ interface UseTestResultsArgs {
   repo: string
   filters?: {
     branch?: string
+    flags?: string[]
+    history?: MEASUREMENT_INTERVAL_TYPE
+    parameter?: TestResultsFilterParameterType
+    term?: string
+    testSuites?: string[] | ParsedQs[]
   }
   ordering?: z.infer<typeof TestResultsOrdering>
   first?: number

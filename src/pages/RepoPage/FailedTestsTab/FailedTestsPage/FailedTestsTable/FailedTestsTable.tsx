@@ -8,10 +8,12 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
+import qs from 'qs'
 import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
+import { MEASUREMENT_INTERVAL_TYPE } from 'pages/RepoPage/shared/constants'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -22,6 +24,7 @@ import {
   OrderingParameter,
   useInfiniteTestResults,
 } from '../hooks/useInfiniteTestResults'
+import { TestResultsFilterParameterType } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
 import { TooltipWithIcon } from '../MetricsSection/MetricsSection'
 
 const getDecodedBranch = (branch?: string) =>
@@ -160,6 +163,24 @@ const FailedTestsTable = () => {
     },
   ])
   const { provider, owner, repo, branch } = useParams<URLParams>()
+  const location = useLocation()
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+
+  let flags = undefined
+  if (Array.isArray(queryParams?.flags) && queryParams?.flags?.length > 0) {
+    flags = queryParams?.flags
+  }
+
+  let testSuites = undefined
+  if (
+    Array.isArray(queryParams?.testSuites) &&
+    queryParams?.testSuites?.length > 0
+  ) {
+    testSuites = queryParams?.testSuites
+  }
 
   const {
     data: testData,
@@ -174,6 +195,10 @@ const FailedTestsTable = () => {
     ordering: getSortingOption(sorting),
     filters: {
       branch: branch ? getDecodedBranch(branch) : undefined,
+      flags: flags as string[],
+      testSuites: testSuites as string[],
+      parameter: queryParams?.parameter as TestResultsFilterParameterType,
+      history: queryParams?.historicalTrend as MEASUREMENT_INTERVAL_TYPE,
     },
     opts: {
       suspense: false,
