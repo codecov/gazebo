@@ -12,18 +12,20 @@ const TestResultsAggregatesSchema = z.object({
       repository: z.discriminatedUnion('__typename', [
         z.object({
           __typename: z.literal('Repository'),
-          testAnalytics: z.object({
-            testResultsAggregates: z.object({
-              totalDuration: z.number(),
-              totalDurationPercentChange: z.number().nullable(),
-              slowestTestsDuration: z.number(),
-              slowestTestsDurationPercentChange: z.number().nullable(),
-              totalFails: z.number(),
-              totalFailsPercentChange: z.number().nullable(),
-              totalSkips: z.number(),
-              totalSkipsPercentChange: z.number().nullable(),
-            }),
-          }),
+          testAnalytics: z
+            .object({
+              testResultsAggregates: z.object({
+                totalDuration: z.number(),
+                totalDurationPercentChange: z.number().nullable(),
+                slowestTestsDuration: z.number(),
+                slowestTestsDurationPercentChange: z.number().nullable(),
+                totalFails: z.number(),
+                totalFailsPercentChange: z.number().nullable(),
+                totalSkips: z.number(),
+                totalSkipsPercentChange: z.number().nullable(),
+              }),
+            })
+            .nullable(),
         }),
         RepoNotFoundErrorSchema,
       ]),
@@ -103,7 +105,7 @@ export const useTestResultsAggregates = () => {
           } satisfies NetworkErrorObject)
         }
 
-        return data.owner?.repository.testAnalytics.testResultsAggregates
+        return data.owner?.repository.testAnalytics?.testResultsAggregates
       }),
   })
 }
