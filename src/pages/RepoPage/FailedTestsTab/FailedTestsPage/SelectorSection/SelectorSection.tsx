@@ -73,7 +73,7 @@ function SelectorSection() {
               />
             </div>
             <A to="" isExternal hook={'30-day-retention'}>
-              30 day retention
+              60 day retention
             </A>
           </div>
           <div className="flex flex-col gap-1 px-4">
