@@ -114,7 +114,7 @@ describe('usePrefetchCommitFileEntry', () => {
     isUnsuccessfulParseError = false,
     isNullOwner = false,
   }: SetupArgs) {
-    const mockVars = jest.fn()
+    const mockVars = vi.fn()
 
     server.use(
       graphql.query('CoverageForFile', (info) => {

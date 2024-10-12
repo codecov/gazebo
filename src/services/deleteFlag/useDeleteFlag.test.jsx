@@ -60,7 +60,7 @@ describe('useDeleteFlag', () => {
       })
     )
 
-    const addNotification = jest.fn()
+    const addNotification = vi.fn()
 
     mocks.useAddNotification.mockReturnValue(addNotification)
 

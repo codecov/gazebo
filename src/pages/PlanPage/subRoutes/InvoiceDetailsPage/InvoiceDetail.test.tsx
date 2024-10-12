@@ -195,7 +195,7 @@ describe('InvoiceDetail', () => {
 
   describe('when ?print is in the URL', () => {
     beforeEach(() => {
-      window.print = jest.fn()
+      window.print = vi.fn()
       setup({}, '/invoice/123?print')
     })
 

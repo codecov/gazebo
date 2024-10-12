@@ -350,7 +350,7 @@ describe('MembersTable', () => {
     describe('user is not a student', () => {
       it('calls handleActivate', async () => {
         const { user } = setup()
-        const handleActivate = jest.fn()
+        const handleActivate = vi.fn()
         render(<MembersTable handleActivate={handleActivate} />, {
           wrapper: wrapper(),
         })
@@ -382,7 +382,7 @@ describe('MembersTable', () => {
             },
           },
         })
-        const handleActivate = jest.fn()
+        const handleActivate = vi.fn()
         render(<MembersTable handleActivate={handleActivate} />, {
           wrapper: wrapper(),
         })

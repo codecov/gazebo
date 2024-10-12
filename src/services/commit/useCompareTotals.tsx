@@ -199,7 +199,7 @@ export function useCompareTotals({
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: null,
+            data: parsedRes.error,
           })
         }
 

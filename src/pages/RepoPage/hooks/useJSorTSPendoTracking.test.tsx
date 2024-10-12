@@ -139,10 +139,10 @@ describe('useJSorTSPendoTracking', () => {
       })
     )
 
-    const updateOptionsMock = jest.fn()
+    const updateOptionsMock = vi.fn()
     if (enablePendo) {
       window.pendo = {
-        initialize: jest.fn(),
+        initialize: vi.fn(),
         updateOptions: updateOptionsMock,
       }
     } else {

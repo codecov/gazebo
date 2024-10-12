@@ -174,7 +174,7 @@ function Step3() {
       <Card.Content className="flex flex-col gap-4">
         <p>
           Once merged to your default branch, subsequent pull requests will have
-          Codecov checks and comments. Additionally, you’ll find your repo
+          Codecov checks and comments. Additionally, you&apos;ll find your repo
           coverage dashboard here. If you have merged, try reloading the page.
         </p>
       </Card.Content>

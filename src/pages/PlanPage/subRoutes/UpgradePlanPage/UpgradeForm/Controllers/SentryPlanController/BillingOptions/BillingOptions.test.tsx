@@ -138,13 +138,15 @@ describe('BillingOptions', () => {
 
         const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).toHaveClass('bg-ds-primary-base')
+        await waitFor(() => expect(annualBtn).toHaveClass('bg-ds-primary-base'))
 
         const monthlyBtn = await screen.findByRole('button', {
           name: 'Monthly',
         })
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).not.toHaveClass('bg-ds-primary-base')
+        await waitFor(() =>
+          expect(monthlyBtn).not.toHaveClass('bg-ds-primary-base')
+        )
       })
 
       it('renders annual pricing scheme', async () => {
