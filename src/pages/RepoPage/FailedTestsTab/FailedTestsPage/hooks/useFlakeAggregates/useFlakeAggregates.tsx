@@ -81,7 +81,7 @@ interface UseFlakeAggregatesParams {
 export const useFlakeAggregates = ({
   history,
   opts,
-}: UseFlakeAggregatesParams) => {
+}: UseFlakeAggregatesParams = {}) => {
   const { provider, owner, repo } = useParams<URLParams>()
 
   return useQuery({

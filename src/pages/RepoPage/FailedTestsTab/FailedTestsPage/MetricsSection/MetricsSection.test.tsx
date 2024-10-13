@@ -43,6 +43,22 @@ const mockAggResponse = {
   },
 }
 
+const mockFlakeAggResponse = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      testAnalytics: {
+        flakeAggregates: {
+          flakeCount: 88,
+          flakeCountPercentChange: 10.0,
+          flakeRate: 8,
+          flakeRatePercentChange: 5.0,
+        },
+      },
+    },
+  },
+}
+
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true, retry: false } },
@@ -87,6 +103,9 @@ describe('MetricsSection', () => {
       }),
       graphql.query('GetTestResultsAggregates', (info) => {
         return HttpResponse.json({ data: mockAggResponse })
+      }),
+      graphql.query('GetFlakeAggregates', (info) => {
+        return HttpResponse.json({ data: mockFlakeAggResponse })
       })
     )
   }
