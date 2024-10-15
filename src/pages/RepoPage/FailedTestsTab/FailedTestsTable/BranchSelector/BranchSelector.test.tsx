@@ -149,8 +149,8 @@ describe('BranchSelector', () => {
     }
   ) {
     const user = userEvent.setup()
-    const fetchNextPage = jest.fn()
-    const mockSearching = jest.fn()
+    const fetchNextPage = vi.fn()
+    const mockSearching = vi.fn()
 
     const queryClient = new QueryClient({
       defaultOptions: {

@@ -47,7 +47,7 @@ const wrapper =
 describe('IndirectChangesTable', () => {
   function setup(data = {}, state = 'processed') {
     const user = userEvent.setup()
-    const mockVars = jest.fn()
+    const mockVars = vi.fn()
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {

@@ -7,7 +7,6 @@ import React, { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TIME_OPTION_VALUES } from 'pages/RepoPage/shared/constants'
-import { useLocationParams } from 'services/navigation'
 
 import useRepoComponentsTable from './useRepoComponentsTable'
 
@@ -42,11 +41,15 @@ afterAll(() => {
   server.close()
 })
 
+const mocks = vi.hoisted(() => ({
+  useLocationParams: vi.fn(),
+}))
+
 vi.mock('services/navigation', async () => {
   const actual = await vi.importActual('services/navigation')
   return {
     ...actual,
-    useLocationParams: vi.fn(),
+    useLocationParams: mocks.useLocationParams,
   }
 })
 
@@ -154,12 +157,11 @@ describe('useRepoComponentsTable', () => {
     noData?: boolean
     useParamsValue?: useParamsValueType
   }) {
-    const mockedUseLocationParams = useLocationParams as jest.Mock
-    mockedUseLocationParams.mockReturnValue({
+    mocks.useLocationParams.mockReturnValue({
       params: useParamsValue,
     })
 
-    const requestFilters = jest.fn()
+    const requestFilters = vi.fn()
 
     server.use(
       graphql.query('ComponentMeasurements', (info) => {

@@ -161,7 +161,7 @@ describe('CommitFileDiff', () => {
   ) {
     mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
-      handleClick: jest.fn(),
+      handleClick: vi.fn(),
       targeted: false,
     }))
 
@@ -337,6 +337,14 @@ describe('CommitFileDiff', () => {
         /There was a problem getting the source code from your provider. Unable to show line by line coverage/i
       )
       expect(criticalFile).toBeInTheDocument()
+    })
+
+    it('renders a login link', async () => {
+      render(<CommitFileDiff path={'random/path'} />, { wrapper })
+
+      const link = await screen.findByText(/logging in/)
+      expect(link).toBeVisible()
+      expect(link).toHaveAttribute('href', '/login')
     })
   })
 })

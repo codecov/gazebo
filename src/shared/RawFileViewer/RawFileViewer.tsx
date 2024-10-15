@@ -11,6 +11,7 @@ import { useFlags } from 'shared/featureFlags'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsMapper'
 import { getFilenameFromFilePath } from 'shared/utils/url'
+import A from 'ui/A'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
 import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
@@ -21,12 +22,24 @@ import { VirtualFileRenderer } from 'ui/VirtualFileRenderer'
 
 function ErrorDisplayMessage() {
   return (
-    <div className="border border-solid border-ds-gray-tertiary p-4">
-      <p>
-        There was a problem getting the source code from your provider. Unable
-        to show line by line coverage.
-      </p>
-    </div>
+    <p className="border border-solid border-ds-gray-tertiary p-4">
+      There was a problem getting the source code from your provider. Unable to
+      show line by line coverage.
+      <br />
+      <span>
+        If you continue to experience this issue, please try{' '}
+        <A
+          to={{
+            pageName: 'login',
+          }}
+          hook={undefined}
+          isExternal={undefined}
+        >
+          logging in
+        </A>{' '}
+        again to refresh your credentials.
+      </span>
+    </p>
   )
 }
 

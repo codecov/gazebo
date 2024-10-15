@@ -11,14 +11,12 @@
     "build": "yarn generate-icons:webpack && craco build --config craco.config.cjs",
     "build:stats": "craco build --config craco.stats.config.cjs",
     "test": "craco test",
-    "test:ci": "craco test --collectCoverage --reporters=default --reporters=jest-junit",
     "test:vite": "yarn generate-icons:vite && vitest run --changed --config ./vitest.config.mjs",
     "test:watch:vite": "yarn generate-icons:vite && vitest watch --changed --config ./vitest.config.mjs",
     "test:ci:vite": "yarn generate-icons:vite && vitest run --config ./vitest.config.mjs --coverage",
     "preview-coverage": "npx vite preview --open --outDir coverage",
-    "test:mutation": "npx stryker run",
     "eject": "craco eject",
-    "lint": "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json",
+    "lint": "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.cjs",
     "storybook": "yarn generate-icons:vite && storybook dev -p 6006",
     "build-storybook": "yarn generate-icons:vite && storybook build",
     "chromatic": "npx chromatic --exit-zero-on-changes -ci",
@@ -35,7 +33,7 @@
       "prettier --write"
     ],
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix --no-ignore --max-warnings=0 -c .eslintrc.json"
+      "eslint --fix --no-ignore --max-warnings=0 -c .eslintrc.cjs"
     ]
   },
   "browserslist": {
@@ -138,7 +136,6 @@
     "@types/d3": "7.4.3",
     "@types/d3-array": "3.2.1",
     "@types/d3-scale": "4.0.8",
-    "@types/jest": "^29.5.1",
     "@types/js-cookie": "3.0.6",
     "@types/lodash": "4.17.6",
     "@types/node": "^20.5.7",
@@ -163,9 +160,9 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-storybook": "^0.8.0",
     "eslint-plugin-tailwindcss": "^3.17.4",
+    "eslint-plugin-testing-library": "^6.3.0",
     "http-proxy-middleware": "^2.0.6",
     "husky": "^9.1.4",
-    "jest-junit": "^13.0.0",
     "jsdom": "^25.0.0",
     "lint-staged": "^15.2.8",
     "msw2": "npm:msw@^2.4.8",
@@ -190,18 +187,6 @@
   },
   "engines": {
     "node": ">=20.10.0"
-  },
-  "jest": {
-    "transformIgnorePatterns": [
-      "<rootDir>/node_modules/(?!d3)/"
-    ],
-    "collectCoverageFrom": [
-      "!src/**/*.stories.js",
-      "!src/**/*.stories.jsx",
-      "!src/**/*.stories.ts",
-      "!src/**/*.stories.tsx"
-    ],
-    "globalSetup": "./src/setupTestGlobal.js"
   },
   "msw": {
     "workerDirectory": "public"

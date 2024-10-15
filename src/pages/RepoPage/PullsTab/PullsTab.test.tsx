@@ -2,7 +2,7 @@ import userEvent from '@testing-library/user-event'
 
 import PullsTab from './PullsTab'
 
-import { repoPageRender, screen } from '../repo-jest-setup'
+import { repoPageRender, screen } from '../repo-test-setup'
 
 vi.mock('./PullsTable', () => ({ default: () => 'PullsTable' }))
 

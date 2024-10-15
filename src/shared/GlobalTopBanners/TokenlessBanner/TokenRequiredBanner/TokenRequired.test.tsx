@@ -6,13 +6,17 @@ import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import ResizeObserver from 'resize-observer-polyfill'
 
-import { useFlags } from 'shared/featureFlags'
-
 import TokenRequiredBanner from './TokenRequiredBanner'
 
-vi.mock('shared/featureFlags')
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
+
+vi.mock('shared/featureFlags', () => ({
+  useFlags: mocks.useFlags,
+}))
+
 global.ResizeObserver = ResizeObserver
-const mockedUseFlags = useFlags as jest.Mock
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -45,7 +49,7 @@ describe('TokenRequiredBanner', () => {
     isAdmin?: boolean
     orgUploadToken?: string | null
   } = {}) {
-    mockedUseFlags.mockReturnValue({ tokenlessSection: true })
+    mocks.useFlags.mockReturnValue({ tokenlessSection: true })
 
     server.use(
       graphql.query('GetUploadTokenRequired', () => {

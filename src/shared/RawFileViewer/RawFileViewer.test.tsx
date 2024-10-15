@@ -434,6 +434,16 @@ describe('RawFileViewer', () => {
       )
       expect(errorMessage).toBeInTheDocument()
     })
+
+    it('renders a login link', async () => {
+      render(
+        <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
+        { wrapper: wrapper() }
+      )
+      const link = await screen.findByText(/logging in/)
+      expect(link).toBeVisible()
+      expect(link).toHaveAttribute('href', '/login')
+    })
   })
 
   describe('displaying unsupported file', () => {

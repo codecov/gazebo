@@ -42,7 +42,7 @@ const wrapper =
 
 describe('GitHubHelpBanner', () => {
   function setup() {
-    const mutation = jest.fn()
+    const mutation = vi.fn()
 
     server.use(
       graphql.query('IsSyncing', (info) => {

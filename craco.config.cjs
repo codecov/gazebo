@@ -46,22 +46,4 @@ module.exports = {
         : []),
     ],
   },
-  jest: {
-    configure: {
-      modulePathIgnorePatterns: ['.*.test.*'],
-      moduleNameMapper: {
-        '^layouts/(.*)$': '<rootDir>/src/layouts/$1',
-        '^ui/(.*)$': '<rootDir>/src/ui/$1',
-        '^old_ui/(.*)$': '<rootDir>/src/old_ui/$1',
-        '^pages/(.*)$': '<rootDir>/src/pages/$1',
-        '^shared/(.*)$': '<rootDir>/src/shared/$1',
-        '^services/(.*)$': '<rootDir>/src/services/$1',
-        '^mocks/(.*)$': '<rootDir>/src/mocks/$1',
-        '^assets/(.*)$': '<rootDir>/src/assets/$1',
-        '^custom-testing-library': '<rootDir>/src/custom-testing-library',
-        '^config': '<rootDir>/src/config',
-        '^sentry': '<rootDir>/src/sentry',
-      },
-    },
-  },
 }

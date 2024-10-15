@@ -160,6 +160,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    enterpriseSupport: {
+      text: 'Enterprise Support',
+      path: () => 'https://codecoventerprise.zendesk.com/hc/en-us',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     legacyUI: {
       path: ({ pathname }) => config.BASE_URL + pathname,
       isExternalLink: true,
@@ -492,6 +498,13 @@ export function useStaticNavLinks() {
       path: () => `https://forms.gle/8fzZrwWEaBRz4ufD9`,
       text: 'Bundle analysis feedback survey',
       isExternalLink: true,
+    },
+    tokenlessDocs: {
+      text: 'Tokenless Uploads',
+      path: () =>
+        'https://docs.codecov.com/docs/codecov-tokens#uploading-without-a-token',
+      isExternalLink: true,
+      openNewTab: true,
     },
   }
 }

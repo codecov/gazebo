@@ -124,7 +124,7 @@ afterAll(() => {
 
 describe('useBundleAssetsTable', () => {
   function setup() {
-    const queryVarMock = jest.fn()
+    const queryVarMock = vi.fn()
 
     server.use(
       graphql.query('BundleAssets', (info) => {

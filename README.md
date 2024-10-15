@@ -41,10 +41,10 @@ PROXY_TO=http://localhost:5100
 You can run the tests with
 
 ```bash
-> yarn test
+> yarn test:vite
 ```
 
-This script is using Jest, so any valid Jest options can be added to the command.
+This script is using Vitest, so any valid Vitest options can be added to the command.
 
 We are using the [Testing Library](https://testing-library.com/docs/react-testing-library/intro) to test the React components.
 

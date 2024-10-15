@@ -212,8 +212,8 @@ describe('AssetsTable', () => {
     multipleAssets = true,
   }: SetupArgs) {
     const user = userEvent.setup()
-    const mockOrdering = jest.fn()
-    const mockOrderingDirection = jest.fn()
+    const mockOrdering = vi.fn()
+    const mockOrderingDirection = vi.fn()
 
     server.use(
       graphql.query('BundleAssets', (info) => {

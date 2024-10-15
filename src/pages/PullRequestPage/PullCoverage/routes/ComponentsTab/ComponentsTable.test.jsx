@@ -68,7 +68,7 @@ const mockPull = {
 
 describe('ComponentsTable', () => {
   function setup(overrideData) {
-    const componentsMock = jest.fn()
+    const componentsMock = vi.fn()
 
     server.use(
       graphql.query('PullComponentComparison', (info) => {
