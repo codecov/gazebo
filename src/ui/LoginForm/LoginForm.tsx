@@ -5,8 +5,8 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
-  const [username, setUsername] = useState<string>('')
-  const [password] = useState<string>('')
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -17,8 +17,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   }
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(username + e.target.value)
-  }
+    setUsername(e.target.value);
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
@@ -44,8 +43,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
         />
       </div>
 
-      <button type="button">Login</button>
-    </form>
+      <button type="submit">Login</button>
   )
 }
 
