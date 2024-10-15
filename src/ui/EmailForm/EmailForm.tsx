@@ -5,7 +5,7 @@ interface FormData {
   age: number
 }
 
-const App: React.FC = () => {
+const EmailComponent: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({ username: '', age: 0 })
   const [message, setMessage] = useState<string>('')
 
@@ -69,4 +69,4 @@ const App: React.FC = () => {
   )
 }
 
-export default App
+export default EmailComponent
