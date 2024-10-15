@@ -162,32 +162,56 @@ describe('useBundleChartData', () => {
 
     const expectedResult = {
       isLoading: false,
-      maxY: 32,
+      maxY: 30,
       multiplier: 1_000,
+      assetTypes: [
+        'JAVASCRIPT_SIZE',
+        'STYLESHEET_SIZE',
+        'FONT_SIZE',
+        'IMAGE_SIZE',
+      ],
       data: [
         {
           date: new Date('2024-06-15T00:00:00+00:00'),
-          size: 0,
+          FONT_SIZE: 0,
+          IMAGE_SIZE: 0,
+          JAVASCRIPT_SIZE: 0,
+          STYLESHEET_SIZE: 0,
         },
         {
           date: new Date('2024-06-16T00:00:00+00:00'),
-          size: 0,
+          FONT_SIZE: 0,
+          IMAGE_SIZE: 0,
+          JAVASCRIPT_SIZE: 0,
+          STYLESHEET_SIZE: 0,
         },
         {
           date: new Date('2024-06-17T00:00:00+00:00'),
-          size: 11000.8,
+          FONT_SIZE: 0,
+          IMAGE_SIZE: 0,
+          JAVASCRIPT_SIZE: 10000.8,
+          STYLESHEET_SIZE: 1000,
         },
         {
           date: new Date('2024-06-18T00:00:00+00:00'),
-          size: 11300,
+          FONT_SIZE: 0,
+          IMAGE_SIZE: 0,
+          JAVASCRIPT_SIZE: 10500,
+          STYLESHEET_SIZE: 800,
         },
         {
           date: new Date('2024-06-19T00:00:00+00:00'),
-          size: 20900,
+          FONT_SIZE: 0,
+          IMAGE_SIZE: 0,
+          JAVASCRIPT_SIZE: 20000,
+          STYLESHEET_SIZE: 900,
         },
         {
           date: new Date('2024-06-20T00:00:00+00:00'),
-          size: 15950,
+          FONT_SIZE: 0,
+          IMAGE_SIZE: 0,
+          JAVASCRIPT_SIZE: 15000,
+          STYLESHEET_SIZE: 950,
         },
       ],
     }
@@ -229,7 +253,12 @@ describe('useBundleChartData', () => {
         branch: 'main',
         bundle: 'test-bundle',
         filters: {
-          assetTypes: ['REPORT_SIZE'],
+          assetTypes: [
+            'JAVASCRIPT_SIZE',
+            'STYLESHEET_SIZE',
+            'FONT_SIZE',
+            'IMAGE_SIZE',
+          ],
           // temp removing while we don't have filtering by types implemented
           // loadTypes: [],
         },
@@ -269,12 +298,18 @@ describe('useBundleChartData', () => {
         expect(queryVarMock).toHaveBeenCalledWith(
           expect.objectContaining({
             filters: expect.objectContaining({
-              assetTypes: ['REPORT_SIZE'],
+              assetTypes: [
+                'JAVASCRIPT_SIZE',
+                'STYLESHEET_SIZE',
+                'FONT_SIZE',
+                'IMAGE_SIZE',
+              ],
             }),
           })
         )
       })
 
+      // this functionality is not implement yet - need to see if we are planning on implementing it*
       it.skip('defaults to empty load types array', async () => {
         const { queryVarMock } = setup()
 

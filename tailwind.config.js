@@ -165,6 +165,13 @@ module.exports = {
           inactive: withOpacity('--color-toggle-inactive'),
           disabled: withOpacity('--color-toggle-disabled'),
         },
+        chart: {
+          'bundle-chart-js': withOpacity('--color-bundle-chart-js'),
+          'bundle-chart-css': withOpacity('--color-bundle-chart-css'),
+          'bundle-chart-image': withOpacity('--color-bundle-chart-image'),
+          'bundle-chart-font': withOpacity('--color-bundle-chart-font'),
+          'bundle-chart-unknown': withOpacity('--color-bundle-chart-unknown'),
+        },
       },
       screens: {
         print: { raw: 'print' },

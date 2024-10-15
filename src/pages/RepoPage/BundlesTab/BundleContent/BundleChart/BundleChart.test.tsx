@@ -3,8 +3,11 @@ import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import MockResizeObserver from 'resize-observer-polyfill'
 
 import { BundleChart } from './BundleChart'
+
+global.ResizeObserver = MockResizeObserver
 
 const mockRepoOverview = {
   owner: {
@@ -33,7 +36,36 @@ const mockBundleTrendData = {
             bundle: {
               measurements: [
                 {
-                  assetType: 'REPORT_SIZE',
+                  assetType: 'JAVASCRIPT_SIZE',
+                  measurements: [
+                    {
+                      timestamp: '2024-06-15T00:00:00+00:00',
+                      avg: null,
+                    },
+                    {
+                      timestamp: '2024-06-16T00:00:00+00:00',
+                      avg: null,
+                    },
+                    {
+                      timestamp: '2024-06-17T00:00:00+00:00',
+                      avg: 6834699.8,
+                    },
+                    {
+                      timestamp: '2024-06-18T00:00:00+00:00',
+                      avg: 6822037.27273,
+                    },
+                    {
+                      timestamp: '2024-06-19T00:00:00+00:00',
+                      avg: 6824833.33333,
+                    },
+                    {
+                      timestamp: '2024-06-20T00:00:00+00:00',
+                      avg: 6812341,
+                    },
+                  ],
+                },
+                {
+                  assetType: 'IMAGE_SIZE',
                   measurements: [
                     {
                       timestamp: '2024-06-15T00:00:00+00:00',
@@ -122,7 +154,7 @@ describe('BundleChart', () => {
     setup()
     render(<BundleChart />, { wrapper })
 
-    const bundleChart = await screen.findByTestId('bundle-trend-chart')
+    const bundleChart = await screen.findByTestId('chart-container')
     expect(bundleChart).toBeInTheDocument()
   })
 })
