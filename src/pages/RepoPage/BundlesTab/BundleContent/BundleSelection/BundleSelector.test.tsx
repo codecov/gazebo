@@ -25,9 +25,11 @@ const mockBundles = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundles: [{ name: 'bundle1' }, { name: 'bundle2' }],
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundles: [{ name: 'bundle1' }, { name: 'bundle2' }],
+            },
           },
         },
       },
@@ -42,9 +44,11 @@ const mockBadBundles = {
       branch: {
         head: {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
-          bundleAnalysisReport: {
-            __typename: 'MissingHeadReport',
-            message: 'missing head report',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+              message: 'missing head report',
+            },
           },
         },
       },

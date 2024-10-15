@@ -30,19 +30,21 @@ const mockBundleSummary = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              name: 'bundle1',
-              moduleCount: 10,
-              bundleData: {
-                loadTime: {
-                  threeG: 1000,
-                  highSpeed: 500,
-                },
-                size: {
-                  gzip: 1000,
-                  uncompress: 2000,
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                name: 'bundle1',
+                moduleCount: 10,
+                bundleData: {
+                  loadTime: {
+                    threeG: 1000,
+                    highSpeed: 500,
+                  },
+                  size: {
+                    gzip: 1000,
+                    uncompress: 2000,
+                  },
                 },
               },
             },

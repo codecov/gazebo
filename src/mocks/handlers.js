@@ -160,7 +160,9 @@ graphql.query('Pull', (info) => {
               ciPassed: true,
               branchName: 'scott/cleanup',
               commitid: '04362ea9b08bcc61e3542c6a51eb65d586956bcc',
-              totals: { percentCovered: 94.97 },
+              coverageAnalytics: {
+                totals: { percentCovered: 94.97 },
+              },
               uploads: {
                 totalCount: 1,
                 edges: [
@@ -242,7 +244,9 @@ graphql.query('Pull2', (info) => {
               ciPassed: true,
               branchName: 'scott/cleanup',
               commitid: '04362ea9b08bcc61e3542c6a51eb65d586956bcc',
-              totals: { percentCovered: 94.97 },
+              coverageAnalytics: {
+                totals: { percentCovered: 94.97 },
+              },
               uploads: {
                 totalCount: 1,
                 edges: [
@@ -371,10 +375,12 @@ graphql.query('CommitBADropdownSummary', (info) => {
         repository: {
           __typename: 'Repository',
           commit: {
-            bundleAnalysisCompareWithParent: {
-              __typename: 'BundleAnalysisComparison',
-              sizeDelta: 1,
-              loadTimeDelta: 2,
+            bundleAnalysis: {
+              bundleAnalysisCompareWithParent: {
+                __typename: 'BundleAnalysisComparison',
+                sizeDelta: 1,
+                loadTimeDelta: 2,
+              },
             },
           },
         },
@@ -412,26 +418,28 @@ graphql.query('CommitBundleList', (info) => {
         repository: {
           __typename: 'Repository',
           commit: {
-            bundleAnalysisCompareWithParent: {
-              __typename: 'BundleAnalysisComparison',
-              bundles: [
-                {
-                  name: 'bundle.js',
-                  changeType: 'added',
-                  sizeDelta: 1,
-                  sizeTotal: 2,
-                  loadTimeDelta: 3,
-                  loadTimeTotal: 4,
-                },
-                {
-                  name: 'bundle.css',
-                  changeType: 'removed',
-                  sizeDelta: 5,
-                  sizeTotal: 6,
-                  loadTimeDelta: 7,
-                  loadTimeTotal: 8,
-                },
-              ],
+            bundleAnalysis: {
+              bundleAnalysisCompareWithParent: {
+                __typename: 'BundleAnalysisComparison',
+                bundles: [
+                  {
+                    name: 'bundle.js',
+                    changeType: 'added',
+                    sizeDelta: 1,
+                    sizeTotal: 2,
+                    loadTimeDelta: 3,
+                    loadTimeTotal: 4,
+                  },
+                  {
+                    name: 'bundle.css',
+                    changeType: 'removed',
+                    sizeDelta: 5,
+                    sizeTotal: 6,
+                    loadTimeDelta: 7,
+                    loadTimeTotal: 8,
+                  },
+                ],
+              },
             },
           },
         },
@@ -447,26 +455,28 @@ graphql.query('PullBundleComparisonList', (info) => {
         repository: {
           __typename: 'Repository',
           commit: {
-            bundleAnalysisCompareWithParent: {
-              __typename: 'BundleAnalysisComparison',
-              bundles: [
-                {
-                  name: 'bundle.js',
-                  changeType: 'added',
-                  sizeDelta: 1,
-                  sizeTotal: 2,
-                  loadTimeDelta: 3,
-                  loadTimeTotal: 4,
-                },
-                {
-                  name: 'bundle.css',
-                  changeType: 'removed',
-                  sizeDelta: 5,
-                  sizeTotal: 6,
-                  loadTimeDelta: 7,
-                  loadTimeTotal: 8,
-                },
-              ],
+            bundleAnalysis: {
+              bundleAnalysisCompareWithParent: {
+                __typename: 'BundleAnalysisComparison',
+                bundles: [
+                  {
+                    name: 'bundle.js',
+                    changeType: 'added',
+                    sizeDelta: 1,
+                    sizeTotal: 2,
+                    loadTimeDelta: 3,
+                    loadTimeTotal: 4,
+                  },
+                  {
+                    name: 'bundle.css',
+                    changeType: 'removed',
+                    sizeDelta: 5,
+                    sizeTotal: 6,
+                    loadTimeDelta: 7,
+                    loadTimeTotal: 8,
+                  },
+                ],
+              },
             },
           },
         },

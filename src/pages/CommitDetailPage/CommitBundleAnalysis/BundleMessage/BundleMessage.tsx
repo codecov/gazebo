@@ -20,7 +20,8 @@ const BundleMessage: React.FC = () => {
     commitid: commitSha,
   })
 
-  const comparison = data?.commit?.bundleAnalysisCompareWithParent
+  const comparison =
+    data?.commit?.bundleAnalysis?.bundleAnalysisCompareWithParent
   if (comparison?.__typename === 'FirstPullRequest') {
     return (
       <>

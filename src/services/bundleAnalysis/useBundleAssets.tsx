@@ -84,7 +84,11 @@ const RepositorySchema = z.object({
     .object({
       head: z
         .object({
-          bundleAnalysisReport: BundleReportSchema.nullable(),
+          bundleAnalysis: z
+            .object({
+              bundleAnalysisReport: BundleReportSchema.nullable(),
+            })
+            .nullable(),
         })
         .nullable(),
     })
@@ -125,62 +129,64 @@ query BundleAssets(
       ... on Repository {
         branch(name: $branch) {
           head {
-            bundleAnalysisReport {
-              __typename
-              ... on BundleAnalysisReport {
-                bundle(name: $bundle, filters: $filters) {
-                  bundleData {
-                    size {
-                      uncompress
+            bundleAnalysis {
+              bundleAnalysisReport {
+                __typename
+                ... on BundleAnalysisReport {
+                  bundle(name: $bundle, filters: $filters) {
+                    bundleData {
+                      size {
+                        uncompress
+                      }
                     }
-                  }
-                  assetsPaginated(
-                    first: 20
-                    after: $assetsAfter
-                    orderingDirection: $orderingDirection
-                    ordering: $ordering
-                  ) {
-                    edges {
-                      node {
-                        name
-                        extension
-                        bundleData {
-                          loadTime {
-                            threeG
-                            highSpeed
-                          }
-                          size {
-                            uncompress
-                            gzip
-                          }
-                        }
-                        measurements(
-                          interval: $interval
-                          before: $dateBefore
-                          after: $dateAfter
-                          branch: $branch
-                        ) {
-                          change {
+                    assetsPaginated(
+                      first: 20
+                      after: $assetsAfter
+                      orderingDirection: $orderingDirection
+                      ordering: $ordering
+                    ) {
+                      edges {
+                        node {
+                          name
+                          extension
+                          bundleData {
+                            loadTime {
+                              threeG
+                              highSpeed
+                            }
                             size {
                               uncompress
+                              gzip
                             }
                           }
-                          measurements {
-                            timestamp
-                            avg
+                          measurements(
+                            interval: $interval
+                            before: $dateBefore
+                            after: $dateAfter
+                            branch: $branch
+                          ) {
+                            change {
+                              size {
+                                uncompress
+                              }
+                            }
+                            measurements {
+                              timestamp
+                              avg
+                            }
                           }
                         }
                       }
-                    }
-                    pageInfo {
-                      hasNextPage
-                      endCursor
+                      pageInfo {
+                        hasNextPage
+                        endCursor
+                      }
                     }
                   }
                 }
-              }
-              ... on MissingHeadReport {
-                message
+                ... on MissingHeadReport {
+                  message
+                }
               }
             }
           }
@@ -302,8 +308,8 @@ export const useBundleAssets = ({
 
         if (
           !data?.owner ||
-          data?.owner?.repository?.branch?.head?.bundleAnalysisReport
-            ?.__typename === 'MissingHeadReport'
+          data?.owner?.repository?.branch?.head?.bundleAnalysis
+            ?.bundleAnalysisReport?.__typename === 'MissingHeadReport'
         ) {
           return {
             assets: [],
@@ -313,18 +319,18 @@ export const useBundleAssets = ({
         }
 
         const assets = mapEdges(
-          data?.owner?.repository?.branch?.head?.bundleAnalysisReport?.bundle
-            ?.assetsPaginated
+          data?.owner?.repository?.branch?.head?.bundleAnalysis
+            ?.bundleAnalysisReport?.bundle?.assetsPaginated
         )
 
         return {
           assets,
           bundleData:
-            data?.owner?.repository?.branch?.head?.bundleAnalysisReport?.bundle
-              ?.bundleData,
+            data?.owner?.repository?.branch?.head?.bundleAnalysis
+              ?.bundleAnalysisReport?.bundle?.bundleData,
           pageInfo:
-            data?.owner?.repository?.branch?.head?.bundleAnalysisReport?.bundle
-              ?.assetsPaginated?.pageInfo ?? null,
+            data?.owner?.repository?.branch?.head?.bundleAnalysis
+              ?.bundleAnalysisReport?.bundle?.assetsPaginated?.pageInfo ?? null,
         }
       }),
     getNextPageParam: (data) => {

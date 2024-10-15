@@ -12,7 +12,9 @@ import {
 
 const data = {
   commit: {
-    totals: { coverage: 90.91 },
+    coverageAnalytics: {
+      totals: { coverage: 90.91 },
+    },
     state: 'complete',
     commitid: 'ca3fe8ad0632288b67909ba9793b00e5d109547b',
     pullId: 123,
@@ -82,7 +84,9 @@ const data = {
     ciPassed: true,
     parent: {
       commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-      totals: { coverage: 100 },
+      coverageAnalytics: {
+        totals: { coverage: 100 },
+      },
     },
     compareWithParent: {
       __typename: 'Comparison',
@@ -108,11 +112,11 @@ const data = {
 
 const commit = data?.commit
 const rawPatch = commit?.compareWithParent?.patchTotals?.coverage
-const parentCoverage = commit?.parent?.totals?.coverage
-const headCoverage = commit?.totals?.coverage
+const parentCoverage = commit?.parent?.coverageAnalytics?.totals?.coverage
+const headCoverage = commit?.coverageAnalytics?.totals?.coverage
 
 const successfulExpectedData = {
-  headCoverage: commit?.totals?.coverage,
+  headCoverage: commit?.coverageAnalytics?.totals?.coverage,
   patchCoverage: isNumber(rawPatch) ? rawPatch : Number.NaN,
   changeCoverage: headCoverage - parentCoverage,
   headCommitId: commit?.commitid,
@@ -178,11 +182,12 @@ describe('usePullForCompareSummary', () => {
 
 describe('getPullDataForCompareSummary', () => {
   it('returns all values accordingly', () => {
-    const { compareWithParent, totals, parent, state, commitid } = data?.commit
+    const { compareWithParent, coverageAnalytics, parent, state, commitid } =
+      data?.commit
 
     const returnedData = getCommitDataForSummary({
       compareWithParent,
-      totals,
+      totals: coverageAnalytics?.totals,
       parent,
       state,
       commitid,

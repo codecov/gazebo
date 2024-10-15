@@ -48,8 +48,10 @@ const mockCommitPageData = ({
         compareWithParent: {
           __typename: 'Comparison',
         },
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+          },
         },
       },
     },
@@ -78,14 +80,16 @@ const mockBundleDropdownSummary = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-          bundleChange: {
-            loadTime: {
-              threeG: 2,
-            },
-            size: {
-              uncompress: 10000,
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              loadTime: {
+                threeG: 2,
+              },
+              size: {
+                uncompress: 10000,
+              },
             },
           },
         },

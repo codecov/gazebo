@@ -14,16 +14,18 @@ const mockBranchComponents = {
         name: 'main',
         head: {
           commitid: 'commit-123',
-          components: [
-            {
-              id: 'compOneId',
-              name: 'compOneName',
-            },
-            {
-              id: 'compTwoId',
-              name: 'compTwoName',
-            },
-          ],
+          coverageAnalytics: {
+            components: [
+              {
+                id: 'compOneId',
+                name: 'compOneName',
+              },
+              {
+                id: 'compTwoId',
+                name: 'compTwoName',
+              },
+            ],
+          },
         },
       },
     },
@@ -38,12 +40,14 @@ const mockBranchComponentsFiltered = {
         name: 'main',
         head: {
           commitid: 'commit-123',
-          components: [
-            {
-              id: 'compOneId',
-              name: 'compOneName',
-            },
-          ],
+          coverageAnalytics: {
+            components: [
+              {
+                id: 'compOneId',
+                name: 'compOneName',
+              },
+            ],
+          },
         },
       },
     },
@@ -153,16 +157,18 @@ describe('useBranchComponents', () => {
             expect(result.current.data).toStrictEqual({
               branch: {
                 head: {
-                  components: [
-                    {
-                      id: 'compOneId',
-                      name: 'compOneName',
-                    },
-                    {
-                      id: 'compTwoId',
-                      name: 'compTwoName',
-                    },
-                  ],
+                  coverageAnalytics: {
+                    components: [
+                      {
+                        id: 'compOneId',
+                        name: 'compOneName',
+                      },
+                      {
+                        id: 'compTwoId',
+                        name: 'compTwoName',
+                      },
+                    ],
+                  },
                 },
               },
             })
@@ -187,12 +193,14 @@ describe('useBranchComponents', () => {
             expect(result.current.data).toStrictEqual({
               branch: {
                 head: {
-                  components: [
-                    {
-                      id: 'compOneId',
-                      name: 'compOneName',
-                    },
-                  ],
+                  coverageAnalytics: {
+                    components: [
+                      {
+                        id: 'compOneId',
+                        name: 'compOneName',
+                      },
+                    ],
+                  },
                 },
               },
             })

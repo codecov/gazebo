@@ -14,10 +14,12 @@ const mockRepoCoverage = {
         name: 'main',
         head: {
           yamlState: 'DEFAULT',
-          totals: {
-            percentCovered: 70.44,
-            lineCount: 90,
-            hitsCount: 80,
+          coverageAnalytics: {
+            totals: {
+              percentCovered: 70.44,
+              lineCount: 90,
+              hitsCount: 80,
+            },
           },
         },
       },
@@ -123,10 +125,12 @@ describe('useRepoCoverage', () => {
           name: 'main',
           head: {
             yamlState: 'DEFAULT',
-            totals: {
-              percentCovered: 70.44,
-              lineCount: 90,
-              hitsCount: 80,
+            coverageAnalytics: {
+              totals: {
+                percentCovered: 70.44,
+                lineCount: 90,
+                hitsCount: 80,
+              },
             },
           },
         })

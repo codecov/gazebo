@@ -12,12 +12,16 @@ const BranchComponentsSchema = z
   .object({
     head: z
       .object({
-        components: z.array(
-          z.object({
-            id: z.string(),
-            name: z.string(),
+        coverageAnalytics: z
+          .object({
+            components: z.array(
+              z.object({
+                id: z.string(),
+                name: z.string(),
+              })
+            ),
           })
-        ),
+          .nullable(),
       })
       .nullable(),
   })
@@ -61,9 +65,11 @@ query GetBranchComponents($owner: String!, $repo: String!, $branch: String!, $fi
       ... on Repository {
         branch(name: $branch) {
           head {
-            components (filters: $filters) {
-              id
-              name
+            coverageAnalytics {
+              components (filters: $filters) {
+                id
+                name
+              }
             }
           }
         }

@@ -18,7 +18,9 @@ const mockCommitComponentsResponse = (components: Array<{ name: string }>) => ({
     repository: {
       __typename: 'Repository',
       commit: {
-        components,
+        coverageAnalytics: {
+          components,
+        },
       },
     },
   },
