@@ -18,11 +18,11 @@ export default defineConfig((config) => {
   if (
     process.env.CODECOV_API_URL &&
     process.env.CODECOV_ORG_TOKEN &&
-    process.env.UPLOAD_CODECOV_BUNDLE_STATS
+    process.env.UPLOAD_CODECOV_BUNDLE_STATS === 'true'
   ) {
     plugins.push(
       codecovVitePlugin({
-        enableBundleAnalysis: true,
+        enableBundleAnalysis: process.env.UPLOAD_CODECOV_BUNDLE_STATS === 'true',
         bundleName: process.env.CODECOV_BUNDLE_NAME,
         apiUrl: process.env.CODECOV_API_URL,
         uploadToken: process.env.CODECOV_ORG_TOKEN,
