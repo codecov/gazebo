@@ -1,11 +1,12 @@
 import { useParams } from 'react-router-dom'
 
-import { useRepoOverview } from 'services/repo'
+import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
 import Badge from 'ui/Badge'
 import Icon from 'ui/Icon'
 import { MetricCard } from 'ui/MetricCard'
 import { Tooltip } from 'ui/Tooltip'
 
+import { useFlakeAggregates } from '../hooks/useFlakeAggregates'
 import { useTestResultsAggregates } from '../hooks/useTestResultsAggregates'
 
 const PercentBadge = ({ value }: { value: number }) => {
@@ -109,7 +110,13 @@ const SlowestTestsCard = ({
   )
 }
 
-const TotalFlakyTestsCard = () => {
+const TotalFlakyTestsCard = ({
+  flakeCount,
+  flakeCountPercentChange,
+}: {
+  flakeCount?: number
+  flakeCountPercentChange?: number | null
+}) => {
   return (
     <MetricCard>
       <MetricCard.Header>
@@ -122,8 +129,10 @@ const TotalFlakyTestsCard = () => {
         </MetricCard.Title>
       </MetricCard.Header>
       <MetricCard.Content>
-        88
-        <Badge variant="success">-15%</Badge>
+        {flakeCount}
+        {flakeCountPercentChange ? (
+          <PercentBadge value={flakeCountPercentChange} />
+        ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
         *The total rerun time for flaky tests is [50hr].
@@ -132,7 +141,13 @@ const TotalFlakyTestsCard = () => {
   )
 }
 
-const AverageFlakeRateCard = () => {
+const AverageFlakeRateCard = ({
+  flakeRate,
+  flakeRatePercentChange,
+}: {
+  flakeRate?: number
+  flakeRatePercentChange?: number | null
+}) => {
   return (
     <MetricCard>
       <MetricCard.Header>
@@ -146,8 +161,10 @@ const AverageFlakeRateCard = () => {
         </MetricCard.Title>
       </MetricCard.Header>
       <MetricCard.Content>
-        8%
-        <Badge variant="success">-35%</Badge>
+        {flakeRate}%
+        {flakeRatePercentChange ? (
+          <PercentBadge value={flakeRatePercentChange} />
+        ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
         On average, a flaky test ran [20] times before it passed.
@@ -229,22 +246,26 @@ const getDecodedBranch = (branch?: string) =>
   !!branch ? decodeURIComponent(branch) : undefined
 
 function MetricsSection() {
-  const { provider, owner, repo, branch } = useParams<URLParams>()
+  const { branch } = useParams<URLParams>()
 
-  const { data: overview } = useRepoOverview({
-    provider,
-    owner,
-    repo,
+  const { data: testResults } = useTestResultsAggregates()
+  const disabledFlakeAggregates =
+    (isTeamPlan(testResults?.plan) || isFreePlan(testResults?.plan)) &&
+    testResults?.private
+  const { data: flakeAggregates } = useFlakeAggregates({
+    opts: {
+      enabled: !disabledFlakeAggregates,
+    },
   })
 
-  const { data: aggregates } = useTestResultsAggregates()
-
   const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
+  const selectedBranch = decodedBranch ?? testResults?.defaultBranch ?? ''
 
-  if (selectedBranch !== overview?.defaultBranch) {
+  if (selectedBranch !== testResults?.defaultBranch) {
     return null
   }
+
+  const aggregates = testResults?.testResultsAggregates
 
   return (
     <>
@@ -272,8 +293,22 @@ function MetricsSection() {
             Improve Test Performance
           </p>
           <div className="flex">
-            <TotalFlakyTestsCard />
-            <AverageFlakeRateCard />
+            {!!flakeAggregates ? (
+              <>
+                <TotalFlakyTestsCard
+                  flakeCount={flakeAggregates?.flakeCount}
+                  flakeCountPercentChange={
+                    flakeAggregates?.flakeCountPercentChange
+                  }
+                />
+                <AverageFlakeRateCard
+                  flakeRate={flakeAggregates?.flakeRate}
+                  flakeRatePercentChange={
+                    flakeAggregates?.flakeRatePercentChange
+                  }
+                />
+              </>
+            ) : null}
             <TotalFailuresCard
               totalFails={aggregates?.totalFails}
               totalFailsPercentChange={aggregates?.totalFailsPercentChange}

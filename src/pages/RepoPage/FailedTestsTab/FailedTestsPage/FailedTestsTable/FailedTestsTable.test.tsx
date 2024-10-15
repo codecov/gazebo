@@ -95,11 +95,23 @@ afterAll(() => {
 interface SetupArgs {
   noEntries?: boolean
   bundleAnalysisEnabled?: boolean
+  planValue?: string
+  isPrivate?: boolean
 }
 
 describe('FailedTestsTable', () => {
-  function setup({ noEntries = false }: SetupArgs) {
-    const queryClient = new QueryClient()
+  function setup({
+    noEntries = false,
+    planValue = 'users-enterprisem',
+    isPrivate = false,
+  }: SetupArgs) {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          suspense: false,
+        },
+      },
+    })
 
     const user = userEvent.setup({ delay: null })
     const mockVariables = vi.fn()
@@ -112,8 +124,12 @@ describe('FailedTestsTable', () => {
           return HttpResponse.json({
             data: {
               owner: {
+                plan: {
+                  value: planValue,
+                },
                 repository: {
                   __typename: 'Repository',
+                  private: isPrivate,
                   testAnalytics: {
                     testResults: {
                       edges: [],
@@ -131,8 +147,12 @@ describe('FailedTestsTable', () => {
 
         const dataReturned = {
           owner: {
+            plan: {
+              value: planValue,
+            },
             repository: {
               __typename: 'Repository',
+              private: isPrivate,
               testAnalytics: {
                 testResults: {
                   edges: info.variables.after
@@ -157,6 +177,42 @@ describe('FailedTestsTable', () => {
   }
 
   describe('renders table headers', () => {
+    describe('when repo is private', () => {
+      describe('when plan is team plan', () => {
+        it('does not render flake rate column', async () => {
+          const { queryClient } = setup({
+            planValue: 'users-teamm',
+            isPrivate: true,
+          })
+          render(<FailedTestsTable />, {
+            wrapper: wrapper(queryClient),
+          })
+
+          await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+          const flakeRateColumn = screen.queryByText('Flake rate')
+          expect(flakeRateColumn).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when plan is free', () => {
+        it('does not render flake rate column', async () => {
+          const { queryClient } = setup({
+            planValue: 'users-free',
+            isPrivate: true,
+          })
+          render(<FailedTestsTable />, {
+            wrapper: wrapper(queryClient),
+          })
+
+          await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+          const flakeRateColumn = screen.queryByText('Flake rate')
+          expect(flakeRateColumn).not.toBeInTheDocument()
+        })
+      })
+    })
+
     it('renders each column name', async () => {
       const { queryClient } = setup({})
       render(<FailedTestsTable />, {

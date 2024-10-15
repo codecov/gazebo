@@ -7,8 +7,12 @@ import { useInfiniteTestResults } from './useInfiniteTestResults'
 
 const mockTestResults = {
   owner: {
+    plan: {
+      value: 'users-enterprisem',
+    },
     repository: {
       __typename: 'Repository',
+      private: false,
       testAnalytics: {
         testResults: {
           edges: [
@@ -68,11 +72,17 @@ const mockNotFoundError = {
       __typename: 'NotFoundError',
       message: 'Repository not found',
     },
+    plan: {
+      value: 'users-enterprisem',
+    },
   },
 }
 
 const mockOwnerNotActivatedError = {
   owner: {
+    plan: {
+      value: 'users-enterprisem',
+    },
     repository: {
       __typename: 'OwnerNotActivatedError',
       message: 'Owner not activated',

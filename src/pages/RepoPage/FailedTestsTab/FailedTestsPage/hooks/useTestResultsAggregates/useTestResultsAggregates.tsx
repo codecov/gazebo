@@ -9,9 +9,16 @@ import { NetworkErrorObject } from 'shared/api/helpers'
 const TestResultsAggregatesSchema = z.object({
   owner: z
     .object({
+      plan: z
+        .object({
+          value: z.string(),
+        })
+        .nullable(),
       repository: z.discriminatedUnion('__typename', [
         z.object({
           __typename: z.literal('Repository'),
+          private: z.boolean().nullable(),
+          defaultBranch: z.string().nullable(),
           testAnalytics: z
             .object({
               testResultsAggregates: z.object({
@@ -39,9 +46,14 @@ const query = `
     $repo: String!
   ) {
     owner(username: $owner) {
+      plan {
+        value
+      }
       repository: repository(name: $repo) {
         __typename
         ... on Repository {
+            private
+            defaultBranch
             testAnalytics {
               testResultsAggregates {
                 totalDuration
@@ -105,7 +117,13 @@ export const useTestResultsAggregates = () => {
           } satisfies NetworkErrorObject)
         }
 
-        return data.owner?.repository.testAnalytics?.testResultsAggregates
+        return {
+          testResultsAggregates:
+            data?.owner?.repository?.testAnalytics?.testResultsAggregates,
+          plan: data?.owner?.plan?.value,
+          private: data?.owner?.repository?.private,
+          defaultBranch: data?.owner?.repository?.defaultBranch,
+        }
       }),
   })
 }
