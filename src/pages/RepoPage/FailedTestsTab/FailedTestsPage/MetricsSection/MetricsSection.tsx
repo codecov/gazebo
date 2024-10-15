@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import Badge from 'ui/Badge'
 import Icon from 'ui/Icon'
@@ -86,9 +87,11 @@ const TotalTestsRunTimeCard = ({
 const SlowestTestsCard = ({
   slowestTests,
   slowestTestsDuration,
+  updateParams,
 }: {
   slowestTests?: number
   slowestTestsDuration?: number | null
+  updateParams: (newParams: { parameter: string }) => void
 }) => {
   return (
     <MetricCard>
@@ -101,7 +104,16 @@ const SlowestTestsCard = ({
         </MetricCard.Title>
       </MetricCard.Header>
 
-      <MetricCard.Content>{slowestTests}</MetricCard.Content>
+      <MetricCard.Content>
+        <button
+          className="text-ds-blue-default hover:underline"
+          onClick={() => {
+            updateParams({ parameter: 'SLOWEST_TESTS' })
+          }}
+        >
+          {slowestTests}
+        </button>
+      </MetricCard.Content>
       <MetricCard.Description>
         The slowest {slowestTests} tests take {slowestTestsDuration} to run.
       </MetricCard.Description>
@@ -122,7 +134,12 @@ const TotalFlakyTestsCard = () => {
         </MetricCard.Title>
       </MetricCard.Header>
       <MetricCard.Content>
-        88
+        <button
+          className="text-ds-blue-default hover:underline"
+          onClick={() => {}}
+        >
+          88
+        </button>
         <Badge variant="success">-15%</Badge>
       </MetricCard.Content>
       <MetricCard.Description>
@@ -159,9 +176,11 @@ const AverageFlakeRateCard = () => {
 const TotalFailuresCard = ({
   totalFails,
   totalFailsPercentChange,
+  updateParams,
 }: {
   totalFails?: number
   totalFailsPercentChange?: number | null
+  updateParams: (newParams: { parameter: string }) => void
 }) => {
   return (
     <MetricCard>
@@ -175,7 +194,14 @@ const TotalFailuresCard = ({
         </MetricCard.Title>
       </MetricCard.Header>
       <MetricCard.Content>
-        {totalFails}
+        <button
+          className="text-ds-blue-default hover:underline"
+          onClick={() => {
+            updateParams({ parameter: 'FAILED_TESTS' })
+          }}
+        >
+          {totalFails}
+        </button>
         {totalFailsPercentChange ? (
           <PercentBadge value={totalFailsPercentChange} />
         ) : null}
@@ -190,9 +216,11 @@ const TotalFailuresCard = ({
 const TotalSkippedTestsCard = ({
   totalSkips,
   totalSkipsPercentChange,
+  updateParams,
 }: {
   totalSkips?: number
   totalSkipsPercentChange?: number | null
+  updateParams: (newParams: { parameter: string }) => void
 }) => {
   return (
     <MetricCard>
@@ -206,7 +234,14 @@ const TotalSkippedTestsCard = ({
       </MetricCard.Header>
 
       <MetricCard.Content>
-        {totalSkips}
+        <button
+          className="text-ds-blue-default hover:underline"
+          onClick={() => {
+            updateParams({ parameter: 'SKIPPED_TESTS' })
+          }}
+        >
+          {totalSkips}
+        </button>
         {totalSkipsPercentChange ? (
           <PercentBadge value={totalSkipsPercentChange} />
         ) : null}
@@ -230,6 +265,10 @@ const getDecodedBranch = (branch?: string) =>
 
 function MetricsSection() {
   const { provider, owner, repo, branch } = useParams<URLParams>()
+
+  const { updateParams } = useLocationParams({
+    parameter: '',
+  })
 
   const { data: overview } = useRepoOverview({
     provider,
@@ -264,6 +303,7 @@ function MetricsSection() {
             <SlowestTestsCard
               slowestTests={6}
               slowestTestsDuration={aggregates?.slowestTestsDuration}
+              updateParams={updateParams}
             />
           </div>
         </div>
@@ -277,10 +317,12 @@ function MetricsSection() {
             <TotalFailuresCard
               totalFails={aggregates?.totalFails}
               totalFailsPercentChange={aggregates?.totalFailsPercentChange}
+              updateParams={updateParams}
             />
             <TotalSkippedTestsCard
               totalSkips={aggregates?.totalSkips}
               totalSkipsPercentChange={aggregates?.totalSkipsPercentChange}
+              updateParams={updateParams}
             />
           </div>
         </div>

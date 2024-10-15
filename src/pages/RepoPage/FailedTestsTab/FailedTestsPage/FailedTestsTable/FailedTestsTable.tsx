@@ -218,7 +218,7 @@ const FailedTestsTable = () => {
 
   const table = useReactTable({
     columns,
-    data: tableData ?? [],
+    data: tableData,
     state: {
       sorting,
     },
