@@ -104,7 +104,7 @@ export function useBundleChartData({
           prevSize = size
         }
 
-        // if the current asset type is already present in the map, add the size to the existing value
+        // check to see if current timestamp is already in the map
         if (presentEntry) {
           mergedDataMap.set(y.timestamp, {
             ...presentEntry,
