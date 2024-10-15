@@ -40,6 +40,9 @@ const mockNotFoundError = {
       __typename: 'NotFoundError',
       message: 'repo not found',
     },
+    plan: {
+      value: 'users-basic',
+    },
   },
 }
 
@@ -48,13 +51,21 @@ const mockIncorrectResponse = {
     repository: {
       invalid: 'invalid',
     },
+    plan: {
+      value: 'users-basic',
+    },
   },
 }
 
 const mockResponse = {
   owner: {
+    plan: {
+      value: 'users-basic',
+    },
     repository: {
       __typename: 'Repository',
+      private: true,
+      defaultBranch: 'main',
       testAnalytics: {
         testResultsAggregates: {
           totalDuration: 1.0,
@@ -101,14 +112,19 @@ describe('useTestResultsAggregates', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
-            totalDuration: 1,
-            totalDurationPercentChange: 25,
-            slowestTestsDuration: 111.11,
-            slowestTestsDurationPercentChange: 0,
-            totalFails: 1,
-            totalFailsPercentChange: 100,
-            totalSkips: 20,
-            totalSkipsPercentChange: 0,
+            testResultsAggregates: {
+              totalDuration: 1,
+              totalDurationPercentChange: 25,
+              slowestTestsDuration: 111.11,
+              slowestTestsDurationPercentChange: 0,
+              totalFails: 1,
+              totalFailsPercentChange: 100,
+              totalSkips: 20,
+              totalSkipsPercentChange: 0,
+            },
+            plan: 'users-basic',
+            private: true,
+            defaultBranch: 'main',
           })
         )
       })

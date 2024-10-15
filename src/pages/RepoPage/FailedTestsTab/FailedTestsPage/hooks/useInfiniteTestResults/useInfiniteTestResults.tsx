@@ -49,9 +49,15 @@ type TestResult = z.infer<typeof TestResultSchema>
 const GetTestResultsSchema = z.object({
   owner: z
     .object({
+      plan: z
+        .object({
+          value: z.string(),
+        })
+        .nullable(),
       repository: z.discriminatedUnion('__typename', [
         z.object({
           __typename: z.literal('Repository'),
+          private: z.boolean().nullable(),
           testAnalytics: z
             .object({
               testResults: z.object({
@@ -87,9 +93,13 @@ query GetTestResults(
   $before: String
 ) {
   owner(username: $owner) {
+    plan {
+      value
+    }
     repository: repository(name: $repo) {
       __typename
       ... on Repository {
+        private
         testAnalytics {
           testResults(
             filters: $filters
@@ -145,6 +155,8 @@ interface UseTestResultsArgs {
   opts?: UseInfiniteQueryOptions<{
     testResults: TestResult[]
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
+    private: boolean | null
+    plan: string | null
   }>
 }
 
@@ -236,6 +248,8 @@ export const useInfiniteTestResults = ({
             hasNextPage: false,
             endCursor: null,
           },
+          private: data?.owner?.repository?.private ?? null,
+          plan: data?.owner?.plan?.value ?? null,
         }
       }),
     getNextPageParam: (lastPage) => {
@@ -254,6 +268,8 @@ export const useInfiniteTestResults = ({
   return {
     data: {
       testResults: memoedData,
+      private: data?.pages?.[0]?.private ?? null,
+      plan: data?.pages?.[0]?.plan ?? null,
     },
     ...rest,
   }
