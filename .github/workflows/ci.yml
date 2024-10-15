@@ -323,7 +323,7 @@ jobs:
 
       - name: Build and upload stats
         run: |
-          yarn build:stats
+          yarn build
         env:
           CODECOV_API_URL: ${{ secrets.CODECOV_STAGING_API_URL }}
           CODECOV_ORG_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
