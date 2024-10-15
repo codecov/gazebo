@@ -114,6 +114,11 @@
     --chart-4: 286, 61%, 52%;
     --chart-5: 0, 100%, 80%;
     --color-chart-area-stroke: var(--color-ds-gray-senary);
+    --color-bundle-chart-js: 205, 100%, 30%;
+    --color-bundle-chart-css: 205, 100%, 46%;
+    --color-bundle-chart-image: 41, 91%, 53%;
+    --color-bundle-chart-font: 209, 19%, 28%;
+    --color-bundle-chart-unknown: 210, 10%, 45%;
 
     /* summary dropdown */
     --color-ds-summary-dropdown: 247, 248, 251;
@@ -228,6 +233,11 @@
     --chart-4: 286, 61%, 52%;
     --chart-5: 0, 100%, 80%;
     --color-chart-area-stroke: 20, 157, 255;
+    --color-bundle-chart-js: 205, 100%, 30%;
+    --color-bundle-chart-css: 205, 100%, 46%;
+    --color-bundle-chart-image: 41, 91%, 53%;
+    --color-bundle-chart-font: 209, 19%, 28%;
+    --color-bundle-chart-unknown: 210, 10%, 45%;
 
     /* summary dropdown */
     --color-ds-summary-dropdown: 22, 24, 29;
