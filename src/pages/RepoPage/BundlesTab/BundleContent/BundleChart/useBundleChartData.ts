@@ -105,7 +105,7 @@ export function useBundleChartData({
         }
 
         // if the current asset type is already present in the map, add the size to the existing value
-        if (presentEntry?.[x.assetType]) {
+        if (presentEntry) {
           mergedDataMap.set(y.timestamp, {
             ...presentEntry,
             // @ts-expect-error - it doesn't like the dynamic key but we're guarding ourselves with the conditional above
