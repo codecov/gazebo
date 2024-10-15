@@ -1,13 +1,15 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
-  TIME_OPTION_VALUES,
-  TimeOption,
-  TimeOptions,
+  MEASUREMENT_INTERVAL,
+  MeasurementTimeOption,
+  MeasurementTimeOptions,
 } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
+import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 
@@ -27,7 +29,24 @@ function SelectorSection() {
   const { params, updateParams } = useLocationParams({
     search: '',
     historicalTrend: '',
+    testSuites: [],
+    flags: [],
   })
+
+  // @ts-expect-error need to type out useLocationParams
+  const [selectedFlags, setSelectedFlags] = useState(params?.flags)
+
+  const [flagSearch, setFlagSearch] = useState('')
+
+  const [selectedTestSuites, setSelectedTestSuites] = useState(
+    // @ts-expect-error need to type out useLocationParams
+    params?.testSuites
+  )
+
+  const [testSuiteSearch, setTestSuiteSearch] = useState('')
+
+  // This is just here for now to appease linter til we link it up
+  console.log(testSuiteSearch, flagSearch)
 
   const { provider, owner, repo, branch } = useParams<URLParams>()
 
@@ -40,14 +59,17 @@ function SelectorSection() {
   const decodedBranch = getDecodedBranch(branch)
   const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
 
-  const value = TimeOptions.find(
+  const timeValue = MeasurementTimeOptions.find(
     // @ts-expect-error need to type out useLocationParams
     (item) => item.value === params.historicalTrend
   )
 
-  const defaultValue = TimeOptions.find(
-    (option) => option.value === TIME_OPTION_VALUES.LAST_3_MONTHS
+  const defaultTimeValue = MeasurementTimeOptions.find(
+    (option) => option.value === MEASUREMENT_INTERVAL.INTERVAL_30_DAY
   )
+
+  const mockTestSuites = ['java', 'script', 'javascript', 'blah']
+
   return (
     <div className="flex flex-1 flex-row justify-between">
       <BranchSelector />
@@ -63,16 +85,16 @@ function SelectorSection() {
                 dataMarketing="select-historical-trend"
                 disabled={false}
                 ariaName="Select historical trend"
-                items={TimeOptions}
-                value={value ?? defaultValue}
-                onChange={(historicalTrend: TimeOption) =>
+                items={MeasurementTimeOptions}
+                value={timeValue ?? defaultTimeValue}
+                onChange={(historicalTrend: MeasurementTimeOption) =>
                   updateParams({ historicalTrend: historicalTrend.value })
                 }
                 renderItem={({ label }: { label: string }) => label}
                 renderSelected={({ label }: { label: string }) => label}
               />
             </div>
-            <A to="" isExternal hook={'30-day-retention'}>
+            <A to="" isExternal hook={'60-day-retention'}>
               60 day retention
             </A>
           </div>
@@ -85,11 +107,24 @@ function SelectorSection() {
                 // @ts-expect-error MultiSelect is not typed
                 dataMarketing="select-test-suites"
                 ariaName="Select Test Suites"
-                value={undefined}
-                items={[1, 2, 3, 4]}
-                renderItem={(item: any) => item}
+                selectedItemsOverride={selectedTestSuites}
+                onChange={(testSuites: string[]) => {
+                  setSelectedTestSuites(testSuites)
+                  updateParams({ testSuites })
+                }}
+                onSearch={(term: string) => setTestSuiteSearch(term)}
+                items={mockTestSuites}
+                renderSelected={(selectedItems: string[]) => (
+                  <span className="flex items-center gap-2">
+                    <Icon variant="solid" name="folder" />
+                    {selectedItems.length === 0 ? (
+                      'All test suites'
+                    ) : (
+                      <span>{selectedItems.length} selected test suites</span>
+                    )}
+                  </span>
+                )}
                 resourceName="Test Suites"
-                onChange={() => {}}
               />
             </div>
           </div>
@@ -102,11 +137,24 @@ function SelectorSection() {
                 // @ts-expect-error MultiSelect is not typed
                 dataMarketing="select-flags"
                 ariaName="Select Flags"
-                value={undefined}
-                items={[1, 2, 3, 4]}
-                renderItem={(item: any) => item}
                 resourceName="Flags"
-                onChange={() => {}}
+                selectedItemsOverride={selectedFlags}
+                onChange={(flags: string[]) => {
+                  setSelectedFlags(flags)
+                  updateParams({ flags })
+                }}
+                onSearch={(term: string) => setFlagSearch(term)}
+                items={[1, 2, 3, 4]}
+                renderSelected={(selectedItems: string[]) => (
+                  <span className="flex items-center gap-2">
+                    <Icon variant="solid" name="flag" />
+                    {selectedItems.length === 0 ? (
+                      'All flags'
+                    ) : (
+                      <span>{selectedItems.length} selected flags</span>
+                    )}
+                  </span>
+                )}
               />
             </div>
           </div>

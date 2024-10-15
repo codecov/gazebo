@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
 import { PropsWithChildren, Suspense } from 'react'
@@ -7,26 +7,18 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import MetricsSection from './MetricsSection'
 
-const mockOverview = {
+const mockAggResponse = (
+  planValue = 'users-enterprisem',
+  isPrivate = false
+) => ({
   owner: {
-    isCurrentUserActivated: true,
-    repository: {
-      __typename: 'Repository',
-      private: false,
-      defaultBranch: 'main',
-      oldestCommitAt: '2022-10-10T11:59:59',
-      coverageEnabled: true,
-      bundleAnalysisEnabled: true,
-      languages: ['typescript'],
-      testAnalyticsEnabled: true,
+    plan: {
+      value: planValue,
     },
-  },
-}
-
-const mockAggResponse = {
-  owner: {
     repository: {
       __typename: 'Repository',
+      defaultBranch: 'main',
+      private: isPrivate,
       testAnalytics: {
         testResultsAggregates: {
           totalDuration: 1.1,
@@ -37,6 +29,22 @@ const mockAggResponse = {
           totalFailsPercentChange: 100.0,
           totalSkips: 20,
           totalSkipsPercentChange: 0.0,
+        },
+      },
+    },
+  },
+})
+
+const mockFlakeAggResponse = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      testAnalytics: {
+        flakeAggregates: {
+          flakeCount: 88,
+          flakeCountPercentChange: 10.0,
+          flakeRate: 8,
+          flakeRatePercentChange: 5.0,
         },
       },
     },
@@ -80,13 +88,15 @@ afterAll(() => {
 })
 
 describe('MetricsSection', () => {
-  function setup() {
+  function setup(planValue = 'users-enterprisem', isPrivate = false) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
-        return HttpResponse.json({ data: mockOverview })
-      }),
       graphql.query('GetTestResultsAggregates', (info) => {
-        return HttpResponse.json({ data: mockAggResponse })
+        return HttpResponse.json({
+          data: mockAggResponse(planValue, isPrivate),
+        })
+      }),
+      graphql.query('GetFlakeAggregates', (info) => {
+        return HttpResponse.json({ data: mockFlakeAggResponse })
       })
     )
   }
@@ -218,6 +228,114 @@ describe('MetricsSection', () => {
       expect(title).toBeInTheDocument()
       expect(context).toBeInTheDocument()
       expect(description).toBeInTheDocument()
+    })
+  })
+
+  describe('when on team plan', () => {
+    describe('when repo is private', () => {
+      it('does not render total flaky tests card', async () => {
+        setup('users-teamm', true)
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+        const flakeAggregates = screen.queryByText('Flaky tests')
+        expect(flakeAggregates).not.toBeInTheDocument()
+      })
+
+      it('does not render avg flaky tests card', async () => {
+        setup('users-teamm', true)
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+        const flakeAggregates = screen.queryByText('Avg. flake rate')
+        expect(flakeAggregates).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when repo is public', () => {
+      it('renders total flaky tests card', async () => {
+        setup('users-teamm', false)
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+        const flakeAggregates = screen.queryByText('Flaky tests')
+        expect(flakeAggregates).toBeInTheDocument()
+      })
+
+      it('renders avg flaky tests card', async () => {
+        setup('users-teamm', false)
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+        const flakeAggregates = screen.queryByText('Avg. flake rate')
+        expect(flakeAggregates).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('when on free plan', () => {
+    describe('when repo is private', () => {
+      it('does not render total flaky tests card', async () => {
+        setup('users-basic', true)
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+        const flakeAggregates = screen.queryByText('Flaky tests')
+        expect(flakeAggregates).not.toBeInTheDocument()
+      })
+
+      it('does not render avg flaky tests card', async () => {
+        setup('users-basic', true)
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+        const flakeAggregates = screen.queryByText('Avg. flake rate')
+        expect(flakeAggregates).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when repo is public', () => {
+      it('renders total flaky tests card', async () => {
+        setup('users-basic', false)
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+        const flakeAggregates = screen.queryByText('Flaky tests')
+        expect(flakeAggregates).toBeInTheDocument()
+      })
+
+      it('renders avg flaky tests card', async () => {
+        setup('users-basic', false)
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+        const flakeAggregates = screen.queryByText('Avg. flake rate')
+        expect(flakeAggregates).toBeInTheDocument()
+      })
     })
   })
 })

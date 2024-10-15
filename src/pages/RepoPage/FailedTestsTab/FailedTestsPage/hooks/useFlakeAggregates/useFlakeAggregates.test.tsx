@@ -5,7 +5,7 @@ import { setupServer } from 'msw2/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { MockInstance } from 'vitest'
 
-import { useTestResultsAggregates } from './useTestResultsAggregates'
+import { MeasurementInterval, useFlakeAggregates } from './useFlakeAggregates'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -40,9 +40,6 @@ const mockNotFoundError = {
       __typename: 'NotFoundError',
       message: 'repo not found',
     },
-    plan: {
-      value: 'users-basic',
-    },
   },
 }
 
@@ -51,44 +48,32 @@ const mockIncorrectResponse = {
     repository: {
       invalid: 'invalid',
     },
-    plan: {
-      value: 'users-basic',
-    },
   },
 }
 
 const mockResponse = {
   owner: {
-    plan: {
-      value: 'users-basic',
-    },
     repository: {
       __typename: 'Repository',
-      private: true,
-      defaultBranch: 'main',
       testAnalytics: {
-        testResultsAggregates: {
-          totalDuration: 1.0,
-          totalDurationPercentChange: 25.0,
-          slowestTestsDuration: 111.11,
-          slowestTestsDurationPercentChange: 0.0,
-          totalFails: 1,
-          totalFailsPercentChange: 100.0,
-          totalSkips: 20,
-          totalSkipsPercentChange: 0.0,
+        flakeAggregates: {
+          flakeCount: 10,
+          flakeCountPercentChange: 5.0,
+          flakeRate: 0.1,
+          flakeRatePercentChange: 2.0,
         },
       },
     },
   },
 }
 
-describe('useTestResultsAggregates', () => {
+describe('useFlakeAggregates', () => {
   function setup({
     isNotFoundError = false,
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query('GetTestResultsAggregates', (info) => {
+      graphql.query('GetFlakeAggregates', (info) => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {
@@ -103,28 +88,23 @@ describe('useTestResultsAggregates', () => {
     describe('when data is loaded', () => {
       it('returns the data', async () => {
         setup({})
-        const { result } = renderHook(() => useTestResultsAggregates(), {
-          wrapper,
-        })
+        const { result } = renderHook(
+          () =>
+            useFlakeAggregates({ history: MeasurementInterval.INTERVAL_1_DAY }),
+          {
+            wrapper,
+          }
+        )
 
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
-            testResultsAggregates: {
-              totalDuration: 1,
-              totalDurationPercentChange: 25,
-              slowestTestsDuration: 111.11,
-              slowestTestsDurationPercentChange: 0,
-              totalFails: 1,
-              totalFailsPercentChange: 100,
-              totalSkips: 20,
-              totalSkipsPercentChange: 0,
-            },
-            plan: 'users-basic',
-            private: true,
-            defaultBranch: 'main',
+            flakeCount: 10,
+            flakeCountPercentChange: 5.0,
+            flakeRate: 0.1,
+            flakeRatePercentChange: 2.0,
           })
         )
       })
@@ -143,15 +123,19 @@ describe('useTestResultsAggregates', () => {
 
     it('returns a failed to parse error', async () => {
       setup({ isUnsuccessfulParseError: true })
-      const { result } = renderHook(() => useTestResultsAggregates(), {
-        wrapper,
-      })
+      const { result } = renderHook(
+        () =>
+          useFlakeAggregates({ history: MeasurementInterval.INTERVAL_1_DAY }),
+        {
+          wrapper,
+        }
+      )
 
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
-            dev: 'useTestResultsAggregates - 404 Failed to parse data',
+            dev: 'useFlakeAggregates - 404 Failed to parse data',
           })
         )
       )
@@ -170,9 +154,13 @@ describe('useTestResultsAggregates', () => {
 
     it('returns a not found error', async () => {
       setup({ isNotFoundError: true })
-      const { result } = renderHook(() => useTestResultsAggregates(), {
-        wrapper,
-      })
+      const { result } = renderHook(
+        () =>
+          useFlakeAggregates({ history: MeasurementInterval.INTERVAL_1_DAY }),
+        {
+          wrapper,
+        }
+      )
 
       await waitFor(() =>
         expect(result.current.error).toEqual(
