@@ -33,7 +33,6 @@ const query = `query EnterpriseAccountDetails($owner: String!) {
         totalCount
       }
     }
-    activatedUserCount
   }
 }`
 
