@@ -44,7 +44,7 @@ ignore:
   - ./src/**/flags/**/*.js
   - ./src/**/mocks.js
   - ./src/**/mocks.ts
-  - ./src/pages/RepoPage/repo-jest-setup.js
+  - ./src/pages/RepoPage/repo-test-setup.js
   - ./src/ui/SunburstChart/*.jsx
   - ./src/ui/SunburstChart/*.js
   - './src/**/*.svg'

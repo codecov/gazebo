@@ -87,7 +87,7 @@ afterAll(() => {
 describe('WebpackOnboarding', () => {
   function setup(hasOrgUploadToken: boolean | null) {
     // mock out to clear error
-    window.prompt = jest.fn()
+    window.prompt = vi.fn()
     const user = userEvent.setup()
 
     server.use(

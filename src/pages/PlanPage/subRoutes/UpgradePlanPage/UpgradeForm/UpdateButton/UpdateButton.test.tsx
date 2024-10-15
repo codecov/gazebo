@@ -96,7 +96,7 @@ describe('UpdateButton', () => {
       })
     )
 
-    const mockSetFormValue = jest.fn()
+    const mockSetFormValue = vi.fn()
     const user = userEvent.setup()
 
     return { user, mockSetFormValue }

@@ -114,7 +114,7 @@ describe('BundleSelector', () => {
     nullOverview = false,
   }: SetupArgs) {
     const user = userEvent.setup()
-    const mockFilterReset = jest.fn()
+    const mockFilterReset = vi.fn()
 
     server.use(
       graphql.query('GetRepoOverview', (info) => {

@@ -1,4 +1,5 @@
 import {
+  CellContext,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -14,6 +15,7 @@ import { useInView } from 'react-intersection-observer'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { MEASUREMENT_INTERVAL_TYPE } from 'pages/RepoPage/shared/constants'
+import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -107,45 +109,54 @@ interface FailedTestsColumns {
 
 const columnHelper = createColumnHelper<FailedTestsColumns>()
 
-const columns = [
-  columnHelper.accessor('name', {
-    header: () => 'Test name',
-    cell: (info) => info.renderValue(),
-  }),
-  columnHelper.accessor('avgDuration', {
-    header: () => 'Avg duration',
-    cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
-  }),
-  columnHelper.accessor('failureRate', {
-    header: () => 'Failure rate',
-    cell: (info) => {
-      const value = (info.renderValue() ?? 0) * 100
-      const isInt = Number.isInteger(info.renderValue())
-      return isInt ? `${value}%` : `${value.toFixed(2)}%`
-    },
-  }),
-  columnHelper.accessor('flakeRate', {
-    header: () => (
-      <div className="flex items-center gap-1">
-        Flake rate
-        <TooltipWithIcon>
-          Shows how often a flake occurs by tracking how many times a test goes
-          from fail to pass or pass to fail on a given branch and commit within
-          the last [7] days.
-        </TooltipWithIcon>
-      </div>
-    ),
-    cell: (info) => info.renderValue(),
-  }),
-  columnHelper.accessor('commitsFailed', {
-    header: () => 'Commits failed',
-    cell: (info) => (info.renderValue() ? info.renderValue() : 0),
-  }),
-  columnHelper.accessor('updatedAt', {
-    header: () => 'Last run',
-    cell: (info) => formatTimeToNow(info.renderValue()),
-  }),
-]
+const getColumns = (hideFlakeRate: boolean) => {
+  const baseColumns = [
+    columnHelper.accessor('name', {
+      header: () => 'Test name',
+      cell: (info) => info.renderValue(),
+    }),
+    columnHelper.accessor('avgDuration', {
+      header: () => 'Avg duration',
+      cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
+    }),
+    columnHelper.accessor('failureRate', {
+      header: () => 'Failure rate',
+      cell: (info) => {
+        const value = (info.renderValue() ?? 0) * 100
+        const isInt = Number.isInteger(info.renderValue())
+        return isInt ? `${value}%` : `${value.toFixed(2)}%`
+      },
+    }),
+    columnHelper.accessor('commitsFailed', {
+      header: () => 'Commits failed',
+      cell: (info) => (info.renderValue() ? info.renderValue() : 0),
+    }),
+    columnHelper.accessor('updatedAt', {
+      header: () => 'Last run',
+      cell: (info) => formatTimeToNow(info.renderValue()),
+    }),
+  ]
+
+  if (!hideFlakeRate) {
+    baseColumns.splice(3, 0, {
+      accessorKey: 'flakeRate',
+      header: () => (
+        <div className="flex items-center gap-1">
+          Flake rate
+          <TooltipWithIcon>
+            Shows how often a flake occurs by tracking how many times a test
+            goes from fail to pass or pass to fail on a given branch and commit
+            within the last [7] days.
+          </TooltipWithIcon>
+        </div>
+      ),
+      cell: (info: CellContext<FailedTestsColumns, number | null>) =>
+        info.renderValue(),
+    })
+  }
+
+  return baseColumns
+}
 
 interface URLParams {
   provider: string
@@ -206,17 +217,21 @@ const FailedTestsTable = () => {
     },
   })
 
-  const tableData = useMemo(() => {
-    return testData?.testResults.map((result) => {
-      const value = (result.flakeRate ?? 0) * 100
-      const isFlakeInt = Number.isInteger(value)
+  const hideFlakeRate =
+    (isTeamPlan(testData?.plan) || isFreePlan(testData?.plan)) &&
+    testData?.private
 
-      return {
-        name: result.name,
-        avgDuration: result.avgDuration,
-        failureRate: result.failureRate,
-        flakeRate: (
-          <>
+  const tableData = useMemo(() => {
+    return (
+      testData?.testResults.map((result) => {
+        const value = (result.flakeRate ?? 0) * 100
+        const isFlakeInt = Number.isInteger(value)
+
+        return {
+          name: result.name,
+          avgDuration: result.avgDuration,
+          failureRate: result.failureRate,
+          flakeRate: (
             <Tooltip delayDuration={0} skipDelayDuration={100}>
               <Tooltip.Root>
                 <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
@@ -234,17 +249,19 @@ const FailedTestsTable = () => {
                 </Tooltip.Portal>
               </Tooltip.Root>
             </Tooltip>
-          </>
-        ),
-        commitsFailed: result.commitsFailed,
-        updatedAt: result.updatedAt,
-      }
-    })
+          ),
+          commitsFailed: result.commitsFailed,
+          updatedAt: result.updatedAt,
+        }
+      }) ?? []
+    )
   }, [testData])
+
+  const columns = useMemo(() => getColumns(!!hideFlakeRate), [hideFlakeRate])
 
   const table = useReactTable({
     columns,
-    data: tableData ?? [],
+    data: tableData,
     state: {
       sorting,
     },
