@@ -189,7 +189,7 @@ const ChartTooltipContent = React.forwardRef<
         data-testid="chart-tooltip-content"
         ref={ref}
         className={cn(
-          'grid min-w-32 items-start gap-1.5 rounded-lg border border-ds-gray-quinary/50 bg-ds-container px-2.5 py-1.5 text-xs shadow-xl lg:text-sm',
+          'grid min-w-36 items-start gap-1.5 rounded-lg border border-ds-gray-quinary/50 bg-ds-container px-2.5 py-1.5 text-xs shadow-xl lg:text-sm',
           className
         )}
       >
@@ -247,7 +247,7 @@ const ChartTooltipContent = React.forwardRef<
                           {itemConfig?.label || item.name}
                         </span>
                       </div>
-                      {item.value ? (
+                      {item.value !== undefined && item.value !== null ? (
                         <span className="font-mono font-medium tabular-nums text-ds-secondary-text">
                           {valueFormatter
                             ? valueFormatter(item.value)
