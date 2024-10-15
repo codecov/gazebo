@@ -277,7 +277,11 @@ const FailedTestsTable = () => {
   }, [fetchNextPage, inView, hasNextPage])
 
   if (isEmpty(testData?.testResults) && !isLoading && !!branch) {
-    return <div>No test results found for this branch</div>
+    return (
+      <div className="flex justify-center">
+        <br /> No test results found
+      </div>
+    )
   }
 
   return (
