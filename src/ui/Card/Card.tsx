@@ -30,6 +30,7 @@ Header.displayName = 'Card.Header'
 const title = cva(['font-semibold'], {
   variants: {
     size: {
+      sm: ['text-sm'],
       base: ['text-base'],
       lg: ['text-lg'],
       xl: ['text-xl'],
