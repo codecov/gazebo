@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useRepoOverview } from 'services/repo'
+import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
 import Badge from 'ui/Badge'
 import Icon from 'ui/Icon'
 import { MetricCard } from 'ui/MetricCard'
@@ -246,23 +246,26 @@ const getDecodedBranch = (branch?: string) =>
   !!branch ? decodeURIComponent(branch) : undefined
 
 function MetricsSection() {
-  const { provider, owner, repo, branch } = useParams<URLParams>()
+  const { branch } = useParams<URLParams>()
 
-  const { data: overview } = useRepoOverview({
-    provider,
-    owner,
-    repo,
+  const { data: testResults } = useTestResultsAggregates()
+  const disabledFlakeAggregates =
+    (isTeamPlan(testResults?.plan) || isFreePlan(testResults?.plan)) &&
+    testResults?.private
+  const { data: flakeAggregates } = useFlakeAggregates({
+    opts: {
+      enabled: !disabledFlakeAggregates,
+    },
   })
 
-  const { data: aggregates } = useTestResultsAggregates()
-  const { data: flakeAggregates } = useFlakeAggregates()
-
   const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
+  const selectedBranch = decodedBranch ?? testResults?.defaultBranch ?? ''
 
-  if (selectedBranch !== overview?.defaultBranch) {
+  if (selectedBranch !== testResults?.defaultBranch) {
     return null
   }
+
+  const aggregates = testResults?.testResultsAggregates
 
   return (
     <>
@@ -290,14 +293,22 @@ function MetricsSection() {
             Improve Test Performance
           </p>
           <div className="flex">
-            <TotalFlakyTestsCard
-              flakeCount={flakeAggregates?.flakeCount}
-              flakeCountPercentChange={flakeAggregates?.flakeCountPercentChange}
-            />
-            <AverageFlakeRateCard
-              flakeRate={flakeAggregates?.flakeRate}
-              flakeRatePercentChange={flakeAggregates?.flakeRatePercentChange}
-            />
+            {!!flakeAggregates ? (
+              <>
+                <TotalFlakyTestsCard
+                  flakeCount={flakeAggregates?.flakeCount}
+                  flakeCountPercentChange={
+                    flakeAggregates?.flakeCountPercentChange
+                  }
+                />
+                <AverageFlakeRateCard
+                  flakeRate={flakeAggregates?.flakeRate}
+                  flakeRatePercentChange={
+                    flakeAggregates?.flakeRatePercentChange
+                  }
+                />
+              </>
+            ) : null}
             <TotalFailuresCard
               totalFails={aggregates?.totalFails}
               totalFailsPercentChange={aggregates?.totalFailsPercentChange}
