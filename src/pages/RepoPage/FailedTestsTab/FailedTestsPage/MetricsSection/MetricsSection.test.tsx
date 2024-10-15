@@ -239,8 +239,7 @@ describe('MetricsSection', () => {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
 
         const flakeAggregates = screen.queryByText('Flaky tests')
         expect(flakeAggregates).not.toBeInTheDocument()
@@ -252,8 +251,7 @@ describe('MetricsSection', () => {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
 
         const flakeAggregates = screen.queryByText('Avg. flake rate')
         expect(flakeAggregates).not.toBeInTheDocument()
@@ -267,8 +265,7 @@ describe('MetricsSection', () => {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
 
         const flakeAggregates = screen.queryByText('Flaky tests')
         expect(flakeAggregates).toBeInTheDocument()
@@ -280,8 +277,7 @@ describe('MetricsSection', () => {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
 
         const flakeAggregates = screen.queryByText('Avg. flake rate')
         expect(flakeAggregates).toBeInTheDocument()
@@ -297,8 +293,7 @@ describe('MetricsSection', () => {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
 
         const flakeAggregates = screen.queryByText('Flaky tests')
         expect(flakeAggregates).not.toBeInTheDocument()
@@ -310,8 +305,7 @@ describe('MetricsSection', () => {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
 
         const flakeAggregates = screen.queryByText('Avg. flake rate')
         expect(flakeAggregates).not.toBeInTheDocument()
@@ -325,8 +319,7 @@ describe('MetricsSection', () => {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
 
         const flakeAggregates = screen.queryByText('Flaky tests')
         expect(flakeAggregates).toBeInTheDocument()
@@ -338,8 +331,7 @@ describe('MetricsSection', () => {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
 
         const flakeAggregates = screen.queryByText('Avg. flake rate')
         expect(flakeAggregates).toBeInTheDocument()

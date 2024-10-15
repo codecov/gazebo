@@ -233,7 +233,7 @@ const FailedTestsTable = () => {
     )
   }, [testData])
 
-  const columns = getColumns(!!hideFlakeRate)
+  const columns = useMemo(() => getColumns(!!hideFlakeRate), [hideFlakeRate])
 
   const table = useReactTable({
     columns,
