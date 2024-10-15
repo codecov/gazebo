@@ -1,61 +1,72 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react'
+import React, { useState } from 'react'
 
-// Define the type for form data
 interface FormData {
-  name: string
-  email: string
+  username: string
+  age: number
 }
 
-const FormComponent: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({ name: '', email: '' })
+const App: React.FC = () => {
+  const [formData, setFormData] = useState<FormData>({ username: '', age: 0 })
+  const [message, setMessage] = useState<string>('')
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    if (!formData.name && !formData.email) {
-      alert('Form cannot be submitted without name and email!')
-      return
-    }
-
-    console.log('Form submitted:', formData)
-
-    setFormData({ name: '', email: '' })
-  }
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
     setFormData({
       ...formData,
-      [event.target.name]: event.target.value,
+      [name]: value, // Logical Error: age should be converted to a number
     })
   }
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    // Missing e.preventDefault();
+
+    // Validate username
+    if (formData.username.length < 3) {
+      setMessage('Username must be at least 3 characters long.')
+      return
+    }
+
+    // Validate age
+    if (formData.age < 18) {
+      setMessage('You must be at least 18 years old.')
+      return
+    }
+
+    // Logical Error: Assuming age is always provided and valid
+    setMessage(`Welcome, ${formData.username}!`)
+  }
+
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>
-          Name:
+    <div style={{ padding: '20px', maxWidth: '400px' }}>
+      <h2>User Registration</h2>
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="username">Username:</label>
+          <br />
           <input
             type="text"
-            name="name"
-            value={formData.name}
+            id="username"
+            name="username"
+            value={formData.username}
             onChange={handleChange}
           />
-        </label>
-      </div>
-      <div>
-        <label>
-          Email:
+        </div>
+        <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="age">Age:</label>
+          <br />
           <input
-            type="email"
-            name="email"
-            value={formData.email}
+            type="number"
+            id="age"
+            name="age"
+            value={formData.age}
             onChange={handleChange}
           />
-        </label>
-      </div>
-      <button type="submit">Submit</button>
-    </form>
+        </div>
+        <button type="submit">Register</button>
+      </form>
+      {message && <p>{message}</p>}
+    </div>
   )
 }
 
-export default FormComponent
+export default App
