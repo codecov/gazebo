@@ -50,6 +50,14 @@ export default defineConfig((config) => {
     )
   }
 
+  // conditionally add the commit sha to the asset and chunk file names
+  let assetFileNames
+  let chunkFileNames
+  if (process.env.GAZEBO_SHA) {
+    assetFileNames = `assets/[name]-${process.env.GAZEBO_SHA}-[hash][extname]`
+    chunkFileNames = `assets/[name]-${process.env.GAZEBO_SHA}-[hash].js`
+  }
+
   return {
     server: {
       port: 3000,
@@ -57,11 +65,14 @@ export default defineConfig((config) => {
     build: {
       outDir: 'build',
       sourcemap: runSentryPlugin,
+      rollupOptions: {
+        output: { assetFileNames, chunkFileNames },
+      },
     },
     define: envWithProcessPrefix,
     plugins: [
       ViteEjsPlugin({
-        isProduction: process.env.REACT_APP_ENV === "production",
+        isProduction: process.env.REACT_APP_ENV === 'production',
         REACT_APP_PENDO_KEY: process.env.REACT_APP_PENDO_KEY,
       }),
       tsconfigPaths(),
