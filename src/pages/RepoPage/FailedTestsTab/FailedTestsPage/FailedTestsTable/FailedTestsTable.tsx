@@ -99,7 +99,7 @@ interface FailedTestsColumns {
   name: string
   avgDuration: number | null
   failureRate: number | null
-  flakeRate?: React.ReactNode | null
+  flakeRate?: React.ReactNode
   commitsFailed: number | null
   updatedAt: string
 }
@@ -206,25 +206,23 @@ const FailedTestsTable = () => {
           avgDuration: result.avgDuration,
           failureRate: result.failureRate,
           flakeRate: (
-            <>
-              <Tooltip delayDuration={0} skipDelayDuration={100}>
-                <Tooltip.Root>
-                  <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
-                    {isFlakeInt ? `${value}%` : `${value.toFixed(2)}%`}
-                  </Tooltip.Trigger>
-                  <Tooltip.Portal>
-                    <Tooltip.Content
-                      className="bg-ds-gray-primary p-2 text-xs text-ds-gray-octonary"
-                      side="right"
-                    >
-                      Passed {result.totalPassCount}, Failed{' '}
-                      {result.totalFailCount}, Skipped {result.totalSkipCount}
-                      <Tooltip.Arrow className="size-4 fill-ds-gray-primary" />
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
-              </Tooltip>
-            </>
+            <Tooltip delayDuration={0} skipDelayDuration={100}>
+              <Tooltip.Root>
+                <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
+                  {isFlakeInt ? `${value}%` : `${value.toFixed(2)}%`}
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content
+                    className="bg-ds-gray-primary p-2 text-xs text-ds-gray-octonary"
+                    side="right"
+                  >
+                    Passed {result.totalPassCount}, Failed{' '}
+                    {result.totalFailCount}, Skipped {result.totalSkipCount}
+                    <Tooltip.Arrow className="size-4 fill-ds-gray-primary" />
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip>
           ),
           commitsFailed: result.commitsFailed,
           updatedAt: result.updatedAt,
