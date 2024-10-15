@@ -21,8 +21,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value)
-  }
+    setPassword(e.target.value);
 
   return (
     <form onSubmit={handleSubmit}>
