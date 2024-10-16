@@ -19,7 +19,7 @@ import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
 import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
 import Spinner from 'ui/Spinner'
-import { VirtualDiffRenderer } from 'ui/VirtualFileRenderer'
+import { VirtualDiffRenderer } from 'ui/VirtualRenderers'
 
 function ErrorDisplayMessage() {
   return (
