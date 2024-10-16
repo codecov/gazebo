@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { http, HttpResponse } from 'msw2'
+import { http, HttpResponse } from 'msw'
 
 const repoUri = '/internal/charts/:provider/:owner/coverage/repository'
 

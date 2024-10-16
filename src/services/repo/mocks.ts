@@ -1,4 +1,4 @@
-import { graphql, HttpResponse } from 'msw2'
+import { graphql, HttpResponse } from 'msw'
 
 export const flagsSelectHandler = graphql.query('FlagsSelect', (info) => {
   return HttpResponse.json({

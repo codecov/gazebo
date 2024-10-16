@@ -1,4 +1,4 @@
-import { graphql, HttpResponse } from 'msw2'
+import { graphql, HttpResponse } from 'msw'
 
 import { repoCoverageHandler } from 'services/charts/mocks'
 import { commitErrored } from 'services/commit/mocks'
