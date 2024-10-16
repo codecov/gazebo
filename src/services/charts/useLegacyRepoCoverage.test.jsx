@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { setupServer } from 'msw2/node'
+import { setupServer } from 'msw/node'
 
 import { repoCoverageHandler } from './mocks'
 
