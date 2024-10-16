@@ -1,5 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
@@ -493,6 +498,22 @@ describe('FailedTestsTable', () => {
           })
         )
       })
+    })
+  })
+
+  describe('infinite scrolling', () => {
+    it('loads next page', async () => {
+      const { queryClient } = setup({})
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, true)
+      await waitForElementToBeRemoved(loading)
+
+      const thirdCommit = await screen.findByText('test-3')
+      expect(thirdCommit).toBeInTheDocument()
     })
   })
 
