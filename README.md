@@ -27,7 +27,7 @@ To run the project in development mode
 
 Note: The first run of `yarn start` may take 5-10 minutes to finish building.
 
-The page will reload when you make edits. There is a local proxy to the staging API so you can develop against it. You can overwrite it by creating a `.env.local` file with it with the following:
+The page will reload when you make edits. There is a local proxy to the staging API so you can develop against it. You can overwrite it by creating a `.env.development.local` file with it with the following:
 
 ```text
 PROXY_TO=http://localhost:5100
@@ -73,12 +73,12 @@ The config are centralized in one place in the file `config.js`. The file merges
 
 Gazebo supports [env files](https://vite.dev/guide/env-and-mode.html#env-variables-and-modes) by default which become environment variables at build-time.
 
-To override environment variables when working locally create a `.env.local.development` file, this file is ignored by git.
+To override environment variables when working locally create a `.env.development.local` file, this file is ignored by git.
 
 You must prepend env variables with `REACT_APP`.
 
 ```text
-# .env.local.development
+# .env.development.local
 PROXY_TO=https://stage-api.codecov.dev
 REACT_APP_MY_CUSTOM_VAR=foobar
 REACT_APP_BASE_URL=http://localhost
@@ -101,7 +101,7 @@ Currently there's three env variables you may want to change when working locall
 
 Sometimes when working locally it helps to control API responses. For edge cases, for investigating support or on call incidents.
 
-If you need to mock a response add `REACT_APP_MSW_BROWSER=true` to `.env.local` to enable browser mocks.
+If you need to mock a response add `REACT_APP_MSW_BROWSER=true` to `.env.development.local` to enable browser mocks.
 Mocks are located in `src/mocks/handlers`
 
 Example:
