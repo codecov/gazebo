@@ -10,7 +10,7 @@ import AccountOrgs from './AccountOrgs'
 import BillingDetails from './BillingDetails'
 import CurrentPlanCard from './CurrentPlanCard'
 import { useEnterpriseAccountDetails } from './hooks/useEnterpriseAccountDetails'
-import InfoMessageCancellation from './InfoMessageCancellation'
+import InfoAlertCancellation from './InfoAlertCancellation'
 import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 import LatestInvoiceCard from './LatestInvoiceCard'
 
@@ -47,11 +47,8 @@ function CurrentOrgPlan() {
 
   return (
     <div className="w-full lg:w-4/5">
-      {/* subscriptionDetail populated means possible cancel at period end cancellation while
-      planUpdatedNotification.isCancellation signifies an auto-refund cancellation */}
-      {accountDetails?.subscriptionDetail ||
-      planUpdatedNotification.isCancellation ? (
-        <InfoMessageCancellation
+      {planUpdatedNotification.isCancellation ? (
+        <InfoAlertCancellation
           subscriptionDetail={accountDetails?.subscriptionDetail}
         />
       ) : null}

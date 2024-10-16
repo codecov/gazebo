@@ -11,14 +11,14 @@ function getPeriodEnd(
   return format(periodEnd, 'MMMM do yyyy, h:mm aaaa')
 }
 
-function InfoMessageCancellation({
+function InfoAlertCancellation({
   subscriptionDetail,
 }: {
   subscriptionDetail?: z.infer<typeof SubscriptionDetailSchema>
 }) {
   let periodEnd: string | undefined
-  // A scheduled cancel at period end should have subscriptionDetail and cancelAtPeriodEnd set to true.
-  // A refunded cancellation will not have subscriptionDetail.
+  // A scheduled subscription cancellation at period end should have subscriptionDetail with cancelAtPeriodEnd field
+  // set to true. An immediately cancelled and refunded subscription will not have subscriptionDetail.
   if (subscriptionDetail) {
     if (!subscriptionDetail?.cancelAtPeriodEnd) return null
     periodEnd = getPeriodEnd(subscriptionDetail)
@@ -28,7 +28,7 @@ function InfoMessageCancellation({
       <Alert variant="info">
         <Alert.Title className="text-sm">Cancellation confirmation</Alert.Title>
         <Alert.Description className="text-sm">
-          Your subscription has been successfully canceled. Your account{' '}
+          Your subscription has been successfully cancelled. Your account{' '}
           {subscriptionDetail ? 'will return' : 'has been returned'} to the{' '}
           <b>one-seat developer plan</b>
           {subscriptionDetail
@@ -40,4 +40,4 @@ function InfoMessageCancellation({
   )
 }
 
-export default InfoMessageCancellation
+export default InfoAlertCancellation

@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import { SubscriptionDetailSchema } from 'services/account'
 
-import InfoMessageCancellation from './InfoMessageCancellation'
+import InfoAlertCancellation from './InfoAlertCancellation'
 
 const subscriptionDetail = {
   currentPeriodEnd: 1606851492,
@@ -18,7 +18,7 @@ const subscriptionDetail = {
   },
 } as z.infer<typeof SubscriptionDetailSchema>
 
-describe('InfoMessageCancellation', () => {
+describe('InfoAlertCancellation', () => {
   describe('when the subscription isnt cancelled', () => {
     const subDetail = {
       ...subscriptionDetail,
@@ -27,7 +27,7 @@ describe('InfoMessageCancellation', () => {
 
     it('doesnt render anything', () => {
       const { container } = render(
-        <InfoMessageCancellation
+        <InfoAlertCancellation
           subscriptionDetail={subDetail}
           // @ts-expect-error
           provider="gh"
@@ -46,7 +46,7 @@ describe('InfoMessageCancellation', () => {
 
     it('renders a message that your subscription is cancelling', () => {
       render(
-        <InfoMessageCancellation
+        <InfoAlertCancellation
           subscriptionDetail={subDetail}
           // @ts-expect-error
           provider="gh"
@@ -61,9 +61,9 @@ describe('InfoMessageCancellation', () => {
   })
 
   describe('when the subscription is cancelled and refunded taking account immediately', () => {
-    it('renders a message that your subscription is canceled and refunded', () => {
+    it('renders a message that your subscription is cancelled and refunded', () => {
       render(
-        <InfoMessageCancellation
+        <InfoAlertCancellation
           // @ts-expect-error
           provider="gh"
           owner="codecov"
