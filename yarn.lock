@@ -4315,9 +4315,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/interceptors@npm:^0.35.6":
-  version: 0.35.6
-  resolution: "@mswjs/interceptors@npm:0.35.6"
+"@mswjs/interceptors@npm:^0.35.8":
+  version: 0.35.9
+  resolution: "@mswjs/interceptors@npm:0.35.9"
   dependencies:
     "@open-draft/deferred-promise": "npm:^2.2.0"
     "@open-draft/logger": "npm:^0.3.0"
@@ -4325,7 +4325,7 @@ __metadata:
     is-node-process: "npm:^1.2.0"
     outvariant: "npm:^1.4.3"
     strict-event-emitter: "npm:^0.5.1"
-  checksum: 10c0/9472f640183675869368bf2ccf32354db0dfb320c754bcbfc683059f5380674598c59dde4fa58007f74817e31aa1dbd123787fcd0b1d37d53595aa718d06bfbe
+  checksum: 10c0/8deade6625275f844442d7760bb687c796edb0a280f424a38545c0cb6e5f9f0a267f026e90c281e2134d482c88c03395ce74784797046e1f47284fb53e98976c
   languageName: node
   linkType: hard
 
@@ -12813,7 +12813,7 @@ __metadata:
     launchdarkly-react-client-sdk: "npm:^3.0.9"
     lint-staged: "npm:^15.2.8"
     lodash: "npm:^4.17.21"
-    msw2: "npm:msw@^2.4.8"
+    msw: "npm:^2.4.11"
     pluralize: "npm:^8.0.0"
     postcss: "npm:^8.4.31"
     prettier: "npm:^3.3.3"
@@ -16613,15 +16613,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw2@npm:msw@^2.4.8":
-  version: 2.4.8
-  resolution: "msw@npm:2.4.8"
+"msw@npm:^2.4.11":
+  version: 2.4.11
+  resolution: "msw@npm:2.4.11"
   dependencies:
     "@bundled-es-modules/cookie": "npm:^2.0.0"
     "@bundled-es-modules/statuses": "npm:^1.0.1"
     "@bundled-es-modules/tough-cookie": "npm:^0.1.6"
     "@inquirer/confirm": "npm:^3.0.0"
-    "@mswjs/interceptors": "npm:^0.35.6"
+    "@mswjs/interceptors": "npm:^0.35.8"
     "@open-draft/until": "npm:^2.1.0"
     "@types/cookie": "npm:^0.6.0"
     "@types/statuses": "npm:^2.0.4"
@@ -16629,10 +16629,10 @@ __metadata:
     graphql: "npm:^16.8.1"
     headers-polyfill: "npm:^4.0.2"
     is-node-process: "npm:^1.2.0"
-    outvariant: "npm:^1.4.2"
+    outvariant: "npm:^1.4.3"
     path-to-regexp: "npm:^6.3.0"
     strict-event-emitter: "npm:^0.5.1"
-    type-fest: "npm:^4.9.0"
+    type-fest: "npm:^4.26.1"
     yargs: "npm:^17.7.2"
   peerDependencies:
     typescript: ">= 4.8.x"
@@ -16641,7 +16641,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 10c0/33a8c5697f7cb003a2af33ff6b259eaf7babf180fadf0697d107d0856ab0d2ff1a80d319e788d9127f289ff091334bee589f348180a1fdd0914bf8c4725830dc
+  checksum: 10c0/2deb2ab740f2c937d74d9141c0f78864f3d45b44b939980a05b317a8c0eb81b3ca9205311eec3baabe0be0da63a3188f174c2657c70d31cbc45c8492f043a4a0
   languageName: node
   linkType: hard
 
@@ -17159,7 +17159,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"outvariant@npm:^1.4.0, outvariant@npm:^1.4.2, outvariant@npm:^1.4.3":
+"outvariant@npm:^1.4.0, outvariant@npm:^1.4.3":
   version: 1.4.3
   resolution: "outvariant@npm:1.4.3"
   checksum: 10c0/5976ca7740349cb8c71bd3382e2a762b1aeca6f33dc984d9d896acdf3c61f78c3afcf1bfe9cc633a7b3c4b295ec94d292048f83ea2b2594fae4496656eba992c
@@ -21703,7 +21703,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.9.0":
+"type-fest@npm:^4.26.1":
   version: 4.26.1
   resolution: "type-fest@npm:4.26.1"
   checksum: 10c0/d2719ff8d380befe8a3c61068f37f28d6fa2849fd140c5d2f0f143099e371da6856aad7c97e56b83329d45bfe504afe9fd936a7cff600cc0d46aa9ffb008d6c6
