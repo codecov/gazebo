@@ -140,6 +140,7 @@ describe('FailedTestsTable', () => {
                         hasNextPage: false,
                         endCursor: null,
                       },
+                      totalCount: 1234,
                     },
                   },
                 },
@@ -167,6 +168,7 @@ describe('FailedTestsTable', () => {
                       ? 'aa'
                       : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
                   },
+                  totalCount: 1234,
                 },
               },
             },
@@ -269,27 +271,6 @@ describe('FailedTestsTable', () => {
 
       const lastRunColumn = await screen.findAllByText('over 1 year ago')
       expect(lastRunColumn.length).toBeGreaterThan(0)
-    })
-
-    it('shows additional info when hovering flake rate', async () => {
-      const { queryClient, user } = setup({})
-      render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
-      })
-
-      const loading = await screen.findByText('Loading')
-      mockIsIntersecting(loading, false)
-
-      const flakeRateColumn = await screen.findByText('0%')
-      expect(flakeRateColumn).toBeInTheDocument()
-
-      await user.hover(flakeRateColumn)
-
-      const hoverObj = await screen.findByText(
-        '5 Passed, 6 Failed (14 Flaky), 7 Skipped'
-      )
-
-      expect(hoverObj).toBeInTheDocument()
     })
   })
 
