@@ -22,7 +22,7 @@ function InfoMessageCancellation({
     periodEnd = getPeriodEnd(subscriptionDetail)
   }
   return (
-    <div className="col-start-1 col-end-13 mb-4">
+    <div className="col-start-1 col-end-13 mb-4 sm:flex-initial md:w-2/3 lg:w-3/4">
       <Alert variant="info">
         <Alert.Title className="text-sm">Cancellation confirmation</Alert.Title>
         <Alert.Description className="text-sm">
