@@ -1,8 +1,8 @@
 import { format, fromUnixTime } from 'date-fns'
 import { z } from 'zod'
 
-import Message from 'old_ui/Message'
 import { SubscriptionDetailSchema } from 'services/account'
+import { Alert } from 'ui/Alert'
 
 function getPeriodEnd(
   subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
@@ -14,19 +14,26 @@ function getPeriodEnd(
 function InfoMessageCancellation({
   subscriptionDetail,
 }: {
-  subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
+  subscriptionDetail?: z.infer<typeof SubscriptionDetailSchema>
 }) {
-  if (!subscriptionDetail?.cancelAtPeriodEnd) return null
-  const periodEnd = getPeriodEnd(subscriptionDetail)
+  let periodEnd: string | undefined
+  if (subscriptionDetail) {
+    if (!subscriptionDetail?.cancelAtPeriodEnd) return null
+    periodEnd = getPeriodEnd(subscriptionDetail)
+  }
   return (
     <div className="col-start-1 col-end-13 mb-4">
-      <Message variant="info">
-        <h2 className="text-lg">Subscription Pending Cancellation</h2>
-        <p className="text-sm">
-          Your subscription has been cancelled and will become inactive on{' '}
-          {periodEnd}
-        </p>
-      </Message>
+      <Alert variant="info">
+        <Alert.Title className="text-sm">Cancellation confirmation</Alert.Title>
+        <Alert.Description className="text-sm">
+          Your subscription has been successfully canceled. Your account{' '}
+          {subscriptionDetail ? 'will return' : 'has been returned'} to the{' '}
+          <b>one-seat developer plan</b>
+          {subscriptionDetail
+            ? ` on ${periodEnd} Thank you for using our service.`
+            : '. An auto refund has been processed and will be credited to your account shortly.'}
+        </Alert.Description>
+      </Alert>
     </div>
   )
 }

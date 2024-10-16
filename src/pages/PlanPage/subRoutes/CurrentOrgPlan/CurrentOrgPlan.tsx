@@ -47,7 +47,8 @@ function CurrentOrgPlan() {
 
   return (
     <div className="w-full lg:w-4/5">
-      {accountDetails?.subscriptionDetail ? (
+      {accountDetails?.subscriptionDetail ||
+      planUpdatedNotification.isRefundedCancellation ? (
         <InfoMessageCancellation
           subscriptionDetail={accountDetails?.subscriptionDetail}
         />
@@ -56,7 +57,8 @@ function CurrentOrgPlan() {
       {isDelinquent ? <DelinquentAlert /> : null}
       {accountDetails?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
-          {planUpdatedNotification.alertOption ? (
+          {planUpdatedNotification.alertOption &&
+          !planUpdatedNotification.isRefundedCancellation ? (
             <Alert variant={planUpdatedNotification.alertOption}>
               {scheduleStart && scheduledPhase?.quantity ? (
                 <>

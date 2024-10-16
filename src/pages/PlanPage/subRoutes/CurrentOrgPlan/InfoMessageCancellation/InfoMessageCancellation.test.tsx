@@ -38,7 +38,7 @@ describe('InfoMessageCancellation', () => {
     })
   })
 
-  describe('when the subscription is cancelled', () => {
+  describe('when the subscription is cancelled and will take effect at the end of the period', () => {
     const subDetail = {
       ...subscriptionDetail,
       cancelAtPeriodEnd: true,
@@ -53,8 +53,27 @@ describe('InfoMessageCancellation', () => {
           owner="codecov"
         />
       )
+      expect(screen.getByText(/Cancellation confirmation/)).toBeInTheDocument()
       expect(
-        screen.getByText(/Subscription Pending Cancellation/)
+        screen.getByText(/Your account will return to the/)
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when the subscription is cancelled and refunded taking account immediately', () => {
+    it('renders a message that your subscription is canceled and refunded', () => {
+      render(
+        <InfoMessageCancellation
+          // @ts-expect-error
+          provider="gh"
+          owner="codecov"
+        />
+      )
+      expect(screen.getByText(/Cancellation confirmation/)).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          /An auto refund has been processed and will be credited to your account shortly./
+        )
       ).toBeInTheDocument()
     })
   })
