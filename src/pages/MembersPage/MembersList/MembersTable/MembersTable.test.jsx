@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { http, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { http, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -350,7 +350,7 @@ describe('MembersTable', () => {
     describe('user is not a student', () => {
       it('calls handleActivate', async () => {
         const { user } = setup()
-        const handleActivate = jest.fn()
+        const handleActivate = vi.fn()
         render(<MembersTable handleActivate={handleActivate} />, {
           wrapper: wrapper(),
         })
@@ -382,7 +382,7 @@ describe('MembersTable', () => {
             },
           },
         })
-        const handleActivate = jest.fn()
+        const handleActivate = vi.fn()
         render(<MembersTable handleActivate={handleActivate} />, {
           wrapper: wrapper(),
         })

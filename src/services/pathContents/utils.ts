@@ -9,7 +9,7 @@ export function extractCoverageFromResponse(
   if (!repository) return null
   const commit = repository?.commit
   const branch = repository?.branch?.head
-  const coverageSource = commit || branch
+  const coverageSource = (commit || branch)?.coverageAnalytics
   const coverageFile = coverageSource?.coverageFile
   if (!coverageFile) return null
   const lineWithCoverage = keyBy(coverageFile?.coverage, 'line')

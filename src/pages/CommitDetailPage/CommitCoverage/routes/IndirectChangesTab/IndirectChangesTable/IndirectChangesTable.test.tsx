@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -47,7 +47,7 @@ const wrapper =
 describe('IndirectChangesTable', () => {
   function setup(data = {}, state = 'processed') {
     const user = userEvent.setup()
-    const mockVars = jest.fn()
+    const mockVars = vi.fn()
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
@@ -65,8 +65,10 @@ describe('IndirectChangesTable', () => {
               repository: {
                 __typename: 'Repository',
                 commit: {
-                  totals: {
-                    coverage: 100,
+                  coverageAnalytics: {
+                    totals: {
+                      coverage: 100,
+                    },
                   },
                   state,
                   commitid: '123',

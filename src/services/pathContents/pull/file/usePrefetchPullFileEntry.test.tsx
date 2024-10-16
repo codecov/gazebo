@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePrefetchPullFileEntry } from './usePrefetchPullFileEntry'
@@ -50,23 +50,25 @@ const mockData = {
       __typename: 'Repository',
       commit: {
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-        flagNames: ['a', 'b'],
-        components: [],
-        coverageFile: {
-          hashedPath: 'afsd',
-          isCriticalFile: true,
-          content:
-            'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
-          coverage: [
-            { line: 1, coverage: 'H' },
-            { line: 2, coverage: 'H' },
-            { line: 4, coverage: 'H' },
-            { line: 5, coverage: 'H' },
-            { line: 7, coverage: 'H' },
-            { line: 8, coverage: 'H' },
-          ],
-          totals: {
-            percentCovered: 100,
+        coverageAnalytics: {
+          flagNames: ['a', 'b'],
+          components: [],
+          coverageFile: {
+            hashedPath: 'afsd',
+            isCriticalFile: true,
+            content:
+              'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
+            coverage: [
+              { line: 1, coverage: 'H' },
+              { line: 2, coverage: 'H' },
+              { line: 4, coverage: 'H' },
+              { line: 5, coverage: 'H' },
+              { line: 7, coverage: 'H' },
+              { line: 8, coverage: 'H' },
+            ],
+            totals: {
+              percentCovered: 100,
+            },
           },
         },
       },
@@ -155,7 +157,8 @@ describe('usePrefetchPullFileEntry', () => {
 
     expect(queryClient.getQueryState(queryKey)?.data).toStrictEqual({
       hashedPath: 'afsd',
-      content: mockData.owner.repository.commit.coverageFile.content,
+      content:
+        mockData.owner.repository.commit.coverageAnalytics.coverageFile.content,
       coverage: {
         1: 'H',
         2: 'H',

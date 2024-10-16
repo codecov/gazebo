@@ -8,7 +8,7 @@ interface TokenlessModalProps {
   isLoading: boolean
 }
 
-const TokenlessModal = ({
+const TokenRequiredModal = ({
   closeModal,
   setTokenRequired,
   isLoading,
@@ -50,7 +50,6 @@ const TokenlessModal = ({
         <Button
           hook="cancel-token-requirement"
           onClick={() => {
-            setTokenRequired(false)
             closeModal()
           }}
           to={undefined}
@@ -76,4 +75,4 @@ const TokenlessModal = ({
   />
 )
 
-export default TokenlessModal
+export default TokenRequiredModal

@@ -46,22 +46,26 @@ const CommitSchema = z.object({
   author: AuthorSchema.nullable(),
   bundleStatus: CommitStatusSchema.nullable(),
   coverageStatus: CommitStatusSchema.nullable(),
-  bundleAnalysisCompareWithParent: z
-    .discriminatedUnion('__typename', [
-      z.object({
-        __typename: z.literal('BundleAnalysisComparison'),
-        bundleChange: z.object({
-          size: z.object({
-            uncompress: z.number(),
+  bundleAnalysis: z
+    .object({
+      bundleAnalysisCompareWithParent: z
+        .discriminatedUnion('__typename', [
+          z.object({
+            __typename: z.literal('BundleAnalysisComparison'),
+            bundleChange: z.object({
+              size: z.object({
+                uncompress: z.number(),
+              }),
+            }),
           }),
-        }),
-      }),
-      FirstPullRequestSchema,
-      MissingBaseCommitSchema,
-      MissingBaseReportSchema,
-      MissingHeadCommitSchema,
-      MissingHeadReportSchema,
-    ])
+          FirstPullRequestSchema,
+          MissingBaseCommitSchema,
+          MissingBaseReportSchema,
+          MissingHeadCommitSchema,
+          MissingHeadReportSchema,
+        ])
+        .nullable(),
+    })
     .nullable(),
   compareWithParent: z
     .discriminatedUnion('__typename', [
@@ -145,29 +149,31 @@ query GetCommits(
                 username
                 avatarUrl
               }
-              bundleAnalysisCompareWithParent {
-                __typename
-                ... on BundleAnalysisComparison {
-                  bundleChange {
-                    size {
-                      uncompress
+              bundleAnalysis {
+                bundleAnalysisCompareWithParent {
+                  __typename
+                  ... on BundleAnalysisComparison {
+                    bundleChange {
+                      size {
+                        uncompress
+                      }
                     }
                   }
-                }
-                ... on FirstPullRequest {
-                  message
-                }
-                ... on MissingBaseCommit {
-                  message
-                }
-                ... on MissingHeadCommit {
-                  message
-                }
-                ... on MissingBaseReport {
-                  message
-                }
-                ... on MissingHeadReport {
-                  message
+                  ... on FirstPullRequest {
+                    message
+                  }
+                  ... on MissingBaseCommit {
+                    message
+                  }
+                  ... on MissingHeadCommit {
+                    message
+                  }
+                  ... on MissingBaseReport {
+                    message
+                  }
+                  ... on MissingHeadReport {
+                    message
+                  }
                 }
               }
               compareWithParent {

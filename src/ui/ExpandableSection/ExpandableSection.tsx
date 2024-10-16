@@ -40,7 +40,7 @@ const ExpandableSectionTrigger = forwardRef<
     >
       <span>{children}</span>
       <span id="expandable-icon" className="rotate-0 transition-transform">
-        <Icon name="chevronUp" size="sm" />
+        <Icon name="chevronDown" size="sm" />
       </span>
     </Collapsible.Trigger>
   )

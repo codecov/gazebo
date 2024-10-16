@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useOnboardUser } from './index'
@@ -96,7 +96,7 @@ describe('useOnboardUser', () => {
   describe('when called with opts', () => {
     it('returns onSuccess from opts', async () => {
       setup()
-      const onSuccessFn = jest.fn()
+      const onSuccessFn = vi.fn()
       const { result } = renderHook(
         () => useOnboardUser({ onSuccess: onSuccessFn }),
         { wrapper: wrapper() }

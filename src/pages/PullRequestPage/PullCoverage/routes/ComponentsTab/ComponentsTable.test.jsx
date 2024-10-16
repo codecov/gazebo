@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ComponentsTable from './ComponentsTable'
@@ -68,7 +68,7 @@ const mockPull = {
 
 describe('ComponentsTable', () => {
   function setup(overrideData) {
-    const componentsMock = jest.fn()
+    const componentsMock = vi.fn()
 
     server.use(
       graphql.query('PullComponentComparison', (info) => {

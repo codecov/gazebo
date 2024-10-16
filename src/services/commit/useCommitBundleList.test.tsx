@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { type MockInstance } from 'vitest'
 
 import { useCommitBundleList } from './useCommitBundleList'
@@ -11,50 +11,52 @@ const mockCommitBundleListData = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-          bundles: [
-            {
-              name: 'bundle.js',
-              changeType: 'added',
-              bundleChange: {
-                loadTime: {
-                  threeG: 3,
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundles: [
+              {
+                name: 'bundle.js',
+                changeType: 'added',
+                bundleChange: {
+                  loadTime: {
+                    threeG: 3,
+                  },
+                  size: {
+                    uncompress: 1,
+                  },
                 },
-                size: {
-                  uncompress: 1,
-                },
-              },
-              bundleData: {
-                loadTime: {
-                  threeG: 4,
-                },
-                size: {
-                  uncompress: 2,
-                },
-              },
-            },
-            {
-              name: 'bundle.css',
-              changeType: 'removed',
-              bundleChange: {
-                loadTime: {
-                  threeG: 7,
-                },
-                size: {
-                  uncompress: 5,
+                bundleData: {
+                  loadTime: {
+                    threeG: 4,
+                  },
+                  size: {
+                    uncompress: 2,
+                  },
                 },
               },
-              bundleData: {
-                loadTime: {
-                  threeG: 8,
+              {
+                name: 'bundle.css',
+                changeType: 'removed',
+                bundleChange: {
+                  loadTime: {
+                    threeG: 7,
+                  },
+                  size: {
+                    uncompress: 5,
+                  },
                 },
-                size: {
-                  uncompress: 6,
+                bundleData: {
+                  loadTime: {
+                    threeG: 8,
+                  },
+                  size: {
+                    uncompress: 6,
+                  },
                 },
               },
-            },
-          ],
+            ],
+          },
         },
       },
     },
@@ -158,50 +160,52 @@ describe('useCommitBundleList', () => {
 
       const expectedResult = {
         commit: {
-          bundleAnalysisCompareWithParent: {
-            __typename: 'BundleAnalysisComparison',
-            bundles: [
-              {
-                name: 'bundle.js',
-                changeType: 'added',
-                bundleChange: {
-                  loadTime: {
-                    threeG: 3,
+          bundleAnalysis: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'BundleAnalysisComparison',
+              bundles: [
+                {
+                  name: 'bundle.js',
+                  changeType: 'added',
+                  bundleChange: {
+                    loadTime: {
+                      threeG: 3,
+                    },
+                    size: {
+                      uncompress: 1,
+                    },
                   },
-                  size: {
-                    uncompress: 1,
-                  },
-                },
-                bundleData: {
-                  loadTime: {
-                    threeG: 4,
-                  },
-                  size: {
-                    uncompress: 2,
-                  },
-                },
-              },
-              {
-                name: 'bundle.css',
-                changeType: 'removed',
-                bundleChange: {
-                  loadTime: {
-                    threeG: 7,
-                  },
-                  size: {
-                    uncompress: 5,
+                  bundleData: {
+                    loadTime: {
+                      threeG: 4,
+                    },
+                    size: {
+                      uncompress: 2,
+                    },
                   },
                 },
-                bundleData: {
-                  loadTime: {
-                    threeG: 8,
+                {
+                  name: 'bundle.css',
+                  changeType: 'removed',
+                  bundleChange: {
+                    loadTime: {
+                      threeG: 7,
+                    },
+                    size: {
+                      uncompress: 5,
+                    },
                   },
-                  size: {
-                    uncompress: 6,
+                  bundleData: {
+                    loadTime: {
+                      threeG: 8,
+                    },
+                    size: {
+                      uncompress: 6,
+                    },
                   },
                 },
-              },
-            ],
+              ],
+            },
           },
         },
       }

@@ -1,18 +1,21 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import ResizeObserver from 'resize-observer-polyfill'
 
-import { useFlags } from 'shared/featureFlags'
-
 import TokenNotRequiredBanner from './TokenNotRequiredBanner'
 
-vi.mock('shared/featureFlags')
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
+
+vi.mock('shared/featureFlags', () => ({
+  useFlags: mocks.useFlags,
+}))
 global.ResizeObserver = ResizeObserver
-const mockedUseFlags = useFlags as jest.Mock
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -45,7 +48,7 @@ describe('TokenNotRequiredBanner', () => {
     isAdmin?: boolean
     orgUploadToken?: string | null
   } = {}) {
-    mockedUseFlags.mockReturnValue({ tokenlessSection: true })
+    mocks.useFlags.mockReturnValue({ tokenlessSection: true })
 
     server.use(
       graphql.query('GetUploadTokenRequired', () => {

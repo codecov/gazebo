@@ -2,8 +2,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 // eslint-disable-next-line no-restricted-imports
 import _ from 'lodash'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
@@ -11,23 +11,25 @@ import { useFileWithMainCoverage } from 'services/pathContents'
 
 const mockCommitDetails = {
   commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-  flagNames: ['a', 'b'],
-  components: [{ id: 'dir_component', name: 'component' }],
-  coverageFile: {
-    hashedPath: 'hashedPath',
-    isCriticalFile: true,
-    content:
-      'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
-    coverage: [
-      { line: 1, coverage: 'H' },
-      { line: 2, coverage: 'H' },
-      { line: 4, coverage: 'H' },
-      { line: 5, coverage: 'H' },
-      { line: 7, coverage: 'H' },
-      { line: 8, coverage: 'H' },
-    ],
-    totals: {
-      percentCovered: 100,
+  coverageAnalytics: {
+    flagNames: ['a', 'b'],
+    components: [{ id: 'dir_component', name: 'component' }],
+    coverageFile: {
+      hashedPath: 'hashedPath',
+      isCriticalFile: true,
+      content:
+        'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
+      coverage: [
+        { line: 1, coverage: 'H' },
+        { line: 2, coverage: 'H' },
+        { line: 4, coverage: 'H' },
+        { line: 5, coverage: 'H' },
+        { line: 7, coverage: 'H' },
+        { line: 8, coverage: 'H' },
+      ],
+      totals: {
+        percentCovered: 100,
+      },
     },
   },
 }
@@ -161,11 +163,13 @@ describe('useFileWithMainCoverage', () => {
 
       await waitFor(() =>
         expect(result.current.data).toEqual({
-          ...mockCommitCoverage.coverageFile,
+          ...mockCommitCoverage.coverageAnalytics.coverageFile,
           totals: 100,
           flagNames: ['a', 'b'],
           componentNames: ['component'],
-          coverage: _.chain(mockCommitCoverage.coverageFile.coverage)
+          coverage: _.chain(
+            mockCommitCoverage.coverageAnalytics.coverageFile.coverage
+          )
             .keyBy('line')
             .mapValues('coverage')
             .value(),
@@ -196,12 +200,14 @@ describe('useFileWithMainCoverage', () => {
 
       await waitFor(() =>
         expect(result.current.data).toEqual({
-          ...mockBranchCoverage.head.coverageFile,
+          ...mockBranchCoverage.head.coverageAnalytics.coverageFile,
           totals: 100,
           flagNames: ['a', 'b'],
           componentNames: ['component'],
           isCriticalFile: true,
-          coverage: _.chain(mockBranchCoverage.head.coverageFile.coverage)
+          coverage: _.chain(
+            mockBranchCoverage.head.coverageAnalytics.coverageFile.coverage
+          )
             .keyBy('line')
             .mapValues('coverage')
             .value(),

@@ -53,9 +53,11 @@ describe('createCommitsTableData', () => {
             percentCovered: 100,
           },
         },
-        bundleAnalysisCompareWithParent: {
-          __typename: 'MissingHeadReport',
-          message: 'Missing head report',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'MissingHeadReport',
+            message: 'Missing head report',
+          },
         },
       } as const
 
@@ -90,11 +92,13 @@ describe('createCommitsTableData', () => {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
-          bundleAnalysisCompareWithParent: {
-            __typename: 'BundleAnalysisComparison',
-            bundleChange: {
-              size: {
-                uncompress: 100,
+          bundleAnalysis: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'BundleAnalysisComparison',
+              bundleChange: {
+                size: {
+                  uncompress: 100,
+                },
               },
             },
           },
@@ -122,11 +126,13 @@ describe('createCommitsTableData', () => {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
-          bundleAnalysisCompareWithParent: {
-            __typename: 'BundleAnalysisComparison',
-            bundleChange: {
-              size: {
-                uncompress: 100,
+          bundleAnalysis: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'BundleAnalysisComparison',
+              bundleChange: {
+                size: {
+                  uncompress: 100,
+                },
               },
             },
           },
@@ -154,9 +160,11 @@ describe('createCommitsTableData', () => {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
-          bundleAnalysisCompareWithParent: {
-            __typename: 'MissingHeadReport',
-            message: 'Missing head report',
+          bundleAnalysis: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'MissingHeadReport',
+              message: 'Missing head report',
+            },
           },
         } as const
 
@@ -184,9 +192,11 @@ describe('createCommitsTableData', () => {
               percentCovered: 100,
             },
           },
-          bundleAnalysisCompareWithParent: {
-            __typename: 'MissingHeadReport',
-            message: 'Missing head report',
+          bundleAnalysis: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'MissingHeadReport',
+              message: 'Missing head report',
+            },
           },
         } as const
 
@@ -221,9 +231,11 @@ describe('createCommitsTableData', () => {
                 percentCovered: null,
               },
             },
-            bundleAnalysisCompareWithParent: {
-              __typename: 'MissingHeadReport',
-              message: 'Missing head report',
+            bundleAnalysis: {
+              bundleAnalysisCompareWithParent: {
+                __typename: 'MissingHeadReport',
+                message: 'Missing head report',
+              },
             },
           } as const
 
@@ -258,11 +270,13 @@ describe('createCommitsTableData', () => {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
-          bundleAnalysisCompareWithParent: {
-            __typename: 'BundleAnalysisComparison',
-            bundleChange: {
-              size: {
-                uncompress: 100,
+          bundleAnalysis: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'BundleAnalysisComparison',
+              bundleChange: {
+                size: {
+                  uncompress: 100,
+                },
               },
             },
           },
@@ -290,11 +304,13 @@ describe('createCommitsTableData', () => {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
-          bundleAnalysisCompareWithParent: {
-            __typename: 'BundleAnalysisComparison',
-            bundleChange: {
-              size: {
-                uncompress: 100,
+          bundleAnalysis: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'BundleAnalysisComparison',
+              bundleChange: {
+                size: {
+                  uncompress: 100,
+                },
               },
             },
           },
@@ -322,9 +338,11 @@ describe('createCommitsTableData', () => {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
-          bundleAnalysisCompareWithParent: {
-            __typename: 'MissingHeadReport',
-            message: 'Missing head report',
+          bundleAnalysis: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'MissingHeadReport',
+              message: 'Missing head report',
+            },
           },
         } as const
 
@@ -350,11 +368,13 @@ describe('createCommitsTableData', () => {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
-          bundleAnalysisCompareWithParent: {
-            __typename: 'BundleAnalysisComparison',
-            bundleChange: {
-              size: {
-                uncompress: 100,
+          bundleAnalysis: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'BundleAnalysisComparison',
+              bundleChange: {
+                size: {
+                  uncompress: 100,
+                },
               },
             },
           },

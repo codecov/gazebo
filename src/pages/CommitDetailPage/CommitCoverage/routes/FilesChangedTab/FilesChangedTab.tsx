@@ -1,9 +1,11 @@
+import { ErrorBoundary } from '@sentry/react'
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
+import A from 'ui/A'
 import Spinner from 'ui/Spinner'
 
 const FilesChangedTable = lazy(() => import('./FilesChangedTable'))
@@ -36,10 +38,27 @@ function FilesChanged() {
   }
 
   return (
-    <Suspense fallback={<Loader />}>
-      <ToggleHeader />
-      <FilesChangedTable />
-    </Suspense>
+    <ErrorBoundary
+      fallback={
+        <p className="m-4" data-testid="files-changed-table-error">
+          There was an error fetching the changed files. Please try refreshing
+          the page. If the error persists, please{' '}
+          <A
+            to={{ pageName: 'support' }}
+            hook="contact-support-link"
+            isExternal
+          >
+            contact support
+          </A>
+          {'.'}
+        </p>
+      }
+    >
+      <Suspense fallback={<Loader />}>
+        <ToggleHeader />
+        <FilesChangedTable />
+      </Suspense>
+    </ErrorBoundary>
   )
 }
 

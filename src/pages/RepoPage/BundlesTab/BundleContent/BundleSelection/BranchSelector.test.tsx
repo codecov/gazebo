@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
@@ -149,9 +149,9 @@ describe('BranchSelector', () => {
     }
   ) {
     const user = userEvent.setup()
-    const fetchNextPage = jest.fn()
-    const mockSearching = jest.fn()
-    const mockResetBundleSelect = jest.fn()
+    const fetchNextPage = vi.fn()
+    const mockSearching = vi.fn()
+    const mockResetBundleSelect = vi.fn()
 
     const queryClient = new QueryClient({
       defaultOptions: {

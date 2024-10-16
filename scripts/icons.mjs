@@ -20,7 +20,7 @@ function generateImports(path, oldIcons = []) {
     lines = oldIcons.map((icon) => {
       const nameIcon = _.camelCase(icon)
       names.push(nameIcon)
-      return `import { ReactComponent as ${nameIcon} } from './${icon}.svg'`
+      return `import ${nameIcon} from './${icon}.svg?react'`
     })
   } else {
     lines = files.map((i) => {
@@ -30,7 +30,7 @@ function generateImports(path, oldIcons = []) {
       if (enabledIcons.includes(fileName)) {
         names.push(nameIcon)
       }
-      return `${commented}import { ReactComponent as ${nameIcon} } from './${i}'`
+      return `${commented}import ${nameIcon} from './${i}?react'`
     })
   }
 
@@ -38,7 +38,7 @@ function generateImports(path, oldIcons = []) {
 
   const exportLines = names.map((i) => i).join(', ')
   const exportDefault = `export { ${exportLines} }`
-  const output = `${joinedLines}\n\n${exportDefault}`
+  const output = `/* eslint-disable import/no-unresolved */\n${joinedLines}\n\n${exportDefault}`
 
   const nameFile = path + '/index.jsx'
   fs.writeFileSync(nameFile, output)
@@ -49,6 +49,6 @@ generateImports('./src/ui/Icon/svg/solid')
 generateImports('./src/ui/Icon/svg/developer')
 
 // this is the old icons and will be removed once the migration to vite is complete
-generateImports('./src/old_ui/Icon/svg',oldIcons)
+generateImports('./src/old_ui/Icon/svg', oldIcons)
 
 console.log('[icon gen]: done')

@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTabsCounts } from './useTabsCounts'
@@ -34,8 +34,10 @@ const mockPullData = {
         },
         head: {
           commitid: '123',
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+            },
           },
         },
         compareWithBase: {
@@ -68,7 +70,9 @@ const mockFirstPullData = {
         },
         head: {
           commitid: '123',
-          bundleAnalysisReport: null,
+          bundleAnalysis: {
+            bundleAnalysisReport: null,
+          },
         },
         compareWithBase: {
           __typename: 'FirstPullRequest',

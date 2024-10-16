@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { http, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { http, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type Mock } from 'vitest'
 
 import { useUpdateCard } from './useUpdateCard'
 
@@ -67,11 +68,7 @@ describe('useUpdateCard', () => {
     last4: '1234',
   }
 
-  function setupStripe({
-    createPaymentMethod,
-  }: {
-    createPaymentMethod: jest.Mock
-  }) {
+  function setupStripe({ createPaymentMethod }: { createPaymentMethod: Mock }) {
     mocks.useStripe.mockReturnValue({
       createPaymentMethod,
     })
@@ -81,7 +78,7 @@ describe('useUpdateCard', () => {
     describe('when the mutation is successful', () => {
       beforeEach(() => {
         setupStripe({
-          createPaymentMethod: jest.fn(
+          createPaymentMethod: vi.fn(
             () =>
               new Promise((resolve) => {
                 resolve({ paymentMethod: { id: 1 } })
@@ -117,7 +114,7 @@ describe('useUpdateCard', () => {
         vi.spyOn(console, 'error').mockImplementation(() => {})
 
         setupStripe({
-          createPaymentMethod: jest.fn(
+          createPaymentMethod: vi.fn(
             () =>
               new Promise((resolve) => {
                 resolve({ error: { message: 'not good' } })

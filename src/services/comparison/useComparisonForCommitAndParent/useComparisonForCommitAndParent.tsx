@@ -76,7 +76,7 @@ export type ImpactedFileType = z.infer<typeof ImpactedFileSchema>
 
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
-  impactedFile: ImpactedFileSchema,
+  impactedFile: ImpactedFileSchema.nullable(),
 })
 
 const CompareWithParentSchema = z

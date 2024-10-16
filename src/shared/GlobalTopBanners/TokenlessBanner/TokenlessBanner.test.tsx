@@ -1,23 +1,26 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import TokenlessBanner from './TokenlessBanner'
 
-vi.mock('shared/featureFlags')
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
+
+vi.mock('shared/featureFlags', () => ({
+  useFlags: mocks.useFlags,
+}))
+
 vi.mock('./TokenRequiredBanner', () => ({
   default: () => 'TokenRequiredBanner',
 }))
 vi.mock('./TokenNotRequiredBanner', () => ({
   default: () => 'TokenNotRequiredBanner',
 }))
-
-const mockedUseFlags = useFlags as jest.Mock
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -58,7 +61,7 @@ describe('TokenlessBanner', () => {
     tokenlessSection?: boolean
     uploadTokenRequired?: boolean
   } = {}) {
-    mockedUseFlags.mockReturnValue({ tokenlessSection })
+    mocks.useFlags.mockReturnValue({ tokenlessSection })
 
     server.use(
       graphql.query('GetUploadTokenRequired', () => {

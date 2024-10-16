@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -138,13 +138,15 @@ describe('BillingOptions', () => {
 
         const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).toHaveClass('bg-ds-primary-base')
+        await waitFor(() => expect(annualBtn).toHaveClass('bg-ds-primary-base'))
 
         const monthlyBtn = await screen.findByRole('button', {
           name: 'Monthly',
         })
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).not.toHaveClass('bg-ds-primary-base')
+        await waitFor(() =>
+          expect(monthlyBtn).not.toHaveClass('bg-ds-primary-base')
+        )
       })
 
       it('renders annual pricing scheme', async () => {

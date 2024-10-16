@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, http, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, http, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import DefaultBranch from './DefaultBranch'
@@ -129,10 +129,10 @@ describe('DefaultBranch', () => {
     }
   ) {
     const user = userEvent.setup()
-    const mutate = jest.fn()
-    const addNotification = jest.fn()
-    const fetchesNextPage = jest.fn()
-    const fetchFilters = jest.fn()
+    const mutate = vi.fn()
+    const addNotification = vi.fn()
+    const fetchesNextPage = vi.fn()
+    const fetchFilters = vi.fn()
 
     server.use(
       graphql.query('GetBranches', (info) => {

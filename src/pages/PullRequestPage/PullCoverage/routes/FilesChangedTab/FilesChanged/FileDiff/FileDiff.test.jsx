@@ -1,13 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { render, screen, within } from '@testing-library/react'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileDiff from './FileDiff'
 
 const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
   useScrollToLine: vi.fn(),
+  withProfiler: (component) => component,
+  captureMessage: vi.fn(),
 }))
 
 vi.mock('ui/CodeRenderer/hooks/useScrollToLine', async () => {
@@ -18,8 +21,55 @@ vi.mock('ui/CodeRenderer/hooks/useScrollToLine', async () => {
   }
 })
 
-window.requestAnimationFrame = (cb) => cb()
+vi.mock('shared/featureFlags', () => ({
+  useFlags: mocks.useFlags,
+}))
+
+vi.mock('@sentry/react', () => {
+  const originalModule = vi.importActual('@sentry/react')
+  return {
+    ...originalModule,
+    withProfiler: mocks.withProfiler,
+    captureMessage: mocks.captureMessage,
+  }
+})
+
+window.requestAnimationFrame = (cb) => {
+  cb(1)
+  return 1
+}
 window.cancelAnimationFrame = () => {}
+
+const scrollToMock = vi.fn()
+window.scrollTo = scrollToMock
+window.scrollY = 100
+
+class ResizeObserverMock {
+  callback = (x) => null
+
+  constructor(callback) {
+    this.callback = callback
+  }
+
+  observe() {
+    this.callback([
+      {
+        contentRect: { width: 100 },
+        target: {
+          getAttribute: () => ({ scrollWidth: 100 }),
+          getBoundingClientRect: () => ({ top: 100 }),
+        },
+      },
+    ])
+  }
+  unobserve() {
+    // do nothing
+  }
+  disconnect() {
+    // do nothing
+  }
+}
+global.window.ResizeObserver = ResizeObserverMock
 
 const baseMock = (impactedFile) => ({
   owner: {
@@ -113,15 +163,24 @@ afterAll(() => server.close())
 
 describe('FileDiff', () => {
   function setup(
-    { impactedFile = mockImpactedFile, bundleAnalysisEnabled = false } = {
+    {
+      impactedFile = mockImpactedFile,
+      bundleAnalysisEnabled = false,
+      featureFlag = false,
+    } = {
       impactedFile: mockImpactedFile,
       bundleAnalysisEnabled: false,
+      featureFlag: false,
     }
   ) {
     mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: vi.fn(),
       targeted: false,
+    }))
+
+    mocks.useFlags.mockImplementation(() => ({
+      virtualDiffRenderer: featureFlag,
     }))
 
     server.use(
@@ -141,20 +200,6 @@ describe('FileDiff', () => {
 
       const changeHeader = await screen.findByText('-0,0 +1,45')
       expect(changeHeader).toBeInTheDocument()
-    })
-
-    it('renders the lines of a segment', async () => {
-      setup()
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
-
-      const calculator = await screen.findByText(/Calculator/)
-      expect(calculator).toBeInTheDocument()
-
-      const value = await screen.findByText(/value/)
-      expect(value).toBeInTheDocument()
-
-      const calcMode = await screen.findByText(/calcMode/)
-      expect(calcMode).toBeInTheDocument()
     })
 
     describe('when only coverage is enabled', () => {
@@ -232,6 +277,64 @@ describe('FileDiff', () => {
 
       const criticalFile = await screen.findByText(/Critical File/i)
       expect(criticalFile).toBeInTheDocument()
+    })
+  })
+
+  describe('code renderer', () => {
+    describe('flag is true', () => {
+      it('renders the text area', async () => {
+        setup({ featureFlag: true })
+        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+
+        const textArea = await screen.findByTestId(
+          'virtual-file-renderer-text-area'
+        )
+        expect(textArea).toBeInTheDocument()
+
+        const calculator = await within(textArea).findByText(/Calculator/)
+        expect(calculator).toBeInTheDocument()
+
+        const value = await within(textArea).findByText(/value/)
+        expect(value).toBeInTheDocument()
+
+        const calcMode = await within(textArea).findByText(/calcMode/)
+        expect(calcMode).toBeInTheDocument()
+      })
+
+      it('renders the lines of a segment', async () => {
+        setup({ featureFlag: true })
+        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+
+        const codeDisplayOverlay = await screen.findByTestId(
+          'virtual-file-renderer-overlay'
+        )
+
+        const calculator =
+          await within(codeDisplayOverlay).findByText(/Calculator/)
+        expect(calculator).toBeInTheDocument()
+
+        const value = await within(codeDisplayOverlay).findByText(/value/)
+        expect(value).toBeInTheDocument()
+
+        const calcMode = await within(codeDisplayOverlay).findByText(/calcMode/)
+        expect(calcMode).toBeInTheDocument()
+      })
+    })
+
+    describe('flag is false', () => {
+      it('renders the lines of a segment', async () => {
+        setup({ featureFlag: false })
+        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+
+        const calculator = await screen.findByText(/Calculator/)
+        expect(calculator).toBeInTheDocument()
+
+        const value = await screen.findByText(/value/)
+        expect(value).toBeInTheDocument()
+
+        const calcMode = await screen.findByText(/calcMode/)
+        expect(calcMode).toBeInTheDocument()
+      })
     })
   })
 })

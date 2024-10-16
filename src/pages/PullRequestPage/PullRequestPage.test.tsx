@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
@@ -41,8 +41,10 @@ const mockPullPageData = {
   },
   head: {
     commitid: '123',
-    bundleAnalysisReport: {
-      __typename: 'BundleAnalysisReport',
+    bundleAnalysis: {
+      bundleAnalysisReport: {
+        __typename: 'BundleAnalysisReport',
+      },
     },
   },
   compareWithBase: {
@@ -65,8 +67,10 @@ const mockPullPageDataTeam = {
   },
   head: {
     commitid: '123',
-    bundleAnalysisReport: {
-      __typename: 'BundleAnalysisReport',
+    bundleAnalysis: {
+      bundleAnalysisReport: {
+        __typename: 'BundleAnalysisReport',
+      },
     },
   },
   compareWithBase: {

@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useDeleteFlag } from './useDeleteFlag'
@@ -60,7 +60,7 @@ describe('useDeleteFlag', () => {
       })
     )
 
-    const addNotification = jest.fn()
+    const addNotification = vi.fn()
 
     mocks.useAddNotification.mockReturnValue(addNotification)
 

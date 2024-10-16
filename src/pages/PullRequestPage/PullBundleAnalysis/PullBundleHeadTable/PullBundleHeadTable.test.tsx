@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -31,21 +31,23 @@ const mockBranchBundles = {
       pull: {
         head: {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundles: [
-              {
-                name: 'bundle1',
-                bundleData: {
-                  loadTime: {
-                    threeG: 200,
-                  },
-                  size: {
-                    uncompress: 100,
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundles: [
+                {
+                  name: 'bundle1',
+                  bundleData: {
+                    loadTime: {
+                      threeG: 200,
+                    },
+                    size: {
+                      uncompress: 100,
+                    },
                   },
                 },
-              },
-            ],
+              ],
+            },
           },
         },
       },
@@ -60,9 +62,11 @@ const mockBranchBundlesEmpty = {
       pull: {
         head: {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundles: [],
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundles: [],
+            },
           },
         },
       },
@@ -77,9 +81,11 @@ const mockBranchBundlesError = {
       pull: {
         head: {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
-          bundleAnalysisReport: {
-            __typename: 'MissingHeadReport',
-            message: 'Missing head report',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+              message: 'Missing head report',
+            },
           },
         },
       },

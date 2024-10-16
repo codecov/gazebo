@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock } from 'vitest'
@@ -104,10 +104,12 @@ const mockRepoCoverage = {
     name: 'main',
     head: {
       yamlState: 'DEFAULT',
-      totals: {
-        percentCovered: 95.0,
-        lineCount: 100,
-        hitsCount: 100,
+      coverageAnalytics: {
+        totals: {
+          percentCovered: 95.0,
+          lineCount: 100,
+          hitsCount: 100,
+        },
       },
     },
   },

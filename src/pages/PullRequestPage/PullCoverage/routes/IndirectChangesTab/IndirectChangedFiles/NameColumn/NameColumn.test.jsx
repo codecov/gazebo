@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import NameColumn from './NameColumn'
@@ -95,16 +95,16 @@ describe('NameColumn', () => {
   describe('when component is not expanded', () => {
     it('renders value', async () => {
       setup()
-      const getValue = jest.fn()
+      const getValue = vi.fn()
       getValue.mockImplementation(() => 'file.ts')
 
       const row = {
-        getValue: jest.fn().mockImplementation(() => ({
+        getValue: vi.fn().mockImplementation(() => ({
           props: {
             children: ['file.ts'],
           },
         })),
-        getIsExpanded: jest.fn().mockImplementation(() => false),
+        getIsExpanded: vi.fn().mockImplementation(() => false),
       }
 
       render(<NameColumn row={row} getValue={getValue} />, { wrapper })
@@ -115,16 +115,16 @@ describe('NameColumn', () => {
 
     it('prefetches query data', async () => {
       const { user } = setup()
-      const getValue = jest.fn()
+      const getValue = vi.fn()
       getValue.mockImplementation(() => 'file.ts')
 
       const row = {
-        getValue: jest.fn().mockImplementation(() => ({
+        getValue: vi.fn().mockImplementation(() => ({
           props: {
             children: ['file.ts'],
           },
         })),
-        getIsExpanded: jest.fn().mockImplementation(() => false),
+        getIsExpanded: vi.fn().mockImplementation(() => false),
       }
 
       render(<NameColumn row={row} getValue={getValue} />, { wrapper })
@@ -164,16 +164,16 @@ describe('NameColumn', () => {
   describe('when component is expanded', () => {
     it('renders value', async () => {
       setup()
-      const getValue = jest.fn()
+      const getValue = vi.fn()
       getValue.mockImplementation(() => 'file.ts')
 
       const row = {
-        getValue: jest.fn().mockImplementation(() => ({
+        getValue: vi.fn().mockImplementation(() => ({
           props: {
             children: ['file.ts'],
           },
         })),
-        getIsExpanded: jest.fn().mockImplementation(() => true),
+        getIsExpanded: vi.fn().mockImplementation(() => true),
       }
 
       render(<NameColumn row={row} getValue={getValue} />, { wrapper })
@@ -184,16 +184,16 @@ describe('NameColumn', () => {
 
     it('prefetches query data', async () => {
       const { user } = setup()
-      const getValue = jest.fn()
+      const getValue = vi.fn()
       getValue.mockImplementation(() => 'file.ts')
 
       const row = {
-        getValue: jest.fn().mockImplementation(() => ({
+        getValue: vi.fn().mockImplementation(() => ({
           props: {
             children: ['file.ts'],
           },
         })),
-        getIsExpanded: jest.fn().mockImplementation(() => true),
+        getIsExpanded: vi.fn().mockImplementation(() => true),
       }
 
       render(<NameColumn row={row} getValue={getValue} />, { wrapper })

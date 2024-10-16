@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -32,46 +32,48 @@ const mockedBundleAssets = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              bundleData: {
-                size: {
-                  uncompress: 12,
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                bundleData: {
+                  size: {
+                    uncompress: 12,
+                  },
                 },
-              },
-              assetsPaginated: {
-                edges: [
-                  {
-                    node: {
-                      name: 'asset-1',
-                      extension: 'js',
-                      bundleData: {
-                        loadTime: {
-                          threeG: 1,
-                          highSpeed: 2,
-                        },
-                        size: {
-                          uncompress: 3,
-                          gzip: 4,
-                        },
-                      },
-                      measurements: {
-                        change: {
+                assetsPaginated: {
+                  edges: [
+                    {
+                      node: {
+                        name: 'asset-1',
+                        extension: 'js',
+                        bundleData: {
+                          loadTime: {
+                            threeG: 1,
+                            highSpeed: 2,
+                          },
                           size: {
-                            uncompress: 5,
+                            uncompress: 3,
+                            gzip: 4,
                           },
                         },
-                        measurements: [
-                          { timestamp: '2022-10-10T11:59:59', avg: 6 },
-                        ],
+                        measurements: {
+                          change: {
+                            size: {
+                              uncompress: 5,
+                            },
+                          },
+                          measurements: [
+                            { timestamp: '2022-10-10T11:59:59', avg: 6 },
+                          ],
+                        },
                       },
                     },
+                  ],
+                  pageInfo: {
+                    hasNextPage: false,
+                    endCursor: null,
                   },
-                ],
-                pageInfo: {
-                  hasNextPage: false,
-                  endCursor: null,
                 },
               },
             },
@@ -122,7 +124,7 @@ afterAll(() => {
 
 describe('useBundleAssetsTable', () => {
   function setup() {
-    const queryVarMock = jest.fn()
+    const queryVarMock = vi.fn()
 
     server.use(
       graphql.query('BundleAssets', (info) => {

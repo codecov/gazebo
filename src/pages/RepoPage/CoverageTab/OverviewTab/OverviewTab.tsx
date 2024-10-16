@@ -52,7 +52,7 @@ function CoverageOverviewTab() {
     branch: branch,
   })
 
-  const fileCount = data?.branch?.head?.totals?.fileCount
+  const fileCount = data?.branch?.head?.coverageAnalytics?.totals?.fileCount
   const withinFileCount =
     typeof fileCount === 'number' && fileCount <= MAX_FILE_COUNT
 

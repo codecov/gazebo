@@ -68,13 +68,13 @@ export const useTableData = () => {
 
   return useMemo(() => {
     if (
-      data?.commit?.bundleAnalysisCompareWithParent?.__typename !==
-      'BundleAnalysisComparison'
+      data?.commit?.bundleAnalysis?.bundleAnalysisCompareWithParent
+        ?.__typename !== 'BundleAnalysisComparison'
     ) {
       return []
     }
 
-    return data?.commit?.bundleAnalysisCompareWithParent?.bundles?.map(
+    return data?.commit?.bundleAnalysis?.bundleAnalysisCompareWithParent?.bundles?.map(
       (bundle) => ({
         name: bundle.name,
         prevSize:
@@ -174,8 +174,8 @@ const CommitBundleAnalysisTable: React.FC = () => {
   })
 
   if (
-    data?.commit?.bundleAnalysisCompareWithParent?.__typename !==
-    'BundleAnalysisComparison'
+    data?.commit?.bundleAnalysis?.bundleAnalysisCompareWithParent
+      ?.__typename !== 'BundleAnalysisComparison'
   ) {
     return null
   }

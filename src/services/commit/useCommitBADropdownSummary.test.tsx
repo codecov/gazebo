@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 
 import { useCommitBADropdownSummary } from './useCommitBADropdownSummary'
 
@@ -10,14 +10,16 @@ const mockCommitBASummaryData = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-          bundleChange: {
-            loadTime: {
-              threeG: 2,
-            },
-            size: {
-              uncompress: 1,
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              loadTime: {
+                threeG: 2,
+              },
+              size: {
+                uncompress: 1,
+              },
             },
           },
         },
@@ -123,14 +125,16 @@ describe('useCommitBADropdownSummary', () => {
 
       const expectedResult = {
         commit: {
-          bundleAnalysisCompareWithParent: {
-            __typename: 'BundleAnalysisComparison',
-            bundleChange: {
-              loadTime: {
-                threeG: 2,
-              },
-              size: {
-                uncompress: 1,
+          bundleAnalysis: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'BundleAnalysisComparison',
+              bundleChange: {
+                loadTime: {
+                  threeG: 2,
+                },
+                size: {
+                  uncompress: 1,
+                },
               },
             },
           },

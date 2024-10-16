@@ -41,7 +41,8 @@ const BundleContent: React.FC = () => {
 
   const { data } = useBranchBundleSummary({ provider, owner, repo, branch })
 
-  const bundleType = data?.branch?.head?.bundleAnalysisReport?.__typename
+  const bundleType =
+    data?.branch?.head?.bundleAnalysis?.bundleAnalysisReport?.__typename
 
   return (
     <div>

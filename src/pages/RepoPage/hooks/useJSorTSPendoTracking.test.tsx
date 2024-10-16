@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { Link, MemoryRouter, Route } from 'react-router-dom'
 
 import { useJSorTSPendoTracking } from './useJSorTSPendoTracking'
@@ -139,10 +139,10 @@ describe('useJSorTSPendoTracking', () => {
       })
     )
 
-    const updateOptionsMock = jest.fn()
+    const updateOptionsMock = vi.fn()
     if (enablePendo) {
       window.pendo = {
-        initialize: jest.fn(),
+        initialize: vi.fn(),
         updateOptions: updateOptionsMock,
       }
     } else {
