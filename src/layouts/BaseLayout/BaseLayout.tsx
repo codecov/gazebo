@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom'
 import Footer from 'layouts/Footer'
 import Header from 'layouts/Header'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
+import { EmptyErrorComponent } from 'layouts/shared/ErrorBoundary/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
@@ -80,20 +81,27 @@ function BaseLayout({ children }: React.PropsWithChildren) {
 
   return (
     <>
+      {/* Header */}
+      <ErrorBoundary errorComponent={EmptyErrorComponent}>
+        <RepoBreadcrumbProvider>
+          <Suspense>
+            {isFullExperience || isImpersonating ? (
+              <>
+                <GlobalTopBanners />
+                <Header />
+              </>
+            ) : (
+              <>{showDefaultOrgSelector ? <InstallationHelpBanner /> : null}</>
+            )}
+          </Suspense>
+        </RepoBreadcrumbProvider>
+      </ErrorBoundary>
+
+      {/* Main Page Contents */}
       <Suspense fallback={<FullPageLoader />}>
         <RepoBreadcrumbProvider>
           <ErrorBoundary sentryScopes={[['layout', 'base']]}>
             <NetworkErrorBoundary>
-              {isFullExperience || isImpersonating ? (
-                <>
-                  <GlobalTopBanners />
-                  <Header />
-                </>
-              ) : (
-                <Suspense fallback={null}>
-                  {showDefaultOrgSelector && <InstallationHelpBanner />}
-                </Suspense>
-              )}
               <main className="container mb-8 flex grow flex-col gap-2 md:p-0">
                 <GlobalBanners />
                 <OnboardingOrChildren
@@ -110,6 +118,8 @@ function BaseLayout({ children }: React.PropsWithChildren) {
           </ErrorBoundary>
         </RepoBreadcrumbProvider>
       </Suspense>
+
+      {/* Footer */}
       {isFullExperience && (
         <>
           <Footer />

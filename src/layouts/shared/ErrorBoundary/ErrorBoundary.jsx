@@ -35,6 +35,8 @@ export default function ErrorBoundary({
   )
 }
 
+export const EmptyErrorComponent = () => <div />
+
 ErrorBoundary.propTypes = {
   children: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
   errorComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.node]),

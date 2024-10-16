@@ -17,6 +17,9 @@ function Header() {
   const { isImpersonating } = useImpersonate()
   const { data: currentUser } = useUser()
 
+  console.log({ currentUser })
+  console.log(!currentUser)
+
   return (
     <header>
       {!currentUser ? <GuestHeader /> : null}
