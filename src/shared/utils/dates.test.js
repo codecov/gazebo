@@ -87,6 +87,6 @@ describe('formatTimeFromSeconds', () => {
   })
 
   it('returns the correct time format when totalSeconds is greater than 0', () => {
-    expect(formatTimeFromSeconds(3661)).toBe('1hr 1min 1s')
+    expect(formatTimeFromSeconds(3661)).toBe('1 hour 1 minute 1 second')
   })
 })
