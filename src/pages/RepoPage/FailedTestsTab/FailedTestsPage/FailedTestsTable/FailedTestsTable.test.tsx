@@ -74,6 +74,24 @@ const wrapper =
 let consoleError: any
 let consoleWarn: any
 
+class ResizeObserverMock {
+  [x: string]: any
+  constructor(cb: any) {
+    this.cb = cb
+  }
+  observe() {
+    this.cb([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }])
+  }
+  unobserve() {
+    // do nothing
+  }
+  disconnect() {
+    // do nothing
+  }
+}
+
+global.window.ResizeObserver = ResizeObserverMock
+
 beforeAll(() => {
   server.listen()
   // Mock console.error and console.warn
@@ -271,6 +289,25 @@ describe('FailedTestsTable', () => {
 
       const lastRunColumn = await screen.findAllByText('over 1 year ago')
       expect(lastRunColumn.length).toBeGreaterThan(0)
+    })
+
+    it('shows additional info when hovering flake rate', async () => {
+      const { queryClient, user } = setup({})
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, false)
+
+      const flakeRateColumn = await screen.findByText('0%')
+      expect(flakeRateColumn).toBeInTheDocument()
+
+      await user.hover(flakeRateColumn)
+
+      const hoverObj = await screen.findAllByText(/6 Passed, 5 Failed /)
+
+      expect(hoverObj.length).toBeGreaterThan(0)
     })
   })
 
