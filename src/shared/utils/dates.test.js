@@ -1,6 +1,10 @@
 import { renderHook } from '@testing-library/react'
 
-import { formatTimeToNow, useDateFormatted } from './dates'
+import {
+  formatTimeFromSeconds,
+  formatTimeToNow,
+  useDateFormatted,
+} from './dates'
 
 describe('useDateFormatted and formatTimeToNow functions', () => {
   let formattedDate
@@ -66,5 +70,23 @@ describe('useDateFormatted and formatTimeToNow functions', () => {
       expect(result.current).toBe('July 20th 2020')
       expect(formattedDate).toBe('about 2 years ago')
     })
+  })
+})
+
+describe('formatTimeFromSeconds', () => {
+  it('returns "N/A" when totalSeconds is null', () => {
+    expect(formatTimeFromSeconds(null)).toBe('N/A')
+  })
+
+  it('returns "N/A" when totalSeconds is undefined', () => {
+    expect(formatTimeFromSeconds(undefined)).toBe('N/A')
+  })
+
+  it('returns "0s" when totalSeconds is 0', () => {
+    expect(formatTimeFromSeconds(0)).toBe('0s')
+  })
+
+  it('returns the correct time format when totalSeconds is greater than 0', () => {
+    expect(formatTimeFromSeconds(3661)).toBe('1hr 1min 1s')
   })
 })
