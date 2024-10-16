@@ -47,8 +47,10 @@ function CurrentOrgPlan() {
 
   return (
     <div className="w-full lg:w-4/5">
+      {/* subscriptionDetail populated means possible cancel at period end cancellation while
+      planUpdatedNotification.isCancellation signifies an auto-refund cancellation */}
       {accountDetails?.subscriptionDetail ||
-      planUpdatedNotification.isRefundedCancellation ? (
+      planUpdatedNotification.isCancellation ? (
         <InfoMessageCancellation
           subscriptionDetail={accountDetails?.subscriptionDetail}
         />
@@ -58,7 +60,7 @@ function CurrentOrgPlan() {
       {accountDetails?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
           {planUpdatedNotification.alertOption &&
-          !planUpdatedNotification.isRefundedCancellation ? (
+          !planUpdatedNotification.isCancellation ? (
             <Alert variant={planUpdatedNotification.alertOption}>
               {scheduleStart && scheduledPhase?.quantity ? (
                 <>

@@ -17,6 +17,8 @@ function InfoMessageCancellation({
   subscriptionDetail?: z.infer<typeof SubscriptionDetailSchema>
 }) {
   let periodEnd: string | undefined
+  // A scheduled cancel at period end should have subscriptionDetail and cancelAtPeriodEnd set to true.
+  // A refunded cancellation will not have subscriptionDetail.
   if (subscriptionDetail) {
     if (!subscriptionDetail?.cancelAtPeriodEnd) return null
     periodEnd = getPeriodEnd(subscriptionDetail)

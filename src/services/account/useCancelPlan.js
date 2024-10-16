@@ -30,7 +30,7 @@ export function useCancelPlan({ provider, owner }) {
       queryClient.setQueryData(['accountDetails', provider, owner], data)
       setPlanUpdatedNotification({
         alertOption: 'info',
-        isRefundedCancellation: true,
+        isCancellation: true,
       })
     },
   })
