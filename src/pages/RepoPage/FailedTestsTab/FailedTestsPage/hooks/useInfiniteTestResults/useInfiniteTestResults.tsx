@@ -23,6 +23,7 @@ const TestResultSchema = z.object({
   flakeRate: z.number().nullable(),
   avgDuration: z.number().nullable(),
   totalFailCount: z.number(),
+  totalFlakyFailCount: z.number(),
   totalSkipCount: z.number(),
   totalPassCount: z.number(),
 })
@@ -81,6 +82,7 @@ const GetTestResultsSchema = z.object({
                   endCursor: z.string().nullable(),
                   hasNextPage: z.boolean(),
                 }),
+                totalCount: z.number(),
               }),
             })
             .nullable(),
@@ -129,6 +131,7 @@ query GetTestResults(
                 flakeRate
                 commitsFailed
                 totalFailCount
+                totalFlakyFailCount
                 totalSkipCount
                 totalPassCount
               }
@@ -137,6 +140,7 @@ query GetTestResults(
               endCursor
               hasNextPage
             }
+            totalCount
           }
         }
       }

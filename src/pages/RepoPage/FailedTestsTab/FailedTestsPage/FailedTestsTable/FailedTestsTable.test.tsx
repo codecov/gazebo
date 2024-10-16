@@ -21,6 +21,7 @@ const node1 = {
   flakeRate: 0.0,
   avgDuration: 10,
   totalFailCount: 5,
+  totalFlakyFailCount: 14,
   totalPassCount: 6,
   totalSkipCount: 7,
 }
@@ -33,6 +34,7 @@ const node2 = {
   flakeRate: 0.2,
   avgDuration: 20,
   totalFailCount: 8,
+  totalFlakyFailCount: 15,
   totalPassCount: 9,
   totalSkipCount: 10,
 }
@@ -45,6 +47,7 @@ const node3 = {
   flakeRate: 0.1,
   avgDuration: 30,
   totalFailCount: 11,
+  totalFlakyFailCount: 16,
   totalPassCount: 12,
   totalSkipCount: 13,
 }
@@ -266,6 +269,27 @@ describe('FailedTestsTable', () => {
 
       const lastRunColumn = await screen.findAllByText('over 1 year ago')
       expect(lastRunColumn.length).toBeGreaterThan(0)
+    })
+
+    it('shows additional info when hovering flake rate', async () => {
+      const { queryClient, user } = setup({})
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, false)
+
+      const flakeRateColumn = await screen.findByText('0%')
+      expect(flakeRateColumn).toBeInTheDocument()
+
+      await user.hover(flakeRateColumn)
+
+      const hoverObj = await screen.findByText(
+        '5 Passed, 6 Failed (14 Flaky), 7 Skipped'
+      )
+
+      expect(hoverObj).toBeInTheDocument()
     })
   })
 

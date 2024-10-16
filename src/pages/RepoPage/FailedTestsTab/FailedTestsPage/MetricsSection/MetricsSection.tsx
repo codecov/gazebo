@@ -1,4 +1,6 @@
-import { useParams } from 'react-router-dom'
+import cs from 'classnames'
+import qs from 'qs'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
@@ -8,6 +10,7 @@ import { MetricCard } from 'ui/MetricCard'
 import { Tooltip } from 'ui/Tooltip'
 
 import { useFlakeAggregates } from '../hooks/useFlakeAggregates'
+import { TestResultsFilterParameterType } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
 import { useTestResultsAggregates } from '../hooks/useTestResultsAggregates'
 
 const PercentBadge = ({ value }: { value: number }) => {
@@ -87,12 +90,18 @@ const TotalTestsRunTimeCard = ({
 
 const SlowestTestsCard = ({
   slowestTests,
+  slowestTestsPercentChange,
   slowestTestsDuration,
+  isSelected,
   updateParams,
 }: {
   slowestTests?: number
+  slowestTestsPercentChange?: number | null
   slowestTestsDuration?: number | null
-  updateParams: (newParams: { parameter: string }) => void
+  isSelected: boolean
+  updateParams: (newParams: {
+    parameter: TestResultsFilterParameterType
+  }) => void
 }) => {
   return (
     <MetricCard>
@@ -107,13 +116,18 @@ const SlowestTestsCard = ({
 
       <MetricCard.Content>
         <button
-          className="text-ds-blue-default hover:underline"
+          className={cs('text-ds-blue-default hover:underline', {
+            'font-semibold': isSelected,
+          })}
           onClick={() => {
             updateParams({ parameter: 'SLOWEST_TESTS' })
           }}
         >
           {slowestTests}
         </button>
+        {slowestTestsPercentChange ? (
+          <PercentBadge value={slowestTestsPercentChange} />
+        ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
         The slowest {slowestTests} tests take {slowestTestsDuration} to run.
@@ -125,9 +139,15 @@ const SlowestTestsCard = ({
 const TotalFlakyTestsCard = ({
   flakeCount,
   flakeCountPercentChange,
+  isSelected,
+  updateParams,
 }: {
   flakeCount?: number
   flakeCountPercentChange?: number | null
+  isSelected: boolean
+  updateParams: (newParams: {
+    parameter: TestResultsFilterParameterType
+  }) => void
 }) => {
   return (
     <MetricCard>
@@ -142,8 +162,12 @@ const TotalFlakyTestsCard = ({
       </MetricCard.Header>
       <MetricCard.Content>
         <button
-          className="text-ds-blue-default hover:underline"
-          onClick={() => {}}
+          className={cs('text-ds-blue-default hover:underline', {
+            'font-semibold': isSelected,
+          })}
+          onClick={() => {
+            updateParams({ parameter: 'FLAKY_TESTS' })
+          }}
         >
           {flakeCount}
         </button>
@@ -193,11 +217,15 @@ const AverageFlakeRateCard = ({
 const TotalFailuresCard = ({
   totalFails,
   totalFailsPercentChange,
+  isSelected,
   updateParams,
 }: {
   totalFails?: number
   totalFailsPercentChange?: number | null
-  updateParams: (newParams: { parameter: string }) => void
+  isSelected: boolean
+  updateParams: (newParams: {
+    parameter: TestResultsFilterParameterType
+  }) => void
 }) => {
   return (
     <MetricCard>
@@ -212,7 +240,9 @@ const TotalFailuresCard = ({
       </MetricCard.Header>
       <MetricCard.Content>
         <button
-          className="text-ds-blue-default hover:underline"
+          className={cs('text-ds-blue-default hover:underline', {
+            'font-semibold': isSelected,
+          })}
           onClick={() => {
             updateParams({ parameter: 'FAILED_TESTS' })
           }}
@@ -233,11 +263,15 @@ const TotalFailuresCard = ({
 const TotalSkippedTestsCard = ({
   totalSkips,
   totalSkipsPercentChange,
+  isSelected,
   updateParams,
 }: {
   totalSkips?: number
   totalSkipsPercentChange?: number | null
-  updateParams: (newParams: { parameter: string }) => void
+  isSelected: boolean
+  updateParams: (newParams: {
+    parameter: TestResultsFilterParameterType
+  }) => void
 }) => {
   return (
     <MetricCard>
@@ -252,7 +286,9 @@ const TotalSkippedTestsCard = ({
 
       <MetricCard.Content>
         <button
-          className="text-ds-blue-default hover:underline"
+          className={cs('text-ds-blue-default hover:underline', {
+            'font-semibold': isSelected,
+          })}
           onClick={() => {
             updateParams({ parameter: 'SKIPPED_TESTS' })
           }}
@@ -285,6 +321,12 @@ function MetricsSection() {
 
   const { updateParams } = useLocationParams({
     parameter: '',
+  })
+
+  const location = useLocation()
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
   })
 
   const { data: testResults } = useTestResultsAggregates()
@@ -322,9 +364,13 @@ function MetricsSection() {
               }
             />
             <SlowestTestsCard
-              slowestTests={6}
+              slowestTests={aggregates?.totalSlowTests}
+              slowestTestsPercentChange={
+                aggregates?.totalSlowTestsPercentChange
+              }
               slowestTestsDuration={aggregates?.slowestTestsDuration}
               updateParams={updateParams}
+              isSelected={queryParams?.parameter === 'SLOWEST_TESTS'}
             />
           </div>
         </div>
@@ -340,6 +386,8 @@ function MetricsSection() {
                   flakeCountPercentChange={
                     flakeAggregates?.flakeCountPercentChange
                   }
+                  updateParams={updateParams}
+                  isSelected={queryParams?.parameter === 'FLAKY_TESTS'}
                 />
                 <AverageFlakeRateCard
                   flakeRate={flakeAggregates?.flakeRate}
@@ -353,11 +401,13 @@ function MetricsSection() {
               totalFails={aggregates?.totalFails}
               totalFailsPercentChange={aggregates?.totalFailsPercentChange}
               updateParams={updateParams}
+              isSelected={queryParams?.parameter === 'FAILED_TESTS'}
             />
             <TotalSkippedTestsCard
               totalSkips={aggregates?.totalSkips}
               totalSkipsPercentChange={aggregates?.totalSkipsPercentChange}
               updateParams={updateParams}
+              isSelected={queryParams?.parameter === 'SKIPPED_TESTS'}
             />
           </div>
         </div>

@@ -25,6 +25,8 @@ const mockAggResponse = (
           totalDurationPercentChange: 25.0,
           slowestTestsDuration: 111.11,
           slowestTestsDurationPercentChange: 0.0,
+          totalSlowTests: 12,
+          totalSlowTestsPercentChange: 15.1,
           totalFails: 1,
           totalFailsPercentChange: 100.0,
           totalSkips: 20,
@@ -152,9 +154,9 @@ describe('MetricsSection', () => {
       })
 
       const title = await screen.findByText('Slowest tests')
-      const context = await screen.findByText(6)
+      const context = await screen.findByText(12)
       const description = await screen.findByText(
-        'The slowest 6 tests take 111.11 to run.'
+        'The slowest 12 tests take 111.11 to run.'
       )
 
       expect(title).toBeInTheDocument()

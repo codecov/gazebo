@@ -242,8 +242,9 @@ const FailedTestsTable = () => {
                     className="bg-ds-gray-primary p-2 text-xs text-ds-gray-octonary"
                     side="right"
                   >
-                    Passed {result.totalPassCount}, Failed{' '}
-                    {result.totalFailCount}, Skipped {result.totalSkipCount}
+                    {result.totalPassCount} Passed, {result.totalFailCount}{' '}
+                    Failed ({result.totalFlakyFailCount} Flaky),{' '}
+                    {result.totalSkipCount} Skipped
                     <Tooltip.Arrow className="size-4 fill-ds-gray-primary" />
                   </Tooltip.Content>
                 </Tooltip.Portal>
