@@ -38,7 +38,7 @@ interface UpdatedNotificationSetters {
 
 interface UpdatedNotification {
   alertOption: AlertOptionsType | ''
-  isRefundedCancellation?: boolean
+  isCancellation?: boolean
 }
 
 export const PlanUpdatedPlanNotificationContext =
