@@ -1,4 +1,5 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
+import containerQueries from '@tailwindcss/container-queries'
+import defaultTheme from 'tailwindcss/defaultTheme'
 
 function withOpacity(variableName) {
   return ({ opacityValue }) => {
@@ -9,13 +10,14 @@ function withOpacity(variableName) {
   }
 }
 
-module.exports = {
+const config = {
   content: [
     './index.html',
     './public/*.html',
     './src/*.{css,js,jsx,ts,tsx}',
     './src/**/*.{css,js,jsx,ts,tsx}',
   ],
+  plugins: [containerQueries],
   mode: 'jit',
   darkMode: 'selector',
   theme: {
@@ -174,12 +176,12 @@ module.exports = {
       },
       keyframes: {
         slideDown: {
-          from: { height: 0 },
+          from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' },
         },
         slideUp: {
           from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: 0 },
+          to: { height: '0' },
         },
       },
       animation: {
@@ -188,5 +190,6 @@ module.exports = {
       },
     },
   },
-  plugins: [require('@tailwindcss/container-queries')],
 }
+
+export default config
