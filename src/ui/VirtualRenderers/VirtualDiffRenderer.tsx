@@ -223,7 +223,6 @@ const CodeBody = ({
       >
         {virtualizer.getVirtualItems().map((item) => {
           const line = lineData[item.index]
-          const lineNumber = item.index + 1
           const baseHash = `#${hashedPath}-L${line?.baseNumber}`
           const headHash = `#${hashedPath}-R${line?.headNumber}`
           // get any specific things from code highlighting library for this given line
@@ -253,7 +252,7 @@ const CodeBody = ({
                     isHighlighted={
                       location.hash === headHash || location.hash === baseHash
                     }
-                    coverage={lineData?.[lineNumber]?.headCoverage}
+                    coverage={lineData?.[item.index]?.headCoverage}
                   />
                 </div>
                 <div
