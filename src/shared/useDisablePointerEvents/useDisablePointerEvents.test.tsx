@@ -49,7 +49,7 @@ describe('useDisablePointerEvents', () => {
 
       render(<TestComponent />)
 
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
 
       const codeRenderer = screen.getByTestId('virtual-file-renderer')
       await waitFor(() =>
@@ -73,12 +73,12 @@ describe('useDisablePointerEvents', () => {
 
       const { container } = render(<TestComponent />)
 
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
 
       // eslint-disable-next-line testing-library/no-container
       container.remove()
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
 
       await waitFor(() => expect(cancelAnimationFrameSpy).toHaveBeenCalled())
     })
