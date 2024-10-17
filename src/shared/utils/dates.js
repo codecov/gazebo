@@ -1,7 +1,6 @@
 import {
   format,
   formatDistanceToNow,
-  formatDuration,
   fromUnixTime,
   intervalToDuration,
   parseISO,
@@ -31,5 +30,15 @@ export const formatTimeFromSeconds = (totalSeconds) => {
   if (!totalSeconds) return 'N/A'
 
   const duration = intervalToDuration({ start: 0, end: totalSeconds * 1000 })
-  return formatDuration(duration)
+
+  const { days, hours, minutes, seconds } = duration
+
+  return [
+    days ? `${days}d` : '',
+    hours ? `${hours}h` : '',
+    minutes ? `${minutes}m` : '',
+    seconds ? `${seconds}s` : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 }

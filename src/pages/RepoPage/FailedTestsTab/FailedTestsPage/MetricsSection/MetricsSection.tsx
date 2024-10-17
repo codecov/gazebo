@@ -275,7 +275,7 @@ function MetricsSection() {
           <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
             Improve CI Run Efficiency
           </p>
-          <div className="flex">
+          <div className="grid grid-cols-2">
             <TotalTestsRunTimeCard
               totalDuration={aggregates?.totalDuration}
               totalDurationPercentChange={

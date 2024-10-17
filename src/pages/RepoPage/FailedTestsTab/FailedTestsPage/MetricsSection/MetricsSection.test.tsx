@@ -135,7 +135,7 @@ describe('MetricsSection', () => {
       })
 
       const title = await screen.findByText('Test run time')
-      const context = await screen.findByText('24 minutes 50 seconds')
+      const context = await screen.findByText('24m 50s')
 
       expect(title).toBeInTheDocument()
       expect(context).toBeInTheDocument()
@@ -150,7 +150,7 @@ describe('MetricsSection', () => {
       const title = await screen.findByText('Slowest tests')
       const context = await screen.findByText(6)
       const description = await screen.findByText(
-        'The slowest 6 tests take 1 minute 51 seconds to run.'
+        'The slowest 6 tests take 1m 51s to run.'
       )
 
       expect(title).toBeInTheDocument()
