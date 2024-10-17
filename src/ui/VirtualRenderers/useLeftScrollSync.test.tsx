@@ -41,7 +41,7 @@ describe('useLeftScrollSync', () => {
       render(<TestComponent />)
 
       const textArea = screen.getByTestId('text-area')
-      await fireEvent.scroll(textArea, {
+      fireEvent.scroll(textArea, {
         target: { scrollLeft: 100 },
       })
 

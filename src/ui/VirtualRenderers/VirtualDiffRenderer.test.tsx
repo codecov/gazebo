@@ -401,7 +401,7 @@ describe('VirtualFileRenderer', () => {
       )
       expect(lines[0]).toBeInTheDocument()
 
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
 
       const codeRenderer = screen.getByTestId('virtual-file-renderer')
       await waitFor(() =>
@@ -438,12 +438,12 @@ describe('VirtualFileRenderer', () => {
       )
       expect(lines[0]).toBeInTheDocument()
 
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
 
       // eslint-disable-next-line testing-library/no-container
       container.remove()
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
 
       await waitFor(() => expect(cancelAnimationFrameSpy).toHaveBeenCalled())
     })
@@ -621,7 +621,7 @@ describe('VirtualFileRenderer', () => {
       )
 
       const textArea = screen.getByTestId('virtual-file-renderer-text-area')
-      await fireEvent.scroll(textArea, {
+      fireEvent.scroll(textArea, {
         target: { scrollLeft: 100 },
       })
 

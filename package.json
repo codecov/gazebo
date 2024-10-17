@@ -14,7 +14,7 @@
     "test:watch": "vitest watch --changed --config ./vitest.config.mjs",
     "test:ci": "vitest run --config ./vitest.config.mjs --coverage",
     "preview-coverage": "npx vite preview --open --outDir coverage",
-    "lint": "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.cjs",
+    "lint": "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.cjs 'src/**/*.{js,jsx,ts,tsx}'",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "npx chromatic --exit-zero-on-changes -ci",
@@ -90,6 +90,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@acemarke/react-prod-sourcemaps": "^0.3.1",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@chromatic-com/storybook": "^1",
     "@codecov/vite-plugin": "^1.0.1",
