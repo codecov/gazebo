@@ -30,7 +30,7 @@ interface AccountOrgRow {
 }
 
 const Loader = () => (
-  <div className="mb-4 flex justify-center pt-4">
+  <div className="mb-4 flex justify-center pt-4" data-testid="spinner">
     <Spinner />
   </div>
 )
@@ -196,9 +196,7 @@ export default function AccountOrgs({ account }: AccountOrgsArgs) {
                       key={header.id}
                       scope="col"
                       data-sortable={header.column.getCanSort()}
-                      {...(header.column.id !== 'isAdmin'
-                        ? { onClick: header.column.getToggleSortingHandler() }
-                        : {})}
+                      onClick={header.column.getToggleSortingHandler()}
                     >
                       <div className="flex">
                         {flexRender(
