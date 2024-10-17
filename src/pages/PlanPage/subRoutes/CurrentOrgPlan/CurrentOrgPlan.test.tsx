@@ -245,9 +245,9 @@ describe('CurrentOrgPlan', () => {
         } as z.infer<typeof AccountDetailsSchema>,
       })
 
-      render(<CurrentOrgPlan />, { wrapper })
+      render(<CurrentOrgPlan />, { wrapper: noUpdatedPlanWrapper })
       const pendingCancellation = await screen.findByText(
-        'Subscription Pending Cancellation'
+        /on August 2nd 2024, 8:52 p.m./
       )
       expect(pendingCancellation).toBeInTheDocument()
     })
