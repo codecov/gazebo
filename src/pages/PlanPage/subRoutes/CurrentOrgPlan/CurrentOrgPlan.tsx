@@ -6,6 +6,7 @@ import { getScheduleStart } from 'shared/plan/ScheduledPlanDetails/ScheduledPlan
 import A from 'ui/A'
 import { Alert } from 'ui/Alert'
 
+import AccountOrgs from './AccountOrgs'
 import BillingDetails from './BillingDetails'
 import CurrentPlanCard from './CurrentPlanCard'
 import { useEnterpriseAccountDetails } from './hooks/useEnterpriseAccountDetails'
@@ -85,6 +86,7 @@ function CurrentOrgPlan() {
               <LatestInvoiceCard />
             </>
           ) : null}
+          {account ? <AccountOrgs account={account} /> : null}
         </div>
       ) : null}
     </div>

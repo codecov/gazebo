@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { type MockInstance } from 'vitest'
 
 import { usePull } from './usePull'
@@ -106,8 +106,10 @@ const pull = {
             'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
           state: 'complete',
           commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-          totals: {
-            percentCovered: 78.33,
+          coverageAnalytics: {
+            totals: {
+              percentCovered: 78.33,
+            },
           },
           uploads: {
             totalCount: 4,
@@ -181,7 +183,9 @@ describe('usePull', () => {
                 branchName:
                   'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
                 commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-                totals: { percentCovered: 78.33 },
+                coverageAnalytics: {
+                  totals: { percentCovered: 78.33 },
+                },
                 uploads: { totalCount: 4, edges: [] },
               },
               commits: {

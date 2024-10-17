@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
@@ -63,9 +63,11 @@ const mockBranchBundles = (noBundles = false) => ({
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundles: noBundles ? [] : [{ name: 'bundle1' }],
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundles: noBundles ? [] : [{ name: 'bundle1' }],
+            },
           },
         },
       },

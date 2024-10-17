@@ -6,6 +6,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { ViteEjsPlugin } from 'vite-plugin-ejs'
 import svgr from 'vite-plugin-svgr'
 import legacy from '@vitejs/plugin-legacy'
+import { ViteReactSourcemapsPlugin } from '@acemarke/react-prod-sourcemaps'
 
 export default defineConfig((config) => {
   const env = loadEnv(config.mode, process.cwd(), 'REACT_APP')
@@ -18,11 +19,12 @@ export default defineConfig((config) => {
   if (
     process.env.CODECOV_API_URL &&
     process.env.CODECOV_ORG_TOKEN &&
-    process.env.UPLOAD_CODECOV_BUNDLE_STATS
+    process.env.UPLOAD_CODECOV_BUNDLE_STATS === 'true'
   ) {
     plugins.push(
       codecovVitePlugin({
-        enableBundleAnalysis: true,
+        enableBundleAnalysis:
+          process.env.UPLOAD_CODECOV_BUNDLE_STATS === 'true',
         bundleName: process.env.CODECOV_BUNDLE_NAME,
         apiUrl: process.env.CODECOV_API_URL,
         uploadToken: process.env.CODECOV_ORG_TOKEN,
@@ -34,6 +36,10 @@ export default defineConfig((config) => {
     config.mode === 'production' && !!process.env.SENTRY_AUTH_TOKEN
   if (runSentryPlugin) {
     plugins.push(
+      ViteReactSourcemapsPlugin({
+        debug: false,
+        preserve: false,
+      }),
       sentryVitePlugin({
         applicationKey: 'gazebo',
         org: process.env.SENTRY_ORG || 'codecov',
@@ -50,6 +56,14 @@ export default defineConfig((config) => {
     )
   }
 
+  // conditionally add the commit sha to the asset and chunk file names
+  let assetFileNames
+  let chunkFileNames
+  if (process.env.GAZEBO_SHA) {
+    assetFileNames = `assets/[name]-${process.env.GAZEBO_SHA}-[hash][extname]`
+    chunkFileNames = `assets/[name]-${process.env.GAZEBO_SHA}-[hash].js`
+  }
+
   return {
     server: {
       port: 3000,
@@ -57,11 +71,14 @@ export default defineConfig((config) => {
     build: {
       outDir: 'build',
       sourcemap: runSentryPlugin,
+      rollupOptions: {
+        output: { assetFileNames, chunkFileNames },
+      },
     },
     define: envWithProcessPrefix,
     plugins: [
       ViteEjsPlugin({
-        isProduction: process.env.REACT_APP_ENV === "production",
+        isProduction: process.env.REACT_APP_ENV === 'production',
         REACT_APP_PENDO_KEY: process.env.REACT_APP_PENDO_KEY,
       }),
       tsconfigPaths(),

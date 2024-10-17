@@ -58,14 +58,16 @@ export const useTableData = () => {
 
   return useMemo(() => {
     if (
-      data?.pull?.head?.bundleAnalysisReport?.__typename ===
+      data?.pull?.head?.bundleAnalysis?.bundleAnalysisReport?.__typename ===
       'BundleAnalysisReport'
     ) {
-      return data?.pull?.head?.bundleAnalysisReport?.bundles?.map((bundle) => ({
-        name: bundle.name,
-        currSize: bundle.bundleData.size.uncompress,
-        loadTime: bundle.bundleData.loadTime.threeG,
-      }))
+      return data?.pull?.head?.bundleAnalysis?.bundleAnalysisReport?.bundles?.map(
+        (bundle) => ({
+          name: bundle.name,
+          currSize: bundle.bundleData.size.uncompress,
+          loadTime: bundle.bundleData.loadTime.threeG,
+        })
+      )
     }
 
     return []

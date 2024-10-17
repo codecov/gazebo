@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCommitBasedCoverageForFileViewer } from './useCommitBasedCoverageForFileViewer'
@@ -18,18 +18,22 @@ const mockFileMainCoverage = (coverage, flagNames) => ({
       __typename: 'Repository',
       commit: {
         commitId: '1',
-        flagNames,
-        components: [],
-        coverageFile: { ...coverage },
+        coverageAnalytics: {
+          flagNames,
+          components: [],
+          coverageFile: { ...coverage },
+        },
       },
       branch: {
         name: 'main',
         head: {
-          flagNames,
           commitId: '1',
-          components: [],
-          coverageFile: {
-            ...coverage,
+          coverageAnalytics: {
+            flagNames,
+            components: [],
+            coverageFile: {
+              ...coverage,
+            },
           },
         },
       },

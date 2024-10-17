@@ -27,17 +27,21 @@ const RepositorySchema = z.object({
     .object({
       head: z
         .object({
-          bundleAnalysisReport: z
-            .discriminatedUnion('__typename', [
-              z.object({
-                __typename: z.literal('BundleAnalysisReport'),
-                bundles: z.array(BundleSchema),
-              }),
-              z.object({
-                __typename: z.literal('MissingHeadReport'),
-                message: z.string(),
-              }),
-            ])
+          bundleAnalysis: z
+            .object({
+              bundleAnalysisReport: z
+                .discriminatedUnion('__typename', [
+                  z.object({
+                    __typename: z.literal('BundleAnalysisReport'),
+                    bundles: z.array(BundleSchema),
+                  }),
+                  z.object({
+                    __typename: z.literal('MissingHeadReport'),
+                    message: z.string(),
+                  }),
+                ])
+                .nullable(),
+            })
             .nullable(),
         })
         .nullable(),
@@ -65,23 +69,25 @@ query PullBundleHeadList($owner: String!, $repo: String!, $pullId: Int!) {
       ... on Repository {
         pull(id: $pullId) {
           head {
-            bundleAnalysisReport {
-              __typename
-              ... on BundleAnalysisReport {
-                bundles {
-                  name
-                  bundleData {
-                    loadTime {
-                      threeG
-                    }
-                    size {
-                      uncompress
+            bundleAnalysis {
+              bundleAnalysisReport {
+                __typename
+                ... on BundleAnalysisReport {
+                  bundles {
+                    name
+                    bundleData {
+                      loadTime {
+                        threeG
+                      }
+                      size {
+                        uncompress
+                      }
                     }
                   }
                 }
-              }
-              ... on MissingHeadReport {
-                message
+                ... on MissingHeadReport {
+                  message
+                }
               }
             }
           }

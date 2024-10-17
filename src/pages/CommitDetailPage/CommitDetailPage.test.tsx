@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -48,8 +48,10 @@ const mockCommitPageData = ({
         compareWithParent: {
           __typename: 'Comparison',
         },
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+          },
         },
       },
     },
@@ -78,14 +80,16 @@ const mockBundleDropdownSummary = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-          bundleChange: {
-            loadTime: {
-              threeG: 2,
-            },
-            size: {
-              uncompress: 10000,
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              loadTime: {
+                threeG: 2,
+              },
+              size: {
+                uncompress: 10000,
+              },
             },
           },
         },

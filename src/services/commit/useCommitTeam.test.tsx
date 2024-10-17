@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { type MockInstance } from 'vitest'
 
 import { useCommitTeam } from './useCommitTeam'
@@ -107,8 +107,10 @@ const mockCommitData = {
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-          totals: {
-            coverage: 38.30846,
+          coverageAnalytics: {
+            totals: {
+              coverage: 38.30846,
+            },
           },
         },
       },

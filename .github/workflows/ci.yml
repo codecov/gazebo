@@ -197,7 +197,7 @@ jobs:
       - name: Run tests
         run: |
           TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
-          yarn test:ci:vite --minWorkers=1 --maxWorkers=2 $TESTS
+          yarn test:ci --minWorkers=1 --maxWorkers=2 $TESTS
         env:
           ENABLE_TEST_REPORTER: true
           TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes-vitest.outputs.test_list_array)[matrix.runner-index]) }}
@@ -286,11 +286,14 @@ jobs:
 
       - name: Build and upload stats
         run: |
-          yarn build:stats
+          yarn build
         env:
           CODECOV_API_URL: ${{ secrets.CODECOV_API_URL }}
           CODECOV_ORG_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
           CODECOV_BUNDLE_NAME: 'gazebo-production'
+          UPLOAD_CODECOV_BUNDLE_STATS: true
+          # The head sha aligns with how the sha used in prod builds
+          GAZEBO_SHA: ${{ github.event.pull_request.head.sha }}
 
   upload-bundle-stats-to-staging:
     name: Upload Bundle Stats - Staging
@@ -322,11 +325,14 @@ jobs:
 
       - name: Build and upload stats
         run: |
-          yarn build:stats
+          yarn build
         env:
           CODECOV_API_URL: ${{ secrets.CODECOV_STAGING_API_URL }}
           CODECOV_ORG_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
           CODECOV_BUNDLE_NAME: 'gazebo-staging'
+          UPLOAD_CODECOV_BUNDLE_STATS: true
+          # The head sha aligns with how the sha used in prod builds
+          GAZEBO_SHA: ${{ github.event.pull_request.head.sha }}
 
   storybook:
     name: Run storybook

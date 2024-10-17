@@ -82,7 +82,8 @@ const CommitBundleAnalysis: React.FC = () => {
   }, [overview?.bundleAnalysisEnabled, overview?.coverageEnabled])
 
   const bundleCompareType =
-    commitPageData?.commit?.bundleAnalysisCompareWithParent?.__typename
+    commitPageData?.commit?.bundleAnalysis?.bundleAnalysisCompareWithParent
+      ?.__typename
 
   if (
     commitPageData?.coverageEnabled &&

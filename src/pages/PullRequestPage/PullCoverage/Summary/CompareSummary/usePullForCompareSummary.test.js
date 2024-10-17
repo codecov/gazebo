@@ -35,8 +35,10 @@ const pull = {
   },
   head: {
     commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-    totals: {
-      percentCovered: 78.33,
+    coverageAnalytics: {
+      totals: {
+        percentCovered: 78.33,
+      },
     },
     uploads: {
       totalCount: 4,
@@ -73,12 +75,14 @@ const commits = [
   { state: 'complete', commitid: 'abc' },
 ]
 
-const succesfulExpectedData = {
-  headCoverage: head?.totals?.percentCovered,
+const successfulExpectedData = {
+  headCoverage: head?.coverageAnalytics?.totals?.percentCovered,
   patchCoverage: compareWithBase?.patchTotals?.percentCovered,
   changeCoverage: compareWithBase?.changeCoverage,
   head: {
-    totals: head?.totals,
+    coverageAnalytics: {
+      totals: head?.coverageAnalytics?.totals,
+    },
     commitid: head?.commitid,
     uploads: {
       totalCount: head?.uploads?.totalCount,
@@ -111,7 +115,7 @@ describe('usePullForCompareSummary', () => {
 
   it('returns data accordingly', () => {
     setup()
-    expect(hookData.result.current).toEqual(succesfulExpectedData)
+    expect(hookData.result.current).toEqual(successfulExpectedData)
   })
 })
 
@@ -123,7 +127,7 @@ describe('getPullDataForCompareSummary', () => {
       compareWithBase,
       commits,
     })
-    expect(data).toEqual(succesfulExpectedData)
+    expect(data).toEqual(successfulExpectedData)
   })
 
   it('returns undefined for undefined parameters', () => {

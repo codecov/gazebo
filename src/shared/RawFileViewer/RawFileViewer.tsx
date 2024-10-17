@@ -18,7 +18,7 @@ import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import SingleLine from 'ui/CodeRenderer/SingleLine'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Title from 'ui/FileViewer/ToggleHeader/Title'
-import { VirtualFileRenderer } from 'ui/VirtualFileRenderer'
+import { VirtualFileRenderer } from 'ui/VirtualRenderers'
 
 function ErrorDisplayMessage() {
   return (

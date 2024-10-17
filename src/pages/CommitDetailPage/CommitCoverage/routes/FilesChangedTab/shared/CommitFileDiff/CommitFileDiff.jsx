@@ -8,6 +8,7 @@ import { useComparisonForCommitAndParent } from 'services/comparison/useComparis
 import { transformImpactedFileData } from 'services/comparison/utils'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
+import { useFlags } from 'shared/featureFlags'
 import {
   CODE_RENDERER_TYPE,
   STICKY_PADDING_SIZES,
@@ -18,6 +19,7 @@ import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
 import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
 import Spinner from 'ui/Spinner'
+import { VirtualDiffRenderer } from 'ui/VirtualRenderers'
 
 function ErrorDisplayMessage() {
   return (
@@ -52,7 +54,7 @@ function CommitFileDiff({ path }) {
   const { commitFileDiff } = useNavLinks()
   const { owner, repo, provider, commit } = useParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-
+  const { virtualDiffRenderer } = useFlags({ virtualDiffRenderer: false })
   const { data: ignoredUploadIds } = useIgnoredIds()
 
   const { data: comparisonData, isLoading } = useComparisonForCommitAndParent({
@@ -81,10 +83,7 @@ function CommitFileDiff({ path }) {
   const { fileLabel, headName, isCriticalFile, segments } = comparisonData
 
   let stickyPadding = undefined
-  let fullFilePath = commitFileDiff.path({
-    commit,
-    tree: path,
-  })
+  let fullFilePath = commitFileDiff.path({ commit, tree: path })
   if (overview?.coverageEnabled && overview?.bundleAnalysisEnabled) {
     stickyPadding = STICKY_PADDING_SIZES.DIFF_LINE_DROPDOWN_PADDING
     fullFilePath = `${fullFilePath}?dropdown=coverage`
@@ -95,6 +94,30 @@ function CommitFileDiff({ path }) {
       {isCriticalFile && <CriticalFileLabel variant="borderTop" />}
       {segments?.map((segment, segmentIndex) => {
         const content = segment.lines.map((line) => line.content).join('\n')
+
+        let newDiffContent = ''
+        const lineData = []
+        if (virtualDiffRenderer) {
+          segment.lines.forEach((line, lineIndex) => {
+            newDiffContent += line.content
+
+            if (lineIndex < segment.lines.length - 1) {
+              newDiffContent += '\n'
+            }
+
+            lineData.push({
+              headNumber: line?.headNumber,
+              baseNumber: line?.baseNumber,
+              headCoverage: line?.headCoverage,
+              baseCoverage: line?.baseCoverage,
+              hitCount: without(
+                line?.coverageInfo?.hitUploadIds,
+                ...ignoredUploadIds
+              ).length,
+            })
+          })
+        }
+
         return (
           <Fragment key={`${headName}-${segmentIndex}`}>
             <CodeRendererInfoRow>
@@ -110,29 +133,39 @@ function CommitFileDiff({ path }) {
                 </A>
               </div>
             </CodeRendererInfoRow>
-            <CodeRenderer
-              code={content}
-              fileName={headName}
-              rendererType={CODE_RENDERER_TYPE.DIFF}
-              LineComponent={({ i, line, ...props }) => (
-                <DiffLine
-                  // If this line one of the first 3 or last three lines of the segment
-                  key={i + 1}
-                  lineContent={line}
-                  edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
-                  path={comparisonData?.hashedPath}
-                  hitCount={
-                    without(
-                      segment?.lines?.[i]?.coverageInfo?.hitUploadIds,
-                      ...ignoredUploadIds
-                    ).length
-                  }
-                  stickyPadding={stickyPadding}
-                  {...props}
-                  {...segment.lines[i]}
-                />
-              )}
-            />
+            {virtualDiffRenderer ? (
+              <VirtualDiffRenderer
+                key={segmentIndex}
+                code={newDiffContent}
+                fileName={headName}
+                hashedPath={comparisonData?.hashedPath}
+                lineData={lineData}
+              />
+            ) : (
+              <CodeRenderer
+                code={content}
+                fileName={headName}
+                rendererType={CODE_RENDERER_TYPE.DIFF}
+                LineComponent={({ i, line, ...props }) => (
+                  <DiffLine
+                    // If this line one of the first 3 or last three lines of the segment
+                    key={i + 1}
+                    lineContent={line}
+                    edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
+                    path={comparisonData?.hashedPath}
+                    hitCount={
+                      without(
+                        segment?.lines?.[i]?.coverageInfo?.hitUploadIds,
+                        ...ignoredUploadIds
+                      ).length
+                    }
+                    stickyPadding={stickyPadding}
+                    {...props}
+                    {...segment.lines[i]}
+                  />
+                )}
+              />
+            )}
           </Fragment>
         )
       })}

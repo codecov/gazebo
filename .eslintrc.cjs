@@ -316,7 +316,7 @@ module.exports = {
     },
     tailwindcss: {
       callees: ['classnames', 'clsx', 'ctl', 'cn'],
-      config: 'tailwind.config.js',
+      config: 'tailwind.config.mjs',
       cssFiles: ['src/**/*.css'],
       cssFilesRefreshRate: 5000,
       removeDuplicates: true,

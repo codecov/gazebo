@@ -51,7 +51,11 @@ const RepositorySchema = z.object({
     .object({
       head: z
         .object({
-          bundleAnalysisReport: BundleReportSchema.nullable(),
+          bundleAnalysis: z
+            .object({
+              bundleAnalysisReport: BundleReportSchema.nullable(),
+            })
+            .nullable(),
         })
         .nullable(),
     })
@@ -86,30 +90,32 @@ query BundleAssetModules(
       ... on Repository {
         branch(name: $branch) {
           head {
-            bundleAnalysisReport {
-              __typename
-              ... on BundleAnalysisReport {
-                bundle(name: $bundle) {
-                  asset(name: $asset) {
-                    modules {
-                      name
-                      extension
-                      bundleData {
-                        loadTime {
-                          threeG
-                          highSpeed
-                        }
-                        size {
-                          gzip
-                          uncompress
+            bundleAnalysis {
+              bundleAnalysisReport {
+                __typename
+                ... on BundleAnalysisReport {
+                  bundle(name: $bundle) {
+                    asset(name: $asset) {
+                      modules {
+                        name
+                        extension
+                        bundleData {
+                          loadTime {
+                            threeG
+                            highSpeed
+                          }
+                          size {
+                            gzip
+                            uncompress
+                          }
                         }
                       }
                     }
                   }
                 }
-              }
-              ... on MissingHeadReport {
-                message
+                ... on MissingHeadReport {
+                  message
+                }
               }
             }
           }
@@ -210,7 +216,8 @@ export const useBundleAssetModules = ({
 
         let modules: Array<BundleAssetModule> = []
         const bundleReport =
-          data?.owner?.repository?.branch?.head?.bundleAnalysisReport
+          data?.owner?.repository?.branch?.head?.bundleAnalysis
+            ?.bundleAnalysisReport
         if (
           bundleReport?.__typename === 'BundleAnalysisReport' &&
           !isNull(bundleReport.bundle) &&
