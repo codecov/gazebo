@@ -5,6 +5,7 @@ import {
 import { useMemo } from 'react'
 import { z } from 'zod'
 
+import { MEASUREMENT_INTERVAL_TYPE } from 'pages/RepoPage/shared/constants'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -19,7 +20,12 @@ const TestResultSchema = z.object({
   name: z.string(),
   commitsFailed: z.number().nullable(),
   failureRate: z.number().nullable(),
+  flakeRate: z.number().nullable(),
   avgDuration: z.number().nullable(),
+  totalFailCount: z.number(),
+  totalFlakyFailCount: z.number(),
+  totalSkipCount: z.number(),
+  totalPassCount: z.number(),
 })
 
 export const OrderingDirection = {
@@ -29,10 +35,21 @@ export const OrderingDirection = {
 
 export const OrderingParameter = {
   AVG_DURATION: 'AVG_DURATION',
+  FLAKE_RATE: 'FLAKE_RATE',
   FAILURE_RATE: 'FAILURE_RATE',
   COMMITS_WHERE_FAIL: 'COMMITS_WHERE_FAIL',
   UPDATED_AT: 'UPDATED_AT',
 } as const
+
+export const TestResultsFilterParameter = {
+  FLAKY_TESTS: 'FLAKY_TESTS',
+  FAILED_TESTS: 'FAILED_TESTS',
+  SLOWEST_TESTS: 'SLOWEST_TESTS',
+  SKIPPED_TESTS: 'SKIPPED_TESTS',
+} as const
+
+export type TestResultsFilterParameterType =
+  keyof typeof TestResultsFilterParameter
 
 export const TestResultsOrdering = z.object({
   direction: z.nativeEnum(OrderingDirection),
@@ -44,9 +61,15 @@ type TestResult = z.infer<typeof TestResultSchema>
 const GetTestResultsSchema = z.object({
   owner: z
     .object({
+      plan: z
+        .object({
+          value: z.string(),
+        })
+        .nullable(),
       repository: z.discriminatedUnion('__typename', [
         z.object({
           __typename: z.literal('Repository'),
+          private: z.boolean().nullable(),
           testAnalytics: z
             .object({
               testResults: z.object({
@@ -59,6 +82,7 @@ const GetTestResultsSchema = z.object({
                   endCursor: z.string().nullable(),
                   hasNextPage: z.boolean(),
                 }),
+                totalCount: z.number(),
               }),
             })
             .nullable(),
@@ -82,9 +106,13 @@ query GetTestResults(
   $before: String
 ) {
   owner(username: $owner) {
+    plan {
+      value
+    }
     repository: repository(name: $repo) {
       __typename
       ... on Repository {
+        private
         testAnalytics {
           testResults(
             filters: $filters
@@ -100,13 +128,19 @@ query GetTestResults(
                 avgDuration
                 name
                 failureRate
+                flakeRate
                 commitsFailed
+                totalFailCount
+                totalFlakyFailCount
+                totalSkipCount
+                totalPassCount
               }
             }
             pageInfo {
               endCursor
               hasNextPage
             }
+            totalCount
           }
         }
       }
@@ -127,6 +161,11 @@ interface UseTestResultsArgs {
   repo: string
   filters?: {
     branch?: string
+    flags?: string[]
+    history?: MEASUREMENT_INTERVAL_TYPE
+    parameter?: TestResultsFilterParameterType
+    term?: string
+    test_suites?: string[]
   }
   ordering?: z.infer<typeof TestResultsOrdering>
   first?: number
@@ -136,6 +175,8 @@ interface UseTestResultsArgs {
   opts?: UseInfiniteQueryOptions<{
     testResults: TestResult[]
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
+    private: boolean | null
+    plan: string | null
   }>
 }
 
@@ -227,6 +268,8 @@ export const useInfiniteTestResults = ({
             hasNextPage: false,
             endCursor: null,
           },
+          private: data?.owner?.repository?.private ?? null,
+          plan: data?.owner?.plan?.value ?? null,
         }
       }),
     getNextPageParam: (lastPage) => {
@@ -245,6 +288,8 @@ export const useInfiniteTestResults = ({
   return {
     data: {
       testResults: memoedData,
+      private: data?.pages?.[0]?.private ?? null,
+      plan: data?.pages?.[0]?.plan ?? null,
     },
     ...rest,
   }

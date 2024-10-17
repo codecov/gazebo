@@ -61,7 +61,7 @@ const availablePlans = [
 const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: 'annual',
   marketingName: 'Sentry',
   monthlyUploadLimit: 250,
   value: 'test-plan',
