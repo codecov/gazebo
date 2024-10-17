@@ -4,6 +4,7 @@ import { useLocation, useParams } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
 import { cn } from 'shared/utils/cn'
+import { formatTimeFromSeconds } from 'shared/utils/dates'
 import Badge from 'ui/Badge'
 import Icon from 'ui/Icon'
 import { MetricCard } from 'ui/MetricCard'
@@ -76,14 +77,11 @@ const TotalTestsRunTimeCard = ({
       </MetricCard.Header>
 
       <MetricCard.Content>
-        {totalDuration}
+        {formatTimeFromSeconds(totalDuration)}
         {totalDurationPercentChange ? (
           <PercentBadge value={totalDurationPercentChange} />
         ) : null}
       </MetricCard.Content>
-      <MetricCard.Description>
-        Increased by [12.5hr] in the last [30 days]
-      </MetricCard.Description>
     </MetricCard>
   )
 }
@@ -130,7 +128,8 @@ const SlowestTestsCard = ({
         ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
-        The slowest {slowestTests} tests take {slowestTestsDuration} to run.
+        The slowest {slowestTests} tests take{' '}
+        {formatTimeFromSeconds(slowestTestsDuration)} to run.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -176,7 +175,7 @@ const TotalFlakyTestsCard = ({
         ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
-        *The total rerun time for flaky tests is [50hr].
+        The number of flaky tests in your test suite.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -208,7 +207,7 @@ const AverageFlakeRateCard = ({
         ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
-        On average, a flaky test ran [20] times before it passed.
+        The average flake rate across all branches.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -356,7 +355,7 @@ function MetricsSection() {
           <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
             Improve CI Run Efficiency
           </p>
-          <div className="flex">
+          <div className="grid grid-cols-2">
             <TotalTestsRunTimeCard
               totalDuration={aggregates?.totalDuration}
               totalDurationPercentChange={
@@ -378,7 +377,12 @@ function MetricsSection() {
           <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
             Improve Test Performance
           </p>
-          <div className="flex">
+          <div
+            className={cn(
+              'grid',
+              !!flakeAggregates ? 'grid-cols-4' : 'grid-cols-2'
+            )}
+          >
             {!!flakeAggregates ? (
               <>
                 <TotalFlakyTestsCard

@@ -22,7 +22,7 @@ const mockAggResponse = (
       private: isPrivate,
       testAnalytics: {
         testResultsAggregates: {
-          totalDuration: 1.1,
+          totalDuration: 1490,
           totalDurationPercentChange: 25.0,
           slowestTestsDuration: 111.11,
           slowestTestsDurationPercentChange: 0.0,
@@ -149,14 +149,10 @@ describe('MetricsSection', () => {
       })
 
       const title = await screen.findByText('Test run time')
-      const context = await screen.findByText(1.1)
-      const description = await screen.findByText(
-        'Increased by [12.5hr] in the last [30 days]'
-      )
+      const context = await screen.findByText('24m 50s')
 
       expect(title).toBeInTheDocument()
       expect(context).toBeInTheDocument()
-      expect(description).toBeInTheDocument()
     })
 
     describe('slowest tests card', () => {
@@ -167,9 +163,9 @@ describe('MetricsSection', () => {
         })
 
         const title = await screen.findByText('Slowest tests')
-        const context = await screen.findByText(12)
+        const context = await screen.findByText(6)
         const description = await screen.findByText(
-          'The slowest 12 tests take 111.11 to run.'
+          'The slowest 6 tests take 1m 51s to run.'
         )
 
         expect(title).toBeInTheDocument()
@@ -202,7 +198,7 @@ describe('MetricsSection', () => {
         const title = await screen.findByText('Flaky tests')
         const context = await screen.findByText(88)
         const description = await screen.findByText(
-          '*The total rerun time for flaky tests is [50hr].'
+          'The number of flaky tests in your test suite.'
         )
 
         expect(title).toBeInTheDocument()
@@ -234,7 +230,7 @@ describe('MetricsSection', () => {
       const title = await screen.findByText('Avg. flake rate')
       const context = await screen.findByText('8%')
       const description = await screen.findByText(
-        'On average, a flaky test ran [20] times before it passed.'
+        'The average flake rate across all branches.'
       )
 
       expect(title).toBeInTheDocument()
