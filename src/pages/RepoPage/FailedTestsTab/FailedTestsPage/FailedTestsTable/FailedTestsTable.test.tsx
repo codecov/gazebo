@@ -1,5 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
@@ -21,6 +26,7 @@ const node1 = {
   flakeRate: 0.0,
   avgDuration: 10,
   totalFailCount: 5,
+  totalFlakyFailCount: 14,
   totalPassCount: 6,
   totalSkipCount: 7,
 }
@@ -33,6 +39,7 @@ const node2 = {
   flakeRate: 0.2,
   avgDuration: 20,
   totalFailCount: 8,
+  totalFlakyFailCount: 15,
   totalPassCount: 9,
   totalSkipCount: 10,
 }
@@ -45,6 +52,7 @@ const node3 = {
   flakeRate: 0.1,
   avgDuration: 30,
   totalFailCount: 11,
+  totalFlakyFailCount: 16,
   totalPassCount: 12,
   totalSkipCount: 13,
 }
@@ -70,6 +78,24 @@ const wrapper =
 
 let consoleError: any
 let consoleWarn: any
+
+class ResizeObserverMock {
+  [x: string]: any
+  constructor(cb: any) {
+    this.cb = cb
+  }
+  observe() {
+    this.cb([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }])
+  }
+  unobserve() {
+    // do nothing
+  }
+  disconnect() {
+    // do nothing
+  }
+}
+
+global.window.ResizeObserver = ResizeObserverMock
 
 beforeAll(() => {
   server.listen()
@@ -137,6 +163,7 @@ describe('FailedTestsTable', () => {
                         hasNextPage: false,
                         endCursor: null,
                       },
+                      totalCount: 1234,
                     },
                   },
                 },
@@ -164,6 +191,7 @@ describe('FailedTestsTable', () => {
                       ? 'aa'
                       : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
                   },
+                  totalCount: 1234,
                 },
               },
             },
@@ -266,6 +294,25 @@ describe('FailedTestsTable', () => {
 
       const lastRunColumn = await screen.findAllByText('over 1 year ago')
       expect(lastRunColumn.length).toBeGreaterThan(0)
+    })
+
+    it('shows additional info when hovering flake rate', async () => {
+      const { queryClient, user } = setup({})
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, false)
+
+      const flakeRateColumn = await screen.findByText('0%')
+      expect(flakeRateColumn).toBeInTheDocument()
+
+      await user.hover(flakeRateColumn)
+
+      const hoverObj = await screen.findAllByText(/6 Passed, 5 Failed /)
+
+      expect(hoverObj.length).toBeGreaterThan(0)
     })
   })
 
@@ -451,6 +498,22 @@ describe('FailedTestsTable', () => {
           })
         )
       })
+    })
+  })
+
+  describe('infinite scrolling', () => {
+    it('loads next page', async () => {
+      const { queryClient } = setup({})
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, true)
+      await waitForElementToBeRemoved(loading)
+
+      const thirdCommit = await screen.findByText('test-3')
+      expect(thirdCommit).toBeInTheDocument()
     })
   })
 

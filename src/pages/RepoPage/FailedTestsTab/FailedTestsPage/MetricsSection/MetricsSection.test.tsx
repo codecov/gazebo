@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw2'
 import { setupServer } from 'msw2/node'
 import { PropsWithChildren, Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import MetricsSection from './MetricsSection'
 
@@ -25,6 +26,8 @@ const mockAggResponse = (
           totalDurationPercentChange: 25.0,
           slowestTestsDuration: 111.11,
           slowestTestsDurationPercentChange: 0.0,
+          totalSlowTests: 12,
+          totalSlowTestsPercentChange: 15.1,
           totalFails: 1,
           totalFailsPercentChange: 100.0,
           totalSkips: 20,
@@ -56,6 +59,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true, retry: false } },
 })
 
+let testLocation: ReturnType<typeof useLocation>
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo/tests') =>
   ({ children }) => (
@@ -70,6 +74,13 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
         >
           <Suspense fallback={null}>{children}</Suspense>
         </Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
       </MemoryRouter>
     </QueryClientProvider>
   )
@@ -89,6 +100,8 @@ afterAll(() => {
 
 describe('MetricsSection', () => {
   function setup(planValue = 'users-enterprisem', isPrivate = false) {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('GetTestResultsAggregates', (info) => {
         return HttpResponse.json({
@@ -99,6 +112,7 @@ describe('MetricsSection', () => {
         return HttpResponse.json({ data: mockFlakeAggResponse })
       })
     )
+    return { user }
   }
 
   describe('when not on default branch', () => {
@@ -141,38 +155,70 @@ describe('MetricsSection', () => {
       expect(context).toBeInTheDocument()
     })
 
-    it('renders slowest tests card', async () => {
-      setup()
-      render(<MetricsSection />, {
-        wrapper: wrapper('/gh/owner/repo/tests/main'),
+    describe('slowest tests card', () => {
+      it('renders slowest tests card', async () => {
+        setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        const title = await screen.findByText('Slowest tests')
+        const context = await screen.findByText(12)
+        const description = await screen.findByText(
+          'The slowest 12 tests take 1m 51s to run.'
+        )
+
+        expect(title).toBeInTheDocument()
+        expect(context).toBeInTheDocument()
+        expect(description).toBeInTheDocument()
       })
 
-      const title = await screen.findByText('Slowest tests')
-      const context = await screen.findByText(6)
-      const description = await screen.findByText(
-        'The slowest 6 tests take 1m 51s to run.'
-      )
+      it('can update the location params on button click', async () => {
+        const { user } = setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+        const select = await screen.findByText('12')
+        expect(select).toBeInTheDocument()
+        await user.click(select)
 
-      expect(title).toBeInTheDocument()
-      expect(context).toBeInTheDocument()
-      expect(description).toBeInTheDocument()
+        expect(testLocation?.state).toStrictEqual({
+          parameter: 'SLOWEST_TESTS',
+        })
+      })
     })
 
-    it('renders total flaky tests card', async () => {
-      setup()
-      render(<MetricsSection />, {
-        wrapper: wrapper('/gh/owner/repo/tests/main'),
+    describe('flaky tests card', () => {
+      it('renders total flaky tests card', async () => {
+        setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        const title = await screen.findByText('Flaky tests')
+        const context = await screen.findByText(88)
+        const description = await screen.findByText(
+          'The number of flaky tests in your test suite.'
+        )
+
+        expect(title).toBeInTheDocument()
+        expect(context).toBeInTheDocument()
+        expect(description).toBeInTheDocument()
       })
 
-      const title = await screen.findByText('Flaky tests')
-      const context = await screen.findByText(88)
-      const description = await screen.findByText(
-        'The number of flaky tests in your test suite.'
-      )
+      it('can update the location params on button click', async () => {
+        const { user } = setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+        const select = await screen.findByText(88)
+        expect(select).toBeInTheDocument()
+        await user.click(select)
 
-      expect(title).toBeInTheDocument()
-      expect(context).toBeInTheDocument()
-      expect(description).toBeInTheDocument()
+        expect(testLocation?.state).toStrictEqual({
+          parameter: 'FLAKY_TESTS',
+        })
+      })
     })
 
     it('renders average flake rate card', async () => {
@@ -192,38 +238,70 @@ describe('MetricsSection', () => {
       expect(description).toBeInTheDocument()
     })
 
-    it('renders total failures card', async () => {
-      setup()
-      render(<MetricsSection />, {
-        wrapper: wrapper('/gh/owner/repo/tests/main'),
+    describe('total failures card', () => {
+      it('renders total failures card', async () => {
+        setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        const title = await screen.findByText('Failures')
+        const context = await screen.findByText(1)
+        const description = await screen.findByText(
+          'The number of test failures across all branches.'
+        )
+
+        expect(title).toBeInTheDocument()
+        expect(context).toBeInTheDocument()
+        expect(description).toBeInTheDocument()
       })
 
-      const title = await screen.findByText('Failures')
-      const context = await screen.findByText(1)
-      const description = await screen.findByText(
-        'The number of test failures across all branches.'
-      )
+      it('can update the location params on button click', async () => {
+        const { user } = setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+        const select = await screen.findByText(1)
+        expect(select).toBeInTheDocument()
+        await user.click(select)
 
-      expect(title).toBeInTheDocument()
-      expect(context).toBeInTheDocument()
-      expect(description).toBeInTheDocument()
+        expect(testLocation?.state).toStrictEqual({
+          parameter: 'FAILED_TESTS',
+        })
+      })
     })
 
-    it('renders total skips card', async () => {
-      setup()
-      render(<MetricsSection />, {
-        wrapper: wrapper('/gh/owner/repo/tests/main'),
+    describe('total skips card', () => {
+      it('renders total skips card', async () => {
+        setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+
+        const title = await screen.findByText('Skipped tests')
+        const context = await screen.findByText(20)
+        const description = await screen.findByText(
+          'The number of skipped tests in your test suite.'
+        )
+
+        expect(title).toBeInTheDocument()
+        expect(context).toBeInTheDocument()
+        expect(description).toBeInTheDocument()
       })
 
-      const title = await screen.findByText('Skipped tests')
-      const context = await screen.findByText(20)
-      const description = await screen.findByText(
-        'The number of skipped tests in your test suite.'
-      )
+      it('can update the location params on button click', async () => {
+        const { user } = setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+        const select = await screen.findByText(20)
+        expect(select).toBeInTheDocument()
+        await user.click(select)
 
-      expect(title).toBeInTheDocument()
-      expect(context).toBeInTheDocument()
-      expect(description).toBeInTheDocument()
+        expect(testLocation?.state).toStrictEqual({
+          parameter: 'SKIPPED_TESTS',
+        })
+      })
     })
   })
 

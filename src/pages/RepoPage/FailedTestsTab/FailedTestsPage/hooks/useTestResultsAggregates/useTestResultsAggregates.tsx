@@ -26,6 +26,8 @@ const TestResultsAggregatesSchema = z.object({
                 totalDurationPercentChange: z.number().nullable(),
                 slowestTestsDuration: z.number(),
                 slowestTestsDurationPercentChange: z.number().nullable(),
+                totalSlowTests: z.number(),
+                totalSlowTestsPercentChange: z.number().nullable(),
                 totalFails: z.number(),
                 totalFailsPercentChange: z.number().nullable(),
                 totalSkips: z.number(),
@@ -60,6 +62,8 @@ const query = `
                 totalDurationPercentChange
                 slowestTestsDuration
                 slowestTestsDurationPercentChange
+                totalSlowTests
+                totalSlowTestsPercentChange
                 totalFails
                 totalFailsPercentChange
                 totalSkips
