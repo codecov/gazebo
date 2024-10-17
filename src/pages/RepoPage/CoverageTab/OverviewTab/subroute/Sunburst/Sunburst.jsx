@@ -31,6 +31,34 @@ function Sunburst() {
     return <p>The sunburst chart failed to load.</p>
   }
 
+  console.log('BEFORE', breadcrumbPaths)
+
+  // Conditionally render based on available space
+  const getTruncatedBreadcrumbs = (paths) => {
+    const maxBreadcrumbWidth = 300 // Adjust based on available space
+    let totalWidth = 0
+    const visiblePaths = []
+
+    console.log(JSON.stringify(paths))
+
+    for (let i = 0; i < paths.length; i++) {
+      const pathWidth = paths[i].text.length * 10 // Estimate width per character
+      totalWidth += pathWidth
+
+      if (totalWidth <= maxBreadcrumbWidth) {
+        visiblePaths.push(paths[i])
+      } else {
+        break // Stop adding paths if they exceed available space
+      }
+    }
+
+    return visiblePaths
+  }
+
+  const truncatedBreadcrumbPaths = getTruncatedBreadcrumbs(breadcrumbPaths)
+
+  console.log('AFTER', truncatedBreadcrumbPaths)
+
   return (
     <>
       <SunburstChart
@@ -43,7 +71,7 @@ function Sunburst() {
         colorDomainMax={config?.indicationRange?.upperRange}
       />
       <span dir="rtl" className="truncate text-left">
-        <Breadcrumb paths={breadcrumbPaths} />
+        <Breadcrumb paths={truncatedBreadcrumbPaths} />
       </span>
     </>
   )
