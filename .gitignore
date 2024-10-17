@@ -55,3 +55,6 @@ codecov
 
 # VSCode
 .vscode
+
+# JetBrains
+.idea
