@@ -37,7 +37,7 @@ export default defineConfig((config) => {
   if (runSentryPlugin) {
     plugins.push(
       ViteReactSourcemapsPlugin({
-        debug: false,
+        debug: true,
         preserve: false,
       }),
       sentryVitePlugin({
