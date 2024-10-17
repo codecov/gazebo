@@ -107,7 +107,7 @@ const SlowestTestsCard = ({
         <MetricCard.Title className="flex items-center gap-2">
           Slowest tests
           <TooltipWithIcon>
-            The number of tests that take the longer than [100ms] to complete.
+            The tests which take the longest time to run.
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
@@ -155,7 +155,7 @@ const TotalFlakyTestsCard = ({
           Flaky tests
           <TooltipWithIcon>
             The number of tests that transition from fail to pass or pass to
-            fail in the last [30 days].
+            fail.
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
@@ -278,7 +278,7 @@ const TotalSkippedTestsCard = ({
         <MetricCard.Title className="flex items-center gap-2">
           Skipped tests
           <TooltipWithIcon>
-            The number of tests that were skipped in the last 30 days.
+            The number of tests that were skipped.
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
