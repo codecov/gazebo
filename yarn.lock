@@ -12651,7 +12651,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     react-hook-form: "npm:^7.43.9"
     react-hot-toast: "npm:^2.4.1"
-    react-intersection-observer: "npm:9.4.1"
+    react-intersection-observer: "npm:9.13.1"
     react-modal: "npm:^3.14.4"
     react-router: "npm:^5.3.3"
     react-router-dom: "npm:^5.2.1"
@@ -18638,12 +18638,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-intersection-observer@npm:9.4.1":
-  version: 9.4.1
-  resolution: "react-intersection-observer@npm:9.4.1"
+"react-intersection-observer@npm:9.13.1":
+  version: 9.13.1
+  resolution: "react-intersection-observer@npm:9.13.1"
   peerDependencies:
-    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/9beb3c765f8de451b2524bc4c0647e79136b0283bdd0d4648920eeadd8597e3ea46bf78104986ce44fa83fe061a82ae897c53ac92e727cfbdaa84a96f1acaebd
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+  checksum: 10c0/c64722db407e0ca83945bf97621ab4618fa74f3a70b528ff43988818d46feee8962bd12e70203d2d92b31030889a1f813d00e0aa3d781a7bc39fb293c277ee04
   languageName: node
   linkType: hard
 
