@@ -229,7 +229,7 @@ const FailedTestsTable = () => {
         const value = (result.flakeRate ?? 0) * 100
         const isFlakeInt = Number.isInteger(value)
 
-        const flakeRateContent = (
+        const FlakeRateContent = (
           <Tooltip delayDuration={0} skipDelayDuration={100}>
             <Tooltip.Root>
               <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
@@ -254,7 +254,7 @@ const FailedTestsTable = () => {
           name: result.name,
           avgDuration: result.avgDuration,
           failureRate: result.failureRate,
-          flakeRate: flakeRateContent,
+          flakeRate: FlakeRateContent,
           commitsFailed: result.commitsFailed,
           updatedAt: result.updatedAt,
         }

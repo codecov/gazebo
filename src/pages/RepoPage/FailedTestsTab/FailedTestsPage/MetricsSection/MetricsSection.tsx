@@ -1,9 +1,9 @@
-import cs from 'classnames'
 import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
+import { cn } from 'shared/utils/cn'
 import Badge from 'ui/Badge'
 import Icon from 'ui/Icon'
 import { MetricCard } from 'ui/MetricCard'
@@ -116,7 +116,7 @@ const SlowestTestsCard = ({
 
       <MetricCard.Content>
         <button
-          className={cs('text-ds-blue-default hover:underline', {
+          className={cn('text-ds-blue-default hover:underline', {
             'font-semibold': isSelected,
           })}
           onClick={() => {
@@ -162,7 +162,7 @@ const TotalFlakyTestsCard = ({
       </MetricCard.Header>
       <MetricCard.Content>
         <button
-          className={cs('text-ds-blue-default hover:underline', {
+          className={cn('text-ds-blue-default hover:underline', {
             'font-semibold': isSelected,
           })}
           onClick={() => {
@@ -240,7 +240,7 @@ const TotalFailuresCard = ({
       </MetricCard.Header>
       <MetricCard.Content>
         <button
-          className={cs('text-ds-blue-default hover:underline', {
+          className={cn('text-ds-blue-default hover:underline', {
             'font-semibold': isSelected,
           })}
           onClick={() => {
@@ -286,7 +286,7 @@ const TotalSkippedTestsCard = ({
 
       <MetricCard.Content>
         <button
-          className={cs('text-ds-blue-default hover:underline', {
+          className={cn('text-ds-blue-default hover:underline', {
             'font-semibold': isSelected,
           })}
           onClick={() => {
