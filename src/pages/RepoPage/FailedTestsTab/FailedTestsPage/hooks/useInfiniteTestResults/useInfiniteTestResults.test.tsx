@@ -13,6 +13,7 @@ const mockTestResults = {
     repository: {
       __typename: 'Repository',
       private: false,
+      defaultBranch: 'main',
       testAnalytics: {
         testResults: {
           edges: [

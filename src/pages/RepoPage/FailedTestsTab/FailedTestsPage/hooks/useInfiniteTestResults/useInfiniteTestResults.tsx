@@ -70,6 +70,7 @@ const GetTestResultsSchema = z.object({
         z.object({
           __typename: z.literal('Repository'),
           private: z.boolean().nullable(),
+          defaultBranch: z.string().nullable(),
           testAnalytics: z
             .object({
               testResults: z.object({
@@ -113,6 +114,7 @@ query GetTestResults(
       __typename
       ... on Repository {
         private
+        defaultBranch
         testAnalytics {
           testResults(
             filters: $filters
@@ -162,7 +164,7 @@ interface UseTestResultsArgs {
   filters?: {
     branch?: string
     flags?: string[]
-    history?: MEASUREMENT_INTERVAL_TYPE
+    interval?: MEASUREMENT_INTERVAL_TYPE
     parameter?: TestResultsFilterParameterType
     term?: string
     test_suites?: string[]
@@ -177,6 +179,7 @@ interface UseTestResultsArgs {
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
     private: boolean | null
     plan: string | null
+    defaultBranch: string | null
   }>
 }
 
@@ -270,6 +273,7 @@ export const useInfiniteTestResults = ({
           },
           private: data?.owner?.repository?.private ?? null,
           plan: data?.owner?.plan?.value ?? null,
+          defaultBranch: data?.owner?.repository?.defaultBranch ?? null,
         }
       }),
     getNextPageParam: (lastPage) => {
@@ -290,6 +294,7 @@ export const useInfiniteTestResults = ({
       testResults: memoedData,
       private: data?.pages?.[0]?.private ?? null,
       plan: data?.pages?.[0]?.plan ?? null,
+      defaultBranch: data?.pages?.[0]?.defaultBranch ?? null,
     },
     ...rest,
   }

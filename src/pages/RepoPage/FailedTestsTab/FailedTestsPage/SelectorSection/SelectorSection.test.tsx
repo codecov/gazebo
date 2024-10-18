@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
@@ -159,6 +159,21 @@ describe('SelectorSection', () => {
       expect(historicalTrend).toBeInTheDocument()
       expect(testSuites).toBeInTheDocument()
       expect(flags).toBeInTheDocument()
+    })
+
+    it('has 60 day retention link', async () => {
+      setup()
+      render(<SelectorSection />, {
+        wrapper: wrapper('/gh/owner/repo/tests/main'),
+      })
+
+      const link = await screen.findByRole('link')
+      expect(link).toBeInTheDocument()
+
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/test-result-ingestion-beta#data-retention'
+      )
     })
   })
 
