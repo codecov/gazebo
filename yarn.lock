@@ -3358,9 +3358,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codecov/bundler-plugin-core@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@codecov/bundler-plugin-core@npm:1.0.1"
+"@codecov/bundler-plugin-core@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@codecov/bundler-plugin-core@npm:1.2.1"
   dependencies:
     "@actions/core": "npm:^1.10.1"
     "@actions/github": "npm:^6.0.0"
@@ -3368,19 +3368,19 @@ __metadata:
     semver: "npm:^7.5.4"
     unplugin: "npm:^1.10.1"
     zod: "npm:^3.22.4"
-  checksum: 10c0/4a2fbcb0d33ada3c5f0335fae555cc534b46ee8e9ae4f72976b894d1d0c21954ba6309c8ee4b4d759a203674557360932c94c40f766368dfaf5195d77fe6feb8
+  checksum: 10c0/ec051dbfea8003b17676d0a0b24c006cfccaa9eb2a790357a5d504d214025d2b3209445d0c5889b56c4729259da4fd0845069ba6e08cd1e271706dd3da1788c6
   languageName: node
   linkType: hard
 
-"@codecov/vite-plugin@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@codecov/vite-plugin@npm:1.0.1"
+"@codecov/vite-plugin@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@codecov/vite-plugin@npm:1.2.1"
   dependencies:
-    "@codecov/bundler-plugin-core": "npm:^1.0.1"
+    "@codecov/bundler-plugin-core": "npm:^1.2.1"
     unplugin: "npm:^1.10.1"
   peerDependencies:
     vite: 4.x || 5.x
-  checksum: 10c0/e6fb5d924fd17cd4ac429c5c5279cc3ff13c25853826aa0cd70468916475d09a163df2669f3a646d7738a4659203de7ccf397ec9834813eef5e013cf4db9c72a
+  checksum: 10c0/bc443322859b3675456af1de2399dc380751ed1910adff0ad3dc84d625dac41fd6301192342a9fb65f033ce56bccd5ab082bb22443cc73bfd464bcf48ef5de32
   languageName: node
   linkType: hard
 
@@ -12550,7 +12550,7 @@ __metadata:
     "@acemarke/react-prod-sourcemaps": "npm:^0.3.1"
     "@babel/plugin-proposal-private-property-in-object": "npm:^7.21.11"
     "@chromatic-com/storybook": "npm:^1"
-    "@codecov/vite-plugin": "npm:^1.0.1"
+    "@codecov/vite-plugin": "npm:^1.2.1"
     "@hookform/resolvers": "npm:^2.8.5"
     "@radix-ui/react-accordion": "npm:^1.1.2"
     "@radix-ui/react-checkbox": "npm:^1.1.1"
