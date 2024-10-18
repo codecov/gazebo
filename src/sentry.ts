@@ -4,6 +4,17 @@ import { Route } from 'react-router-dom'
 
 import config from './config'
 
+// Custom ignored errors
+const customIgnoredErrors = [
+  /*
+   * LD could fail for a multiple reasons, network issues, server issues, rate
+   * limiting, etc. We can't really help if if LD fails to fetch, so we ignore
+   * it. We also provide a fallback value to our feature flags so if this
+   * fails the app won't break.
+   */
+  'LaunchDarklyFlagFetchError',
+]
+
 // common ignore errors / URLs to de-clutter Sentry
 // https://docs.sentry.io/platforms/javascript/guides/react/configuration/filtering/#decluttering-sentry
 const deClutterConfig = {
@@ -29,6 +40,7 @@ const deClutterConfig = {
     'EBCallBackMessageReceived',
     // See http://toolbar.conduit.com/Developer/HtmlAndGadget/Methods/JSInjection.aspx
     'conduitPage',
+    ...customIgnoredErrors,
   ],
   denyUrls: [
     // Facebook flakiness
