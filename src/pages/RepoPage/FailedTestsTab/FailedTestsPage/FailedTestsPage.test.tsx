@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -15,6 +15,9 @@ vi.mock('./MetricsSection/MetricsSection', () => ({
 }))
 vi.mock('./FailedTestsTable/FailedTestsTable', () => ({
   default: () => 'Failed Tests Table',
+}))
+vi.mock('./TableHeader/TableHeader', () => ({
+  default: () => 'Table Header',
 }))
 
 const server = setupServer()
@@ -76,8 +79,11 @@ describe('FailedTestsPage', () => {
     const selectorSection = screen.getByText(/Selector Section/)
     const metricSection = screen.getByText(/Metrics Section/)
     const table = screen.getByText(/Failed Tests Table/)
+    const tableHeader = screen.getByText(/Table Header/)
+
     expect(selectorSection).toBeInTheDocument()
     expect(metricSection).toBeInTheDocument()
     expect(table).toBeInTheDocument()
+    expect(tableHeader).toBeInTheDocument()
   })
 })

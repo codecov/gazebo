@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
@@ -178,10 +178,11 @@ describe('SelectorSection', () => {
       await user.click(flag1)
 
       expect(testLocation?.state).toStrictEqual({
-        search: '',
         flags: [1],
         historicalTrend: '',
         testSuites: [],
+        parameter: '',
+        term: '',
       })
     })
   })
@@ -202,10 +203,11 @@ describe('SelectorSection', () => {
       await user.click(jsSuite)
 
       expect(testLocation?.state).toStrictEqual({
-        search: '',
         flags: [],
         historicalTrend: '',
         testSuites: ['java'],
+        parameter: '',
+        term: '',
       })
     })
   })
@@ -226,10 +228,11 @@ describe('SelectorSection', () => {
       await user.click(jsSuite)
 
       expect(testLocation?.state).toStrictEqual({
-        search: '',
         flags: [],
         historicalTrend: 'INTERVAL_7_DAY',
         testSuites: [],
+        parameter: '',
+        term: '',
       })
     })
   })
