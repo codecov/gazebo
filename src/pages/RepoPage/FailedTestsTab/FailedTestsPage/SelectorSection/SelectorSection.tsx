@@ -110,7 +110,11 @@ function SelectorSection() {
                 renderSelected={({ label }: { label: string }) => label}
               />
             </div>
-            <A to="" isExternal hook={'60-day-retention'}>
+            <A
+              to={{ pageName: 'testsAnalyticsDataRetention' }}
+              isExternal
+              hook="60-day-retention"
+            >
               60 day retention
             </A>
           </div>

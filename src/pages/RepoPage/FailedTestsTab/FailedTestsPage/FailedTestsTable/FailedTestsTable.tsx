@@ -210,7 +210,7 @@ const FailedTestsTable = () => {
       // eslint-disable-next-line camelcase
       test_suites: testSuites as string[],
       parameter: queryParams?.parameter as TestResultsFilterParameterType,
-      history: queryParams?.historicalTrend as MEASUREMENT_INTERVAL_TYPE,
+      interval: queryParams?.historicalTrend as MEASUREMENT_INTERVAL_TYPE,
       term: queryParams?.term as string,
     },
     opts: {
@@ -218,9 +218,11 @@ const FailedTestsTable = () => {
     },
   })
 
+  // Only show flake rate column when on default branch for pro / enterprise plans or public repos
   const hideFlakeRate =
-    (isTeamPlan(testData?.plan) || isFreePlan(testData?.plan)) &&
-    testData?.private
+    ((isTeamPlan(testData?.plan) || isFreePlan(testData?.plan)) &&
+      testData?.private) ||
+    (!!branch && testData?.defaultBranch !== branch)
 
   const tableData = useMemo(() => {
     if (!testData?.testResults) return []

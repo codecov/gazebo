@@ -160,6 +160,21 @@ describe('SelectorSection', () => {
       expect(testSuites).toBeInTheDocument()
       expect(flags).toBeInTheDocument()
     })
+
+    it('has 60 day retention link', async () => {
+      setup()
+      render(<SelectorSection />, {
+        wrapper: wrapper('/gh/owner/repo/tests/main'),
+      })
+
+      const link = await screen.findByRole('link')
+      expect(link).toBeInTheDocument()
+
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/test-result-ingestion-beta#data-retention'
+      )
+    })
   })
 
   describe('when selecting a flag from flag selector', () => {
