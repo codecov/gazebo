@@ -156,6 +156,7 @@ describe('FailedTestsTable', () => {
                 repository: {
                   __typename: 'Repository',
                   private: isPrivate,
+                  defaultBranch: 'main',
                   testAnalytics: {
                     testResults: {
                       edges: [],
@@ -180,6 +181,7 @@ describe('FailedTestsTable', () => {
             repository: {
               __typename: 'Repository',
               private: isPrivate,
+              defaultBranch: 'main',
               testAnalytics: {
                 testResults: {
                   edges: info.variables.after
@@ -231,6 +233,20 @@ describe('FailedTestsTable', () => {
           })
           render(<FailedTestsTable />, {
             wrapper: wrapper(queryClient),
+          })
+
+          await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+          const flakeRateColumn = screen.queryByText('Flake rate')
+          expect(flakeRateColumn).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when not on default branch', () => {
+        it('does not render flake rate column', async () => {
+          const { queryClient } = setup({})
+          render(<FailedTestsTable />, {
+            wrapper: wrapper(queryClient, ['/gh/codecov/repo/tests/lol']),
           })
 
           await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
