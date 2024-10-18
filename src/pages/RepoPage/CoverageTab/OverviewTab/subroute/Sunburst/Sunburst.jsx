@@ -15,14 +15,8 @@ const Placeholder = () => (
   />
 )
 
-interface URLParams {
-  provider: string
-  owner: string
-  repo: string
-}
-
 function Sunburst() {
-  const { provider, owner, repo } = useParams<URLParams>()
+  const { provider, owner, repo } = useParams()
   const [currentPath, setCurrentPath] = useState({ path: '', type: 'folder' })
   const { data, isFetching, isError, isLoading } = useSunburstChart()
   const { data: config } = useRepoConfig({ provider, owner, repo })
@@ -37,47 +31,6 @@ function Sunburst() {
     return <p>The sunburst chart failed to load.</p>
   }
 
-  console.log('BEFORE', breadcrumbPaths)
-
-  interface Path {
-    text: string
-  }
-
-  const getTruncatedBreadcrumbs = (paths: Path[] = []) => {
-    if (paths.length === 0) {
-      return []
-    }
-    const maxWidth = 250
-    const approxCharacterWidth = 10
-
-    let totalWidth = 0
-    const visiblePaths = []
-
-    for (let i = 0; i < paths.length; i++) {
-      const pathWidth = paths[i].text.length * approxCharacterWidth
-      totalWidth += pathWidth
-
-      if (totalWidth <= maxWidth) {
-        visiblePaths.push(paths[i])
-      } else {
-        // stop adding paths if exeed available space
-        break
-      }
-    }
-
-    // must have at least 1 visible path
-    if (paths.length !== 0 && visiblePaths.length === 0) {
-      visiblePaths.push(paths[paths.length - 1])
-    }
-
-    return visiblePaths
-  }
-
-  const isTruncated = true
-  const truncatedBreadcrumbPaths = getTruncatedBreadcrumbs(breadcrumbPaths)
-
-  console.log('AFTER', truncatedBreadcrumbPaths)
-
   return (
     <>
       <SunburstChart
@@ -89,12 +42,11 @@ function Sunburst() {
         colorDomainMin={config?.indicationRange?.lowerRange}
         colorDomainMax={config?.indicationRange?.upperRange}
       />
-      <span>
-        {isTruncated ? <div className="text-ds-gray-octonary">...</div> : null}
-        <span dir="rtl" className="truncate text-left">
-          <Breadcrumb paths={truncatedBreadcrumbPaths} />
-        </span>
-      </span>
+      <p className="w-full truncate">
+        {/* <span dir="rtl"> */}
+        <Breadcrumb paths={breadcrumbPaths} truncate={true} direction="rtl" />
+        {/* </span> */}
+      </p>
     </>
   )
 }

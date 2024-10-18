@@ -60,7 +60,7 @@ function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
   const className = cs(
     baseClass,
     variantClasses[variant],
-    'inline-flex items-center gap-1'
+    'inline-flex items-center gap-1 truncate'
   )
 
   const completeProps = {

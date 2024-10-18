@@ -1,59 +1,71 @@
 import defaultTo from 'lodash/defaultTo'
 import PropTypes from 'prop-types'
-import { Fragment, Key } from 'react'
+import { Fragment } from 'react'
 
 import AppLink from 'shared/AppLink'
 import { cn } from 'shared/utils/cn'
 import A from 'ui/A'
 
-export interface BreadcrumbProps {
-  paths: any
-  largeFont: any
-  truncateOptions?: TruncateOptions
-  flippedDirection: boolean
+interface BreadcrumbProps {
+  paths: Array<{ text: string; children?: React.ReactNode; to?: string }>
+  largeFont?: boolean
+  truncate?: boolean
+  direction?: 'ltr' | 'rtl'
 }
 
-interface TruncateOptions {
-  prefix: string
-}
-
-function Breadcrumb({
-  paths,
-  largeFont,
-  truncateOptions,
-  flippedDirection,
-}: BreadcrumbProps) {
-  console.log('testing')
+const Breadcrumb: React.FC<BreadcrumbProps> = ({
+  paths = [],
+  largeFont = false,
+  truncate = false,
+  direction = 'ltr',
+}) => {
   return (
-    <>
-      {truncateOptions ? <div>...</div> : null}
-      {/*space-x-1 doesn't work when text is rendered rtl, using margins*/}
-      <nav
-        className={cn(
-          'flex flex-1 items-center truncate text-ds-gray-octonary [&>*]:mr-1',
-          { 'text-lg': largeFont }
-        )}
-      >
-        {paths.map(
-          (to: { children: any; text: any }, i: Key | null | undefined) => {
-            return (
-              <Fragment key={i}>
-                {i === paths.length - 1 ? (
-                  <span className="flex items-center font-semibold">
-                    {defaultTo(to.children, to.text)}
-                  </span>
-                ) : (
-                  // @ts-ignore errors until we can global fix A.js
-                  <A to={to}>{defaultTo(to.children, to.text)}</A>
-                )}
+    <nav
+      className={cn(
+        'flex flex-1 items-center truncate text-ds-gray-octonary',
+        { 'text-lg': largeFont },
+        { 'flex-row-reverse': direction === 'rtl' }, // Reverse for RTL
+        { '[&>*]:mr-1': direction === 'ltr', '[&>*]:ml-1': direction === 'rtl' } // Margin direction based on text direction
+      )}
+    >
+      {paths.map((to, i) => {
+        const text = defaultTo(to.children, to.text)
+        const shouldTruncate = truncate ? 'truncate' : ''
 
-                {i !== paths.length - 1 && <span>/</span>}
-              </Fragment>
-            )
-          }
-        )}
-      </nav>
-    </>
+        return (
+          <Fragment key={i}>
+            {i === paths.length - 1 ? (
+              // Larger max-width for the last item
+              <span
+                className={cn(
+                  'flex items-center font-semibold',
+                  shouldTruncate,
+                  {
+                    'max-w-[200px]': truncate, // Larger space for the last breadcrumb
+                  }
+                )}
+                title={truncate ? text : undefined}
+              >
+                {text}
+              </span>
+            ) : (
+              // Smaller max-width for intermediate items
+              <A
+                to={to?.to}
+                className={cn(shouldTruncate, { 'max-w-[100px]': truncate })}
+                title={truncate ? text : undefined}
+              >
+                {text}
+              </A>
+            )}
+
+            {i !== paths.length - 1 && (
+              <span>{direction === 'rtl' ? '\\' : '/'}</span>
+            )}
+          </Fragment>
+        )
+      })}
+    </nav>
   )
 }
 
