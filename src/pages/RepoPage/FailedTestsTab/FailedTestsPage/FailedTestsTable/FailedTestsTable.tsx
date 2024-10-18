@@ -211,6 +211,7 @@ const FailedTestsTable = () => {
       test_suites: testSuites as string[],
       parameter: queryParams?.parameter as TestResultsFilterParameterType,
       history: queryParams?.historicalTrend as MEASUREMENT_INTERVAL_TYPE,
+      term: queryParams?.term as string,
     },
     opts: {
       suspense: false,

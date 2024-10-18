@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
@@ -184,6 +184,10 @@ describe('MetricsSection', () => {
 
         expect(testLocation?.state).toStrictEqual({
           parameter: 'SLOWEST_TESTS',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
         })
       })
     })
@@ -217,6 +221,10 @@ describe('MetricsSection', () => {
 
         expect(testLocation?.state).toStrictEqual({
           parameter: 'FLAKY_TESTS',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
         })
       })
     })
@@ -267,6 +275,10 @@ describe('MetricsSection', () => {
 
         expect(testLocation?.state).toStrictEqual({
           parameter: 'FAILED_TESTS',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
         })
       })
     })
@@ -300,6 +312,10 @@ describe('MetricsSection', () => {
 
         expect(testLocation?.state).toStrictEqual({
           parameter: 'SKIPPED_TESTS',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
         })
       })
     })

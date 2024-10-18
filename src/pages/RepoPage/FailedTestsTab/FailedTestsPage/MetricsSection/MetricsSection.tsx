@@ -13,6 +13,7 @@ import { Tooltip } from 'ui/Tooltip'
 import { useFlakeAggregates } from '../hooks/useFlakeAggregates'
 import { TestResultsFilterParameterType } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
 import { useTestResultsAggregates } from '../hooks/useTestResultsAggregates'
+import { defaultQueryParams } from '../SelectorSection'
 
 const PercentBadge = ({ value }: { value: number }) => {
   let variant: 'success' | 'danger' = 'success'
@@ -318,9 +319,7 @@ const getDecodedBranch = (branch?: string) =>
 function MetricsSection() {
   const { branch } = useParams<URLParams>()
 
-  const { updateParams } = useLocationParams({
-    parameter: '',
-  })
+  const { updateParams } = useLocationParams(defaultQueryParams)
 
   const location = useLocation()
   const queryParams = qs.parse(location.search, {
