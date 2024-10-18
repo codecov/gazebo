@@ -58,7 +58,8 @@ function SelectorSection() {
     if (!params?.testSuites || params.testSuites.length === 0) {
       setSelectedTestSuites([])
     }
-  }, [params])
+    // @ts-expect-error need to type out useLocationParams
+  }, [params?.flags, params?.testSuites])
 
   // This is just here for now to appease linter til we link it up
   console.log(testSuiteSearch, flagSearch)

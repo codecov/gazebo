@@ -1,19 +1,7 @@
-import { lazy } from 'react'
-
-const FailedTestsTable = lazy(() => import('./FailedTestsTable'))
-const MetricsSection = lazy(() =>
-  import('./MetricsSection').then((module) => ({
-    default: module.MetricsSection,
-  }))
-)
-const SelectorSection = lazy(() =>
-  import('./SelectorSection').then((module) => ({
-    default: module.SelectorSection,
-  }))
-)
-const TableHeader = lazy(() =>
-  import('./TableHeader').then((module) => ({ default: module.TableHeader }))
-)
+import FailedTestsTable from './FailedTestsTable'
+import { MetricsSection } from './MetricsSection'
+import { SelectorSection } from './SelectorSection'
+import { TableHeader } from './TableHeader'
 
 function FailedTestsPage() {
   return (
