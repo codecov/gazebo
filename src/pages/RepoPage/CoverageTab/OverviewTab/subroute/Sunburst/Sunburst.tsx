@@ -15,8 +15,14 @@ const Placeholder = () => (
   />
 )
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
 function Sunburst() {
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo } = useParams<URLParams>()
   const [currentPath, setCurrentPath] = useState({ path: '', type: 'folder' })
   const { data, isFetching, isError, isLoading } = useSunburstChart()
   const { data: config } = useRepoConfig({ provider, owner, repo })
@@ -33,28 +39,41 @@ function Sunburst() {
 
   console.log('BEFORE', breadcrumbPaths)
 
-  // Conditionally render based on available space
-  const getTruncatedBreadcrumbs = (paths) => {
-    const maxBreadcrumbWidth = 300 // Adjust based on available space
+  interface Path {
+    text: string
+  }
+
+  const getTruncatedBreadcrumbs = (paths: Path[] = []) => {
+    if (paths.length === 0) {
+      return []
+    }
+    const maxWidth = 250
+    const approxCharacterWidth = 10
+
     let totalWidth = 0
     const visiblePaths = []
 
-    console.log(JSON.stringify(paths))
-
     for (let i = 0; i < paths.length; i++) {
-      const pathWidth = paths[i].text.length * 10 // Estimate width per character
+      const pathWidth = paths[i].text.length * approxCharacterWidth
       totalWidth += pathWidth
 
-      if (totalWidth <= maxBreadcrumbWidth) {
+      if (totalWidth <= maxWidth) {
         visiblePaths.push(paths[i])
       } else {
-        break // Stop adding paths if they exceed available space
+        // stop adding paths if exeed available space
+        break
       }
+    }
+
+    // must have at least 1 visible path
+    if (paths.length !== 0 && visiblePaths.length === 0) {
+      visiblePaths.push(paths[paths.length - 1])
     }
 
     return visiblePaths
   }
 
+  const isTruncated = true
   const truncatedBreadcrumbPaths = getTruncatedBreadcrumbs(breadcrumbPaths)
 
   console.log('AFTER', truncatedBreadcrumbPaths)
@@ -70,8 +89,11 @@ function Sunburst() {
         colorDomainMin={config?.indicationRange?.lowerRange}
         colorDomainMax={config?.indicationRange?.upperRange}
       />
-      <span dir="rtl" className="truncate text-left">
-        <Breadcrumb paths={truncatedBreadcrumbPaths} />
+      <span>
+        {isTruncated ? <div className="text-ds-gray-octonary">...</div> : null}
+        <span dir="rtl" className="truncate text-left">
+          <Breadcrumb paths={truncatedBreadcrumbPaths} />
+        </span>
       </span>
     </>
   )
