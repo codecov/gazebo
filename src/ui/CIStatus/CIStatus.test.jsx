@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import CIStatus from '.'
 
@@ -23,6 +24,20 @@ describe('CIStatus', () => {
 
       const noStatus = screen.getByText(/No Status/)
       expect(noStatus).toBeInTheDocument()
+    })
+
+    it('shows tooltip on hover', async () => {
+      render(<CIStatus ciPassed={true} />)
+
+      const tooltipTrigger = screen.getByTestId('ci-tooltip-trigger')
+      await userEvent.hover(tooltipTrigger)
+
+      const link = await screen.findByTestId('docs-link')
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/codecovyml-reference#codecovrequire_ci_to_pass'
+      )
     })
   })
 })
