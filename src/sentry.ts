@@ -13,6 +13,13 @@ const customIgnoredErrors = [
    * fails the app won't break.
    */
   'LaunchDarklyFlagFetchError',
+  /*
+   * App throwing an error if it can't find a module. We have resolved this
+   * with two different methods, we're storing assets from previous builds, as
+   * well when this error is triggered we automatically refresh the users
+   * window to load in the new data (which is triggered by this error).
+   */
+  'Failed to fetch dynamically imported module',
 ]
 
 // common ignore errors / URLs to de-clutter Sentry
