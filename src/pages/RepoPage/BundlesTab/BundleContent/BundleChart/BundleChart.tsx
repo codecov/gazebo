@@ -49,6 +49,13 @@ const fontConfig = {
   },
 } satisfies ChartConfig
 
+const unknownConfig = {
+  UNKNOWN_SIZE: {
+    label: 'Media',
+    color: 'hsl(var(--color-bundle-chart-unknown))',
+  },
+} satisfies ChartConfig
+
 interface URLParams {
   provider: string
   owner: string
@@ -81,6 +88,9 @@ export function BundleChart() {
         break
       case 'FONT_SIZE':
         chartConfig = { ...chartConfig, ...fontConfig }
+        break
+      case 'UNKNOWN_SIZE':
+        chartConfig = { ...chartConfig, ...unknownConfig }
         break
     }
   }
