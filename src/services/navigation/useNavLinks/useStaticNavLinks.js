@@ -463,6 +463,13 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    testsAnalyticsDataRetention: {
+      text: 'Test Analytics Data Retention',
+      path: () =>
+        'https://docs.codecov.com/docs/test-result-ingestion-beta#data-retention',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     expiredReports: {
       text: 'Expired Reports',
       path: () =>
