@@ -57,7 +57,13 @@ export function useBundleChartData({
   const assetTypes: Array<(typeof BUNDLE_TREND_REPORT_TYPES)[number]> =
     types.length > 0
       ? types.map((type) => findBundleReportAssetEnum(type))
-      : ['JAVASCRIPT_SIZE', 'STYLESHEET_SIZE', 'FONT_SIZE', 'IMAGE_SIZE']
+      : [
+          'JAVASCRIPT_SIZE',
+          'STYLESHEET_SIZE',
+          'FONT_SIZE',
+          'IMAGE_SIZE',
+          'UNKNOWN_SIZE',
+        ]
 
   const { data: trendData, isLoading } = useBundleTrendData({
     provider,
@@ -88,6 +94,7 @@ export function useBundleChartData({
         STYLESHEET_SIZE: 0,
         FONT_SIZE: 0,
         IMAGE_SIZE: 0,
+        UNKNOWN_SIZE: 0,
       }
 
       let prevSize = 0
@@ -128,6 +135,7 @@ export function useBundleChartData({
   }, [trendData])
 
   const multiplier = findBundleMultiplier(maxSize.current)
+
   // calculate the y-axis max value based on the max size
   // basically 2 + the next 10^x number
   // examples:

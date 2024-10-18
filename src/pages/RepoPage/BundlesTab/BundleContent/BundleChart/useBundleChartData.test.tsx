@@ -171,6 +171,7 @@ describe('useBundleChartData', () => {
         'STYLESHEET_SIZE',
         'FONT_SIZE',
         'IMAGE_SIZE',
+        'UNKNOWN_SIZE',
       ],
       data: [
         {
@@ -179,6 +180,7 @@ describe('useBundleChartData', () => {
           IMAGE_SIZE: 0,
           JAVASCRIPT_SIZE: 0,
           STYLESHEET_SIZE: 0,
+          UNKNOWN_SIZE: 0,
         },
         {
           date: new Date('2024-06-16T00:00:00+00:00'),
@@ -186,6 +188,7 @@ describe('useBundleChartData', () => {
           IMAGE_SIZE: 0,
           JAVASCRIPT_SIZE: 0,
           STYLESHEET_SIZE: 0,
+          UNKNOWN_SIZE: 0,
         },
         {
           date: new Date('2024-06-17T00:00:00+00:00'),
@@ -193,6 +196,7 @@ describe('useBundleChartData', () => {
           IMAGE_SIZE: 0,
           JAVASCRIPT_SIZE: 10000.8,
           STYLESHEET_SIZE: 1000,
+          UNKNOWN_SIZE: 0,
         },
         {
           date: new Date('2024-06-18T00:00:00+00:00'),
@@ -200,6 +204,7 @@ describe('useBundleChartData', () => {
           IMAGE_SIZE: 0,
           JAVASCRIPT_SIZE: 10500,
           STYLESHEET_SIZE: 800,
+          UNKNOWN_SIZE: 0,
         },
         {
           date: new Date('2024-06-19T00:00:00+00:00'),
@@ -207,6 +212,7 @@ describe('useBundleChartData', () => {
           IMAGE_SIZE: 0,
           JAVASCRIPT_SIZE: 20000,
           STYLESHEET_SIZE: 900,
+          UNKNOWN_SIZE: 0,
         },
         {
           date: new Date('2024-06-20T00:00:00+00:00'),
@@ -214,6 +220,7 @@ describe('useBundleChartData', () => {
           IMAGE_SIZE: 0,
           JAVASCRIPT_SIZE: 15000,
           STYLESHEET_SIZE: 950,
+          UNKNOWN_SIZE: 0,
         },
       ],
     }
@@ -260,6 +267,7 @@ describe('useBundleChartData', () => {
             'STYLESHEET_SIZE',
             'FONT_SIZE',
             'IMAGE_SIZE',
+            'UNKNOWN_SIZE',
           ],
           // temp removing while we don't have filtering by types implemented
           // loadTypes: [],
@@ -305,6 +313,7 @@ describe('useBundleChartData', () => {
                 'STYLESHEET_SIZE',
                 'FONT_SIZE',
                 'IMAGE_SIZE',
+                'UNKNOWN_SIZE',
               ],
             }),
           })
