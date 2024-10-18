@@ -31,6 +31,8 @@ function Sunburst() {
     return <p>The sunburst chart failed to load.</p>
   }
 
+  console.log({ breadcrumbPaths })
+
   return (
     <>
       <SunburstChart
@@ -42,11 +44,9 @@ function Sunburst() {
         colorDomainMin={config?.indicationRange?.lowerRange}
         colorDomainMax={config?.indicationRange?.upperRange}
       />
-      <p className="w-full truncate">
-        {/* <span dir="rtl"> */}
+      <span className="truncate">
         <Breadcrumb paths={breadcrumbPaths} truncate={true} direction="rtl" />
-        {/* </span> */}
-      </p>
+      </span>
     </>
   )
 }

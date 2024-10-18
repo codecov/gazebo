@@ -56,11 +56,20 @@ function _adjustPathForGLSubgroups(path) {
   return domain + owner.replace(/:/g, '/') + rest
 }
 
-function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
+function A({
+  to,
+  hook,
+  variant = 'default',
+  children,
+  isExternal,
+  className: additionalClassName = '',
+  ...props
+}) {
   const className = cs(
     baseClass,
     variantClasses[variant],
-    'inline-flex items-center gap-1 truncate'
+    'inline-flex items-center gap-1',
+    additionalClassName
   )
 
   const completeProps = {
