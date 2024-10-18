@@ -6,7 +6,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import MockResizeObserver from 'resize-observer-polyfill'
 
-import { BundleChart } from './BundleChart'
+import { BundleChart, formatDate } from './BundleChart'
 
 global.ResizeObserver = MockResizeObserver
 
@@ -161,5 +161,11 @@ describe('BundleChart', () => {
 
     const bundleChart = await screen.findByTestId('chart-container')
     expect(bundleChart).toBeInTheDocument()
+  })
+})
+
+describe('formatDate', () => {
+  it('formats the date correctly', () => {
+    expect(formatDate('2024-06-15T00:00:00+00:00')).toBe('Jun 15, 2024')
   })
 })

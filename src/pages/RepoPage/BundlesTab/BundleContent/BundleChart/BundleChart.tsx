@@ -64,6 +64,10 @@ interface URLParams {
   bundle: string
 }
 
+// exporting for testing
+export const formatDate = (date: string) =>
+  format(new Date(date), 'MMM d, yyyy')
+
 export function BundleChart() {
   const { provider, owner, repo, branch, bundle } = useParams<URLParams>()
   const { data, maxY, multiplier, isLoading, assetTypes } = useBundleChartData({
@@ -125,21 +129,16 @@ export function BundleChart() {
               tickLine={false}
               minTickGap={50}
               axisLine={false}
-              tickFormatter={(date: string) =>
-                format(new Date(date), 'MMM d, yyyy')
-              }
+              tickFormatter={(date: string) => formatDate(date)}
             />
             <ChartTooltip
               content={
                 <ChartTooltipContent
                   indicator="line"
-                  labelFormatter={(value, payload) => {
-                    const date = payload?.[0]?.payload?.date
-                    return format(new Date(date), 'MMM d, yyyy')
-                  }}
-                  valueFormatter={(value: number) => {
-                    return `${formatSizeToString(value)}`
-                  }}
+                  labelFormatter={(value, payload) =>
+                    formatDate(payload?.[0]?.payload?.date)
+                  }
+                  valueFormatter={(value: number) => formatSizeToString(value)}
                 />
               }
             />
