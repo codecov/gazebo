@@ -56,6 +56,7 @@ const ChartContainer = React.forwardRef<
           [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-ds-gray-secondary
           [&_.recharts-curve.recharts-tooltip-cursor]:stroke-ds-gray-quaternary
           [&_.recharts-dot[stroke='#fff']]:stroke-transparent
+          dark:[&_.recharts-dot[stroke='#fff']]:stroke-white
           [&_.recharts-layer]:outline-none
           [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-ds-gray-quinary
           [&_.recharts-radial-bar-background-sector]:fill-ds-gray-quaternary/50
