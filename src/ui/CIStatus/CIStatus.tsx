@@ -24,7 +24,7 @@ export default function CIStatusLabel({ ciPassed }: CIStatusLabelProps) {
 
   return (
     <Tooltip>
-      <Tooltip.Root open delayDuration={500}>
+      <Tooltip.Root delayDuration={500}>
         <Tooltip.Trigger>
           <span
             className="flex flex-none items-center gap-1 text-xs"
