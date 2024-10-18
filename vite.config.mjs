@@ -6,6 +6,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { ViteEjsPlugin } from 'vite-plugin-ejs'
 import svgr from 'vite-plugin-svgr'
 import legacy from '@vitejs/plugin-legacy'
+import { ViteReactSourcemapsPlugin } from '@acemarke/react-prod-sourcemaps'
 
 export default defineConfig((config) => {
   const env = loadEnv(config.mode, process.cwd(), 'REACT_APP')
@@ -22,7 +23,8 @@ export default defineConfig((config) => {
   ) {
     plugins.push(
       codecovVitePlugin({
-        enableBundleAnalysis: process.env.UPLOAD_CODECOV_BUNDLE_STATS === 'true',
+        enableBundleAnalysis:
+          process.env.UPLOAD_CODECOV_BUNDLE_STATS === 'true',
         bundleName: process.env.CODECOV_BUNDLE_NAME,
         apiUrl: process.env.CODECOV_API_URL,
         uploadToken: process.env.CODECOV_ORG_TOKEN,
@@ -34,6 +36,10 @@ export default defineConfig((config) => {
     config.mode === 'production' && !!process.env.SENTRY_AUTH_TOKEN
   if (runSentryPlugin) {
     plugins.push(
+      ViteReactSourcemapsPlugin({
+        debug: false,
+        preserve: false,
+      }),
       sentryVitePlugin({
         applicationKey: 'gazebo',
         org: process.env.SENTRY_ORG || 'codecov',
@@ -50,14 +56,6 @@ export default defineConfig((config) => {
     )
   }
 
-  // conditionally add the commit sha to the asset and chunk file names
-  let assetFileNames
-  let chunkFileNames
-  if (process.env.GAZEBO_SHA) {
-    assetFileNames = `assets/[name]-${process.env.GAZEBO_SHA}-[hash][extname]`
-    chunkFileNames = `assets/[name]-${process.env.GAZEBO_SHA}-[hash].js`
-  }
-
   return {
     server: {
       port: 3000,
@@ -66,7 +64,11 @@ export default defineConfig((config) => {
       outDir: 'build',
       sourcemap: runSentryPlugin,
       rollupOptions: {
-        output: { assetFileNames, chunkFileNames },
+        output: {
+          entryFileNames: 'assets/[name].[hash:22].js',
+          chunkFileNames: 'assets/[name].[hash:22].js',
+          assetFileNames: 'assets/[name].[hash:22][extname]',
+        },
       },
     },
     define: envWithProcessPrefix,
@@ -77,7 +79,10 @@ export default defineConfig((config) => {
       }),
       tsconfigPaths(),
       legacy({
+        // which legacy browsers to support
         targets: ['>0.2%', 'not dead', 'not op_mini all'],
+        // which polyfills to include in the modern build
+        modernPolyfills: ['es.promise.all-settled'],
       }),
       react(),
       svgr(),
