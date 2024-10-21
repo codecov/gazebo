@@ -90,7 +90,9 @@ describe('useFlakeAggregates', () => {
         setup({})
         const { result } = renderHook(
           () =>
-            useFlakeAggregates({ history: MeasurementInterval.INTERVAL_1_DAY }),
+            useFlakeAggregates({
+              interval: MeasurementInterval.INTERVAL_1_DAY,
+            }),
           {
             wrapper,
           }
@@ -125,7 +127,7 @@ describe('useFlakeAggregates', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useFlakeAggregates({ history: MeasurementInterval.INTERVAL_1_DAY }),
+          useFlakeAggregates({ interval: MeasurementInterval.INTERVAL_1_DAY }),
         {
           wrapper,
         }
@@ -156,7 +158,7 @@ describe('useFlakeAggregates', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useFlakeAggregates({ history: MeasurementInterval.INTERVAL_1_DAY }),
+          useFlakeAggregates({ interval: MeasurementInterval.INTERVAL_1_DAY }),
         {
           wrapper,
         }

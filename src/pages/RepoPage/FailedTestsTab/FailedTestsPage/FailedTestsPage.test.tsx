@@ -76,6 +76,7 @@ describe('FailedTestsPage', () => {
     const selectorSection = screen.getByText(/Selector Section/)
     const metricSection = screen.getByText(/Metrics Section/)
     const table = screen.getByText(/Failed Tests Table/)
+
     expect(selectorSection).toBeInTheDocument()
     expect(metricSection).toBeInTheDocument()
     expect(table).toBeInTheDocument()

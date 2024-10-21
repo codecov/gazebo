@@ -33,14 +33,14 @@ const query = `
   query GetFlakeAggregates(
     $owner: String!
     $repo: String!
-    $history: MeasurementInterval
+    $interval: MeasurementInterval
   ) {
     owner(username: $owner) {
       repository: repository(name: $repo) {
         __typename
         ... on Repository {
             testAnalytics {
-              flakeAggregates(history: $history) {
+              flakeAggregates(interval: $interval) {
                 flakeCount
                 flakeCountPercentChange
                 flakeRate
@@ -74,18 +74,18 @@ interface UseFlakeAggregatesOptions {
 }
 
 interface UseFlakeAggregatesParams {
-  history?: MeasurementInterval
+  interval?: MeasurementInterval
   opts?: UseFlakeAggregatesOptions
 }
 
 export const useFlakeAggregates = ({
-  history,
+  interval,
   opts,
 }: UseFlakeAggregatesParams = {}) => {
   const { provider, owner, repo } = useParams<URLParams>()
 
   return useQuery({
-    queryKey: ['GetFlakeAggregates', provider, owner, repo, history],
+    queryKey: ['GetFlakeAggregates', provider, owner, repo, interval],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -95,7 +95,7 @@ export const useFlakeAggregates = ({
           provider,
           owner,
           repo,
-          history,
+          interval,
         },
       }).then((res) => {
         const parsedData = FlakeAggregatesSchema.safeParse(res?.data)

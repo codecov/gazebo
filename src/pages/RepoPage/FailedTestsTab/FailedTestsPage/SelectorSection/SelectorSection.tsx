@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
   MEASUREMENT_INTERVAL,
+  MEASUREMENT_INTERVAL_TYPE,
   MeasurementTimeOption,
   MeasurementTimeOptions,
 } from 'pages/RepoPage/shared/constants'
@@ -15,6 +16,8 @@ import Select from 'ui/Select'
 
 import BranchSelector from './BranchSelector'
 
+import { TestResultsFilterParameterType } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
+
 interface URLParams {
   provider: string
   owner: string
@@ -22,28 +25,41 @@ interface URLParams {
   branch?: string
 }
 
+export const defaultQueryParams = {
+  term: '',
+  flags: [] as string[],
+  historicalTrend: '' as MEASUREMENT_INTERVAL_TYPE,
+  parameter: '' as TestResultsFilterParameterType,
+  testSuites: [] as string[],
+}
+
 const getDecodedBranch = (branch?: string) =>
   !!branch ? decodeURIComponent(branch) : undefined
 
 function SelectorSection() {
-  const { params, updateParams } = useLocationParams({
-    search: '',
-    historicalTrend: '',
-    testSuites: [],
-    flags: [],
-  })
+  const { params, updateParams } = useLocationParams(defaultQueryParams)
 
   // @ts-expect-error need to type out useLocationParams
   const [selectedFlags, setSelectedFlags] = useState(params?.flags)
-
   const [flagSearch, setFlagSearch] = useState('')
 
   const [selectedTestSuites, setSelectedTestSuites] = useState(
     // @ts-expect-error need to type out useLocationParams
     params?.testSuites
   )
-
   const [testSuiteSearch, setTestSuiteSearch] = useState('')
+
+  useEffect(() => {
+    // @ts-expect-error need to type out useLocationParams
+    if (!params?.flags || params.flags.length === 0) {
+      setSelectedFlags([])
+    }
+    // @ts-expect-error need to type out useLocationParams
+    if (!params?.testSuites || params.testSuites.length === 0) {
+      setSelectedTestSuites([])
+    }
+    // @ts-expect-error need to type out useLocationParams
+  }, [params?.flags, params?.testSuites])
 
   // This is just here for now to appease linter til we link it up
   console.log(testSuiteSearch, flagSearch)

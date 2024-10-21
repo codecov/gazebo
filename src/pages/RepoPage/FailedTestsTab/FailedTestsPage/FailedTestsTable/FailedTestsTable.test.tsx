@@ -18,6 +18,10 @@ import {
   OrderingParameter,
 } from '../hooks/useInfiniteTestResults'
 
+vi.mock('../TableHeader/TableHeader', () => ({
+  default: () => 'Table Header',
+}))
+
 const node1 = {
   updatedAt: '2023-01-01T00:00:00Z',
   name: 'test-1',
@@ -280,6 +284,16 @@ describe('FailedTestsTable', () => {
 
       const lastRunColumn = await screen.findByText('Last run')
       expect(lastRunColumn).toBeInTheDocument()
+    })
+
+    it('renders table header', async () => {
+      const { queryClient } = setup({})
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const tableHeader = await screen.findByText('Table Header')
+      expect(tableHeader).toBeInTheDocument()
     })
   })
 

@@ -184,6 +184,10 @@ describe('MetricsSection', () => {
 
         expect(testLocation?.state).toStrictEqual({
           parameter: 'SLOWEST_TESTS',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
         })
       })
     })
@@ -217,6 +221,10 @@ describe('MetricsSection', () => {
 
         expect(testLocation?.state).toStrictEqual({
           parameter: 'FLAKY_TESTS',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
         })
       })
     })
@@ -267,6 +275,10 @@ describe('MetricsSection', () => {
 
         expect(testLocation?.state).toStrictEqual({
           parameter: 'FAILED_TESTS',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
         })
       })
     })
@@ -300,6 +312,10 @@ describe('MetricsSection', () => {
 
         expect(testLocation?.state).toStrictEqual({
           parameter: 'SKIPPED_TESTS',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
         })
       })
     })

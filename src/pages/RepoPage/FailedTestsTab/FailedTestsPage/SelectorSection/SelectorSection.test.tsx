@@ -193,10 +193,11 @@ describe('SelectorSection', () => {
       await user.click(flag1)
 
       expect(testLocation?.state).toStrictEqual({
-        search: '',
         flags: [1],
         historicalTrend: '',
         testSuites: [],
+        parameter: '',
+        term: '',
       })
     })
   })
@@ -217,10 +218,11 @@ describe('SelectorSection', () => {
       await user.click(jsSuite)
 
       expect(testLocation?.state).toStrictEqual({
-        search: '',
         flags: [],
         historicalTrend: '',
         testSuites: ['java'],
+        parameter: '',
+        term: '',
       })
     })
   })
@@ -241,10 +243,11 @@ describe('SelectorSection', () => {
       await user.click(jsSuite)
 
       expect(testLocation?.state).toStrictEqual({
-        search: '',
         flags: [],
         historicalTrend: 'INTERVAL_7_DAY',
         testSuites: [],
+        parameter: '',
+        term: '',
       })
     })
   })
