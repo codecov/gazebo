@@ -6,10 +6,14 @@ import SearchField from 'ui/SearchField'
 
 import { defaultQueryParams } from '../SelectorSection'
 
-const TableHeader = () => {
+interface TableHeaderProps {
+  totalCount: number
+}
+
+const TableHeader: React.FC<TableHeaderProps> = ({ totalCount }) => {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   // @ts-expect-error, useLocationParams needs to be updated to have full types
-  const [searchTerm, setSearchTerm] = useState(params.term || '')
+  const [searchTerm, setSearchTerm] = useState(params.term)
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value)
@@ -23,7 +27,11 @@ const TableHeader = () => {
     <>
       <hr />
       <div className="flex items-center justify-between py-2">
-        <h2 className="text-lg font-semibold">Tests (50K)</h2>
+        <h2 className="text-lg font-semibold">
+          Tests (
+          {totalCount > 999 ? `${(totalCount / 1000).toFixed(1)}K` : totalCount}
+          )
+        </h2>
         <div className="flex items-center gap-2">
           <SearchField
             // @ts-expect-error, component is not typed

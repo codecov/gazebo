@@ -271,6 +271,9 @@ export const useInfiniteTestResults = ({
             hasNextPage: false,
             endCursor: null,
           },
+          totalCount:
+            data?.owner?.repository?.testAnalytics?.testResults?.totalCount ??
+            0,
           private: data?.owner?.repository?.private ?? null,
           plan: data?.owner?.plan?.value ?? null,
           defaultBranch: data?.owner?.repository?.defaultBranch ?? null,
@@ -292,6 +295,7 @@ export const useInfiniteTestResults = ({
   return {
     data: {
       testResults: memoedData,
+      totalCount: data?.pages?.[0]?.totalCount ?? 0,
       private: data?.pages?.[0]?.private ?? null,
       plan: data?.pages?.[0]?.plan ?? null,
       defaultBranch: data?.pages?.[0]?.defaultBranch ?? null,

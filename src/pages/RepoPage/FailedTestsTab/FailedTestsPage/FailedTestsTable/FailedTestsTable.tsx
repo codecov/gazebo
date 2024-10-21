@@ -28,6 +28,7 @@ import {
 } from '../hooks/useInfiniteTestResults'
 import { TestResultsFilterParameterType } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
 import { TooltipWithIcon } from '../MetricsSection/MetricsSection'
+import { TableHeader } from '../TableHeader'
 
 const getDecodedBranch = (branch?: string) =>
   !!branch ? decodeURIComponent(branch) : undefined
@@ -286,14 +287,17 @@ const FailedTestsTable = () => {
 
   if (isEmpty(testData?.testResults) && !isLoading && !!branch) {
     return (
-      <div className="flex justify-center">
-        <br /> No test results found
+      <div className="flex flex-col gap-2">
+        <TableHeader totalCount={testData?.totalCount} />
+        <hr />
+        <p className="mt-4 text-center">No test results found</p>
       </div>
     )
   }
 
   return (
     <>
+      <TableHeader totalCount={testData?.totalCount} />
       <div className="tableui">
         <table>
           <colgroup>

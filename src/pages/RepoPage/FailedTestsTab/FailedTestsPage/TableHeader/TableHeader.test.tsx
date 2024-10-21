@@ -42,8 +42,8 @@ describe('TableHeader', () => {
   })
 
   it('renders the TableHeader component', () => {
-    render(<TableHeader />, { wrapper: wrapper() })
-    const testsText = screen.getByText('Tests (50K)')
+    render(<TableHeader totalCount={50000} />, { wrapper: wrapper() })
+    const testsText = screen.getByText('Tests (50.0K)')
     const searchInput = screen.getByPlaceholderText('Search by name')
     const resetButton = screen.getByText('Reset to default')
 
@@ -53,7 +53,7 @@ describe('TableHeader', () => {
   })
 
   it('updates search term on input change', async () => {
-    render(<TableHeader />, { wrapper: wrapper() })
+    render(<TableHeader totalCount={50000} />, { wrapper: wrapper() })
     const searchInput = screen.getByPlaceholderText('Search by name')
     await userEvent.type(searchInput, 'test')
     expect(searchInput).toHaveValue('test')
@@ -63,7 +63,7 @@ describe('TableHeader', () => {
   })
 
   it('resets to default parameters on button click', async () => {
-    render(<TableHeader />, {
+    render(<TableHeader totalCount={50000} />, {
       wrapper: wrapper('/gh/codecov/cool-repo/tests?term=test'),
     })
     const resetButton = screen.getByText('Reset to default')
@@ -74,13 +74,13 @@ describe('TableHeader', () => {
   })
 
   it('disables reset button when parameters are default', () => {
-    render(<TableHeader />, { wrapper: wrapper() })
+    render(<TableHeader totalCount={50000} />, { wrapper: wrapper() })
     const resetButton = screen.getByText('Reset to default')
     expect(resetButton).toBeDisabled()
   })
 
   it('enables reset button when parameters are not default', () => {
-    render(<TableHeader />, {
+    render(<TableHeader totalCount={50000} />, {
       wrapper: wrapper('/gh/codecov/cool-repo/tests?term=test'),
     })
     const resetButton = screen.getByText('Reset to default')

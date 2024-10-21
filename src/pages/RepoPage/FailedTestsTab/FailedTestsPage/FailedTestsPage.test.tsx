@@ -16,9 +16,6 @@ vi.mock('./MetricsSection/MetricsSection', () => ({
 vi.mock('./FailedTestsTable/FailedTestsTable', () => ({
   default: () => 'Failed Tests Table',
 }))
-vi.mock('./TableHeader/TableHeader', () => ({
-  default: () => 'Table Header',
-}))
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -79,11 +76,9 @@ describe('FailedTestsPage', () => {
     const selectorSection = screen.getByText(/Selector Section/)
     const metricSection = screen.getByText(/Metrics Section/)
     const table = screen.getByText(/Failed Tests Table/)
-    const tableHeader = screen.getByText(/Table Header/)
 
     expect(selectorSection).toBeInTheDocument()
     expect(metricSection).toBeInTheDocument()
     expect(table).toBeInTheDocument()
-    expect(tableHeader).toBeInTheDocument()
   })
 })
