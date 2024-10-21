@@ -230,6 +230,7 @@ export default function AccountOrgs({ account }: AccountOrgsArgs) {
                       className="h-14 hover:cursor-pointer hover:bg-ds-gray-primary"
                       onClick={() => linkToMembersTab(row.original.name)}
                       tabIndex={0}
+                      role="button"
                     >
                       {row.getVisibleCells().map((cell) => (
                         <td key={cell.id}>
