@@ -123,7 +123,7 @@ describe('RepoUploadToken', () => {
       expect(p).toBeInTheDocument()
 
       const addTokenToCICD = screen.getByText(
-        'If you’d like to add the token directly to your CI/CD Environment:'
+        "If you'd like to add the token directly to your CI/CD Environment:"
       )
       expect(addTokenToCICD).toBeInTheDocument()
     })

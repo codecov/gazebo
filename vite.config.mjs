@@ -56,14 +56,6 @@ export default defineConfig((config) => {
     )
   }
 
-  // conditionally add the commit sha to the asset and chunk file names
-  let assetFileNames
-  let chunkFileNames
-  if (process.env.GAZEBO_SHA) {
-    assetFileNames = `assets/[name]-${process.env.GAZEBO_SHA}-[hash][extname]`
-    chunkFileNames = `assets/[name]-${process.env.GAZEBO_SHA}-[hash].js`
-  }
-
   return {
     server: {
       port: 3000,
@@ -72,7 +64,11 @@ export default defineConfig((config) => {
       outDir: 'build',
       sourcemap: runSentryPlugin,
       rollupOptions: {
-        output: { assetFileNames, chunkFileNames },
+        output: {
+          entryFileNames: 'assets/[name].[hash:22].js',
+          chunkFileNames: 'assets/[name].[hash:22].js',
+          assetFileNames: 'assets/[name].[hash:22][extname]',
+        },
       },
     },
     define: envWithProcessPrefix,
@@ -83,7 +79,10 @@ export default defineConfig((config) => {
       }),
       tsconfigPaths(),
       legacy({
+        // which legacy browsers to support
         targets: ['>0.2%', 'not dead', 'not op_mini all'],
+        // which polyfills to include in the modern build
+        modernPolyfills: ['es.promise.all-settled'],
       }),
       react(),
       svgr(),

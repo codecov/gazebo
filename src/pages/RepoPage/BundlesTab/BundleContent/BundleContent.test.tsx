@@ -5,8 +5,11 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import MockResizeObserver from 'resize-observer-polyfill'
 
 import BundleContent from './BundleContent'
+
+global.ResizeObserver = MockResizeObserver
 
 vi.mock('./BundleSelection', () => ({
   default: () => <div>BundleSelection</div>,
