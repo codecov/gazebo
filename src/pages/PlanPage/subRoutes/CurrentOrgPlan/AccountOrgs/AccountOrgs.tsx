@@ -85,7 +85,24 @@ const columns = [
         <ActivatedUsersTooltip />
       </div>
     ),
-    cell: ({ renderValue }) => <p className="text-right">{renderValue()}</p>,
+    cell: (info) =>
+      info.row.original.isCurrentUserPartOfOrg ? (
+        <div className="flex w-full justify-end">
+          {/* @ts-ignore-error */}
+          <A
+            to={{
+              pageName: 'membersTab',
+              options: {
+                owner: info.row.original.name,
+              },
+            }}
+          >
+            {info.cell.renderValue()}
+          </A>
+        </div>
+      ) : (
+        <p className="text-right">{info.renderValue()}</p>
+      ),
   }),
 ]
 
@@ -213,50 +230,18 @@ export default function AccountOrgs({ account }: AccountOrgsArgs) {
                   </td>
                 </tr>
               ) : (
-                table.getRowModel().rows.map((row) =>
-                  row.original.isCurrentUserPartOfOrg ? (
-                    <tr key={row.id} className="h-14">
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id}>
-                          {cell.column.id === 'activatedUserCount' ? (
-                            <div className="flex w-full justify-end">
-                              {/* @ts-ignore-error */}
-                              <A
-                                to={{
-                                  pageName: 'membersTab',
-                                  options: {
-                                    owner: encodeURIComponent(
-                                      row.original.name
-                                    ),
-                                    provider,
-                                  },
-                                }}
-                              >
-                                {cell.getValue()}
-                              </A>
-                            </div>
-                          ) : (
-                            flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ) : (
-                    <tr key={row.id} className="h-14">
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  )
-                )
+                table.getRowModel().rows.map((row) => (
+                  <tr key={row.id} className="h-14">
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
               )}
               {isFetchingNextPage ? (
                 <tr>
