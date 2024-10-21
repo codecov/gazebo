@@ -180,6 +180,7 @@ interface UseTestResultsArgs {
     private: boolean | null
     plan: string | null
     defaultBranch: string | null
+    totalCount: number | null
   }>
 }
 
