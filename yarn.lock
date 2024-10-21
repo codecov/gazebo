@@ -3358,9 +3358,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codecov/bundler-plugin-core@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@codecov/bundler-plugin-core@npm:1.0.1"
+"@codecov/bundler-plugin-core@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@codecov/bundler-plugin-core@npm:1.2.1"
   dependencies:
     "@actions/core": "npm:^1.10.1"
     "@actions/github": "npm:^6.0.0"
@@ -3368,19 +3368,19 @@ __metadata:
     semver: "npm:^7.5.4"
     unplugin: "npm:^1.10.1"
     zod: "npm:^3.22.4"
-  checksum: 10c0/4a2fbcb0d33ada3c5f0335fae555cc534b46ee8e9ae4f72976b894d1d0c21954ba6309c8ee4b4d759a203674557360932c94c40f766368dfaf5195d77fe6feb8
+  checksum: 10c0/ec051dbfea8003b17676d0a0b24c006cfccaa9eb2a790357a5d504d214025d2b3209445d0c5889b56c4729259da4fd0845069ba6e08cd1e271706dd3da1788c6
   languageName: node
   linkType: hard
 
-"@codecov/vite-plugin@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@codecov/vite-plugin@npm:1.0.1"
+"@codecov/vite-plugin@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@codecov/vite-plugin@npm:1.2.1"
   dependencies:
-    "@codecov/bundler-plugin-core": "npm:^1.0.1"
+    "@codecov/bundler-plugin-core": "npm:^1.2.1"
     unplugin: "npm:^1.10.1"
   peerDependencies:
     vite: 4.x || 5.x
-  checksum: 10c0/e6fb5d924fd17cd4ac429c5c5279cc3ff13c25853826aa0cd70468916475d09a163df2669f3a646d7738a4659203de7ccf397ec9834813eef5e013cf4db9c72a
+  checksum: 10c0/bc443322859b3675456af1de2399dc380751ed1910adff0ad3dc84d625dac41fd6301192342a9fb65f033ce56bccd5ab082bb22443cc73bfd464bcf48ef5de32
   languageName: node
   linkType: hard
 
@@ -6456,6 +6456,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.59.13":
+  version: 5.59.13
+  resolution: "@tanstack/query-core@npm:5.59.13"
+  checksum: 10c0/57b43a9c1599b99055195fa83db80ddc7e00996244e9b73de5afa6bb8b0b489ee344ca5bcd660ccb9a6e4d2c01ef5dab42acd2e30ffa2b96d0335b3facb84707
+  languageName: node
+  linkType: hard
+
 "@tanstack/react-query-devtools@npm:^4.29.6":
   version: 4.36.1
   resolution: "@tanstack/react-query-devtools@npm:4.36.1"
@@ -6487,6 +6494,17 @@ __metadata:
     react-native:
       optional: true
   checksum: 10c0/15d9c98269d52fbdd49f4eb4b077b5d70346f904ea2ae51fd0400949d731afde658919a1143dd849fb50d4c5b6d0ab072e7b313a098ef316dd1c24089653f626
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-queryV5@npm:@tanstack/react-query@^5.59.15":
+  version: 5.59.15
+  resolution: "@tanstack/react-query@npm:5.59.15"
+  dependencies:
+    "@tanstack/query-core": "npm:5.59.13"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10c0/7b697eee85ed40efb82b6609434e2580405a3c32844365a8bb876b354e3068b21e0fa4c8ed0f5a06af45dc68373f39873b046f104975a31204d9288e03bba0f5
   languageName: node
   linkType: hard
 
@@ -12550,7 +12568,7 @@ __metadata:
     "@acemarke/react-prod-sourcemaps": "npm:^0.3.1"
     "@babel/plugin-proposal-private-property-in-object": "npm:^7.21.11"
     "@chromatic-com/storybook": "npm:^1"
-    "@codecov/vite-plugin": "npm:^1.0.1"
+    "@codecov/vite-plugin": "npm:^1.2.1"
     "@hookform/resolvers": "npm:^2.8.5"
     "@radix-ui/react-accordion": "npm:^1.1.2"
     "@radix-ui/react-checkbox": "npm:^1.1.1"
@@ -12580,6 +12598,7 @@ __metadata:
     "@tanstack/eslint-plugin-query": "npm:^4.29.4"
     "@tanstack/react-query": "npm:^4.29.5"
     "@tanstack/react-query-devtools": "npm:^4.29.6"
+    "@tanstack/react-queryV5": "npm:@tanstack/react-query@^5.59.15"
     "@tanstack/react-table": "npm:^8.9.1"
     "@tanstack/react-virtual": "npm:^3.8.1"
     "@testing-library/dom": "npm:10.3.2"
@@ -12651,7 +12670,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     react-hook-form: "npm:^7.43.9"
     react-hot-toast: "npm:^2.4.1"
-    react-intersection-observer: "npm:9.4.1"
+    react-intersection-observer: "npm:9.13.1"
     react-modal: "npm:^3.14.4"
     react-router: "npm:^5.3.3"
     react-router-dom: "npm:^5.2.1"
@@ -18638,12 +18657,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-intersection-observer@npm:9.4.1":
-  version: 9.4.1
-  resolution: "react-intersection-observer@npm:9.4.1"
+"react-intersection-observer@npm:9.13.1":
+  version: 9.13.1
+  resolution: "react-intersection-observer@npm:9.13.1"
   peerDependencies:
-    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/9beb3c765f8de451b2524bc4c0647e79136b0283bdd0d4648920eeadd8597e3ea46bf78104986ce44fa83fe061a82ae897c53ac92e727cfbdaa84a96f1acaebd
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+  checksum: 10c0/c64722db407e0ca83945bf97621ab4618fa74f3a70b528ff43988818d46feee8962bd12e70203d2d92b31030889a1f813d00e0aa3d781a7bc39fb293c277ee04
   languageName: node
   linkType: hard
 
