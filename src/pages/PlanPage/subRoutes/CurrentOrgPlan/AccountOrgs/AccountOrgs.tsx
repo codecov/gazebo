@@ -86,9 +86,7 @@ const columns = [
         <ActivatedUsersTooltip />
       </div>
     ),
-    cell: ({ renderValue }) => (
-      <p className="text-right text-ds-blue-default">{renderValue()}</p>
-    ),
+    cell: ({ renderValue }) => <p className="text-right">{renderValue()}</p>,
   }),
 ]
 
@@ -229,8 +227,6 @@ export default function AccountOrgs({ account }: AccountOrgsArgs) {
                       key={row.id}
                       className="h-14 hover:cursor-pointer hover:bg-ds-gray-primary"
                       onClick={() => linkToMembersTab(row.original.name)}
-                      tabIndex={0}
-                      role="button"
                     >
                       {row.getVisibleCells().map((cell) => (
                         <td key={cell.id}>
@@ -245,9 +241,24 @@ export default function AccountOrgs({ account }: AccountOrgsArgs) {
                     <tr key={row.id} className="h-14">
                       {row.getVisibleCells().map((cell) => (
                         <td key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
+                          {cell.id === 'activatedUserCount' ? (
+                            <div className="flex justify-items-end">
+                              {/* @ts-ignore-error */}
+                              <A
+                                to={{
+                                  pageName: 'membersTab',
+                                  options: {
+                                    owner: cell.getValue(),
+                                    provider,
+                                  },
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )
                           )}
                         </td>
                       ))}
