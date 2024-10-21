@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
+import { useDebounce } from 'react-use'
 
 import { Branch, useBranch, useBranches } from 'services/branches'
 import { useNavLinks } from 'services/navigation'
@@ -29,12 +30,22 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
   const { bundles: bundlesLink } = useNavLinks()
   const { provider, owner, repo, branch } = useParams<URLParams>()
   const [branchSearchTerm, setBranchSearchTerm] = useState<string>()
+  const [debouncedBranchSearchTerm, setDebouncedBranchSearchTerm] =
+    useState<string>()
 
   const { data: overview } = useRepoOverview({
     provider,
     owner,
     repo,
   })
+
+  useDebounce(
+    () => {
+      setDebouncedBranchSearchTerm(branchSearchTerm)
+    },
+    500,
+    [branchSearchTerm]
+  )
 
   const {
     data: branchList,
@@ -45,7 +56,7 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
     repo,
     owner,
     provider,
-    filters: { searchValue: branchSearchTerm },
+    filters: { searchValue: debouncedBranchSearchTerm },
     opts: {
       suspense: false,
     },
