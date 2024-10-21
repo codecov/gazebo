@@ -10,6 +10,7 @@ import BranchSelector from './BranchSelector'
 
 const mocks = vi.hoisted(() => ({
   useIntersection: vi.fn(),
+  useDebounce: vi.fn(),
 }))
 
 vi.mock('react-use', async () => {
@@ -17,8 +18,11 @@ vi.mock('react-use', async () => {
   return {
     ...actual,
     useIntersection: mocks.useIntersection,
+    useDebounce: mocks.useDebounce,
   }
 })
+
+const getBranchesWatcher = vi.fn()
 
 const mockRepoOverview = {
   __typename: 'Repository',
@@ -148,7 +152,7 @@ describe('BranchSelector', () => {
       nullHead: false,
     }
   ) {
-    const user = userEvent.setup()
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     const fetchNextPage = vi.fn()
     const mockSearching = vi.fn()
     const mockResetBundleSelect = vi.fn()
@@ -197,6 +201,8 @@ describe('BranchSelector', () => {
         })
       }),
       graphql.query('GetBranches', (info) => {
+        getBranchesWatcher(info)
+
         if (info.variables?.after) {
           fetchNextPage(info.variables?.after)
         }
@@ -412,6 +418,53 @@ describe('BranchSelector', () => {
       })
 
       expect(select).toHaveTextContent('Select branch')
+    })
+  })
+
+  describe('BranchSelector debounce functionality', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    })
+
+    it.only('debounces the branch search term', async () => {
+      const { queryClient, user, mockResetBundleSelect } = setup()
+      render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const input = (await screen.findByRole('combobox')) as HTMLInputElement
+
+      await waitFor(() => {
+        expect(getBranchesWatcher).toHaveBeenCalledTimes(1)
+      })
+
+      const firstRequest = getBranchesWatcher.mock.calls[0][0]
+      expect(firstRequest.variables.filters.searchValue).toBe(undefined)
+
+      await user.type(input, 'searching for branch')
+
+      vi.advanceTimersByTime(1000)
+
+      await waitFor(() => {
+        expect(getBranchesWatcher).toHaveBeenCalledTimes(1)
+      })
+
+      await user.type(input, 'searching for branch with some more text')
+
+      await waitFor(() => {
+        expect(getBranchesWatcher).toHaveBeenCalledTimes(2)
+      })
+
+      // Verify the search term is passed in the second request
+      const secondRequest = getBranchesWatcher.mock.calls[1][0] // The second call's first argument (req)
+      expect(secondRequest.variables.filters.searchValue).toBe(
+        'searching for branch with some more text'
+      )
     })
   })
 })
