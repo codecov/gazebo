@@ -23,7 +23,7 @@ const TableHeader = () => {
     <>
       <hr />
       <div className="flex items-center justify-between py-2">
-        <h3 className="font-semibold">Tests (50K)</h3>
+        <h2 className="font-semibold">Tests (50K)</h2>
         <div className="flex items-center gap-2">
           <SearchField
             // @ts-expect-error, component is not typed

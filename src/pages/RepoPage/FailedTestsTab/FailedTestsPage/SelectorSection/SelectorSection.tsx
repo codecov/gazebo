@@ -40,12 +40,12 @@ function SelectorSection() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
 
   // @ts-expect-error need to type out useLocationParams
-  const [selectedFlags, setSelectedFlags] = useState(params?.flags || [])
+  const [selectedFlags, setSelectedFlags] = useState(params?.flags)
   const [flagSearch, setFlagSearch] = useState('')
 
   const [selectedTestSuites, setSelectedTestSuites] = useState(
     // @ts-expect-error need to type out useLocationParams
-    params?.testSuites || []
+    params?.testSuites
   )
   const [testSuiteSearch, setTestSuiteSearch] = useState('')
 
