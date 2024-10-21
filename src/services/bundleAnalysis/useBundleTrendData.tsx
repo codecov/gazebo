@@ -24,6 +24,7 @@ export const BUNDLE_TREND_REPORT_TYPES = [
   'FONT_SIZE',
   'IMAGE_SIZE',
   'ASSET_SIZE',
+  'UNKNOWN_SIZE',
 ] as const
 
 const MeasurementSchema = z.object({
