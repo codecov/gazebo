@@ -23,6 +23,13 @@ function Sunburst() {
 
   const breadcrumbPaths = useConvertD3ToBreadcrumbs(currentPath)
 
+  let pathsToDisplay
+  if (breadcrumbPaths.length <= 1) {
+    pathsToDisplay = breadcrumbPaths
+  } else {
+    pathsToDisplay = [breadcrumbPaths[0], { text: '...' }]
+  }
+
   if (isFetching || isLoading) {
     return <Placeholder />
   }
@@ -43,7 +50,7 @@ function Sunburst() {
         colorDomainMax={config?.indicationRange?.upperRange}
       />
       <span dir="rtl" className="truncate text-left">
-        <Breadcrumb paths={breadcrumbPaths} />
+        <Breadcrumb paths={pathsToDisplay} />
       </span>
     </>
   )
