@@ -4,8 +4,8 @@ import {
   screen,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -44,9 +44,11 @@ const node1 = {
       percentCovered: 80,
     },
   },
-  bundleAnalysisCompareWithParent: {
-    __typename: 'MissingHeadReport',
-    message: 'Missing head report',
+  bundleAnalysis: {
+    bundleAnalysisCompareWithParent: {
+      __typename: 'MissingHeadReport',
+      message: 'Missing head report',
+    },
   },
 }
 
@@ -67,11 +69,13 @@ const node2 = {
       percentCovered: 90,
     },
   },
-  bundleAnalysisCompareWithParent: {
-    __typename: 'BundleAnalysisComparison',
-    bundleChange: {
-      size: {
-        uncompress: 1000,
+  bundleAnalysis: {
+    bundleAnalysisCompareWithParent: {
+      __typename: 'BundleAnalysisComparison',
+      bundleChange: {
+        size: {
+          uncompress: 1000,
+        },
       },
     },
   },
@@ -94,11 +98,13 @@ const node3 = {
       percentCovered: 100,
     },
   },
-  bundleAnalysisCompareWithParent: {
-    __typename: 'BundleAnalysisComparison',
-    bundleChange: {
-      size: {
-        uncompress: 1001,
+  bundleAnalysis: {
+    bundleAnalysisCompareWithParent: {
+      __typename: 'BundleAnalysisComparison',
+      bundleChange: {
+        size: {
+          uncompress: 1001,
+        },
       },
     },
   },

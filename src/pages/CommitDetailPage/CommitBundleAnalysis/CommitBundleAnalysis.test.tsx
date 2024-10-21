@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -37,12 +37,14 @@ const mockCommitPageData = ({
         compareWithParent: {
           __typename: 'Comparison',
         },
-        bundleAnalysisCompareWithParent: {
-          __typename: firstPullRequest
-            ? 'FirstPullRequest'
-            : comparisonError
-              ? 'MissingHeadCommit'
-              : 'BundleAnalysisComparison',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: firstPullRequest
+              ? 'FirstPullRequest'
+              : comparisonError
+                ? 'MissingHeadCommit'
+                : 'BundleAnalysisComparison',
+          },
         },
       },
     },
@@ -54,14 +56,16 @@ const mockSummaryData = (uncompress: number) => ({
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-          bundleChange: {
-            loadTime: {
-              threeG: 2,
-            },
-            size: {
-              uncompress,
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              loadTime: {
+                threeG: 2,
+              },
+              size: {
+                uncompress,
+              },
             },
           },
         },
@@ -77,9 +81,11 @@ const mockFirstPullRequest = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'FirstPullRequest',
-          message: 'First pull request',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'FirstPullRequest',
+            message: 'First pull request',
+          },
         },
       },
     },
@@ -91,9 +97,11 @@ const mockComparisonError = {
     repository: {
       __typename: 'Repository',
       commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'MissingHeadCommit',
-          message: 'Missing head commit',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'MissingHeadCommit',
+            message: 'Missing head commit',
+          },
         },
       },
     },

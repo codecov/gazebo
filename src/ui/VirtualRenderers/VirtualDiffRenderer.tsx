@@ -16,10 +16,10 @@
 import * as Sentry from '@sentry/react'
 import { useWindowVirtualizer } from '@tanstack/react-virtual'
 import Highlight, { defaultProps } from 'prism-react-renderer'
-import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import { requestAnimationTimeout } from 'shared/utils/animationFrameUtils'
+import { useDisablePointerEvents } from 'shared/useDisablePointerEvents'
 import { cn } from 'shared/utils/cn'
 import { prismLanguageMapper } from 'shared/utils/prism/prismLanguageMapper'
 
@@ -27,6 +27,9 @@ import { ColorBar } from './ColorBar'
 import { LINE_ROW_HEIGHT } from './constants'
 import { LineNumber } from './LineNumber'
 import { CoverageValue, Token } from './types'
+import { useLeftScrollSync } from './useLeftScrollSync'
+import { useSyncScrollMargin } from './useSyncScrollMargin'
+import { useSyncWrapperWidth } from './useSyncWrapperWidth'
 
 import './VirtualFileRenderer.css'
 import 'shared/utils/prism/prismTheme.css'
@@ -91,66 +94,17 @@ const CodeBody = ({
 }: CodeBodyProps) => {
   const history = useHistory()
   const location = useLocation()
-
-  const [scrollMargin, setScrollMargin] = useState<number | undefined>(
-    undefined
-  )
-  const virtualizer = useWindowVirtualizer({
-    count: tokens.length,
-    // this is the height of each line in the code block based off of not having any line wrapping, if we add line wrapping this will need to be updated to dynamically measure the height of each line.
-    estimateSize: () => LINE_ROW_HEIGHT,
-    overscan: 45, // update to be based off of the height of the window
-    scrollMargin: scrollMargin ?? 0,
+  const { wrapperWidth, setWrapperRefState } = useSyncWrapperWidth()
+  const scrollMargin = useSyncScrollMargin({
+    overlayRef: codeDisplayOverlayRef,
   })
 
-  const [wrapperRefState, setWrapperRefState] = useState<HTMLDivElement | null>(
-    null
-  )
-  const [wrapperWidth, setWrapperWidth] = useState<number | '100%'>('100%')
-  useLayoutEffect(() => {
-    if (!wrapperRefState) return
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      const entry = entries?.[0]
-      if (entry) {
-        setWrapperWidth(entry.contentRect.width)
-      }
-    })
-
-    resizeObserver.observe(wrapperRefState)
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [wrapperRefState])
-
-  /**
-   * This effect is used to update the scroll margin of the virtualizer when the
-   * code display overlay is resized. This is needed because the virtualizer
-   * needs to know the offset of the code display overlay from the top of the
-   * window to correctly calculate the scroll position of the virtual items.
-   * We do the calculation to account for the scroll position of the window
-   * incase the user has scrolled down the page, and resizes the window
-   * afterwards.
-   */
-  useEffect(() => {
-    if (!codeDisplayOverlayRef.current) return
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      const entry = entries?.[0]
-      if (entry) {
-        setScrollMargin(
-          entry.target.getBoundingClientRect().top + window.scrollY
-        )
-      }
-    })
-
-    resizeObserver.observe(codeDisplayOverlayRef.current)
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [codeDisplayOverlayRef])
+  const virtualizer = useWindowVirtualizer({
+    count: tokens.length,
+    estimateSize: () => LINE_ROW_HEIGHT,
+    overscan: 45,
+    scrollMargin: scrollMargin ?? 0,
+  })
 
   const initializeRender = useRef(true)
   useEffect(() => {
@@ -269,7 +223,6 @@ const CodeBody = ({
       >
         {virtualizer.getVirtualItems().map((item) => {
           const line = lineData[item.index]
-          const lineNumber = item.index + 1
           const baseHash = `#${hashedPath}-L${line?.baseNumber}`
           const headHash = `#${hashedPath}-R${line?.headNumber}`
           // get any specific things from code highlighting library for this given line
@@ -299,7 +252,7 @@ const CodeBody = ({
                     isHighlighted={
                       location.hash === headHash || location.hash === baseHash
                     }
-                    coverage={lineData?.[lineNumber]?.headCoverage}
+                    coverage={lineData?.[item.index]?.headCoverage}
                   />
                 </div>
                 <div
@@ -386,98 +339,8 @@ function VirtualDiffRendererComponent({
   const codeDisplayOverlayRef = useRef<HTMLDivElement>(null)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const virtualCodeRendererRef = useRef<HTMLDivElement>(null)
-
-  // this ref is actually used to store the ID of the requestAnimationFrame hence Raf instead of Ref
-  const pointerEventsRaf = useRef<{ id: number } | null>(null)
-
-  useLayoutEffect(() => {
-    const onScroll = (_event: Event) => {
-      /**
-       * We want to disable pointer events on the virtual file renderer while
-       * scrolling because as the user is scrolling the page, the browser needs
-       * to also check to see if the user if the pointer is over any
-       * interactive elements (like the line number indicators) during the
-       * repaint. By disabling these events, we can reduce the amount of work
-       * the browser needs to do during the repaint, as it does not need to
-       * check these events.
-       */
-      if (!pointerEventsRaf.current && virtualCodeRendererRef.current) {
-        virtualCodeRendererRef.current.style.pointerEvents = 'none'
-      }
-
-      /**
-       * If there is a requestAnimationFrame already scheduled, we cancel it
-       * and schedule a new one. This is to prevent the pointer events from
-       * being re-enabled while the user is still scrolling.
-       */
-      if (pointerEventsRaf.current) {
-        window.cancelAnimationFrame(pointerEventsRaf.current.id)
-      }
-
-      /**
-       * We then re-enable pointer events after the scroll event has finished so
-       * the user can continue interacting with the line number indicators.
-       */
-      pointerEventsRaf.current = requestAnimationTimeout(() => {
-        if (virtualCodeRendererRef.current) {
-          virtualCodeRendererRef.current.style.pointerEvents = 'auto'
-          pointerEventsRaf.current = null
-        }
-      }, 50)
-    }
-
-    if (virtualCodeRendererRef) {
-      window.addEventListener('scroll', onScroll, { passive: true })
-    }
-
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-    }
-  }, [])
-
-  // this effect syncs the scroll position of the text area with the parent div
-  useLayoutEffect(() => {
-    // if the text area or code display element ref is not available, return
-    if (!textAreaRef.current || !codeDisplayOverlayRef.current) return
-    // copy the ref into a variable so we can use it in the cleanup function
-    const clonedTextAreaRef = textAreaRef.current
-
-    // sync the scroll position of the text area with the code highlight div
-    const onScroll = () => {
-      if (!clonedTextAreaRef || !codeDisplayOverlayRef.current) return
-      codeDisplayOverlayRef.current.scrollLeft = clonedTextAreaRef?.scrollLeft
-    }
-
-    // add the scroll event listener
-    clonedTextAreaRef.addEventListener('scroll', onScroll, { passive: true })
-
-    return () => {
-      // remove the scroll event listener
-      clonedTextAreaRef?.removeEventListener('scroll', onScroll)
-    }
-  }, [])
-
-  // this effect sets an empty div to the width of the text area so the code highlight div can scroll horizontally
-  useLayoutEffect(() => {
-    // if the text area or width div ref is not available, return
-    if (!textAreaRef.current || !widthDivRef.current) return
-
-    // create a resize observer to watch the text area for changes in width so once the text area is resized, the width div can be updated
-    const resize = new ResizeObserver((entries) => {
-      const entry = entries?.[0]
-      if (widthDivRef.current && entry) {
-        widthDivRef.current.style.width = `${entry.target.scrollWidth}px`
-      }
-    })
-
-    // observe the text area for changes
-    resize.observe(textAreaRef.current)
-
-    return () => {
-      // disconnect the resize observer
-      resize.disconnect()
-    }
-  }, [])
+  useDisablePointerEvents(virtualCodeRendererRef)
+  useLeftScrollSync({ textAreaRef, overlayRef: codeDisplayOverlayRef })
 
   return (
     <div

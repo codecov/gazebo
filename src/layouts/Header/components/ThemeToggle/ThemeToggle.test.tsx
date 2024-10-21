@@ -50,7 +50,7 @@ describe('ThemeToggle', () => {
     expect(icon).toBeInTheDocument()
 
     // toggle to dark mode
-    userEvent.click(button)
+    await userEvent.click(button)
 
     await waitFor(() => {
       expect(mockSetItem).toHaveBeenCalledWith('theme', 'dark')
@@ -68,7 +68,7 @@ describe('ThemeToggle', () => {
     )
 
     // toggle back to light mode
-    userEvent.click(button)
+    await userEvent.click(button)
     await waitFor(() => {
       expect(mockSetItem).toHaveBeenCalledWith('theme', 'light')
     })

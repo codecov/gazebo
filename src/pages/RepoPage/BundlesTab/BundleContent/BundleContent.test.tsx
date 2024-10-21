@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -35,21 +35,23 @@ const mockBranchBundles = {
       branch: {
         head: {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundleData: {
-              loadTime: { threeG: 200 },
-              size: { uncompress: 100 },
-            },
-            bundles: [
-              {
-                name: 'bundle1',
-                bundleData: {
-                  loadTime: { threeG: 100 },
-                  size: { uncompress: 50 },
-                },
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundleData: {
+                loadTime: { threeG: 200 },
+                size: { uncompress: 100 },
               },
-            ],
+              bundles: [
+                {
+                  name: 'bundle1',
+                  bundleData: {
+                    loadTime: { threeG: 100 },
+                    size: { uncompress: 50 },
+                  },
+                },
+              ],
+            },
           },
         },
       },
@@ -64,9 +66,11 @@ const mockBranchBundlesError = {
       branch: {
         head: {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
-          bundleAnalysisReport: {
-            __typename: 'MissingHeadReport',
-            message: 'Missing head report',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+              message: 'Missing head report',
+            },
           },
         },
       },
@@ -89,46 +93,48 @@ const mockAssets = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              bundleData: {
-                size: {
-                  uncompress: 12,
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                bundleData: {
+                  size: {
+                    uncompress: 12,
+                  },
                 },
-              },
-              assetsPaginated: {
-                edges: [
-                  {
-                    node: {
-                      name: 'asset-1',
-                      extension: 'js',
-                      bundleData: {
-                        loadTime: {
-                          threeG: 2000,
-                          highSpeed: 2000,
-                        },
-                        size: {
-                          uncompress: 3000,
-                          gzip: 4000,
-                        },
-                      },
-                      measurements: {
-                        change: {
+                assetsPaginated: {
+                  edges: [
+                    {
+                      node: {
+                        name: 'asset-1',
+                        extension: 'js',
+                        bundleData: {
+                          loadTime: {
+                            threeG: 2000,
+                            highSpeed: 2000,
+                          },
                           size: {
-                            uncompress: 5,
+                            uncompress: 3000,
+                            gzip: 4000,
                           },
                         },
-                        measurements: [
-                          { timestamp: '2022-10-10T11:59:59', avg: 6 },
-                        ],
+                        measurements: {
+                          change: {
+                            size: {
+                              uncompress: 5,
+                            },
+                          },
+                          measurements: [
+                            { timestamp: '2022-10-10T11:59:59', avg: 6 },
+                          ],
+                        },
                       },
                     },
+                  ],
+                  pageInfo: {
+                    hasNextPage: false,
+                    endCursor: null,
                   },
-                ],
-                pageInfo: {
-                  hasNextPage: false,
-                  endCursor: null,
                 },
               },
             },
@@ -145,9 +151,11 @@ const mockMissingHeadReportAssets = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'MissingHeadReport',
-            message: 'Missing head report',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+              message: 'Missing head report',
+            },
           },
         },
       },
@@ -161,40 +169,42 @@ const mockBundleTrendData = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              measurements: [
-                {
-                  assetType: 'REPORT_SIZE',
-                  measurements: [
-                    {
-                      timestamp: '2024-06-15T00:00:00+00:00',
-                      avg: null,
-                    },
-                    {
-                      timestamp: '2024-06-16T00:00:00+00:00',
-                      avg: null,
-                    },
-                    {
-                      timestamp: '2024-06-17T00:00:00+00:00',
-                      avg: 6834699.8,
-                    },
-                    {
-                      timestamp: '2024-06-18T00:00:00+00:00',
-                      avg: 6822037.27273,
-                    },
-                    {
-                      timestamp: '2024-06-19T00:00:00+00:00',
-                      avg: 6824833.33333,
-                    },
-                    {
-                      timestamp: '2024-06-20T00:00:00+00:00',
-                      avg: 6812341,
-                    },
-                  ],
-                },
-              ],
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                measurements: [
+                  {
+                    assetType: 'REPORT_SIZE',
+                    measurements: [
+                      {
+                        timestamp: '2024-06-15T00:00:00+00:00',
+                        avg: null,
+                      },
+                      {
+                        timestamp: '2024-06-16T00:00:00+00:00',
+                        avg: null,
+                      },
+                      {
+                        timestamp: '2024-06-17T00:00:00+00:00',
+                        avg: 6834699.8,
+                      },
+                      {
+                        timestamp: '2024-06-18T00:00:00+00:00',
+                        avg: 6822037.27273,
+                      },
+                      {
+                        timestamp: '2024-06-19T00:00:00+00:00',
+                        avg: 6824833.33333,
+                      },
+                      {
+                        timestamp: '2024-06-20T00:00:00+00:00',
+                        avg: 6812341,
+                      },
+                    ],
+                  },
+                ],
+              },
             },
           },
         },
@@ -209,19 +219,21 @@ const mockBundleSummary = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              name: 'bundle1',
-              moduleCount: 10,
-              bundleData: {
-                loadTime: {
-                  threeG: 1000,
-                  highSpeed: 500,
-                },
-                size: {
-                  gzip: 1000,
-                  uncompress: 2000,
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                name: 'bundle1',
+                moduleCount: 10,
+                bundleData: {
+                  loadTime: {
+                    threeG: 1000,
+                    highSpeed: 500,
+                  },
+                  size: {
+                    gzip: 1000,
+                    uncompress: 2000,
+                  },
                 },
               },
             },

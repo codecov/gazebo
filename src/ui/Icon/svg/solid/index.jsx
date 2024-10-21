@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 // import academicCap from './academic-cap.svg?react'
 // import adjustments from './adjustments.svg?react'
 // import annotation from './annotation.svg?react'
@@ -226,4 +227,45 @@ import x from './x.svg?react'
 // import zoomIn from './zoom-in.svg?react'
 // import zoomOut from './zoom-out.svg?react'
 
-export { arrowDown, arrowUp, ban, bookOpen, checkCircle, check, chevronDown, chevronLeft, chevronRight, chevronUp, clipboardCopy, cog, database, documentText, document, download, exclamationCircle, exclamation, externalLink, eyeOff, eye, flag, folder, globeAlt, home, informationCircle, lightBulb, lockClosed, moon, noSymbol, plusCircle, printer, questionMarkCircle, refresh, search, speakerphone, sun, trash, xCircle, x }
+export {
+  arrowDown,
+  arrowUp,
+  ban,
+  bookOpen,
+  checkCircle,
+  check,
+  chevronDown,
+  chevronLeft,
+  chevronRight,
+  chevronUp,
+  clipboardCopy,
+  cog,
+  database,
+  documentText,
+  document,
+  download,
+  exclamationCircle,
+  exclamation,
+  externalLink,
+  eyeOff,
+  eye,
+  flag,
+  folder,
+  globeAlt,
+  home,
+  informationCircle,
+  lightBulb,
+  lockClosed,
+  moon,
+  noSymbol,
+  plusCircle,
+  printer,
+  questionMarkCircle,
+  refresh,
+  search,
+  speakerphone,
+  sun,
+  trash,
+  xCircle,
+  x,
+}

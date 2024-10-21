@@ -68,11 +68,12 @@ export const createCommitsTableData = ({ pages }: CommitsTableData) => {
       bundleAnalysis = <PendingUpload />
     } else if (
       commit?.bundleStatus === COMMIT_STATUS_COMPLETED &&
-      commit?.bundleAnalysisCompareWithParent?.__typename ===
+      commit?.bundleAnalysis?.bundleAnalysisCompareWithParent?.__typename ===
         'BundleAnalysisComparison'
     ) {
       const change =
-        commit?.bundleAnalysisCompareWithParent?.bundleChange?.size?.uncompress
+        commit?.bundleAnalysis?.bundleAnalysisCompareWithParent?.bundleChange
+          ?.size?.uncompress
       const content = `${change > 0 ? '+' : ''}${formatSizeToString(change)}`
       bundleAnalysis = <p>{content}</p>
     }

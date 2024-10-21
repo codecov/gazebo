@@ -1,4 +1,4 @@
-import { graphql, HttpResponse } from 'msw2'
+import { graphql, HttpResponse } from 'msw'
 
 export const commitErrored = graphql.query('Commit', (info) => {
   return HttpResponse.json({
@@ -111,10 +111,12 @@ export const compareTotalsEmpty = graphql.query('CompareTotals', (info) => {
 })
 
 const commitDataError = {
-  totals: {
-    coverage: 38.30846,
-    diff: {
-      coverage: null,
+  coverageAnalytics: {
+    totals: {
+      coverage: 38.30846,
+      diff: {
+        coverage: null,
+      },
     },
   },
   branchName: null,
@@ -290,17 +292,21 @@ const commitDataError = {
   },
   parent: {
     commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-    totals: {
-      coverage: 38.30846,
+    coverageAnalytics: {
+      totals: {
+        coverage: 38.30846,
+      },
     },
   },
 }
 
 const commitDataEmpty = {
-  totals: {
-    coverage: 38.30846,
-    diff: {
-      coverage: null,
+  coverageAnalytics: {
+    totals: {
+      coverage: 38.30846,
+      diff: {
+        coverage: null,
+      },
     },
   },
   commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
@@ -321,8 +327,10 @@ const commitDataEmpty = {
   },
   parent: {
     commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-    totals: {
-      coverage: 38.30846,
+    coverageAnalytics: {
+      totals: {
+        coverage: 38.30846,
+      },
     },
   },
 }

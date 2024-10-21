@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import angleDown from './angleDown.svg?react'
 import angleUp from './angleUp.svg?react'
 import arrowLeft from './arrowLeft.svg?react'
@@ -15,4 +16,21 @@ import setting from './setting.svg?react'
 import signOut from './signOut.svg?react'
 import times from './times.svg?react'
 
-export { angleDown, angleUp, arrowLeft, ban, check, chevronLeft, chevronRight, creditCard, exclamationCircle, fileAlt, hamburger, infoCircle, search, setting, signOut, times }
+export {
+  angleDown,
+  angleUp,
+  arrowLeft,
+  ban,
+  check,
+  chevronLeft,
+  chevronRight,
+  creditCard,
+  exclamationCircle,
+  fileAlt,
+  hamburger,
+  infoCircle,
+  search,
+  setting,
+  signOut,
+  times,
+}

@@ -6,8 +6,8 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -47,10 +47,12 @@ const mockCommitData = {
       __typename: 'Repository',
       commit: {
         branchName: null,
-        totals: {
-          coverage: 38.30846,
-          diff: {
-            coverage: null,
+        coverageAnalytics: {
+          totals: {
+            coverage: 38.30846,
+            diff: {
+              coverage: null,
+            },
           },
         },
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
@@ -97,8 +99,10 @@ const mockCommitData = {
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-          totals: {
-            coverage: 38.30846,
+          coverageAnalytics: {
+            totals: {
+              coverage: 38.30846,
+            },
           },
         },
       },
@@ -112,10 +116,12 @@ const mockErroredUploads = {
       __typename: 'Repository',
       commit: {
         branchName: null,
-        totals: {
-          coverage: 38.30846,
-          diff: {
-            coverage: null,
+        coverageAnalytics: {
+          totals: {
+            coverage: 38.30846,
+            diff: {
+              coverage: null,
+            },
           },
         },
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
@@ -162,8 +168,10 @@ const mockErroredUploads = {
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-          totals: {
-            coverage: 38.30846,
+          coverageAnalytics: {
+            totals: {
+              coverage: 38.30846,
+            },
           },
         },
       },
@@ -275,7 +283,9 @@ const mockCommitComponentData = {
     repository: {
       __typename: 'Repository',
       commit: {
-        components: [],
+        coverageAnalytics: {
+          components: [],
+        },
       },
     },
   },
@@ -304,8 +314,10 @@ const mockCommitPageData = (
                 ? 'FirstPullRequest'
                 : 'Comparison',
         },
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
+        bundleAnalysis: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+          },
         },
       },
     },

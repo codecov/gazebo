@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
@@ -13,10 +13,12 @@ const compareDoneData = {
       __typename: 'Repository',
       commit: {
         branchName: null,
-        totals: {
-          coverage: 38.30846,
-          diff: {
-            coverage: null,
+        coverageAnalytics: {
+          totals: {
+            coverage: 38.30846,
+            diff: {
+              coverage: null,
+            },
           },
         },
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
@@ -44,8 +46,10 @@ const compareDoneData = {
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-          totals: {
-            coverage: 38.30846,
+          coverageAnalytics: {
+            totals: {
+              coverage: 38.30846,
+            },
           },
         },
       },
@@ -59,10 +63,12 @@ const dataReturned = {
       __typename: 'Repository',
       commit: {
         branchName: null,
-        totals: {
-          coverage: 38.30846,
-          diff: {
-            coverage: null,
+        coverageAnalytics: {
+          totals: {
+            coverage: 38.30846,
+            diff: {
+              coverage: null,
+            },
           },
         },
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
@@ -128,8 +134,10 @@ const dataReturned = {
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-          totals: {
-            coverage: 38.30846,
+          coverageAnalytics: {
+            totals: {
+              coverage: 38.30846,
+            },
           },
         },
       },
@@ -143,10 +151,12 @@ const dataReturnedTeam = {
       __typename: 'Repository',
       commit: {
         branchName: null,
-        totals: {
-          coverage: 38.30846,
-          diff: {
-            coverage: null,
+        coverageAnalytics: {
+          totals: {
+            coverage: 38.30846,
+            diff: {
+              coverage: null,
+            },
           },
         },
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
@@ -193,8 +203,10 @@ const dataReturnedTeam = {
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-          totals: {
-            coverage: 38.30846,
+          coverageAnalytics: {
+            totals: {
+              coverage: 38.30846,
+            },
           },
         },
       },
@@ -347,14 +359,18 @@ describe('useCommit', () => {
             message: 'paths test',
             parent: {
               commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-              totals: {
-                coverage: 38.30846,
+              coverageAnalytics: {
+                totals: {
+                  coverage: 38.30846,
+                },
               },
             },
             pullId: 10,
             state: 'complete',
-            totals: {
-              coverage: 38.30846,
+            coverageAnalytics: {
+              totals: {
+                coverage: 38.30846,
+              },
             },
             uploads: [
               {
@@ -440,14 +456,18 @@ describe('useCommit', () => {
             message: 'paths test',
             parent: {
               commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-              totals: {
-                coverage: 38.30846,
+              coverageAnalytics: {
+                totals: {
+                  coverage: 38.30846,
+                },
               },
             },
             pullId: 10,
             state: 'complete',
-            totals: {
-              coverage: 38.30846,
+            coverageAnalytics: {
+              totals: {
+                coverage: 38.30846,
+              },
             },
             uploads: [
               {
@@ -665,8 +685,10 @@ describe('useCommit polling', () => {
         expect(result.current.data).toStrictEqual({
           commit: {
             branchName: null,
-            totals: {
-              coverage: 38.30846,
+            coverageAnalytics: {
+              totals: {
+                coverage: 38.30846,
+              },
             },
             commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
             pullId: 10,
@@ -690,8 +712,10 @@ describe('useCommit polling', () => {
             },
             parent: {
               commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-              totals: {
-                coverage: 38.30846,
+              coverageAnalytics: {
+                totals: {
+                  coverage: 38.30846,
+                },
               },
             },
             uploads: [

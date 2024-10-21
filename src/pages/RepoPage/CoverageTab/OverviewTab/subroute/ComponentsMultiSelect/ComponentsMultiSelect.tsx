@@ -39,7 +39,7 @@ export default function ComponentsMultiSelect() {
   })
 
   const components = useMemo(() => {
-    return data?.branch?.head?.components
+    return data?.branch?.head?.coverageAnalytics?.components
   }, [data])
 
   const componentNames = useMemo(() => {

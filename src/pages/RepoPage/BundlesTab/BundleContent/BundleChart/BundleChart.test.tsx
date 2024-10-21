@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { BundleChart } from './BundleChart'
@@ -28,40 +28,42 @@ const mockBundleTrendData = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              measurements: [
-                {
-                  assetType: 'REPORT_SIZE',
-                  measurements: [
-                    {
-                      timestamp: '2024-06-15T00:00:00+00:00',
-                      avg: null,
-                    },
-                    {
-                      timestamp: '2024-06-16T00:00:00+00:00',
-                      avg: null,
-                    },
-                    {
-                      timestamp: '2024-06-17T00:00:00+00:00',
-                      avg: 6834699.8,
-                    },
-                    {
-                      timestamp: '2024-06-18T00:00:00+00:00',
-                      avg: 6822037.27273,
-                    },
-                    {
-                      timestamp: '2024-06-19T00:00:00+00:00',
-                      avg: 6824833.33333,
-                    },
-                    {
-                      timestamp: '2024-06-20T00:00:00+00:00',
-                      avg: 6812341,
-                    },
-                  ],
-                },
-              ],
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                measurements: [
+                  {
+                    assetType: 'REPORT_SIZE',
+                    measurements: [
+                      {
+                        timestamp: '2024-06-15T00:00:00+00:00',
+                        avg: null,
+                      },
+                      {
+                        timestamp: '2024-06-16T00:00:00+00:00',
+                        avg: null,
+                      },
+                      {
+                        timestamp: '2024-06-17T00:00:00+00:00',
+                        avg: 6834699.8,
+                      },
+                      {
+                        timestamp: '2024-06-18T00:00:00+00:00',
+                        avg: 6822037.27273,
+                      },
+                      {
+                        timestamp: '2024-06-19T00:00:00+00:00',
+                        avg: 6824833.33333,
+                      },
+                      {
+                        timestamp: '2024-06-20T00:00:00+00:00',
+                        avg: 6812341,
+                      },
+                    ],
+                  },
+                ],
+              },
             },
           },
         },

@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
@@ -41,12 +41,16 @@ const mockCommits = {
                 username: 'user-1',
                 avatarUrl: 'http://127.0.0.1/avatar-url',
               },
-              totals: {
-                coverage: 100,
-              },
-              parent: {
+              coverageAnalytics: {
                 totals: {
                   coverage: 100,
+                },
+              },
+              parent: {
+                coverageAnalytics: {
+                  totals: {
+                    coverage: 100,
+                  },
                 },
               },
               compareWithParent: {
@@ -55,8 +59,10 @@ const mockCommits = {
                   percentCovered: 100,
                 },
               },
-              bundleAnalysisReport: {
-                __typename: 'BundleAnalysisReport',
+              bundleAnalysis: {
+                bundleAnalysisReport: {
+                  __typename: 'BundleAnalysisReport',
+                },
               },
             },
           },
@@ -83,8 +89,10 @@ const mockPullData = {
         },
         head: {
           commitid: '123',
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+            },
           },
         },
         compareWithBase: {

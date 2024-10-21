@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCoverageTabData } from './useCoverageTabData'
@@ -28,8 +28,10 @@ const mockCoverageTabData = {
       __typename: 'Repository',
       branch: {
         head: {
-          totals: {
-            fileCount: 10,
+          coverageAnalytics: {
+            totals: {
+              fileCount: 10,
+            },
           },
         },
       },
@@ -154,8 +156,10 @@ describe('useCoverageTabData', () => {
           expect(result.current.data).toEqual({
             branch: {
               head: {
-                totals: {
-                  fileCount: 10,
+                coverageAnalytics: {
+                  totals: {
+                    fileCount: 10,
+                  },
                 },
               },
             },
@@ -182,8 +186,10 @@ describe('useCoverageTabData', () => {
           expect(result.current.data).toEqual({
             branch: {
               head: {
-                totals: {
-                  fileCount: 10,
+                coverageAnalytics: {
+                  totals: {
+                    fileCount: 10,
+                  },
                 },
               },
             },

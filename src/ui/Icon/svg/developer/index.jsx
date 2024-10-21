@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 // import branchDeleted from './branch-deleted.svg?react'
 import branch from './branch.svg?react'
 // import commit from './commit.svg?react'

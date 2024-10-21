@@ -25,7 +25,7 @@ export function getPullDataForCompareSummary({
   const rawPatch = compareWithBase?.patchTotals?.percentCovered
 
   return {
-    headCoverage: head?.totals?.percentCovered,
+    headCoverage: head?.coverageAnalytics?.totals?.percentCovered,
     patchCoverage: isNumber(rawPatch) ? rawPatch : Number.NaN,
     changeCoverage: compareWithBase?.changeCoverage,
     hasDifferentNumberOfHeadAndBaseReports:

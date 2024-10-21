@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { type MockInstance } from 'vitest'
 
 import { useBundleAssetModules } from './useBundleAssetModules'
@@ -12,26 +12,28 @@ const mockBundleAssetModules = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              asset: {
-                modules: [
-                  {
-                    name: 'module1',
-                    extension: 'js',
-                    bundleData: {
-                      loadTime: {
-                        threeG: 100,
-                        highSpeed: 200,
-                      },
-                      size: {
-                        gzip: 50,
-                        uncompress: 100,
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                asset: {
+                  modules: [
+                    {
+                      name: 'module1',
+                      extension: 'js',
+                      bundleData: {
+                        loadTime: {
+                          threeG: 100,
+                          highSpeed: 200,
+                        },
+                        size: {
+                          gzip: 50,
+                          uncompress: 100,
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
             },
           },
@@ -47,9 +49,11 @@ const mockMissingHeadReport = {
       __typename: 'Repository',
       branch: {
         head: {
-          bundleAnalysisReport: {
-            __typename: 'MissingHeadReport',
-            message: 'Missing head report',
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+              message: 'Missing head report',
+            },
           },
         },
       },

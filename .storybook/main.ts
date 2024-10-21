@@ -18,14 +18,6 @@ const config: StorybookConfig = {
   typescript: {
     reactDocgen: 'react-docgen-typescript',
   },
-  // TODO: Remove this once we have removed CRACO, and index.html from the public folder
-  viteFinal: async (config) => {
-    const { mergeConfig } = await import('vite')
-
-    return mergeConfig(config, {
-      publicDir: false,
-    })
-  },
 }
 
 export default config

@@ -7,14 +7,12 @@ import {
   within,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+// eslint-disable-next-line no-restricted-imports
+import { type Dictionary } from 'lodash'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import {
-  CoverageHitCounter,
-  type LineData,
-  VirtualDiffRenderer,
-} from './VirtualDiffRenderer'
+import { VirtualFileRenderer } from './VirtualFileRenderer'
 
 const mocks = vi.hoisted(() => ({
   withProfiler: (component: any) => component,
@@ -76,64 +74,11 @@ const code = `<Breadcrumb
     ]}
 />`
 
-const lineData: LineData[] = [
-  {
-    headNumber: '1',
-    baseNumber: '2',
-    headCoverage: null,
-    baseCoverage: 'H',
-    hitCount: undefined,
-  },
-  {
-    headNumber: '3',
-    baseNumber: '4',
-    headCoverage: 'M',
-    baseCoverage: null,
-    hitCount: undefined,
-  },
-  {
-    headNumber: '5',
-    baseNumber: '6',
-    headCoverage: null,
-    baseCoverage: 'P',
-    hitCount: undefined,
-  },
-  {
-    headNumber: '7',
-    baseNumber: '8',
-    headCoverage: null,
-    baseCoverage: null,
-    hitCount: undefined,
-  },
-  {
-    headNumber: '9',
-    baseNumber: '10',
-    headCoverage: null,
-    baseCoverage: null,
-    hitCount: undefined,
-  },
-  {
-    headNumber: '11',
-    baseNumber: '12',
-    headCoverage: null,
-    baseCoverage: null,
-    hitCount: undefined,
-  },
-  {
-    headNumber: '13',
-    baseNumber: '14',
-    headCoverage: null,
-    baseCoverage: null,
-    hitCount: undefined,
-  },
-  {
-    headNumber: '15',
-    baseNumber: '16',
-    headCoverage: null,
-    baseCoverage: null,
-    hitCount: undefined,
-  },
-]
+const coverageData = {
+  1: 'H',
+  2: 'M',
+  3: 'P',
+} as unknown as Dictionary<'H' | 'M' | 'P'>
 
 let testLocation: ReturnType<typeof useLocation>
 const wrapper =
@@ -160,13 +105,14 @@ describe('VirtualFileRenderer', () => {
 
   it('renders the text-area', () => {
     render(
-      <VirtualDiffRenderer
+      <VirtualFileRenderer
         code={code}
-        lineData={lineData}
+        coverage={coverageData}
         fileName="tsx"
-        hashedPath="hashedPath"
       />,
-      { wrapper: wrapper() }
+      {
+        wrapper: wrapper(),
+      }
     )
 
     const textArea = screen.getByTestId('virtual-file-renderer')
@@ -180,13 +126,14 @@ describe('VirtualFileRenderer', () => {
     describe('valid language', () => {
       it('renders code in virtualized list', () => {
         render(
-          <VirtualDiffRenderer
+          <VirtualFileRenderer
             code={code}
-            lineData={lineData}
+            coverage={coverageData}
             fileName="tsx"
-            hashedPath="hashedPath"
           />,
-          { wrapper: wrapper() }
+          {
+            wrapper: wrapper(),
+          }
         )
 
         const virtualOverlay = screen.getByTestId(
@@ -202,13 +149,14 @@ describe('VirtualFileRenderer', () => {
     describe('invalid language', () => {
       it('renders code in virtualized list', () => {
         render(
-          <VirtualDiffRenderer
+          <VirtualFileRenderer
             code={code}
-            lineData={lineData}
+            coverage={coverageData}
             fileName="random-file-type"
-            hashedPath="hashedPath"
           />,
-          { wrapper: wrapper() }
+          {
+            wrapper: wrapper(),
+          }
         )
 
         const virtualOverlay = screen.getByTestId(
@@ -224,30 +172,31 @@ describe('VirtualFileRenderer', () => {
 
   it('renders line numbers', () => {
     render(
-      <VirtualDiffRenderer
+      <VirtualFileRenderer
         code={code}
-        lineData={lineData}
+        coverage={coverageData}
         fileName="tsx"
-        hashedPath="hashedPath"
       />,
-      { wrapper: wrapper() }
+      {
+        wrapper: wrapper(),
+      }
     )
 
     const lineNumbers = screen.getAllByText(/\d+/)
-    // 2 * total lines
-    expect(lineNumbers).toHaveLength(16)
+    expect(lineNumbers).toHaveLength(8)
   })
 
   describe('covered lines', () => {
     it('applies coverage background', () => {
       render(
-        <VirtualDiffRenderer
+        <VirtualFileRenderer
           code={code}
-          lineData={lineData}
+          coverage={coverageData}
           fileName="tsx"
-          hashedPath="hashedPath"
         />,
-        { wrapper: wrapper() }
+        {
+          wrapper: wrapper(),
+        }
       )
 
       const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
@@ -265,13 +214,14 @@ describe('VirtualFileRenderer', () => {
   describe('uncovered lines', () => {
     it('applies missing coverage background', () => {
       render(
-        <VirtualDiffRenderer
+        <VirtualFileRenderer
           code={code}
-          lineData={lineData}
+          coverage={coverageData}
           fileName="tsx"
-          hashedPath="hashedPath"
         />,
-        { wrapper: wrapper() }
+        {
+          wrapper: wrapper(),
+        }
       )
 
       const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
@@ -287,13 +237,14 @@ describe('VirtualFileRenderer', () => {
 
     it('renders missing coverage icon', async () => {
       render(
-        <VirtualDiffRenderer
+        <VirtualFileRenderer
           code={code}
-          lineData={lineData}
+          coverage={coverageData}
           fileName="tsx"
-          hashedPath="hashedPath"
         />,
-        { wrapper: wrapper() }
+        {
+          wrapper: wrapper(),
+        }
       )
 
       const icon = await screen.findByTestId('missing-coverage-icon')
@@ -304,13 +255,14 @@ describe('VirtualFileRenderer', () => {
   describe('partial lines', () => {
     it('applies partial coverage background', () => {
       render(
-        <VirtualDiffRenderer
+        <VirtualFileRenderer
           code={code}
-          lineData={lineData}
+          coverage={coverageData}
           fileName="tsx"
-          hashedPath="hashedPath"
         />,
-        { wrapper: wrapper() }
+        {
+          wrapper: wrapper(),
+        }
       )
 
       const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
@@ -324,36 +276,18 @@ describe('VirtualFileRenderer', () => {
 
     it('renders partial coverage icon', async () => {
       render(
-        <VirtualDiffRenderer
+        <VirtualFileRenderer
           code={code}
-          lineData={lineData}
+          coverage={coverageData}
           fileName="tsx"
-          hashedPath="hashedPath"
         />,
-        { wrapper: wrapper() }
+        {
+          wrapper: wrapper(),
+        }
       )
 
       const icon = await screen.findByTestId('partial-coverage-icon')
       expect(icon).toBeInTheDocument()
-    })
-  })
-
-  describe('there are hit counts', () => {
-    it('renders hit counts', () => {
-      lineData![0]!.hitCount = 100
-      render(
-        <VirtualDiffRenderer
-          code={code}
-          lineData={lineData}
-          fileName="tsx"
-          hashedPath="hashedPath"
-        />,
-        { wrapper: wrapper() }
-      )
-
-      const hitCount = screen.getByTestId('coverage-hit-counter')
-      expect(hitCount).toBeInTheDocument()
-      expect(hitCount).toHaveTextContent('100')
     })
   })
 
@@ -387,13 +321,14 @@ describe('VirtualFileRenderer', () => {
       })
 
       render(
-        <VirtualDiffRenderer
+        <VirtualFileRenderer
           code={code}
-          lineData={lineData}
+          coverage={coverageData}
           fileName="tsx"
-          hashedPath="hashedPath"
         />,
-        { wrapper: wrapper() }
+        {
+          wrapper: wrapper(),
+        }
       )
 
       const lines = await screen.findAllByText(
@@ -401,7 +336,7 @@ describe('VirtualFileRenderer', () => {
       )
       expect(lines[0]).toBeInTheDocument()
 
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
 
       const codeRenderer = screen.getByTestId('virtual-file-renderer')
       await waitFor(() =>
@@ -424,13 +359,14 @@ describe('VirtualFileRenderer', () => {
       })
 
       const { container } = render(
-        <VirtualDiffRenderer
+        <VirtualFileRenderer
           code={code}
-          lineData={lineData}
+          coverage={coverageData}
           fileName="tsx"
-          hashedPath="hashedPath"
         />,
-        { wrapper: wrapper() }
+        {
+          wrapper: wrapper(),
+        }
       )
 
       const lines = await screen.findAllByText(
@@ -438,106 +374,49 @@ describe('VirtualFileRenderer', () => {
       )
       expect(lines[0]).toBeInTheDocument()
 
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
 
       // eslint-disable-next-line testing-library/no-container
       container.remove()
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
-      await fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
+      fireEvent.scroll(window, { target: { scrollX: 100 } })
 
       await waitFor(() => expect(cancelAnimationFrameSpy).toHaveBeenCalled())
     })
   })
 
   describe('highlighted line', () => {
-    describe('user clicks on base number', () => {
+    describe('user clicks on line number', () => {
       it('updates the URL', async () => {
         const { user } = setup()
         render(
-          <VirtualDiffRenderer
+          <VirtualFileRenderer
             code={code}
-            lineData={lineData}
+            coverage={coverageData}
             fileName="tsx"
-            hashedPath="hashedPath"
           />,
-          { wrapper: wrapper() }
-        )
-
-        const line = screen.getByText(2)
-        await user.click(line)
-
-        await waitFor(() => expect(testLocation.hash).toBe('#hashedPath-L2'))
-      })
-
-      it('highlights the line on click', async () => {
-        const { user } = setup()
-        render(
-          <VirtualDiffRenderer
-            code={code}
-            lineData={lineData}
-            fileName="tsx"
-            hashedPath="hashedPath"
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const line = screen.getByText(2)
-        await user.click(line)
-
-        const bar = await screen.findByTestId('highlighted-bar')
-        expect(bar).toBeInTheDocument()
-        await waitFor(() => expect(bar).toHaveClass('bg-ds-blue-medium/25'))
-      })
-
-      it('removes highlighting when clicking on highlighted line', async () => {
-        const { user } = setup()
-        render(
-          <VirtualDiffRenderer
-            code={code}
-            lineData={lineData}
-            fileName="tsx"
-            hashedPath="hashedPath"
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const line = screen.getByText(1)
-        await user.click(line)
-        await waitFor(() => expect(testLocation.hash).toBe('#hashedPath-R1'))
-        await user.click(line)
-        await waitFor(() => expect(testLocation.hash).toBe(''))
-      })
-    })
-
-    describe('user clicks on head number', () => {
-      it('updates the URL', async () => {
-        const { user } = setup()
-        render(
-          <VirtualDiffRenderer
-            code={code}
-            lineData={lineData}
-            fileName="tsx"
-            hashedPath="hashedPath"
-          />,
-          { wrapper: wrapper() }
+          {
+            wrapper: wrapper(),
+          }
         )
 
         const line = screen.getByText(1)
         await user.click(line)
 
-        await waitFor(() => expect(testLocation.hash).toBe('#hashedPath-R1'))
+        await waitFor(() => expect(testLocation.hash).toBe('#L1'))
       })
 
       it('highlights the line on click', async () => {
         const { user } = setup()
         render(
-          <VirtualDiffRenderer
+          <VirtualFileRenderer
             code={code}
-            lineData={lineData}
+            coverage={coverageData}
             fileName="tsx"
-            hashedPath="hashedPath"
           />,
-          { wrapper: wrapper() }
+          {
+            wrapper: wrapper(),
+          }
         )
 
         const line = screen.getByText(1)
@@ -551,18 +430,19 @@ describe('VirtualFileRenderer', () => {
       it('removes highlighting when clicking on highlighted line', async () => {
         const { user } = setup()
         render(
-          <VirtualDiffRenderer
+          <VirtualFileRenderer
             code={code}
-            lineData={lineData}
+            coverage={coverageData}
             fileName="tsx"
-            hashedPath="hashedPath"
           />,
-          { wrapper: wrapper() }
+          {
+            wrapper: wrapper(),
+          }
         )
 
         const line = screen.getByText(1)
         await user.click(line)
-        await waitFor(() => expect(testLocation.hash).toBe('#hashedPath-R1'))
+        await waitFor(() => expect(testLocation.hash).toBe('#L1'))
         await user.click(line)
         await waitFor(() => expect(testLocation.hash).toBe(''))
       })
@@ -573,13 +453,12 @@ describe('VirtualFileRenderer', () => {
     describe('valid line number', () => {
       it('calls scrollTo', async () => {
         render(
-          <VirtualDiffRenderer
+          <VirtualFileRenderer
             code={code}
-            lineData={lineData}
+            coverage={coverageData}
             fileName="tsx"
-            hashedPath="hashedPath"
           />,
-          { wrapper: wrapper('/#hashedPath-L4') }
+          { wrapper: wrapper('/#L4') }
         )
 
         await waitFor(() => expect(scrollToMock).toHaveBeenCalled())
@@ -589,18 +468,17 @@ describe('VirtualFileRenderer', () => {
     describe('invalid line number', () => {
       it('captures message to sentry', async () => {
         render(
-          <VirtualDiffRenderer
+          <VirtualFileRenderer
             code={code}
-            lineData={lineData}
+            coverage={coverageData}
             fileName="tsx"
-            hashedPath="hashedPath"
           />,
-          { wrapper: wrapper('/#hashedPath-RRandomNumber') }
+          { wrapper: wrapper('/#RandomNumber') }
         )
 
         await waitFor(() => {
           expect(Sentry.captureMessage).toHaveBeenCalledWith(
-            'Invalid line number in file renderer hash: #hashedPath-RRandomNumber',
+            'Invalid line number in file renderer hash: #RandomNumber',
             { fingerprint: ['file-renderer-invalid-line-number'] }
           )
         })
@@ -611,43 +489,23 @@ describe('VirtualFileRenderer', () => {
   describe('horizontal scroll', () => {
     it('syncs code display with text area scroll', async () => {
       render(
-        <VirtualDiffRenderer
+        <VirtualFileRenderer
           code={code}
-          lineData={lineData}
+          coverage={coverageData}
           fileName="tsx"
-          hashedPath="hashedPath"
         />,
-        { wrapper: wrapper() }
+        {
+          wrapper: wrapper(),
+        }
       )
 
       const textArea = screen.getByTestId('virtual-file-renderer-text-area')
-      await fireEvent.scroll(textArea, {
+      fireEvent.scroll(textArea, {
         target: { scrollLeft: 100 },
       })
 
       const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
       await waitFor(() => expect(virtualOverlay.scrollLeft).toBe(100))
-    })
-  })
-})
-
-describe('CoverageHitCounter', () => {
-  describe('when hitCount is greater than 0', () => {
-    it('renders the hit count', () => {
-      render(<CoverageHitCounter hitCount={100} coverage="H" />)
-
-      const hitCount = screen.getByTestId('coverage-hit-counter')
-      expect(hitCount).toBeInTheDocument()
-      expect(hitCount).toHaveTextContent('100')
-    })
-  })
-
-  describe('when hitCount is 0', () => {
-    it('does not render the hit count', () => {
-      render(<CoverageHitCounter hitCount={0} coverage="H" />)
-
-      const hitCount = screen.queryByTestId('coverage-hit-counter')
-      expect(hitCount).not.toBeInTheDocument()
     })
   })
 })

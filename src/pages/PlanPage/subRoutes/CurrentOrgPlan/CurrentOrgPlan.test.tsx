@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import noop from 'lodash/noop'
-import { graphql, http, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, http, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { z } from 'zod'
 
@@ -16,6 +16,7 @@ import { useEnterpriseAccountDetails } from './hooks/useEnterpriseAccountDetails
 vi.mock('./BillingDetails', () => ({ default: () => 'BillingDetails' }))
 vi.mock('./CurrentPlanCard', () => ({ default: () => 'CurrentPlanCard' }))
 vi.mock('./LatestInvoiceCard', () => ({ default: () => 'LatestInvoiceCard' }))
+vi.mock('./AccountOrgs', () => ({ default: () => 'AccountOrgs' }))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -416,6 +417,14 @@ describe('CurrentOrgPlan', () => {
         )
         expect(banner).toBeInTheDocument()
       })
+    })
+
+    it('renders AccountOrgs', async () => {
+      setup({ enterpriseAccountDetails: mockEnterpriseAccountDetails })
+      render(<CurrentOrgPlan />, { wrapper })
+
+      const accountOrgs = await screen.findByText(/AccountOrgs/)
+      expect(accountOrgs).toBeInTheDocument()
     })
   })
 })

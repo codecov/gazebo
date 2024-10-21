@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, http, HttpResponse } from 'msw2'
-import { setupServer } from 'msw2/node'
+import { graphql, http, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames, TTierNames } from 'services/tier'
@@ -232,8 +232,10 @@ const mockCoverageTabData = (fileCount = 10) => ({
       __typename: 'Repository',
       branch: {
         head: {
-          totals: {
-            fileCount,
+          coverageAnalytics: {
+            totals: {
+              fileCount,
+            },
           },
         },
       },
@@ -249,16 +251,18 @@ const mockBranchComponents = {
         name: 'main',
         head: {
           commitid: 'commit-123',
-          components: [
-            {
-              id: 'compOneId',
-              name: 'compOneName',
-            },
-            {
-              id: 'compTwoId',
-              name: 'compTwoName',
-            },
-          ],
+          coverageAnalytics: {
+            components: [
+              {
+                id: 'compOneId',
+                name: 'compOneName',
+              },
+              {
+                id: 'compTwoId',
+                name: 'compTwoName',
+              },
+            ],
+          },
         },
       },
     },
