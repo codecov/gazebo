@@ -57,7 +57,8 @@ function RepoUploadToken({ uploadToken }) {
           <TokenWrapper token={TokenFormatEnum.FIRST_FORMAT + uploadToken} />
           <span className="font-semibold ">OR</span>
           <p>
-            If you’d like to add the token directly to your CI/CD Environment:
+            If you&apos;d like to add the token directly to your CI/CD
+            Environment:
           </p>
           <TokenWrapper token={TokenFormatEnum.SECOND_FORMAT + uploadToken} />
         </div>
