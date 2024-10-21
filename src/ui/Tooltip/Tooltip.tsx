@@ -43,7 +43,7 @@ const TooltipContent = forwardRef<
     sideOffset={sideOffset}
     {...props}
     className={cn(
-      'bg-gray-800 px-3 py-2 text-sm text-white shadow-md',
+      'bg-ds-gray-primary px-3 py-2 text-sm text-ds-gray-octonary shadow-md',
       className
     )}
   >
@@ -57,7 +57,11 @@ const TooltipArrow = forwardRef<
   React.ElementRef<typeof RadixTooltip.Arrow>,
   React.ComponentPropsWithoutRef<typeof RadixTooltip.Arrow>
 >(({ className, ...props }, ref) => (
-  <RadixTooltip.Arrow ref={ref} {...props} className={className} />
+  <RadixTooltip.Arrow
+    ref={ref}
+    {...props}
+    className={cn('fill-ds-gray-primary', className)}
+  />
 ))
 
 TooltipArrow.displayName = 'TooltipArrow'
