@@ -7,9 +7,8 @@ import {
 } from '@tanstack/react-table'
 import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
-import { useHistory, useParams } from 'react-router'
+import { useParams } from 'react-router'
 
-import { useNavLinks } from 'services/navigation'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import Icon from 'ui/Icon'
@@ -96,8 +95,6 @@ interface URLParams {
 }
 
 export default function AccountOrgs({ account }: AccountOrgsArgs) {
-  const history = useHistory()
-  const { membersTab } = useNavLinks()
   const { provider, owner } = useParams<URLParams>()
   const { ref, inView } = useInView()
   const [sorting, setSorting] = useState<SortingState>([
@@ -106,11 +103,6 @@ export default function AccountOrgs({ account }: AccountOrgsArgs) {
       desc: false,
     },
   ])
-
-  const linkToMembersTab = (orgOwner: string) =>
-    history.push(
-      membersTab.path({ owner: encodeURIComponent(orgOwner), provider })
-    )
 
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useInfiniteAccountOrganizations({
@@ -223,16 +215,31 @@ export default function AccountOrgs({ account }: AccountOrgsArgs) {
               ) : (
                 table.getRowModel().rows.map((row) =>
                   row.original.isCurrentUserPartOfOrg ? (
-                    <tr
-                      key={row.id}
-                      className="h-14 hover:cursor-pointer hover:bg-ds-gray-primary"
-                      onClick={() => linkToMembersTab(row.original.name)}
-                    >
+                    <tr key={row.id} className="h-14">
                       {row.getVisibleCells().map((cell) => (
                         <td key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
+                          {cell.column.id === 'activatedUserCount' ? (
+                            <div className="flex w-full justify-end">
+                              {/* @ts-ignore-error */}
+                              <A
+                                to={{
+                                  pageName: 'membersTab',
+                                  options: {
+                                    owner: encodeURIComponent(
+                                      row.original.name
+                                    ),
+                                    provider,
+                                  },
+                                }}
+                              >
+                                {cell.getValue()}
+                              </A>
+                            </div>
+                          ) : (
+                            flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )
                           )}
                         </td>
                       ))}
@@ -241,24 +248,9 @@ export default function AccountOrgs({ account }: AccountOrgsArgs) {
                     <tr key={row.id} className="h-14">
                       {row.getVisibleCells().map((cell) => (
                         <td key={cell.id}>
-                          {cell.id === 'activatedUserCount' ? (
-                            <div className="flex justify-items-end">
-                              {/* @ts-ignore-error */}
-                              <A
-                                to={{
-                                  pageName: 'membersTab',
-                                  options: {
-                                    owner: cell.getValue(),
-                                    provider,
-                                  },
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
                           )}
                         </td>
                       ))}

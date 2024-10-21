@@ -281,17 +281,17 @@ describe('AccountOrgs', () => {
       })
     })
 
-    describe('when user clicks on an org', () => {
+    describe('when user clicks on activated user count', () => {
       describe('and they are a member of that org', () => {
         it('redirects them to the member page for that org', async () => {
           setup()
           const user = userEvent.setup()
           render(<AccountOrgs account={mockAccount} />, { wrapper })
 
-          const org1 = await screen.findByText('org1')
-          expect(org1).toBeInTheDocument()
+          const org1Members = await screen.findByRole('link', { name: '7' })
+          expect(org1Members).toBeInTheDocument()
 
-          await user.click(org1)
+          await user.click(org1Members)
 
           await waitFor(() =>
             expect(testLocation.pathname).toBe('/members/gh/org1')
@@ -305,10 +305,10 @@ describe('AccountOrgs', () => {
           const user = userEvent.setup()
           render(<AccountOrgs account={mockAccount} />, { wrapper })
 
-          const org2 = await screen.findByText('org2')
-          expect(org2).toBeInTheDocument()
+          const org2Members = await screen.findByRole('cell', { name: '4' })
+          expect(org2Members).toBeInTheDocument()
 
-          await user.click(org2)
+          await user.click(org2Members)
 
           await waitFor(() =>
             expect(testLocation.pathname).toBe('/plan/gh/codecov')
