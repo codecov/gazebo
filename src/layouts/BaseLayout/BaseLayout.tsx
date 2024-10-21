@@ -81,10 +81,10 @@ function BaseLayout({ children }: React.PropsWithChildren) {
 
   return (
     <>
-      {/* Header */}
-      <ErrorBoundary errorComponent={EmptyErrorComponent}>
-        <RepoBreadcrumbProvider>
-          <Suspense>
+      <RepoBreadcrumbProvider>
+        {/* Header */}
+        <Suspense>
+          <ErrorBoundary errorComponent={EmptyErrorComponent}>
             {isFullExperience || isImpersonating ? (
               <>
                 <GlobalTopBanners />
@@ -93,13 +93,11 @@ function BaseLayout({ children }: React.PropsWithChildren) {
             ) : (
               <>{showDefaultOrgSelector ? <InstallationHelpBanner /> : null}</>
             )}
-          </Suspense>
-        </RepoBreadcrumbProvider>
-      </ErrorBoundary>
+          </ErrorBoundary>
+        </Suspense>
 
-      {/* Main Page Contents */}
-      <Suspense fallback={<FullPageLoader />}>
-        <RepoBreadcrumbProvider>
+        {/* Main Page Contents */}
+        <Suspense fallback={<FullPageLoader />}>
           <ErrorBoundary sentryScopes={[['layout', 'base']]}>
             <NetworkErrorBoundary>
               <main className="container mb-8 flex grow flex-col gap-2 md:p-0">
@@ -116,16 +114,16 @@ function BaseLayout({ children }: React.PropsWithChildren) {
               </main>
             </NetworkErrorBoundary>
           </ErrorBoundary>
-        </RepoBreadcrumbProvider>
-      </Suspense>
+        </Suspense>
 
-      {/* Footer */}
-      {isFullExperience && (
-        <>
-          <Footer />
-          <ToastNotifications />
-        </>
-      )}
+        {/* Footer */}
+        {isFullExperience && (
+          <>
+            <Footer />
+            <ToastNotifications />
+          </>
+        )}
+      </RepoBreadcrumbProvider>
     </>
   )
 }
