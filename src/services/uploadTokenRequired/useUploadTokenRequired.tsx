@@ -8,7 +8,7 @@ const RequestSchema = z.object({
     .object({
       orgUploadToken: z.string().nullable(),
       uploadTokenRequired: z.boolean().nullable(),
-      isAdmin: z.boolean(),
+      isAdmin: z.boolean().nullable(),
     })
     .nullable(),
 })
