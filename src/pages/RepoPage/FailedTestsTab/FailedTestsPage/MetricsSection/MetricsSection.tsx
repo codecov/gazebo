@@ -108,7 +108,8 @@ const SlowestTestsCard = ({
         <MetricCard.Title className="flex items-center gap-2">
           Slowest tests
           <TooltipWithIcon>
-            The tests which take the longest time to run.
+            Lists the tests that take more than the 95th percentile run time to
+            complete. Showing a max of 100 tests.
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
