@@ -550,6 +550,7 @@ describe('useCommit', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
+            dev: 'useCommit - 404 not found',
           })
         )
       )
@@ -587,6 +588,7 @@ describe('useCommit', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 403,
+            dev: 'useCommit - 403 owner not activated',
           })
         )
       )
@@ -624,6 +626,7 @@ describe('useCommit', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
+            dev: 'useCommit - 404 failed to parse',
           })
         )
       )

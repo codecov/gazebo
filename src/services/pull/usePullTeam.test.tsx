@@ -257,6 +257,7 @@ describe('usePullTeam', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
+            dev: 'usePullTeam - 404 not found',
           })
         )
       )
@@ -293,6 +294,7 @@ describe('usePullTeam', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 403,
+            dev: 'usePullTeam - 403 owner not activated',
           })
         )
       )
@@ -329,6 +331,7 @@ describe('usePullTeam', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
+            dev: 'usePullTeam - 404 failed to parse',
           })
         )
       )
