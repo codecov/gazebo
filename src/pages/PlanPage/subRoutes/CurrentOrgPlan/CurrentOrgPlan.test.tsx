@@ -233,7 +233,7 @@ describe('CurrentOrgPlan', () => {
   })
 
   describe('when info message cancellation should be shown', () => {
-    it.only('renders when subscription detail data is available', async () => {
+    it('renders when subscription detail data is available', async () => {
       setup({
         accountDetails: {
           plan: {
