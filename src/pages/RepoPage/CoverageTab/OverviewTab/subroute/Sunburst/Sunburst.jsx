@@ -56,4 +56,12 @@ function Sunburst() {
   )
 }
 
+export function getPathsToDisplay(breadcrumbPaths) {
+  if (breadcrumbPaths.length <= 1) {
+    return breadcrumbPaths
+  } else {
+    return [breadcrumbPaths[0], { text: '...' }]
+  }
+}
+
 export default Sunburst
