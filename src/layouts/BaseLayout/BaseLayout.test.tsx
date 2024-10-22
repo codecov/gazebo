@@ -558,6 +558,11 @@ describe('BaseLayout', () => {
       expect(header).toBeInTheDocument()
       const footer = await screen.findByText(/Footer/)
       expect(footer).toBeInTheDocument()
+
+      const errorMainAppUI = await screen.findByText(
+        /Please try refreshing your browser/
+      )
+      expect(errorMainAppUI).toBeInTheDocument()
     })
   })
 })
