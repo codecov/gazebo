@@ -4,7 +4,7 @@ import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import Sunburst from './Sunburst'
+import Sunburst, { getPathsToDisplay } from './Sunburst'
 
 vi.mock('ui/SunburstChart', () => ({ default: () => 'Chart Mocked' }))
 
@@ -122,6 +122,25 @@ describe('Sunburst', () => {
       )
 
       expect(chart).toBeInTheDocument()
+    })
+  })
+
+  describe('getPathsToDisplay', () => {
+    it('handles one segment', () => {
+      const breadcrumbPaths = [{ text: 'root' }]
+
+      const pathsToDisplay = getPathsToDisplay(breadcrumbPaths)
+      expect(pathsToDisplay).toEqual([{ text: 'root' }])
+    })
+    it('handles multiple segments', () => {
+      const breadcrumbPaths = [
+        { text: 'file' },
+        { text: 'folder' },
+        { text: 'root' },
+      ]
+
+      const pathsToDisplay = getPathsToDisplay(breadcrumbPaths)
+      expect(pathsToDisplay).toEqual([{ text: 'file' }, { text: '...' }])
     })
   })
 })

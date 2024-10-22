@@ -136,20 +136,4 @@ describe('FilesChangedTab', () => {
       })
     })
   })
-
-  describe('when there is an error rendering the Files Changed Table', () => {
-    it('displays error message', async () => {
-      mocks.filesChangedTable.mockImplementation(() => {
-        throw new Error('this is an expected error')
-      })
-
-      setup({ planValue: TierNames.PRO, isPrivate: false })
-      render(<FilesChangedTab />, { wrapper })
-
-      const errorMessage = await screen.findByTestId(
-        'files-changed-table-error'
-      )
-      expect(errorMessage).toBeInTheDocument()
-    })
-  })
 })

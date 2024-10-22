@@ -85,14 +85,18 @@ function BaseLayout({ children }: React.PropsWithChildren) {
         {/* Header */}
         <Suspense>
           <ErrorBoundary errorComponent={EmptyErrorComponent}>
-            {isFullExperience || isImpersonating ? (
-              <>
-                <GlobalTopBanners />
-                <Header />
-              </>
-            ) : (
-              <>{showDefaultOrgSelector ? <InstallationHelpBanner /> : null}</>
-            )}
+            <NetworkErrorBoundary>
+              {isFullExperience || isImpersonating ? (
+                <>
+                  <GlobalTopBanners />
+                  <Header />
+                </>
+              ) : (
+                <>
+                  {showDefaultOrgSelector ? <InstallationHelpBanner /> : null}
+                </>
+              )}
+            </NetworkErrorBoundary>
           </ErrorBoundary>
         </Suspense>
 

@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import { useQueryClient } from '@tanstack/react-query'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
@@ -12,10 +13,6 @@ import Button from 'ui/Button'
 import openUmbrella from './assets/error-open-umbrella.svg'
 import upsideDownUmbrella from './assets/error-upsidedown-umbrella.svg'
 import styles from './NetworkErrorBoundary.module.css'
-import {
-  sendGraphQLErrorMetrics,
-  sendNetworkErrorMetrics,
-} from './networkErrorMetrics'
 
 const errorToUI = {
   401: {
@@ -174,12 +171,26 @@ class NetworkErrorBoundary extends Component {
     // if the error is not a network error, we don't do anything and
     // another error boundary will take it from there
     if (Object.keys(errorToUI).includes(String(error.status))) {
-      sendNetworkErrorMetrics(error.status)
+      // only capture network errors if they are not a rate limit error
+      // this will typically only be schema parsing errors
+      if (error.status !== 429 && error.dev && error.error) {
+        Sentry.captureMessage('Network Error', {
+          // group all network errors together based off of their dev message
+          fingerprint: error.dev,
+          // add a breadcrumb for with the message and error
+          addBreadcrumb: {
+            category: 'network-error',
+            message: error.dev,
+            level: 'error',
+            data: error.error,
+          },
+        })
+      }
       return { hasNetworkError: true, error }
     }
 
     if (Object.keys(graphQLErrorToUI).includes(error.__typename)) {
-      sendGraphQLErrorMetrics(error.__typename)
+      // there are no errors we want to capture for graphql errors
       return { hasGraphqlError: true, error }
     }
 

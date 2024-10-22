@@ -14,6 +14,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 import { usePullCompareTotalsTeam } from './usePullCompareTotalsTeam'
@@ -54,7 +55,7 @@ export type ImpactedFile = z.infer<typeof ImpactedFileSchema>
 const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
   z.object({
     __typename: z.literal('ImpactedFiles'),
-    results: z.array(ImpactedFileSchema),
+    results: z.array(ImpactedFileSchema).nullable(),
   }),
   z.object({
     __typename: z.literal('UnknownFlags'),
@@ -211,8 +212,9 @@ export function usePullTeam({
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: null,
-          })
+            data: {},
+            dev: 'usePullTeam - 404 failed to parse',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedRes.data
@@ -221,7 +223,8 @@ export function usePullTeam({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'usePullTeam - 404 not found',
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -237,7 +240,8 @@ export function usePullTeam({
                 </p>
               ),
             },
-          })
+            dev: 'usePullTeam - 403 owner not activated',
+          } satisfies NetworkErrorObject)
         }
 
         const pull = data?.owner?.repository?.pull
