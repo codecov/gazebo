@@ -18,6 +18,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
 import {
   ErrorCodeEnum,
   UploadStateEnum,
@@ -93,7 +94,7 @@ export type ImpactedFileType = z.infer<typeof ImpactedFileSchema>
 
 const ImpactedFileResultsSchema = z.object({
   __typename: z.literal('ImpactedFiles'),
-  results: z.array(ImpactedFileSchema.nullable()),
+  results: z.array(ImpactedFileSchema.nullable()).nullable(),
 })
 
 const ImpactedFileResultsUnionSchema = z.discriminatedUnion('__typename', [
@@ -369,8 +370,9 @@ export function useCommit({
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: null,
-          })
+            data: {},
+            dev: 'useCommit - 404 failed to parse',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedRes.data
@@ -379,7 +381,8 @@ export function useCommit({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useCommit - 404 not found',
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -395,7 +398,8 @@ export function useCommit({
                 </p>
               ),
             },
-          })
+            dev: 'useCommit - 403 owner not activated',
+          } satisfies NetworkErrorObject)
         }
 
         const commit = data?.owner?.repository?.commit
