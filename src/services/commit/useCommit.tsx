@@ -45,13 +45,7 @@ const UploadErrorSchema = z.object({
 })
 
 const ErrorsSchema = z.object({
-  edges: z.array(
-    z
-      .object({
-        node: UploadErrorSchema,
-      })
-      .nullable()
-  ),
+  edges: z.array(z.object({ node: UploadErrorSchema }).nullable()),
 })
 
 const UploadSchema = z.object({
@@ -71,13 +65,7 @@ const UploadSchema = z.object({
 })
 
 const UploadsSchema = z.object({
-  edges: z.array(
-    z
-      .object({
-        node: UploadSchema,
-      })
-      .nullable()
-  ),
+  edges: z.array(z.object({ node: UploadSchema }).nullable()),
 })
 
 const ImpactedFileSchema = z

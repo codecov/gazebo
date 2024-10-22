@@ -18,7 +18,7 @@ import { type NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const CoverageObjSchema = z.object({
-  percentCovered: z.number().nullable(),
+  coverage: z.number().nullable(),
 })
 
 const ImpactedFileSchema = z
