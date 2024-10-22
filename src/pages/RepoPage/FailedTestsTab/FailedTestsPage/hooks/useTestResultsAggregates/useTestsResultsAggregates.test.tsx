@@ -105,7 +105,7 @@ describe('useTestResultsAggregates', () => {
     describe('when data is loaded', () => {
       it('returns the data', async () => {
         setup({})
-        const { result } = renderHook(() => useTestResultsAggregates(), {
+        const { result } = renderHook(() => useTestResultsAggregates({}), {
           wrapper,
         })
 
@@ -147,7 +147,7 @@ describe('useTestResultsAggregates', () => {
 
     it('returns a failed to parse error', async () => {
       setup({ isUnsuccessfulParseError: true })
-      const { result } = renderHook(() => useTestResultsAggregates(), {
+      const { result } = renderHook(() => useTestResultsAggregates({}), {
         wrapper,
       })
 
@@ -174,7 +174,7 @@ describe('useTestResultsAggregates', () => {
 
     it('returns a not found error', async () => {
       setup({ isNotFoundError: true })
-      const { result } = renderHook(() => useTestResultsAggregates(), {
+      const { result } = renderHook(() => useTestResultsAggregates({}), {
         wrapper,
       })
 

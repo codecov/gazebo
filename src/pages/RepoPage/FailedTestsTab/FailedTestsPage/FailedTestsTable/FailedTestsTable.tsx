@@ -14,7 +14,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { MEASUREMENT_INTERVAL_TYPE } from 'pages/RepoPage/shared/constants'
+import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
 import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Icon from 'ui/Icon'
@@ -27,7 +27,10 @@ import {
   useInfiniteTestResults,
 } from '../hooks/useInfiniteTestResults'
 import { TestResultsFilterParameterType } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
-import { TooltipWithIcon } from '../MetricsSection/MetricsSection'
+import {
+  historicalTrendToCopy,
+  TooltipWithIcon,
+} from '../MetricsSection/MetricsSection'
 import { TableHeader } from '../TableHeader'
 
 const getDecodedBranch = (branch?: string) =>
@@ -110,7 +113,13 @@ interface FailedTestsColumns {
 
 const columnHelper = createColumnHelper<FailedTestsColumns>()
 
-const getColumns = (hideFlakeRate: boolean) => {
+const getColumns = ({
+  hideFlakeRate,
+  interval,
+}: {
+  hideFlakeRate: boolean
+  interval?: MeasurementInterval
+}) => {
   const baseColumns = [
     columnHelper.accessor('name', {
       header: () => 'Test name',
@@ -147,7 +156,7 @@ const getColumns = (hideFlakeRate: boolean) => {
           <TooltipWithIcon>
             Shows how often a flake occurs by tracking how many times a test
             goes from fail to pass or pass to fail on a given branch and commit
-            within the last [7] days.
+            within the last {historicalTrendToCopy(interval)}.
           </TooltipWithIcon>
         </div>
       ),
@@ -211,7 +220,7 @@ const FailedTestsTable = () => {
       // eslint-disable-next-line camelcase
       test_suites: testSuites as string[],
       parameter: queryParams?.parameter as TestResultsFilterParameterType,
-      interval: queryParams?.historicalTrend as MEASUREMENT_INTERVAL_TYPE,
+      interval: queryParams?.historicalTrend as MeasurementInterval,
       term: queryParams?.term as string,
     },
     opts: {
@@ -266,7 +275,14 @@ const FailedTestsTable = () => {
     )
   }, [testData?.testResults])
 
-  const columns = useMemo(() => getColumns(!!hideFlakeRate), [hideFlakeRate])
+  const columns = useMemo(
+    () =>
+      getColumns({
+        hideFlakeRate: !!hideFlakeRate,
+        interval: queryParams?.historicalTrend as MeasurementInterval,
+      }),
+    [hideFlakeRate, queryParams?.historicalTrend]
+  )
 
   const table = useReactTable({
     columns,

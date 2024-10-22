@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
 import { RepoNotFoundErrorSchema } from 'services/repo'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
@@ -55,12 +56,6 @@ const query = `
     }
   }
   `
-
-export enum MeasurementInterval {
-  INTERVAL_1_DAY = 'INTERVAL_1_DAY',
-  INTERVAL_7_DAY = 'INTERVAL_7_DAY',
-  INTERVAL_30_DAY = 'INTERVAL_30_DAY',
-}
 
 interface URLParams {
   provider: string

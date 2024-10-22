@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import MetricsSection from './MetricsSection'
+import MetricsSection, { historicalTrendToCopy } from './MetricsSection'
 
 const mockAggResponse = (
   planValue = 'users-enterprisem',
@@ -115,6 +115,15 @@ describe('MetricsSection', () => {
     return { user }
   }
 
+  describe('historicalTrendToCopy', () => {
+    it('returns correct values for intervals', () => {
+      expect(historicalTrendToCopy()).toBe('30 days')
+      expect(historicalTrendToCopy('INTERVAL_30_DAY')).toBe('30 days')
+      expect(historicalTrendToCopy('INTERVAL_7_DAY')).toBe('7 days')
+      expect(historicalTrendToCopy('INTERVAL_1_DAY')).toBe('1 day')
+    })
+  })
+
   describe('when not on default branch', () => {
     it('does not render component', () => {
       setup()
@@ -148,11 +157,15 @@ describe('MetricsSection', () => {
         wrapper: wrapper('/gh/owner/repo/tests/main'),
       })
 
-      const title = await screen.findByText('Test run time')
+      const title = await screen.findByText('Total test run time')
       const context = await screen.findByText('24m 50s')
+      const description = await screen.findByText(
+        'The cumulative time spent running tests over the last 30 days'
+      )
 
       expect(title).toBeInTheDocument()
       expect(context).toBeInTheDocument()
+      expect(description).toBeInTheDocument()
     })
 
     describe('slowest tests card', () => {

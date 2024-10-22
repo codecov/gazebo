@@ -1,6 +1,7 @@
 import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
+import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
 import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
 import { cn } from 'shared/utils/cn'
@@ -62,15 +63,17 @@ export const TooltipWithIcon = ({
 const TotalTestsRunTimeCard = ({
   totalDuration,
   totalDurationPercentChange,
+  intervalCopy,
 }: {
   totalDuration?: number
   totalDurationPercentChange?: number | null
+  intervalCopy: string
 }) => {
   return (
     <MetricCard>
       <MetricCard.Header>
         <MetricCard.Title className="flex items-center gap-2">
-          Test run time
+          Total test run time
           <TooltipWithIcon>
             The total time it takes to run all your tests.
           </TooltipWithIcon>
@@ -83,6 +86,9 @@ const TotalTestsRunTimeCard = ({
           <PercentBadge value={totalDurationPercentChange} />
         ) : null}
       </MetricCard.Content>
+      <MetricCard.Description>
+        The cumulative time spent running tests over the last {intervalCopy}
+      </MetricCard.Description>
     </MetricCard>
   )
 }
@@ -317,6 +323,19 @@ interface URLParams {
 const getDecodedBranch = (branch?: string) =>
   !!branch ? decodeURIComponent(branch) : undefined
 
+export const historicalTrendToCopy = (interval?: MeasurementInterval) => {
+  switch (interval) {
+    case 'INTERVAL_1_DAY':
+      return '1 day'
+    case 'INTERVAL_7_DAY':
+      return '7 days'
+    case 'INTERVAL_30_DAY':
+      return '30 days'
+    default:
+      return '30 days'
+  }
+}
+
 function MetricsSection() {
   const { branch } = useParams<URLParams>()
 
@@ -328,11 +347,14 @@ function MetricsSection() {
     depth: 1,
   })
 
-  const { data: testResults } = useTestResultsAggregates()
+  const { data: testResults } = useTestResultsAggregates({
+    interval: queryParams?.historicalTrend as MeasurementInterval,
+  })
   const disabledFlakeAggregates =
     (isTeamPlan(testResults?.plan) || isFreePlan(testResults?.plan)) &&
     testResults?.private
   const { data: flakeAggregates } = useFlakeAggregates({
+    interval: queryParams?.historicalTrend as MeasurementInterval,
     opts: {
       enabled: !disabledFlakeAggregates,
     },
@@ -361,6 +383,9 @@ function MetricsSection() {
               totalDurationPercentChange={
                 aggregates?.totalDurationPercentChange
               }
+              intervalCopy={historicalTrendToCopy(
+                queryParams?.historicalTrend as MeasurementInterval
+              )}
             />
             <SlowestTestsCard
               slowestTests={aggregates?.totalSlowTests}

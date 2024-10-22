@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
 import { RepoNotFoundErrorSchema } from 'services/repo'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
@@ -46,6 +47,7 @@ const query = `
   query GetTestResultsAggregates(
     $owner: String!
     $repo: String!
+    $interval: MeasurementInterval
   ) {
     owner(username: $owner) {
       plan {
@@ -57,7 +59,7 @@ const query = `
             private
             defaultBranch
             testAnalytics {
-              testResultsAggregates {
+              testResultsAggregates(interval: $interval) {
                 totalDuration
                 totalDurationPercentChange
                 slowestTestsDuration
@@ -85,11 +87,15 @@ interface URLParams {
   repo: string
 }
 
-export const useTestResultsAggregates = () => {
+export const useTestResultsAggregates = ({
+  interval,
+}: {
+  interval?: MeasurementInterval
+}) => {
   const { provider, owner, repo } = useParams<URLParams>()
 
   return useQuery({
-    queryKey: ['GetTestResultsAggregates', provider, owner, repo],
+    queryKey: ['GetTestResultsAggregates', provider, owner, repo, interval],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -99,6 +105,7 @@ export const useTestResultsAggregates = () => {
           provider,
           owner,
           repo,
+          interval,
         },
       }).then((res) => {
         const parsedData = TestResultsAggregatesSchema.safeParse(res?.data)
