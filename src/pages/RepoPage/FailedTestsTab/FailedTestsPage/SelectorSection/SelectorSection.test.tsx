@@ -24,6 +24,20 @@ const mockRepoOverview = {
   },
 }
 
+const mockFlags = {
+  __typename: 'Repository',
+  testAnalytics: {
+    flags: ['alpha', 'beta', 'charlie', 'delta'],
+  },
+}
+
+const mockTestSuites = {
+  __typename: 'Repository',
+  testAnalytics: {
+    testSuites: ['java', 'script', 'ok', 'blahbloo'],
+  },
+}
+
 const mockBranch = {
   branch: {
     name: 'main',
@@ -120,6 +134,16 @@ describe('SelectorSection', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockBranches } },
         })
+      }),
+      graphql.query('GetTestResultsFlags', (info) => {
+        return HttpResponse.json({
+          data: { owner: { repository: mockFlags } },
+        })
+      }),
+      graphql.query('GetTestResultsTestSuites', (info) => {
+        return HttpResponse.json({
+          data: { owner: { repository: mockTestSuites } },
+        })
       })
     )
 
@@ -188,12 +212,12 @@ describe('SelectorSection', () => {
       expect(select).toBeInTheDocument()
       await user.click(select)
 
-      const flag1 = await screen.findByText('1')
+      const flag1 = await screen.findByText('alpha')
       expect(flag1).toBeInTheDocument()
       await user.click(flag1)
 
       expect(testLocation?.state).toStrictEqual({
-        flags: [1],
+        flags: ['alpha'],
         historicalTrend: '',
         testSuites: [],
         parameter: '',

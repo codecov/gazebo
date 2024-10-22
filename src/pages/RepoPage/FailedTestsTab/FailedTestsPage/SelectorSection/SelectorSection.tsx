@@ -17,6 +17,8 @@ import Select from 'ui/Select'
 import BranchSelector from './BranchSelector'
 
 import { TestResultsFilterParameterType } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
+import { useTestResultsFlags } from '../hooks/useTestResultsFlags/useTestResultsFlags'
+import { useTestResultsTestSuites } from '../hooks/useTestResultsTestSuites/useTestResultsTestSuites'
 
 interface URLParams {
   provider: string
@@ -61,15 +63,17 @@ function SelectorSection() {
     // @ts-expect-error need to type out useLocationParams
   }, [params?.flags, params?.testSuites])
 
-  // This is just here for now to appease linter til we link it up
-  console.log(testSuiteSearch, flagSearch)
-
   const { provider, owner, repo, branch } = useParams<URLParams>()
 
   const { data: overview } = useRepoOverview({
     provider,
     owner,
     repo,
+  })
+
+  const { data: flagResults } = useTestResultsFlags({ term: flagSearch })
+  const { data: testSuiteResults } = useTestResultsTestSuites({
+    term: testSuiteSearch,
   })
 
   const decodedBranch = getDecodedBranch(branch)
@@ -83,8 +87,6 @@ function SelectorSection() {
   const defaultTimeValue = MeasurementTimeOptions.find(
     (option) => option.value === MEASUREMENT_INTERVAL.INTERVAL_30_DAY
   )
-
-  const mockTestSuites = ['java', 'script', 'javascript', 'blah']
 
   return (
     <div className="flex flex-1 flex-row justify-between">
@@ -133,7 +135,7 @@ function SelectorSection() {
                   updateParams({ testSuites })
                 }}
                 onSearch={(term: string) => setTestSuiteSearch(term)}
-                items={mockTestSuites}
+                items={testSuiteResults?.testSuites ?? []}
                 renderSelected={(selectedItems: string[]) => (
                   <span className="flex items-center gap-2">
                     <Icon variant="solid" name="folder" />
@@ -164,7 +166,7 @@ function SelectorSection() {
                   updateParams({ flags })
                 }}
                 onSearch={(term: string) => setFlagSearch(term)}
-                items={[1, 2, 3, 4]}
+                items={flagResults?.flags ?? []}
                 renderSelected={(selectedItems: string[]) => (
                   <span className="flex items-center gap-2">
                     <Icon variant="solid" name="flag" />
