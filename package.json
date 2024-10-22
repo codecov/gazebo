@@ -12,6 +12,7 @@
     "test": "vitest run --changed --config ./vitest.config.mjs",
     "test:vite": "yarn test",
     "test:watch": "vitest watch --changed --config ./vitest.config.mjs",
+    "test:all": "vitest run --config ./vitest.config.mjs",
     "test:ci": "vitest run --config ./vitest.config.mjs --coverage",
     "preview-coverage": "npx vite preview --open --outDir coverage",
     "lint": "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.cjs 'src/**/*.{js,jsx,ts,tsx}'",
