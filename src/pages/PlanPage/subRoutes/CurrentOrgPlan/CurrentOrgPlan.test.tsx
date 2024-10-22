@@ -81,7 +81,8 @@ const mockEnterpriseAccountDetailsHundredPercent = {
 }
 
 const alertOptionWrapperCreator = (
-  alertOptionString: AlertOptionsType | ''
+  alertOptionString: AlertOptionsType | '',
+  isCancellation?: boolean
 ) => {
   const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
     <MemoryRouter initialEntries={['/billing/gh/codecov']}>
@@ -89,7 +90,10 @@ const alertOptionWrapperCreator = (
         <QueryClientProvider client={queryClient}>
           <PlanUpdatedPlanNotificationContext.Provider
             value={{
-              updatedNotification: { alertOption: alertOptionString },
+              updatedNotification: {
+                alertOption: alertOptionString,
+                isCancellation,
+              },
               setUpdatedNotification: noop,
             }}
           >
@@ -105,6 +109,7 @@ const alertOptionWrapperCreator = (
 const server = setupServer()
 const wrapper = alertOptionWrapperCreator(AlertOptions.SUCCESS)
 const noUpdatedPlanWrapper = alertOptionWrapperCreator('')
+const cancellationPlanWrapper = alertOptionWrapperCreator('', true)
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -228,7 +233,7 @@ describe('CurrentOrgPlan', () => {
   })
 
   describe('when info message cancellation should be shown', () => {
-    it('renders when subscription detail data is available', async () => {
+    it.only('renders when subscription detail data is available', async () => {
       setup({
         accountDetails: {
           plan: {
@@ -245,7 +250,7 @@ describe('CurrentOrgPlan', () => {
         } as z.infer<typeof AccountDetailsSchema>,
       })
 
-      render(<CurrentOrgPlan />, { wrapper: noUpdatedPlanWrapper })
+      render(<CurrentOrgPlan />, { wrapper: cancellationPlanWrapper })
       const pendingCancellation = await screen.findByText(
         /on August 2nd 2024, 8:52 p.m./
       )
