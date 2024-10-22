@@ -1,13 +1,21 @@
+import capitalize from 'lodash/capitalize'
 import { useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
 import Button from 'ui/Button'
 import SearchField from 'ui/SearchField'
 
+import { TestResultsFilterParameter } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
 import { defaultQueryParams } from '../SelectorSection'
 
 interface TableHeaderProps {
   totalCount: number
+}
+
+const getHeaderTitle = (parameter: keyof typeof TestResultsFilterParameter) => {
+  return parameter && TestResultsFilterParameter[parameter]
+    ? capitalize(parameter.replace('_', ' '))
+    : 'Tests'
 }
 
 const TableHeader: React.FC<TableHeaderProps> = ({ totalCount }) => {
@@ -27,8 +35,9 @@ const TableHeader: React.FC<TableHeaderProps> = ({ totalCount }) => {
     <>
       <hr />
       <div className="flex items-center justify-between py-2">
-        <h2 className="text-lg font-semibold">
-          Tests (
+        <h2 className="text-lg font-semibold capitalize">
+          {/* @ts-expect-error, params is not typed */}
+          {getHeaderTitle(params?.parameter)} (
           {totalCount > 999 ? `${(totalCount / 1000).toFixed(1)}K` : totalCount}
           )
         </h2>

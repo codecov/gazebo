@@ -86,4 +86,52 @@ describe('TableHeader', () => {
     const resetButton = screen.getByText('Reset to default')
     expect(resetButton).not.toBeDisabled()
   })
+
+  describe('header title', () => {
+    it('renders the default header title', () => {
+      render(<TableHeader totalCount={50000} />, { wrapper: wrapper() })
+      const headerTitle = screen.getByText('Tests (50.0K)')
+      expect(headerTitle).toBeInTheDocument()
+    })
+
+    it('renders the flaky tests header title', () => {
+      render(<TableHeader totalCount={50000} />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/tests?parameter=FLAKY_TESTS'),
+      })
+      const headerTitle = screen.getByText('Flaky tests (50.0K)')
+      expect(headerTitle).toBeInTheDocument()
+    })
+
+    it('renders the failed tests header title', () => {
+      render(<TableHeader totalCount={50000} />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/tests?parameter=FAILED_TESTS'),
+      })
+      const headerTitle = screen.getByText('Failed tests (50.0K)')
+      expect(headerTitle).toBeInTheDocument()
+    })
+
+    it('renders the tests header title', () => {
+      render(<TableHeader totalCount={50000} />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/tests?parameter=TESTS'),
+      })
+      const headerTitle = screen.getByText('Tests (50.0K)')
+      expect(headerTitle).toBeInTheDocument()
+    })
+
+    it('renders the skipped tests header title', () => {
+      render(<TableHeader totalCount={50000} />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/tests?parameter=SKIPPED_TESTS'),
+      })
+      const headerTitle = screen.getByText('Skipped tests (50.0K)')
+      expect(headerTitle).toBeInTheDocument()
+    })
+
+    it('renders the slowest tests header title', () => {
+      render(<TableHeader totalCount={50000} />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/tests?parameter=SLOWEST_TESTS'),
+      })
+      const headerTitle = screen.getByText('Slowest tests (50.0K)')
+      expect(headerTitle).toBeInTheDocument()
+    })
+  })
 })
