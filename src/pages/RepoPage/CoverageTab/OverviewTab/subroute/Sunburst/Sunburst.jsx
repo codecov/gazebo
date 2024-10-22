@@ -23,12 +23,7 @@ function Sunburst() {
 
   const breadcrumbPaths = useConvertD3ToBreadcrumbs(currentPath)
 
-  let pathsToDisplay
-  if (breadcrumbPaths.length <= 1) {
-    pathsToDisplay = breadcrumbPaths
-  } else {
-    pathsToDisplay = [breadcrumbPaths[0], { text: '...' }]
-  }
+  const pathsToDisplay = getPathsToDisplay(breadcrumbPaths)
 
   if (isFetching || isLoading) {
     return <Placeholder />
