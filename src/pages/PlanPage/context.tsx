@@ -38,6 +38,7 @@ interface UpdatedNotificationSetters {
 
 interface UpdatedNotification {
   alertOption: AlertOptionsType | ''
+  isCancellation?: boolean
 }
 
 export const PlanUpdatedPlanNotificationContext =

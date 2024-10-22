@@ -10,7 +10,7 @@ import AccountOrgs from './AccountOrgs'
 import BillingDetails from './BillingDetails'
 import CurrentPlanCard from './CurrentPlanCard'
 import { useEnterpriseAccountDetails } from './hooks/useEnterpriseAccountDetails'
-import InfoMessageCancellation from './InfoMessageCancellation'
+import InfoAlertCancellation from './InfoAlertCancellation'
 import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 import LatestInvoiceCard from './LatestInvoiceCard'
 
@@ -47,8 +47,8 @@ function CurrentOrgPlan() {
 
   return (
     <div className="w-full lg:w-4/5">
-      {accountDetails?.subscriptionDetail ? (
-        <InfoMessageCancellation
+      {planUpdatedNotification.isCancellation ? (
+        <InfoAlertCancellation
           subscriptionDetail={accountDetails?.subscriptionDetail}
         />
       ) : null}
@@ -56,7 +56,8 @@ function CurrentOrgPlan() {
       {isDelinquent ? <DelinquentAlert /> : null}
       {accountDetails?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
-          {planUpdatedNotification.alertOption ? (
+          {planUpdatedNotification.alertOption &&
+          !planUpdatedNotification.isCancellation ? (
             <Alert variant={planUpdatedNotification.alertOption}>
               {scheduleStart && scheduledPhase?.quantity ? (
                 <>

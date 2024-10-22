@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import { SubscriptionDetailSchema } from 'services/account'
 
-import InfoMessageCancellation from './InfoMessageCancellation'
+import InfoAlertCancellation from './InfoAlertCancellation'
 
 const subscriptionDetail = {
   currentPeriodEnd: 1606851492,
@@ -18,7 +18,7 @@ const subscriptionDetail = {
   },
 } as z.infer<typeof SubscriptionDetailSchema>
 
-describe('InfoMessageCancellation', () => {
+describe('InfoAlertCancellation', () => {
   describe('when the subscription isnt cancelled', () => {
     const subDetail = {
       ...subscriptionDetail,
@@ -27,7 +27,7 @@ describe('InfoMessageCancellation', () => {
 
     it('doesnt render anything', () => {
       const { container } = render(
-        <InfoMessageCancellation
+        <InfoAlertCancellation
           subscriptionDetail={subDetail}
           // @ts-expect-error
           provider="gh"
@@ -38,7 +38,7 @@ describe('InfoMessageCancellation', () => {
     })
   })
 
-  describe('when the subscription is cancelled', () => {
+  describe('when the subscription is cancelled and will take effect at the end of the period', () => {
     const subDetail = {
       ...subscriptionDetail,
       cancelAtPeriodEnd: true,
@@ -46,15 +46,34 @@ describe('InfoMessageCancellation', () => {
 
     it('renders a message that your subscription is cancelling', () => {
       render(
-        <InfoMessageCancellation
+        <InfoAlertCancellation
           subscriptionDetail={subDetail}
           // @ts-expect-error
           provider="gh"
           owner="codecov"
         />
       )
+      expect(screen.getByText(/Cancellation confirmation/)).toBeInTheDocument()
       expect(
-        screen.getByText(/Subscription Pending Cancellation/)
+        screen.getByText(/Your account will return to the/)
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when the subscription is cancelled and refunded taking account immediately', () => {
+    it('renders a message that your subscription is cancelled and refunded', () => {
+      render(
+        <InfoAlertCancellation
+          // @ts-expect-error
+          provider="gh"
+          owner="codecov"
+        />
+      )
+      expect(screen.getByText(/Cancellation confirmation/)).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          /An auto refund has been processed and will be credited to your account shortly./
+        )
       ).toBeInTheDocument()
     })
   })
