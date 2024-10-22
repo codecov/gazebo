@@ -160,7 +160,7 @@ describe('MetricsSection', () => {
       const title = await screen.findByText('Total test run time')
       const context = await screen.findByText('24m 50s')
       const description = await screen.findByText(
-        'The cumulative time spent running tests over the last 30 days'
+        'The cumulative CI time spent running tests over the last 30 days'
       )
 
       expect(title).toBeInTheDocument()
