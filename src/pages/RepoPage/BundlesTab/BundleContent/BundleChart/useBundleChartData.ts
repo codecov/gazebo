@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 
 import { useBundleTrendData } from 'services/bundleAnalysis'
 import { BUNDLE_TREND_REPORT_TYPES } from 'services/bundleAnalysis/useBundleTrendData'
@@ -25,6 +25,7 @@ export function useBundleChartData({
   bundle,
 }: UseBundleChartArgs) {
   const { params } = useLocationParams()
+  const maxSize = useRef(0)
   const { data: overview } = useRepoOverview({ provider, owner, repo })
 
   // @ts-expect-error - useLocationParams needs fixing
@@ -56,7 +57,13 @@ export function useBundleChartData({
   const assetTypes: Array<(typeof BUNDLE_TREND_REPORT_TYPES)[number]> =
     types.length > 0
       ? types.map((type) => findBundleReportAssetEnum(type))
-      : ['REPORT_SIZE']
+      : [
+          'JAVASCRIPT_SIZE',
+          'STYLESHEET_SIZE',
+          'FONT_SIZE',
+          'IMAGE_SIZE',
+          'UNKNOWN_SIZE',
+        ]
 
   const { data: trendData, isLoading } = useBundleTrendData({
     provider,
@@ -78,25 +85,44 @@ export function useBundleChartData({
   })
 
   const mergedData = useMemo(() => {
-    // merge the data from all the measurements into a single data point
-    // this will be required when we are able to filter by multiple asset types
-    // and we want to be able to merge their sizes into a single data point
-    // using a map for this because it's efficient for setting and getting values
-    const mergedDataMap = new Map<string, number>()
+    const mergedDataMap = new Map<string, { [key: string]: number }>()
+    // loop through the trend data for various asset types
     for (const x of trendData ?? []) {
+      // create data object for the current timestamp
+      const data = {
+        JAVASCRIPT_SIZE: 0,
+        STYLESHEET_SIZE: 0,
+        FONT_SIZE: 0,
+        IMAGE_SIZE: 0,
+        UNKNOWN_SIZE: 0,
+      }
+
       let prevSize = 0
+      // loop through the measurements for the current asset type
       for (const y of x.measurements ?? []) {
         const size = y.avg ?? prevSize
         const presentEntry = mergedDataMap.get(y.timestamp)
+
+        if (size > maxSize.current) {
+          maxSize.current = size
+        }
 
         if (prevSize !== size) {
           prevSize = size
         }
 
+        // check to see if current timestamp is already in the map
         if (presentEntry) {
-          mergedDataMap.set(y.timestamp, presentEntry + size)
+          mergedDataMap.set(y.timestamp, {
+            ...presentEntry,
+            // @ts-expect-error - it doesn't like the dynamic key but we're guarding ourselves with the conditional above
+            [x.assetType]: presentEntry[x.assetType] + size,
+          })
         } else {
-          mergedDataMap.set(y.timestamp, size)
+          mergedDataMap.set(y.timestamp, {
+            ...data,
+            [x.assetType]: size,
+          })
         }
       }
     }
@@ -104,19 +130,12 @@ export function useBundleChartData({
     // take the merged data and convert it into an array of objects
     return Array.from(mergedDataMap).map(([timestamp, avg]) => ({
       date: new Date(timestamp),
-      size: avg,
+      ...avg,
     }))
   }, [trendData])
 
-  // find the max size to calculate the y-axis max value
-  let maxSize = 0
-  mergedData.forEach((x) => {
-    if (x.size > maxSize) {
-      maxSize = x.size
-    }
-  })
+  const multiplier = findBundleMultiplier(maxSize.current)
 
-  const multiplier = findBundleMultiplier(maxSize)
   // calculate the y-axis max value based on the max size
   // basically 2 + the next 10^x number
   // examples:
@@ -126,8 +145,8 @@ export function useBundleChartData({
   const maxY =
     2 *
     Math.round(
-      (10 ** (Math.floor(maxSize).toString().length - 1) +
-        maxSize +
+      (10 ** (Math.floor(maxSize.current).toString().length - 1) +
+        maxSize.current +
         multiplier / 2) /
         multiplier /
         2
@@ -138,5 +157,6 @@ export function useBundleChartData({
     isLoading,
     multiplier,
     data: mergedData,
+    assetTypes,
   }
 }

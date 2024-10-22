@@ -39,7 +39,6 @@ const query = `query InfiniteAccountOrganizations(
   $owner: String!, 
   $after: String, 
   $first: Int!, 
-  $ordering: AccountOrganizationOrdering!, 
   $direction: OrderingDirection!
 ) {
   owner(username: $owner) {
@@ -47,7 +46,6 @@ const query = `query InfiniteAccountOrganizations(
       organizations(
         first: $first
         after: $after
-        ordering: $ordering
         orderingDirection: $direction
       ) {
         edges {
@@ -71,7 +69,6 @@ interface UseInfiniteAccountOrganizationsArgs {
   provider: string
   owner: string
   first?: number
-  ordering?: 'NAME' | 'ACTIVATED_USERS'
   orderingDirection?: OrderingDirection
 }
 
@@ -79,13 +76,11 @@ export function useInfiniteAccountOrganizations({
   provider,
   owner,
   first = 20,
-  ordering = 'ACTIVATED_USERS',
   orderingDirection = 'DESC',
 }: UseInfiniteAccountOrganizationsArgs) {
   const variables = {
     first,
-    ordering,
-    orderingDirection,
+    direction: orderingDirection,
   }
 
   return useInfiniteQuery({
