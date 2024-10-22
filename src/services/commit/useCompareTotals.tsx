@@ -14,10 +14,11 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { type NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const CoverageObjSchema = z.object({
-  percentCovered: z.number().nullable(),
+  coverage: z.number().nullable(),
 })
 
 const ImpactedFileSchema = z
@@ -32,7 +33,7 @@ const ImpactedFileSchema = z
 const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
   z.object({
     __typename: z.literal('ImpactedFiles'),
-    results: z.array(ImpactedFileSchema),
+    results: z.array(ImpactedFileSchema).nullable(),
   }),
   z.object({
     __typename: z.literal('UnknownFlags'),
@@ -43,10 +44,10 @@ const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
   state: z.string(),
+  indirectChangedFilesCount: z.number(),
+  directChangedFilesCount: z.number(),
   patchTotals: CoverageObjSchema.nullable(),
   impactedFiles: ImpactedFilesSchema,
-  directChangedFilesCount: z.number(),
-  indirectChangedFilesCount: z.number(),
 })
 
 const CompareWithParentSchema = z
@@ -199,8 +200,9 @@ export function useCompareTotals({
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: parsedRes.error,
-          })
+            data: {},
+            dev: 'useCompareTotals - 404 failed to parse',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedRes.data
@@ -209,7 +211,8 @@ export function useCompareTotals({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useCompareTotals - 404 not found',
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -225,7 +228,8 @@ export function useCompareTotals({
                 </p>
               ),
             },
-          })
+            dev: 'useCompareTotals - 403 owner not activated',
+          } satisfies NetworkErrorObject)
         }
 
         return data

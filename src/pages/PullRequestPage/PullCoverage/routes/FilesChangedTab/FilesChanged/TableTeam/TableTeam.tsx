@@ -185,13 +185,13 @@ export default function FilesChangedTableTeam() {
       pullData?.pull?.compareWithBase?.impactedFiles?.__typename ===
         'ImpactedFiles'
     ) {
-      return pullData?.pull?.compareWithBase?.impactedFiles?.results
+      return pullData?.pull?.compareWithBase?.impactedFiles?.results ?? []
     }
     return []
   }, [pullData?.pull?.compareWithBase])
 
   useEffect(() => {
-    if (data.length > 0 && currentlySelectedFile) {
+    if (data && data.length > 0 && currentlySelectedFile) {
       const fileToExpandIndex = data.findIndex(
         (file) => file && file.headName === currentlySelectedFile
       )

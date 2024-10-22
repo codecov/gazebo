@@ -206,7 +206,10 @@ describe('usePullCompareTotalsTeam', () => {
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
-          expect.objectContaining({ status: 404 })
+          expect.objectContaining({
+            status: 404,
+            dev: 'usePullCompareTotalsTeam - 404 not found',
+          })
         )
       )
     })
@@ -238,7 +241,10 @@ describe('usePullCompareTotalsTeam', () => {
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
-          expect.objectContaining({ status: 403 })
+          expect.objectContaining({
+            status: 403,
+            dev: 'usePullCompareTotalsTeam - 403 owner not activated',
+          })
         )
       )
     })
@@ -270,7 +276,10 @@ describe('usePullCompareTotalsTeam', () => {
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
-          expect.objectContaining({ status: 404 })
+          expect.objectContaining({
+            status: 404,
+            dev: 'usePullCompareTotalsTeam - 404 failed to parse',
+          })
         )
       )
     })
