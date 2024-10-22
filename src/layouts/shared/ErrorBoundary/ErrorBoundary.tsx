@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react'
-import { FallbackRender, Scope } from '@sentry/react'
+import { FallbackRender } from '@sentry/react'
 import PropTypes from 'prop-types'
 import { Fragment, ReactElement, ReactNode } from 'react'
 

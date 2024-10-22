@@ -536,4 +536,28 @@ describe('BaseLayout', () => {
       })
     })
   })
+
+  describe('When main app has error', () => {
+    it('still renders the header and footer content independently', async () => {
+      const ErrorThrowingComponent = () => {
+        throw new Error('Test Error')
+      }
+
+      setup({ currentUser: userHasDefaultOrg })
+      render(
+        <BaseLayout>
+          <ErrorThrowingComponent />
+        </BaseLayout>,
+
+        { wrapper: wrapper() }
+      )
+
+      const globalTopBanners = await screen.findByText(/GlobalTopBanners/)
+      expect(globalTopBanners).toBeInTheDocument()
+      const header = await screen.findByText(/Header/)
+      expect(header).toBeInTheDocument()
+      const footer = await screen.findByText(/Footer/)
+      expect(footer).toBeInTheDocument()
+    })
+  })
 })
