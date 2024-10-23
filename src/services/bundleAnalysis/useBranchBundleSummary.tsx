@@ -1,5 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
-import isString from 'lodash/isString'
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -127,28 +126,22 @@ const query = `query BranchBundleSummaryData(
   }
 }`
 
-export interface UseBranchBundleSummaryArgs {
+export interface BranchBundleSummaryQueryOptsArgs {
   provider: string
   owner: string
   repo: string
-  branch?: string
+  branch: string | null | undefined
+  repoOverviewIsSuccess: boolean
 }
 
-export const useBranchBundleSummary = ({
+export const BranchBundleSummaryQueryOpts = ({
   provider,
   owner,
   repo,
-  branch: branchArg,
-}: UseBranchBundleSummaryArgs) => {
-  const { data: repoOverview, isSuccess } = useRepoOverview({
-    provider,
-    repo,
-    owner,
-  })
-
-  const branch = branchArg ?? repoOverview?.defaultBranch
-
-  return useQuery({
+  branch,
+  repoOverviewIsSuccess,
+}: BranchBundleSummaryQueryOptsArgs) =>
+  queryOptions({
     queryKey: ['BranchBundleSummaryData', provider, owner, repo, branch],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -199,6 +192,37 @@ export const useBranchBundleSummary = ({
 
         return { branch }
       }),
-    enabled: isSuccess && isString(branch),
+    enabled: repoOverviewIsSuccess && typeof branch === 'string',
   })
+
+export interface UseBranchBundleSummaryArgs {
+  provider: string
+  owner: string
+  repo: string
+  branch?: string
+}
+
+export const useBranchBundleSummary = ({
+  provider,
+  owner,
+  repo,
+  branch: branchArg,
+}: UseBranchBundleSummaryArgs) => {
+  const { data: repoOverview, isSuccess } = useRepoOverview({
+    provider,
+    repo,
+    owner,
+  })
+
+  const branch = branchArg ?? repoOverview?.defaultBranch
+
+  return useSuspenseQuery(
+    BranchBundleSummaryQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+      repoOverviewIsSuccess: isSuccess,
+    })
+  )
 }
