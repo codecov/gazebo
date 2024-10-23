@@ -4,13 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "yarn start",
-    "dev:vite": "yarn start",
     "start": "vite --host",
-    "start:vite": "yarn start",
     "build": "tsc -b && vite build",
-    "build:vite": "yarn build",
     "test": "vitest run --changed --config ./vitest.config.mjs",
-    "test:vite": "yarn test",
     "test:watch": "vitest watch --changed --config ./vitest.config.mjs",
     "test:ci": "vitest run --config ./vitest.config.mjs --coverage",
     "preview-coverage": "npx vite preview --open --outDir coverage",
