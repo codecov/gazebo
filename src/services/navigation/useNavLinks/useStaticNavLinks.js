@@ -506,5 +506,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    requireCIPassDocs: {
+      text: 'Codecov YAML require CI to pass',
+      path: () =>
+        'https://docs.codecov.com/docs/codecovyml-reference#codecovrequire_ci_to_pass',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
