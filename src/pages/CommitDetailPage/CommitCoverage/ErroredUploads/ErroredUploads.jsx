@@ -14,8 +14,8 @@ function ErroredUploads({ erroredUploads }) {
           then open a new commit.
         </p>
         <p>
-          Note: this page will not reflect the latest results, if you re-run all
-          jobs successfully or merge this commit.
+          Note: this page will not reflect the latest results, even if you have
+          re-run all jobs successfully or have merged this commit.
         </p>
       </div>
     )
