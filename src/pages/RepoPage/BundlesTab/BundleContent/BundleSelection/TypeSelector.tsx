@@ -1,7 +1,7 @@
 import { forwardRef, useState } from 'react'
 import { useParams } from 'react-router'
 
-import { useBranchBundlesNames } from 'services/bundleAnalysis'
+import { useBranchBundlesNames } from 'services/bundleAnalysis/useBranchBundlesNames'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import MultiSelect from 'ui/MultiSelect'
