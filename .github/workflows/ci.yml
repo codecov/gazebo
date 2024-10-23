@@ -288,7 +288,7 @@ jobs:
         run: |
           yarn build
         env:
-          CODECOV_API_URL: ${{ secrets.CODECOV_API_URL }}
+          CODECOV_API_URL: https://ingest.codecov.io
           CODECOV_ORG_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
           CODECOV_BUNDLE_NAME: 'gazebo-production'
           UPLOAD_CODECOV_BUNDLE_STATS: true
