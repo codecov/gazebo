@@ -6,21 +6,46 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileViewer from './FileViewer'
 
-const mocks = vi.hoisted(() => ({
-  useScrollToLine: vi.fn(),
-}))
-
-vi.mock('ui/CodeRenderer/hooks/useScrollToLine', async () => {
-  const actual = await vi.importActual('ui/CodeRenderer/hooks/useScrollToLine')
-  return {
-    ...actual,
-    useScrollToLine: mocks.useScrollToLine,
-  }
-})
-
 vi.mock('../ComponentsSelector', () => ({
   default: () => 'ComponentsSelector',
 }))
+
+window.requestAnimationFrame = (cb) => {
+  cb(1)
+  return 1
+}
+window.cancelAnimationFrame = () => {}
+
+const scrollToMock = vi.fn()
+window.scrollTo = scrollToMock
+window.scrollY = 100
+
+class ResizeObserverMock {
+  callback = (x) => null
+
+  constructor(callback) {
+    this.callback = callback
+  }
+
+  observe() {
+    this.callback([
+      {
+        contentRect: { width: 100 },
+        target: {
+          getAttribute: () => ({ scrollWidth: 100 }),
+          getBoundingClientRect: () => ({ top: 100 }),
+        },
+      },
+    ])
+  }
+  unobserve() {
+    // do nothing
+  }
+  disconnect() {
+    // do nothing
+  }
+}
+global.window.ResizeObserver = ResizeObserverMock
 
 const mockOwner = {
   username: 'cool-user',
@@ -109,12 +134,6 @@ afterAll(() => {
 
 describe('FileViewer', () => {
   function setup() {
-    mocks.useScrollToLine.mockImplementation(() => ({
-      lineRef: () => {},
-      handleClick: vi.fn(),
-      targeted: false,
-    }))
-
     server.use(
       graphql.query('DetailOwner', (req, res, ctx) => {
         return HttpResponse.json({ data: { owner: mockOwner } })
