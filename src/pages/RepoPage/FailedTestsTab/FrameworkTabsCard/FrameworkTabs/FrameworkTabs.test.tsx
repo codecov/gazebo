@@ -44,7 +44,7 @@ describe('FrameworkTabs', () => {
 
     expect(jestButton).toHaveClass('border-b-2 border-ds-gray-octonary')
 
-    const codeSnippet = screen.getByText(/npm i --save-dev jest-junit/)
+    const codeSnippet = await screen.findByTestId('jest-framework-copy')
     expect(codeSnippet).toBeInTheDocument()
   })
 

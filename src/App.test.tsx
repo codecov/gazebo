@@ -223,6 +223,9 @@ describe('App', () => {
       }),
       graphql.query('GetRepoOverview', (info) => {
         return HttpResponse.json({ data: mockRepoOverview })
+      }),
+      graphql.query('GetUploadTokenRequired', (info) => {
+        return HttpResponse.json({ data: {} })
       })
     )
   }
