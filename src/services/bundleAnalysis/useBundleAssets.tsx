@@ -1,4 +1,7 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import {
+  infiniteQueryOptions,
+  useInfiniteQuery as useInfiniteQueryV5,
+} from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { OrderingDirection } from 'types'
@@ -202,7 +205,7 @@ query BundleAssets(
   }
 }`
 
-interface UseBundleAssetsArgs {
+interface BundleAssetQueryOptsArgs {
   provider: string
   owner: string
   repo: string
@@ -223,7 +226,7 @@ interface UseBundleAssetsArgs {
   }
 }
 
-export const useBundleAssets = ({
+export const BundleAssetsQueryOpts = ({
   provider,
   owner,
   repo,
@@ -235,9 +238,11 @@ export const useBundleAssets = ({
   filters = {},
   orderingDirection,
   ordering,
-  opts,
-}: UseBundleAssetsArgs) => {
-  return useInfiniteQuery({
+  opts = {
+    enabled: true,
+  },
+}: BundleAssetQueryOptsArgs) =>
+  infiniteQueryOptions({
     queryKey: [
       'BundleAssets',
       provider,
@@ -252,8 +257,15 @@ export const useBundleAssets = ({
       ordering,
       orderingDirection,
     ],
-    queryFn: ({ signal, pageParam }) =>
-      Api.graphql({
+    queryFn: ({ signal, pageParam }) => {
+      // We have to do this, because infiniteQuery in Tanstack Query V5
+      // doesn't support undefined as a pageParam
+      let assetsAfter: string | undefined = undefined
+      if (pageParam !== null) {
+        assetsAfter = pageParam
+      }
+
+      return Api.graphql({
         query,
         provider,
         signal,
@@ -266,7 +278,7 @@ export const useBundleAssets = ({
           dateBefore,
           dateAfter,
           filters,
-          assetsAfter: pageParam,
+          assetsAfter,
           ordering,
           orderingDirection,
         },
@@ -332,11 +344,64 @@ export const useBundleAssets = ({
             data?.owner?.repository?.branch?.head?.bundleAnalysis
               ?.bundleAnalysisReport?.bundle?.assetsPaginated?.pageInfo ?? null,
         }
-      }),
+      })
+    },
+    initialPageParam: '',
     getNextPageParam: (data) => {
-      return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : undefined
+      return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : null
     },
     enabled: opts?.enabled !== undefined ? opts.enabled : true,
-    suspense: !!opts?.suspense,
   })
+
+interface UseBundleAssetsArgs {
+  provider: string
+  owner: string
+  repo: string
+  branch: string
+  bundle: string
+  interval?: 'INTERVAL_1_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_30_DAY'
+  dateBefore?: Date
+  dateAfter?: Date | null
+  filters?: {
+    reportGroups?: string[]
+    loadTypes?: string[]
+  }
+  orderingDirection?: OrderingDirection
+  ordering?: 'NAME' | 'SIZE' | 'TYPE'
+  opts?: {
+    enabled?: boolean
+    suspense?: boolean
+  }
+}
+
+export const useBundleAssets = ({
+  provider,
+  owner,
+  repo,
+  branch,
+  bundle,
+  interval,
+  dateBefore,
+  dateAfter,
+  filters = {},
+  orderingDirection,
+  ordering,
+  opts,
+}: UseBundleAssetsArgs) => {
+  return useInfiniteQueryV5(
+    BundleAssetsQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      interval,
+      dateBefore,
+      dateAfter,
+      filters,
+      orderingDirection,
+      ordering,
+      opts,
+    })
+  )
 }

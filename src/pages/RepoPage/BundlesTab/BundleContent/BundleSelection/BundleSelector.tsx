@@ -1,8 +1,9 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import isString from 'lodash/isString'
 import { forwardRef, useMemo, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import { useBranchBundlesNames } from 'services/bundleAnalysis'
+import { BranchBundlesNamesQueryOpts } from 'services/bundleAnalysis/BranchBundlesNamesQueryOpts'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import Select from 'ui/Select'
@@ -49,12 +50,14 @@ const BundleSelector = forwardRef<any, BranchSelectorProps>(
       data: bundleData,
       isLoading: bundlesIsLoading,
       isFetching: bundlesIsFetching,
-    } = useBranchBundlesNames({
-      provider,
-      owner,
-      repo,
-      branch,
-    })
+    } = useSuspenseQueryV5(
+      BranchBundlesNamesQueryOpts({
+        provider,
+        owner,
+        repo,
+        branch,
+      })
+    )
 
     // Note: There's no real way to test this as the data is resolved during
     // suspense and the component is not rendered until the data is resolved.

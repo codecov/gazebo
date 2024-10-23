@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
@@ -32,27 +36,10 @@ const mockBranches = {
   __typename: 'Repository',
   branches: {
     edges: [
-      {
-        node: {
-          name: 'branch-1',
-          head: {
-            commitid: 'asdf123',
-          },
-        },
-      },
-      {
-        node: {
-          name: 'main',
-          head: {
-            commitid: '321fdsa',
-          },
-        },
-      },
+      { node: { name: 'branch-1', head: { commitid: 'asdf123' } } },
+      { node: { name: 'main', head: { commitid: '321fdsa' } } },
     ],
-    pageInfo: {
-      hasNextPage: false,
-      endCursor: 'end-cursor',
-    },
+    pageInfo: { hasNextPage: false, endCursor: 'end-cursor' },
   },
 }
 
@@ -76,12 +63,10 @@ const mockBranchBundles = {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      suspense: true,
-    },
-  },
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper =
@@ -89,19 +74,21 @@ const wrapper =
     initialEntries = '/gh/codecov/test-repo/bundles/test-branch'
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/bundles/:branch/:bundle',
-            '/:provider/:owner/:repo/bundles/:branch',
-            '/:provider/:owner/:repo/bundles/',
-          ]}
-        >
-          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/bundles/:branch/:bundle',
+              '/:provider/:owner/:repo/bundles/:branch',
+              '/:provider/:owner/:repo/bundles/',
+            ]}
+          >
+            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -110,6 +97,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 

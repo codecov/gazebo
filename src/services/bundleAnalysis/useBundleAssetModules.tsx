@@ -1,5 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
-import isNull from 'lodash/isNull'
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -131,7 +130,7 @@ query BundleAssetModules(
   }
 }`
 
-interface UseBundleAssetModulesArgs {
+interface BundleAssetModulesQueryOptsArgs {
   provider: string
   owner: string
   repo: string
@@ -143,7 +142,7 @@ interface UseBundleAssetModulesArgs {
   }
 }
 
-export const useBundleAssetModules = ({
+export const BundleAssetModulesQueryOpts = ({
   provider,
   owner,
   repo,
@@ -151,13 +150,13 @@ export const useBundleAssetModules = ({
   bundle,
   asset,
   opts = {},
-}: UseBundleAssetModulesArgs) => {
+}: BundleAssetModulesQueryOptsArgs) => {
   let enabled = true
   if (opts.enabled) {
     enabled = opts.enabled
   }
 
-  return useQuery({
+  return queryOptions({
     queryKey: [
       'BundleAssetModules',
       provider,
@@ -220,8 +219,8 @@ export const useBundleAssetModules = ({
             ?.bundleAnalysisReport
         if (
           bundleReport?.__typename === 'BundleAnalysisReport' &&
-          !isNull(bundleReport.bundle) &&
-          !isNull(bundleReport.bundle.asset)
+          bundleReport.bundle !== null &&
+          bundleReport.bundle.asset !== null
         ) {
           modules = bundleReport.bundle.asset.modules
         }
@@ -230,4 +229,38 @@ export const useBundleAssetModules = ({
       }),
     enabled: enabled,
   })
+}
+
+interface UseBundleAssetModulesArgs {
+  provider: string
+  owner: string
+  repo: string
+  branch: string
+  bundle: string
+  asset: string
+  opts?: {
+    enabled?: boolean
+  }
+}
+
+export const useBundleAssetModules = ({
+  provider,
+  owner,
+  repo,
+  branch,
+  bundle,
+  asset,
+  opts = {},
+}: UseBundleAssetModulesArgs) => {
+  return useSuspenseQuery(
+    BundleAssetModulesQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      asset,
+      opts,
+    })
+  )
 }

@@ -1,12 +1,10 @@
-import { useQuery } from '@tanstack/react-query'
-import isString from 'lodash/isString'
+import { queryOptions } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
-  useRepoOverview,
 } from 'services/repo'
 import Api from 'shared/api'
 import A from 'ui/A'
@@ -92,33 +90,24 @@ const query = `query BranchBundlesNames(
     }
   }
 }`
-
-interface UseBranchBundlesNamesArgs {
+interface BranchBundlesNamesQueryOptsArgs {
   provider: string
   owner: string
   repo: string
-  branch?: string
+  branch: string
   opts?: {
     enabled?: boolean
   }
 }
 
-export const useBranchBundlesNames = ({
+export const BranchBundlesNamesQueryOpts = ({
   provider,
   owner,
   repo,
-  branch: branchArg,
+  branch,
   opts = {},
-}: UseBranchBundlesNamesArgs) => {
-  const { data: repoOverview, isSuccess } = useRepoOverview({
-    provider,
-    repo,
-    owner,
-  })
-
-  const branch = branchArg ?? repoOverview?.defaultBranch
-
-  return useQuery({
+}: BranchBundlesNamesQueryOptsArgs) =>
+  queryOptions({
     queryKey: ['BranchBundlesNames', provider, owner, repo, branch],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -178,6 +167,5 @@ export const useBranchBundlesNames = ({
 
         return { bundles }
       }),
-    enabled: (isSuccess && isString(branch)) || opts?.enabled,
+    enabled: opts?.enabled,
   })
-}
