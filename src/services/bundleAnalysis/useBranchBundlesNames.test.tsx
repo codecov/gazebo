@@ -1,10 +1,19 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MockInstance } from 'vitest'
 
-import { useBranchBundlesNames } from './useBranchBundlesNames'
+import {
+  BranchBundlesNamesQueryOpts,
+  useBranchBundlesNames,
+} from './useBranchBundlesNames'
 
 const mockRepoOverview = {
   owner: {
@@ -64,15 +73,18 @@ const mockOwnerNotActivated = {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <Suspense fallback={<p>loading</p>}>{children}</Suspense>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -82,6 +94,7 @@ beforeAll(() => {
 afterEach(() => {
   vi.clearAllMocks()
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -233,11 +246,15 @@ describe('useBranchBundlesNames', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundlesNames({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-          }),
+          useQueryV5(
+            BranchBundlesNamesQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              repoOverviewIsSuccess: true,
+            })
+          ),
         { wrapper }
       )
 
@@ -267,11 +284,15 @@ describe('useBranchBundlesNames', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundlesNames({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-          }),
+          useQueryV5(
+            BranchBundlesNamesQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              repoOverviewIsSuccess: true,
+            })
+          ),
         { wrapper }
       )
 
@@ -301,11 +322,15 @@ describe('useBranchBundlesNames', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundlesNames({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-          }),
+          useQueryV5(
+            BranchBundlesNamesQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              repoOverviewIsSuccess: true,
+            })
+          ),
         { wrapper }
       )
 
