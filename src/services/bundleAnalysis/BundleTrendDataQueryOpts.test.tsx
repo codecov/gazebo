@@ -1,10 +1,14 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { type MockInstance } from 'vitest'
 
-import { useBundleTrendData } from './useBundleTrendData'
+import { BundleTrendDataQueryOpts } from './BundleTrendDataQueryOpts'
 
 const mockBundleTrendData = {
   owner: {
@@ -97,16 +101,14 @@ const mockOwnerNotActivated = {
 }
 
 const server = setupServer()
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -114,7 +116,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -162,19 +164,21 @@ describe('useBundleTrendData', () => {
       setup({})
       const { result } = renderHook(
         () =>
-          useBundleTrendData({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
-            interval: 'INTERVAL_1_DAY',
-            after: new Date('2024-06-15T03:00:00.000Z'),
-            before: new Date('2024-06-20T03:00:00.000Z'),
-            filters: {
-              assetTypes: ['REPORT_SIZE'],
-            },
-          }),
+          useQueryV5(
+            BundleTrendDataQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+              interval: 'INTERVAL_1_DAY',
+              after: new Date('2024-06-15T03:00:00.000Z'),
+              before: new Date('2024-06-20T03:00:00.000Z'),
+              filters: {
+                assetTypes: ['REPORT_SIZE'],
+              },
+            })
+          ),
         { wrapper }
       )
 
@@ -182,30 +186,12 @@ describe('useBundleTrendData', () => {
         {
           assetType: 'REPORT_SIZE',
           measurements: [
-            {
-              timestamp: '2024-06-15T00:00:00+00:00',
-              avg: null,
-            },
-            {
-              timestamp: '2024-06-16T00:00:00+00:00',
-              avg: null,
-            },
-            {
-              timestamp: '2024-06-17T00:00:00+00:00',
-              avg: 6834699.8,
-            },
-            {
-              timestamp: '2024-06-18T00:00:00+00:00',
-              avg: 6822037.27273,
-            },
-            {
-              timestamp: '2024-06-19T00:00:00+00:00',
-              avg: 6824833.33333,
-            },
-            {
-              timestamp: '2024-06-20T00:00:00+00:00',
-              avg: 6812341,
-            },
+            { timestamp: '2024-06-15T00:00:00+00:00', avg: null },
+            { timestamp: '2024-06-16T00:00:00+00:00', avg: null },
+            { timestamp: '2024-06-17T00:00:00+00:00', avg: 6834699.8 },
+            { timestamp: '2024-06-18T00:00:00+00:00', avg: 6822037.27273 },
+            { timestamp: '2024-06-19T00:00:00+00:00', avg: 6824833.33333 },
+            { timestamp: '2024-06-20T00:00:00+00:00', avg: 6812341 },
           ],
         },
       ]
@@ -221,19 +207,21 @@ describe('useBundleTrendData', () => {
       setup({ isNullOwner: true })
       const { result } = renderHook(
         () =>
-          useBundleTrendData({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
-            interval: 'INTERVAL_1_DAY',
-            after: new Date('2024-06-15T03:00:00.000Z'),
-            before: new Date('2024-06-20T03:00:00.000Z'),
-            filters: {
-              assetTypes: ['REPORT_SIZE'],
-            },
-          }),
+          useQueryV5(
+            BundleTrendDataQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+              interval: 'INTERVAL_1_DAY',
+              after: new Date('2024-06-15T03:00:00.000Z'),
+              before: new Date('2024-06-20T03:00:00.000Z'),
+              filters: {
+                assetTypes: ['REPORT_SIZE'],
+              },
+            })
+          ),
         { wrapper }
       )
 
@@ -256,19 +244,21 @@ describe('useBundleTrendData', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useBundleTrendData({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
-            interval: 'INTERVAL_1_DAY',
-            after: new Date('2024-06-15T03:00:00.000Z'),
-            before: new Date('2024-06-20T03:00:00.000Z'),
-            filters: {
-              assetTypes: ['REPORT_SIZE'],
-            },
-          }),
+          useQueryV5(
+            BundleTrendDataQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+              interval: 'INTERVAL_1_DAY',
+              after: new Date('2024-06-15T03:00:00.000Z'),
+              before: new Date('2024-06-20T03:00:00.000Z'),
+              filters: {
+                assetTypes: ['REPORT_SIZE'],
+              },
+            })
+          ),
         { wrapper }
       )
 
@@ -298,19 +288,21 @@ describe('useBundleTrendData', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useBundleTrendData({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
-            interval: 'INTERVAL_1_DAY',
-            after: new Date('2024-06-15T03:00:00.000Z'),
-            before: new Date('2024-06-20T03:00:00.000Z'),
-            filters: {
-              assetTypes: ['REPORT_SIZE'],
-            },
-          }),
+          useQueryV5(
+            BundleTrendDataQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+              interval: 'INTERVAL_1_DAY',
+              after: new Date('2024-06-15T03:00:00.000Z'),
+              before: new Date('2024-06-20T03:00:00.000Z'),
+              filters: {
+                assetTypes: ['REPORT_SIZE'],
+              },
+            })
+          ),
         { wrapper }
       )
 
@@ -340,19 +332,21 @@ describe('useBundleTrendData', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useBundleTrendData({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
-            interval: 'INTERVAL_1_DAY',
-            after: new Date('2024-06-15T03:00:00.000Z'),
-            before: new Date('2024-06-20T03:00:00.000Z'),
-            filters: {
-              assetTypes: ['REPORT_SIZE'],
-            },
-          }),
+          useQueryV5(
+            BundleTrendDataQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+              interval: 'INTERVAL_1_DAY',
+              after: new Date('2024-06-15T03:00:00.000Z'),
+              before: new Date('2024-06-20T03:00:00.000Z'),
+              filters: {
+                assetTypes: ['REPORT_SIZE'],
+              },
+            })
+          ),
         { wrapper }
       )
 

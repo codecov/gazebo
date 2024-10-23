@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 // import { BUNDLE_LOAD_TYPE_ITEMS } from 'pages/RepoPage/BundlesTab/BundleContent/constants'
@@ -134,7 +134,7 @@ query GetBundleTrend(
   }
 }`
 
-interface UseBundleTrendDataArgs {
+interface BundleTrendDataQueryOptsArgs {
   provider: string
   owner: string
   repo: string
@@ -152,7 +152,7 @@ interface UseBundleTrendDataArgs {
   suspense?: boolean
 }
 
-export const useBundleTrendData = ({
+export const BundleTrendDataQueryOpts = ({
   provider,
   owner,
   repo,
@@ -162,12 +162,10 @@ export const useBundleTrendData = ({
   before,
   after,
   filters,
-  enabled = true,
-  suspense = false,
-}: UseBundleTrendDataArgs) => {
-  return useQuery({
+  enabled,
+}: BundleTrendDataQueryOptsArgs) =>
+  queryOptions({
     enabled: enabled,
-    suspense: suspense,
     queryKey: [
       'GetBundleTrend',
       provider,
@@ -244,4 +242,3 @@ export const useBundleTrendData = ({
         return []
       }),
   })
-}
