@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -120,11 +120,11 @@ query BundleSummary(
   }
 }`
 
-interface UseBundleSummaryArgs {
+interface BundleSummaryQueryOptsArgs {
   provider: string
   owner: string
   repo: string
-  branch?: string
+  branch: string | null | undefined
   bundle: string
   filters?: {
     reportGroups?: string[]
@@ -135,27 +135,16 @@ interface UseBundleSummaryArgs {
   }
 }
 
-export const useBundleSummary = ({
+export const BundleSummaryQueryOpts = ({
   provider,
   owner,
   repo,
-  branch: branchParam,
+  branch,
   bundle,
-  filters = {},
+  filters,
   opts = {},
-}: UseBundleSummaryArgs) => {
-  const { data: overview } = useRepoOverview({
-    provider,
-    owner,
-    repo,
-    opts: {
-      enabled: !branchParam,
-    },
-  })
-
-  const branch = branchParam ?? overview?.defaultBranch
-
-  return useQuery({
+}: BundleSummaryQueryOptsArgs) =>
+  queryOptions({
     queryKey: ['BundleSummary', provider, owner, repo, branch, bundle, filters],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -216,4 +205,51 @@ export const useBundleSummary = ({
       }),
     enabled: opts?.enabled,
   })
+
+interface UseBundleSummaryArgs {
+  provider: string
+  owner: string
+  repo: string
+  branch?: string
+  bundle: string
+  filters?: {
+    reportGroups?: string[]
+    loadTypes?: string[]
+  }
+  opts?: {
+    enabled?: boolean
+  }
+}
+
+export const useBundleSummary = ({
+  provider,
+  owner,
+  repo,
+  branch: branchParam,
+  bundle,
+  filters = {},
+  opts = {},
+}: UseBundleSummaryArgs) => {
+  const { data: overview } = useRepoOverview({
+    provider,
+    owner,
+    repo,
+    opts: {
+      enabled: !branchParam,
+    },
+  })
+
+  const branch = branchParam ?? overview?.defaultBranch
+
+  return useSuspenseQuery(
+    BundleSummaryQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      filters,
+      opts,
+    })
+  )
 }
