@@ -42,10 +42,10 @@ export default function CIStatusLabel({ ciPassed }: CIStatusLabelProps) {
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content
-            className="rounded-md border border-ds-gray-secondary bg-ds-gray-primary px-3 py-2 text-xs"
+            className="rounded-md bg-ds-gray-primary px-3 py-2 text-xs"
             side="right"
           >
-            <p className="text-ds-gray-octonary">
+            <p>
               This CI status is based on all of your <br />
               <A
                 to={{ pageName: 'requireCIPassDocs' }}
