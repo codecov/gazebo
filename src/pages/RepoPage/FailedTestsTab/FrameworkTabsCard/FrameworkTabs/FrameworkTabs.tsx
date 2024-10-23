@@ -28,13 +28,9 @@ const FrameworkCopy = {
 } as const
 
 const FrameworkClipboard = {
-  [Frameworks.PYTEST]:
-    'pytest --cov --junitxml=junit.xml -o junit_family=legacy',
-  [Frameworks.VITEST]: 'vitest --reporter=junit',
+  ...FrameworkCopy,
   [Frameworks.JEST]:
     'npm i --save-dev jest-junit \n JEST_JUNIT_CLASSNAME="{filepath}" jest --reporters=jest-junit',
-
-  [Frameworks.PHP_UNIT]: './vendor/bin/phpunit --log-junit junit.xml',
 } as const
 
 export function FrameworkTabs() {
