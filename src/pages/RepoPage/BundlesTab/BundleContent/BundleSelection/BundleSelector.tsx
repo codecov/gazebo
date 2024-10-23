@@ -2,7 +2,7 @@ import isString from 'lodash/isString'
 import { forwardRef, useMemo, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import { useBranchBundlesNames } from 'services/bundleAnalysis'
+import { useBranchBundlesNames } from 'services/bundleAnalysis/useBranchBundlesNames'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import Select from 'ui/Select'
