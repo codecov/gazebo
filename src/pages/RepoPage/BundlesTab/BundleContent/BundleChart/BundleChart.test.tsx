@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -108,16 +112,22 @@ const mockBundleTrendData = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true, retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={['/gh/codecov/test-repo/bundles/main/test-bundle']}
-    >
-      <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
-        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter
+        initialEntries={['/gh/codecov/test-repo/bundles/main/test-bundle']}
+      >
+        <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
+          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
@@ -128,6 +138,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
