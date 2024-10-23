@@ -84,7 +84,7 @@ function BaseLayout({ children }: React.PropsWithChildren) {
       <RepoBreadcrumbProvider>
         {/* Header */}
         <Suspense>
-          <ErrorBoundary errorComponent={EmptyErrorComponent}>
+          <ErrorBoundary errorComponent={<EmptyErrorComponent />}>
             <NetworkErrorBoundary>
               {isFullExperience || isImpersonating ? (
                 <>
