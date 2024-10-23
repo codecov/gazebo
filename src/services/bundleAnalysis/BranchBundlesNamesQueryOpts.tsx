@@ -1,11 +1,10 @@
-import { queryOptions, useSuspenseQuery } from '@tanstack/react-queryV5'
+import { queryOptions } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
-  useRepoOverview,
 } from 'services/repo'
 import Api from 'shared/api'
 import A from 'ui/A'
@@ -95,8 +94,7 @@ interface BranchBundlesNamesQueryOptsArgs {
   provider: string
   owner: string
   repo: string
-  branch: string | null | undefined
-  repoOverviewIsSuccess: boolean
+  branch: string
   opts?: {
     enabled?: boolean
   }
@@ -107,7 +105,6 @@ export const BranchBundlesNamesQueryOpts = ({
   owner,
   repo,
   branch,
-  repoOverviewIsSuccess,
   opts = {},
 }: BranchBundlesNamesQueryOptsArgs) =>
   queryOptions({
@@ -170,43 +167,5 @@ export const BranchBundlesNamesQueryOpts = ({
 
         return { bundles }
       }),
-    enabled:
-      (repoOverviewIsSuccess && typeof branch === 'string') || opts?.enabled,
+    enabled: opts?.enabled,
   })
-
-interface UseBranchBundlesNamesArgs {
-  provider: string
-  owner: string
-  repo: string
-  branch?: string
-  opts?: {
-    enabled?: boolean
-  }
-}
-
-export const useBranchBundlesNames = ({
-  provider,
-  owner,
-  repo,
-  branch: branchArg,
-  opts = {},
-}: UseBranchBundlesNamesArgs) => {
-  const { data: repoOverview, isSuccess } = useRepoOverview({
-    provider,
-    repo,
-    owner,
-  })
-
-  const branch = branchArg ?? repoOverview?.defaultBranch
-
-  return useSuspenseQuery(
-    BranchBundlesNamesQueryOpts({
-      provider,
-      owner,
-      repo,
-      branch,
-      repoOverviewIsSuccess: isSuccess,
-      opts,
-    })
-  )
-}

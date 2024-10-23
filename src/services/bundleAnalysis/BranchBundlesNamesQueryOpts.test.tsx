@@ -3,6 +3,7 @@ import {
   QueryClientProvider as QueryClientProviderV5,
   QueryClient as QueryClientV5,
   useQuery as useQueryV5,
+  useSuspenseQuery as useSuspenseQueryV5,
 } from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
@@ -10,26 +11,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MockInstance } from 'vitest'
 
-import {
-  BranchBundlesNamesQueryOpts,
-  useBranchBundlesNames,
-} from './useBranchBundlesNames'
-
-const mockRepoOverview = {
-  owner: {
-    isCurrentUserActivated: true,
-    repository: {
-      __typename: 'Repository',
-      private: false,
-      defaultBranch: 'main',
-      oldestCommitAt: '2022-10-10T11:59:59',
-      coverageEnabled: false,
-      bundleAnalysisEnabled: false,
-      languages: ['javascript'],
-      testAnalyticsEnabled: true,
-    },
-  },
-}
+import { BranchBundlesNamesQueryOpts } from './BranchBundlesNamesQueryOpts'
 
 const mockBranchBundles = {
   owner: {
@@ -135,53 +117,11 @@ describe('useBranchBundlesNames', () => {
         }
 
         return HttpResponse.json({ data: mockBranchBundles })
-      }),
-      graphql.query('GetRepoOverview', (info) => {
-        return HttpResponse.json({ data: mockRepoOverview })
       })
     )
 
     return { passedBranch }
   }
-
-  describe('passing branch name', () => {
-    it('uses the branch name passed in', async () => {
-      const { passedBranch } = setup({})
-      renderHook(
-        () =>
-          useBranchBundlesNames({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
-    })
-  })
-
-  describe('no branch name passed', () => {
-    it('uses the default branch', async () => {
-      const { passedBranch } = setup({})
-      renderHook(
-        () =>
-          useBranchBundlesNames({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'cool-branch',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(passedBranch).toHaveBeenCalledWith('cool-branch')
-      )
-    })
-  })
 
   describe('returns repository typename of repository', () => {
     describe('there is valid data', () => {
@@ -189,11 +129,14 @@ describe('useBranchBundlesNames', () => {
         setup({})
         const { result } = renderHook(
           () =>
-            useBranchBundlesNames({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'codecov',
-            }),
+            useSuspenseQueryV5(
+              BranchBundlesNamesQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                branch: 'cool-branch',
+              })
+            ),
           { wrapper }
         )
 
@@ -212,11 +155,14 @@ describe('useBranchBundlesNames', () => {
         setup({ isNullOwner: true })
         const { result } = renderHook(
           () =>
-            useBranchBundlesNames({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'codecov',
-            }),
+            useSuspenseQueryV5(
+              BranchBundlesNamesQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                branch: 'cool-branch',
+              })
+            ),
           { wrapper }
         )
 
@@ -252,7 +198,6 @@ describe('useBranchBundlesNames', () => {
               owner: 'codecov',
               repo: 'codecov',
               branch: 'main',
-              repoOverviewIsSuccess: true,
             })
           ),
         { wrapper }
@@ -290,7 +235,6 @@ describe('useBranchBundlesNames', () => {
               owner: 'codecov',
               repo: 'codecov',
               branch: 'main',
-              repoOverviewIsSuccess: true,
             })
           ),
         { wrapper }
@@ -328,7 +272,6 @@ describe('useBranchBundlesNames', () => {
               owner: 'codecov',
               repo: 'codecov',
               branch: 'main',
-              repoOverviewIsSuccess: true,
             })
           ),
         { wrapper }
