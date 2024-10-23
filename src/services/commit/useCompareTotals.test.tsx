@@ -3,7 +3,6 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { type MockInstance } from 'vitest'
-import { ZodError } from 'zod'
 
 import { useCompareTotals } from './useCompareTotals'
 
@@ -198,6 +197,7 @@ describe('useCompareTotals', () => {
           expect(result.current.error).toEqual(
             expect.objectContaining({
               status: 404,
+              dev: 'useCompareTotals - 404 not found',
             })
           )
         )
@@ -233,6 +233,7 @@ describe('useCompareTotals', () => {
           expect(result.current.error).toEqual(
             expect.objectContaining({
               status: 403,
+              dev: 'useCompareTotals - 403 owner not activated',
             })
           )
         )
@@ -268,46 +269,10 @@ describe('useCompareTotals', () => {
           expect(result.current.error).toEqual(
             expect.objectContaining({
               status: 404,
+              dev: 'useCompareTotals - 404 failed to parse',
             })
           )
         )
-      })
-
-      it('declares the error', async () => {
-        setup({ isUnsuccessfulParseError: true })
-        const { result } = renderHook(
-          () =>
-            useCompareTotals({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              commitid: '123',
-            }),
-          { wrapper }
-        )
-
-        await waitFor(() => expect(result.current.isError).toBeTruthy())
-        await waitFor(() =>
-          expect(result.current.error).toEqual(
-            expect.objectContaining({
-              data: expect.any(ZodError),
-            })
-          )
-        )
-
-        interface ErrorWithZodData {
-          status: number
-          data: ZodError
-        }
-
-        const zodError = result?.current?.error as ErrorWithZodData
-        expect(zodError.data.errors).toContainEqual({
-          code: 'invalid_type',
-          expected: 'object',
-          message: 'Required',
-          path: ['owner'],
-          received: 'undefined',
-        })
       })
     })
   })

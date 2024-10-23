@@ -11,6 +11,7 @@ export interface NetworkErrorObject {
     detail?: React.ReactNode
   }
   dev: `${string} - ${number} ${string}`
+  error?: Error
 }
 
 export const AllProvidersArray = [

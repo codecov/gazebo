@@ -263,7 +263,10 @@ describe('usePull', () => {
 
         await waitFor(() =>
           expect(result.current.error).toEqual(
-            expect.objectContaining({ status: 403 })
+            expect.objectContaining({
+              status: 403,
+              dev: 'usePull - 403 owner not activated',
+            })
           )
         )
       })
@@ -300,7 +303,10 @@ describe('usePull', () => {
 
         await waitFor(() =>
           expect(result.current.error).toEqual(
-            expect.objectContaining({ status: 404, data: {} })
+            expect.objectContaining({
+              status: 404,
+              dev: 'usePull - 404 not found',
+            })
           )
         )
       })
@@ -389,7 +395,10 @@ describe('usePull', () => {
 
         await waitFor(() =>
           expect(result.current.error).toEqual(
-            expect.objectContaining({ status: 404, data: {} })
+            expect.objectContaining({
+              status: 404,
+              dev: 'usePull - 404 failed to parse',
+            })
           )
         )
       })

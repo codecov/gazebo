@@ -353,6 +353,7 @@ describe('useCommitTeam', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
+            dev: 'useCommitTeam - 404 not found',
           })
         )
       )
@@ -390,6 +391,7 @@ describe('useCommitTeam', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 403,
+            dev: 'useCommitTeam - 403 owner not activated',
           })
         )
       )
@@ -427,6 +429,7 @@ describe('useCommitTeam', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
+            dev: 'useCommitTeam - 404 failed to parse',
           })
         )
       )

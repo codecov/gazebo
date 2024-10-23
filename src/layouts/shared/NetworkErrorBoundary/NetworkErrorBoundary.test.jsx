@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -14,12 +13,25 @@ import NetworkErrorBoundary from './NetworkErrorBoundary'
 vi.spyOn(console, 'error').mockImplementation(() => undefined)
 vi.mock('config')
 
+const mocks = vi.hoisted(() => ({
+  captureMessage: vi.fn(),
+}))
+
+vi.mock('@sentry/react', async () => {
+  const actual = await vi.importActual('@sentry/react')
+  return {
+    ...actual,
+    captureMessage: mocks.captureMessage,
+  }
+})
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
 afterEach(() => {
   queryClient.clear()
+  vi.clearAllMocks()
 })
 
 class TestErrorBoundary extends Component {
@@ -44,13 +56,15 @@ class TestErrorBoundary extends Component {
 }
 
 // eslint-disable-next-line react/prop-types
-function ErrorComponent({ status, detail, typename }) {
+function ErrorComponent({ status, detail, typename, dev, error }) {
   // eslint-disable-next-line no-throw-literal
   throw {
     status,
     data: {
       detail,
     },
+    dev,
+    error,
     __typename: typename,
   }
   // eslint-disable-next-line no-unreachable
@@ -58,7 +72,7 @@ function ErrorComponent({ status, detail, typename }) {
 }
 
 // eslint-disable-next-line react/prop-types
-function App({ status, detail, typename }) {
+function App({ status, detail, typename, dev, error }) {
   const [text, setText] = useState('')
   const history = useHistory()
 
@@ -88,6 +102,8 @@ function App({ status, detail, typename }) {
                 status={status}
                 detail={detail}
                 typename={typename}
+                dev={dev}
+                error={error}
               />
             ) : (
               'type "fail"'
@@ -179,21 +195,31 @@ describe('NetworkErrorBoundary', () => {
       expect(returnButton).toBeInTheDocument()
     })
 
-    it('sends metric to sentry', async () => {
+    it('calls captureMessage with the error when dev and error are provided', async () => {
       const { user } = setup()
-      render(<App status={401} detail="not authenticated" />, {
-        wrapper: wrapper(),
-      })
+      render(
+        <App
+          status={401}
+          detail="not authenticated"
+          error="cool error"
+          dev="401 - cool error"
+        />,
+        { wrapper: wrapper() }
+      )
 
       const textBox = await screen.findByRole('textbox')
       await user.type(textBox, 'fail')
 
       await waitFor(() =>
-        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'network_errors.network_status.401',
-          1,
-          undefined
-        )
+        expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
+          fingerprint: '401 - cool error',
+          addBreadcrumb: {
+            category: 'network-error',
+            data: 'cool error',
+            level: 'error',
+            message: '401 - cool error',
+          },
+        })
       )
     })
   })
@@ -238,21 +264,31 @@ describe('NetworkErrorBoundary', () => {
       expect(button).toBeInTheDocument()
     })
 
-    it('sends metric to sentry', async () => {
+    it('calls captureMessage with the error when dev and error are provided', async () => {
       const { user } = setup()
-      render(<App status={403} detail="you not admin" />, {
-        wrapper: wrapper(),
-      })
+      render(
+        <App
+          status={403}
+          detail="you not admin"
+          error="cool error"
+          dev="403 - cool error"
+        />,
+        { wrapper: wrapper() }
+      )
 
       const textBox = await screen.findByRole('textbox')
       await user.type(textBox, 'fail')
 
       await waitFor(() =>
-        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'network_errors.network_status.403',
-          1,
-          undefined
-        )
+        expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
+          fingerprint: '403 - cool error',
+          addBreadcrumb: {
+            category: 'network-error',
+            data: 'cool error',
+            level: 'error',
+            message: '403 - cool error',
+          },
+        })
       )
     })
   })
@@ -284,6 +320,34 @@ describe('NetworkErrorBoundary', () => {
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
       })
+
+      it('calls captureMessage with the error when dev and error are provided', async () => {
+        const { user } = setup()
+        render(
+          <App
+            status={404}
+            detail="not found"
+            error="cool error"
+            dev="404 - cool error"
+          />,
+          { wrapper: wrapper() }
+        )
+
+        const textBox = await screen.findByRole('textbox')
+        await user.type(textBox, 'fail')
+
+        await waitFor(() =>
+          expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
+            fingerprint: '404 - cool error',
+            addBreadcrumb: {
+              category: 'network-error',
+              data: 'cool error',
+              level: 'error',
+              message: '404 - cool error',
+            },
+          })
+        )
+      })
     })
 
     describe('when running in self hosted mode', () => {
@@ -312,24 +376,34 @@ describe('NetworkErrorBoundary', () => {
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
       })
-    })
 
-    it('sends metric to sentry', async () => {
-      const { user } = setup()
-      render(<App status={404} detail="not found" />, {
-        wrapper: wrapper(),
-      })
-
-      const textBox = await screen.findByRole('textbox')
-      await user.type(textBox, 'fail')
-
-      await waitFor(() =>
-        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'network_errors.network_status.404',
-          1,
-          undefined
+      it('calls captureMessage with the error when dev and error are provided', async () => {
+        const { user } = setup({ isSelfHosted: true })
+        render(
+          <App
+            status={404}
+            detail="not found"
+            error="cool error"
+            dev="404 - cool error"
+          />,
+          { wrapper: wrapper() }
         )
-      )
+
+        const textBox = await screen.findByRole('textbox')
+        await user.type(textBox, 'fail')
+
+        await waitFor(() =>
+          expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
+            fingerprint: '404 - cool error',
+            addBreadcrumb: {
+              category: 'network-error',
+              data: 'cool error',
+              level: 'error',
+              message: '404 - cool error',
+            },
+          })
+        )
+      })
     })
   })
 
@@ -381,22 +455,22 @@ describe('NetworkErrorBoundary', () => {
       global.fetch.mockRestore()
     })
 
-    it('sends metric to sentry', async () => {
+    it('does not call captureMessage ', async () => {
       const { user } = setup()
-      render(<App status={429} detail="rate throttled" />, {
-        wrapper: wrapper(),
-      })
+      render(
+        <App
+          status={429}
+          detail="rate limit exceeded"
+          error="cool error"
+          dev="429 - cool error"
+        />,
+        { wrapper: wrapper() }
+      )
 
       const textBox = await screen.findByRole('textbox')
       await user.type(textBox, 'fail')
 
-      await waitFor(() =>
-        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'network_errors.network_status.429',
-          1,
-          undefined
-        )
-      )
+      await waitFor(() => expect(mocks.captureMessage).not.toHaveBeenCalled())
     })
   })
 
@@ -427,6 +501,34 @@ describe('NetworkErrorBoundary', () => {
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
       })
+
+      it('calls captureMessage with the error when dev and error are provided', async () => {
+        const { user } = setup()
+        render(
+          <App
+            status={500}
+            detail="server error"
+            error="cool error"
+            dev="500 - cool error"
+          />,
+          { wrapper: wrapper() }
+        )
+
+        const textBox = await screen.findByRole('textbox')
+        await user.type(textBox, 'fail')
+
+        await waitFor(() =>
+          expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
+            fingerprint: '500 - cool error',
+            addBreadcrumb: {
+              category: 'network-error',
+              data: 'cool error',
+              level: 'error',
+              message: '500 - cool error',
+            },
+          })
+        )
+      })
     })
 
     describe('when running in self-hosted mode', () => {
@@ -455,24 +557,34 @@ describe('NetworkErrorBoundary', () => {
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
       })
-    })
 
-    it('sends metric to sentry', async () => {
-      const { user } = setup()
-      render(<App status={500} detail="internal server error" />, {
-        wrapper: wrapper(),
-      })
-
-      const textBox = await screen.findByRole('textbox')
-      await user.type(textBox, 'fail')
-
-      await waitFor(() =>
-        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'network_errors.network_status.500',
-          1,
-          undefined
+      it('calls captureMessage with the error when dev and error are provided', async () => {
+        const { user } = setup({ isSelfHosted: true })
+        render(
+          <App
+            status={500}
+            detail="server error"
+            error="cool error"
+            dev="500 - cool error"
+          />,
+          { wrapper: wrapper() }
         )
-      )
+
+        const textBox = await screen.findByRole('textbox')
+        await user.type(textBox, 'fail')
+
+        await waitFor(() =>
+          expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
+            fingerprint: '500 - cool error',
+            addBreadcrumb: {
+              category: 'network-error',
+              data: 'cool error',
+              level: 'error',
+              message: '500 - cool error',
+            },
+          })
+        )
+      })
     })
   })
 
@@ -501,24 +613,6 @@ describe('NetworkErrorBoundary', () => {
 
       const button = await screen.findByText('Return to previous page')
       expect(button).toBeInTheDocument()
-    })
-
-    it('sends metric to sentry', async () => {
-      const { user } = setup()
-      render(<App typename="UnauthenticatedError" />, {
-        wrapper: wrapper(),
-      })
-
-      const textBox = await screen.findByRole('textbox')
-      await user.type(textBox, 'fail')
-
-      await waitFor(() =>
-        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'network_errors.graphql.unauthenticated_error',
-          1,
-          undefined
-        )
-      )
     })
   })
 
