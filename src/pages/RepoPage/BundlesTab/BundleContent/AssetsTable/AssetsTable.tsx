@@ -161,7 +161,7 @@ const createColumns = (totalBundleSize: number | null) => [
             />{' '}
             <ChangeOverTime
               change={value?.change?.size.uncompress}
-              hasMeasurements={value.measurements.length > 0 ?? false}
+              hasMeasurements={value.measurements.length > 0}
             />
           </>
         )

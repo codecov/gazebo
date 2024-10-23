@@ -160,7 +160,7 @@ describe('useBundleAssetsTable', () => {
     )
 
     const expectedResult = {
-      pageParams: [undefined],
+      pageParams: [''],
       pages: [
         {
           assets: [
