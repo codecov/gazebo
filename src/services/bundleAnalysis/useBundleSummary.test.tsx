@@ -1,10 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { type MockInstance } from 'vitest'
 
-import { useBundleSummary } from './useBundleSummary'
+import { BundleSummaryQueryOpts, useBundleSummary } from './useBundleSummary'
 
 const mockRepoOverview = {
   owner: {
@@ -35,14 +41,8 @@ const mockBundleSummary = {
                 name: 'bundle1',
                 moduleCount: 10,
                 bundleData: {
-                  loadTime: {
-                    threeG: 1000,
-                    highSpeed: 500,
-                  },
-                  size: {
-                    gzip: 1000,
-                    uncompress: 2000,
-                  },
+                  loadTime: { threeG: 1000, highSpeed: 500 },
+                  size: { gzip: 1000, uncompress: 2000 },
                 },
               },
             },
@@ -95,15 +95,18 @@ const mockOwnerNotActivated = {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -113,6 +116,7 @@ beforeAll(() => {
 afterEach(() => {
   vi.clearAllMocks()
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -312,13 +316,15 @@ describe('useBundleSummary', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useBundleSummary({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
-          }),
+          useQueryV5(
+            BundleSummaryQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+            })
+          ),
         { wrapper }
       )
 
@@ -348,13 +354,15 @@ describe('useBundleSummary', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useBundleSummary({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
-          }),
+          useQueryV5(
+            BundleSummaryQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+            })
+          ),
         { wrapper }
       )
 
@@ -384,13 +392,15 @@ describe('useBundleSummary', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useBundleSummary({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
-          }),
+          useQueryV5(
+            BundleSummaryQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+            })
+          ),
         { wrapper }
       )
 
