@@ -15,7 +15,7 @@ export interface NetworkErrorObject {
   error?: Error
 }
 
-export function rejectNetworkErrorToSentry(error: NetworkErrorObject) {
+export function rejectNetworkError(error: NetworkErrorObject) {
   // only capture network errors if they are not a rate limit error
   // this will typically only be schema parsing errors
   if (error.status !== 429 && error.dev && error.error) {

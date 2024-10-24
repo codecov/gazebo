@@ -18,10 +18,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
-import {
-  NetworkErrorObject,
-  rejectNetworkErrorToSentry,
-} from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 import {
   ErrorCodeEnum,
   UploadStateEnum,
@@ -359,7 +356,7 @@ export function useCommit({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return rejectNetworkErrorToSentry({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useCommit - 404 failed to parse',
@@ -370,15 +367,15 @@ export function useCommit({
         const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useCommit - 404 not found',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -391,7 +388,7 @@ export function useCommit({
               ),
             },
             dev: 'useCommit - 403 owner not activated',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         const commit = data?.owner?.repository?.commit

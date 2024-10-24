@@ -2,7 +2,7 @@ import Cookie from 'js-cookie'
 
 import config from 'config'
 
-import { generatePath, getHeaders, rejectNetworkErrorToSentry } from './helpers'
+import { generatePath, getHeaders, rejectNetworkError } from './helpers'
 
 const mocks = vi.hoisted(() => ({
   withScope: vi.fn(),
@@ -103,10 +103,10 @@ describe('getHeaders', () => {
   })
 })
 
-describe('rejectNetworkErrorToSentry', () => {
+describe('rejectNetworkError', () => {
   describe('when the error has a dev message and error', () => {
     it('adds a breadcrumb', () => {
-      rejectNetworkErrorToSentry({
+      rejectNetworkError({
         status: 404,
         data: {},
         dev: 'useCoolHook - 404 not found',
@@ -121,7 +121,7 @@ describe('rejectNetworkErrorToSentry', () => {
     })
 
     it('sets the fingerprint', () => {
-      rejectNetworkErrorToSentry({
+      rejectNetworkError({
         status: 404,
         data: {},
         dev: 'useCoolHook - 404 not found',
@@ -134,7 +134,7 @@ describe('rejectNetworkErrorToSentry', () => {
     })
 
     it('captures the error with Sentry', () => {
-      rejectNetworkErrorToSentry({
+      rejectNetworkError({
         status: 404,
         data: {},
         dev: 'useCoolHook - 404 not found',
@@ -147,7 +147,7 @@ describe('rejectNetworkErrorToSentry', () => {
 
   describe('when the error does not have an error', () => {
     it('does not call any Sentry methods', () => {
-      rejectNetworkErrorToSentry({
+      rejectNetworkError({
         status: 404,
         data: {},
         dev: 'useCoolHook - 404 not found',
