@@ -96,6 +96,9 @@ export function useResyncUser() {
       queryClient.invalidateQueries({
         queryKey: ['repos', provider, owner],
       })
+      queryClient.invalidateQueries({
+        queryKey: ['UseMyOrganizations', provider],
+      })
     }
   }, [isFetching, isSuccess, queryClient, provider, owner])
 
