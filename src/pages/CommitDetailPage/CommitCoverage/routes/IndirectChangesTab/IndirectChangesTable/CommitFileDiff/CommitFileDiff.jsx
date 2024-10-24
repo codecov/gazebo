@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 
 import { useIgnoredIds } from 'pages/CommitDetailPage/hooks/useIgnoredIds'
 import { useComparisonForCommitAndParent } from 'services/comparison/useComparisonForCommitAndParent'
-import { transformImpactedFileData } from 'services/comparison/utils'
+import { transformImpactedFileToDiff } from 'services/comparison/utils'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
@@ -66,7 +66,7 @@ function CommitFileDiff({ path }) {
   }
 
   const { fileLabel, headName, isCriticalFile, segments } =
-    transformImpactedFileData(comparisonData?.impactedFile)
+    transformImpactedFileToDiff(comparisonData?.impactedFile)
 
   let stickyPadding = undefined
   let fullFilePath = commitFileDiff.path({ commit, tree: path })

@@ -6,7 +6,7 @@ import {
   ImpactedFileType,
   useComparisonForCommitAndParent,
 } from 'services/comparison/useComparisonForCommitAndParent'
-import { transformImpactedFileData } from 'services/comparison/utils'
+import { transformImpactedFileToDiff } from 'services/comparison/utils'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
@@ -71,7 +71,7 @@ function DiffRenderer({
   const { data: ignoredUploadIds } = useIgnoredIds()
 
   const fileDiff = useMemo(() => {
-    const transformedData = transformImpactedFileData(impactedFile)
+    const transformedData = transformImpactedFileToDiff(impactedFile)
 
     const modifiedSegments = transformSegmentsToLineData(
       transformedData?.segments,
