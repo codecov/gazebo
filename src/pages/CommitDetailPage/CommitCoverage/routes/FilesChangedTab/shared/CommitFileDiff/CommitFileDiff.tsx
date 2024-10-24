@@ -1,4 +1,3 @@
-import without from 'lodash/without'
 import { Fragment, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -19,27 +18,38 @@ import {
   VirtualDiffRenderer,
 } from 'ui/VirtualRenderers/VirtualDiffRenderer'
 
-function ErrorDisplayMessage() {
-  return (
-    <p className="border border-solid border-ds-gray-tertiary p-4">
-      There was a problem getting the source code from your provider. Unable to
-      show line by line coverage.
-      <br />
-      <span>
-        If you continue to experience this issue, please try{' '}
-        <A
-          to={{
-            pageName: 'login',
-          }}
-          hook={undefined}
-          isExternal={undefined}
-        >
-          logging in
-        </A>{' '}
-        again to refresh your credentials.
-      </span>
-    </p>
-  )
+interface FormatSegmentArgs {
+  segments: ImpactedFileType['segments']['results']
+  ignoredUploadIds: number[]
+}
+
+function formatSegments({ segments, ignoredUploadIds }: FormatSegmentArgs) {
+  return segments.map((segment) => {
+    // we need to create a string of the diff content for the virtual diff renderer text area
+    let newDiffContent = ''
+    const lineData: LineData[] = []
+
+    segment.lines.forEach((line, lineIndex) => {
+      newDiffContent += line.content
+
+      // only add a newline if it's not the last line
+      if (lineIndex < segment.lines.length - 1) {
+        newDiffContent += '\n'
+      }
+
+      lineData.push({
+        headNumber: line?.headNumber,
+        baseNumber: line?.baseNumber,
+        headCoverage: line?.headCoverage as CoverageValue,
+        baseCoverage: line?.baseCoverage as CoverageValue,
+        hitCount: line?.coverageInfo?.hitUploadIds?.filter((value) => {
+          return !ignoredUploadIds.includes(value)
+        }).length,
+      })
+    })
+
+    return { ...segment, lineData, newDiffContent }
+  })
 }
 
 function DiffRenderer({
@@ -57,30 +67,9 @@ function DiffRenderer({
   const memoizedData = useMemo(() => {
     const transformedData = transformImpactedFileData(impactedFile)
 
-    const modifiedSegments = transformedData?.segments?.map((segment) => {
-      let newDiffContent = ''
-      const lineData: LineData[] = []
-
-      segment.lines.forEach((line, lineIndex) => {
-        newDiffContent += line.content
-
-        if (lineIndex < segment.lines.length - 1) {
-          newDiffContent += '\n'
-        }
-
-        lineData.push({
-          headNumber: line?.headNumber,
-          baseNumber: line?.baseNumber,
-          headCoverage: line?.headCoverage as CoverageValue,
-          baseCoverage: line?.baseCoverage as CoverageValue,
-          hitCount: without(
-            line?.coverageInfo?.hitUploadIds,
-            ...ignoredUploadIds
-          ).length,
-        })
-      })
-
-      return { ...segment, lineData, newDiffContent }
+    const modifiedSegments = formatSegments({
+      segments: transformedData?.segments ?? [],
+      ignoredUploadIds,
     })
 
     return { ...transformedData, segments: modifiedSegments }
@@ -127,6 +116,29 @@ function DiffRenderer({
         )
       })}
     </>
+  )
+}
+
+function ErrorDisplayMessage() {
+  return (
+    <p className="border border-solid border-ds-gray-tertiary p-4">
+      There was a problem getting the source code from your provider. Unable to
+      show line by line coverage.
+      <br />
+      <span>
+        If you continue to experience this issue, please try{' '}
+        <A
+          to={{
+            pageName: 'login',
+          }}
+          hook={undefined}
+          isExternal={undefined}
+        >
+          logging in
+        </A>{' '}
+        again to refresh your credentials.
+      </span>
+    </p>
   )
 }
 
