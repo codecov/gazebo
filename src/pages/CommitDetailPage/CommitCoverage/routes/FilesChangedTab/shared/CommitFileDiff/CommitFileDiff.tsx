@@ -18,12 +18,14 @@ import {
   VirtualDiffRenderer,
 } from 'ui/VirtualRenderers/VirtualDiffRenderer'
 
-interface FormatSegmentArgs {
-  segments: ImpactedFileType['segments']['results']
-  ignoredUploadIds: number[]
-}
+function transformSegments(
+  segments: ImpactedFileType['segments']['results'] | undefined,
+  ignoredUploadIds: Set<number>
+) {
+  if (!segments) {
+    return []
+  }
 
-function formatSegments({ segments, ignoredUploadIds }: FormatSegmentArgs) {
   return segments.map((segment) => {
     // we need to create a string of the diff content for the virtual diff renderer text area
     let newDiffContent = ''
@@ -33,7 +35,7 @@ function formatSegments({ segments, ignoredUploadIds }: FormatSegmentArgs) {
       newDiffContent += line.content
 
       // only add a newline if it's not the last line
-      if (lineIndex < segment.lines.length - 1) {
+      if (lineIndex !== segment.lines.length - 1) {
         newDiffContent += '\n'
       }
 
@@ -42,9 +44,10 @@ function formatSegments({ segments, ignoredUploadIds }: FormatSegmentArgs) {
         baseNumber: line?.baseNumber,
         headCoverage: line?.headCoverage as CoverageValue,
         baseCoverage: line?.baseCoverage as CoverageValue,
-        hitCount: line?.coverageInfo?.hitUploadIds?.filter(
-          (value) => !ignoredUploadIds.includes(value)
-        ).length,
+        hitCount: line?.coverageInfo?.hitUploadIds?.reduce(
+          (count, value) => (ignoredUploadIds.has(value) ? count : count + 1),
+          0
+        ),
       })
     })
 
@@ -64,16 +67,21 @@ function DiffRenderer({
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: ignoredUploadIds } = useIgnoredIds()
 
+  const ignoredUploadIdsSet = useMemo(
+    () => new Set(ignoredUploadIds),
+    [ignoredUploadIds]
+  )
+
   const memoizedData = useMemo(() => {
     const transformedData = transformImpactedFileData(impactedFile)
 
-    const modifiedSegments = formatSegments({
-      segments: transformedData?.segments ?? [],
-      ignoredUploadIds,
-    })
+    const modifiedSegments = transformSegments(
+      transformedData?.segments,
+      ignoredUploadIdsSet
+    )
 
     return { ...transformedData, segments: modifiedSegments }
-  }, [ignoredUploadIds, impactedFile])
+  }, [ignoredUploadIdsSet, impactedFile])
 
   let fullFilePath = commitFileDiff.path({ commit, tree: path })
   if (overview?.coverageEnabled && overview?.bundleAnalysisEnabled) {
