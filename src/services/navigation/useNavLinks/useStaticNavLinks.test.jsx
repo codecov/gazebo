@@ -90,6 +90,7 @@ describe('useStaticNavLinks', () => {
       ${links.installSelfHosted}             | ${'https://docs.codecov.com/docs/installing-codecov-self-hosted'}
       ${links.login}                         | ${`/login`}
       ${links.testsAnalytics}                | ${'https://docs.codecov.com/docs/test-result-ingestion-beta#failed-test-reporting'}
+      ${links.testsAnalyticsDataRetention}   | ${'https://docs.codecov.com/docs/test-result-ingestion-beta#data-retention'}
       ${links.expiredReports}                | ${'https://docs.codecov.com/docs/codecov-yaml#section-expired-reports'}
       ${links.unusableReports}               | ${'https://docs.codecov.com/docs/error-reference#unusable-reports'}
       ${links.demoRepo}                      | ${'/github/codecov/gazebo'}

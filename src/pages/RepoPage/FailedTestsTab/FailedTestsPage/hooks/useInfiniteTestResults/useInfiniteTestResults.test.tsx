@@ -7,8 +7,13 @@ import { useInfiniteTestResults } from './useInfiniteTestResults'
 
 const mockTestResults = {
   owner: {
+    plan: {
+      value: 'users-enterprisem',
+    },
     repository: {
       __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
       testAnalytics: {
         testResults: {
           edges: [
@@ -18,7 +23,12 @@ const mockTestResults = {
                 name: 'test-1',
                 commitsFailed: 1,
                 failureRate: 0.1,
+                flakeRate: 0.0,
                 avgDuration: 10,
+                totalFailCount: 5,
+                totalFlakyFailCount: 14,
+                totalPassCount: 6,
+                totalSkipCount: 7,
               },
             },
             {
@@ -27,7 +37,26 @@ const mockTestResults = {
                 name: 'test-2',
                 commitsFailed: 2,
                 failureRate: 0.2,
+                flakeRate: 0.0,
                 avgDuration: 20,
+                totalFailCount: 8,
+                totalFlakyFailCount: 15,
+                totalPassCount: 9,
+                totalSkipCount: 10,
+              },
+            },
+            {
+              node: {
+                updatedAt: '2023-01-03T00:00:00Z',
+                name: 'test-3',
+                commitsFailed: 3,
+                failureRate: 0.2,
+                flakeRate: 0.1,
+                avgDuration: 30,
+                totalFailCount: 11,
+                totalFlakyFailCount: 16,
+                totalPassCount: 12,
+                totalSkipCount: 13,
               },
             },
           ],
@@ -35,6 +64,7 @@ const mockTestResults = {
             endCursor: 'cursor-2',
             hasNextPage: true,
           },
+          totalCount: 55,
         },
       },
     },
@@ -47,11 +77,17 @@ const mockNotFoundError = {
       __typename: 'NotFoundError',
       message: 'Repository not found',
     },
+    plan: {
+      value: 'users-enterprisem',
+    },
   },
 }
 
 const mockOwnerNotActivatedError = {
   owner: {
+    plan: {
+      value: 'users-enterprisem',
+    },
     repository: {
       __typename: 'OwnerNotActivatedError',
       message: 'Owner not activated',
@@ -139,14 +175,36 @@ describe('useInfiniteTestResults', () => {
                 name: 'test-1',
                 commitsFailed: 1,
                 failureRate: 0.1,
+                flakeRate: 0.0,
                 avgDuration: 10,
+                totalFailCount: 5,
+                totalFlakyFailCount: 14,
+                totalPassCount: 6,
+                totalSkipCount: 7,
               },
               {
                 updatedAt: '2023-01-02T00:00:00Z',
                 name: 'test-2',
                 commitsFailed: 2,
                 failureRate: 0.2,
+                flakeRate: 0.0,
                 avgDuration: 20,
+                totalFailCount: 8,
+                totalFlakyFailCount: 15,
+                totalPassCount: 9,
+                totalSkipCount: 10,
+              },
+              {
+                updatedAt: '2023-01-03T00:00:00Z',
+                name: 'test-3',
+                commitsFailed: 3,
+                failureRate: 0.2,
+                flakeRate: 0.1,
+                avgDuration: 30,
+                totalFailCount: 11,
+                totalFlakyFailCount: 16,
+                totalPassCount: 12,
+                totalSkipCount: 13,
               },
             ])
           )
