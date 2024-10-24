@@ -87,7 +87,7 @@ const TotalTestsRunTimeCard = ({
         ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
-        The cumulative CI time spent running tests over the last {intervalCopy}
+        The cumulative CI time spent running tests over the last {intervalCopy}.
       </MetricCard.Description>
     </MetricCard>
   )

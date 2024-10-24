@@ -278,7 +278,7 @@ const FailedTestsTable = () => {
   const columns = useMemo(
     () =>
       getColumns({
-        hideFlakeRate: !!hideFlakeRate,
+        hideFlakeRate,
         interval: queryParams?.historicalTrend as MeasurementInterval,
       }),
     [hideFlakeRate, queryParams?.historicalTrend]
