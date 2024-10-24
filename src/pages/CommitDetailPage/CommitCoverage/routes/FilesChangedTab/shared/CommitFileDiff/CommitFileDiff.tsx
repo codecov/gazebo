@@ -18,13 +18,15 @@ import {
   VirtualDiffRenderer,
 } from 'ui/VirtualRenderers/VirtualDiffRenderer'
 
-function transformSegments(
+function transformSegmentsToLineData(
   segments: ImpactedFileType['segments']['results'] | undefined,
-  ignoredUploadIds: Set<number>
+  ignoredUploadIds: number[]
 ) {
   if (!segments) {
     return []
   }
+
+  const ignoredUploadIdsSet = new Set(ignoredUploadIds)
 
   return segments.map((segment) => {
     // we need to create a string of the diff content for the virtual diff renderer text area
@@ -45,7 +47,8 @@ function transformSegments(
         headCoverage: line?.headCoverage as CoverageValue,
         baseCoverage: line?.baseCoverage as CoverageValue,
         hitCount: line?.coverageInfo?.hitUploadIds?.reduce(
-          (count, value) => (ignoredUploadIds.has(value) ? count : count + 1),
+          (count, value) =>
+            ignoredUploadIdsSet.has(value) ? count : count + 1,
           0
         ),
       })
@@ -67,21 +70,16 @@ function DiffRenderer({
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: ignoredUploadIds } = useIgnoredIds()
 
-  const ignoredUploadIdsSet = useMemo(
-    () => new Set(ignoredUploadIds),
-    [ignoredUploadIds]
-  )
-
-  const memoizedData = useMemo(() => {
+  const fileDiff = useMemo(() => {
     const transformedData = transformImpactedFileData(impactedFile)
 
-    const modifiedSegments = transformSegments(
+    const modifiedSegments = transformSegmentsToLineData(
       transformedData?.segments,
-      ignoredUploadIdsSet
+      ignoredUploadIds
     )
 
     return { ...transformedData, segments: modifiedSegments }
-  }, [ignoredUploadIdsSet, impactedFile])
+  }, [ignoredUploadIds, impactedFile])
 
   let fullFilePath = commitFileDiff.path({ commit, tree: path })
   if (overview?.coverageEnabled && overview?.bundleAnalysisEnabled) {
@@ -91,19 +89,17 @@ function DiffRenderer({
 
   return (
     <>
-      {memoizedData?.isCriticalFile && (
-        <CriticalFileLabel variant="borderTop" />
-      )}
-      {memoizedData?.segments?.map((segment, segmentIndex) => {
+      {fileDiff?.isCriticalFile && <CriticalFileLabel variant="borderTop" />}
+      {fileDiff?.segments?.map((segment, segmentIndex) => {
         return (
-          <Fragment key={`${memoizedData?.headName}-${segmentIndex}`}>
+          <Fragment key={`${fileDiff?.headName}-${segmentIndex}`}>
             <CodeRendererInfoRow>
               <div className="flex w-full justify-between">
                 <div className="flex gap-1">
                   <span data-testid="patch">{segment?.header}</span>
-                  {memoizedData?.fileLabel && (
+                  {fileDiff?.fileLabel && (
                     <span className="border-l-2 pl-2">
-                      {memoizedData?.fileLabel}
+                      {fileDiff?.fileLabel}
                     </span>
                   )}
                 </div>
@@ -116,7 +112,7 @@ function DiffRenderer({
             <VirtualDiffRenderer
               key={segmentIndex}
               code={segment?.newDiffContent}
-              fileName={memoizedData?.headName ?? ''}
+              fileName={fileDiff?.headName ?? ''}
               hashedPath={hashedPath}
               lineData={segment?.lineData}
             />
