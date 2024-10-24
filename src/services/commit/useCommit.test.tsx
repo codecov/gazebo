@@ -306,7 +306,7 @@ describe('useCommit', () => {
       }),
       graphql.query(`CompareTotals`, (info) => {
         if (skipPolling) {
-          return HttpResponse.json({ data: {} })
+          return HttpResponse.json({ data: { owner: null } })
         }
         return HttpResponse.json({ data: compareDoneData })
       })
