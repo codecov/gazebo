@@ -29,9 +29,6 @@ interface UseComparisonForCommitAndParentArgs {
   filters?: {
     hasUnintendedChanges?: boolean
   }
-  opts?: {
-    select: (res?: any) => any
-  }
 }
 
 const CoverageObjSchema = z.object({
@@ -122,7 +119,6 @@ export function useComparisonForCommitAndParent({
   commitid,
   path,
   filters,
-  opts,
 }: UseComparisonForCommitAndParentArgs) {
   return useQuery({
     queryKey: [
@@ -187,9 +183,15 @@ export function useComparisonForCommitAndParent({
           } satisfies NetworkErrorObject)
         }
 
-        return { data }
+        if (
+          data?.owner?.repository?.commit?.compareWithParent?.__typename ===
+          'Comparison'
+        ) {
+          return data?.owner?.repository?.commit?.compareWithParent
+        }
+
+        return null
       }),
     suspense: false,
-    ...opts,
   })
 }
