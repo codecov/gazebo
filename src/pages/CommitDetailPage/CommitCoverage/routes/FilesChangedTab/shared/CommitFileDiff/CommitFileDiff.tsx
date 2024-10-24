@@ -13,7 +13,6 @@ import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
 import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
-import Spinner from 'ui/Spinner'
 import {
   CoverageValue,
   LineData,
@@ -131,12 +130,6 @@ function DiffRenderer({
   )
 }
 
-const Loader = () => (
-  <div className="flex items-center justify-center py-16">
-    <Spinner />
-  </div>
-)
-
 interface URLParams {
   provider: string
   owner: string
@@ -145,26 +138,23 @@ interface URLParams {
 }
 
 interface CommitFileDiffProps {
-  path: string
+  path: string | null | undefined
 }
 
 function CommitFileDiff({ path }: CommitFileDiffProps) {
   const { provider, owner, repo, commit } = useParams<URLParams>()
 
-  const { data: comparisonData, isLoading } = useComparisonForCommitAndParent({
+  const { data: comparisonData } = useComparisonForCommitAndParent({
     provider,
     owner,
     repo,
     commitid: commit,
-    path,
+    path: path ?? '',
     filters: { hasUnintendedChanges: false },
+    opts: { enabled: !!path },
   })
 
-  if (isLoading) {
-    return <Loader />
-  }
-
-  if (!comparisonData || !comparisonData?.impactedFile) {
+  if (!comparisonData || !comparisonData?.impactedFile || !path) {
     return <ErrorDisplayMessage />
   }
 
