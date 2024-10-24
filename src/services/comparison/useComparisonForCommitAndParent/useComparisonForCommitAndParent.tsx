@@ -20,17 +20,6 @@ import {
   MissingHeadReportSchema,
 } from '../schemas'
 
-interface UseComparisonForCommitAndParentArgs {
-  provider: string
-  owner: string
-  repo: string
-  commitid: string
-  path: string
-  filters?: {
-    hasUnintendedChanges?: boolean
-  }
-}
-
 const CoverageObjSchema = z.object({
   coverage: z.number().nullish(),
 })
@@ -111,6 +100,20 @@ export const ComparisonForCommitAndParentSchema = z.object({
     .nullable(),
 })
 
+interface UseComparisonForCommitAndParentArgs {
+  provider: string
+  owner: string
+  repo: string
+  commitid: string
+  path: string
+  filters?: {
+    hasUnintendedChanges?: boolean
+  }
+  opts?: {
+    enabled?: boolean
+  }
+}
+
 // TODO: make the a similar hook for the comparison with base, useComparisonForHeadAndBase
 export function useComparisonForCommitAndParent({
   provider,
@@ -119,7 +122,13 @@ export function useComparisonForCommitAndParent({
   commitid,
   path,
   filters,
+  opts = {},
 }: UseComparisonForCommitAndParentArgs) {
+  let enabled = true
+  if (opts?.enabled !== undefined) {
+    enabled = opts.enabled
+  }
+
   return useQuery({
     queryKey: [
       'ImpactedFileComparedWithParent',
@@ -192,6 +201,6 @@ export function useComparisonForCommitAndParent({
 
         return null
       }),
-    suspense: false,
+    enabled,
   })
 }
