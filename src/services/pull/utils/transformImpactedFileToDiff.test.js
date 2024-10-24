@@ -1,8 +1,8 @@
-import { transformImpactedFileData } from './transformImpactedFileData'
+import { transformImpactedFileToDiff } from './transformImpactedFileToDiff'
 
-describe('transformImpactedFileData', () => {
+describe('transformImpactedFileToDiff', () => {
   it('returns file information', () => {
-    const data = transformImpactedFileData({
+    const data = transformImpactedFileToDiff({
       isNewFile: true,
       headName: 'name',
       isCriticalFile: false,

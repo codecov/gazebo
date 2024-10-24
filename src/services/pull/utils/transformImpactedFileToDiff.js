@@ -1,6 +1,6 @@
 import { setFileLabel } from './setFileLabel'
 
-export function transformImpactedFileData(impactedFile) {
+export function transformImpactedFileToDiff(impactedFile) {
   const fileLabel = setFileLabel({
     isNewFile: impactedFile?.isNewFile,
     isRenamedFile: impactedFile?.isRenamedFile,

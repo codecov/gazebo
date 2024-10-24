@@ -7,18 +7,6 @@ import { type MockInstance } from 'vitest'
 
 import { useComparisonForCommitAndParent } from './useComparisonForCommitAndParent'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-})
-
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-)
-
 const provider = 'gh'
 const owner = 'codecov'
 const repo = 'gazebo'
@@ -103,13 +91,26 @@ const baseMock = {
 }
 
 const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
-beforeAll(() => server.listen())
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 interface SetupArgs {
   isNotFoundError?: boolean
@@ -170,12 +171,75 @@ describe('useComparisonForCommitAndParent', () => {
             commitid,
             path: 'someFile.js',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
-      await waitFor(() => expect(result.current.data.data).toEqual(baseMock))
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          __typename: 'Comparison',
+          impactedFile: {
+            baseCoverage: {
+              coverage: 100,
+            },
+            changeCoverage: 0,
+            hashedPath: 'hashedFilePath',
+            headCoverage: {
+              coverage: 100,
+            },
+            headName: 'flag1/file.js',
+            isCriticalFile: false,
+            isDeletedFile: false,
+            isNewFile: false,
+            isRenamedFile: false,
+            patchCoverage: {
+              coverage: 100,
+            },
+            segments: {
+              results: [
+                {
+                  hasUnintendedChanges: false,
+                  header: '-0,0 +1,45',
+                  lines: [
+                    {
+                      baseCoverage: null,
+                      baseNumber: null,
+                      content: '+export default class Calculator {',
+                      coverageInfo: {
+                        hitCount: null,
+                        hitUploadIds: null,
+                      },
+                      headCoverage: 'H',
+                      headNumber: '1',
+                    },
+                    {
+                      baseCoverage: null,
+                      baseNumber: null,
+                      content: '+  private value = 0;',
+                      coverageInfo: {
+                        hitCount: 1,
+                        hitUploadIds: [1],
+                      },
+                      headCoverage: 'H',
+                      headNumber: '2',
+                    },
+                    {
+                      baseCoverage: null,
+                      baseNumber: null,
+                      content: '+  private calcMode = ""',
+                      coverageInfo: {
+                        hitCount: null,
+                        hitUploadIds: null,
+                      },
+                      headCoverage: 'H',
+                      headNumber: '3',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        })
+      )
     })
   })
 
@@ -201,9 +265,7 @@ describe('useComparisonForCommitAndParent', () => {
             commitid,
             path: 'someFile.js',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -227,9 +289,7 @@ describe('useComparisonForCommitAndParent', () => {
             commitid,
             path: 'someFile.js',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -253,9 +313,7 @@ describe('useComparisonForCommitAndParent', () => {
             commitid,
             path: 'someFile.js',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())

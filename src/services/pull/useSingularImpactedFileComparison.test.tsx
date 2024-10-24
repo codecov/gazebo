@@ -4,7 +4,7 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
 import { useSingularImpactedFileComparison } from './useSingularImpactedFileComparison'
-import { transformImpactedFileData } from './utils'
+import { transformImpactedFileToDiff } from './utils'
 
 console.error = () => {}
 
@@ -165,7 +165,7 @@ describe('useSingularImpactedFileComparison', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual(
-            transformImpactedFileData(
+            transformImpactedFileToDiff(
               mockResponse.owner.repository.pull.compareWithBase.impactedFile
             )
           )
