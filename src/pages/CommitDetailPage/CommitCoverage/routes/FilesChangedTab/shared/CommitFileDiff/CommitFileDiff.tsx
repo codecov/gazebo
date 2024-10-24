@@ -42,9 +42,9 @@ function formatSegments({ segments, ignoredUploadIds }: FormatSegmentArgs) {
         baseNumber: line?.baseNumber,
         headCoverage: line?.headCoverage as CoverageValue,
         baseCoverage: line?.baseCoverage as CoverageValue,
-        hitCount: line?.coverageInfo?.hitUploadIds?.filter((value) => {
-          return !ignoredUploadIds.includes(value)
-        }).length,
+        hitCount: line?.coverageInfo?.hitUploadIds?.filter(
+          (value) => !ignoredUploadIds.includes(value)
+        ).length,
       })
     })
 
