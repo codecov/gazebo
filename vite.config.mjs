@@ -17,6 +17,7 @@ export default defineConfig((config) => {
 
   const plugins = []
   if (
+    process.env.CODECOV_SHELTER_BA_URL &&
     process.env.CODECOV_API_URL &&
     process.env.CODECOV_ORG_TOKEN &&
     process.env.UPLOAD_CODECOV_BUNDLE_STATS === 'true'
