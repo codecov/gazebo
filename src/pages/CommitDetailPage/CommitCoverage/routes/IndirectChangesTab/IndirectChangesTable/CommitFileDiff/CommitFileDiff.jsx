@@ -66,23 +66,18 @@ function CommitFileDiff({ path }) {
     filters: {
       hasUnintendedChanges: true,
     },
-    opts: {
-      select: (res) =>
-        transformImpactedFileData(
-          res?.data?.owner?.repository?.commit?.compareWithParent?.impactedFile
-        ),
-    },
   })
 
   if (isLoading) {
     return <Loader />
   }
 
-  if (!comparisonData) {
+  if (!comparisonData || !comparisonData?.impactedFile) {
     return <ErrorDisplayMessage />
   }
 
-  const { fileLabel, headName, isCriticalFile, segments } = comparisonData
+  const { fileLabel, headName, isCriticalFile, segments } =
+    transformImpactedFileData(comparisonData?.impactedFile)
 
   let stickyPadding = undefined
   let fullFilePath = commitFileDiff.path({ commit, tree: path })

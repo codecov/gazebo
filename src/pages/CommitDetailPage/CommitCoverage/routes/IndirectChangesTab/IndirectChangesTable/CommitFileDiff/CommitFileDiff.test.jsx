@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CommitFileDiff from './CommitFileDiff'
@@ -169,7 +170,7 @@ const mockOverview = (bundleAnalysisEnabled = false) => {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, suspense: true } },
 })
 
 const wrapper = ({ children }) => (
@@ -179,7 +180,9 @@ const wrapper = ({ children }) => (
         '/gh/codecov/gazebo/commit/123sha/folder/subfolder/file.js',
       ]}
     >
-      <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
+      <Route path="/:provider/:owner/:repo/commit/:commit">
+        <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+      </Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -348,6 +351,7 @@ describe('CommitFileDiff', () => {
     })
 
     it('renders a login link', async () => {
+      setup({ impactedFile: null })
       render(<CommitFileDiff path={'random/path'} />, { wrapper })
 
       const link = await screen.findByText(/logging in/)
