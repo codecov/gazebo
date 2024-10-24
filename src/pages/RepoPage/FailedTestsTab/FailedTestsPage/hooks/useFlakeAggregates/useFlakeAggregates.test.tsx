@@ -5,7 +5,9 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { MockInstance } from 'vitest'
 
-import { MeasurementInterval, useFlakeAggregates } from './useFlakeAggregates'
+import { MEASUREMENT_INTERVAL } from 'pages/RepoPage/shared/constants'
+
+import { useFlakeAggregates } from './useFlakeAggregates'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -91,7 +93,7 @@ describe('useFlakeAggregates', () => {
         const { result } = renderHook(
           () =>
             useFlakeAggregates({
-              interval: MeasurementInterval.INTERVAL_1_DAY,
+              interval: MEASUREMENT_INTERVAL.INTERVAL_1_DAY,
             }),
           {
             wrapper,
@@ -127,7 +129,7 @@ describe('useFlakeAggregates', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useFlakeAggregates({ interval: MeasurementInterval.INTERVAL_1_DAY }),
+          useFlakeAggregates({ interval: MEASUREMENT_INTERVAL.INTERVAL_1_DAY }),
         {
           wrapper,
         }
@@ -158,7 +160,7 @@ describe('useFlakeAggregates', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useFlakeAggregates({ interval: MeasurementInterval.INTERVAL_1_DAY }),
+          useFlakeAggregates({ interval: MEASUREMENT_INTERVAL.INTERVAL_1_DAY }),
         {
           wrapper,
         }

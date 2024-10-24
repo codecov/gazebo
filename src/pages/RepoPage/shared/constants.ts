@@ -4,7 +4,7 @@ export const MEASUREMENT_INTERVAL = {
   INTERVAL_1_DAY: 'INTERVAL_1_DAY',
 } as const
 
-export type MEASUREMENT_INTERVAL_TYPE = keyof typeof MEASUREMENT_INTERVAL
+export type MeasurementInterval = keyof typeof MEASUREMENT_INTERVAL
 
 export const MeasurementTimeOptions = [
   { label: 'Last 30 days', value: MEASUREMENT_INTERVAL.INTERVAL_30_DAY },

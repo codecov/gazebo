@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import {
   MEASUREMENT_INTERVAL,
-  MEASUREMENT_INTERVAL_TYPE,
+  MeasurementInterval,
   MeasurementTimeOption,
   MeasurementTimeOptions,
 } from 'pages/RepoPage/shared/constants'
@@ -30,7 +30,7 @@ interface URLParams {
 export const defaultQueryParams = {
   term: '',
   flags: [] as string[],
-  historicalTrend: '' as MEASUREMENT_INTERVAL_TYPE,
+  historicalTrend: '' as MeasurementInterval,
   parameter: '' as TestResultsFilterParameterType,
   testSuites: [] as string[],
 }

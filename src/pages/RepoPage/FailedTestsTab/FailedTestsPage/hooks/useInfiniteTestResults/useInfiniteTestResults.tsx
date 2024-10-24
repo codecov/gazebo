@@ -5,7 +5,7 @@ import {
 import { useMemo } from 'react'
 import { z } from 'zod'
 
-import { MEASUREMENT_INTERVAL_TYPE } from 'pages/RepoPage/shared/constants'
+import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -164,7 +164,7 @@ interface UseTestResultsArgs {
   filters?: {
     branch?: string
     flags?: string[]
-    interval?: MEASUREMENT_INTERVAL_TYPE
+    interval?: MeasurementInterval
     parameter?: TestResultsFilterParameterType
     term?: string
     test_suites?: string[]
