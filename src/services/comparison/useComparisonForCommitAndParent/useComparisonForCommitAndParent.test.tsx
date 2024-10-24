@@ -7,18 +7,6 @@ import { type MockInstance } from 'vitest'
 
 import { useComparisonForCommitAndParent } from './useComparisonForCommitAndParent'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-})
-
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-)
-
 const provider = 'gh'
 const owner = 'codecov'
 const repo = 'gazebo'
@@ -103,13 +91,26 @@ const baseMock = {
 }
 
 const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
-beforeAll(() => server.listen())
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 interface SetupArgs {
   isNotFoundError?: boolean
