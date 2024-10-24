@@ -44,7 +44,7 @@ function UploadsCard() {
       <Card className="overflow-x-hidden">
         <Card.Header className="p-4">
           <div className="flex justify-between">
-            <Card.Title size="base">Uploads</Card.Title>
+            <Card.Title size="base">Coverage reports history</Card.Title>
             {/* @ts-expect-error */}
             <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
               <span className="text-xs">view YAML file</span>

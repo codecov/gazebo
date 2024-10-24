@@ -19,7 +19,8 @@ const customIgnoredErrors = [
    * well when this error is triggered we automatically refresh the users
    * window to load in the new data (which is triggered by this error).
    */
-  'Failed to fetch dynamically imported module',
+  // Removing this for the time being, to see if we can resolve it fully
+  // 'Failed to fetch dynamically imported module',
 ]
 
 // common ignore errors / URLs to de-clutter Sentry

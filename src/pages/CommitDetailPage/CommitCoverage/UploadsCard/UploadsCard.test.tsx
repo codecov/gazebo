@@ -182,8 +182,8 @@ describe('UploadsCard', () => {
     it('renders the title', () => {
       render(<UploadsCard />, { wrapper })
 
-      const uploads = screen.getByText(/Uploads/)
-      expect(uploads).toBeInTheDocument()
+      const covReportHistory = screen.getByText(/Coverage reports history/)
+      expect(covReportHistory).toBeInTheDocument()
     })
     it('renders different cis', () => {
       render(<UploadsCard />, { wrapper })
@@ -237,7 +237,7 @@ describe('UploadsCard', () => {
     it('renders the title', () => {
       render(<UploadsCard />, { wrapper })
 
-      const uploads = screen.getByText(/Uploads/)
+      const uploads = screen.getByText(/Coverage reports history/)
       expect(uploads).toBeInTheDocument()
     })
     it('renders different cis', () => {
@@ -264,7 +264,7 @@ describe('UploadsCard', () => {
     it('renders the title', () => {
       render(<UploadsCard />, { wrapper })
 
-      const uploads = screen.getByText(/Uploads/)
+      const uploads = screen.getByText(/Coverage reports history/)
       expect(uploads).toBeInTheDocument()
     })
   })

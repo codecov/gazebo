@@ -37,35 +37,17 @@ describe('ErroredUploads', () => {
       render(<ErroredUploads erroredUploads={mockErroredUploads} />)
 
       const message = screen.getByText(
-        /The following uploads failed to process:/
+        /No coverage data is available due to incomplete uploads on the first attempt./
       )
       expect(message).toBeInTheDocument()
-    })
-
-    it('all providers involved', () => {
-      render(<ErroredUploads erroredUploads={mockErroredUploads} />)
-
-      const circle = screen.getByText(/circleCI/)
-      expect(circle).toBeInTheDocument()
-
-      const ghActions = screen.getByText(/github actions/)
-      expect(ghActions).toBeInTheDocument()
-    })
-
-    it('build code', () => {
-      render(<ErroredUploads erroredUploads={mockErroredUploads} />)
-
-      const buildCode1 = screen.getByText(82364)
-      expect(buildCode1).toBeInTheDocument()
-
-      const buildCode2 = screen.getByText(20374)
-      expect(buildCode2).toBeInTheDocument()
     })
 
     it('recommendation text', () => {
       render(<ErroredUploads erroredUploads={mockErroredUploads} />)
 
-      const recommendationText = screen.getByText(/We recommend checking/)
+      const recommendationText = screen.getByText(
+        /To receive coverage data, ensure your coverage data is accurate and then open a new commit./
+      )
       expect(recommendationText).toBeInTheDocument()
     })
   })
@@ -75,7 +57,7 @@ describe('ErroredUploads', () => {
       render(<ErroredUploads erroredUploads={{}} />)
 
       const message = screen.queryByText(
-        /The following uploads failed to process:/
+        /No coverage data is available due to incomplete uploads on the first attempt./
       )
       expect(message).not.toBeInTheDocument()
     })

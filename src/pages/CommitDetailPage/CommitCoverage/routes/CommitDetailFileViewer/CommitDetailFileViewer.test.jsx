@@ -4,14 +4,48 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
-
 import CommitDetailFileViewer from './CommitDetailFileViewer'
 
-vi.mock('ui/CodeRenderer/hooks/useScrollToLine')
 vi.mock('../ComponentsSelector', () => ({
   default: () => 'ComponentsSelector',
 }))
+
+window.requestAnimationFrame = (cb) => {
+  cb(1)
+  return 1
+}
+window.cancelAnimationFrame = () => {}
+
+const scrollToMock = vi.fn()
+window.scrollTo = scrollToMock
+window.scrollY = 100
+
+class ResizeObserverMock {
+  callback = (x) => null
+
+  constructor(callback) {
+    this.callback = callback
+  }
+
+  observe() {
+    this.callback([
+      {
+        contentRect: { width: 100 },
+        target: {
+          getAttribute: () => ({ scrollWidth: 100 }),
+          getBoundingClientRect: () => ({ top: 100 }),
+        },
+      },
+    ])
+  }
+  unobserve() {
+    // do nothing
+  }
+  disconnect() {
+    // do nothing
+  }
+}
+global.window.ResizeObserver = ResizeObserverMock
 
 const mockOwner = {
   username: 'cool-user',
@@ -80,12 +114,6 @@ afterAll(() => {
 
 describe('CommitDetailFileViewer', () => {
   function setup() {
-    useScrollToLine.mockImplementation(() => ({
-      lineRef: () => {},
-      handleClick: vi.fn(),
-      targeted: false,
-    }))
-
     server.use(
       graphql.query('DetailOwner', (info) => {
         return HttpResponse.json({ data: { owner: mockOwner } })

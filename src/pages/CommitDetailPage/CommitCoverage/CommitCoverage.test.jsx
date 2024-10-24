@@ -675,7 +675,7 @@ describe('CommitCoverage', () => {
       render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
 
       const erroredUploads = await screen.findByText(
-        /The following uploads failed to process:/
+        /No coverage data is available due to incomplete uploads on the first attempt./
       )
       expect(erroredUploads).toBeInTheDocument()
     })

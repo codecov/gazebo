@@ -21,7 +21,7 @@ const CoverageMessage: React.FC = () => {
   const comparison = data?.commit?.compareWithParent
   const uploadErrorCount = data?.uploadErrorCount
 
-  if (uploadErrorCount && uploadErrorCount > 0) {
+  if (!!uploadErrorCount) {
     if (uploadErrorCount === 1) {
       return (
         <>{uploadErrorCount} upload has failed to process &#x26A0;&#xFE0F;</>

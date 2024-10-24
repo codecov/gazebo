@@ -7,15 +7,11 @@ import { useLocation, useParams } from 'react-router-dom'
 import NotFound from 'pages/NotFound'
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import { useOwner } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
-import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsMapper'
 import { getFilenameFromFilePath } from 'shared/utils/url'
 import A from 'ui/A'
-import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
 import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
-import SingleLine from 'ui/CodeRenderer/SingleLine'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Title from 'ui/FileViewer/ToggleHeader/Title'
 import { VirtualFileRenderer } from 'ui/VirtualRenderers'
@@ -86,10 +82,6 @@ function CodeRendererContent({
   coverageData,
   stickyPadding,
 }: CodeRendererContentProps) {
-  const { virtualFileRenderer } = useFlags({
-    virtualFileRenderer: false,
-  })
-
   if (isUnsupportedFileType) {
     return (
       <div className="border border-solid border-ds-gray-tertiary p-2">
@@ -99,32 +91,11 @@ function CodeRendererContent({
   }
 
   if (content) {
-    if (virtualFileRenderer) {
-      return (
-        <VirtualFileRenderer
-          code={content}
-          coverage={coverageData}
-          fileName={getFilenameFromFilePath(path)}
-        />
-      )
-    }
-
     return (
-      <CodeRenderer
+      <VirtualFileRenderer
         code={content}
+        coverage={coverageData}
         fileName={getFilenameFromFilePath(path)}
-        rendererType={CODE_RENDERER_TYPE.SINGLE_LINE}
-        LineComponent={({ i, line, getLineProps, getTokenProps }) => (
-          <SingleLine
-            key={i}
-            line={line}
-            number={i + 1}
-            getLineProps={getLineProps}
-            getTokenProps={getTokenProps}
-            coverage={coverageData && coverageData[i + 1]}
-            stickyPadding={stickyPadding}
-          />
-        )}
       />
     )
   }

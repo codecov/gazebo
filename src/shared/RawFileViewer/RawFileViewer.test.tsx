@@ -7,7 +7,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import RawFileViewer from './RawFileViewer'
 
 const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
   useScrollToLine: vi.fn(),
   captureMessage: vi.fn(),
 }))
@@ -18,14 +17,6 @@ vi.mock('@sentry/react', async () => {
     ...originalModule,
     withProfiler: (component: any) => component,
     captureMessage: mocks.captureMessage,
-  }
-})
-
-vi.mock('shared/featureFlags', async () => {
-  const originalModule = await vi.importActual('shared/featureFlags')
-  return {
-    ...originalModule,
-    useFlags: mocks.useFlags,
   }
 })
 
@@ -134,8 +125,6 @@ interface SetupArgs {
 
 describe('RawFileViewer', () => {
   function setup({ content, owner, coverage, isCriticalFile }: SetupArgs) {
-    mocks.useFlags.mockReturnValue({ virtualFileRenderer: true })
-
     mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: vi.fn(),

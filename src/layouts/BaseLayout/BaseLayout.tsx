@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom'
 import Footer from 'layouts/Footer'
 import Header from 'layouts/Header'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
+import { EmptyErrorComponent } from 'layouts/shared/ErrorBoundary/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
@@ -80,9 +81,10 @@ function BaseLayout({ children }: React.PropsWithChildren) {
 
   return (
     <>
-      <Suspense fallback={<FullPageLoader />}>
-        <RepoBreadcrumbProvider>
-          <ErrorBoundary sentryScopes={[['layout', 'base']]}>
+      <RepoBreadcrumbProvider>
+        {/* Header */}
+        <Suspense>
+          <ErrorBoundary errorComponent={<EmptyErrorComponent />}>
             <NetworkErrorBoundary>
               {isFullExperience || isImpersonating ? (
                 <>
@@ -90,10 +92,18 @@ function BaseLayout({ children }: React.PropsWithChildren) {
                   <Header />
                 </>
               ) : (
-                <Suspense fallback={null}>
-                  {showDefaultOrgSelector && <InstallationHelpBanner />}
-                </Suspense>
+                <>
+                  {showDefaultOrgSelector ? <InstallationHelpBanner /> : null}
+                </>
               )}
+            </NetworkErrorBoundary>
+          </ErrorBoundary>
+        </Suspense>
+
+        {/* Main Page Contents */}
+        <Suspense fallback={<FullPageLoader />}>
+          <ErrorBoundary sentryScopes={[['layout', 'base']]}>
+            <NetworkErrorBoundary>
               <main className="container mb-8 flex grow flex-col gap-2 md:p-0">
                 <GlobalBanners />
                 <OnboardingOrChildren
@@ -108,14 +118,16 @@ function BaseLayout({ children }: React.PropsWithChildren) {
               </main>
             </NetworkErrorBoundary>
           </ErrorBoundary>
-        </RepoBreadcrumbProvider>
-      </Suspense>
-      {isFullExperience && (
-        <>
-          <Footer />
-          <ToastNotifications />
-        </>
-      )}
+        </Suspense>
+
+        {/* Footer */}
+        {isFullExperience && (
+          <>
+            <Footer />
+            <ToastNotifications />
+          </>
+        )}
+      </RepoBreadcrumbProvider>
     </>
   )
 }
