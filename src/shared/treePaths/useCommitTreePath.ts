@@ -5,11 +5,7 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import { getFilePathParts } from 'shared/utils/url'
 
-function getTreeLocation(
-  paths: string | any[] | Array<unknown> | null | undefined,
-  location: string,
-  index: number
-) {
+function getTreeLocation(paths: string[], location: string, index: number) {
   return dropRight(paths, paths.length - index - 1).join('/')
 }
 

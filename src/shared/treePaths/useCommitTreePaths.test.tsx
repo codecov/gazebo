@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import qs from 'qs'
+import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCommitTreePaths } from './useCommitTreePath'
@@ -7,7 +8,7 @@ import { useCommitTreePaths } from './useCommitTreePath'
 describe('useCommitTreePaths', () => {
   describe('a path is provided', () => {
     describe('no duplicate names in path', () => {
-      const wrapper = ({ children }) => (
+      const wrapper = ({ children }: { children: ReactNode }) => (
         <MemoryRouter
           initialEntries={['/gh/owner/cool-repo/commit/sha256/tree/src/tests']}
         >
