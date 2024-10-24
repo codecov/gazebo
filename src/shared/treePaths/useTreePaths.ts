@@ -20,6 +20,15 @@ export function useTreePaths(passedPath) {
     })
   }, [location.search])
 
+  interface URLParams {
+    provider: string
+    owner: string
+    branch: string
+    path: string
+    repo: string
+    ref: string
+  }
+
   const {
     provider,
     owner,
@@ -27,7 +36,7 @@ export function useTreePaths(passedPath) {
     path: urlPath,
     repo,
     ref: urlRef,
-  } = useParams()
+  } = useParams<URLParams>()
 
   const { data: repoOverview } = useRepoOverview(
     {

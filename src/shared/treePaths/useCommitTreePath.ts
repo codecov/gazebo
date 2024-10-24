@@ -5,12 +5,22 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import { getFilePathParts } from 'shared/utils/url'
 
-function getTreeLocation(paths, location, index) {
+function getTreeLocation(
+  paths: string | any[] | Array<unknown> | null | undefined,
+  location: string,
+  index: number
+) {
   return dropRight(paths, paths.length - index - 1).join('/')
 }
 
+interface URLParams {
+  repo: string
+  path: string
+  commit: string
+}
+
 export function useCommitTreePaths() {
-  const { repo, path, commit } = useParams()
+  const { repo, path, commit } = useParams<URLParams>()
   const location = useLocation()
 
   const params = useMemo(() => {

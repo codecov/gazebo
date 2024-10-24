@@ -1,7 +1,11 @@
 import { format, fromUnixTime } from 'date-fns'
 import PropType from 'prop-types'
 
-export function getScheduleStart(scheduledPhase) {
+export function getScheduleStart(scheduledPhase: {
+  quantity: number
+  plan: string
+  startDate: number
+}) {
   const scheduleStart = fromUnixTime(scheduledPhase?.startDate)
   return format(scheduleStart, 'MMMM do yyyy, h:mm aaaa')
 }
