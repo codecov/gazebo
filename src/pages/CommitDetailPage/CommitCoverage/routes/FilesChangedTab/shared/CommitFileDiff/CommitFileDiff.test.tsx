@@ -70,21 +70,27 @@ class ResizeObserverMock {
 }
 global.window.ResizeObserver = ResizeObserverMock
 
-const baseMock = (impactedFile: ImpactedFileType | null) => ({
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      commit: {
-        compareWithParent: {
-          __typename: 'Comparison',
-          impactedFile: {
-            ...impactedFile,
+const baseMock = (impactedFile: ImpactedFileType | null) => {
+  if (!impactedFile) {
+    return { owner: null }
+  }
+
+  return {
+    owner: {
+      repository: {
+        __typename: 'Repository',
+        commit: {
+          compareWithParent: {
+            __typename: 'Comparison',
+            impactedFile: {
+              ...impactedFile,
+            },
           },
         },
       },
     },
-  },
-})
+  }
+}
 
 const mockImpactedFile = {
   isCriticalFile: false,
