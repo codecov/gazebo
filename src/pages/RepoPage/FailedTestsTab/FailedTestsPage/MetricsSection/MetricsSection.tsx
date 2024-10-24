@@ -330,7 +330,6 @@ export const historicalTrendToCopy = (interval?: MeasurementInterval) => {
     case 'INTERVAL_7_DAY':
       return '7 days'
     case 'INTERVAL_30_DAY':
-      return '30 days'
     default:
       return '30 days'
   }
