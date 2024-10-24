@@ -5,11 +5,45 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
-import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import FileView from './Fileviewer'
 
-vi.mock('ui/CodeRenderer/hooks/useScrollToLine')
+window.requestAnimationFrame = (cb) => {
+  cb(1)
+  return 1
+}
+window.cancelAnimationFrame = () => {}
+
+const scrollToMock = vi.fn()
+window.scrollTo = scrollToMock
+window.scrollY = 100
+
+class ResizeObserverMock {
+  callback = (x) => null
+
+  constructor(callback) {
+    this.callback = callback
+  }
+
+  observe() {
+    this.callback([
+      {
+        contentRect: { width: 100 },
+        target: {
+          getAttribute: () => ({ scrollWidth: 100 }),
+          getBoundingClientRect: () => ({ top: 100 }),
+        },
+      },
+    ])
+  }
+  unobserve() {
+    // do nothing
+  }
+  disconnect() {
+    // do nothing
+  }
+}
+global.window.ResizeObserver = ResizeObserverMock
 
 const mockRepoSettings = (isPrivate) => ({
   owner: {
@@ -100,17 +134,8 @@ const mockFlagResponse = {
     repository: {
       __typename: 'Repository',
       flags: {
-        edges: [
-          {
-            node: {
-              name: 'flag-2',
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: null,
-        },
+        edges: [{ node: { name: 'flag-2' } }],
+        pageInfo: { hasNextPage: false, endCursor: null },
       },
     },
   },
@@ -172,12 +197,6 @@ describe('FileView', () => {
       isPrivate: false,
     }
   ) {
-    useScrollToLine.mockImplementation(() => ({
-      lineRef: () => {},
-      handleClick: vi.fn(),
-      targeted: false,
-    }))
-
     server.use(
       graphql.query('DetailOwner', (info) => {
         return HttpResponse.json({ data: { owner: mockOwner } })

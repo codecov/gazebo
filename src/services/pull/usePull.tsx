@@ -14,6 +14,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { type NetworkErrorObject } from 'shared/api/helpers'
 import { UploadTypeEnum } from 'shared/utils/commit'
 import { userHasAccess } from 'shared/utils/user'
 import A from 'ui/A'
@@ -60,7 +61,7 @@ export type ImpactedFile = z.infer<typeof ImpactedFileSchema>
 const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
   z.object({
     __typename: z.literal('ImpactedFiles'),
-    results: z.array(ImpactedFileSchema),
+    results: z.array(ImpactedFileSchema).nullable(),
   }),
   z.object({
     __typename: z.literal('UnknownFlags'),
@@ -329,7 +330,8 @@ export function usePull({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'usePull - 404 failed to parse',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedRes.data
@@ -338,7 +340,8 @@ export function usePull({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'usePull - 404 not found',
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -354,7 +357,8 @@ export function usePull({
                 </p>
               ),
             },
-          })
+            dev: 'usePull - 403 owner not activated',
+          } satisfies NetworkErrorObject)
         }
 
         const pull = data?.owner?.repository?.pull

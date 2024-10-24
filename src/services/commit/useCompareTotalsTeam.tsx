@@ -14,6 +14,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const CoverageObjSchema = z.object({
@@ -30,7 +31,7 @@ const ImpactedFileSchema = z
 const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
   z.object({
     __typename: z.literal('ImpactedFiles'),
-    results: z.array(ImpactedFileSchema),
+    results: z.array(ImpactedFileSchema).nullable(),
   }),
   z.object({
     __typename: z.literal('UnknownFlags'),
@@ -187,8 +188,9 @@ export function useCompareTotalsTeam({
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: null,
-          })
+            data: {},
+            dev: 'useCompareTotalsTeam - 404 failed to parse',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedRes.data
@@ -197,7 +199,8 @@ export function useCompareTotalsTeam({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useCompareTotalsTeam - 404 not found',
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -213,7 +216,8 @@ export function useCompareTotalsTeam({
                 </p>
               ),
             },
-          })
+            dev: 'useCompareTotalsTeam - 403 owner not activated',
+          } satisfies NetworkErrorObject)
         }
 
         return data?.owner?.repository?.commit ?? null

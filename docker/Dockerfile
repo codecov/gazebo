@@ -47,7 +47,7 @@ RUN apk -U add git
 COPY . /home/workspace
 RUN corepack enable
 RUN yarn install
-RUN yarn build:vite && rm -f build/mockServiceWorker.js
+RUN yarn build && rm -f build/mockServiceWorker.js
 
 
 FROM alpine:3.17

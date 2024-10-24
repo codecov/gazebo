@@ -1,12 +1,12 @@
 import * as Sentry from '@sentry/browser'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { vi } from 'vitest'
+import { Mock, vi } from 'vitest'
 
 import ErrorBoundary from './ErrorBoundary'
 
 const thrownError = 'Alice in wonderland'
-function BadComponent() {
+function BadComponent(): never {
   throw new Error(thrownError)
 }
 
@@ -14,7 +14,7 @@ function BadComponent() {
 const sentryMockScope = vi.fn()
 
 describe('Error Boundary', () => {
-  let mockError
+  let mockError: Mock<(...args: any[]) => any>
 
   beforeEach(() => {
     mockError = vi.fn()
@@ -34,8 +34,8 @@ describe('Error Boundary', () => {
         </MemoryRouter>
       )
 
-      expect(mockError).toHaveBeenCalled()
-      expect(mockError.mock.calls[0][0]).toContain(thrownError) // Can this be done better?
+      const firstCallArgs = mockError.mock.calls[0] || []
+      expect(firstCallArgs[0]).toContain(thrownError)
     })
 
     it('renders the default error UI', () => {
@@ -70,7 +70,9 @@ describe('Error Boundary', () => {
         </MemoryRouter>
       )
 
-      const issueLink = screen.getByRole('link', { name: /contact support/i })
+      const issueLink = screen.getByRole('link', {
+        name: /contact support/i,
+      }) as HTMLAnchorElement
       expect(issueLink).toBeInTheDocument()
       expect(issueLink.href).toBe('https://codecovpro.zendesk.com/hc/en-us')
     })
@@ -90,7 +92,8 @@ describe('Error Boundary', () => {
       )
 
       expect(mockError).toHaveBeenCalled()
-      expect(mockError.mock.calls[0][0]).toContain(thrownError)
+      const firstCallArgs = mockError.mock.calls[0] || []
+      expect(firstCallArgs[0]).toContain(thrownError)
     })
 
     it('renders a custom error component', () => {
@@ -114,6 +117,7 @@ describe('Error Boundary', () => {
     beforeEach(() => {
       const spySentry = vi.spyOn(Sentry, 'withScope')
       spySentry.mockImplementation((callback) => {
+        // @ts-ignore - this test is skipped
         callback({ setTag: sentryMockScope })
       })
     })

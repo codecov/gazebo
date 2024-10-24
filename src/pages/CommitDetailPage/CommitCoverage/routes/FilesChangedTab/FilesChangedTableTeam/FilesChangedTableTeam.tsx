@@ -170,7 +170,7 @@ export default function FilesChangedTableTeam() {
       commitData?.commit?.compareWithParent?.impactedFiles?.__typename ===
         'ImpactedFiles'
     ) {
-      return commitData?.commit?.compareWithParent?.impactedFiles?.results
+      return commitData?.commit?.compareWithParent?.impactedFiles?.results ?? []
     }
 
     return []
