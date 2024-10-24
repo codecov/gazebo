@@ -45,6 +45,8 @@ export interface LineData {
   hitCount: number | undefined
 }
 
+export type { CoverageValue } from './types'
+
 interface CoverageHitCounterProps {
   coverage: CoverageValue
   hitCount: number | undefined
