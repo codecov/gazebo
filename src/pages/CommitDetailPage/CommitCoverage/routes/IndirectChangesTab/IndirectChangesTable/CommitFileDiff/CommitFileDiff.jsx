@@ -18,7 +18,6 @@ import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
 import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
-import Spinner from 'ui/Spinner'
 import { VirtualDiffRenderer } from 'ui/VirtualRenderers'
 
 function ErrorDisplayMessage() {
@@ -44,12 +43,6 @@ function ErrorDisplayMessage() {
   )
 }
 
-const Loader = () => (
-  <div className="flex items-center justify-center py-16">
-    <Spinner />
-  </div>
-)
-
 function CommitFileDiff({ path }) {
   const { commitFileDiff } = useNavLinks()
   const { owner, repo, provider, commit } = useParams()
@@ -57,7 +50,7 @@ function CommitFileDiff({ path }) {
   const { virtualDiffRenderer } = useFlags({ virtualDiffRenderer: false })
   const { data: ignoredUploadIds } = useIgnoredIds()
 
-  const { data: comparisonData, isLoading } = useComparisonForCommitAndParent({
+  const { data: comparisonData } = useComparisonForCommitAndParent({
     provider,
     owner,
     repo,
@@ -67,10 +60,6 @@ function CommitFileDiff({ path }) {
       hasUnintendedChanges: true,
     },
   })
-
-  if (isLoading) {
-    return <Loader />
-  }
 
   if (!comparisonData || !comparisonData?.impactedFile) {
     return <ErrorDisplayMessage />
