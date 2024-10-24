@@ -85,7 +85,6 @@ function DiffRenderer({
   if (overview?.coverageEnabled && overview?.bundleAnalysisEnabled) {
     fullFilePath = `${fullFilePath}?dropdown=coverage`
   }
-  const hashedPath = impactedFile?.hashedPath
 
   return (
     <>
@@ -113,7 +112,7 @@ function DiffRenderer({
               key={segmentIndex}
               code={segment?.newDiffContent}
               fileName={fileDiff?.headName ?? ''}
-              hashedPath={hashedPath}
+              hashedPath={impactedFile?.hashedPath}
               lineData={segment?.lineData}
             />
           </Fragment>
