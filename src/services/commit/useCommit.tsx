@@ -18,7 +18,10 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import {
+  NetworkErrorObject,
+  rejectNetworkErrorToSentry,
+} from 'shared/api/helpers'
 import {
   ErrorCodeEnum,
   UploadStateEnum,
@@ -356,11 +359,12 @@ export function useCommit({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
+          return rejectNetworkErrorToSentry({
             status: 404,
             data: {},
             dev: 'useCommit - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+            error: parsedRes.error,
+          })
         }
 
         const data = parsedRes.data
