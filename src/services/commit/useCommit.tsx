@@ -360,6 +360,7 @@ export function useCommit({
             status: 404,
             data: {},
             dev: 'useCommit - 404 failed to parse',
+            error: parsedRes.error,
           } satisfies NetworkErrorObject)
         }
 
