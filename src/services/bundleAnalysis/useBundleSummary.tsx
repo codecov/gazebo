@@ -1,4 +1,7 @@
-import { queryOptions, useSuspenseQuery } from '@tanstack/react-queryV5'
+import {
+  queryOptions as queryOptionsV5,
+  useSuspenseQuery as useSuspenseQueryV5,
+} from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -144,7 +147,7 @@ export const BundleSummaryQueryOpts = ({
   filters,
   opts = {},
 }: BundleSummaryQueryOptsArgs) =>
-  queryOptions({
+  queryOptionsV5({
     queryKey: ['BundleSummary', provider, owner, repo, branch, bundle, filters],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -241,7 +244,7 @@ export const useBundleSummary = ({
 
   const branch = branchParam ?? overview?.defaultBranch
 
-  return useSuspenseQuery(
+  return useSuspenseQueryV5(
     BundleSummaryQueryOpts({
       provider,
       owner,

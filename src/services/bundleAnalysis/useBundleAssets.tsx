@@ -1,5 +1,5 @@
 import {
-  infiniteQueryOptions,
+  infiniteQueryOptions as infiniteQueryOptionsV5,
   useInfiniteQuery as useInfiniteQueryV5,
 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
@@ -242,7 +242,7 @@ export const BundleAssetsQueryOpts = ({
     enabled: true,
   },
 }: BundleAssetQueryOptsArgs) =>
-  infiniteQueryOptions({
+  infiniteQueryOptionsV5({
     queryKey: [
       'BundleAssets',
       provider,

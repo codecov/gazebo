@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-queryV5'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 // import { BUNDLE_LOAD_TYPE_ITEMS } from 'pages/RepoPage/BundlesTab/BundleContent/constants'
@@ -164,7 +164,7 @@ export const BundleTrendDataQueryOpts = ({
   filters,
   enabled,
 }: BundleTrendDataQueryOptsArgs) =>
-  queryOptions({
+  queryOptionsV5({
     enabled: enabled,
     queryKey: [
       'GetBundleTrend',

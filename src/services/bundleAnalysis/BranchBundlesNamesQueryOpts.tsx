@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-queryV5'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -107,7 +107,7 @@ export const BranchBundlesNamesQueryOpts = ({
   branch,
   opts = {},
 }: BranchBundlesNamesQueryOptsArgs) =>
-  queryOptions({
+  queryOptionsV5({
     queryKey: ['BranchBundlesNames', provider, owner, repo, branch],
     queryFn: ({ signal }) =>
       Api.graphql({

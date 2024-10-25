@@ -1,4 +1,7 @@
-import { queryOptions, useSuspenseQuery } from '@tanstack/react-queryV5'
+import {
+  queryOptions as queryOptionsV5,
+  useSuspenseQuery as useSuspenseQueryV5,
+} from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -156,7 +159,7 @@ export const BundleAssetModulesQueryOpts = ({
     enabled = opts.enabled
   }
 
-  return queryOptions({
+  return queryOptionsV5({
     queryKey: [
       'BundleAssetModules',
       provider,
@@ -252,7 +255,7 @@ export const useBundleAssetModules = ({
   asset,
   opts = {},
 }: UseBundleAssetModulesArgs) => {
-  return useSuspenseQuery(
+  return useSuspenseQueryV5(
     BundleAssetModulesQueryOpts({
       provider,
       owner,
