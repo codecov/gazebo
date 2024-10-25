@@ -11,7 +11,7 @@ import { UploadTypeEnum } from 'shared/utils/commit'
 
 import FilesChangedTable, { getFilter } from './FilesChangedTable'
 
-vi.mock('../FileDiff', () => ({ default: () => 'FileDiff' }))
+vi.mock('../PullFileDiff', () => ({ default: () => 'PullFileDiff' }))
 
 const mockImpactedFiles = [
   {
@@ -410,7 +410,7 @@ describe('FilesChangedTable', () => {
       expect(expander).toBeInTheDocument()
       await user.click(expander)
 
-      const pullFileDiff = await screen.findByText('FileDiff')
+      const pullFileDiff = await screen.findByText('PullFileDiff')
       expect(pullFileDiff).toBeInTheDocument()
     })
 
@@ -422,7 +422,7 @@ describe('FilesChangedTable', () => {
         ]),
       })
 
-      const pullFileDiff = await screen.findByText('FileDiff')
+      const pullFileDiff = await screen.findByText('PullFileDiff')
       expect(pullFileDiff).toBeInTheDocument()
     })
   })
