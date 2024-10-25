@@ -6,11 +6,11 @@ import { useLocation, useParams } from 'react-router-dom'
 import { useRepoOverview } from 'services/repo'
 import { getFilePathParts } from 'shared/utils/url'
 
-function getTreeLocation(paths, index) {
+function getTreeLocation(paths: string[], index: number) {
   return dropRight(paths, paths.length - index - 1).join('/')
 }
 
-export function useTreePaths(passedPath) {
+export function useTreePaths(passedPath: string) {
   const location = useLocation()
 
   const params = useMemo(() => {
@@ -38,14 +38,11 @@ export function useTreePaths(passedPath) {
     ref: urlRef,
   } = useParams<URLParams>()
 
-  const { data: repoOverview } = useRepoOverview(
-    {
-      provider,
-      repo,
-      owner,
-    },
-    { suspense: false }
-  )
+  const { data: repoOverview } = useRepoOverview({
+    provider,
+    repo,
+    owner,
+  })
 
   const treePaths = useMemo(() => {
     const branch = urlBranch && decodeURIComponent(urlBranch)
