@@ -3,6 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import qs from 'qs'
+import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTreePaths } from './useTreePaths'
@@ -18,7 +19,7 @@ const queryClient = new QueryClient({
 
 const wrapper =
   (initialEntries = '/gh/owner/coolrepo/tree/main/src%2Ftests') =>
-  ({ children }) => (
+  ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <Route path="/:provider/:owner/:repo">
@@ -70,7 +71,11 @@ const overviewMock = {
 }
 
 describe('useTreePaths', () => {
-  function setup({ repoOverviewData }) {
+  function setup({
+    repoOverviewData,
+  }: {
+    repoOverviewData: typeof overviewMock
+  }) {
     server.use(
       graphql.query('GetRepoOverview', (info) => {
         return HttpResponse.json({ data: repoOverviewData })

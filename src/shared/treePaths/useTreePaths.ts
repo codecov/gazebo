@@ -1,5 +1,5 @@
 import dropRight from 'lodash/dropRight'
-import qs from 'qs'
+import qs, { ParsedQs } from 'qs'
 import { useMemo } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
@@ -10,10 +10,10 @@ function getTreeLocation(paths: string[], index: number) {
   return dropRight(paths, paths.length - index - 1).join('/')
 }
 
-export function useTreePaths(passedPath: string) {
+export function useTreePaths(passedPath?: string) {
   const location = useLocation()
 
-  const params = useMemo(() => {
+  const params: ParsedQs = useMemo(() => {
     return qs.parse(location.search, {
       ignoreQueryPrefix: true,
       depth: 1,
@@ -51,7 +51,7 @@ export function useTreePaths(passedPath: string) {
     const filePaths = getFilePathParts(passedPath || path)
     const defaultBranch = repoOverview?.defaultBranch
 
-    let queryParams = undefined
+    let queryParams: ParsedQs | undefined = undefined
     if (Object.keys(params).length > 0) {
       queryParams = params
     }
