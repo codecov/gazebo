@@ -116,6 +116,7 @@ describe('rejectNetworkError', () => {
       expect(mocks.addBreadcrumb).toHaveBeenCalledWith({
         category: 'network.error',
         level: 'error',
+        message: 'useCoolHook - 404 not found',
         data: Error('not found'),
       })
     })

@@ -23,6 +23,7 @@ export function rejectNetworkError(error: NetworkErrorObject) {
       scope.addBreadcrumb({
         category: 'network.error',
         level: 'error',
+        message: error.dev,
         data: error.error,
       })
       scope.setFingerprint([error.dev])
