@@ -17,29 +17,35 @@ import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
-import { ComparisonSchema, FileComparisonWithBase } from './fragments'
-import { transformImpactedFileToDiff } from './utils'
+import {
+  ComparisonSchema,
+  FileComparisonWithBase,
+  ImpactedFileSchema,
+} from './fragments'
+import { transformImpactedPullFileToDiff } from './utils'
+
+export type PullImpactedFile = z.infer<typeof ImpactedFileSchema>
 
 const query = `
-    query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!, $filters: SegmentsFilters) {
-      owner(username: $owner) {
-        repository(name: $repo) {
-          __typename
-          ... on Repository {
-            pull(id: $pullId) {
-              ...FileComparisonWithBase
-            }
-          }
-          ... on NotFoundError {
-            message
-          }
-          ... on OwnerNotActivatedError {
-            message
-          }
+query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!, $filters: SegmentsFilters) {
+  owner(username: $owner) {
+    repository(name: $repo) {
+      __typename
+      ... on Repository {
+        pull(id: $pullId) {
+          ...FileComparisonWithBase
         }
       }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
+      }
     }
-    ${FileComparisonWithBase}
+  }
+}
+${FileComparisonWithBase}
 `
 
 const RepositorySchema = z.object({
@@ -157,7 +163,7 @@ export function useSingularImpactedFileComparison({
           data?.owner?.repository?.pull?.compareWithBase?.__typename ===
           'Comparison'
         ) {
-          return transformImpactedFileToDiff(
+          return transformImpactedPullFileToDiff(
             data?.owner?.repository?.pull?.compareWithBase?.impactedFile
           )
         }
@@ -168,6 +174,5 @@ export function useSingularImpactedFileComparison({
           dev: 'useSingularImpactedFileComparison - 404 missing data',
         } satisfies NetworkErrorObject)
       }),
-    suspense: false,
   })
 }
