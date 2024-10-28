@@ -1,10 +1,12 @@
 import { format, fromUnixTime } from 'date-fns'
 
-export function getScheduleStart(scheduledPhase: {
+interface ScheduledPhase {
   quantity: number
   plan: string
   startDate: number
-}) {
+}
+
+export function getScheduleStart(scheduledPhase: ScheduledPhase): string {
   const scheduleStart = fromUnixTime(scheduledPhase?.startDate)
   return format(scheduleStart, 'MMMM do yyyy, h:mm aaaa')
 }
@@ -12,11 +14,7 @@ export function getScheduleStart(scheduledPhase: {
 function ScheduledPlanDetails({
   scheduledPhase,
 }: {
-  scheduledPhase: {
-    quantity: number
-    plan: string
-    startDate: number
-  }
+  scheduledPhase: ScheduledPhase
 }) {
   const { plan, quantity } = scheduledPhase
   const scheduleStart = getScheduleStart(scheduledPhase)

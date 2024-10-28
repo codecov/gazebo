@@ -33,7 +33,7 @@ beforeEach(() => {
 })
 afterAll(() => server.close())
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov']}>
       <Route path="/:provider/:owner">{children}</Route>

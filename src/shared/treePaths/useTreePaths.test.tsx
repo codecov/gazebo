@@ -5,6 +5,9 @@ import { setupServer } from 'msw/node'
 import qs from 'qs'
 import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { z } from 'zod'
+
+import { RequestSchema } from 'services/repo'
 
 import { useTreePaths } from './useTreePaths'
 
@@ -58,7 +61,7 @@ const overviewMock = {
   owner: {
     isCurrentUserActivated: true,
     repository: {
-      __typename: 'Repository',
+      __typename: 'Repository' as const,
       private: false,
       defaultBranch: 'main',
       oldestCommitAt: '2022-10-10T11:59:59',
@@ -70,12 +73,12 @@ const overviewMock = {
   },
 }
 
+interface SetupArgs {
+  repoOverviewData?: z.infer<typeof RequestSchema>
+}
+
 describe('useTreePaths', () => {
-  function setup({
-    repoOverviewData,
-  }: {
-    repoOverviewData: typeof overviewMock
-  }) {
+  function setup({ repoOverviewData }: SetupArgs) {
     server.use(
       graphql.query('GetRepoOverview', (info) => {
         return HttpResponse.json({ data: repoOverviewData })
