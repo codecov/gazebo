@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react'
 import { useQueryClient } from '@tanstack/react-query'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
@@ -171,21 +170,6 @@ class NetworkErrorBoundary extends Component {
     // if the error is not a network error, we don't do anything and
     // another error boundary will take it from there
     if (Object.keys(errorToUI).includes(String(error.status))) {
-      // only capture network errors if they are not a rate limit error
-      // this will typically only be schema parsing errors
-      if (error.status !== 429 && error.dev && error.error) {
-        Sentry.captureMessage('Network Error', {
-          // group all network errors together based off of their dev message
-          fingerprint: error.dev,
-          // add a breadcrumb for with the message and error
-          addBreadcrumb: {
-            category: 'network-error',
-            message: error.dev,
-            level: 'error',
-            data: error.error,
-          },
-        })
-      }
       return { hasNetworkError: true, error }
     }
 

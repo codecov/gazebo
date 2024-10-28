@@ -2,7 +2,32 @@ import Cookie from 'js-cookie'
 
 import config from 'config'
 
-import { generatePath, getHeaders } from './helpers'
+import { generatePath, getHeaders, rejectNetworkError } from './helpers'
+
+const mocks = vi.hoisted(() => ({
+  withScope: vi.fn(),
+  addBreadcrumb: vi.fn(),
+  captureMessage: vi.fn(),
+  setFingerprint: vi.fn(),
+}))
+
+vi.mock('@sentry/react', async () => {
+  const actual = await vi.importActual('@sentry/react')
+  return {
+    ...actual,
+    withScope: mocks.withScope.mockImplementation((fn) =>
+      fn({
+        addBreadcrumb: mocks.addBreadcrumb,
+        setFingerprint: mocks.setFingerprint,
+        captureMessage: mocks.captureMessage,
+      })
+    ),
+  }
+})
+
+afterEach(() => {
+  vi.clearAllMocks()
+})
 
 describe('generatePath', () => {
   it('generates a path without a query', () => {
@@ -74,6 +99,64 @@ describe('getHeaders', () => {
     expect(getHeaders(undefined)).toStrictEqual({
       Accept: 'application/json',
       'Content-Type': 'application/json; charset=utf-8',
+    })
+  })
+})
+
+describe('rejectNetworkError', () => {
+  describe('when the error has a dev message and error', () => {
+    it('adds a breadcrumb', () => {
+      rejectNetworkError({
+        status: 404,
+        data: {},
+        dev: 'useCoolHook - 404 not found',
+        error: Error('not found'),
+      }).catch((e) => {})
+
+      expect(mocks.addBreadcrumb).toHaveBeenCalledWith({
+        category: 'network.error',
+        level: 'error',
+        message: 'useCoolHook - 404 not found',
+        data: Error('not found'),
+      })
+    })
+
+    it('sets the fingerprint', () => {
+      rejectNetworkError({
+        status: 404,
+        data: {},
+        dev: 'useCoolHook - 404 not found',
+        error: Error('not found'),
+      }).catch((e) => {})
+
+      expect(mocks.setFingerprint).toHaveBeenCalledWith([
+        'useCoolHook - 404 not found',
+      ])
+    })
+
+    it('captures the error with Sentry', () => {
+      rejectNetworkError({
+        status: 404,
+        data: {},
+        dev: 'useCoolHook - 404 not found',
+        error: Error('not found'),
+      }).catch((e) => {})
+
+      expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error')
+    })
+  })
+
+  describe('when the error does not have an error', () => {
+    it('does not call any Sentry methods', () => {
+      rejectNetworkError({
+        status: 404,
+        data: {},
+        dev: 'useCoolHook - 404 not found',
+      }).catch((e) => {})
+
+      expect(mocks.addBreadcrumb).not.toHaveBeenCalled()
+      expect(mocks.setFingerprint).not.toHaveBeenCalled()
+      expect(mocks.captureMessage).not.toHaveBeenCalled()
     })
   })
 })
