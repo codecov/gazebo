@@ -339,4 +339,25 @@ describe('FileDiff', () => {
       expect(calcMode).toBeInTheDocument()
     })
   })
+
+  describe('when path is undefined', () => {
+    it('renders an error message', async () => {
+      setup({})
+      render(<FileDiff path={undefined} />, { wrapper })
+
+      const errorMessage = await screen.findByText(
+        /There was a problem getting the source code from your provider./
+      )
+      expect(errorMessage).toBeInTheDocument()
+    })
+
+    it('renders a login link', async () => {
+      setup({})
+      render(<FileDiff path={undefined} />, { wrapper })
+
+      const loginLink = await screen.findByRole('link', { name: /logging in/ })
+      expect(loginLink).toBeInTheDocument()
+      expect(loginLink).toHaveAttribute('href', '/login')
+    })
+  })
 })
