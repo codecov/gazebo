@@ -29,6 +29,7 @@ import { LineNumber } from './LineNumber'
 import { CoverageValue, Token } from './types'
 import { useLeftScrollSync } from './useLeftScrollSync'
 import { useSyncScrollMargin } from './useSyncScrollMargin'
+import { useSyncTotalWidth } from './useSyncTotalWidth'
 import { useSyncWrapperWidth } from './useSyncWrapperWidth'
 
 import './VirtualFileRenderer.css'
@@ -339,8 +340,10 @@ function VirtualDiffRendererComponent({
   const codeDisplayOverlayRef = useRef<HTMLDivElement>(null)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const virtualCodeRendererRef = useRef<HTMLDivElement>(null)
+
   useDisablePointerEvents(virtualCodeRendererRef)
   useLeftScrollSync({ textAreaRef, overlayRef: codeDisplayOverlayRef })
+  useSyncTotalWidth({ textAreaRef, widthDivRef })
 
   return (
     <div
