@@ -1,24 +1,33 @@
 import dropRight from 'lodash/dropRight'
-import qs from 'qs'
+import qs, { ParsedQs } from 'qs'
 import { useMemo } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { useRepoOverview } from 'services/repo'
 import { getFilePathParts } from 'shared/utils/url'
 
-function getTreeLocation(paths, index) {
+function getTreeLocation(paths: string[], index: number) {
   return dropRight(paths, paths.length - index - 1).join('/')
 }
 
-export function useTreePaths(passedPath) {
+export function useTreePaths(passedPath?: string) {
   const location = useLocation()
 
-  const params = useMemo(() => {
+  const params: ParsedQs = useMemo(() => {
     return qs.parse(location.search, {
       ignoreQueryPrefix: true,
       depth: 1,
     })
   }, [location.search])
+
+  interface URLParams {
+    provider: string
+    owner: string
+    branch: string
+    path: string
+    repo: string
+    ref: string
+  }
 
   const {
     provider,
@@ -27,16 +36,13 @@ export function useTreePaths(passedPath) {
     path: urlPath,
     repo,
     ref: urlRef,
-  } = useParams()
+  } = useParams<URLParams>()
 
-  const { data: repoOverview } = useRepoOverview(
-    {
-      provider,
-      repo,
-      owner,
-    },
-    { suspense: false }
-  )
+  const { data: repoOverview } = useRepoOverview({
+    provider,
+    repo,
+    owner,
+  })
 
   const treePaths = useMemo(() => {
     const branch = urlBranch && decodeURIComponent(urlBranch)
@@ -45,7 +51,7 @@ export function useTreePaths(passedPath) {
     const filePaths = getFilePathParts(passedPath || path)
     const defaultBranch = repoOverview?.defaultBranch
 
-    let queryParams = undefined
+    let queryParams: ParsedQs | undefined = undefined
     if (Object.keys(params).length > 0) {
       queryParams = params
     }
