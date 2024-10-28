@@ -153,7 +153,7 @@ function PullFileDiff({ path }: PullFileDiffProps) {
     filters: { hasUnintendedChanges: false },
   })
 
-  if (!data || !path) {
+  if (!data || typeof path !== 'string') {
     return <ErrorDisplayMessage />
   }
 
