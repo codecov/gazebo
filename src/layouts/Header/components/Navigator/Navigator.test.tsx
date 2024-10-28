@@ -133,6 +133,16 @@ const mockDetailOwner = {
   },
 }
 
+const mockDetailOwnerNotMyOrg = {
+  owner: {
+    ownerid: 1,
+    username: 'not-codecov',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
+    isCurrentUserPartOfOrg: false,
+    isAdmin: false,
+  },
+}
+
 const mockOwnerPageData = {
   owner: {
     username: 'codecov',
@@ -174,6 +184,10 @@ describe('Header Navigator', () => {
         return HttpResponse.json({ data: mockMyContexts })
       }),
       graphql.query('DetailOwner', (info) => {
+        if (!isMyOrg) {
+          return HttpResponse.json({ data: mockDetailOwnerNotMyOrg })
+        }
+
         return HttpResponse.json({ data: mockDetailOwner })
       }),
       graphql.query('OwnerPageData', (info) => {
@@ -203,6 +217,19 @@ describe('Header Navigator', () => {
       const repo = await screen.findByText('test-repo')
       expect(repo).toBeInTheDocument()
     })
+
+    it('should show Viewing as Visitor if appropriate', async () => {
+      setup({ isMyOrg: false })
+      render(<Navigator currentUser={mockUser} />, {
+        wrapper: wrapper('/gh/not-codecov/test-repo'),
+      })
+
+      const org = await screen.findByText('not-codecov')
+      expect(org).toBeInTheDocument()
+
+      const text = await screen.findByText('Viewing as visitor')
+      expect(text).toBeInTheDocument()
+    })
   })
 
   describe('when on self-hosted admin settings page', () => {
@@ -222,7 +249,7 @@ describe('Header Navigator', () => {
 
   describe('when viewing owner page', () => {
     describe('and user is not part of the org', () => {
-      it('should render non-ContextSwitcher owner page variant', async () => {
+      it('should still render the user orgs dropdown', async () => {
         const { user } = setup({ isMyOrg: false })
         render(<Navigator currentUser={mockUser} />, {
           wrapper: wrapper('/gh/not-codecov'),
@@ -234,7 +261,7 @@ describe('Header Navigator', () => {
         await user.click(org)
 
         const sentryOrg = screen.queryByRole('link', { name: 'sentry' })
-        expect(sentryOrg).not.toBeInTheDocument()
+        expect(sentryOrg).toBeInTheDocument()
       })
     })
   })
@@ -326,6 +353,19 @@ describe('Header Navigator', () => {
       const sentryOrg = await screen.findByRole('link', { name: 'sentry' })
       expect(sentryOrg).toBeInTheDocument()
       expect(sentryOrg).toHaveAttribute('href', '/gh/sentry')
+    })
+
+    it('should show Viewing as Visitor if appropriate', async () => {
+      setup({ isMyOrg: false })
+      render(<Navigator currentUser={mockUser} />, {
+        wrapper: wrapper('/gh/not-codecov'),
+      })
+
+      const org = await screen.findByText('not-codecov')
+      expect(org).toBeInTheDocument()
+
+      const text = await screen.findByText('Viewing as visitor')
+      expect(text).toBeInTheDocument()
     })
   })
 })

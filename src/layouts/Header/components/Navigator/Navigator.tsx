@@ -22,7 +22,18 @@ function Navigator({ currentUser }: NavigatorProps) {
 
   // Repo page
   if (path.startsWith('/:provider/:owner/:repo')) {
-    return <Breadcrumb paths={breadcrumbs} largeFont />
+    return (
+      <div>
+        <span className="inline-block">
+          <Breadcrumb paths={breadcrumbs} largeFont />{' '}
+        </span>
+        {isCurrentUserPartOfOrg ? null : (
+          <span className="relative inline-block -translate-y-0.5">
+            <Label variant="plain">Viewing as visitor</Label>
+          </span>
+        )}
+      </div>
+    )
   }
 
   // Self-hosted admin settings
@@ -66,11 +77,15 @@ function Navigator({ currentUser }: NavigatorProps) {
   }
 
   return (
-    <div className="flex items-center space-x-2">
-      <MyContextSwitcher pageName={pageName} />
-      {isCurrentUserPartOfOrg ? null : (
-        <Label variant="neutral">Viewing as visitor</Label>
-      )}
+    <div>
+      <span className="inline-block">
+        <MyContextSwitcher pageName={pageName} />
+      </span>
+      <span className="relative inline-block -translate-y-2">
+        {isCurrentUserPartOfOrg ? null : (
+          <Label variant="plain">Viewing as visitor</Label>
+        )}
+      </span>
     </div>
   )
 }
