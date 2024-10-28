@@ -16,13 +16,12 @@ const handleSubmit = (event: Event): void => {
 
   const errors = validateFormData(formData)
 
-  try {
+if (errors.length > 0) {
+    displayErrors(errors)
+  } else {
     submitForm(formData)
-    if (errors.length > 0) {
-      displayErrors(errors)
-    } else {
-      displaySuccessMessage('Form submitted successfully!')
-    }
+    displaySuccessMessage('Form submitted successfully!')
+  }
   } catch (error) {
     displayErrorMessage('Failed to submit the form.')
   }
