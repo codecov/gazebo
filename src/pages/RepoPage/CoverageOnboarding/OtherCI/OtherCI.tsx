@@ -36,15 +36,20 @@ function OtherCI() {
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
   const apiUrlCopy = config.IS_SELF_HOSTED ? ` -u ${config.API_URL}` : ''
-  const uploadCommand = `./codecov${apiUrlCopy} upload-process -t ${uploadToken}${
-    orgUploadToken ? ` -r ${repo}` : ''
-  }`
+
+  const repoTokenUploadCommand = `./codecov${apiUrlCopy} upload-process`
+  const orgTokenUploadCommand = orgUploadToken
+    ? `./codecov${apiUrlCopy} upload-process -r ${repo}`
+    : ''
 
   return (
     <div className="flex flex-col gap-6">
       <Step1 tokenCopy={tokenCopy} uploadToken={uploadToken} />
       <Step2 />
-      <Step3 uploadCommand={uploadCommand} />
+      <Step3
+        repoTokenUploadCommand={repoTokenUploadCommand}
+        orgTokenUploadCommand={orgTokenUploadCommand}
+      />
       <Step4 />
       <FeedbackCTA />
       <LearnMoreBlurb />
@@ -106,10 +111,11 @@ function Step2() {
 }
 
 interface Step3Props {
-  uploadCommand: string
+  repoTokenUploadCommand: string
+  orgTokenUploadCommand: string
 }
 
-function Step3({ uploadCommand }: Step3Props) {
+function Step3({ repoTokenUploadCommand, orgTokenUploadCommand }: Step3Props) {
   return (
     <Card>
       <Card.Header>
@@ -119,7 +125,18 @@ function Step3({ uploadCommand }: Step3Props) {
         </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
-        <CodeSnippet clipboard={uploadCommand}>{uploadCommand}</CodeSnippet>
+        <p>If you are using a repo token, use this script.</p>
+        <CodeSnippet clipboard={repoTokenUploadCommand}>
+          {repoTokenUploadCommand}
+        </CodeSnippet>
+        {!!orgTokenUploadCommand ? (
+          <>
+            <p>If you are using an org token, use this script.</p>
+            <CodeSnippet clipboard={orgTokenUploadCommand}>
+              {orgTokenUploadCommand}
+            </CodeSnippet>
+          </>
+        ) : null}
         <ExampleBlurb />
       </Card.Content>
     </Card>
