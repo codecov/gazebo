@@ -264,6 +264,21 @@ describe('Header Navigator', () => {
         expect(sentryOrg).toBeInTheDocument()
       })
     })
+
+    it.only('should show the fallback if not logged in', async () => {
+      const { user } = setup({ isMyOrg: false })
+      render(<Navigator currentUser={undefined} />, {
+        wrapper: wrapper('/gh/not-codecov'),
+      })
+
+      const org = await screen.findByText('not-codecov')
+      expect(org).toBeInTheDocument()
+
+      await user.click(org)
+
+      const dropdownText = screen.queryByText('Install Codecov GitHub app')
+      expect(dropdownText).not.toBeInTheDocument()
+    })
   })
 
   describe('when on owner analytics page', () => {

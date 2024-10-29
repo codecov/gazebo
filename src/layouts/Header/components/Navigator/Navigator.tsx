@@ -3,6 +3,7 @@ import { useParams, useRouteMatch } from 'react-router-dom'
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
 import { useCrumbs } from 'pages/RepoPage/context'
 import { Me } from 'services/user'
+import Avatar from 'ui/Avatar'
 import Breadcrumb from 'ui/Breadcrumb'
 import Label from 'ui/Label'
 
@@ -18,18 +19,20 @@ function Navigator({ currentUser }: NavigatorProps) {
   const { path } = useRouteMatch()
   const { breadcrumbs } = useCrumbs()
 
-  const isCurrentUserPartOfOrg = ownerData && ownerData.isCurrentUserPartOfOrg
+  const isCurrentUserPartOfOrg = ownerData?.isCurrentUserPartOfOrg
 
   // Repo page
   if (path.startsWith('/:provider/:owner/:repo')) {
     return (
       <div className="flex items-center">
-        <Breadcrumb paths={breadcrumbs} largeFont />{' '}
-        {isCurrentUserPartOfOrg ? null : (
+        <span className="inline-block">
+          <Breadcrumb paths={breadcrumbs} largeFont />{' '}
+        </span>
+        {isCurrentUserPartOfOrg === false ? (
           <Label variant="plain" className="hidden sm:block">
             Viewing as visitor
           </Label>
-        )}
+        ) : null}
       </div>
     )
   }
@@ -53,6 +56,21 @@ function Navigator({ currentUser }: NavigatorProps) {
     )
   }
 
+  // Fallback instead of MyContextSwitcher if not logged in
+  if (!currentUser) {
+    return (
+      <div className="flex items-center">
+        <Avatar user={ownerData} />
+        <h2 className="mx-2 text-xl font-semibold">{ownerData?.username}</h2>
+        {isCurrentUserPartOfOrg === false ? (
+          <Label variant="plain" className="hidden sm:block">
+            Viewing as visitor
+          </Label>
+        ) : null}
+      </div>
+    )
+  }
+
   let pageName = 'owner'
   if (path.startsWith('/analytics/:provider/:owner')) {
     pageName = 'analytics'
@@ -67,11 +85,11 @@ function Navigator({ currentUser }: NavigatorProps) {
   return (
     <div className="flex items-center">
       <MyContextSwitcher pageName={pageName} />
-      {isCurrentUserPartOfOrg ? null : (
+      {isCurrentUserPartOfOrg === false ? (
         <Label variant="plain" className="hidden sm:block">
           Viewing as visitor
         </Label>
-      )}
+      ) : null}
     </div>
   )
 }

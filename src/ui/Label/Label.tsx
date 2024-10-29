@@ -28,7 +28,7 @@ const Label: React.FC<React.PropsWithChildren<LabelProps>> = ({
   variant,
   className,
 }) => {
-  return <span className={cn(label({ variant }), className)}>{children}</span>
+  return <span className={cn(label({ variant, className }))}>{children}</span>
 }
 
 export default Label
