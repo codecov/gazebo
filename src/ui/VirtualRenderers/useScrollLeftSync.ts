@@ -5,6 +5,7 @@ interface UseScrollLeftSyncArgs {
   refsToSync: React.RefObject<HTMLElement>[]
 }
 
+// this hook syncs the scroll position of the scrollingRef with the refsToSync
 export const useScrollLeftSync = ({
   scrollingRef,
   refsToSync,

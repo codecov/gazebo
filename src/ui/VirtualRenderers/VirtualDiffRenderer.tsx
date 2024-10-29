@@ -370,6 +370,8 @@ function VirtualDiffRendererComponent({
     scrollingRef: textAreaRef,
     refsToSync: [codeDisplayOverlayRef, scrollBarRef],
   })
+
+  // sync the scroll position of the scroll bar with the code display overlay and text area
   useScrollLeftSync({
     scrollingRef: scrollBarRef,
     refsToSync: [codeDisplayOverlayRef, textAreaRef],
