@@ -19,13 +19,16 @@ const label = cva(
   }
 )
 
-interface LabelProps extends VariantProps<typeof label> {}
+interface LabelProps extends VariantProps<typeof label> {
+  className?: string
+}
 
 const Label: React.FC<React.PropsWithChildren<LabelProps>> = ({
   children,
   variant,
+  className,
 }) => {
-  return <span className={cn(label({ variant }))}>{children}</span>
+  return <span className={cn(label({ variant }), className)}>{children}</span>
 }
 
 export default Label

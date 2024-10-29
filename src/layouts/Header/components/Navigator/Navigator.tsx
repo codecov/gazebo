@@ -23,14 +23,12 @@ function Navigator({ currentUser }: NavigatorProps) {
   // Repo page
   if (path.startsWith('/:provider/:owner/:repo')) {
     return (
-      <div>
-        <span className="inline-block">
-          <Breadcrumb paths={breadcrumbs} largeFont />{' '}
-        </span>
+      <div className="flex items-center">
+        <Breadcrumb paths={breadcrumbs} largeFont />{' '}
         {isCurrentUserPartOfOrg ? null : (
-          <span className="relative inline-block -translate-y-0.5">
-            <Label variant="plain">Viewing as visitor</Label>
-          </span>
+          <Label variant="plain" className="hidden sm:block">
+            Viewing as visitor
+          </Label>
         )}
       </div>
     )
@@ -55,16 +53,6 @@ function Navigator({ currentUser }: NavigatorProps) {
     )
   }
 
-  // if (ownerData && !ownerData.isCurrentUserPartOfOrg) {
-  //   return (
-  //     <div className="flex items-center">
-  //       <Avatar user={ownerData} />
-  //       <h2 className="mx-2 text-xl font-semibold">{ownerData.username}</h2>
-  //     </div>
-  //   )
-  // }
-
-  // Everything else uses MyContextSwitcher
   let pageName = 'owner'
   if (path.startsWith('/analytics/:provider/:owner')) {
     pageName = 'analytics'
@@ -77,15 +65,13 @@ function Navigator({ currentUser }: NavigatorProps) {
   }
 
   return (
-    <div>
-      <span className="inline-block">
-        <MyContextSwitcher pageName={pageName} />
-      </span>
-      <span className="relative inline-block -translate-y-2">
-        {isCurrentUserPartOfOrg ? null : (
-          <Label variant="plain">Viewing as visitor</Label>
-        )}
-      </span>
+    <div className="flex items-center">
+      <MyContextSwitcher pageName={pageName} />
+      {isCurrentUserPartOfOrg ? null : (
+        <Label variant="plain" className="hidden sm:block">
+          Viewing as visitor
+        </Label>
+      )}
     </div>
   )
 }
