@@ -1,9 +1,14 @@
 import { useLayoutEffect } from 'react'
 
-export const useSyncScrollLeft = (
-  scrollingRef: React.RefObject<HTMLElement>,
+interface UseSyncScrollLeftArgs {
+  scrollingRef: React.RefObject<HTMLElement>
   refsToSync: React.RefObject<HTMLElement>[]
-) => {
+}
+
+export const useSyncScrollLeft = ({
+  scrollingRef,
+  refsToSync,
+}: UseSyncScrollLeftArgs) => {
   // this effect syncs the scroll position of the scrollingRef with the refsToSync
   useLayoutEffect(() => {
     // if the scrollingRef is not available, return
