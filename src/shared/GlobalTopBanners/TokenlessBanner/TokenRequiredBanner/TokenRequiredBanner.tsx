@@ -84,7 +84,7 @@ const AdminTokenRequiredBanner: React.FC = () => {
         <p className="items-center gap-1 md:flex">
           <span className="flex items-center gap-1 font-semibold">
             <Icon name="informationCircle" />
-            You must now upload using a token.
+            You must now upload using a token
           </span>
           Upload with either{' '}
           {typeof orgUploadToken === 'string' ? (
