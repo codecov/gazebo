@@ -26,9 +26,12 @@ import { prismLanguageMapper } from 'shared/utils/prism/prismLanguageMapper'
 import { ColorBar } from './ColorBar'
 import { LINE_ROW_HEIGHT } from './constants'
 import { LineNumber } from './LineNumber'
+import { ScrollBar } from './ScrollBar'
 import { CoverageValue, Token } from './types'
-import { useLeftScrollSync } from './useLeftScrollSync'
+import { useIsOverflowing } from './useIsOverflowing'
+import { useScrollLeftSync } from './useScrollLeftSync'
 import { useSyncScrollMargin } from './useSyncScrollMargin'
+import { useSyncTotalWidth } from './useSyncTotalWidth'
 import { useSyncWrapperWidth } from './useSyncWrapperWidth'
 
 import './VirtualFileRenderer.css'
@@ -54,12 +57,9 @@ export const CoverageHitCounter = ({
 }: CoverageHitCounterProps) => {
   if (typeof hitCount === 'number' && hitCount > 0) {
     return (
-      <div className="pr-0.5">
+      <div className="flex items-center justify-center pr-1">
         <span
           data-testid="coverage-hit-counter"
-          style={{
-            lineHeight: `${LINE_ROW_HEIGHT}px`,
-          }}
           className={cn(
             'flex content-center items-center justify-center whitespace-nowrap rounded-full px-1.5 text-center text-xs text-white',
             coverage === 'M' && 'bg-ds-primary-red',
@@ -82,6 +82,10 @@ interface CodeBodyProps {
   lineData: Array<LineData>
   hashedPath: string
   codeDisplayOverlayRef: React.RefObject<HTMLDivElement>
+  wrapperWidth: number | '100%'
+  setWrapperRefState: React.Dispatch<
+    React.SetStateAction<HTMLDivElement | null>
+  >
 }
 
 const CodeBody = ({
@@ -91,10 +95,12 @@ const CodeBody = ({
   lineData,
   hashedPath,
   codeDisplayOverlayRef,
+  wrapperWidth,
+  setWrapperRefState,
 }: CodeBodyProps) => {
   const history = useHistory()
   const location = useLocation()
-  const { wrapperWidth, setWrapperRefState } = useSyncWrapperWidth()
+
   const scrollMargin = useSyncScrollMargin({
     overlayRef: codeDisplayOverlayRef,
   })
@@ -247,7 +253,7 @@ const CodeBody = ({
               className="absolute left-0 top-0 pl-[192px]"
             >
               <div className="grid">
-                <div className="z-[-1] col-start-1 row-start-1">
+                <div className="z-[-1] col-start-1 row-start-1 ">
                   <ColorBar
                     isHighlighted={
                       location.hash === headHash || location.hash === baseHash
@@ -290,6 +296,10 @@ interface MemoedHighlightProps {
   hashedPath: string
   codeDisplayOverlayRef: React.RefObject<HTMLDivElement>
   lineData: Array<LineData>
+  wrapperWidth: number | '100%'
+  setWrapperRefState: React.Dispatch<
+    React.SetStateAction<HTMLDivElement | null>
+  >
 }
 
 const MemoedHighlight = memo(
@@ -299,6 +309,8 @@ const MemoedHighlight = memo(
     lineData,
     hashedPath,
     codeDisplayOverlayRef,
+    wrapperWidth,
+    setWrapperRefState,
   }: MemoedHighlightProps) => (
     <Highlight
       {...defaultProps}
@@ -314,6 +326,8 @@ const MemoedHighlight = memo(
           getTokenProps={getTokenProps}
           hashedPath={hashedPath}
           codeDisplayOverlayRef={codeDisplayOverlayRef}
+          wrapperWidth={wrapperWidth}
+          setWrapperRefState={setWrapperRefState}
         />
       )}
     </Highlight>
@@ -338,9 +352,30 @@ function VirtualDiffRendererComponent({
   const widthDivRef = useRef<HTMLDivElement>(null)
   const codeDisplayOverlayRef = useRef<HTMLDivElement>(null)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const scrollBarRef = useRef<HTMLDivElement>(null)
   const virtualCodeRendererRef = useRef<HTMLDivElement>(null)
+  const { wrapperWidth, setWrapperRefState } = useSyncWrapperWidth()
+
+  // disable pointer events will scrolling
   useDisablePointerEvents(virtualCodeRendererRef)
-  useLeftScrollSync({ textAreaRef, overlayRef: codeDisplayOverlayRef })
+
+  // sync the width of the wrapper with the width of the text area
+  useSyncTotalWidth({ textAreaRef, widthDivRef })
+
+  // check if the code display overlay is overflowing, so we can conditionally render the scroll bar
+  const isOverflowing = useIsOverflowing(codeDisplayOverlayRef)
+
+  // sync the scroll position of the text area with the code display overlay and scroll bar
+  useScrollLeftSync({
+    scrollingRef: textAreaRef,
+    refsToSync: [codeDisplayOverlayRef, scrollBarRef],
+  })
+
+  // sync the scroll position of the scroll bar with the code display overlay and text area
+  useScrollLeftSync({
+    scrollingRef: scrollBarRef,
+    refsToSync: [codeDisplayOverlayRef, textAreaRef],
+  })
 
   return (
     <div
@@ -362,6 +397,7 @@ function VirtualDiffRendererComponent({
           tabSize: '8',
           overscrollBehaviorX: 'none',
           lineHeight: `${LINE_ROW_HEIGHT}px`,
+          scrollbarWidth: 'none',
         }}
         className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[192px] font-mono text-transparent outline-none"
         // Directly setting the value of the text area to the code content
@@ -386,25 +422,29 @@ function VirtualDiffRendererComponent({
           // @ts-expect-error - it is a legacy value that is still valid
           // you can read more about it here: https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-x#values
           overflowX: 'overlay',
+          scrollbarWidth: 'none',
         }}
       >
-        <div ref={widthDivRef} className="w-full">
+        <div ref={widthDivRef} className="size-full">
           <MemoedHighlight
             code={code}
             fileType={fileType}
             lineData={lineData}
             hashedPath={hashedPath}
             codeDisplayOverlayRef={codeDisplayOverlayRef}
+            wrapperWidth={wrapperWidth}
+            setWrapperRefState={setWrapperRefState}
           />
         </div>
       </div>
+      {isOverflowing ? (
+        <ScrollBar scrollBarRef={scrollBarRef} wrapperWidth={wrapperWidth} />
+      ) : null}
     </div>
   )
 }
 
 export const VirtualDiffRenderer = Sentry.withProfiler(
   VirtualDiffRendererComponent,
-  {
-    name: 'VirtualDiffRenderer',
-  }
+  { name: 'VirtualDiffRenderer' }
 )

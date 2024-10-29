@@ -17,6 +17,8 @@ import { VirtualFileRenderer } from './VirtualFileRenderer'
 const mocks = vi.hoisted(() => ({
   withProfiler: (component: any) => component,
   captureMessage: vi.fn(),
+  scrollWidth: 0,
+  clientWidth: 0,
 }))
 
 vi.mock('@sentry/react', () => {
@@ -50,6 +52,8 @@ class ResizeObserverMock {
       {
         contentRect: { width: 100 },
         target: {
+          scrollWidth: mocks.scrollWidth,
+          clientWidth: mocks.clientWidth,
           getAttribute: () => ({ scrollWidth: 100 }),
           getBoundingClientRect: () => ({ top: 100 }),
         },
@@ -96,6 +100,10 @@ const wrapper =
     </MemoryRouter>
   )
 
+afterEach(() => {
+  vi.clearAllMocks()
+})
+
 describe('VirtualFileRenderer', () => {
   function setup() {
     const user = userEvent.setup()
@@ -131,9 +139,7 @@ describe('VirtualFileRenderer', () => {
             coverage={coverageData}
             fileName="tsx"
           />,
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         const virtualOverlay = screen.getByTestId(
@@ -154,9 +160,7 @@ describe('VirtualFileRenderer', () => {
             coverage={coverageData}
             fileName="random-file-type"
           />,
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         const virtualOverlay = screen.getByTestId(
@@ -177,9 +181,7 @@ describe('VirtualFileRenderer', () => {
         coverage={coverageData}
         fileName="tsx"
       />,
-      {
-        wrapper: wrapper(),
-      }
+      { wrapper: wrapper() }
     )
 
     const lineNumbers = screen.getAllByText(/\d+/)
@@ -194,9 +196,7 @@ describe('VirtualFileRenderer', () => {
           coverage={coverageData}
           fileName="tsx"
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
@@ -219,9 +219,7 @@ describe('VirtualFileRenderer', () => {
           coverage={coverageData}
           fileName="tsx"
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
@@ -242,9 +240,7 @@ describe('VirtualFileRenderer', () => {
           coverage={coverageData}
           fileName="tsx"
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const icon = await screen.findByTestId('missing-coverage-icon')
@@ -260,9 +256,7 @@ describe('VirtualFileRenderer', () => {
           coverage={coverageData}
           fileName="tsx"
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
@@ -281,9 +275,7 @@ describe('VirtualFileRenderer', () => {
           coverage={coverageData}
           fileName="tsx"
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const icon = await screen.findByTestId('partial-coverage-icon')
@@ -326,9 +318,7 @@ describe('VirtualFileRenderer', () => {
           coverage={coverageData}
           fileName="tsx"
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const lines = await screen.findAllByText(
@@ -364,9 +354,7 @@ describe('VirtualFileRenderer', () => {
           coverage={coverageData}
           fileName="tsx"
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const lines = await screen.findAllByText(
@@ -395,9 +383,7 @@ describe('VirtualFileRenderer', () => {
             coverage={coverageData}
             fileName="tsx"
           />,
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         const line = screen.getByText(1)
@@ -414,9 +400,7 @@ describe('VirtualFileRenderer', () => {
             coverage={coverageData}
             fileName="tsx"
           />,
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         const line = screen.getByText(1)
@@ -435,9 +419,7 @@ describe('VirtualFileRenderer', () => {
             coverage={coverageData}
             fileName="tsx"
           />,
-          {
-            wrapper: wrapper(),
-          }
+          { wrapper: wrapper() }
         )
 
         const line = screen.getByText(1)
@@ -494,9 +476,7 @@ describe('VirtualFileRenderer', () => {
           coverage={coverageData}
           fileName="tsx"
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const textArea = screen.getByTestId('virtual-file-renderer-text-area')
@@ -506,6 +486,50 @@ describe('VirtualFileRenderer', () => {
 
       const virtualOverlay = screen.getByTestId('virtual-file-renderer-overlay')
       await waitFor(() => expect(virtualOverlay.scrollLeft).toBe(100))
+    })
+  })
+
+  describe('testing overflowing lines', () => {
+    describe('overflowing lines', () => {
+      beforeEach(() => {
+        mocks.scrollWidth = 200
+        mocks.clientWidth = 100
+      })
+
+      it('renders the scrollbar', () => {
+        render(
+          <VirtualFileRenderer
+            code={code}
+            coverage={coverageData}
+            fileName="tsx"
+          />,
+          { wrapper: wrapper() }
+        )
+
+        const scrollBar = screen.getByTestId('virtual-renderer-scroll-bar')
+        expect(scrollBar).toBeInTheDocument()
+      })
+    })
+
+    describe('does not overflow', () => {
+      beforeEach(() => {
+        mocks.scrollWidth = 100
+        mocks.clientWidth = 100
+      })
+
+      it('does not render the scrollbar', () => {
+        render(
+          <VirtualFileRenderer
+            code={code}
+            coverage={coverageData}
+            fileName="tsx"
+          />,
+          { wrapper: wrapper() }
+        )
+
+        const scrollBar = screen.queryByTestId('virtual-renderer-scroll-bar')
+        expect(scrollBar).not.toBeInTheDocument()
+      })
     })
   })
 })
