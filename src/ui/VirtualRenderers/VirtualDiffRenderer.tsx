@@ -16,7 +16,7 @@
 import * as Sentry from '@sentry/react'
 import { useWindowVirtualizer } from '@tanstack/react-virtual'
 import Highlight, { defaultProps } from 'prism-react-renderer'
-import { memo, useEffect, useMemo, useRef } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { useDisablePointerEvents } from 'shared/useDisablePointerEvents'
@@ -238,8 +238,6 @@ const CodeBody = ({
             key: item.index,
           })
 
-          const hasHitCount = !!lineData?.[item.index]?.hitCount
-
           return (
             <div
               ref={virtualizer.measureElement}
@@ -252,13 +250,10 @@ const CodeBody = ({
                   item.start - virtualizer.options.scrollMargin
                 }px)`,
               }}
-              className={cn(
-                'absolute left-0 top-0',
-                hasHitCount ? 'pl-[175px]' : 'pl-[198px]'
-              )}
+              className="absolute left-0 top-0 pl-[192px]"
             >
               <div className="grid">
-                <div className="z-[-1] col-start-1 row-start-1">
+                <div className="z-[-1] col-start-1 row-start-1 ">
                   <ColorBar
                     isHighlighted={
                       location.hash === headHash || location.hash === baseHash
@@ -267,24 +262,24 @@ const CodeBody = ({
                   />
                 </div>
                 <div
-                  className="col-start-1 row-start-1 flex flex-1"
+                  className="col-start-1 row-start-1 flex flex-1 justify-between"
                   style={{
                     ...lineStyle,
                     height: `${LINE_ROW_HEIGHT}px`,
                     lineHeight: `${LINE_ROW_HEIGHT}px`,
                   }}
                 >
+                  <div>
+                    {tokens[item.index]?.map((token: Token, key: React.Key) => (
+                      <span {...getTokenProps({ token, key })} key={key} />
+                    ))}
+                  </div>
                   {lineData?.[item.index]?.hitCount ? (
                     <CoverageHitCounter
                       coverage={lineData?.[item.index]?.headCoverage}
                       hitCount={lineData?.[item.index]?.hitCount}
                     />
                   ) : null}
-                  <div>
-                    {tokens[item.index]?.map((token: Token, key: React.Key) => (
-                      <span {...getTokenProps({ token, key })} key={key} />
-                    ))}
-                  </div>
                 </div>
               </div>
             </div>
@@ -371,12 +366,14 @@ function VirtualDiffRendererComponent({
   const isOverflowing = useIsOverflowing(codeDisplayOverlayRef)
 
   // sync the scroll position of the text area with the code display overlay and scroll bar
-  useSyncScrollLeft(textAreaRef, [codeDisplayOverlayRef, scrollBarRef])
-  useSyncScrollLeft(scrollBarRef, [codeDisplayOverlayRef, textAreaRef])
-
-  const hasHitCount = useMemo(() => {
-    return lineData.some((line) => line.hitCount)
-  }, [lineData])
+  useSyncScrollLeft({
+    scrollingRef: textAreaRef,
+    refsToSync: [codeDisplayOverlayRef, scrollBarRef],
+  })
+  useSyncScrollLeft({
+    scrollingRef: scrollBarRef,
+    refsToSync: [codeDisplayOverlayRef, textAreaRef],
+  })
 
   return (
     <div
@@ -400,10 +397,7 @@ function VirtualDiffRendererComponent({
           lineHeight: `${LINE_ROW_HEIGHT}px`,
           scrollbarWidth: 'none',
         }}
-        className={cn(
-          'absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] font-mono text-transparent outline-none',
-          hasHitCount ? 'pl-[198px]' : 'pl-[175px]'
-        )}
+        className="absolute z-[1] size-full resize-none overflow-y-hidden whitespace-pre bg-[unset] pl-[192px] font-mono text-transparent outline-none"
         // Directly setting the value of the text area to the code content
         value={code}
         // need to set to true since we're setting a value without an onChange handler

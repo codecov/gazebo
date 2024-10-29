@@ -256,8 +256,14 @@ function VirtualFileRendererComponent({
   const isOverflowing = useIsOverflowing(codeDisplayOverlayRef)
 
   // sync the scroll position of the text area with the code display overlay and scroll bar
-  useSyncScrollLeft(textAreaRef, [codeDisplayOverlayRef, scrollBarRef])
-  useSyncScrollLeft(scrollBarRef, [codeDisplayOverlayRef, textAreaRef])
+  useSyncScrollLeft({
+    scrollingRef: textAreaRef,
+    refsToSync: [codeDisplayOverlayRef, scrollBarRef],
+  })
+  useSyncScrollLeft({
+    scrollingRef: scrollBarRef,
+    refsToSync: [codeDisplayOverlayRef, textAreaRef],
+  })
 
   return (
     <div
