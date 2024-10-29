@@ -47,7 +47,7 @@ function UploadsCard() {
             <Card.Title size="base">Coverage reports history</Card.Title>
             {/* @ts-expect-error */}
             <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
-              <span className="text-xs">view YAML file</span>
+              <span className="text-xs text-red-700">view YAML file</span>
             </A>
           </div>
           <Card.Description className="text-ds-gray-quinary">

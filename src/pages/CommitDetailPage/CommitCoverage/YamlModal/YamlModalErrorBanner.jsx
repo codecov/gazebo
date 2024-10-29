@@ -7,12 +7,15 @@ function YamlModalErrorBanner() {
   return (
     <Banner variant="warning">
       <BannerHeading>
-        <div className="font-semibold">Commit YAML is invalid</div>
+        <div className="font-semibold"><A to="">YAML</A> is invalid</div>
       </BannerHeading>
       <BannerContent>
-        When the commit-level YAML is invalid, we use the last valid repo YAML.
+        Coverage data is unable to be displayed, as the yaml appears to be invalid. 
+        The <A to="" isExternal={true}>yaml validator</A> can help determine its validation.
+        
+        {/* When the commit-level YAML is invalid, we use the last valid repo YAML.
         To determine if your YAML is valid, please follow the steps{' '}
-        <A to={{ pageName: 'repoYaml' }}>here.</A>
+        <A to={{ pageName: 'repoYaml' }}>here.</A> */}
       </BannerContent>
     </Banner>
   )

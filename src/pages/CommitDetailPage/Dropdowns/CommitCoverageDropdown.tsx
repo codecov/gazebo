@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useCommitCoverageDropdownSummary } from 'services/commit/useCommitCoverageDropdownSummary'
+import Icon from 'ui/Icon'
 import SummaryDropdown from 'ui/SummaryDropdown'
 
 interface URLParams {
@@ -20,6 +21,13 @@ const CoverageMessage: React.FC = () => {
   })
   const comparison = data?.commit?.compareWithParent
   const uploadErrorCount = data?.uploadErrorCount
+
+  return (
+    <>
+      data unavailable due to invalid yaml{' '}
+      <Icon name="exclamationTriangle" className="fill-ds-primary-red" />
+    </>
+  )
 
   if (!!uploadErrorCount) {
     if (uploadErrorCount === 1) {

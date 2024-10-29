@@ -1,3 +1,4 @@
+import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
@@ -6,11 +7,20 @@ function YamlErrorBanner() {
   return (
     <Banner variant="warning">
       <BannerHeading>
-        <p className="font-semibold">Commit YAML is invalid</p>
+        <p className="font-semibold">
+          <A to="" isExternal={true}>
+            YAML
+          </A>{' '}
+          is invalid
+        </p>
       </BannerHeading>
       <BannerContent>
         Coverage data is unable to be displayed, as the commit YAML appears to
-        be invalid.
+        be invalid. The{' '}
+        <A to="" isExternal={true}>
+          yaml validator
+        </A>{' '}
+        can help determine its validation.
       </BannerContent>
     </Banner>
   )
