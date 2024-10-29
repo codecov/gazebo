@@ -265,7 +265,7 @@ describe('Header Navigator', () => {
       })
     })
 
-    it.only('should show the fallback if not logged in', async () => {
+    it('should show the fallback if not logged in', async () => {
       const { user } = setup({ isMyOrg: false })
       render(<Navigator currentUser={undefined} />, {
         wrapper: wrapper('/gh/not-codecov'),
