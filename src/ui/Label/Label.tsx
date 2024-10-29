@@ -10,7 +10,7 @@ const label = cva(
         default: 'border-current',
         subtle: 'border-ds-border-line text-ds-gray-senary bg-ds-gray-primary',
         plain:
-          'ml-2 py-0.5 border-ds-gray-tertiary text-ds-gray-senary dark:bg-ds-gray-tertiary dark:text-ds-secondary-text',
+          'py-0.5 border-ds-gray-tertiary text-ds-gray-senary dark:bg-ds-gray-tertiary dark:text-ds-secondary-text',
       },
     },
     defaultVariants: {

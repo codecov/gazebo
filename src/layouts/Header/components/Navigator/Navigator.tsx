@@ -29,7 +29,7 @@ function Navigator({ currentUser }: NavigatorProps) {
           <Breadcrumb paths={breadcrumbs} largeFont />{' '}
         </span>
         {isCurrentUserPartOfOrg === false ? (
-          <Label variant="plain" className="hidden sm:block">
+          <Label variant="plain" className="ml-2 hidden sm:block">
             Viewing as visitor
           </Label>
         ) : null}
@@ -63,7 +63,7 @@ function Navigator({ currentUser }: NavigatorProps) {
         <Avatar user={ownerData} />
         <h2 className="mx-2 text-xl font-semibold">{ownerData?.username}</h2>
         {isCurrentUserPartOfOrg === false ? (
-          <Label variant="plain" className="hidden sm:block">
+          <Label variant="plain" className="ml-2 hidden sm:block">
             Viewing as visitor
           </Label>
         ) : null}
@@ -86,7 +86,7 @@ function Navigator({ currentUser }: NavigatorProps) {
     <div className="flex items-center">
       <MyContextSwitcher pageName={pageName} />
       {isCurrentUserPartOfOrg === false ? (
-        <Label variant="plain" className="hidden sm:block">
+        <Label variant="plain" className="ml-2 hidden sm:block">
           Viewing as visitor
         </Label>
       ) : null}

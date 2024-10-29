@@ -29,8 +29,16 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
             <span className="font-semibold">{repo.name}</span>
           </span>
         </div>
-        {isRepoPrivate && <Label variant="plain">Private</Label>}
-        {active && !activated && <Label variant="plain">Deactivated</Label>}
+        {isRepoPrivate && (
+          <Label variant="plain" className="ml-2">
+            Private
+          </Label>
+        )}
+        {active && !activated && (
+          <Label variant="plain" className="ml-2">
+            Deactivated
+          </Label>
+        )}
       </div>
     )
   }
@@ -52,9 +60,21 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
           <span className="font-semibold">{repo.name}</span>
         </span>
       </AppLink>
-      {isRepoPrivate && <Label variant="plain">Private</Label>}
-      {active && !activated && <Label variant="plain">Deactivated</Label>}
-      {repo?.isDemo && <Label variant="plain">System generated</Label>}
+      {isRepoPrivate && (
+        <Label variant="plain" className="ml-2">
+          Private
+        </Label>
+      )}
+      {active && !activated && (
+        <Label variant="plain" className="ml-2">
+          Deactivated
+        </Label>
+      )}
+      {repo?.isDemo && (
+        <Label variant="plain" className="ml-2">
+          System generated
+        </Label>
+      )}
     </div>
   )
 }
