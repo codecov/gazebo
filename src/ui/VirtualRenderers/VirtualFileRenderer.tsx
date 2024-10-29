@@ -31,7 +31,7 @@ import { LineNumber } from './LineNumber'
 import { ScrollBar } from './ScrollBar'
 import { Token } from './types'
 import { useIsOverflowing } from './useIsOverflowing'
-import { useSyncScrollLeft } from './useSyncScrollLeft'
+import { useScrollLeftSync } from './useScrollLeftSync'
 import { useSyncScrollMargin } from './useSyncScrollMargin'
 import { useSyncTotalWidth } from './useSyncTotalWidth'
 import { useSyncWrapperWidth } from './useSyncWrapperWidth'
@@ -256,11 +256,11 @@ function VirtualFileRendererComponent({
   const isOverflowing = useIsOverflowing(codeDisplayOverlayRef)
 
   // sync the scroll position of the text area with the code display overlay and scroll bar
-  useSyncScrollLeft({
+  useScrollLeftSync({
     scrollingRef: textAreaRef,
     refsToSync: [codeDisplayOverlayRef, scrollBarRef],
   })
-  useSyncScrollLeft({
+  useScrollLeftSync({
     scrollingRef: scrollBarRef,
     refsToSync: [codeDisplayOverlayRef, textAreaRef],
   })
