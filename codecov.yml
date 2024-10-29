@@ -1,5 +1,6 @@
 codecov:
   require_ci_to_pass: true
+  i_am_invalid: true
 
 ai_pr_review:
   enabled: false
