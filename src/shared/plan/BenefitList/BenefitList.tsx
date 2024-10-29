@@ -1,8 +1,14 @@
-import PropType from 'prop-types'
-
 import Icon from 'old_ui/Icon'
 
-function BenefitList({ benefits, iconName, iconColor }) {
+function BenefitList({
+  benefits,
+  iconName,
+  iconColor,
+}: {
+  benefits: string[]
+  iconName: string
+  iconColor?: string
+}) {
   return (
     <ul className="flex flex-col gap-3">
       {benefits?.map((benefit) => (
@@ -14,12 +20,6 @@ function BenefitList({ benefits, iconName, iconColor }) {
       ))}
     </ul>
   )
-}
-
-BenefitList.propTypes = {
-  benefits: PropType.arrayOf(PropType.string).isRequired,
-  iconName: PropType.string.isRequired,
-  iconColor: PropType.string,
 }
 
 export default BenefitList

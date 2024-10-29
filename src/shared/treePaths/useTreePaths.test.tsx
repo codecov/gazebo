@@ -3,7 +3,11 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import qs from 'qs'
+import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { z } from 'zod'
+
+import { RequestSchema } from 'services/repo'
 
 import { useTreePaths } from './useTreePaths'
 
@@ -18,7 +22,7 @@ const queryClient = new QueryClient({
 
 const wrapper =
   (initialEntries = '/gh/owner/coolrepo/tree/main/src%2Ftests') =>
-  ({ children }) => (
+  ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <Route path="/:provider/:owner/:repo">
@@ -57,7 +61,7 @@ const overviewMock = {
   owner: {
     isCurrentUserActivated: true,
     repository: {
-      __typename: 'Repository',
+      __typename: 'Repository' as const,
       private: false,
       defaultBranch: 'main',
       oldestCommitAt: '2022-10-10T11:59:59',
@@ -69,8 +73,12 @@ const overviewMock = {
   },
 }
 
+interface SetupArgs {
+  repoOverviewData?: z.infer<typeof RequestSchema>
+}
+
 describe('useTreePaths', () => {
-  function setup({ repoOverviewData }) {
+  function setup({ repoOverviewData }: SetupArgs) {
     server.use(
       graphql.query('GetRepoOverview', (info) => {
         return HttpResponse.json({ data: repoOverviewData })

@@ -1,12 +1,21 @@
 import { format, fromUnixTime } from 'date-fns'
-import PropType from 'prop-types'
 
-export function getScheduleStart(scheduledPhase) {
+interface ScheduledPhase {
+  quantity: number
+  plan: string
+  startDate: number
+}
+
+export function getScheduleStart(scheduledPhase: ScheduledPhase): string {
   const scheduleStart = fromUnixTime(scheduledPhase?.startDate)
   return format(scheduleStart, 'MMMM do yyyy, h:mm aaaa')
 }
 
-function ScheduledPlanDetails({ scheduledPhase }) {
+function ScheduledPlanDetails({
+  scheduledPhase,
+}: {
+  scheduledPhase: ScheduledPhase
+}) {
   const { plan, quantity } = scheduledPhase
   const scheduleStart = getScheduleStart(scheduledPhase)
 
@@ -21,14 +30,6 @@ function ScheduledPlanDetails({ scheduledPhase }) {
       </p>
     </div>
   )
-}
-
-ScheduledPlanDetails.propTypes = {
-  scheduledPhase: PropType.shape({
-    quantity: PropType.number.isRequired,
-    plan: PropType.string.isRequired,
-    startDate: PropType.number.isRequired,
-  }),
 }
 
 export default ScheduledPlanDetails

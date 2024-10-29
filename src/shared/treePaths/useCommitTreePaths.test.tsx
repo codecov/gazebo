@@ -7,7 +7,7 @@ import { useCommitTreePaths } from './useCommitTreePath'
 describe('useCommitTreePaths', () => {
   describe('a path is provided', () => {
     describe('no duplicate names in path', () => {
-      const wrapper = ({ children }) => (
+      const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
         <MemoryRouter
           initialEntries={['/gh/owner/cool-repo/commit/sha256/tree/src/tests']}
         >
@@ -43,7 +43,7 @@ describe('useCommitTreePaths', () => {
     })
 
     describe('path has duplicate names', () => {
-      const wrapper = ({ children }) => (
+      const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
         <MemoryRouter
           initialEntries={[
             '/gh/owner/cool-repo/commit/sha256/tree/src/temp/src/temp/component',
@@ -98,7 +98,7 @@ describe('useCommitTreePaths', () => {
   })
 
   describe('no path is given', () => {
-    const wrapper = ({ children }) => (
+    const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
       <MemoryRouter initialEntries={['/gh/owner/cool-repo/commit/sha256/tree']}>
         <Route path="/:provider/:owner/:repo/commit/:commit/tree/">
           <div>{children}</div>
@@ -121,7 +121,7 @@ describe('useCommitTreePaths', () => {
 
   describe('viewing a file', () => {
     describe('a path is provided', () => {
-      const wrapper = ({ children }) => (
+      const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
         <MemoryRouter
           initialEntries={[
             '/gh/owner/cool-repo/commit/sha256/tree/src/file.js',
@@ -158,7 +158,7 @@ describe('useCommitTreePaths', () => {
   })
 
   describe('query string params are passed along', () => {
-    const wrapper = ({ children }) => (
+    const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
       <MemoryRouter
         initialEntries={[
           `/gh/owner/cool-repo/commit/sha256/tree/src/tests${qs.stringify(
