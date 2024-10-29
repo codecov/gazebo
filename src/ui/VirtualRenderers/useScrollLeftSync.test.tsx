@@ -1,24 +1,28 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRef } from 'react'
 
-import { useLeftScrollSync } from './useLeftScrollSync'
+import { useScrollLeftSync } from './useScrollLeftSync'
 
 const mockAddEventListener = vi.fn()
 
 const NullRefComponent = () => {
   const ref = useRef(null)
-  useLeftScrollSync({
-    // @ts-expect-error - testing something
-    textAreaRef: { current: null, addEventListener: mockAddEventListener },
-    overlayRef: ref,
+  useScrollLeftSync({
+    // @ts-expect-error - testing null ref
+    scrollingRef: { current: null, addEventListener: mockAddEventListener },
+    refsToSync: [ref],
   })
+
   return <div ref={ref} />
 }
 
 const TestComponent = () => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
-  useLeftScrollSync({ textAreaRef, overlayRef })
+  useScrollLeftSync({
+    scrollingRef: textAreaRef,
+    refsToSync: [overlayRef],
+  })
   return (
     <div>
       <textarea ref={textAreaRef} data-testid="text-area" />
