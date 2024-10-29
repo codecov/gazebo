@@ -7,18 +7,22 @@ const mockAddEventListener = vi.fn()
 
 const NullRefComponent = () => {
   const ref = useRef(null)
-  useSyncScrollLeft(
+  useSyncScrollLeft({
     // @ts-expect-error - testing null ref
-    { current: null, addEventListener: mockAddEventListener },
-    [ref]
-  )
+    scrollingRef: { current: null, addEventListener: mockAddEventListener },
+    refsToSync: [ref],
+  })
+
   return <div ref={ref} />
 }
 
 const TestComponent = () => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
-  useSyncScrollLeft(textAreaRef, [overlayRef])
+  useSyncScrollLeft({
+    scrollingRef: textAreaRef,
+    refsToSync: [overlayRef],
+  })
   return (
     <div>
       <textarea ref={textAreaRef} data-testid="text-area" />
