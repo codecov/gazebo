@@ -3,8 +3,12 @@ import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
+interface URLParams {
+  provider: string
+}
+
 export const useSelfHostedCurrentUser = (options = {}) => {
-  const { provider } = useParams()
+  const { provider } = useParams<URLParams>()
 
   return useQuery({
     queryKey: ['SelfHostedCurrentUser', provider],

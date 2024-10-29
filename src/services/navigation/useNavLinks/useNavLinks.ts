@@ -5,6 +5,17 @@ import config from 'config'
 
 // Note to Terry, when we have more time automate all paths to pass through query search params.
 
+interface URLParams {
+  branch: string
+  provider: string
+  owner: string
+  repo: string
+  id: string
+  pullId: string
+  commit: string
+  path: string
+}
+
 export const ALL_BRANCHES = 'All branches'
 export function useNavLinks() {
   const {
@@ -16,7 +27,7 @@ export function useNavLinks() {
     pullId: pi,
     commit: c,
     path: pa,
-  } = useParams()
+  } = useParams<URLParams>()
 
   return {
     signOut: {
@@ -28,7 +39,11 @@ export function useNavLinks() {
     },
     signIn: {
       text: 'Log in',
-      path: ({ provider = p, to } = { provider: p }) => {
+      path: (
+        { provider = p, to }: { provider?: string; to?: string } = {
+          provider: p,
+        }
+      ): string => {
         const query = qs.stringify({ to }, { addQueryPrefix: true })
         return `${config.API_URL}/login/${provider}${query}`
       },
@@ -203,7 +218,13 @@ export function useNavLinks() {
     },
     commitFile: {
       path: (
-        { provider = p, owner = o, repo = r, commit, path } = {
+        {
+          provider = p,
+          owner = o,
+          repo = r,
+          commit,
+          path,
+        }: Partial<URLParams> = {
           provider: p,
           owner: o,
           repo: r,

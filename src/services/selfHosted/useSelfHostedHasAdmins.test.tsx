@@ -2,13 +2,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { PropsWithChildren } from 'react'
 
 import { useSelfHostedHasAdmins } from './useSelfHostedHasAdmins'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const wrapper = ({ children }) => (
+const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 

@@ -12,8 +12,12 @@ query Seats {
 }
 `
 
+interface URLParams {
+  provider: string
+}
+
 export const useSelfHostedSeatsConfig = (options = {}) => {
-  const { provider } = useParams()
+  const { provider } = useParams<URLParams>()
 
   return useQuery({
     queryKey: ['Seats', provider, query],
