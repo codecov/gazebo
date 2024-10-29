@@ -57,12 +57,9 @@ export const CoverageHitCounter = ({
 }: CoverageHitCounterProps) => {
   if (typeof hitCount === 'number' && hitCount > 0) {
     return (
-      <div className="pr-0.5">
+      <div className="flex items-center justify-center pr-0.5">
         <span
           data-testid="coverage-hit-counter"
-          style={{
-            lineHeight: `${LINE_ROW_HEIGHT}px`,
-          }}
           className={cn(
             'flex content-center items-center justify-center whitespace-nowrap rounded-full px-1.5 text-center text-xs text-white',
             coverage === 'M' && 'bg-ds-primary-red',
