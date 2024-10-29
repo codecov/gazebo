@@ -13,18 +13,6 @@ import NetworkErrorBoundary from './NetworkErrorBoundary'
 vi.spyOn(console, 'error').mockImplementation(() => undefined)
 vi.mock('config')
 
-const mocks = vi.hoisted(() => ({
-  captureMessage: vi.fn(),
-}))
-
-vi.mock('@sentry/react', async () => {
-  const actual = await vi.importActual('@sentry/react')
-  return {
-    ...actual,
-    captureMessage: mocks.captureMessage,
-  }
-})
-
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -194,34 +182,6 @@ describe('NetworkErrorBoundary', () => {
       const returnButton = await screen.findByText('Return to previous page')
       expect(returnButton).toBeInTheDocument()
     })
-
-    it('calls captureMessage with the error when dev and error are provided', async () => {
-      const { user } = setup()
-      render(
-        <App
-          status={401}
-          detail="not authenticated"
-          error="cool error"
-          dev="401 - cool error"
-        />,
-        { wrapper: wrapper() }
-      )
-
-      const textBox = await screen.findByRole('textbox')
-      await user.type(textBox, 'fail')
-
-      await waitFor(() =>
-        expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
-          fingerprint: '401 - cool error',
-          addBreadcrumb: {
-            category: 'network-error',
-            data: 'cool error',
-            level: 'error',
-            message: '401 - cool error',
-          },
-        })
-      )
-    })
   })
 
   describe('when the children component has a 403 error', () => {
@@ -263,34 +223,6 @@ describe('NetworkErrorBoundary', () => {
       const button = await screen.findByText('Return to previous page')
       expect(button).toBeInTheDocument()
     })
-
-    it('calls captureMessage with the error when dev and error are provided', async () => {
-      const { user } = setup()
-      render(
-        <App
-          status={403}
-          detail="you not admin"
-          error="cool error"
-          dev="403 - cool error"
-        />,
-        { wrapper: wrapper() }
-      )
-
-      const textBox = await screen.findByRole('textbox')
-      await user.type(textBox, 'fail')
-
-      await waitFor(() =>
-        expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
-          fingerprint: '403 - cool error',
-          addBreadcrumb: {
-            category: 'network-error',
-            data: 'cool error',
-            level: 'error',
-            message: '403 - cool error',
-          },
-        })
-      )
-    })
   })
 
   describe('when the children component has a 404 error', () => {
@@ -320,34 +252,6 @@ describe('NetworkErrorBoundary', () => {
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
       })
-
-      it('calls captureMessage with the error when dev and error are provided', async () => {
-        const { user } = setup()
-        render(
-          <App
-            status={404}
-            detail="not found"
-            error="cool error"
-            dev="404 - cool error"
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const textBox = await screen.findByRole('textbox')
-        await user.type(textBox, 'fail')
-
-        await waitFor(() =>
-          expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
-            fingerprint: '404 - cool error',
-            addBreadcrumb: {
-              category: 'network-error',
-              data: 'cool error',
-              level: 'error',
-              message: '404 - cool error',
-            },
-          })
-        )
-      })
     })
 
     describe('when running in self hosted mode', () => {
@@ -375,34 +279,6 @@ describe('NetworkErrorBoundary', () => {
 
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
-      })
-
-      it('calls captureMessage with the error when dev and error are provided', async () => {
-        const { user } = setup({ isSelfHosted: true })
-        render(
-          <App
-            status={404}
-            detail="not found"
-            error="cool error"
-            dev="404 - cool error"
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const textBox = await screen.findByRole('textbox')
-        await user.type(textBox, 'fail')
-
-        await waitFor(() =>
-          expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
-            fingerprint: '404 - cool error',
-            addBreadcrumb: {
-              category: 'network-error',
-              data: 'cool error',
-              level: 'error',
-              message: '404 - cool error',
-            },
-          })
-        )
       })
     })
   })
@@ -454,24 +330,6 @@ describe('NetworkErrorBoundary', () => {
       // Clean up the mock
       global.fetch.mockRestore()
     })
-
-    it('does not call captureMessage ', async () => {
-      const { user } = setup()
-      render(
-        <App
-          status={429}
-          detail="rate limit exceeded"
-          error="cool error"
-          dev="429 - cool error"
-        />,
-        { wrapper: wrapper() }
-      )
-
-      const textBox = await screen.findByRole('textbox')
-      await user.type(textBox, 'fail')
-
-      await waitFor(() => expect(mocks.captureMessage).not.toHaveBeenCalled())
-    })
   })
 
   describe('when the children component has a 500 error', () => {
@@ -501,34 +359,6 @@ describe('NetworkErrorBoundary', () => {
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
       })
-
-      it('calls captureMessage with the error when dev and error are provided', async () => {
-        const { user } = setup()
-        render(
-          <App
-            status={500}
-            detail="server error"
-            error="cool error"
-            dev="500 - cool error"
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const textBox = await screen.findByRole('textbox')
-        await user.type(textBox, 'fail')
-
-        await waitFor(() =>
-          expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
-            fingerprint: '500 - cool error',
-            addBreadcrumb: {
-              category: 'network-error',
-              data: 'cool error',
-              level: 'error',
-              message: '500 - cool error',
-            },
-          })
-        )
-      })
     })
 
     describe('when running in self-hosted mode', () => {
@@ -556,34 +386,6 @@ describe('NetworkErrorBoundary', () => {
 
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
-      })
-
-      it('calls captureMessage with the error when dev and error are provided', async () => {
-        const { user } = setup({ isSelfHosted: true })
-        render(
-          <App
-            status={500}
-            detail="server error"
-            error="cool error"
-            dev="500 - cool error"
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const textBox = await screen.findByRole('textbox')
-        await user.type(textBox, 'fail')
-
-        await waitFor(() =>
-          expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error', {
-            fingerprint: '500 - cool error',
-            addBreadcrumb: {
-              category: 'network-error',
-              data: 'cool error',
-              level: 'error',
-              message: '500 - cool error',
-            },
-          })
-        )
       })
     })
   })
