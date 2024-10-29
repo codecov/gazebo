@@ -71,16 +71,14 @@ const TotalTestsRunTimeCard = ({
   intervalCopy: string
   interval?: MeasurementInterval
 }) => {
+  totalDurationPercentChange = 8.6
+
   if (interval === 'INTERVAL_7_DAY') {
     totalDurationPercentChange = 23
   }
 
   if (interval === 'INTERVAL_1_DAY') {
     totalDurationPercentChange = -7.3
-  }
-
-  if (interval === 'INTERVAL_30_DAY') {
-    totalDurationPercentChange = 8.6
   }
 
   return (
