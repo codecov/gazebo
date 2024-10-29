@@ -90,7 +90,8 @@ export const useTestResultsFlags = ({ term }: { term?: string }) => {
         }
 
         return {
-          flags: data?.owner?.repository?.testAnalytics?.flags,
+          // flags: data?.owner?.repository?.testAnalytics?.flags,
+          flags: ['test_analytics', 'is', 'pretty', 'cool'],
         }
       }),
   })
