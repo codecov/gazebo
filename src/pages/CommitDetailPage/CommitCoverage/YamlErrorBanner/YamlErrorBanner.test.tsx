@@ -20,13 +20,13 @@ describe('YamlErrorBanner', () => {
     })
 
     it('renders heading of banner', () => {
-      expect(screen.getByText(/Commit YAML/)).toBeInTheDocument()
+      expect(screen.getByText(/YAML is invalid/)).toBeInTheDocument()
     })
 
     it('renders content', () => {
       expect(
         screen.getByText(
-          /Coverage data is unable to be displayed, as the commit YAML appears to be invalid./
+          /Coverage data is unable to be displayed, as the yaml appears to be invalid/
         )
       ).toBeInTheDocument()
     })
