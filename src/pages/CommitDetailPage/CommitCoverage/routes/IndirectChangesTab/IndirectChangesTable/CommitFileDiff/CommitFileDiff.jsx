@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 
 import { useIgnoredIds } from 'pages/CommitDetailPage/hooks/useIgnoredIds'
 import { useComparisonForCommitAndParent } from 'services/comparison/useComparisonForCommitAndParent'
-import { transformImpactedFileData } from 'services/comparison/utils'
+import { transformImpactedFileToDiff } from 'services/comparison/utils'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
@@ -18,7 +18,6 @@ import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
 import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
-import Spinner from 'ui/Spinner'
 import { VirtualDiffRenderer } from 'ui/VirtualRenderers'
 
 function ErrorDisplayMessage() {
@@ -44,12 +43,6 @@ function ErrorDisplayMessage() {
   )
 }
 
-const Loader = () => (
-  <div className="flex items-center justify-center py-16">
-    <Spinner />
-  </div>
-)
-
 function CommitFileDiff({ path }) {
   const { commitFileDiff } = useNavLinks()
   const { owner, repo, provider, commit } = useParams()
@@ -57,7 +50,7 @@ function CommitFileDiff({ path }) {
   const { virtualDiffRenderer } = useFlags({ virtualDiffRenderer: false })
   const { data: ignoredUploadIds } = useIgnoredIds()
 
-  const { data: comparisonData, isLoading } = useComparisonForCommitAndParent({
+  const { data: comparisonData } = useComparisonForCommitAndParent({
     provider,
     owner,
     repo,
@@ -66,23 +59,14 @@ function CommitFileDiff({ path }) {
     filters: {
       hasUnintendedChanges: true,
     },
-    opts: {
-      select: (res) =>
-        transformImpactedFileData(
-          res?.data?.owner?.repository?.commit?.compareWithParent?.impactedFile
-        ),
-    },
   })
 
-  if (isLoading) {
-    return <Loader />
-  }
-
-  if (!comparisonData) {
+  if (!comparisonData || !comparisonData?.impactedFile) {
     return <ErrorDisplayMessage />
   }
 
-  const { fileLabel, headName, isCriticalFile, segments } = comparisonData
+  const { fileLabel, headName, isCriticalFile, segments } =
+    transformImpactedFileToDiff(comparisonData?.impactedFile)
 
   let stickyPadding = undefined
   let fullFilePath = commitFileDiff.path({ commit, tree: path })

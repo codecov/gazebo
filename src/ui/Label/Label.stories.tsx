@@ -7,7 +7,7 @@ const meta: Meta<typeof Label> = {
   component: Label,
   argTypes: {
     variant: {
-      options: ['default', 'subtle'],
+      options: ['default', 'subtle', 'plain'],
       control: { type: 'select' },
     },
   },
@@ -39,6 +39,18 @@ export const SubtleLabel: Story = {
       <Label {...args}>
         <span className="text-ds-pink-default">Dynamic</span> Content
       </Label>
+    </div>
+  ),
+}
+
+export const PlainLabel: Story = {
+  args: { variant: 'plain' },
+  render: (args) => (
+    <div className="flex gap-2">
+      <Label {...args}>Label in light mode</Label>
+      <div className="dark">
+        <Label {...args}>Label in dark mode</Label>
+      </div>
     </div>
   ),
 }
