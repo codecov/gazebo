@@ -4,7 +4,7 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import FileDiff from './FileDiff'
+import PullFileDiff from './PullFileDiff'
 
 const mocks = vi.hoisted(() => ({
   useFlags: vi.fn(),
@@ -196,7 +196,7 @@ describe('FileDiff', () => {
   describe('when rendered', () => {
     it('renders the line changes header', async () => {
       setup()
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const changeHeader = await screen.findByText('-0,0 +1,45')
       expect(changeHeader).toBeInTheDocument()
@@ -205,7 +205,7 @@ describe('FileDiff', () => {
     describe('when only coverage is enabled', () => {
       it('renders the commit redirect url', async () => {
         setup()
-        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+        render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
         const viewFullFileText = await screen.findByText(/View full file/)
         expect(viewFullFileText).toBeInTheDocument()
@@ -219,7 +219,7 @@ describe('FileDiff', () => {
     describe('when both coverage and bundle products are enabled', () => {
       it('renders the commit redirect url', async () => {
         setup({ bundleAnalysisEnabled: true })
-        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+        render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
         const viewFullFileText = await screen.findByText(/View full file/)
         expect(viewFullFileText).toBeInTheDocument()
@@ -237,7 +237,7 @@ describe('FileDiff', () => {
     })
 
     it('renders a new file label', async () => {
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const newText = await screen.findByText(/New/i)
       expect(newText).toBeInTheDocument()
@@ -249,7 +249,7 @@ describe('FileDiff', () => {
       setup({ impactedFile: { isRenamedFile: true } })
     })
     it('renders a renamed file label', async () => {
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const renamed = await screen.findByText(/Renamed/i)
       expect(renamed).toBeInTheDocument()
@@ -261,7 +261,7 @@ describe('FileDiff', () => {
       setup({ impactedFile: { isDeletedFile: true } })
     })
     it('renders a deleted file label', async () => {
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const deleted = await screen.findByText(/Deleted/i)
       expect(deleted).toBeInTheDocument()
@@ -273,7 +273,7 @@ describe('FileDiff', () => {
       setup({ impactedFile: { isCriticalFile: true } })
     })
     it('renders a critical file label', async () => {
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const criticalFile = await screen.findByText(/Critical File/i)
       expect(criticalFile).toBeInTheDocument()
@@ -284,7 +284,7 @@ describe('FileDiff', () => {
     describe('feature flag is true', () => {
       it('renders the textarea', async () => {
         setup({ featureFlag: true })
-        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+        render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
         const textArea = await screen.findByTestId(
           'virtual-file-renderer-text-area'
@@ -303,7 +303,7 @@ describe('FileDiff', () => {
 
       it('renders the lines of a segment', async () => {
         setup({ featureFlag: true })
-        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+        render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
         const codeDisplayOverlay = await screen.findByTestId(
           'virtual-file-renderer-overlay'
@@ -324,7 +324,7 @@ describe('FileDiff', () => {
     describe('feature flag is false', () => {
       it('renders the lines of a segment', async () => {
         setup({ featureFlag: false })
-        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+        render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
         const calculator = await screen.findByText(/Calculator/)
         expect(calculator).toBeInTheDocument()

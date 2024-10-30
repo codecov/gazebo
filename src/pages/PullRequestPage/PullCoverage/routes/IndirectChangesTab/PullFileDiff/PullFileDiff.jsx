@@ -25,7 +25,7 @@ const Loader = () => (
   </div>
 )
 
-function FileDiff({ path }) {
+function PullFileDiff({ path }) {
   const { pullFileView } = useNavLinks()
   const { provider, owner, repo, pullId } = useParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
@@ -130,8 +130,8 @@ function FileDiff({ path }) {
   )
 }
 
-FileDiff.propTypes = {
+PullFileDiff.propTypes = {
   path: PropTypes.string,
 }
 
-export default FileDiff
+export default PullFileDiff
