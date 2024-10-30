@@ -12,7 +12,7 @@ const queryClient = new QueryClient({
 
 const server = setupServer()
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 

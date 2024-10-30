@@ -4,7 +4,7 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
 import { useSingularImpactedFileComparison } from './useSingularImpactedFileComparison'
-import { transformImpactedFileData } from './utils'
+import { transformImpactedFileToDiff } from './utils'
 
 console.error = () => {}
 
@@ -12,7 +12,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
@@ -165,7 +165,7 @@ describe('useSingularImpactedFileComparison', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual(
-            transformImpactedFileData(
+            transformImpactedFileToDiff(
               mockResponse.owner.repository.pull.compareWithBase.impactedFile
             )
           )

@@ -33,7 +33,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/']}>
       <Route path="/">
