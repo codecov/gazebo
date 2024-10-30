@@ -54,7 +54,7 @@ const SummaryTrigger = forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
   TriggerProps
 >(({ children, className, ...props }, forwardedRef) => (
-  <AccordionPrimitive.Header className="sticky top-0">
+  <AccordionPrimitive.Header className="sticky top-0 z-30">
     <AccordionPrimitive.Trigger
       className={cn(trigger({ className }))}
       {...props}
