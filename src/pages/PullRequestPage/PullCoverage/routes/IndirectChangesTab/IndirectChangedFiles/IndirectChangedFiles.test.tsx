@@ -10,7 +10,7 @@ import { UploadTypeEnum } from 'shared/utils/commit'
 
 import IndirectChangedFiles from './IndirectChangedFiles'
 
-vi.mock('../FileDiff', () => ({ default: () => 'FileDiff Component' }))
+vi.mock('../PullFileDiff', () => ({ default: () => 'FileDiff Component' }))
 
 const mockImpactedFiles = [
   {
@@ -222,6 +222,15 @@ describe('IndirectChangedFiles', () => {
       ),
       graphql.query('GetRepoOverview', (info) => {
         return HttpResponse.json({ data: mockOverview })
+      }),
+      graphql.query('PullComponentsSelector', (info) => {
+        return HttpResponse.json({ data: { owner: null } })
+      }),
+      graphql.query('BackfillFlagMemberships', (info) => {
+        return HttpResponse.json({ data: { owner: null } })
+      }),
+      graphql.query('OwnerTier', (info) => {
+        return HttpResponse.json({ data: { owner: null } })
       })
     )
 
