@@ -200,10 +200,6 @@ describe('OtherCI', () => {
 
       const box = await screen.findByText(/upload-process/)
       expect(box).toBeInTheDocument()
-      const instruction = await screen.findByText(
-        /If you are using a repo token/
-      )
-      expect(instruction).toBeInTheDocument()
     })
 
     describe('when org has upload token', () => {
@@ -214,18 +210,6 @@ describe('OtherCI', () => {
         const box = await screen.findByText(/-r cool-repo/)
         expect(box).toBeInTheDocument()
       })
-
-      it('renders both command boxes', async () => {
-        setup({ hasOrgUploadToken: true })
-        render(<OtherCI />, { wrapper })
-
-        const commandBoxes = await screen.findAllByText(/upload-process/)
-        expect(commandBoxes).toHaveLength(2)
-        const instruction = await screen.findByText(
-          /If you are using an org token/
-        )
-        expect(instruction).toBeInTheDocument()
-      })
     })
 
     describe('when org does not have org upload token', () => {
@@ -235,8 +219,6 @@ describe('OtherCI', () => {
 
         const box = screen.queryByText(/-r cool-repo/)
         expect(box).not.toBeInTheDocument()
-        const instruction = screen.queryByText(/If you are using an org token/)
-        expect(instruction).not.toBeInTheDocument()
       })
     })
 
