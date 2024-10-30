@@ -513,5 +513,11 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    codecovAIDocs: {
+      text: 'Codecov AI Documentation',
+      path: () => `https://docs.codecov.com/docs/beta-codecov-ai`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
