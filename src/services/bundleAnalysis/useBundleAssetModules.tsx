@@ -10,6 +10,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BundleAssetModuleSchema = z.object({
@@ -185,23 +186,26 @@ export const BundleAssetModulesQueryOpts = ({
         const parsedData = RequestSchema.safeParse(res.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'BundleAssetModulesQueryOpts - 404 Failed to parse',
+            error: parsedData.error,
           })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'BundleAssetModulesQueryOpts - 404 Repository not found',
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -213,6 +217,7 @@ export const BundleAssetModulesQueryOpts = ({
                 </p>
               ),
             },
+            dev: 'BundleAssetModulesQueryOpts - 403 Owner not activated',
           })
         }
 

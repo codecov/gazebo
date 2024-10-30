@@ -12,7 +12,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
@@ -286,24 +286,26 @@ export const BundleAssetsQueryOpts = ({
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useBundleAssets - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+            dev: 'BundleAssetsQueryOpts - 404 schema parsing failed',
+            error: parsedData.error,
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'BundleAssetsQueryOpts - 404 Repository not found',
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -315,6 +317,7 @@ export const BundleAssetsQueryOpts = ({
                 </p>
               ),
             },
+            dev: 'BundleAssetsQueryOpts - 403 Owner not activated',
           })
         }
 
