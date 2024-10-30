@@ -88,6 +88,7 @@ const config = {
           },
         },
         codecov: {
+          red: withOpacity('--color-codecov-red'),
           orange: withOpacity('--color-codecov-orange'),
           footer: withOpacity('--color-codecov-footer'),
           code: withOpacity('--color-codecov-code'),

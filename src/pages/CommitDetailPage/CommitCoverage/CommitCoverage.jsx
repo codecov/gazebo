@@ -130,7 +130,7 @@ function CommitErrorBanners() {
       {ownerData?.isCurrentUserPartOfOrg && (
         <BotErrorBanner botErrorsCount={data?.botErrors?.length} />
       )}
-      {invalidYaml && <YamlErrorBanner />}
+      {invalidYaml && <YamlErrorBanner shouldLinkToModal={true} />}
     </>
   )
 }
