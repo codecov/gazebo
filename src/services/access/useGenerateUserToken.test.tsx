@@ -6,6 +6,7 @@ import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useGenerateUserToken } from './index'
+import { Z } from 'vitest/dist/chunks/reporters.C4ZHgdxQ'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },

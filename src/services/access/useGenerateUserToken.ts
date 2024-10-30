@@ -4,10 +4,10 @@ import Api from 'shared/api'
 
 import { USER_TOKEN_TYPE } from './constants'
 
-export function useGenerateUserToken({ provider, opts = {} }) {
+export function useGenerateUserToken({ provider }: { provider: string }) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ name }) => {
+    mutationFn: ({ name }: { name: string }) => {
       const query = `
         mutation CreateUserToken($input: CreateUserTokenInput!) {
           createUserToken(input: $input) {
@@ -28,7 +28,7 @@ export function useGenerateUserToken({ provider, opts = {} }) {
     },
     useErrorBoundary: true,
     onSuccess: () => {
-      queryClient.invalidateQueries('sessions')
+      queryClient.invalidateQueries(['sessions'])
     },
   })
 }

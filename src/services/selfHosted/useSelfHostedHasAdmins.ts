@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-function fetchHasAdmins({ provider }) {
+function fetchHasAdmins({ provider }: { provider: string }) {
   const query = `
   query HasAdmins {
     config {
@@ -17,7 +17,10 @@ function fetchHasAdmins({ provider }) {
   })
 }
 
-export const useSelfHostedHasAdmins = ({ provider }, options = {}) => {
+export const useSelfHostedHasAdmins = (
+  { provider }: { provider: string },
+  options = {}
+) => {
   const opts = {
     select: ({ data }) => data?.config?.hasAdmins,
     keepPreviousData: true,

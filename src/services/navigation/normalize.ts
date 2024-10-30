@@ -7,7 +7,7 @@ export const ApiFilterEnum = Object.freeze({
 })
 
 // Help convert useForm data to our API
-export function normalizeFormData(data) {
+export function normalizeFormData(data: { [x: string]: any }) {
   return mapValues(data, (value) => {
     if (!value) return ''
     return value

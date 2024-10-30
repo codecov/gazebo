@@ -1,6 +1,11 @@
+import { z } from 'zod'
+
+import { ImpactedFileSchema } from 'services/comparison'
+
 import { setFileLabel } from './setFileLabel'
 
-export function transformImpactedFileToDiff(impactedFile) {
+
+export function transformImpactedFileToDiff(impactedFile: z.infer<typeof ImpactedFileSchema>) {
   const fileLabel = setFileLabel({
     isNewFile: impactedFile?.isNewFile,
     isRenamedFile: impactedFile?.isRenamedFile,
