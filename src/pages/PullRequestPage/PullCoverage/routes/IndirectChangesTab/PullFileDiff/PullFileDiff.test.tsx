@@ -4,12 +4,11 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import FileDiff from './FileDiff'
+import PullFileDiff from './PullFileDiff'
 
 const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
   useScrollToLine: vi.fn(),
-  withProfiler: (component) => component,
+  withProfiler: (component: any) => component,
   captureMessage: vi.fn(),
 }))
 
@@ -20,10 +19,6 @@ vi.mock('ui/CodeRenderer/hooks/useScrollToLine', async () => {
     useScrollToLine: mocks.useScrollToLine,
   }
 })
-
-vi.mock('shared/featureFlags', () => ({
-  useFlags: mocks.useFlags,
-}))
 
 vi.mock('@sentry/react', () => {
   const originalModule = vi.importActual('@sentry/react')
@@ -45,9 +40,9 @@ window.scrollTo = scrollToMock
 window.scrollY = 100
 
 class ResizeObserverMock {
-  callback = (x) => null
+  callback = (x: any) => null
 
-  constructor(callback) {
+  constructor(callback: any) {
     this.callback = callback
   }
 
@@ -71,7 +66,17 @@ class ResizeObserverMock {
 }
 global.window.ResizeObserver = ResizeObserverMock
 
-const baseMock = (impactedFile) => ({
+const baseMock = ({
+  isNewFile,
+  isRenamedFile,
+  isDeletedFile,
+  isCriticalFile,
+}: {
+  isNewFile?: boolean
+  isRenamedFile?: boolean
+  isDeletedFile?: boolean
+  isCriticalFile?: boolean
+}) => ({
   owner: {
     repository: {
       __typename: 'Repository',
@@ -79,49 +84,40 @@ const baseMock = (impactedFile) => ({
         compareWithBase: {
           __typename: 'Comparison',
           impactedFile: {
-            ...mockImpactedFile,
-            ...impactedFile,
+            headName: 'flag1/file.js',
+            hashedPath: 'hashedFilePath',
+            isRenamedFile,
+            isDeletedFile,
+            isCriticalFile,
+            isNewFile,
+            baseCoverage: null,
+            headCoverage: null,
+            patchCoverage: null,
+            changeCoverage: null,
+            segments: {
+              __typename: 'SegmentComparisons',
+              results: [
+                {
+                  header: '-0,0 +1,45',
+                  hasUnintendedChanges: false,
+                  lines: [
+                    {
+                      baseNumber: '1',
+                      headNumber: '1',
+                      content: 'const Calculator = ({ value, calcMode }) => {',
+                      baseCoverage: 'M',
+                      headCoverage: 'H',
+                    },
+                  ],
+                },
+              ],
+            },
           },
         },
       },
     },
   },
 })
-
-const mockImpactedFile = {
-  headName: 'flag1/file.js',
-  hashedPath: 'hashedFilePath',
-  isRenamedFile: false,
-  isDeletedFile: false,
-  isCriticalFile: false,
-  isNewFile: false,
-  baseCoverage: null,
-  headCoverage: null,
-  patchCoverage: null,
-  changeCoverage: null,
-  segments: {
-    __typename: 'SegmentComparisons',
-    results: [
-      {
-        header: '-0,0 +1,45',
-        hasUnintendedChanges: false,
-        lines: [
-          {
-            baseNumber: '1',
-            headNumber: '1',
-            content: 'const Calculator = ({ value, calcMode }) => {',
-            baseCoverage: 'M',
-            headCoverage: 'H',
-            coverageInfo: {
-              hitCount: 18,
-              hitUploadIds: null,
-            },
-          },
-        ],
-      },
-    ],
-  },
-}
 
 const mockOverview = (bundleAnalysisEnabled = false) => {
   return {
@@ -143,10 +139,10 @@ const mockOverview = (bundleAnalysisEnabled = false) => {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, suspense: true } },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo/pull/1']}>
       <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
@@ -154,38 +150,51 @@ const wrapper = ({ children }) => (
   </QueryClientProvider>
 )
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
+
+interface SetupArgs {
+  bundleAnalysisEnabled?: boolean
+  isNewFile?: boolean
+  isRenamedFile?: boolean
+  isDeletedFile?: boolean
+  isCriticalFile?: boolean
+}
 
 describe('FileDiff', () => {
-  function setup(
-    {
-      impactedFile = mockImpactedFile,
-      bundleAnalysisEnabled = false,
-      featureFlag = false,
-    } = {
-      impactedFile: mockImpactedFile,
-      bundleAnalysisEnabled: false,
-      featureFlag: false,
-    }
-  ) {
+  function setup({
+    bundleAnalysisEnabled = false,
+    isNewFile = false,
+    isRenamedFile = false,
+    isDeletedFile = false,
+    isCriticalFile = false,
+  }: SetupArgs) {
     mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: vi.fn(),
       targeted: false,
     }))
 
-    mocks.useFlags.mockImplementation(() => ({
-      virtualDiffRenderer: featureFlag,
-    }))
-
     server.use(
       graphql.query('ImpactedFileComparison', (info) => {
-        return HttpResponse.json({ data: baseMock(impactedFile) })
+        return HttpResponse.json({
+          data: baseMock({
+            isNewFile,
+            isRenamedFile,
+            isDeletedFile,
+            isCriticalFile,
+          }),
+        })
       }),
       graphql.query('GetRepoOverview', (info) => {
         return HttpResponse.json({ data: mockOverview(bundleAnalysisEnabled) })
@@ -195,8 +204,8 @@ describe('FileDiff', () => {
 
   describe('when rendered', () => {
     it('renders the line changes header', async () => {
-      setup()
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+      setup({})
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const changeHeader = await screen.findByText('-0,0 +1,45')
       expect(changeHeader).toBeInTheDocument()
@@ -204,8 +213,8 @@ describe('FileDiff', () => {
 
     describe('when only coverage is enabled', () => {
       it('renders the commit redirect url', async () => {
-        setup()
-        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+        setup({})
+        render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
         const viewFullFileText = await screen.findByText(/View full file/)
         expect(viewFullFileText).toBeInTheDocument()
@@ -219,7 +228,7 @@ describe('FileDiff', () => {
     describe('when both coverage and bundle products are enabled', () => {
       it('renders the commit redirect url', async () => {
         setup({ bundleAnalysisEnabled: true })
-        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+        render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
         const viewFullFileText = await screen.findByText(/View full file/)
         expect(viewFullFileText).toBeInTheDocument()
@@ -233,11 +242,11 @@ describe('FileDiff', () => {
 
   describe('a new file', () => {
     beforeEach(() => {
-      setup({ impactedFile: { isNewFile: true } })
+      setup({ isNewFile: true })
     })
 
     it('renders a new file label', async () => {
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const newText = await screen.findByText(/New/i)
       expect(newText).toBeInTheDocument()
@@ -246,10 +255,10 @@ describe('FileDiff', () => {
 
   describe('a renamed file', () => {
     beforeEach(() => {
-      setup({ impactedFile: { isRenamedFile: true } })
+      setup({ isRenamedFile: true })
     })
     it('renders a renamed file label', async () => {
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const renamed = await screen.findByText(/Renamed/i)
       expect(renamed).toBeInTheDocument()
@@ -258,10 +267,10 @@ describe('FileDiff', () => {
 
   describe('a deleted file', () => {
     beforeEach(() => {
-      setup({ impactedFile: { isDeletedFile: true } })
+      setup({ isDeletedFile: true })
     })
     it('renders a deleted file label', async () => {
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const deleted = await screen.findByText(/Deleted/i)
       expect(deleted).toBeInTheDocument()
@@ -270,10 +279,10 @@ describe('FileDiff', () => {
 
   describe('a critical file', () => {
     beforeEach(() => {
-      setup({ impactedFile: { isCriticalFile: true } })
+      setup({ isCriticalFile: true })
     })
     it('renders a critical file label', async () => {
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const criticalFile = await screen.findByText(/Critical File/i)
       expect(criticalFile).toBeInTheDocument()
@@ -281,60 +290,63 @@ describe('FileDiff', () => {
   })
 
   describe('code renderer', () => {
-    describe('feature flag is true', () => {
-      it('renders the textarea', async () => {
-        setup({ featureFlag: true })
-        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+    it('renders the textarea', async () => {
+      setup({})
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
-        const textArea = await screen.findByTestId(
-          'virtual-file-renderer-text-area'
-        )
-        expect(textArea).toBeInTheDocument()
+      const textArea = await screen.findByTestId(
+        'virtual-file-renderer-text-area'
+      )
+      expect(textArea).toBeInTheDocument()
 
-        const calculator = await within(textArea).findByText(/Calculator/)
-        expect(calculator).toBeInTheDocument()
+      const calculator = await within(textArea).findByText(/Calculator/)
+      expect(calculator).toBeInTheDocument()
 
-        const value = await within(textArea).findByText(/value/)
-        expect(value).toBeInTheDocument()
+      const value = await within(textArea).findByText(/value/)
+      expect(value).toBeInTheDocument()
 
-        const calcMode = await within(textArea).findByText(/calcMode/)
-        expect(calcMode).toBeInTheDocument()
-      })
-
-      it('renders the lines of a segment', async () => {
-        setup({ featureFlag: true })
-        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
-
-        const codeDisplayOverlay = await screen.findByTestId(
-          'virtual-file-renderer-overlay'
-        )
-
-        const calculator =
-          await within(codeDisplayOverlay).findByText(/Calculator/)
-        expect(calculator).toBeInTheDocument()
-
-        const value = await within(codeDisplayOverlay).findByText(/value/)
-        expect(value).toBeInTheDocument()
-
-        const calcMode = await within(codeDisplayOverlay).findByText(/calcMode/)
-        expect(calcMode).toBeInTheDocument()
-      })
+      const calcMode = await within(textArea).findByText(/calcMode/)
+      expect(calcMode).toBeInTheDocument()
     })
 
-    describe('feature flag is false', () => {
-      it('renders the lines of a segment', async () => {
-        setup({ featureFlag: false })
-        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+    it('renders the lines of a segment', async () => {
+      setup({})
+      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
 
-        const calculator = await screen.findByText(/Calculator/)
-        expect(calculator).toBeInTheDocument()
+      const codeDisplayOverlay = await screen.findByTestId(
+        'virtual-file-renderer-overlay'
+      )
 
-        const value = await screen.findByText(/value/)
-        expect(value).toBeInTheDocument()
+      const calculator =
+        await within(codeDisplayOverlay).findByText(/Calculator/)
+      expect(calculator).toBeInTheDocument()
 
-        const calcMode = await screen.findByText(/calcMode/)
-        expect(calcMode).toBeInTheDocument()
-      })
+      const value = await within(codeDisplayOverlay).findByText(/value/)
+      expect(value).toBeInTheDocument()
+
+      const calcMode = await within(codeDisplayOverlay).findByText(/calcMode/)
+      expect(calcMode).toBeInTheDocument()
+    })
+  })
+
+  describe('when path is undefined', () => {
+    it('renders an error message', async () => {
+      setup({})
+      render(<PullFileDiff path={undefined} />, { wrapper })
+
+      const errorMessage = await screen.findByText(
+        /There was a problem getting the source code from your provider./
+      )
+      expect(errorMessage).toBeInTheDocument()
+    })
+
+    it('renders a login link', async () => {
+      setup({})
+      render(<PullFileDiff path={undefined} />, { wrapper })
+
+      const loginLink = await screen.findByRole('link', { name: /logging in/ })
+      expect(loginLink).toBeInTheDocument()
+      expect(loginLink).toHaveAttribute('href', '/login')
     })
   })
 })
