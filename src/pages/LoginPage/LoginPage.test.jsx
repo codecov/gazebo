@@ -22,6 +22,7 @@ describe('LoginPage', () => {
   function setup() {
     const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
     const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
+    window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 
     return { mockSetItem, mockGetItem }
   }

@@ -19,6 +19,7 @@ vi.mock('react-router-dom', async () => {
     useLocation: mocks.useLocation,
   }
 })
+window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 
 const server = setupServer()
 const queryClient = new QueryClient()

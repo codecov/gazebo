@@ -19,6 +19,7 @@ vi.mock('shared/featureFlags', async () => {
     useFlags: mocks.useFlags,
   }
 })
+window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 
 const queryClient = new QueryClient({
   defaultOptions: {

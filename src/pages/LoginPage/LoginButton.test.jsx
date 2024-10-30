@@ -5,6 +5,8 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import LoginButton from './LoginButton'
 
+window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
+
 const wrapper =
   ({ initialEntries, path }) =>
   ({ children }) => (
@@ -18,6 +20,9 @@ const wrapper =
   )
 
 describe('LoginButton', () => {
+  afterAll(() => {
+    vi.clearAllMocks()
+  })
   describe('bitbucket', () => {
     it('renders bitbucket login button', () => {
       render(<LoginButton provider="bb" />, {
