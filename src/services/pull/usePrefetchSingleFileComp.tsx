@@ -18,7 +18,7 @@ import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 import { ComparisonSchema, FileComparisonWithBase } from './fragments'
-import { transformImpactedFileToDiff } from './utils'
+import { transformImpactedPullFileToDiff } from './utils'
 
 const FileComparisonWithBaseSchema = z.object({
   compareWithBase: z
@@ -157,7 +157,7 @@ export function usePrefetchSingleFileComp({
             data.owner?.repository.pull?.compareWithBase?.__typename ===
             'Comparison'
           ) {
-            return transformImpactedFileToDiff(
+            return transformImpactedPullFileToDiff(
               data?.owner?.repository?.pull?.compareWithBase?.impactedFile
             )
           }

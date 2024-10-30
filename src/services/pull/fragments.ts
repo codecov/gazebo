@@ -256,51 +256,51 @@ fragment FileComparisonWithBase on Pull {
 
 const CoverageLineSchema = z.enum(['H', 'M', 'P'])
 
-export const ComparisonSchema = z.object({
-  __typename: z.literal('Comparison'),
-  impactedFile: z
+export const ImpactedFileSchema = z.object({
+  headName: z.string().nullable(),
+  hashedPath: z.string(),
+  isNewFile: z.boolean(),
+  isRenamedFile: z.boolean(),
+  isDeletedFile: z.boolean(),
+  isCriticalFile: z.boolean(),
+  changeCoverage: z.number().nullable(),
+  baseCoverage: z
     .object({
-      headName: z.string().nullable(),
-      hashedPath: z.string(),
-      isNewFile: z.boolean(),
-      isRenamedFile: z.boolean(),
-      isDeletedFile: z.boolean(),
-      isCriticalFile: z.boolean(),
-      changeCoverage: z.number().nullable(),
-      baseCoverage: z
-        .object({
-          percentCovered: z.number().nullable(),
-        })
-        .nullable(),
-      headCoverage: z
-        .object({
-          percentCovered: z.number().nullable(),
-        })
-        .nullable(),
-      patchCoverage: z
-        .object({
-          percentCovered: z.number().nullable(),
-        })
-        .nullable(),
-      segments: z.object({
-        results: z.array(
-          z.object({
-            header: z.string(),
-            hasUnintendedChanges: z.boolean(),
-            lines: z.array(
-              z.object({
-                baseNumber: z.string().nullable(),
-                headNumber: z.string().nullable(),
-                baseCoverage: CoverageLineSchema.nullable(),
-                headCoverage: CoverageLineSchema.nullable(),
-                content: z.string().nullable(),
-              })
-            ),
-          })
-        ),
-      }),
+      percentCovered: z.number().nullable(),
     })
     .nullable(),
+  headCoverage: z
+    .object({
+      percentCovered: z.number().nullable(),
+    })
+    .nullable(),
+  patchCoverage: z
+    .object({
+      percentCovered: z.number().nullable(),
+    })
+    .nullable(),
+  segments: z.object({
+    results: z.array(
+      z.object({
+        header: z.string(),
+        hasUnintendedChanges: z.boolean(),
+        lines: z.array(
+          z.object({
+            baseNumber: z.string().nullable(),
+            headNumber: z.string().nullable(),
+            baseCoverage: CoverageLineSchema.nullable(),
+            headCoverage: CoverageLineSchema.nullable(),
+            content: z.string().nullable(),
+          })
+        ),
+      })
+    ),
+  }),
+})
+
+export const ComparisonSchema = z.object({
+  __typename: z.literal('Comparison'),
+  impactedFile: ImpactedFileSchema.nullable(),
 })
 
 export const PullCompareWithBaseFragment = `
