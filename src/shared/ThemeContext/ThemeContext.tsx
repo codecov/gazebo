@@ -29,8 +29,15 @@ interface ThemeContextProviderProps {
 export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
   children,
 }) => {
-  const currentTheme = (localStorage.getItem('theme') as Theme) || Theme.LIGHT
-  const [theme, setTheme] = useState<Theme>(currentTheme)
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+  let systemTheme = Theme.LIGHT
+  if (prefersDark) {
+    systemTheme = Theme.DARK
+  }
+
+  const currentTheme = localStorage.getItem('theme') as Theme
+  const [theme, setTheme] = useState<Theme>(currentTheme ?? systemTheme)
   const initialRender = useRef(true)
 
   if (initialRender.current) {
