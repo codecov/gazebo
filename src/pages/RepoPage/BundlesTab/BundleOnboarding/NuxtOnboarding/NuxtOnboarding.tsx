@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
@@ -8,14 +8,6 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 
 import LearnMoreBlurb from '../LearnMoreBlurb'
-import {
-  copiedBuildCommandMetric,
-  copiedCommitMetric,
-  copiedConfigMetric,
-  copiedInstallCommandMetric,
-  copiedTokenMetric,
-  visitedOnboardingMetric,
-} from '../metricHelpers'
 
 const npmInstall = `npm install @codecov/nuxt-plugin --save-dev`
 const yarnInstall = `yarn add @codecov/nuxt-plugin --dev`
@@ -61,31 +53,13 @@ const StepOne: React.FC = () => {
           </span>{' '}
           to your project, use one of the following commands.
         </p>
-        <CodeSnippet
-          clipboard={npmInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('npm', 'nuxt')
-          }}
-          data-testid="nuxt-npm-install"
-        >
+        <CodeSnippet clipboard={npmInstall} data-testid="nuxt-npm-install">
           {npmInstall}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={yarnInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('yarn', 'nuxt')
-          }}
-          data-testid="nuxt-yarn-install"
-        >
+        <CodeSnippet clipboard={yarnInstall} data-testid="nuxt-yarn-install">
           {yarnInstall}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={pnpmInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('pnpm', 'nuxt')
-          }}
-          data-testid="nuxt-pnpm-install"
-        >
+        <CodeSnippet clipboard={pnpmInstall} data-testid="nuxt-pnpm-install">
           {pnpmInstall}
         </CodeSnippet>
       </Card.Content>
@@ -111,9 +85,6 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
           <CodeSnippet
             className="basis-2/3"
             clipboard={uploadToken}
-            clipboardOnClick={() => {
-              copiedTokenMetric('nuxt')
-            }}
             data-testid="nuxt-upload-token"
           >
             {uploadToken}
@@ -140,13 +111,7 @@ const StepThree: React.FC = () => {
           </span>{' '}
           file, and pass your configuration.
         </p>
-        <CodeSnippet
-          clipboard={pluginConfig}
-          clipboardOnClick={() => {
-            copiedConfigMetric('nuxt')
-          }}
-          data-testid="nuxt-plugin-config"
-        >
+        <CodeSnippet clipboard={pluginConfig} data-testid="nuxt-plugin-config">
           {pluginConfig}
         </CodeSnippet>
       </Card.Content>
@@ -167,13 +132,7 @@ const StepFour: React.FC = () => {
           The plugin requires at least one commit to be made to properly upload
           bundle analysis information to Codecov.
         </p>
-        <CodeSnippet
-          clipboard={commitString}
-          clipboardOnClick={() => {
-            copiedCommitMetric('nuxt')
-          }}
-          data-testid="nuxt-commit-command"
-        >
+        <CodeSnippet clipboard={commitString} data-testid="nuxt-commit-command">
           {commitString}
         </CodeSnippet>
       </Card.Content>
@@ -192,31 +151,13 @@ const StepFive: React.FC = () => {
           When building your application the plugin will automatically upload
           the stats information to Codecov.
         </p>
-        <CodeSnippet
-          clipboard={npmBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('npm', 'nuxt')
-          }}
-          data-testid="nuxt-npm-build"
-        >
+        <CodeSnippet clipboard={npmBuild} data-testid="nuxt-npm-build">
           {npmBuild}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={yarnBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('yarn', 'nuxt')
-          }}
-          data-testid="nuxt-yarn-build"
-        >
+        <CodeSnippet clipboard={yarnBuild} data-testid="nuxt-yarn-build">
           {yarnBuild}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={pnpmBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('pnpm', 'nuxt')
-          }}
-          data-testid="nuxt-pnpm-build"
-        >
+        <CodeSnippet clipboard={pnpmBuild} data-testid="nuxt-pnpm-build">
           {pnpmBuild}
         </CodeSnippet>
       </Card.Content>
@@ -256,10 +197,6 @@ const NuxtOnboarding: React.FC = () => {
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
   const uploadToken = orgUploadToken ?? repoData?.repository?.uploadToken ?? ''
-
-  useEffect(() => {
-    visitedOnboardingMetric('nuxt')
-  }, [])
 
   return (
     <div className="flex flex-col gap-6">

@@ -1,9 +1,7 @@
-import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   render,
   screen,
-  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
@@ -187,19 +185,6 @@ describe('PullBundleAnalysis', () => {
         const table = await screen.findByText('PullBundleComparisonTable')
         expect(table).toBeInTheDocument()
       })
-
-      it('sends bundle dropdown metrics', async () => {
-        setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
-        render(<PullBundleAnalysis />, { wrapper })
-
-        await waitFor(() =>
-          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-            'pull_request_page.bundle_dropdown.opened',
-            1,
-            undefined
-          )
-        )
-      })
     })
 
     describe('return first pull request typename', () => {
@@ -210,9 +195,6 @@ describe('PullBundleAnalysis', () => {
           bundleAnalysisEnabled: true,
         })
         render(<PullBundleAnalysis />, { wrapper })
-
-        const loader = await screen.findByText('Loading')
-        await waitForElementToBeRemoved(loader)
 
         const message = screen.queryByText(/Bundle report:/)
         expect(message).not.toBeInTheDocument()
@@ -253,9 +235,6 @@ describe('PullBundleAnalysis', () => {
           bundleAnalysisEnabled: true,
         })
         render(<PullBundleAnalysis />, { wrapper })
-
-        const loader = await screen.findByText('Loading')
-        await waitForElementToBeRemoved(loader)
 
         const message = screen.queryByText(/Bundle report:/)
         expect(message).not.toBeInTheDocument()
@@ -320,19 +299,6 @@ describe('PullBundleAnalysis', () => {
 
         const table = await screen.findByText('PullBundleComparisonTable')
         expect(table).toBeInTheDocument()
-      })
-
-      it('sends bundle dropdown metrics', async () => {
-        setup({ coverageEnabled: false, bundleAnalysisEnabled: true })
-        render(<PullBundleAnalysis />, { wrapper })
-
-        await waitFor(() =>
-          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-            'pull_request_page.bundle_page.visited_page',
-            1,
-            undefined
-          )
-        )
       })
     })
 

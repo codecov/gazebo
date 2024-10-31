@@ -9,7 +9,7 @@ import { OrderingDirection, OrderingParameter } from 'services/pull/usePullTeam'
 
 import TableTeam, { getFilter } from './TableTeam'
 
-vi.mock('../FileDiff', () => ({ default: () => 'FileDiff' }))
+vi.mock('../PullFileDiff', () => ({ default: () => 'PullFileDiff' }))
 
 const mockComparisonTeamData = {
   owner: {
@@ -412,7 +412,7 @@ describe('TableTeam', () => {
       expect(expander).toBeInTheDocument()
       await user.click(expander)
 
-      const pullFileDiff = await screen.findByText('FileDiff')
+      const pullFileDiff = await screen.findByText('PullFileDiff')
       expect(pullFileDiff).toBeInTheDocument()
     })
 
@@ -424,7 +424,7 @@ describe('TableTeam', () => {
         ]),
       })
 
-      const pullFileDiff = await screen.findByText('FileDiff')
+      const pullFileDiff = await screen.findByText('PullFileDiff')
       expect(pullFileDiff).toBeInTheDocument()
     })
   })

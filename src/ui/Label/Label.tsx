@@ -9,6 +9,8 @@ const label = cva(
       variant: {
         default: 'border-current',
         subtle: 'border-ds-border-line text-ds-gray-senary bg-ds-gray-primary',
+        plain:
+          'py-0.5 border-ds-gray-tertiary text-ds-gray-senary dark:bg-ds-gray-tertiary dark:text-ds-secondary-text',
       },
     },
     defaultVariants: {
@@ -17,13 +19,16 @@ const label = cva(
   }
 )
 
-interface LabelProps extends VariantProps<typeof label> {}
+interface LabelProps extends VariantProps<typeof label> {
+  className?: string
+}
 
 const Label: React.FC<React.PropsWithChildren<LabelProps>> = ({
   children,
   variant,
+  className,
 }) => {
-  return <span className={cn(label({ variant }))}>{children}</span>
+  return <span className={cn(label({ variant, className }))}>{children}</span>
 }
 
 export default Label

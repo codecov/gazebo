@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
@@ -8,14 +7,6 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 
 import LearnMoreBlurb from '../LearnMoreBlurb'
-import {
-  copiedBuildCommandMetric,
-  copiedCommitMetric,
-  copiedConfigMetric,
-  copiedInstallCommandMetric,
-  copiedTokenMetric,
-  visitedOnboardingMetric,
-} from '../metricHelpers'
 
 const npmInstall = `npm install @codecov/vite-plugin --save-dev`
 const yarnInstall = `yarn add @codecov/vite-plugin --dev`
@@ -58,31 +49,13 @@ const StepOne: React.FC = () => {
           </span>{' '}
           to your project, use one of the following commands.
         </p>
-        <CodeSnippet
-          clipboard={npmInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('npm', 'vite')
-          }}
-          data-testid="vite-npm-install"
-        >
+        <CodeSnippet clipboard={npmInstall} data-testid="vite-npm-install">
           {npmInstall}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={yarnInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('yarn', 'vite')
-          }}
-          data-testid="vite-yarn-install"
-        >
+        <CodeSnippet clipboard={yarnInstall} data-testid="vite-yarn-install">
           {yarnInstall}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={pnpmInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('pnpm', 'vite')
-          }}
-          data-testid="vite-pnpm-install"
-        >
+        <CodeSnippet clipboard={pnpmInstall} data-testid="vite-pnpm-install">
           {pnpmInstall}
         </CodeSnippet>
       </Card.Content>
@@ -108,9 +81,6 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
           <CodeSnippet
             className="basis-2/3"
             clipboard={uploadToken}
-            clipboardOnClick={() => {
-              copiedTokenMetric('vite')
-            }}
             data-testid="vite-upload-token"
           >
             {uploadToken}
@@ -138,13 +108,7 @@ const StepThree: React.FC = () => {
           </span>{' '}
           file.
         </p>
-        <CodeSnippet
-          clipboard={pluginConfig}
-          clipboardOnClick={() => {
-            copiedConfigMetric('vite')
-          }}
-          data-testid="vite-plugin-config"
-        >
+        <CodeSnippet clipboard={pluginConfig} data-testid="vite-plugin-config">
           {pluginConfig}
         </CodeSnippet>
       </Card.Content>
@@ -165,13 +129,7 @@ const StepFour: React.FC = () => {
           The plugin requires at least one commit to be made to properly upload
           bundle analysis information to Codecov.
         </p>
-        <CodeSnippet
-          clipboard={commitString}
-          clipboardOnClick={() => {
-            copiedCommitMetric('vite')
-          }}
-          data-testid="vite-commit-command"
-        >
+        <CodeSnippet clipboard={commitString} data-testid="vite-commit-command">
           {commitString}
         </CodeSnippet>
       </Card.Content>
@@ -191,31 +149,13 @@ const StepFive: React.FC = () => {
           the stats information to Codecov.
         </p>
         <div className="flex flex-col gap-4">
-          <CodeSnippet
-            clipboard={npmBuild}
-            clipboardOnClick={() => {
-              copiedBuildCommandMetric('npm', 'vite')
-            }}
-            data-testid="vite-npm-build"
-          >
+          <CodeSnippet clipboard={npmBuild} data-testid="vite-npm-build">
             {npmBuild}
           </CodeSnippet>
-          <CodeSnippet
-            clipboard={yarnBuild}
-            clipboardOnClick={() => {
-              copiedBuildCommandMetric('yarn', 'vite')
-            }}
-            data-testid="vite-yarn-build"
-          >
+          <CodeSnippet clipboard={yarnBuild} data-testid="vite-yarn-build">
             {yarnBuild}
           </CodeSnippet>
-          <CodeSnippet
-            clipboard={pnpmBuild}
-            clipboardOnClick={() => {
-              copiedBuildCommandMetric('pnpm', 'vite')
-            }}
-            data-testid="vite-pnpm-build"
-          >
+          <CodeSnippet clipboard={pnpmBuild} data-testid="vite-pnpm-build">
             {pnpmBuild}
           </CodeSnippet>
         </div>
@@ -256,10 +196,6 @@ const ViteOnboarding: React.FC = () => {
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
   const uploadToken = orgUploadToken ?? repoData?.repository?.uploadToken ?? ''
-
-  useEffect(() => {
-    visitedOnboardingMetric('vite')
-  }, [])
 
   return (
     <div className="flex flex-col gap-6">

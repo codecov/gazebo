@@ -43,7 +43,7 @@ const subscriptionDetail = {
   cancelAtPeriodEnd: false,
 } as z.infer<typeof SubscriptionDetailSchema>
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <ThemeContextProvider>{children}</ThemeContextProvider>
 )
 

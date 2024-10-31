@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -7,21 +7,6 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import RemixOnboarding from './RemixOnboarding'
-
-const mocks = vi.hoisted(() => ({
-  increment: vi.fn(),
-}))
-
-vi.mock('@sentry/react', async () => {
-  const originalModule = await vi.importActual('@sentry/react')
-
-  return {
-    ...originalModule,
-    metrics: {
-      increment: mocks.increment,
-    },
-  }
-})
 
 const mockGetRepo = {
   owner: {
@@ -104,21 +89,6 @@ describe('RemixOnboarding', () => {
     return { user }
   }
 
-  describe('rendering onboarding', () => {
-    it('sends remix onboarding metric', async () => {
-      setup(null)
-      render(<RemixOnboarding />, { wrapper })
-
-      await waitFor(() =>
-        expect(mocks.increment).toHaveBeenCalledWith(
-          'bundles_tab.onboarding.visited_page',
-          1,
-          { tags: { bundler: 'remix' } }
-        )
-      )
-    })
-  })
-
   describe('step 1', () => {
     it('renders header', async () => {
       setup(null)
@@ -155,28 +125,6 @@ describe('RemixOnboarding', () => {
           )
           expect(npmInstallCommand).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(null)
-            render(<RemixOnboarding />, { wrapper })
-
-            const npmInstall = await screen.findByTestId('remix-npm-install')
-            const npmInstallCopy = await within(npmInstall).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(npmInstallCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.install_command',
-                1,
-                { tags: { package_manager: 'npm', bundler: 'remix' } }
-              )
-            )
-          })
-        })
       })
 
       describe('yarn', () => {
@@ -189,28 +137,6 @@ describe('RemixOnboarding', () => {
           )
           expect(yarnInstallCommand).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(null)
-            render(<RemixOnboarding />, { wrapper })
-
-            const yarnInstall = await screen.findByTestId('remix-yarn-install')
-            const yarnInstallCopy = await within(yarnInstall).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(yarnInstallCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.install_command',
-                1,
-                { tags: { package_manager: 'yarn', bundler: 'remix' } }
-              )
-            )
-          })
-        })
       })
 
       describe('pnpm', () => {
@@ -222,28 +148,6 @@ describe('RemixOnboarding', () => {
             'pnpm add @codecov/remix-vite-plugin --save-dev'
           )
           expect(pnpmInstallCommand).toBeInTheDocument()
-        })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(null)
-            render(<RemixOnboarding />, { wrapper })
-
-            const pnpmInstall = await screen.findByTestId('remix-pnpm-install')
-            const pnpmInstallCopy = await within(pnpmInstall).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(pnpmInstallCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.install_command',
-                1,
-                { tags: { package_manager: 'pnpm', bundler: 'remix' } }
-              )
-            )
-          })
         })
       })
     })
@@ -294,28 +198,6 @@ describe('RemixOnboarding', () => {
         expect(token).toBeInTheDocument()
       })
     })
-
-    describe('user clicks copy button', () => {
-      it('sends metric to sentry', async () => {
-        const { user } = setup(true)
-        render(<RemixOnboarding />, { wrapper })
-
-        const uploadToken = await screen.findByTestId('remix-upload-token')
-        const uploadTokenCopy = await within(uploadToken).findByTestId(
-          'clipboard-code-snippet'
-        )
-
-        await user.click(uploadTokenCopy)
-
-        await waitFor(() =>
-          expect(mocks.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.copied.token',
-            1,
-            { tags: { bundler: 'remix' } }
-          )
-        )
-      })
-    })
   })
 
   describe('step 3', () => {
@@ -349,28 +231,6 @@ describe('RemixOnboarding', () => {
 
       const pluginText = await screen.findByText(/\/\/ vite.config.ts/)
       expect(pluginText).toBeInTheDocument()
-    })
-
-    describe('user clicks copy button', () => {
-      it('sends metric to sentry', async () => {
-        const { user } = setup(true)
-        render(<RemixOnboarding />, { wrapper })
-
-        const pluginConfig = await screen.findByTestId('remix-plugin-config')
-        const pluginConfigCopy = await within(pluginConfig).findByTestId(
-          'clipboard-code-snippet'
-        )
-
-        await user.click(pluginConfigCopy)
-
-        await waitFor(() =>
-          expect(mocks.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.copied.config',
-            1,
-            { tags: { bundler: 'remix' } }
-          )
-        )
-      })
     })
   })
 
@@ -407,28 +267,6 @@ describe('RemixOnboarding', () => {
       )
       expect(gitCommit).toBeInTheDocument()
     })
-
-    describe('user clicks copy button', () => {
-      it('sends metric to sentry', async () => {
-        const { user } = setup(true)
-        render(<RemixOnboarding />, { wrapper })
-
-        const commitCommand = await screen.findByTestId('remix-commit-command')
-        const commitCommandCopy = await within(commitCommand).findByTestId(
-          'clipboard-code-snippet'
-        )
-
-        await user.click(commitCommandCopy)
-
-        await waitFor(() =>
-          expect(mocks.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.copied.commit',
-            1,
-            { tags: { bundler: 'remix' } }
-          )
-        )
-      })
-    })
   })
 
   describe('step 5', () => {
@@ -462,28 +300,6 @@ describe('RemixOnboarding', () => {
           const npmBuild = await screen.findByText('npm run build')
           expect(npmBuild).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(true)
-            render(<RemixOnboarding />, { wrapper })
-
-            const buildCommand = await screen.findByTestId('remix-npm-build')
-            const buildCommandCopy = await within(buildCommand).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(buildCommandCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.build_command',
-                1,
-                { tags: { package_manager: 'npm', bundler: 'remix' } }
-              )
-            )
-          })
-        })
       })
 
       describe('yarn', () => {
@@ -494,28 +310,6 @@ describe('RemixOnboarding', () => {
           const yarnBuild = await screen.findByText('yarn run build')
           expect(yarnBuild).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(true)
-            render(<RemixOnboarding />, { wrapper })
-
-            const buildCommand = await screen.findByTestId('remix-yarn-build')
-            const buildCommandCopy = await within(buildCommand).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(buildCommandCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.build_command',
-                1,
-                { tags: { package_manager: 'yarn', bundler: 'remix' } }
-              )
-            )
-          })
-        })
       })
 
       describe('pnpm', () => {
@@ -525,28 +319,6 @@ describe('RemixOnboarding', () => {
 
           const pnpmBuild = await screen.findByText('pnpm run build')
           expect(pnpmBuild).toBeInTheDocument()
-        })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(true)
-            render(<RemixOnboarding />, { wrapper })
-
-            const buildCommand = await screen.findByTestId('remix-pnpm-build')
-            const buildCommandCopy = await within(buildCommand).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(buildCommandCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.build_command',
-                1,
-                { tags: { package_manager: 'pnpm', bundler: 'remix' } }
-              )
-            )
-          })
         })
       })
     })

@@ -203,6 +203,26 @@ describe('MetricsSection', () => {
           testSuites: [],
         })
       })
+
+      it('removes the location param on second button click', async () => {
+        const { user } = setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+        const select = await screen.findByText('12')
+        expect(select).toBeInTheDocument()
+
+        await user.click(select)
+        await user.click(select)
+
+        expect(testLocation?.state).toStrictEqual({
+          parameter: '',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
+        })
+      })
     })
 
     describe('flaky tests card', () => {
@@ -234,6 +254,26 @@ describe('MetricsSection', () => {
 
         expect(testLocation?.state).toStrictEqual({
           parameter: 'FLAKY_TESTS',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
+        })
+      })
+
+      it('removes the location param on second button click', async () => {
+        const { user } = setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+        const select = await screen.findByText(88)
+        expect(select).toBeInTheDocument()
+
+        await user.click(select)
+        await user.click(select)
+
+        expect(testLocation?.state).toStrictEqual({
+          parameter: '',
           flags: [],
           historicalTrend: '',
           term: '',
@@ -294,6 +334,26 @@ describe('MetricsSection', () => {
           testSuites: [],
         })
       })
+
+      it('removes the location param on second button click', async () => {
+        const { user } = setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+        const select = await screen.findByText(1)
+        expect(select).toBeInTheDocument()
+
+        await user.click(select)
+        await user.click(select)
+
+        expect(testLocation?.state).toStrictEqual({
+          parameter: '',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
+        })
+      })
     })
 
     describe('total skips card', () => {
@@ -325,6 +385,26 @@ describe('MetricsSection', () => {
 
         expect(testLocation?.state).toStrictEqual({
           parameter: 'SKIPPED_TESTS',
+          flags: [],
+          historicalTrend: '',
+          term: '',
+          testSuites: [],
+        })
+      })
+
+      it('removes the location param on second button click', async () => {
+        const { user } = setup()
+        render(<MetricsSection />, {
+          wrapper: wrapper('/gh/owner/repo/tests/main'),
+        })
+        const select = await screen.findByText(20)
+        expect(select).toBeInTheDocument()
+
+        await user.click(select)
+        await user.click(select)
+
+        expect(testLocation?.state).toStrictEqual({
+          parameter: '',
           flags: [],
           historicalTrend: '',
           term: '',
