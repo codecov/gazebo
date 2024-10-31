@@ -1,18 +1,27 @@
-describe('MyTestSuite', () => {
-  // Exporting and testing this on it's own due to it being difficult to test the charting lib
-  describe('if I can fail, I will fail', () => {
-    it('probably passes', () => {
-      const num = Math.floor(Math.random() * 10)
-      expect(num).toBeGreaterThan(3)
-    })
+import { checkForConsecutiveMatches } from './testingTests'
 
-    it('might pass', () => {
-      const num = Math.floor(Math.random() * 10)
-      expect(num).toBe(2)
-    })
+describe('checkForConsecutiveMatches', () => {
+  it('should return true sometimes', () => {
+    expect(checkForConsecutiveMatches()).toBe(true)
+  })
 
-    it('definitely will not pass', () => {
-      expect(5).toBe(0)
-    })
+  it('should return false sometimes', () => {
+    expect(checkForConsecutiveMatches()).toBe(false)
+  })
+
+  it('should return true 50% of the time over 100 runs', () => {
+    let trueCount = 0
+    let falseCount = 0
+    for (let i = 0; i < 100; i++) {
+      if (checkForConsecutiveMatches()) trueCount++
+      else falseCount++
+    }
+    expect(trueCount).toBeGreaterThan(49)
+    expect(falseCount).toBeGreaterThan(49)
+  })
+
+  it('should always return a boolean', () => {
+    const result = checkForConsecutiveMatches()
+    expect(typeof result).toBe('boolean')
   })
 })
