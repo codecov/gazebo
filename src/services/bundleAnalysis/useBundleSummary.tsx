@@ -8,7 +8,7 @@ import {
   useRepoOverview,
 } from 'services/repo'
 import Api from 'shared/api/api'
-import type { NetworkErrorObject } from 'shared/api/helpers'
+import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BundleDataSchema = z.object({
@@ -167,12 +167,12 @@ export const useBundleSummary = ({
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useBundleSummary - 404 Failed to parse data',
             error: parsedData.error,
-          } satisfies NetworkErrorObject)
+          })
         }
 
         const data = parsedData.data

@@ -17,7 +17,7 @@ const RepositorySchema = z.object({
   languages: z.array(z.string()).nullable(),
 })
 
-const RequestSchema = z.object({
+export const RequestSchema = z.object({
   owner: z
     .object({
       isCurrentUserActivated: z.boolean().nullable(),
