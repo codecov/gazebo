@@ -228,12 +228,12 @@ const FailedTestsTable = () => {
     },
   })
 
-  const isDefaultBranch = !!branch && testData?.defaultBranch === branch
+  const isDefaultBranch = testData?.defaultBranch === branch
   const isTeamOrFreePlan =
     isTeamPlan(testData?.plan) || isFreePlan(testData?.plan)
   // Only show flake rate column when on default branch for pro / enterprise plans or public repos
   const hideFlakeRate =
-    (isTeamOrFreePlan && testData?.private) || !isDefaultBranch
+    (isTeamOrFreePlan && testData?.private) || (!!branch && !isDefaultBranch)
 
   const tableData = useMemo(() => {
     if (!testData?.testResults) return []
