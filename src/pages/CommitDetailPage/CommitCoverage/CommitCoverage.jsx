@@ -1,5 +1,5 @@
 import isEmpty from 'lodash/isEmpty'
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -13,7 +13,6 @@ import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
 import { ReportUploadType } from 'shared/utils/comparison'
 import { extractUploads } from 'shared/utils/extractUploads'
-import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
 import BotErrorBanner from './BotErrorBanner'
@@ -181,14 +180,6 @@ function CommitCoverage() {
     repo,
     commitId: commitSha,
   })
-
-  useEffect(() => {
-    if (overview.bundleAnalysisEnabled && overview.coverageEnabled) {
-      metrics.increment('commit_detail_page.coverage_dropdown.opened', 1)
-    } else if (overview.coverageEnabled) {
-      metrics.increment('commit_detail_page.coverage_page.visited_page', 1)
-    }
-  }, [overview.bundleAnalysisEnabled, overview.coverageEnabled])
 
   const showCommitSummary = !(overview.private && tierName === TierNames.TEAM)
   const showFirstPullBanner =
