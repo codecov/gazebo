@@ -39,7 +39,7 @@ function UploadsCard() {
 
   const { data } = useCommitErrors()
 
-  const hasInvalidYaml = data?.yamlErrors?.find(
+  const invalidYamlError = data?.yamlErrors?.find(
     (err) => err?.errorCode === 'invalid_yaml'
   )
 
@@ -54,17 +54,15 @@ function UploadsCard() {
             <Card.Title size="base">Coverage reports history</Card.Title>
             {/* @ts-expect-error */}
             <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
-              {hasInvalidYaml ? (
-                <>
-                  <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
-                    <Icon name="exclamation" size="sm" variant="solid" />
-                    <span className="ml-0.5 text-xs text-red-700">
-                      view YAML file
-                    </span>
-                  </div>
-                </>
+              {invalidYamlError ? (
+                <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
+                  <Icon name="exclamation" size="sm" variant="solid" />
+                  <span className="ml-0.5 text-xs text-red-700">
+                    view YAML file
+                  </span>
+                </div>
               ) : (
-                <span>view YAML file</span>
+                <span className="text-xs">view YAML file</span>
               )}
             </A>
           </div>

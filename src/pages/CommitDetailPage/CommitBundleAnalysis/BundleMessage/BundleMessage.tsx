@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 
 import { useCommitBADropdownSummary } from 'services/commit/useCommitBADropdownSummary'
 import { formatSizeToString } from 'shared/utils/bundleAnalysis'
-import Icon from 'ui/Icon'
 
 interface URLParams {
   provider: string
@@ -82,8 +81,7 @@ const BundleMessage: React.FC = () => {
   return (
     <>
       <span className="font-semibold">Bundle report: </span>an unknown error
-      occurred{' '}
-      <Icon variant="solid" name="exclamation" className="fill-codecov-red" />
+      occurred &#x26A0;&#xFE0F;
     </>
   )
 }

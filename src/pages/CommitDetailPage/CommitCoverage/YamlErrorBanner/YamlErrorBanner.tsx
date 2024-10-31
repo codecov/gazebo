@@ -9,7 +9,7 @@ function YamlErrorBanner({
 }: {
   shouldLinkToModal?: boolean
 }) {
-  const [showYAMLModal, setShowYAMLModal] = useState(false)
+  const [showYamlModal, setShowYamlModal] = useState(false)
 
   return (
     <>
@@ -20,7 +20,7 @@ function YamlErrorBanner({
               <span>
                 {/* @ts-ignore ignore until we convert A to ts */}
                 <A
-                  onClick={() => setShowYAMLModal(true)}
+                  onClick={() => setShowYamlModal(true)}
                   hook="open yaml modal"
                   isExternal={true}
                 >
@@ -43,8 +43,8 @@ function YamlErrorBanner({
       </Alert>
       {shouldLinkToModal ? (
         <YamlModal
-          showYAMLModal={showYAMLModal}
-          setShowYAMLModal={setShowYAMLModal}
+          showYAMLModal={showYamlModal}
+          setShowYAMLModal={setShowYamlModal}
         />
       ) : null}
     </>
