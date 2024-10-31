@@ -60,7 +60,8 @@ const variantClasses = {
   github: `
     justify-center font-semibold
     border border-solid border-github
-    bg-github hover:bg-ds-container dark:border-[rgb(153,159,167)]
+    bg-github hover:bg-ds-container dark:hover:bg-[rgb(70,75,85)]
+    dark:border-[rgb(153,159,167)]
     text-github-text hover:text-github dark:text-app-primary-text
     transition-colors duration-75 ease-in
   `,
