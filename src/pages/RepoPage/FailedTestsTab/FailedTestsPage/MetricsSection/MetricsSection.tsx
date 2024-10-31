@@ -105,7 +105,7 @@ const SlowestTestsCard = ({
   slowestTestsDuration?: number | null
   isSelected: boolean
   updateParams: (newParams: {
-    parameter: TestResultsFilterParameterType
+    parameter: TestResultsFilterParameterType | ''
   }) => void
 }) => {
   return (
@@ -126,7 +126,9 @@ const SlowestTestsCard = ({
             'font-semibold': isSelected,
           })}
           onClick={() => {
-            updateParams({ parameter: 'SLOWEST_TESTS' })
+            updateParams({
+              parameter: isSelected ? '' : 'SLOWEST_TESTS',
+            })
           }}
         >
           {slowestTests}
@@ -153,7 +155,7 @@ const TotalFlakyTestsCard = ({
   flakeCountPercentChange?: number | null
   isSelected: boolean
   updateParams: (newParams: {
-    parameter: TestResultsFilterParameterType
+    parameter: TestResultsFilterParameterType | ''
   }) => void
 }) => {
   return (
@@ -173,7 +175,7 @@ const TotalFlakyTestsCard = ({
             'font-semibold': isSelected,
           })}
           onClick={() => {
-            updateParams({ parameter: 'FLAKY_TESTS' })
+            updateParams({ parameter: isSelected ? '' : 'FLAKY_TESTS' })
           }}
         >
           {flakeCount}
@@ -231,7 +233,7 @@ const TotalFailuresCard = ({
   totalFailsPercentChange?: number | null
   isSelected: boolean
   updateParams: (newParams: {
-    parameter: TestResultsFilterParameterType
+    parameter: TestResultsFilterParameterType | ''
   }) => void
 }) => {
   return (
@@ -251,7 +253,7 @@ const TotalFailuresCard = ({
             'font-semibold': isSelected,
           })}
           onClick={() => {
-            updateParams({ parameter: 'FAILED_TESTS' })
+            updateParams({ parameter: isSelected ? '' : 'FAILED_TESTS' })
           }}
         >
           {totalFails}
@@ -277,7 +279,7 @@ const TotalSkippedTestsCard = ({
   totalSkipsPercentChange?: number | null
   isSelected: boolean
   updateParams: (newParams: {
-    parameter: TestResultsFilterParameterType
+    parameter: TestResultsFilterParameterType | ''
   }) => void
 }) => {
   return (
@@ -297,7 +299,9 @@ const TotalSkippedTestsCard = ({
             'font-semibold': isSelected,
           })}
           onClick={() => {
-            updateParams({ parameter: 'SKIPPED_TESTS' })
+            updateParams({
+              parameter: isSelected ? '' : 'SKIPPED_TESTS',
+            })
           }}
         >
           {totalSkips}

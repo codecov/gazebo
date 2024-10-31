@@ -10,6 +10,7 @@ import { defaultQueryParams } from '../SelectorSection'
 
 interface TableHeaderProps {
   totalCount: number
+  isDefaultBranch: boolean
 }
 
 const getHeaderTitle = (parameter: keyof typeof TestResultsFilterParameter) => {
@@ -18,7 +19,10 @@ const getHeaderTitle = (parameter: keyof typeof TestResultsFilterParameter) => {
     : 'Tests'
 }
 
-const TableHeader: React.FC<TableHeaderProps> = ({ totalCount }) => {
+const TableHeader: React.FC<TableHeaderProps> = ({
+  totalCount,
+  isDefaultBranch,
+}) => {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   // @ts-expect-error, useLocationParams needs to be updated to have full types
   const [searchTerm, setSearchTerm] = useState(params.term)
@@ -50,19 +54,21 @@ const TableHeader: React.FC<TableHeaderProps> = ({ totalCount }) => {
             setSearchValue={handleSearchChange}
             data-testid="search-input-failed-tests"
           />
-          <Button
-            disabled={isParamsDefault}
-            to={undefined}
-            hook="reset-failed-tests"
-            onClick={() => {
-              if (!isParamsDefault) {
-                updateParams(defaultQueryParams)
-                setSearchTerm('')
-              }
-            }}
-          >
-            Reset to default
-          </Button>
+          {isDefaultBranch ? (
+            <Button
+              disabled={isParamsDefault}
+              to={undefined}
+              hook="reset-failed-tests"
+              onClick={() => {
+                if (!isParamsDefault) {
+                  updateParams(defaultQueryParams)
+                  setSearchTerm('')
+                }
+              }}
+            >
+              Reset to default
+            </Button>
+          ) : null}
         </div>
       </div>
     </>
