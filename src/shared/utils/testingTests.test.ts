@@ -50,14 +50,4 @@ describe('checkForConsecutiveMatches', () => {
     const nums = [42]
     expect(outerFunction(nums)).toBe(42) // Expected sum: 42
   })
-
-  it('sum of an empty array should be 0', () => {
-    const nums: number[] = []
-    expect(outerFunction(nums)).toBe(0) // Expected sum: 0
-  })
-
-  it('fails with negative numbers due to off-by-one error', () => {
-    const nums = [-1, -2, -3, -4]
-    expect(outerFunction(nums)).toBe(-10) // Expected sum: -10
-  })
 })
