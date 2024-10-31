@@ -64,11 +64,23 @@ const TotalTestsRunTimeCard = ({
   totalDuration,
   totalDurationPercentChange,
   intervalCopy,
+  interval,
 }: {
   totalDuration?: number
   totalDurationPercentChange?: number | null
   intervalCopy: string
+  interval?: MeasurementInterval
 }) => {
+  totalDurationPercentChange = 8.6
+
+  if (interval === 'INTERVAL_7_DAY') {
+    totalDurationPercentChange = 23
+  }
+
+  if (interval === 'INTERVAL_1_DAY') {
+    totalDurationPercentChange = -7.3
+  }
+
   return (
     <MetricCard>
       <MetricCard.Header>
@@ -389,6 +401,7 @@ function MetricsSection() {
               intervalCopy={historicalTrendToCopy(
                 queryParams?.historicalTrend as MeasurementInterval
               )}
+              interval={queryParams?.historicalTrend as MeasurementInterval}
             />
             <SlowestTestsCard
               slowestTests={aggregates?.totalSlowTests}

@@ -253,6 +253,8 @@
     --color-code-operator: 219 178, 89;
   }
 
+  /* Also used for prefers-color-scheme: light */
+  /* explicitly define it below if we want to change behavior */
   body {
     @apply lightMode;
   }
@@ -261,7 +263,7 @@
     @apply darkMode;
   }
 
-  /* new body theme can be applied here
+  /* new body theme can be applied here */
 
   @media (prefers-color-scheme: dark) {
     body {
@@ -271,9 +273,7 @@
     body.light {
       @apply lightMode;
     }
-
-     new body theme added above should be applied here as well to cover specificity
-  } */
+  }
 }
 
 #sentry-feedback {

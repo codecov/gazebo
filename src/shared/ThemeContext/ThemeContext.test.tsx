@@ -27,6 +27,7 @@ describe('Theme context', () => {
   function setup() {
     window.localStorage.__proto__.setItem = vi.fn()
     window.localStorage.__proto__.getItem = vi.fn()
+    window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 
     const user = userEvent.setup()
 
