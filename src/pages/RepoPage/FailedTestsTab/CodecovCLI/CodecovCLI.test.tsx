@@ -22,13 +22,8 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
 vi.mock('../FrameworkTabsCard', () => ({
   FrameworkTabsCard: () => 'FrameworkTabsCard',
 }))
-window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 
 describe('CodecovCLI', () => {
-  afterAll(() => {
-    vi.clearAllMocks()
-  })
-
   function setup() {
     const user = userEvent.setup()
     return { user }

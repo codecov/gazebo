@@ -10,7 +10,6 @@ import GitHubActions from './GitHubActions'
 vi.mock('../FrameworkTabsCard', () => ({
   FrameworkTabsCard: () => 'FrameworkTabsCard',
 }))
-window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo/tests') =>
@@ -23,9 +22,6 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   )
 
 describe('GitHubActions', () => {
-  afterAll(() => {
-    vi.clearAllMocks()
-  })
   function setup() {
     const user = userEvent.setup()
     return { user }

@@ -59,8 +59,6 @@ vi.mock('@sentry/react', async () => {
   }
 })
 
-window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
-
 afterEach(() => {
   cleanup()
   vi.clearAllMocks()

@@ -9,7 +9,6 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 import EnterpriseLandingPage from './EnterpriseLandingPage'
 
 vi.mock('config')
-window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 
 const server = setupServer()
 const queryClient = new QueryClient()
@@ -48,7 +47,6 @@ afterEach(() => {
 })
 
 afterAll(() => {
-  vi.clearAllMocks()
   server.close()
 })
 

@@ -19,8 +19,6 @@ vi.mock('services/account/useUpdateBillingAddress', async () => {
   }
 })
 
-window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
-
 const subscriptionDetail = {
   defaultPaymentMethod: {
     card: {
@@ -76,9 +74,6 @@ vi.mock('@stripe/react-stripe-js', () => {
 })
 
 describe('AddressCard', () => {
-  afterAll(() => {
-    vi.clearAllMocks()
-  })
   function setup() {
     const user = userEvent.setup()
 

@@ -6,8 +6,6 @@ import { LoginProvidersEnum } from 'shared/utils/loginProviders'
 
 import ProviderCard, { InternalProviderButton } from './ProviderCard'
 
-window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
-
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <ThemeContextProvider>
     <MemoryRouter initialEntries={['/']}>
@@ -17,9 +15,6 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 describe('ProviderCard', () => {
-  afterAll(() => {
-    vi.clearAllMocks()
-  })
   describe('Bitbucket', () => {
     describe('when system is configured with Bitbucket', () => {
       it('renders external login button', () => {

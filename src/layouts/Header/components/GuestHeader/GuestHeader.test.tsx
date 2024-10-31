@@ -10,7 +10,6 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 import GuestHeader from './GuestHeader'
 
 vi.mock('config')
-window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 
 // silence console errors
 console.error = () => {}
@@ -32,7 +31,6 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 afterEach(() => {
-  vi.clearAllMocks()
   queryClient.clear()
 })
 

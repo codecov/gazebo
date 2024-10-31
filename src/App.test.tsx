@@ -40,7 +40,6 @@ vi.mock('services/navigation', async () => {
     useLocationParams: vi.fn(),
   }
 })
-window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 
 const mockedUseLocationParams = useLocationParams as Mock
 
@@ -164,7 +163,6 @@ beforeEach(() => {
 })
 
 afterAll(() => {
-  vi.clearAllMocks()
   server.close()
 })
 
