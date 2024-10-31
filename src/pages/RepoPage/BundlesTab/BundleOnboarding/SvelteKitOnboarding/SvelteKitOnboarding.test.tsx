@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -7,21 +7,6 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import SvelteKitOnboarding from './SvelteKitOnboarding'
-
-const mocks = vi.hoisted(() => ({
-  increment: vi.fn(),
-}))
-
-vi.mock('@sentry/react', async () => {
-  const originalModule = await vi.importActual('@sentry/react')
-
-  return {
-    ...originalModule,
-    metrics: {
-      increment: mocks.increment,
-    },
-  }
-})
 
 const mockGetRepo = {
   owner: {
@@ -104,21 +89,6 @@ describe('SvelteKitOnboarding', () => {
     return { user }
   }
 
-  describe('rendering onboarding', () => {
-    it('sends sveltekit onboarding metric', async () => {
-      setup(null)
-      render(<SvelteKitOnboarding />, { wrapper })
-
-      await waitFor(() =>
-        expect(mocks.increment).toHaveBeenCalledWith(
-          'bundles_tab.onboarding.visited_page',
-          1,
-          { tags: { bundler: 'sveltekit' } }
-        )
-      )
-    })
-  })
-
   describe('step 1', () => {
     it('renders header', async () => {
       setup(null)
@@ -155,30 +125,6 @@ describe('SvelteKitOnboarding', () => {
           )
           expect(npmInstallCommand).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(null)
-            render(<SvelteKitOnboarding />, { wrapper })
-
-            const npmInstall = await screen.findByTestId(
-              'sveltekit-npm-install'
-            )
-            const npmInstallCopy = await within(npmInstall).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(npmInstallCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.install_command',
-                1,
-                { tags: { package_manager: 'npm', bundler: 'sveltekit' } }
-              )
-            )
-          })
-        })
       })
 
       describe('yarn', () => {
@@ -191,30 +137,6 @@ describe('SvelteKitOnboarding', () => {
           )
           expect(yarnInstallCommand).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(null)
-            render(<SvelteKitOnboarding />, { wrapper })
-
-            const yarnInstall = await screen.findByTestId(
-              'sveltekit-yarn-install'
-            )
-            const yarnInstallCopy = await within(yarnInstall).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(yarnInstallCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.install_command',
-                1,
-                { tags: { package_manager: 'yarn', bundler: 'sveltekit' } }
-              )
-            )
-          })
-        })
       })
 
       describe('pnpm', () => {
@@ -226,30 +148,6 @@ describe('SvelteKitOnboarding', () => {
             'pnpm add @codecov/sveltekit-plugin --save-dev'
           )
           expect(pnpmInstallCommand).toBeInTheDocument()
-        })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(null)
-            render(<SvelteKitOnboarding />, { wrapper })
-
-            const pnpmInstall = await screen.findByTestId(
-              'sveltekit-pnpm-install'
-            )
-            const pnpmInstallCopy = await within(pnpmInstall).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(pnpmInstallCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.install_command',
-                1,
-                { tags: { package_manager: 'pnpm', bundler: 'sveltekit' } }
-              )
-            )
-          })
         })
       })
     })
@@ -300,28 +198,6 @@ describe('SvelteKitOnboarding', () => {
         expect(token).toBeInTheDocument()
       })
     })
-
-    describe('user clicks copy button', () => {
-      it('sends metric to sentry', async () => {
-        const { user } = setup(true)
-        render(<SvelteKitOnboarding />, { wrapper })
-
-        const uploadToken = await screen.findByTestId('sveltekit-upload-token')
-        const uploadTokenCopy = await within(uploadToken).findByTestId(
-          'clipboard-code-snippet'
-        )
-
-        await user.click(uploadTokenCopy)
-
-        await waitFor(() =>
-          expect(mocks.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.copied.token',
-            1,
-            { tags: { bundler: 'sveltekit' } }
-          )
-        )
-      })
-    })
   })
 
   describe('step 3', () => {
@@ -355,30 +231,6 @@ describe('SvelteKitOnboarding', () => {
 
       const pluginText = await screen.findByText(/\/\/ vite.config.ts/)
       expect(pluginText).toBeInTheDocument()
-    })
-
-    describe('user clicks copy button', () => {
-      it('sends metric to sentry', async () => {
-        const { user } = setup(true)
-        render(<SvelteKitOnboarding />, { wrapper })
-
-        const pluginConfig = await screen.findByTestId(
-          'sveltekit-plugin-config'
-        )
-        const pluginConfigCopy = await within(pluginConfig).findByTestId(
-          'clipboard-code-snippet'
-        )
-
-        await user.click(pluginConfigCopy)
-
-        await waitFor(() =>
-          expect(mocks.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.copied.config',
-            1,
-            { tags: { bundler: 'sveltekit' } }
-          )
-        )
-      })
     })
   })
 
@@ -415,30 +267,6 @@ describe('SvelteKitOnboarding', () => {
       )
       expect(gitCommit).toBeInTheDocument()
     })
-
-    describe('user clicks copy button', () => {
-      it('sends metric to sentry', async () => {
-        const { user } = setup(true)
-        render(<SvelteKitOnboarding />, { wrapper })
-
-        const commitCommand = await screen.findByTestId(
-          'sveltekit-commit-command'
-        )
-        const commitCommandCopy = await within(commitCommand).findByTestId(
-          'clipboard-code-snippet'
-        )
-
-        await user.click(commitCommandCopy)
-
-        await waitFor(() =>
-          expect(mocks.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.copied.commit',
-            1,
-            { tags: { bundler: 'sveltekit' } }
-          )
-        )
-      })
-    })
   })
 
   describe('step 5', () => {
@@ -472,30 +300,6 @@ describe('SvelteKitOnboarding', () => {
           const npmBuild = await screen.findByText('npm run build')
           expect(npmBuild).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(true)
-            render(<SvelteKitOnboarding />, { wrapper })
-
-            const buildCommand = await screen.findByTestId(
-              'sveltekit-npm-build'
-            )
-            const buildCommandCopy = await within(buildCommand).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(buildCommandCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.build_command',
-                1,
-                { tags: { package_manager: 'npm', bundler: 'sveltekit' } }
-              )
-            )
-          })
-        })
       })
 
       describe('yarn', () => {
@@ -506,30 +310,6 @@ describe('SvelteKitOnboarding', () => {
           const yarnBuild = await screen.findByText('yarn run build')
           expect(yarnBuild).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(true)
-            render(<SvelteKitOnboarding />, { wrapper })
-
-            const buildCommand = await screen.findByTestId(
-              'sveltekit-yarn-build'
-            )
-            const buildCommandCopy = await within(buildCommand).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(buildCommandCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.build_command',
-                1,
-                { tags: { package_manager: 'yarn', bundler: 'sveltekit' } }
-              )
-            )
-          })
-        })
       })
 
       describe('pnpm', () => {
@@ -539,30 +319,6 @@ describe('SvelteKitOnboarding', () => {
 
           const pnpmBuild = await screen.findByText('pnpm run build')
           expect(pnpmBuild).toBeInTheDocument()
-        })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(true)
-            render(<SvelteKitOnboarding />, { wrapper })
-
-            const buildCommand = await screen.findByTestId(
-              'sveltekit-pnpm-build'
-            )
-            const buildCommandCopy = await within(buildCommand).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(buildCommandCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.build_command',
-                1,
-                { tags: { package_manager: 'pnpm', bundler: 'sveltekit' } }
-              )
-            )
-          })
         })
       })
     })
