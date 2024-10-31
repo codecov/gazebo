@@ -135,7 +135,6 @@ export interface BranchBundleSummaryQueryOptsArgs {
   owner: string
   repo: string
   branch: string | null | undefined
-  repoOverviewIsSuccess: boolean
 }
 
 export const BranchBundleSummaryQueryOpts = ({
@@ -143,7 +142,6 @@ export const BranchBundleSummaryQueryOpts = ({
   owner,
   repo,
   branch,
-  repoOverviewIsSuccess,
 }: BranchBundleSummaryQueryOptsArgs) =>
   queryOptionsV5({
     queryKey: ['BranchBundleSummaryData', provider, owner, repo, branch],
@@ -200,7 +198,6 @@ export const BranchBundleSummaryQueryOpts = ({
 
         return { branch }
       }),
-    enabled: repoOverviewIsSuccess && typeof branch === 'string',
   })
 
 export interface UseBranchBundleSummaryArgs {
@@ -216,7 +213,7 @@ export const useBranchBundleSummary = ({
   repo,
   branch: branchArg,
 }: UseBranchBundleSummaryArgs) => {
-  const { data: repoOverview, isSuccess } = useRepoOverview({
+  const { data: repoOverview } = useRepoOverview({
     provider,
     repo,
     owner,
@@ -230,7 +227,6 @@ export const useBranchBundleSummary = ({
       owner,
       repo,
       branch,
-      repoOverviewIsSuccess: isSuccess,
     })
   )
 }

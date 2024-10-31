@@ -141,9 +141,6 @@ interface BundleAssetModulesQueryOptsArgs {
   branch: string
   bundle: string
   asset: string
-  opts?: {
-    enabled?: boolean
-  }
 }
 
 export const BundleAssetModulesQueryOpts = ({
@@ -153,13 +150,7 @@ export const BundleAssetModulesQueryOpts = ({
   branch,
   bundle,
   asset,
-  opts = {},
 }: BundleAssetModulesQueryOptsArgs) => {
-  let enabled = true
-  if (opts.enabled) {
-    enabled = opts.enabled
-  }
-
   return queryOptionsV5({
     queryKey: [
       'BundleAssetModules',
@@ -235,7 +226,6 @@ export const BundleAssetModulesQueryOpts = ({
 
         return { modules }
       }),
-    enabled: enabled,
   })
 }
 
@@ -246,9 +236,6 @@ interface UseBundleAssetModulesArgs {
   branch: string
   bundle: string
   asset: string
-  opts?: {
-    enabled?: boolean
-  }
 }
 
 export const useBundleAssetModules = ({
@@ -258,7 +245,6 @@ export const useBundleAssetModules = ({
   branch,
   bundle,
   asset,
-  opts = {},
 }: UseBundleAssetModulesArgs) => {
   return useSuspenseQueryV5(
     BundleAssetModulesQueryOpts({
@@ -268,7 +254,6 @@ export const useBundleAssetModules = ({
       branch,
       bundle,
       asset,
-      opts,
     })
   )
 }

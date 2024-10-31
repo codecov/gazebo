@@ -220,10 +220,6 @@ interface BundleAssetQueryOptsArgs {
   }
   orderingDirection?: OrderingDirection
   ordering?: 'NAME' | 'SIZE' | 'TYPE'
-  opts?: {
-    enabled?: boolean
-    suspense?: boolean
-  }
 }
 
 export const BundleAssetsQueryOpts = ({
@@ -238,9 +234,6 @@ export const BundleAssetsQueryOpts = ({
   filters = {},
   orderingDirection,
   ordering,
-  opts = {
-    enabled: true,
-  },
 }: BundleAssetQueryOptsArgs) =>
   infiniteQueryOptionsV5({
     queryKey: [
@@ -353,7 +346,6 @@ export const BundleAssetsQueryOpts = ({
     getNextPageParam: (data) => {
       return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : null
     },
-    enabled: opts?.enabled !== undefined ? opts.enabled : true,
   })
 
 interface UseBundleAssetsArgs {
@@ -373,7 +365,6 @@ interface UseBundleAssetsArgs {
   ordering?: 'NAME' | 'SIZE' | 'TYPE'
   opts?: {
     enabled?: boolean
-    suspense?: boolean
   }
 }
 
@@ -391,8 +382,8 @@ export const useBundleAssets = ({
   ordering,
   opts,
 }: UseBundleAssetsArgs) => {
-  return useInfiniteQueryV5(
-    BundleAssetsQueryOpts({
+  return useInfiniteQueryV5({
+    ...BundleAssetsQueryOpts({
       provider,
       owner,
       repo,
@@ -404,7 +395,7 @@ export const useBundleAssets = ({
       filters,
       orderingDirection,
       ordering,
-      opts,
-    })
-  )
+    }),
+    enabled: opts?.enabled,
+  })
 }

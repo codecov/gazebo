@@ -148,8 +148,6 @@ interface BundleTrendDataQueryOptsArgs {
     // temp removing while we don't have filtering by types implemented
     // loadTypes: Array<(typeof BUNDLE_LOAD_TYPE_ITEMS)[number]>
   }
-  enabled?: boolean
-  suspense?: boolean
 }
 
 export const BundleTrendDataQueryOpts = ({
@@ -162,10 +160,8 @@ export const BundleTrendDataQueryOpts = ({
   before,
   after,
   filters,
-  enabled,
 }: BundleTrendDataQueryOptsArgs) =>
   queryOptionsV5({
-    enabled: enabled,
     queryKey: [
       'GetBundleTrend',
       provider,

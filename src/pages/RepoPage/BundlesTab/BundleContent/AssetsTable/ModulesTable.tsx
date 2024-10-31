@@ -78,7 +78,6 @@ const ModulesTable: React.FC<ModulesTableProps> = ({ asset }) => {
     branch,
     bundle,
     asset,
-    opts: { enabled: bundle !== '' },
   })
 
   const tableData = useMemo(() => {

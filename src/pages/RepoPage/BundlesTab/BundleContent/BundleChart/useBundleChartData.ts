@@ -68,8 +68,8 @@ export function useBundleChartData({
           'UNKNOWN_SIZE',
         ]
 
-  const { data: trendData, isLoading } = useQueryV5(
-    BundleTrendDataQueryOpts({
+  const { data: trendData, isLoading } = useQueryV5({
+    ...BundleTrendDataQueryOpts({
       provider,
       owner,
       repo,
@@ -84,9 +84,9 @@ export function useBundleChartData({
         // temp removing while we don't have filtering by types implemented
         // loadTypes: loadTypes,
       },
-      enabled: !!overview?.oldestCommitAt,
-    })
-  )
+    }),
+    enabled: !!overview?.oldestCommitAt,
+  })
 
   const mergedData = useMemo(() => {
     const mergedDataMap = new Map<string, { [key: string]: number }>()

@@ -133,9 +133,6 @@ interface BundleSummaryQueryOptsArgs {
     reportGroups?: string[]
     loadTypes?: string[]
   }
-  opts?: {
-    enabled?: boolean
-  }
 }
 
 export const BundleSummaryQueryOpts = ({
@@ -145,7 +142,6 @@ export const BundleSummaryQueryOpts = ({
   branch,
   bundle,
   filters,
-  opts = {},
 }: BundleSummaryQueryOptsArgs) =>
   queryOptionsV5({
     queryKey: ['BundleSummary', provider, owner, repo, branch, bundle, filters],
@@ -206,7 +202,6 @@ export const BundleSummaryQueryOpts = ({
 
         return { bundleSummary }
       }),
-    enabled: opts?.enabled,
   })
 
 interface UseBundleSummaryArgs {
@@ -219,9 +214,6 @@ interface UseBundleSummaryArgs {
     reportGroups?: string[]
     loadTypes?: string[]
   }
-  opts?: {
-    enabled?: boolean
-  }
 }
 
 export const useBundleSummary = ({
@@ -231,7 +223,6 @@ export const useBundleSummary = ({
   branch: branchParam,
   bundle,
   filters = {},
-  opts = {},
 }: UseBundleSummaryArgs) => {
   const { data: overview } = useRepoOverview({
     provider,
@@ -252,7 +243,6 @@ export const useBundleSummary = ({
       branch,
       bundle,
       filters,
-      opts,
     })
   )
 }

@@ -91,6 +91,7 @@ const query = `query BranchBundlesNames(
     }
   }
 }`
+
 interface BranchBundlesNamesQueryOptsArgs {
   provider: string
   owner: string
