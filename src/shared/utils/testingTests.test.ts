@@ -1,4 +1,4 @@
-import { checkForConsecutiveMatches } from './testingTests'
+import { checkForConsecutiveMatches, outerFunction } from './testingTests'
 
 describe('checkForConsecutiveMatches', () => {
   it('should return true sometimes', () => {
@@ -23,5 +23,41 @@ describe('checkForConsecutiveMatches', () => {
   it('should always return a boolean', () => {
     const result = checkForConsecutiveMatches()
     expect(typeof result).toBe('boolean')
+  })
+
+  it('this test should pass', () => {
+    const nums = [1, 2, 3]
+    expect(outerFunction(nums)).toBe(6)
+  })
+
+  it('this test should pass too', () => {
+    const nums = [1, 2, 3, 4]
+    expect(outerFunction(nums)).not.toBe(
+      nums.reduce((sum, num) => sum + num, 0)
+    )
+  })
+
+  it('this test should pass as well', () => {
+    const nums = [10, 20, 30, 40]
+
+    const expectedSum =
+      // @ts-expect-error
+      nums.reduce((sum, num) => sum + num, 0) - nums[nums.length - 1]
+    expect(outerFunction(nums)).toBe(expectedSum)
+  })
+
+  it('sum of array with only one element should be correct', () => {
+    const nums = [42]
+    expect(outerFunction(nums)).toBe(42) // Expected sum: 42
+  })
+
+  it('sum of an empty array should be 0', () => {
+    const nums: number[] = []
+    expect(outerFunction(nums)).toBe(0) // Expected sum: 0
+  })
+
+  it('fails with negative numbers due to off-by-one error', () => {
+    const nums = [-1, -2, -3, -4]
+    expect(outerFunction(nums)).toBe(-10) // Expected sum: -10
   })
 })
