@@ -28,6 +28,8 @@ vi.mock('@sentry/react', async () => {
   }
 })
 
+window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
+
 beforeAll(() => {
   globalThis.jest = {
     ...globalThis.jest,
@@ -49,8 +51,6 @@ beforeAll(() => {
 
     fn: vi.fn.bind(vi),
   }
-
-  window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 })
 
 afterEach(() => {
