@@ -49,6 +49,8 @@ beforeAll(() => {
 
     fn: vi.fn.bind(vi),
   }
+
+  window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 })
 
 afterEach(() => {
