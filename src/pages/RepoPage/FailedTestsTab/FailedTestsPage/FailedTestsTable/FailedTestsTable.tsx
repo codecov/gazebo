@@ -228,11 +228,12 @@ const FailedTestsTable = () => {
     },
   })
 
+  const isDefaultBranch = !!branch && testData?.defaultBranch === branch
+  const isTeamOrFreePlan =
+    isTeamPlan(testData?.plan) || isFreePlan(testData?.plan)
   // Only show flake rate column when on default branch for pro / enterprise plans or public repos
   const hideFlakeRate =
-    ((isTeamPlan(testData?.plan) || isFreePlan(testData?.plan)) &&
-      testData?.private) ||
-    (!!branch && testData?.defaultBranch !== branch)
+    (isTeamOrFreePlan && testData?.private) || !isDefaultBranch
 
   const tableData = useMemo(() => {
     if (!testData?.testResults) return []
@@ -304,7 +305,10 @@ const FailedTestsTable = () => {
   if (isEmpty(testData?.testResults) && !isLoading && !!branch) {
     return (
       <div className="flex flex-col gap-2">
-        <TableHeader totalCount={testData?.totalCount} />
+        <TableHeader
+          totalCount={testData?.totalCount}
+          isDefaultBranch={isDefaultBranch}
+        />
         <hr />
         <p className="mt-4 text-center">No test results found</p>
       </div>
@@ -313,7 +317,10 @@ const FailedTestsTable = () => {
 
   return (
     <>
-      <TableHeader totalCount={testData?.totalCount} />
+      <TableHeader
+        totalCount={testData?.totalCount}
+        isDefaultBranch={isDefaultBranch}
+      />
       <div className="tableui">
         <table>
           <colgroup>
