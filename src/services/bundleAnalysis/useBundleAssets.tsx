@@ -251,13 +251,6 @@ export const BundleAssetsQueryOpts = ({
       orderingDirection,
     ],
     queryFn: ({ signal, pageParam }) => {
-      // We have to do this, because infiniteQuery in Tanstack Query V5
-      // doesn't support undefined as a pageParam
-      let assetsAfter: string | null = null
-      if (pageParam !== '') {
-        assetsAfter = pageParam
-      }
-
       return Api.graphql({
         query,
         provider,
@@ -271,7 +264,7 @@ export const BundleAssetsQueryOpts = ({
           dateBefore,
           dateAfter,
           filters,
-          assetsAfter,
+          assetsAfter: pageParam,
           ordering,
           orderingDirection,
         },
