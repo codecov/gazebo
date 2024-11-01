@@ -253,8 +253,8 @@ export const BundleAssetsQueryOpts = ({
     queryFn: ({ signal, pageParam }) => {
       // We have to do this, because infiniteQuery in Tanstack Query V5
       // doesn't support undefined as a pageParam
-      let assetsAfter: string | undefined = undefined
-      if (pageParam !== null) {
+      let assetsAfter: string | null = null
+      if (pageParam !== '') {
         assetsAfter = pageParam
       }
 
@@ -342,6 +342,8 @@ export const BundleAssetsQueryOpts = ({
         }
       })
     },
+    // We have to set this as an empty string, because the type for pageParam
+    // matches the type for initialPageParam.
     initialPageParam: '',
     getNextPageParam: (data) => {
       return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : null
