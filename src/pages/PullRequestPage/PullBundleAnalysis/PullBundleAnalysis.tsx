@@ -1,10 +1,8 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useRepoOverview } from 'services/repo'
 import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import { ReportUploadType } from 'shared/utils/comparison'
-import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
 import BundleMessage from './BundleMessage'
@@ -82,7 +80,6 @@ const BundleContent: React.FC<BundleContentProps> = ({
 
 const PullBundleAnalysis: React.FC = () => {
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { data: overview } = useRepoOverview({ provider, owner, repo })
 
   // we can set team plan true here because we don't care about the fields it will skip - tho we should really stop doing this and just return null on the API if they're on a team plan so we can save on requests made
   const { data } = usePullPageData({
@@ -92,14 +89,6 @@ const PullBundleAnalysis: React.FC = () => {
     pullId,
     isTeamPlan: true,
   })
-
-  useEffect(() => {
-    if (overview?.bundleAnalysisEnabled && overview?.coverageEnabled) {
-      metrics.increment('pull_request_page.bundle_dropdown.opened', 1)
-    } else if (overview?.bundleAnalysisEnabled) {
-      metrics.increment('pull_request_page.bundle_page.visited_page', 1)
-    }
-  }, [overview?.bundleAnalysisEnabled, overview?.coverageEnabled])
 
   const bundleCompareType =
     data?.pull?.bundleAnalysisCompareWithBase?.__typename

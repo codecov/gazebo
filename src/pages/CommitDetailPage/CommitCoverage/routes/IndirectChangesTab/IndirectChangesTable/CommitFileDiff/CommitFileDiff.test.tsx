@@ -4,13 +4,15 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type MockInstance } from 'vitest'
+
+import { ImpactedFileType } from 'services/commit'
 
 import CommitFileDiff from './CommitFileDiff'
 
 const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
   useScrollToLine: vi.fn(),
-  withProfiler: (component) => component,
+  withProfiler: (component: any) => component,
   captureMessage: vi.fn(),
 }))
 
@@ -21,10 +23,6 @@ vi.mock('ui/CodeRenderer/hooks', () => {
     useScrollToLine: mocks.useScrollToLine,
   }
 })
-
-vi.mock('shared/featureFlags', () => ({
-  useFlags: mocks.useFlags,
-}))
 
 vi.mock('@sentry/react', () => {
   const originalModule = vi.importActual('@sentry/react')
@@ -46,9 +44,9 @@ window.scrollTo = scrollToMock
 window.scrollY = 100
 
 class ResizeObserverMock {
-  callback = (x) => null
+  callback = (x: any) => null
 
-  constructor(callback) {
+  constructor(callback: any) {
     this.callback = callback
   }
 
@@ -72,7 +70,7 @@ class ResizeObserverMock {
 }
 global.window.ResizeObserver = ResizeObserverMock
 
-const baseMock = (impactedFile) => {
+const baseMock = (impactedFile: ImpactedFileType | null) => {
   if (!impactedFile) {
     return { owner: null }
   }
@@ -179,7 +177,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter
       initialEntries={[
@@ -193,33 +191,38 @@ const wrapper = ({ children }) => (
   </QueryClientProvider>
 )
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
+
+interface SetupArgs {
+  impactedFile?: ImpactedFileType | null
+  bundleAnalysisEnabled?: boolean
+}
 
 describe('CommitFileDiff', () => {
   function setup(
     {
       impactedFile = mockImpactedFile,
       bundleAnalysisEnabled = false,
-      featureFlag = false,
-    } = {
+    }: SetupArgs = {
       impactedFile: mockImpactedFile,
       bundleAnalysisEnabled: false,
-      featureFlag: false,
     }
   ) {
     mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: vi.fn(),
       targeted: false,
-    }))
-
-    mocks.useFlags.mockImplementation(() => ({
-      virtualDiffRenderer: featureFlag,
     }))
 
     server.use(
@@ -336,7 +339,7 @@ describe('CommitFileDiff', () => {
   })
 
   describe('when there is no data', () => {
-    let consoleSpy
+    let consoleSpy: MockInstance
 
     beforeAll(() => {
       consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -367,161 +370,92 @@ describe('CommitFileDiff', () => {
   })
 
   describe('code renderer', () => {
-    describe('feature flag is true', () => {
-      it('renders the text area', async () => {
-        setup({ featureFlag: true })
-        render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+    it('renders the text area', async () => {
+      setup({})
+      render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
-        const textArea = await screen.findByTestId(
-          'virtual-file-renderer-text-area'
-        )
-        expect(textArea).toBeInTheDocument()
+      const textArea = await screen.findByTestId(
+        'virtual-file-renderer-text-area'
+      )
+      expect(textArea).toBeInTheDocument()
 
-        const calculator = await within(textArea).findByText(/Calculator/)
-        expect(calculator).toBeInTheDocument()
+      const calculator = await within(textArea).findByText(/Calculator/)
+      expect(calculator).toBeInTheDocument()
 
-        const value = await within(textArea).findByText(/value/)
-        expect(value).toBeInTheDocument()
+      const value = await within(textArea).findByText(/value/)
+      expect(value).toBeInTheDocument()
 
-        const calcMode = await within(textArea).findByText(/calcMode/)
-        expect(calcMode).toBeInTheDocument()
-      })
+      const calcMode = await within(textArea).findByText(/calcMode/)
+      expect(calcMode).toBeInTheDocument()
+    })
 
-      it('renders the lines of a segment', async () => {
-        setup({ featureFlag: true })
-        render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+    it('renders the lines of a segment', async () => {
+      setup({})
+      render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
-        const codeDisplayOverlay = await screen.findByTestId(
-          'virtual-file-renderer-overlay'
-        )
+      const codeDisplayOverlay = await screen.findByTestId(
+        'virtual-file-renderer-overlay'
+      )
 
-        const calculator =
-          await within(codeDisplayOverlay).findByText(/Calculator/)
-        expect(calculator).toBeInTheDocument()
+      const calculator =
+        await within(codeDisplayOverlay).findByText(/Calculator/)
+      expect(calculator).toBeInTheDocument()
 
-        const value = await within(codeDisplayOverlay).findByText(/value/)
-        expect(value).toBeInTheDocument()
+      const value = await within(codeDisplayOverlay).findByText(/value/)
+      expect(value).toBeInTheDocument()
 
-        const calcMode = await within(codeDisplayOverlay).findByText(/calcMode/)
-        expect(calcMode).toBeInTheDocument()
-      })
+      const calcMode = await within(codeDisplayOverlay).findByText(/calcMode/)
+      expect(calcMode).toBeInTheDocument()
+    })
 
-      describe('rendering hit icon', () => {
-        describe('there are no ignored ids', () => {
-          it('renders hit count icon', async () => {
-            setup({ featureFlag: true })
-            render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
-
-            const hitCount = await screen.findByText('5')
-            expect(hitCount).toBeInTheDocument()
-          })
-        })
-
-        describe('there are ignored ids', () => {
-          beforeEach(() => {
-            queryClient.setQueryData(['IgnoredUploadIds'], [0])
-          })
-
-          it('renders hit count icon', async () => {
-            setup({ featureFlag: true })
-            render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
-
-            const hitCount = await screen.findByText('4')
-            expect(hitCount).toBeInTheDocument()
-          })
-        })
-      })
-
-      describe('when segment is an empty array', () => {
-        const impactedFile = {
-          ...mockImpactedFile,
-          isCriticalFile: false,
-          headName: 'flag1/file.js',
-          segments: {
-            results: [],
-          },
-        }
-
-        it('does not render information on the code renderer', async () => {
-          setup({ impactedFile, featureFlag: true })
+    describe('rendering hit icon', () => {
+      describe('there are no ignored ids', () => {
+        it('renders hit count icon', async () => {
+          setup({})
           render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
+          const hitCount = await screen.findByText('5')
+          expect(hitCount).toBeInTheDocument()
+        })
+      })
 
-          const unexpectedChange = screen.queryByText(/Unexpected Changes/i)
-          expect(unexpectedChange).not.toBeInTheDocument()
+      describe('there are ignored ids', () => {
+        beforeEach(() => {
+          queryClient.setQueryData(['IgnoredUploadIds'], [0])
+        })
 
-          const diffLine = screen.queryByText('fv-diff-line')
-          expect(diffLine).not.toBeInTheDocument()
+        it('renders hit count icon', async () => {
+          setup({})
+          render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+          const hitCount = await screen.findByText('4')
+          expect(hitCount).toBeInTheDocument()
         })
       })
     })
 
-    describe('feature flag is false', () => {
-      it('renders the lines of a segment', async () => {
-        setup()
+    describe('when segment is an empty array', () => {
+      const impactedFile = {
+        ...mockImpactedFile,
+        isCriticalFile: false,
+        headName: 'flag1/file.js',
+        segments: {
+          results: [],
+        },
+      }
+
+      it('does not render information on the code renderer', async () => {
+        setup({ impactedFile })
         render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
-        const calculator = await screen.findByText(/Calculator/)
-        expect(calculator).toBeInTheDocument()
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
 
-        const value = await screen.findByText(/value/)
-        expect(value).toBeInTheDocument()
+        const unexpectedChange = screen.queryByText(/Unexpected Changes/i)
+        expect(unexpectedChange).not.toBeInTheDocument()
 
-        const calcMode = await screen.findByText(/calcMode/)
-        expect(calcMode).toBeInTheDocument()
-      })
-
-      describe('rendering hit icon', () => {
-        describe('there are no ignored ids', () => {
-          it('renders hit count icon', async () => {
-            setup()
-            render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
-
-            const hitCount = await screen.findByText('5')
-            expect(hitCount).toBeInTheDocument()
-          })
-        })
-
-        describe('there are ignored ids', () => {
-          beforeEach(() => {
-            queryClient.setQueryData(['IgnoredUploadIds'], [0])
-          })
-
-          it('renders hit count icon', async () => {
-            setup()
-            render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
-
-            const hitCount = await screen.findByText('4')
-            expect(hitCount).toBeInTheDocument()
-          })
-        })
-      })
-
-      describe('when segment is an empty array', () => {
-        const impactedFile = {
-          ...mockImpactedFile,
-          isCriticalFile: false,
-          headName: 'flag1/file.js',
-          segments: {
-            results: [],
-          },
-        }
-
-        it('does not render information on the code renderer', async () => {
-          setup({ impactedFile })
-          render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
-
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          const unexpectedChange = screen.queryByText(/Unexpected Changes/i)
-          expect(unexpectedChange).not.toBeInTheDocument()
-
-          const diffLine = screen.queryByText('fv-diff-line')
-          expect(diffLine).not.toBeInTheDocument()
-        })
+        const diffLine = screen.queryByText('fv-diff-line')
+        expect(diffLine).not.toBeInTheDocument()
       })
     })
   })

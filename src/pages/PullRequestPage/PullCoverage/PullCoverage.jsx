@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -9,7 +9,6 @@ import { TierNames, useTier } from 'services/tier'
 import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
 import { ComparisonReturnType, ReportUploadType } from 'shared/utils/comparison'
-import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
 import PullCoverageTabs from './PullCoverageTabs'
@@ -38,14 +37,6 @@ function PullCoverageContent() {
   const { owner, repo, pullId, provider } = useParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: tierData } = useTier({ provider, owner })
-
-  useEffect(() => {
-    if (overview?.bundleAnalysisEnabled && overview?.coverageEnabled) {
-      metrics.increment('pull_request_page.coverage_dropdown.opened', 1)
-    } else if (overview?.coverageEnabled) {
-      metrics.increment('pull_request_page.coverage_page.visited_page', 1)
-    }
-  }, [overview?.bundleAnalysisEnabled, overview?.coverageEnabled])
 
   const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
@@ -135,13 +126,6 @@ function PullCoverage() {
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: tierData } = useTier({ provider, owner })
   const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
-  useEffect(() => {
-    if (overview?.bundleAnalysisEnabled && overview?.coverageEnabled) {
-      metrics.increment('pull_request_page.coverage_dropdown.opened', 1)
-    } else if (overview?.coverageEnabled) {
-      metrics.increment('pull_request_page.coverage_page.visited_page', 1)
-    }
-  }, [overview?.bundleAnalysisEnabled, overview?.coverageEnabled])
 
   const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 

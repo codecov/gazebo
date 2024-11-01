@@ -115,7 +115,7 @@ describe('YamlModal', () => {
         wrapper,
       })
 
-      const bannerHeader = await screen.findByText('Commit YAML is invalid')
+      const bannerHeader = await screen.findByText('YAML is invalid')
       expect(bannerHeader).toBeInTheDocument()
     })
   })
@@ -130,7 +130,7 @@ describe('YamlModal', () => {
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
 
-      const bannerHeader = screen.queryByText('Commit YAML is invalid')
+      const bannerHeader = screen.queryByText('YAML is invalid')
       expect(bannerHeader).not.toBeInTheDocument()
     })
   })

@@ -88,6 +88,7 @@ const config = {
           },
         },
         codecov: {
+          red: withOpacity('--color-codecov-red'),
           orange: withOpacity('--color-codecov-orange'),
           footer: withOpacity('--color-codecov-footer'),
           code: withOpacity('--color-codecov-code'),
@@ -145,6 +146,7 @@ const config = {
           900: withOpacity('--color-info-900'),
         },
         github: withOpacity('--color-github'),
+        'github-hover': withOpacity('--color-github-hover-bg'),
         'github-text': withOpacity('--color-github-text'),
         gitlab: withOpacity('--color-gitlab'),
         bitbucket: withOpacity('--color-bitbucket'),
