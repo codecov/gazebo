@@ -37,7 +37,7 @@ function YamlErrorBanner({
           Coverage data is unable to be displayed, as the yaml appears to be
           invalid. The&nbsp;
           {/* @ts-ignore ignore until we convert A to ts */}
-          <A to={{ pageName: 'yamlValidatorDoc' }}>yaml validator</A> can help
+          <A to={{ pageName: 'yamlValidatorDocs' }}>yaml validator</A> can help
           determine its validation.
         </Alert.Description>
       </Alert>
