@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types'
 import { lazy, Suspense } from 'react'
 
+import YamlErrorBanner from 'pages/CommitDetailPage/CommitCoverage/YamlErrorBanner'
 import { useCommitErrors } from 'services/commitErrors'
 import A from 'ui/A'
 import Modal from 'ui/Modal'
 import Spinner from 'ui/Spinner'
-
-import YamlModalErrorBanner from './YamlModalErrorBanner'
 
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
@@ -31,7 +30,7 @@ function YamlModal({ showYAMLModal, setShowYAMLModal }) {
           }
         >
           <div className="flex flex-col gap-3">
-            {invalidYaml && <YamlModalErrorBanner />}
+            {invalidYaml && <YamlErrorBanner shouldLinkToModal={false} />}
             <YAMLViewer />
           </div>
         </Suspense>

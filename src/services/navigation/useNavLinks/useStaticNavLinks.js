@@ -520,5 +520,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    yamlValidatorDocs: {
+      text: 'YAML validator',
+      path: () =>
+        'https://docs.codecov.com/docs/codecov-yaml#validate-your-repository-yaml',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
