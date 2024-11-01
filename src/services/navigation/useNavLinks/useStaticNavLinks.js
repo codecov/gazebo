@@ -118,7 +118,8 @@ export function useStaticNavLinks() {
     },
     codecovAIAppInstallation: {
       text: 'Install the Codecov AI app for an org',
-      path: () => `https://github.com/apps/${config.GH_APP}/installations/new`,
+      path: () =>
+        `https://github.com/apps/${config.GH_APP_AI}/installations/new`,
       isExternalLink: true,
       openNewTab: true,
     },
@@ -510,6 +511,12 @@ export function useStaticNavLinks() {
       text: 'Codecov YAML require CI to pass',
       path: () =>
         'https://docs.codecov.com/docs/codecovyml-reference#codecovrequire_ci_to_pass',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    codecovAIDocs: {
+      text: 'Codecov AI Documentation',
+      path: () => `https://docs.codecov.com/docs/beta-codecov-ai`,
       isExternalLink: true,
       openNewTab: true,
     },

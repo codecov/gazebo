@@ -9,7 +9,7 @@ const defaultConfig = {
   SENTRY_SESSION_SAMPLE_RATE: 0.1,
   SENTRY_ERROR_SAMPLE_RATE: 1.0,
   GH_APP: 'codecov',
-  GH_APP_AI: 'codecov', // TODO: Update to proper GH app name once it is live
+  GH_APP_AI: 'codecov-ai',
 }
 
 export function removeReactAppPrefix(obj) {
