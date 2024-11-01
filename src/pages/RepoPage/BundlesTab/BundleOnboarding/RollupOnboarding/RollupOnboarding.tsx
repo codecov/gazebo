@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
@@ -8,14 +7,6 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 
 import LearnMoreBlurb from '../LearnMoreBlurb'
-import {
-  copiedBuildCommandMetric,
-  copiedCommitMetric,
-  copiedConfigMetric,
-  copiedInstallCommandMetric,
-  copiedTokenMetric,
-  visitedOnboardingMetric,
-} from '../metricHelpers'
 
 const npmInstall = `npm install @codecov/rollup-plugin --save-dev`
 const yarnInstall = `yarn add @codecov/rollup-plugin --dev`
@@ -58,31 +49,13 @@ const StepOne: React.FC = () => {
           </span>{' '}
           to your project, use one of the following commands.
         </p>
-        <CodeSnippet
-          clipboard={npmInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('npm', 'rollup')
-          }}
-          data-testid="rollup-npm-install"
-        >
+        <CodeSnippet clipboard={npmInstall} data-testid="rollup-npm-install">
           {npmInstall}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={yarnInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('yarn', 'rollup')
-          }}
-          data-testid="rollup-yarn-install"
-        >
+        <CodeSnippet clipboard={yarnInstall} data-testid="rollup-yarn-install">
           {yarnInstall}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={pnpmInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('pnpm', 'rollup')
-          }}
-          data-testid="rollup-pnpm-install"
-        >
+        <CodeSnippet clipboard={pnpmInstall} data-testid="rollup-pnpm-install">
           {pnpmInstall}
         </CodeSnippet>
       </Card.Content>
@@ -108,9 +81,6 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
           <CodeSnippet
             className="basis-2/3"
             clipboard={uploadToken}
-            clipboardOnClick={() => {
-              copiedTokenMetric('rollup')
-            }}
             data-testid="rollup-upload-token"
           >
             {uploadToken}
@@ -140,9 +110,6 @@ const StepThree: React.FC = () => {
         </p>
         <CodeSnippet
           clipboard={pluginConfig}
-          clipboardOnClick={() => {
-            copiedConfigMetric('rollup')
-          }}
           data-testid="rollup-plugin-config"
         >
           {pluginConfig}
@@ -167,9 +134,6 @@ const StepFour: React.FC = () => {
         </p>
         <CodeSnippet
           clipboard={commitString}
-          clipboardOnClick={() => {
-            copiedCommitMetric('rollup')
-          }}
           data-testid="rollup-commit-command"
         >
           {commitString}
@@ -190,31 +154,13 @@ const StepFive: React.FC = () => {
           When building your application the plugin will automatically upload
           the stats information to Codecov.
         </p>
-        <CodeSnippet
-          clipboard={npmBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('npm', 'rollup')
-          }}
-          data-testid="rollup-npm-build"
-        >
+        <CodeSnippet clipboard={npmBuild} data-testid="rollup-npm-build">
           {npmBuild}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={yarnBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('yarn', 'rollup')
-          }}
-          data-testid="rollup-yarn-build"
-        >
+        <CodeSnippet clipboard={yarnBuild} data-testid="rollup-yarn-build">
           {yarnBuild}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={pnpmBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('pnpm', 'rollup')
-          }}
-          data-testid="rollup-pnpm-build"
-        >
+        <CodeSnippet clipboard={pnpmBuild} data-testid="rollup-pnpm-build">
           {pnpmBuild}
         </CodeSnippet>
       </Card.Content>
@@ -254,10 +200,6 @@ const RollupOnboarding: React.FC = () => {
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
   const uploadToken = orgUploadToken ?? repoData?.repository?.uploadToken ?? ''
-
-  useEffect(() => {
-    visitedOnboardingMetric('rollup')
-  }, [])
 
   return (
     <div className="flex flex-col gap-6">
