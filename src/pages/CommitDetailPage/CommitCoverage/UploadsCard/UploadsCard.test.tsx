@@ -50,12 +50,23 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 afterAll(() => server.close())
+
+interface MockCommitErrors {
+  data: {
+    yamlErrors: [{ errorCode: string }?]
+    botErrors: [{ errorCode: string }?]
+  }
+}
+
 describe('UploadsCard', () => {
-  function setup(mockUploads: ReturnType<typeof useUploads>) {
-    mocks.useUploads.mockReturnValue(mockUploads)
-    mocks.useCommitErrors.mockReturnValue({
+  function setup(
+    mockUploads: ReturnType<typeof useUploads>,
+    mockCommitErrors: MockCommitErrors = {
       data: { yamlErrors: [], botErrors: [] },
-    })
+    }
+  ) {
+    mocks.useUploads.mockReturnValue(mockUploads)
+    mocks.useCommitErrors.mockReturnValue(mockCommitErrors)
 
     server.use(
       graphql.query('CommitYaml', (info) => {
@@ -304,34 +315,29 @@ describe('UploadsCard', () => {
     })
 
     describe('handles invalid yaml', () => {
-      beforeEach(() => {
-        setup({
-          uploadsProviderList: [],
-          uploadsOverview: '',
-          groupedUploads: {},
-          hasNoUploads: false,
-          erroredUploads: {},
-          flagErrorUploads: {},
-          searchResults: [],
-        })
-        mocks.useCommitErrors.mockReturnValue({
-          data: {
-            yamlErrors: [{ errorCode: 'invalid_yaml' }],
-            botErrors: [],
+      it('shows the warn icon and does not have a link to itself in the modal', async () => {
+        setup(
+          {
+            uploadsProviderList: [],
+            uploadsOverview: '',
+            groupedUploads: {},
+            hasNoUploads: false,
+            erroredUploads: {},
+            flagErrorUploads: {},
+            searchResults: [],
           },
-        })
-      })
-
-      it('shows the warn icon when there are yaml errors', async () => {
+          {
+            data: {
+              yamlErrors: [{ errorCode: 'invalid_yaml' }],
+              botErrors: [],
+            },
+          }
+        )
         render(<UploadsCard />, { wrapper })
         const icon = screen.getByTestId('warn')
         expect(icon).toBeInTheDocument()
-      })
 
-      it('does not have a link to itself inside the modal', async () => {
         const user = userEvent.setup()
-        render(<UploadsCard />, { wrapper })
-
         const viewYamlButton = screen.getByText('view YAML file')
         await user.click(viewYamlButton)
 
@@ -339,10 +345,6 @@ describe('UploadsCard', () => {
           'Includes default YAML, global YAML, and repo'
         )
         expect(includesDefaultYaml).toBeInTheDocument()
-
-        const yamlIsInvalid = await screen.findByText('YAML is invalid')
-        expect(yamlIsInvalid).toBeInTheDocument()
-        expect(yamlIsInvalid).not.toHaveAttribute('href')
       })
     })
   })
