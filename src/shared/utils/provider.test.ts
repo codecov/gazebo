@@ -62,6 +62,7 @@ describe('providerToName', () => {
 
   describe('when called with BitBucket', () => {
     it('returns BitBucket', () => {
+      // @ts-expect-error
       expect(providerToName('BitBucket')).toBe('BitBucket')
     })
   })
@@ -88,16 +89,19 @@ describe('providerToName', () => {
 describe('providerImage', () => {
   describe('when called for Github', () => {
     it('returns correct logo url', () => {
+      // @ts-expect-error
       expect(providerImage('Github')).toMatch(/github-icon.svg/)
     })
   })
   describe('when called for Gitlab', () => {
     it('returns correct logo url', () => {
+      // @ts-expect-error
       expect(providerImage('Gitlab')).toMatch(/gitlab-icon.svg/)
     })
   })
   describe('when called for BitBucket', () => {
     it('returns correct logo url', () => {
+      // @ts-expect-error
       expect(providerImage('BitBucket')).toMatch(/bitbucket-icon.svg/)
     })
   })
@@ -121,6 +125,7 @@ describe('providerImage', () => {
 describe('providerFeedback', () => {
   describe('when called for Github', () => {
     it('returns correct url', () => {
+      // @ts-expect-error
       expect(providerFeedback('Github')).toEqual(
         'https://github.com/codecov/Codecov-user-feedback/issues/1'
       )
@@ -128,6 +133,7 @@ describe('providerFeedback', () => {
   })
   describe('when called for Gitlab', () => {
     it('returns correct url', () => {
+      // @ts-expect-error
       expect(providerFeedback('Gitlab')).toEqual(
         'https://gitlab.com/codecov-open-source/codecov-user-feedback/-/issues/1'
       )
@@ -135,6 +141,7 @@ describe('providerFeedback', () => {
   })
   describe('when called for BitBucket', () => {
     it('returns correct url', () => {
+      // @ts-expect-error
       expect(providerFeedback('BitBucket')).toEqual(
         'https://bitbucket.org/kylemann/codecov/issues/1/wed-love-your-feedback'
       )

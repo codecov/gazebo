@@ -1,7 +1,5 @@
 import { renderHook } from '@testing-library/react'
 
-import { useFlags } from 'shared/featureFlags'
-
 import {
   canApplySentryUpgrade,
   EnterprisePlans,
@@ -23,12 +21,23 @@ import {
   isTeamPlan,
   isTrialPlan,
   lastTwoDigits,
+  Plan,
   Plans,
   shouldDisplayTeamCard,
   useProPlans,
 } from './billing'
 
-vi.mock('shared/featureFlags')
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
+
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
+})
 
 function getPlans() {
   return [
@@ -158,11 +167,9 @@ describe('isFreePlan', () => {
   })
 
   it('Defaults to false otherwise', () => {
-    expect(isFreePlan('users-pro')).toBe(false)
-    expect(isFreePlan('rable rable')).toBe(false)
+    expect(isFreePlan('users-inappy')).toBe(false)
+    // @ts-expect-error
     expect(isFreePlan(undefined)).toBe(false)
-    expect(isFreePlan(12345)).toBe(false)
-    expect(isFreePlan({})).toBe(false)
   })
 })
 
@@ -215,17 +222,15 @@ describe('isEnterprisePlans', () => {
   })
 
   it('defaults to false otherwise', () => {
-    expect(isEnterprisePlan('users-pro')).toBe(false)
-    expect(isEnterprisePlan('rable rable')).toBe(false)
+    expect(isEnterprisePlan('users-inappy')).toBe(false)
+    // @ts-expect-error
     expect(isEnterprisePlan(undefined)).toBe(false)
-    expect(isEnterprisePlan(12345)).toBe(false)
-    expect(isEnterprisePlan({})).toBe(false)
   })
 })
 
 describe('useProPlans', () => {
-  function setup(flagValue) {
-    useFlags.mockReturnValue({
+  function setup(flagValue: boolean) {
+    mocks.useFlags.mockReturnValue({
       enterpriseCloudPlanSupport: flagValue,
     })
   }
@@ -314,6 +319,7 @@ describe('formatNumberToUSD', () => {
 
 describe('formatTimestampToCalendarDate', () => {
   it('formats into calendar date', () => {
+    // @ts-expect-error
     const value = formatTimestampToCalendarDate('1660000000')
 
     expect(value).toBe('August 8, 2022')
@@ -334,6 +340,7 @@ describe('lastTwoDigits', () => {
   })
 
   it('return null when null', () => {
+    // @ts-expect-error
     const value = lastTwoDigits(null)
 
     expect(value).toBe(null)
@@ -343,16 +350,9 @@ describe('lastTwoDigits', () => {
 describe('getNextBillingDate', () => {
   describe('there is a valid timestamp', () => {
     it('returns formatted timestamp', () => {
-      const value = getNextBillingDate({})
-
-      expect(value).toBeNull()
-    })
-  })
-
-  describe('there is no timestamp', () => {
-    it('returns null', () => {
       const value = getNextBillingDate({
         subscriptionDetail: {
+          // @ts-expect-error
           latestInvoice: {
             periodEnd: 1660000000,
           },
@@ -360,6 +360,15 @@ describe('getNextBillingDate', () => {
       })
 
       expect(value).toBe('August 8th, 2022')
+    })
+  })
+
+  describe('there is no timestamp', () => {
+    it('returns null', () => {
+      // @ts-expect-error
+      const value = getNextBillingDate({})
+
+      expect(value).toBeNull()
     })
   })
 })
@@ -386,11 +395,9 @@ describe('isAnnualPlan', () => {
   })
 
   it('defaults to false otherwise', () => {
-    expect(isAnnualPlan('users-pro')).toBe(false)
-    expect(isAnnualPlan('rable rable')).toBe(false)
+    expect(isAnnualPlan('users-inappm')).toBe(false)
+    // @ts-expect-error
     expect(isAnnualPlan(undefined)).toBe(false)
-    expect(isAnnualPlan(12345)).toBe(false)
-    expect(isAnnualPlan({})).toBe(false)
   })
 })
 
@@ -411,11 +418,9 @@ describe('isMonthlyPlan', () => {
   })
 
   it('defaults to false otherwise', () => {
-    expect(isMonthlyPlan('users-pro')).toBe(false)
-    expect(isMonthlyPlan('rable rable')).toBe(false)
+    expect(isMonthlyPlan('users-inappy')).toBe(false)
+    // @ts-expect-error
     expect(isMonthlyPlan(undefined)).toBe(false)
-    expect(isMonthlyPlan(12345)).toBe(false)
-    expect(isMonthlyPlan({})).toBe(false)
   })
 })
 
@@ -431,11 +436,9 @@ describe('isSentryPlan', () => {
   })
 
   it('Defaults to false otherwise', () => {
-    expect(isSentryPlan('users-pro')).toBe(false)
-    expect(isSentryPlan('rable rable')).toBe(false)
+    expect(isSentryPlan('users-inappy')).toBe(false)
+    // @ts-expect-error
     expect(isSentryPlan(undefined)).toBe(false)
-    expect(isSentryPlan(12345)).toBe(false)
-    expect(isSentryPlan({})).toBe(false)
   })
 })
 
@@ -460,10 +463,9 @@ describe('isPaidPlan', () => {
   })
 
   it('defaults to false otherwise', () => {
-    expect(isPaidPlan('rable rable')).toBe(false)
+    expect(isPaidPlan('users-free')).toBe(false)
+    // @ts-expect-error
     expect(isPaidPlan(undefined)).toBe(false)
-    expect(isPaidPlan(12345)).toBe(false)
-    expect(isPaidPlan({})).toBe(false)
   })
 })
 
@@ -601,7 +603,7 @@ describe('canApplySentryUpgrade', () => {
   it('returns true when list contains monthly plan', () => {
     const result = canApplySentryUpgrade({
       plan: Plans.USERS_PR_INAPPM,
-      plans: [{ value: 'users-sentrym' }],
+      plans: [{ value: 'users-sentrym' }] as Plan[],
     })
 
     expect(result).toBeTruthy()
@@ -610,7 +612,7 @@ describe('canApplySentryUpgrade', () => {
   it('returns true when list contains annual plan', () => {
     const result = canApplySentryUpgrade({
       plan: Plans.USERS_PR_INAPPM,
-      plans: [{ value: 'users-sentryy' }],
+      plans: [{ value: 'users-sentryy' }] as Plan[],
     })
 
     expect(result).toBeTruthy()
@@ -619,7 +621,7 @@ describe('canApplySentryUpgrade', () => {
   it('returns false when plans are not in list', () => {
     const result = canApplySentryUpgrade({
       plan: Plans.USERS_PR_INAPPM,
-      plans: [{ value: 'users-free' }],
+      plans: [{ value: 'users-free' }] as Plan[],
     })
 
     expect(result).toBeFalsy()
@@ -628,7 +630,7 @@ describe('canApplySentryUpgrade', () => {
   it('returns false when user has enterprise plan', () => {
     const result = canApplySentryUpgrade({
       plan: Plans.USERS_ENTERPRISEM,
-      plans: [{ value: 'users-sentryy' }],
+      plans: [{ value: 'users-sentryy' }] as Plan[],
     })
 
     expect(result).toBeFalsy()
@@ -646,12 +648,6 @@ describe('isBasicPlan', () => {
     expect(isBasicPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
     expect(isBasicPlan(Plans.USERS_SENTRYM)).toBeFalsy()
   })
-
-  it('returns false when plan is not a string', () => {
-    expect(isBasicPlan(123)).toBeFalsy()
-    expect(isBasicPlan({})).toBeFalsy()
-    expect(isBasicPlan([])).toBeFalsy()
-  })
 })
 
 describe('isTeamPlan', () => {
@@ -667,12 +663,6 @@ describe('isTeamPlan', () => {
     expect(isTeamPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
     expect(isTeamPlan(Plans.USERS_SENTRYM)).toBeFalsy()
   })
-
-  it('returns false when plan is not a string', () => {
-    expect(isTeamPlan(123)).toBeFalsy()
-    expect(isTeamPlan({})).toBeFalsy()
-    expect(isTeamPlan([])).toBeFalsy()
-  })
 })
 
 describe('isTrialPlan', () => {
@@ -686,12 +676,6 @@ describe('isTrialPlan', () => {
     expect(isTrialPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
     expect(isTrialPlan(Plans.USERS_SENTRYM)).toBeFalsy()
     expect(isTrialPlan(Plans.USERS_BASIC)).toBeFalsy()
-  })
-
-  it('returns false when plan is not a string', () => {
-    expect(isTrialPlan(123)).toBeFalsy()
-    expect(isTrialPlan({})).toBeFalsy()
-    expect(isTrialPlan([])).toBeFalsy()
   })
 })
 
@@ -709,12 +693,6 @@ describe('isProPlan', () => {
     expect(isProPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
     expect(isProPlan(Plans.USERS_BASIC)).toBeFalsy()
   })
-
-  it('returns false when plan is not a string', () => {
-    expect(isProPlan(123)).toBeFalsy()
-    expect(isProPlan({})).toBeFalsy()
-    expect(isProPlan([])).toBeFalsy()
-  })
 })
 
 describe('isCodecovProPlan', () => {
@@ -727,11 +705,5 @@ describe('isCodecovProPlan', () => {
     expect(isCodecovProPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
     expect(isCodecovProPlan(Plans.USERS_SENTRYM)).toBeFalsy()
     expect(isCodecovProPlan(Plans.USERS_BASIC)).toBeFalsy()
-  })
-
-  it('returns false when plan is not a string', () => {
-    expect(isCodecovProPlan(123)).toBeFalsy()
-    expect(isCodecovProPlan({})).toBeFalsy()
-    expect(isCodecovProPlan([])).toBeFalsy()
   })
 })

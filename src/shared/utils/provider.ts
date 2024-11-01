@@ -4,25 +4,28 @@ import config from 'config'
 import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
 import githubLogo from 'assets/providers/github-icon.svg'
 import gitlabLogo from 'assets/providers/gitlab-icon.svg'
+import { Provider } from 'shared/api/helpers'
 
-export function providerToName(provider) {
-  return {
-    gh: 'Github',
-    bb: 'BitBucket',
-    gl: 'Gitlab',
-    ghe: 'Github Enterprise',
-    gle: 'Gitlab Enterprise',
-    bbs: 'BitBucket Server',
-    github: 'Github',
-    bitbucket: 'BitBucket',
-    gitlab: 'Gitlab',
-    github_enterprise: 'Github Enterprise',
-    gitlab_enterprise: 'Gitlab Enterprise',
-    bitbucket_server: 'BitBucket Server',
-  }[provider.toLowerCase()]
+export function providerToName(provider: Provider) {
+  return (
+    {
+      gh: 'Github',
+      bb: 'BitBucket',
+      gl: 'Gitlab',
+      ghe: 'Github Enterprise',
+      gle: 'Gitlab Enterprise',
+      bbs: 'BitBucket Server',
+      github: 'Github',
+      bitbucket: 'BitBucket',
+      gitlab: 'Gitlab',
+      github_enterprise: 'Github Enterprise',
+      gitlab_enterprise: 'Gitlab Enterprise',
+      bitbucket_server: 'BitBucket Server',
+    }[provider.toLowerCase()] || 'Github'
+  )
 }
 
-export function providerToInternalProvider(provider) {
+export function providerToInternalProvider(provider: Provider) {
   return {
     gh: 'github',
     bb: 'bitbucket',
@@ -39,7 +42,7 @@ export function providerToInternalProvider(provider) {
   }[provider.toLowerCase()]
 }
 
-export function providerImage(providerName) {
+export function providerImage(providerName: Provider) {
   return {
     Github: githubLogo,
     Gitlab: gitlabLogo,
@@ -50,7 +53,7 @@ export function providerImage(providerName) {
   }[providerToName(providerName)]
 }
 
-export function providerFeedback(providerName) {
+export function providerFeedback(providerName: Provider) {
   return {
     Github: 'https://github.com/codecov/Codecov-user-feedback/issues/1',
     Gitlab:
@@ -66,7 +69,17 @@ export function providerFeedback(providerName) {
   }[providerToName(providerName)]
 }
 
-export function getProviderCommitURL({ provider, owner, repo, commit }) {
+export function getProviderCommitURL({
+  provider,
+  owner,
+  repo,
+  commit,
+}: {
+  provider: Provider
+  owner: string
+  repo: string
+  commit: string
+}) {
   return {
     Github: `https://github.com/${owner}/${repo}/commit/${commit}`,
     BitBucket: `https://bitbucket.org/${owner}/${repo}/commits/${commit}`,
@@ -77,7 +90,17 @@ export function getProviderCommitURL({ provider, owner, repo, commit }) {
   }[providerToName(provider)]
 }
 
-export function getProviderPullURL({ provider, owner, repo, pullId }) {
+export function getProviderPullURL({
+  provider,
+  owner,
+  repo,
+  pullId,
+}: {
+  provider: Provider
+  owner: string
+  repo: string
+  pullId: string
+}) {
   return {
     Github: `https://github.com/${owner}/${repo}/pull/${pullId}`,
     BitBucket: `https://bitbucket.org/${owner}/${repo}/pull-requests/${pullId}`,
