@@ -286,7 +286,6 @@ describe('useBranchBundleSummary', () => {
               provider: 'gh',
               owner: 'codecov',
               repo: 'codecov',
-              repoOverviewIsSuccess: true,
               branch: 'main',
             })
           ),
@@ -324,7 +323,6 @@ describe('useBranchBundleSummary', () => {
               provider: 'gh',
               owner: 'codecov',
               repo: 'codecov',
-              repoOverviewIsSuccess: true,
               branch: 'main',
             })
           ),
@@ -362,7 +360,6 @@ describe('useBranchBundleSummary', () => {
               provider: 'gh',
               owner: 'codecov',
               repo: 'codecov',
-              repoOverviewIsSuccess: true,
               branch: 'main',
             })
           ),
