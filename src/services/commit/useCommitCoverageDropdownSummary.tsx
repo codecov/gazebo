@@ -67,7 +67,7 @@ const RepositorySchema = z.object({
     .nullable(),
 })
 
-const RequestSchema = z.object({
+export const RequestSchema = z.object({
   owner: z
     .object({
       repository: z.discriminatedUnion('__typename', [

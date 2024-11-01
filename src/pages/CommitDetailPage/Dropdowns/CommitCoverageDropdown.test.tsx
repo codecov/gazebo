@@ -5,7 +5,9 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { z } from 'zod'
 
+import { RequestSchema } from 'services/commit/useCommitCoverageDropdownSummary'
 import SummaryDropdown from 'ui/SummaryDropdown'
 
 import CommitCoverageDropdown from './CommitCoverageDropdown'
@@ -39,13 +41,10 @@ const mockSummaryData = (
           uploads: {
             edges: uploads,
           },
-          yamlErrors: {
-            edges: [{ node: {} }],
-          },
         },
       },
     },
-  }
+  } as z.infer<typeof RequestSchema>
 }
 
 const mockNoData = { owner: null }
@@ -72,6 +71,23 @@ const mockComparisonError = {
         compareWithParent: {
           __typename: 'MissingHeadCommit',
           message: 'Missing head commit',
+        },
+      },
+    },
+  },
+}
+
+const mockYamlError = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        compareWithParent: {
+          __typename: 'FirstPullRequest',
+          message: 'First pull request',
+        },
+        yamlErrors: {
+          edges: [{ node: { errorCode: 'invalid_yaml' } }],
         },
       },
     },
@@ -154,16 +170,7 @@ describe('CommitCoverageDropdown', () => {
         } else if (firstPullRequest) {
           return HttpResponse.json({ data: mockFirstPullRequest })
         } else if (hasYamlError) {
-          const mockWithYamlErrors = mockSummaryData(
-            patchTotals,
-            uploadState,
-            multipleUploads
-          )
-          mockWithYamlErrors.owner.repository.commit.yamlErrors = {
-            edges: [{ node: { errorCode: 'invalid_yaml' } }],
-          }
-
-          return HttpResponse.json({ data: mockWithYamlErrors })
+          return HttpResponse.json({ data: mockYamlError })
         }
 
         return HttpResponse.json({
