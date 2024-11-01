@@ -199,6 +199,8 @@
 
     --color-github: 255, 255, 255;
     --color-github-text: 14, 27, 41;
+    --color-github-hover-bg: 70, 75, 85;
+
     --color-gitlab: 242, 98, 42;
     --color-bitbucket: 2, 75, 186;
     --color-okta: 255, 255, 255;
