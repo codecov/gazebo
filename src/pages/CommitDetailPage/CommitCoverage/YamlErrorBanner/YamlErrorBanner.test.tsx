@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import YamlErrorBanner from './YamlErrorBanner'
@@ -7,11 +8,10 @@ vi.mock('../YamlModal', () => ({ default: () => 'YamlModalComponent' }))
 
 interface SetupArgs {
   shouldLinkToModal?: boolean
-  hasYamlErrors?: boolean
 }
 
 describe('YamlErrorBanner', () => {
-  function setup({ shouldLinkToModal = false }: SetupArgs) {
+  function setup({ shouldLinkToModal }: SetupArgs) {
     render(
       <MemoryRouter initialEntries={[`/gh/codecov`]}>
         <Route path="/:provider/:owner">
@@ -47,10 +47,13 @@ describe('YamlErrorBanner', () => {
 
       const yamlModalLink = await screen.findByTestId('open yaml modal')
       expect(yamlModalLink).toBeInTheDocument()
+
+      const user = userEvent.setup()
+      user.click(yamlModalLink)
     })
 
     it('does not link to modal when false', async () => {
-      setup({ shouldLinkToModal: false })
+      setup({})
       const yamlModal = screen.queryByText(/YamlModalComponent/)
       expect(yamlModal).not.toBeInTheDocument()
 
