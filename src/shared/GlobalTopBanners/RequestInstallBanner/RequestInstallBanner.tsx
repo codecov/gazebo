@@ -6,7 +6,6 @@ import config from 'config'
 import { useLocationParams } from 'services/navigation'
 import AppInstallModal from 'shared/AppInstallModal'
 import { providerToName } from 'shared/utils'
-import { metrics } from 'shared/utils/metrics'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import TopBanner, { saveToLocalStorage } from 'ui/TopBanner'
@@ -76,7 +75,6 @@ const RequestInstallBanner = () => {
             onClick={() => {
               // this has the side effect of hiding the banner
               setShowAppInstallModal(true)
-              metrics.increment('request_install.user.shared.request')
             }}
           >
             Share Request

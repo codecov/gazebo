@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
@@ -8,14 +8,6 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 
 import LearnMoreBlurb from '../LearnMoreBlurb'
-import {
-  copiedBuildCommandMetric,
-  copiedCommitMetric,
-  copiedConfigMetric,
-  copiedInstallCommandMetric,
-  copiedTokenMetric,
-  visitedOnboardingMetric,
-} from '../metricHelpers'
 
 const npmInstall = `npm install @codecov/remix-vite-plugin --save-dev`
 const yarnInstall = `yarn add @codecov/remix-vite-plugin --dev`
@@ -62,31 +54,13 @@ const StepOne: React.FC = () => {
           </span>{' '}
           to your project, use one of the following commands.
         </p>
-        <CodeSnippet
-          clipboard={npmInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('npm', 'remix')
-          }}
-          data-testid="remix-npm-install"
-        >
+        <CodeSnippet clipboard={npmInstall} data-testid="remix-npm-install">
           {npmInstall}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={yarnInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('yarn', 'remix')
-          }}
-          data-testid="remix-yarn-install"
-        >
+        <CodeSnippet clipboard={yarnInstall} data-testid="remix-yarn-install">
           {yarnInstall}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={pnpmInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('pnpm', 'remix')
-          }}
-          data-testid="remix-pnpm-install"
-        >
+        <CodeSnippet clipboard={pnpmInstall} data-testid="remix-pnpm-install">
           {pnpmInstall}
         </CodeSnippet>
       </Card.Content>
@@ -112,9 +86,6 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
           <CodeSnippet
             className="basis-2/3"
             clipboard={uploadToken}
-            clipboardOnClick={() => {
-              copiedTokenMetric('remix')
-            }}
             data-testid="remix-upload-token"
           >
             {uploadToken}
@@ -141,13 +112,7 @@ const StepThree: React.FC = () => {
           </span>{' '}
           file, and pass your configuration.
         </p>
-        <CodeSnippet
-          clipboard={pluginConfig}
-          clipboardOnClick={() => {
-            copiedConfigMetric('remix')
-          }}
-          data-testid="remix-plugin-config"
-        >
+        <CodeSnippet clipboard={pluginConfig} data-testid="remix-plugin-config">
           {pluginConfig}
         </CodeSnippet>
       </Card.Content>
@@ -170,9 +135,6 @@ const StepFour: React.FC = () => {
         </p>
         <CodeSnippet
           clipboard={commitString}
-          clipboardOnClick={() => {
-            copiedCommitMetric('remix')
-          }}
           data-testid="remix-commit-command"
         >
           {commitString}
@@ -193,31 +155,13 @@ const StepFive: React.FC = () => {
           When building your application the plugin will automatically upload
           the stats information to Codecov.
         </p>
-        <CodeSnippet
-          clipboard={npmBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('npm', 'remix')
-          }}
-          data-testid="remix-npm-build"
-        >
+        <CodeSnippet clipboard={npmBuild} data-testid="remix-npm-build">
           {npmBuild}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={yarnBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('yarn', 'remix')
-          }}
-          data-testid="remix-yarn-build"
-        >
+        <CodeSnippet clipboard={yarnBuild} data-testid="remix-yarn-build">
           {yarnBuild}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={pnpmBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('pnpm', 'remix')
-          }}
-          data-testid="remix-pnpm-build"
-        >
+        <CodeSnippet clipboard={pnpmBuild} data-testid="remix-pnpm-build">
           {pnpmBuild}
         </CodeSnippet>
       </Card.Content>
@@ -257,10 +201,6 @@ const RemixOnboarding: React.FC = () => {
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
   const uploadToken = orgUploadToken ?? repoData?.repository?.uploadToken ?? ''
-
-  useEffect(() => {
-    visitedOnboardingMetric('remix')
-  }, [])
 
   return (
     <div className="flex flex-col gap-6">
