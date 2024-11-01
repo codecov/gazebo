@@ -56,7 +56,12 @@ function UploadsCard() {
             <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
               {invalidYamlError ? (
                 <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
-                  <Icon name="exclamation" size="sm" variant="solid" />
+                  <Icon
+                    name="exclamation"
+                    size="sm"
+                    variant="solid"
+                    label="warn"
+                  />
                   <span className="ml-0.5 text-xs text-red-700">
                     view YAML file
                   </span>

@@ -39,6 +39,9 @@ const mockSummaryData = (
           uploads: {
             edges: uploads,
           },
+          yamlErrors: {
+            edges: [{ node: {} }],
+          },
         },
       },
     },
@@ -124,6 +127,7 @@ interface SetupArgs {
   uploadState?: 'COMPLETE' | 'ERROR'
   multipleUploads?: boolean
   firstPullRequest?: boolean
+  hasYamlError?: boolean
 }
 
 describe('CommitCoverageDropdown', () => {
@@ -137,6 +141,7 @@ describe('CommitCoverageDropdown', () => {
     uploadState = 'COMPLETE',
     multipleUploads = false,
     firstPullRequest = false,
+    hasYamlError = false,
   }: SetupArgs = {}) {
     const user = userEvent.setup()
 
@@ -148,6 +153,17 @@ describe('CommitCoverageDropdown', () => {
           return HttpResponse.json({ data: mockComparisonError })
         } else if (firstPullRequest) {
           return HttpResponse.json({ data: mockFirstPullRequest })
+        } else if (hasYamlError) {
+          const mockWithYamlErrors = mockSummaryData(
+            patchTotals,
+            uploadState,
+            multipleUploads
+          )
+          mockWithYamlErrors.owner.repository.commit.yamlErrors = {
+            edges: [{ node: { errorCode: 'invalid_yaml' } }],
+          }
+
+          return HttpResponse.json({ data: mockWithYamlErrors })
         }
 
         return HttpResponse.json({
@@ -361,6 +377,23 @@ describe('CommitCoverageDropdown', () => {
       )
 
       const errorMsg = await screen.findByText(/missing head commit/)
+      expect(errorMsg).toBeInTheDocument()
+    })
+  })
+
+  describe('there is a yaml error', () => {
+    it('renders the yaml error message', async () => {
+      setup({ hasYamlError: true })
+      render(
+        <CommitCoverageDropdown>
+          <p>Passed child</p>
+        </CommitCoverageDropdown>,
+        { wrapper }
+      )
+
+      const errorMsg = await screen.findByText(
+        /data unavailable due to invalid yaml/
+      )
       expect(errorMsg).toBeInTheDocument()
     })
   })
