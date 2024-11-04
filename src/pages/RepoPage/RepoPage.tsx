@@ -63,7 +63,9 @@ function Routes({
   const productEnabled =
     coverageEnabled || bundleAnalysisEnabled || testAnalyticsEnabled
   const userAuthorizedtoViewRepo =
-    (isRepoPrivate && isCurrentUserActivated) || !isRepoPrivate
+    (isRepoPrivate && isCurrentUserActivated) ||
+    !isRepoPrivate ||
+    isCurrentUserOutsideCollaborator
   const showUnauthorizedMessageCoverage =
     coverageEnabled && isRepoPrivate && !isCurrentUserActivated
   const showUnauthorizedMessageBundles =
