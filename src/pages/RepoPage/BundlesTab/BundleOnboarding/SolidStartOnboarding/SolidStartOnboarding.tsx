@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
@@ -8,14 +8,6 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 
 import LearnMoreBlurb from '../LearnMoreBlurb'
-import {
-  copiedBuildCommandMetric,
-  copiedCommitMetric,
-  copiedConfigMetric,
-  copiedInstallCommandMetric,
-  copiedTokenMetric,
-  visitedOnboardingMetric,
-} from '../metricHelpers'
 
 const npmInstall = `npm install @codecov/solidstart-plugin --save-dev`
 const yarnInstall = `yarn add @codecov/solidstart-plugin --dev`
@@ -64,27 +56,18 @@ const StepOne: React.FC = () => {
         </p>
         <CodeSnippet
           clipboard={npmInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('npm', 'solidstart')
-          }}
           data-testid="solidstart-npm-install"
         >
           {npmInstall}
         </CodeSnippet>
         <CodeSnippet
           clipboard={yarnInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('yarn', 'solidstart')
-          }}
           data-testid="solidstart-yarn-install"
         >
           {yarnInstall}
         </CodeSnippet>
         <CodeSnippet
           clipboard={pnpmInstall}
-          clipboardOnClick={() => {
-            copiedInstallCommandMetric('pnpm', 'solidstart')
-          }}
           data-testid="solidstart-pnpm-install"
         >
           {pnpmInstall}
@@ -112,9 +95,6 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
           <CodeSnippet
             className="basis-2/3"
             clipboard={uploadToken}
-            clipboardOnClick={() => {
-              copiedTokenMetric('solidstart')
-            }}
             data-testid="solidstart-upload-token"
           >
             {uploadToken}
@@ -143,9 +123,6 @@ const StepThree: React.FC = () => {
         </p>
         <CodeSnippet
           clipboard={pluginConfig}
-          clipboardOnClick={() => {
-            copiedConfigMetric('solidstart')
-          }}
           data-testid="solidstart-plugin-config"
         >
           {pluginConfig}
@@ -170,9 +147,6 @@ const StepFour: React.FC = () => {
         </p>
         <CodeSnippet
           clipboard={commitString}
-          clipboardOnClick={() => {
-            copiedCommitMetric('solidstart')
-          }}
           data-testid="solidstart-commit-command"
         >
           {commitString}
@@ -193,31 +167,13 @@ const StepFive: React.FC = () => {
           When building your application the plugin will automatically upload
           the stats information to Codecov.
         </p>
-        <CodeSnippet
-          clipboard={npmBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('npm', 'solidstart')
-          }}
-          data-testid="solidstart-npm-build"
-        >
+        <CodeSnippet clipboard={npmBuild} data-testid="solidstart-npm-build">
           {npmBuild}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={yarnBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('yarn', 'solidstart')
-          }}
-          data-testid="solidstart-yarn-build"
-        >
+        <CodeSnippet clipboard={yarnBuild} data-testid="solidstart-yarn-build">
           {yarnBuild}
         </CodeSnippet>
-        <CodeSnippet
-          clipboard={pnpmBuild}
-          clipboardOnClick={() => {
-            copiedBuildCommandMetric('pnpm', 'solidstart')
-          }}
-          data-testid="solidstart-pnpm-build"
-        >
+        <CodeSnippet clipboard={pnpmBuild} data-testid="solidstart-pnpm-build">
           {pnpmBuild}
         </CodeSnippet>
       </Card.Content>
@@ -257,10 +213,6 @@ const SolidStartOnboarding: React.FC = () => {
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
   const uploadToken = orgUploadToken ?? repoData?.repository?.uploadToken ?? ''
-
-  useEffect(() => {
-    visitedOnboardingMetric('solidstart')
-  }, [])
 
   return (
     <div className="flex flex-col gap-6">

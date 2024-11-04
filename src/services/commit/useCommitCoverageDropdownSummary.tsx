@@ -44,6 +44,10 @@ const NodeSchema = z.object({
   node: z.object({ state: z.nativeEnum(UploadStateEnum) }),
 })
 
+export const YamlErrorNodeSchema = z.object({
+  node: z.object({ errorCode: z.string() }),
+})
+
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   commit: z
@@ -54,11 +58,16 @@ const RepositorySchema = z.object({
           edges: z.array(NodeSchema.nullable()),
         })
         .nullish(),
+      yamlErrors: z
+        .object({
+          edges: z.array(YamlErrorNodeSchema.nullable()),
+        })
+        .nullish(),
     })
     .nullable(),
 })
 
-const RequestSchema = z.object({
+export const RequestSchema = z.object({
   owner: z
     .object({
       repository: z.discriminatedUnion('__typename', [
@@ -113,6 +122,13 @@ query CommitDropdownSummary(
             }
             ... on MissingHeadReport {
               message
+            }
+          }
+          yamlErrors: errors(errorType: YAML_ERROR){
+            edges {
+                node {
+                    errorCode
+                }
             }
           }
         }
@@ -202,9 +218,13 @@ export function useCommitCoverageDropdownSummary({
           delete commit.uploads
         }
 
+        const yamlErrors =
+          mapEdges(data?.owner?.repository?.commit?.yamlErrors) || []
+
         return {
           uploadErrorCount,
           commit,
+          yamlErrors,
         }
       }),
   })

@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
@@ -28,17 +27,6 @@ vi.mock('shared/featureFlags', async () => {
   return {
     ...originalModule,
     useFlags: mocks.useFlags,
-  }
-})
-vi.mock('@sentry/react', async () => {
-  const originalModule = await vi.importActual('@sentry/react')
-  return {
-    ...originalModule,
-    metrics: {
-      // @ts-expect-error
-      ...originalModule.metrics,
-      increment: mocks.captureMessage,
-    },
   }
 })
 
@@ -117,23 +105,6 @@ describe('RequestInstallBanner', () => {
               ' admin or owner to assist.'
           )
           expect(modalText).toBeInTheDocument()
-        })
-
-        it('should capture the user shared request metric', async () => {
-          const { user, mockGetItem } = setup({})
-          render(<RequestInstallBanner />, { wrapper: wrapper('/gh/codecov') })
-
-          mockGetItem.mockReturnValue(null)
-
-          const btn = screen.getByRole('button', { name: /Share Request/ })
-          expect(btn).toBeInTheDocument()
-          await user.click(btn)
-
-          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-            'request_install.user.shared.request',
-            undefined,
-            undefined
-          )
         })
       })
 
