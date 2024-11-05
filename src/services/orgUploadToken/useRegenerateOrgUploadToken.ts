@@ -9,7 +9,7 @@ interface URLParams {
 }
 
 export function useRegenerateOrgUploadToken(
-  { onSuccess = (data: any) => {} } = { onSuccess: () => {} }
+  { onSuccess = (data: unknown) => {} } = { onSuccess: () => {} }
 ) {
   const { provider, owner } = useParams<URLParams>()
   const queryClient = useQueryClient()

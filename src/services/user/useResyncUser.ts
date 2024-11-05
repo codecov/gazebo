@@ -13,7 +13,7 @@ function fetchIsSyncing({
   signal,
 }: {
   provider: string
-  signal: AbortSignal | undefined
+  signal?: AbortSignal
 }) {
   const query = `
       query IsSyncing {

@@ -39,7 +39,7 @@ export function useImage({ src }: { src: string }) {
     let unMounted = false
     imageCache
       .get(src)
-      .promise.then((src: any) => {
+      .promise.then((src: string) => {
         if (unMounted) return
         imageCache.set(src, { ...imageCache.get(src), cache: 'resolved', src })
         setIsLoading(false)
