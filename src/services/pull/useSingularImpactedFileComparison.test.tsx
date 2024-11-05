@@ -4,7 +4,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
 import { useSingularImpactedFileComparison } from './useSingularImpactedFileComparison'
-import { transformImpactedFileToDiff } from './utils'
 
 console.error = () => {}
 
@@ -164,11 +163,27 @@ describe('useSingularImpactedFileComparison', () => {
         await waitFor(() => !result.current.isLoading)
 
         await waitFor(() =>
-          expect(result.current.data).toEqual(
-            transformImpactedFileToDiff(
-              mockResponse.owner.repository.pull.compareWithBase.impactedFile
-            )
-          )
+          expect(result.current.data).toEqual({
+            fileLabel: null,
+            hashedPath: 'hashedPath',
+            headName: 'headName',
+            isCriticalFile: false,
+            segments: [
+              {
+                hasUnintendedChanges: false,
+                header: 'header',
+                lines: [
+                  {
+                    baseCoverage: 'M',
+                    baseNumber: '1',
+                    content: 'content',
+                    headCoverage: 'H',
+                    headNumber: '1',
+                  },
+                ],
+              },
+            ],
+          })
         )
       })
     })

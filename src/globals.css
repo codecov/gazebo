@@ -199,6 +199,8 @@
 
     --color-github: 255, 255, 255;
     --color-github-text: 14, 27, 41;
+    --color-github-hover-bg: 70, 75, 85;
+
     --color-gitlab: 242, 98, 42;
     --color-bitbucket: 2, 75, 186;
     --color-okta: 255, 255, 255;
@@ -253,6 +255,8 @@
     --color-code-operator: 219 178, 89;
   }
 
+  /* Also used for prefers-color-scheme: light */
+  /* explicitly define it below if we want to change behavior */
   body {
     @apply lightMode;
   }
@@ -261,7 +265,7 @@
     @apply darkMode;
   }
 
-  /* new body theme can be applied here
+  /* new body theme can be applied here */
 
   @media (prefers-color-scheme: dark) {
     body {
@@ -271,9 +275,7 @@
     body.light {
       @apply lightMode;
     }
-
-     new body theme added above should be applied here as well to cover specificity
-  } */
+  }
 }
 
 #sentry-feedback {

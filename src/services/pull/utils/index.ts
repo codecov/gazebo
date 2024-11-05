@@ -1,2 +1,2 @@
 export * from './setFileLabel'
-export * from './transformImpactedFileToDiff'
+export * from './transformImpactedPullFileToDiff'
