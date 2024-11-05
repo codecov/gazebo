@@ -6,13 +6,24 @@ import Api from 'shared/api'
 
 import { queryForCommitFile as query } from '../../constants'
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
 export function usePrefetchBranchFileEntry({
   branch,
   path,
   flags = [],
   options = {},
+}: {
+  branch: string
+  path: string
+  flags?: string[]
+  options?: Record<string, unknown>
 }) {
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo } = useParams<URLParams>()
   const queryClient = useQueryClient()
 
   const runPrefetch = async () =>

@@ -4,17 +4,19 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useOwner } from './useOwner'
+import { DetailOwnerSchema, useOwner } from './useOwner'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
   logger: {
+    log: () => {},
+    warn: () => {},
     error: () => {},
   },
 })
 
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
@@ -38,7 +40,7 @@ afterAll(() => {
 })
 
 describe('useOwner', () => {
-  function setup(dataReturned = undefined) {
+  function setup(dataReturned: DetailOwnerSchema | undefined = undefined) {
     server.use(
       graphql.query('DetailOwner', (info) => {
         return HttpResponse.json({ data: { owner: dataReturned } })

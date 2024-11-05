@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter
     initialEntries={['/gh/codecov/test-repo/tree/main/src/file.js']}
   >

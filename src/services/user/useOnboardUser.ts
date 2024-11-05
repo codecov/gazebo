@@ -43,8 +43,12 @@ fragment CurrentUserFragment on Me {
 }
 `
 
-export function useOnboardUser(opts) {
-  const { provider } = useParams()
+interface URLParams {
+  provider: string
+}
+
+export function useOnboardUser(opts: Record<string, unknown>) {
+  const { provider } = useParams<URLParams>()
   const queryClient = useQueryClient()
   const mutation = `
       mutation OnboardUser($input: OnboardUserInput!) {
