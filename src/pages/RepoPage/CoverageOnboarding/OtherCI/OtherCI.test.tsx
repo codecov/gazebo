@@ -146,7 +146,7 @@ describe('OtherCI', () => {
         expect(codecovToken).toBeInTheDocument()
 
         const tokenValue = await screen.findAllByText(/repo-token-jkl;-7890/)
-        expect(tokenValue).toHaveLength(2)
+        expect(tokenValue).toHaveLength(1)
       })
     })
   })
