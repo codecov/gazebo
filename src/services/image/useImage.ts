@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 
-export function imagePromiseFactory({ src }) {
+export function imagePromiseFactory({ src }: { src: string }) {
   return new Promise((resolveSource, rejectSource) => {
-    return new Promise((resolveImage, rejectImage) => {
+    return new Promise<void>((resolveImage, rejectImage) => {
       const image = new Image()
       image.src = src
       image.onload = () =>
@@ -19,7 +19,7 @@ export function imagePromiseFactory({ src }) {
 
 const imageExtCache = new Map()
 
-export function useImage({ src }) {
+export function useImage({ src }: { src: string }) {
   const [, setIsLoading] = useState(true)
 
   let imageCache = useMemo(
@@ -39,12 +39,12 @@ export function useImage({ src }) {
     let unMounted = false
     imageCache
       .get(src)
-      .promise.then((src) => {
+      .promise.then((src: any) => {
         if (unMounted) return
         imageCache.set(src, { ...imageCache.get(src), cache: 'resolved', src })
         setIsLoading(false)
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         if (unMounted) return
         imageCache.set(src, {
           ...imageCache.get(src),

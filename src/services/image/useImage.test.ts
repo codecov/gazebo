@@ -23,7 +23,7 @@ describe('useImage', () => {
         }
 
         decode() {
-          return new Promise((resolve) => resolve())
+          return new Promise<void>((resolve) => resolve())
         }
       }
     })

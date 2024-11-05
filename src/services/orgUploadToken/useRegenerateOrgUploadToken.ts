@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 import Api from 'shared/api'
 
 export function useRegenerateOrgUploadToken(
-  { onSuccess = () => {} } = { onSuccess: () => {} }
+  { onSuccess = (data: any) => {} } = { onSuccess: () => {} }
 ) {
   const { provider, owner } = useParams()
   const queryClient = useQueryClient()
