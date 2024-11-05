@@ -8,8 +8,19 @@ interface URLParams {
   owner: string
 }
 
+interface RegenerateOrgUploadTokenOutput {
+  regenerateOrgUploadToken?: {
+    orgUploadToken?: string
+    error?: {
+      __typename?: string
+    }
+  }
+}
+
 export function useRegenerateOrgUploadToken(
-  { onSuccess = (data: unknown) => {} } = { onSuccess: () => {} }
+  { onSuccess = (data: RegenerateOrgUploadTokenOutput) => {} } = {
+    onSuccess: () => {},
+  }
 ) {
   const { provider, owner } = useParams<URLParams>()
   const queryClient = useQueryClient()

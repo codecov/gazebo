@@ -22,7 +22,7 @@ function fetchRepoCoverage({
 }: {
   provider: string
   owner: string
-  body: any
+  body?: string
   signal: AbortSignal
 }) {
   const path = getRepoCoverage({ provider, owner })
@@ -34,8 +34,8 @@ interface UseLegacyRepoCoverageArgs {
   owner: string
   branch?: string
   trend?: string
-  body?: any
-  opts?: any
+  body?: string
+  opts?: unknown
   query?: {
     groupingUnit: string
   }
