@@ -6,7 +6,6 @@ import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useGenerateUserToken } from './index'
-import { Z } from 'vitest/dist/chunks/reporters.C4ZHgdxQ'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -39,7 +38,7 @@ describe('useGenerateUserToken', () => {
   function setup() {
     server.use(
       graphql.mutation(`CreateUserToken`, (info) => {
-        return HttpResponse.json({ data: {me: null} })
+        return HttpResponse.json({ data: { me: null } })
       })
     )
   }
@@ -54,7 +53,7 @@ describe('useGenerateUserToken', () => {
           { wrapper }
         )
 
-        result.current.mutate({ sessionid: 1 })
+        result.current.mutate({ name: '1' })
 
         await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
       })
