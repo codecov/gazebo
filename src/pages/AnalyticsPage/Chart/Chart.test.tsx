@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -128,6 +128,45 @@ describe('Analytics coverage chart', () => {
     expect(label).toBeInTheDocument()
   })
 
+  describe('renders the chart', () => {
+    it('renders the chart', async () => {
+      setup({})
+      render(
+        <Chart
+          params={{
+            startDate: new Date('2020-01-15'),
+            endDate: new Date('2020-01-19'),
+            repositories: [],
+          }}
+        />,
+        { wrapper }
+      )
+
+      const chart = await screen.findByTestId('chart-container')
+      expect(chart).toBeInTheDocument()
+    })
+
+    it('renders the legend', async () => {
+      setup({})
+      render(
+        <Chart
+          params={{
+            startDate: new Date('2020-01-15'),
+            endDate: new Date('2020-01-19'),
+            repositories: [],
+          }}
+        />,
+        { wrapper }
+      )
+
+      const legend = await screen.findByTestId('chart-legend-content')
+      expect(legend).toBeInTheDocument()
+
+      const coverage = await within(legend).findByText('Coverage')
+      expect(coverage).toBeInTheDocument()
+    })
+  })
+
   describe('no coverage data exists', () => {
     it('renders not enough data message', async () => {
       setup({ hasNoData: true })
@@ -144,7 +183,7 @@ describe('Analytics coverage chart', () => {
       )
 
       const message = await screen.findByText(
-        'Not enough coverage data to display.'
+        'Not enough coverage data to display chart.'
       )
       expect(message).toBeInTheDocument()
     })
