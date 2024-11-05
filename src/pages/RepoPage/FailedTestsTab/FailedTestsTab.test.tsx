@@ -186,7 +186,7 @@ describe('FailedTestsTab', () => {
 
           const codecovCLI = screen.getByTestId('codecov-cli-radio')
           expect(codecovCLI).toBeInTheDocument()
-          expect(codecovCLI).toHaveAttribute('data-state', 'checked')
+          expect(codecovCLI).not.toHaveAttribute('data-state', 'checked')
         })
       })
     })
