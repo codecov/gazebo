@@ -148,7 +148,7 @@ describe('FailedTestsTab', () => {
     render(<FailedTestsTab />, { wrapper: wrapper() })
 
     const intro = screen.getByText('Test Analytics')
-    expect(intro).toBeInTheDocument()
+    expect(intro).not.toBeInTheDocument()
   })
 
   describe('Setup Options', () => {
@@ -162,7 +162,7 @@ describe('FailedTestsTab', () => {
       const githubActions = screen.getByText('Using GitHub Actions')
       const codecovCLI = screen.getByText("Using Codecov's CLI")
       expect(githubActions).toBeInTheDocument()
-      expect(codecovCLI).toBeInTheDocument()
+      expect(codecovCLI).not.toBeInTheDocument()
     })
 
     describe('initial selection', () => {
