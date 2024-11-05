@@ -47,7 +47,7 @@ interface URLParams {
   provider: string
 }
 
-export function useOnboardUser(opts: Record<string, unknown>) {
+export function useOnboardUser(opts?: Record<string, unknown>) {
   const { provider } = useParams<URLParams>()
   const queryClient = useQueryClient()
   const mutation = `
@@ -65,7 +65,7 @@ export function useOnboardUser(opts: Record<string, unknown>) {
     `
 
   return useMutation({
-    mutationFn: (input) => {
+    mutationFn: (input?: { formData?: unknown; selectedOrg?: string }) => {
       const formData = input?.formData
       const selectedOrg = input?.selectedOrg
 

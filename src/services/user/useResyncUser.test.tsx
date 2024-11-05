@@ -1,4 +1,8 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClient,
+  QueryClientProvider,
+  QueryFilters,
+} from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -115,9 +119,8 @@ describe('useResyncUser', () => {
       await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(4))
 
       // Mock returning the data returned being as large as the page size
-      getQueriesDataSpy.mockReturnValue([
-        0,
-        { pages: { repos: Array.from({ length: 20 }) } },
+      getQueriesDataSpy.mockImplementation(({ queryKey }: QueryFilters) => [
+        [queryKey!, { pages: { repos: Array.from({ length: 20 }) } }],
       ])
 
       vi.advanceTimersByTime(POLLING_INTERVAL)

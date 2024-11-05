@@ -13,7 +13,7 @@ function fetchIsSyncing({
   signal,
 }: {
   provider: string
-  signal: AbortSignal
+  signal: AbortSignal | undefined
 }) {
   const query = `
       query IsSyncing {
@@ -80,13 +80,15 @@ export function useResyncUser() {
   // useQuery will automatically feed the so we don't need to care about return
   const { isSuccess, isFetching } = useQuery({
     queryKey: ['isSyncing', provider, owner],
-    queryFn: ({ signal }: { signal: AbortSignal }) => {
+    queryFn: ({ signal }) => {
       const data = queryClient.getQueriesData({
         queryKey: ['repos', provider, owner],
       })
 
       const numRepos =
-        data?.length > 0 ? data[data.length - 1]?.pages?.repos?.length : 0
+        data?.length > 0
+          ? (data[data.length - 1] as any)?.pages?.repos?.length
+          : 0
 
       if (numRepos < PAGE_SIZE) {
         queryClient.invalidateQueries({
@@ -98,7 +100,7 @@ export function useResyncUser() {
     },
     suspense: false,
     useErrorBoundary: false,
-    refetchInterval: isSyncing ? POLLING_INTERVAL : null,
+    refetchInterval: isSyncing ? POLLING_INTERVAL : undefined,
   })
 
   useEffect(() => {
