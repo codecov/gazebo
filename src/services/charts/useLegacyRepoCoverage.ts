@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { QueryOptions, useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 import { providerToInternalProvider } from 'shared/utils'
@@ -23,7 +23,7 @@ function fetchRepoCoverage({
   provider: string
   owner: string
   body?: string
-  signal: AbortSignal
+  signal?: AbortSignal
 }) {
   const path = getRepoCoverage({ provider, owner })
   return Api.post({ path, provider, body, signal })
@@ -35,7 +35,7 @@ interface UseLegacyRepoCoverageArgs {
   branch?: string
   trend?: string
   body?: string
-  opts?: unknown
+  opts?: QueryOptions
   query?: {
     groupingUnit: string
   }
@@ -51,7 +51,7 @@ export function useLegacyRepoCoverage({
 }: UseLegacyRepoCoverageArgs) {
   return useQuery({
     queryKey: ['legacyRepo', 'coverage', provider, owner, branch, trend, body],
-    queryFn: ({ signal }: { signal: AbortSignal }) =>
+    queryFn: ({ signal }) =>
       fetchRepoCoverage({ provider, owner, body, signal }),
     ...opts,
   })
