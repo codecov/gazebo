@@ -31,7 +31,7 @@ export const useCoverage = ({ params, options = {} }: UseCoverageArgs) => {
 
   const queryVars = analyticsQuery(params)
 
-  const { data } = useReposCoverageMeasurements({
+  const { data, ...rest } = useReposCoverageMeasurements({
     provider,
     owner,
     interval: queryVars?.interval,
@@ -48,7 +48,7 @@ export const useCoverage = ({ params, options = {} }: UseCoverageArgs) => {
 
   return useMemo(() => {
     if (!data?.measurements) {
-      return { data: [] }
+      return { ...rest, data: [] }
     }
 
     if (data?.measurements?.[0]?.avg === null) {
@@ -71,6 +71,6 @@ export const useCoverage = ({ params, options = {} }: UseCoverageArgs) => {
       }
     })
 
-    return { data: coverage }
-  }, [data])
+    return { ...rest, data: coverage }
+  }, [data?.measurements, rest])
 }

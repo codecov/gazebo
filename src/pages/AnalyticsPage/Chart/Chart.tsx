@@ -10,6 +10,7 @@ import {
   ChartTooltipContent,
 } from 'ui/Chart'
 import Icon from 'ui/Icon'
+import LoadingLogo from 'ui/LoadingLogo'
 
 import { useCoverage } from './useCoverage'
 
@@ -26,19 +27,32 @@ interface ChartProps {
 }
 
 function Chart({ params }: ChartProps) {
-  const { data: coverage } = useCoverage({
+  const {
+    data: coverage,
+    isPreviousData,
+    isLoading,
+    isError,
+  } = useCoverage({
     params: {
       startDate: params.startDate ? params.startDate : null,
       endDate: params.endDate ? params.endDate : null,
       repositories: params.repositories,
     },
     options: {
-      suspense: true,
+      suspense: false,
       keepPreviousData: true,
     },
   })
 
-  if (!coverage) {
+  if (!isPreviousData && isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <LoadingLogo />
+      </div>
+    )
+  }
+
+  if (isError) {
     return (
       <div className="flex max-h-[260px] min-h-[200px] w-full items-center justify-center">
         <p>The coverage chart failed to load.</p>

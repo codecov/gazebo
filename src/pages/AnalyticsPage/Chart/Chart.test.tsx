@@ -26,6 +26,21 @@ vi.mock('recharts', async () => {
   }
 })
 
+const mockSingleDataPoint = {
+  owner: {
+    measurements: [{ timestamp: '2020-01-01T00:00:00Z', avg: 91.11 }],
+  },
+}
+
+const mockDataPoints = {
+  owner: {
+    measurements: [
+      { timestamp: '2020-01-01T00:00:00Z', avg: 90.0 },
+      { timestamp: '2021-01-01T00:00:00Z', avg: 91.11 },
+    ],
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -76,31 +91,26 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  hasNoData?: boolean
+  hasSingleData?: boolean
+  hasError?: boolean
+}
+
 describe('Analytics coverage chart', () => {
-  const mockSingleDataPoint = {
-    owner: {
-      measurements: [{ timestamp: '2020-01-01T00:00:00Z', avg: 91.11 }],
-    },
-  }
-
-  const mockDataPoints = {
-    owner: {
-      measurements: [
-        { timestamp: '2020-01-01T00:00:00Z', avg: 90.0 },
-        { timestamp: '2021-01-01T00:00:00Z', avg: 91.11 },
-      ],
-    },
-  }
-
-  function setup({ hasNoData = false, hasSingleData = false }) {
+  function setup({
+    hasNoData = false,
+    hasSingleData = false,
+    hasError = false,
+  }: SetupArgs) {
     server.use(
       graphql.query('GetReposCoverageMeasurements', (info) => {
         if (hasNoData) {
           return HttpResponse.json({ data: { owner: { measurements: [] } } })
-        }
-
-        if (hasSingleData) {
+        } else if (hasSingleData) {
           return HttpResponse.json({ data: mockSingleDataPoint })
+        } else if (hasError) {
+          return HttpResponse.json({ errors: ['error'] }, { status: 500 })
         }
 
         return HttpResponse.json({ data: mockDataPoints })
@@ -170,7 +180,6 @@ describe('Analytics coverage chart', () => {
   describe('no coverage data exists', () => {
     it('renders not enough data message', async () => {
       setup({ hasNoData: true })
-
       render(
         <Chart
           params={{
@@ -184,6 +193,27 @@ describe('Analytics coverage chart', () => {
 
       const message = await screen.findByText(
         'Not enough coverage data to display chart.'
+      )
+      expect(message).toBeInTheDocument()
+    })
+  })
+
+  describe('fails to load', () => {
+    it('renders error message', async () => {
+      setup({ hasError: true })
+      render(
+        <Chart
+          params={{
+            startDate: new Date('2020-01-15'),
+            endDate: new Date('2020-01-19'),
+            repositories: [],
+          }}
+        />,
+        { wrapper }
+      )
+
+      const message = await screen.findByText(
+        'The coverage chart failed to load.'
       )
       expect(message).toBeInTheDocument()
     })
