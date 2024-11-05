@@ -39,11 +39,13 @@ export function useNavLinks() {
     },
     signIn: {
       text: 'Log in',
-      path: (
-        { provider = p, to }: { provider?: string; to?: string } = {
-          provider: p,
-        }
-      ): string => {
+      path: ({
+        provider = p,
+        to,
+      }: {
+        provider?: string
+        to?: string
+      } = {}): string => {
         const query = qs.stringify({ to }, { addQueryPrefix: true })
         return `${config.API_URL}/login/${provider}${query}`
       },
