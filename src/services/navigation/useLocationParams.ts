@@ -12,7 +12,7 @@ export function useLocationParams(defaultParams = {}) {
     }),
   }
 
-  function updateWindowLocation(params) {
+  function updateWindowLocation(params: unknown) {
     const locationParams = omitBy(
       params,
       (value, key) => value === defaultParams[key]
@@ -22,12 +22,12 @@ export function useLocationParams(defaultParams = {}) {
   }
 
   // Create new state
-  function setParams(newParams) {
+  function setParams(newParams: unknown) {
     updateWindowLocation(newParams)
   }
 
   // Retain previous state
-  function updateParams(newParams) {
+  function updateParams(newParams: unknown) {
     updateWindowLocation({
       ...params,
       ...newParams,

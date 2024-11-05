@@ -36,10 +36,10 @@ afterAll(() => {
 })
 
 describe('useGenerateUserToken', () => {
-  function setup(dataReturned) {
+  function setup() {
     server.use(
       graphql.mutation(`CreateUserToken`, (info) => {
-        return HttpResponse.json({ data: dataReturned })
+        return HttpResponse.json({ data: {me: null} })
       })
     )
   }
@@ -47,7 +47,7 @@ describe('useGenerateUserToken', () => {
   describe('when called', () => {
     describe('when calling the mutation', () => {
       it('returns success', async () => {
-        setup({ me: null })
+        setup()
 
         const { result } = renderHook(
           () => useGenerateUserToken({ provider }),
