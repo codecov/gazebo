@@ -37,11 +37,180 @@ function GitHubActions() {
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken ?? ''
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
+  const [framework, setFramework] = useState<Framework>('Jest')
+
+  const frameworkInstructions = {
+    Jest: {
+      install: 'npm install --save-dev jest',
+      run: 'npx jest --coverage',
+      workflow: `name: Run tests and upload coverage
+  
+  on: 
+  push
+  
+  jobs:
+  test:
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+  
+      - name: Set up Node
+        uses: actions/setup-node@v4
+  
+      - name: Install dependencies
+        run: npm install
+  
+      - name: Run tests
+        run: npx jest --coverage
+  
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: \${{ secrets.CODECOV_TOKEN }}${
+            orgUploadToken
+              ? `
+          slug: ${owner}/${repo}`
+              : ''
+          }
+  `,
+    },
+    Vitest: {
+      install: 'npm install --save-dev vitest @vitest/coverage-v8',
+      run: 'npx vitest run --coverage',
+      workflow: `name: Run tests and upload coverage
+  
+  on: 
+  push
+  
+  jobs:
+  test:
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+  
+      - name: Set up Node
+        uses: actions/setup-node@v4
+  
+      - name: Install dependencies
+        run: npm install
+  
+      - name: Run tests
+        run: npx vitest run --coverage
+  
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: \${{ secrets.CODECOV_TOKEN }}${
+            orgUploadToken
+              ? `
+          slug: ${owner}/${repo}`
+              : ''
+          }
+  `,
+    },
+    Pytest: {
+      install: 'pip install pytest pytest-cov',
+      run: 'pytest --cov --cov-report=xml',
+      workflow: `name: Run tests and upload coverage
+  
+  on: 
+  push
+  
+  jobs:
+  test:
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+  
+      - name: Set up Python
+        uses: actions/setup-python@v4
+  
+      - name: Install dependencies
+        run: pip install pytest pytest-cov
+  
+      - name: Run tests
+        run: pytest --cov --cov-report=xml
+  
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: \${{ secrets.CODECOV_TOKEN }}${
+            orgUploadToken
+              ? `
+          slug: ${owner}/${repo}`
+              : ''
+          }
+  `,
+    },
+    Go: {
+      install: undefined,
+      run: 'go test -coverprofile=coverage.txt',
+      workflow: `name: Run tests and upload coverage
+  
+  on: 
+  push
+  
+  jobs:
+  test:
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+  
+      - name: Set up Go
+        uses: actions/setup-go@v5
+  
+      - name: Install dependencies
+        run: go mod download
+  
+      - name: Run tests
+        run: go test -coverprofile=coverage.txt
+  
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: \${{ secrets.CODECOV_TOKEN }}${
+            orgUploadToken
+              ? `
+          slug: ${owner}/${repo}`
+              : ''
+          }
+  `,
+    },
+  }
+
   return (
     <div className="flex flex-col gap-6">
-      <Step1 orgUploadToken={orgUploadToken} owner={owner} repo={repo} />
+      <Step1
+        framework={framework}
+        frameworkInstructions={frameworkInstructions}
+        owner={owner}
+        setFramework={setFramework}
+      />
       <Step2 tokenCopy={tokenCopy} uploadToken={uploadToken} />
-      <Step3 />
+      <Step3
+        framework={framework}
+        frameworkInstructions={frameworkInstructions}
+        orgUploadToken={orgUploadToken}
+        owner={owner}
+        repo={repo}
+      />
+      <Step4 />
       <FeedbackCTA />
       <LearnMoreBlurb />
     </div>
@@ -49,170 +218,23 @@ function GitHubActions() {
 }
 
 type Framework = 'Jest' | 'Vitest' | 'Pytest' | 'Go'
-
-interface Step1Props {
-  orgUploadToken: string | null | undefined
-  owner: string
-  repo: string
+type FrameworkInstructions = {
+  [key in Framework]: { install?: string; run?: string; workflow?: string }
 }
 
-function Step1({ orgUploadToken, owner, repo }: Step1Props) {
-  const frameworkInstructions = {
-    Jest: {
-      install: 'npm install --save-dev jest',
-      run: 'npx jest --coverage',
-      workflow: `name: Run tests and upload coverage
+interface Step1Props {
+  framework: Framework
+  frameworkInstructions: FrameworkInstructions
+  owner: string
+  setFramework: (value: Framework) => void
+}
 
-on: 
-  push
-
-jobs:
-  test:
-    name: Run tests and collect coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npx jest --coverage
-
-      - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: \${{ secrets.CODECOV_TOKEN }}${
-            orgUploadToken
-              ? `
-          slug: ${owner}/${repo}`
-              : ''
-          }
-`,
-    },
-    Vitest: {
-      install: 'npm install --save-dev vitest @vitest/coverage-v8',
-      run: 'npx vitest run --coverage',
-      workflow: `name: Run tests and upload coverage
-
-on: 
-  push
-
-jobs:
-  test:
-    name: Run tests and collect coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npx vitest run --coverage
-
-      - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: \${{ secrets.CODECOV_TOKEN }}${
-            orgUploadToken
-              ? `
-          slug: ${owner}/${repo}`
-              : ''
-          }
-`,
-    },
-    Pytest: {
-      install: 'pip install pytest pytest-cov',
-      run: 'pytest --cov --cov-report=xml',
-      workflow: `name: Run tests and upload coverage
-
-on: 
-  push
-
-jobs:
-  test:
-    name: Run tests and collect coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-
-      - name: Install dependencies
-        run: pip install pytest pytest-cov
-
-      - name: Run tests
-        run: pytest --cov --cov-report=xml
-
-      - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: \${{ secrets.CODECOV_TOKEN }}${
-            orgUploadToken
-              ? `
-          slug: ${owner}/${repo}`
-              : ''
-          }
-`,
-    },
-    Go: {
-      install: undefined,
-      run: 'go test -coverprofile=coverage.txt',
-      workflow: `name: Run tests and upload coverage
-
-on: 
-  push
-
-jobs:
-  test:
-    name: Run tests and collect coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-
-      - name: Install dependencies
-        run: go mod download
-
-      - name: Run tests
-        run: go test -coverprofile=coverage.txt
-
-      - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: \${{ secrets.CODECOV_TOKEN }}${
-            orgUploadToken
-              ? `
-          slug: ${owner}/${repo}`
-              : ''
-          }
-`,
-    },
-  }
-
-  const [framework, setFramework] = useState<Framework>('Jest')
+function Step1({
+  framework,
+  frameworkInstructions,
+  owner,
+  setFramework,
+}: Step1Props) {
   const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
 
   return (
@@ -280,39 +302,6 @@ jobs:
           </CodeSnippet>
         </Card.Content>
       </Card>
-      <ExpandableSection className="-mt-px">
-        <ExpandableSection.Trigger>
-          <p className="font-normal">
-            Your final GitHub Actions workflow for a project using{' '}
-            <span className="text-codecov-code">{framework}</span> could look
-            something like this:
-          </p>
-        </ExpandableSection.Trigger>
-        <ExpandableSection.Content>
-          <CodeSnippet
-            clipboard={frameworkInstructions[framework].workflow}
-            clipboardOnClick={() =>
-              storeEventMetric({
-                owner,
-                event: EVENT_METRICS.COPIED_TEXT,
-                jsonPayload: { text: `coverage GHA ${framework} action` },
-              })
-            }
-          >
-            {frameworkInstructions[framework].workflow}
-          </CodeSnippet>
-          <p className="pt-4">
-            <A
-              to={{ pageName: 'exampleRepos' }}
-              isExternal
-              hook="supported-languages-docs"
-            >
-              Learn more
-            </A>{' '}
-            about generating coverage reports with {framework}
-          </p>
-        </ExpandableSection.Content>
-      </ExpandableSection>
     </div>
   )
 }
@@ -371,12 +360,103 @@ function Step2({ tokenCopy, uploadToken }: Step2Props) {
   )
 }
 
-function Step3() {
+interface Step3Props {
+  framework: Framework
+  frameworkInstructions: FrameworkInstructions
+  orgUploadToken: string | null | undefined
+  owner: string
+  repo: string
+}
+
+function Step3({
+  framework,
+  frameworkInstructions,
+  orgUploadToken,
+  owner,
+  repo,
+}: Step3Props) {
+  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
+
+  const step3Config = `- name: Upload coverage reports to Codecov
+    uses: codecov/codecov-action@v4
+    with:
+      token: \${{ secrets.CODECOV_TOKEN }}${
+        orgUploadToken
+          ? `
+      slug: ${owner}/${repo}`
+          : ''
+      }
+    `
+
+  return (
+    <div>
+      <Card>
+        <Card.Header>
+          <Card.Title size="base">
+            Step 3: Add Codecov to your GitHub Actions workflow yaml file
+          </Card.Title>
+        </Card.Header>
+        <Card.Content className="flex flex-col gap-4">
+          <p>
+            After tests run, this will upload your coverage report to Codecov:
+          </p>
+          <CodeSnippet
+            clipboard={step3Config}
+            clipboardOnClick={() =>
+              storeEventMetric({
+                owner,
+                event: EVENT_METRICS.COPIED_TEXT,
+                jsonPayload: { text: `coverage GHA ${framework} upload` },
+              })
+            }
+          >
+            {step3Config}
+          </CodeSnippet>
+        </Card.Content>
+      </Card>
+      <ExpandableSection className="-mt-px" defaultOpen>
+        <ExpandableSection.Trigger>
+          <p className="font-normal">
+            Your final GitHub Actions workflow for a project using{' '}
+            <span className="text-codecov-code">{framework}</span> could look
+            something like this:
+          </p>
+        </ExpandableSection.Trigger>
+        <ExpandableSection.Content>
+          <CodeSnippet
+            clipboard={frameworkInstructions[framework].workflow}
+            clipboardOnClick={() =>
+              storeEventMetric({
+                owner,
+                event: EVENT_METRICS.COPIED_TEXT,
+                jsonPayload: { text: `coverage GHA ${framework} action` },
+              })
+            }
+          >
+            {frameworkInstructions[framework].workflow}
+          </CodeSnippet>
+          <p className="pt-4">
+            <A
+              to={{ pageName: 'exampleRepos' }}
+              isExternal
+              hook="supported-languages-docs"
+            >
+              Learn more
+            </A>{' '}
+            about generating coverage reports with {framework}
+          </p>
+        </ExpandableSection.Content>
+      </ExpandableSection>
+    </div>
+  )
+}
+
+function Step4() {
   return (
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 3: merge to main or your preferred feature branch
+          Step 4: merge to main or your preferred feature branch
         </Card.Title>
       </Card.Header>
       <Card.Content>
