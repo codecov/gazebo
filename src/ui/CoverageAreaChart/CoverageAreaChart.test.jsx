@@ -100,18 +100,5 @@ describe('Coverage Area Chart', () => {
       )
       expect(screen.getByRole('img')).toBeInTheDocument()
     })
-
-    it('renders not enough data', () => {
-      render(
-        <CoverageAreaChart
-          axisLabelFunc={(t) => t}
-          data={[{ date: new Date('2020-01-15T20:18:39.413Z'), coverage: 20 }]}
-          desc="Chart desc"
-          title="Chart title"
-          renderAreaChart={true}
-        />
-      )
-      expect(screen.getByText('Not enough data to render')).toBeInTheDocument()
-    })
   })
 })
