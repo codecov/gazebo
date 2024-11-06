@@ -65,9 +65,9 @@ export function useOnboardUser(opts?: Record<string, unknown>) {
     `
 
   return useMutation({
-    mutationFn: (input?: { formData?: unknown; selectedOrg?: string }) => {
-      const formData = input?.formData
-      const selectedOrg = input?.selectedOrg
+    mutationFn: (input: { formData?: unknown; selectedOrg?: string }) => {
+      const formData = input.formData
+      const selectedOrg = input.selectedOrg
 
       return Api.graphqlMutation({
         provider,

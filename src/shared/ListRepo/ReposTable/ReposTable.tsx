@@ -111,7 +111,7 @@ const ReposTable = ({
   const { data: ownerData } = useOwner({
     username: owner,
   })
-  const isCurrentUserPartOfOrg = ownerData?.isCurrentUserPartOfOrg
+  const isCurrentUserPartOfOrg = !!ownerData?.isCurrentUserPartOfOrg
 
   const { data: tierName } = useTier({
     provider,

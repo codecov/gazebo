@@ -3,25 +3,25 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 
 const RequestSchema = z.object({
   regenerateOrgUploadToken: z
     .object({
       orgUploadToken: z.string().nullish(),
       error: z
-        .union([
+        .discriminatedUnion('__typename', [
           z.object({
             __typename: z.literal('UnauthorizedError'),
-            message: z.string(),
+            message: z.string().nullable(),
           }),
           z.object({
             __typename: z.literal('ValidationError'),
-            message: z.string(),
+            message: z.string().nullable(),
           }),
           z.object({
             __typename: z.literal('UnauthenticatedError'),
-            message: z.string(),
+            message: z.string().nullable(),
           }),
         ])
         .nullish(),
@@ -62,20 +62,20 @@ export function useRegenerateOrgUploadToken(
         variables,
         mutationPath: 'regenerateOrgUploadToken',
       })
-
-      const parsedRes = RequestSchema.safeParse(data.data)
+      
+      const parsedRes = RequestSchema.safeParse(data?.data)
       if (!parsedRes.success) {
-        return Promise.reject({
+        return rejectNetworkError({
           status: 404,
           data: {},
           dev: 'useRegenerateOrgUploadToken - 404 schema parsing failed',
         } satisfies NetworkErrorObject)
       }
 
-      return parsedRes
+      return parsedRes?.data
     },
     useErrorBoundary: true,
-    onSuccess: ({ data }) => {
+    onSuccess: (data) => {
       onSuccess(data)
       queryClient.invalidateQueries(['DetailOwner'])
     },

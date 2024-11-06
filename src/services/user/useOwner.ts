@@ -3,19 +3,25 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 
 interface URLParams {
   provider: string
 }
 
-export const DetailOwnerSchema = z.object({
-  ownerid: z.string().nullish(),
-  username: z.string().nullish(),
-  avatarUrl: z.string().nullish(),
-  isCurrentUserPartOfOrg: z.boolean().nullish(),
-  isAdmin: z.boolean().nullish(),
-})
+export const DetailOwnerSchema = z
+  .object({
+    owner: z
+      .object({
+        ownerid: z.string().nullish(),
+        username: z.string().nullish(),
+        avatarUrl: z.string().nullish(),
+        isCurrentUserPartOfOrg: z.boolean().nullish(),
+        isAdmin: z.boolean().nullish(),
+      })
+      .nullable(),
+  })
+  .nullable()
 
 export function useOwner({
   username,
@@ -47,16 +53,16 @@ export function useOwner({
     queryKey: ['owner', variables, provider, query],
     queryFn: ({ signal }) =>
       Api.graphql({ provider, query, variables, signal }).then((res) => {
-        const parsedData = DetailOwnerSchema.safeParse(res)
+        const parsedData = DetailOwnerSchema.safeParse(res?.data)
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useOwner - 404 failed to parse',
           } satisfies NetworkErrorObject)
         }
 
-        return res?.data?.owner
+        return parsedData.data?.owner
       }),
     ...opts,
   })
