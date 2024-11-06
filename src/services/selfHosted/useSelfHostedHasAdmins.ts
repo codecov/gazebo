@@ -1,12 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
+import { z } from 'zod'
 
 import Api from 'shared/api'
 
-export interface HasAdmins {
-  config?: {
-    hasAdmins?: boolean
-  }
-}
+export const HasAdminsSchema = z.object({
+  config: z
+    .object({
+      hasAdmins: z.boolean().nullable(),
+    })
+    .nullable(),
+})
 
 function fetchHasAdmins({ provider }: { provider: string }) {
   const query = `
@@ -16,23 +19,21 @@ function fetchHasAdmins({ provider }: { provider: string }) {
     }
   }
   `
-
   return Api.graphql({
     provider,
     query,
   })
 }
-
 export const useSelfHostedHasAdmins = (
   { provider }: { provider: string },
   options = {}
 ) => {
   const opts = {
-    select: ({ data }: { data: HasAdmins }) => data?.config?.hasAdmins,
+    select: ({ data }: { data: z.infer<typeof HasAdminsSchema> }) =>
+      data?.config?.hasAdmins,
     keepPreviousData: true,
     ...options,
   }
-
   return useQuery({
     queryKey: ['hasAdmins', provider],
     queryFn: () =>
