@@ -3,8 +3,12 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { PropsWithChildren } from 'react'
+import { z } from 'zod'
 
-import { useSelfHostedHasAdmins, HasAdmins } from './useSelfHostedHasAdmins'
+import {
+  HasAdminsSchema,
+  useSelfHostedHasAdmins,
+} from './useSelfHostedHasAdmins'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -12,30 +16,26 @@ const queryClient = new QueryClient({
 const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
-
 const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
-
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-
 afterAll(() => {
   server.close()
 })
 
 describe('useSelfHostedHasAdmins', () => {
-  function setup({ data }: { data: HasAdmins }) {
+  function setup({ data }: { data: z.infer<typeof HasAdminsSchema> }) {
     server.use(
       graphql.query('HasAdmins', (info) => {
         return HttpResponse.json({ data })
       })
     )
   }
-
   describe('when called', () => {
     it('returns the user info', async () => {
       setup({ data: { config: { hasAdmins: true } } })
@@ -43,7 +43,6 @@ describe('useSelfHostedHasAdmins', () => {
         () => useSelfHostedHasAdmins({ provider: 'gl' }),
         { wrapper }
       )
-
       await waitFor(() => expect(result.current.data).toEqual(true))
     })
   })
