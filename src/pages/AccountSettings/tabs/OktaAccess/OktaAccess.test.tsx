@@ -40,14 +40,7 @@ describe('OktaAccess', () => {
     server.use(
       graphql.query('DetailOwner', (info) => {
         return HttpResponse.json({
-          data: {
-            owner: {
-              username: 'codecov',
-              isAdmin,
-              avatarUrl: 'abc',
-              isCurrentUserPartOfOrg: true,
-            },
-          },
+          data: { owner: { username: 'codecov', isAdmin } },
         })
       }),
       graphql.query('GetOktaConfig', (info) => {
