@@ -11,7 +11,6 @@ import {
 } from 'victory'
 
 import './chart.css'
-import NoData from './NoData'
 
 const defaultStyles = {
   tooltip: {
@@ -147,7 +146,6 @@ function Chart({
             />
           }
         >
-          <NoData dataPointCount={data?.length} />
           <VictoryAxis
             // Dates (x)
             domainPadding={{ x: [10, 10] }}
