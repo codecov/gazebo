@@ -7,12 +7,12 @@ import { NetworkErrorObject } from 'shared/api/helpers'
 
 const SelfHostedCurrentUserSchema = z
   .object({
-    activated: z.boolean().nullable(),
-    email: z.string().nullable(),
-    isAdmin: z.boolean().nullable(),
-    name: z.string().nullable(),
-    ownerid: z.number().nullable(),
-    username: z.string().nullable(),
+    activated: z.boolean().nullish(),
+    email: z.string().nullish(),
+    isAdmin: z.boolean().nullish(),
+    name: z.string().nullish(),
+    ownerid: z.number().nullish(),
+    username: z.string().nullish(),
   })
   .nullable()
 

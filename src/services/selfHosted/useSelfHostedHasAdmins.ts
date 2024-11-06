@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
 
 export const HasAdminsSchema = z.object({
   config: z
@@ -39,6 +40,18 @@ export const useSelfHostedHasAdmins = (
     queryFn: () =>
       fetchHasAdmins({
         provider,
+      }).then((res) => {
+        const parsedRes = HasAdminsSchema.safeParse(res?.data)
+
+        if (!parsedRes.success) {
+          return Promise.reject({
+            status: 404,
+            data: {},
+            dev: 'useSelfHostedHasAdmins - 404 schema parsing failed',
+          } satisfies NetworkErrorObject)
+        }
+
+        return parsedRes
       }),
     ...opts,
   })
