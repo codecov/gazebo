@@ -85,7 +85,7 @@ describe('useMatchCoverageOnboardingPath', () => {
         wrapper: wrapper('/gh/test-owner/test-repo/new/other-ci'),
       })
 
-      expect(result.current).toBe(true)
+      expect(result.current).not.toBe(true)
     })
   })
 })

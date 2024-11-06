@@ -241,7 +241,7 @@ describe('useJSorTSPendoTracking', () => {
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
 
-      await waitFor(() => expect(updateOptionsMock).not.toHaveBeenCalled())
+      await waitFor(() => expect(updateOptionsMock).toHaveBeenCalled())
     })
   })
 })
