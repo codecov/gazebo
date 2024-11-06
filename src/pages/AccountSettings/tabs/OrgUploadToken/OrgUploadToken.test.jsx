@@ -19,8 +19,6 @@ const mockOwner = {
   owner: {
     me: {},
     isCurrentUserPartOfOrg: true,
-    avatarUrl: 'asdf',
-    username: 'asdf',
   },
 }
 
@@ -96,8 +94,8 @@ describe('OrgUploadToken', () => {
             regenerateOrgUploadToken: {
               orgUploadToken,
               error: {
-                    __typename: 'UnauthenticatedError',
-                  },
+                __typename: error,
+              },
             },
           },
         })
@@ -179,7 +177,7 @@ describe('OrgUploadToken', () => {
       it('calls the mutation', async () => {
         const { user, mutate } = setup({
           orgUploadToken: '',
-          error: 'UnauthenticatedError',
+          error: 'Authentication Error',
           isAdmin: true,
         })
         render(<OrgUploadToken />, { wrapper })
@@ -192,10 +190,10 @@ describe('OrgUploadToken', () => {
         await waitFor(() => expect(mutate).toHaveBeenCalled())
       })
 
-      it.only('adds an error notification', async () => {
+      it('adds an error notification', async () => {
         const { addNotification, user } = setup({
           orgUploadToken: '',
-          error: 'UnauthenticatedError',
+          error: 'Authentication Error',
           isAdmin: true,
         })
         const { rerender } = render(<OrgUploadToken />, { wrapper })
@@ -210,7 +208,7 @@ describe('OrgUploadToken', () => {
         await waitFor(() =>
           expect(addNotification).toHaveBeenCalledWith({
             type: 'error',
-            text: 'UnauthenticatedError',
+            text: 'Authentication Error',
           })
         )
       })
