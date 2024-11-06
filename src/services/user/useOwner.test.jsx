@@ -3,21 +3,18 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { z } from 'zod'
 
-import { DetailOwnerSchema, useOwner } from './useOwner'
+import { useOwner } from './useOwner'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
   logger: {
-    log: () => {},
-    warn: () => {},
     error: () => {},
   },
 })
 
 const wrapper =
-  (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
+  (initialEntries = '/gh') =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
@@ -41,24 +38,20 @@ afterAll(() => {
 })
 
 describe('useOwner', () => {
-  function setup(
-    dataReturned: z.infer<typeof DetailOwnerSchema> | undefined = undefined
-  ) {
+  function setup(dataReturned = undefined) {
     server.use(
       graphql.query('DetailOwner', (info) => {
-        return HttpResponse.json({ data: dataReturned })
+        return HttpResponse.json({ data: { owner: dataReturned } })
       })
     )
   }
 
   describe('when called and user is authenticated', () => {
     const codecovOrg = {
-      owner: {
-        username: 'codecov',
-        avatarUrl: 'http://127.0.0.1/avatar-url',
-        isCurrentUserPartOfOrg: true,
-        isAdmin: false,
-      },
+      username: 'codecov',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      isCurrentUserPartOfOrg: true,
+      isAdmin: false,
     }
 
     it('returns the org', async () => {
