@@ -69,10 +69,7 @@ export const BundleDetails: React.FC = () => {
   const { params } = useLocationParams()
 
   const bundle = bundleParam ?? ''
-
-  // @ts-expect-error - useLocationParams needs fixing
   const types = params?.types ?? []
-  // @ts-expect-error - useLocationParams needs fixing
   const loadTypes = params?.loading ?? []
 
   const { data: summaryData } = useBundleSummary({

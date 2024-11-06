@@ -28,7 +28,6 @@ export function useBundleChartData({
   const maxSize = useRef(0)
   const { data: overview } = useRepoOverview({ provider, owner, repo })
 
-  // @ts-expect-error - useLocationParams needs fixing
   const trend = params?.trend ?? Trend.THREE_MONTHS
   const today = useMemo(() => new Date(), [])
 

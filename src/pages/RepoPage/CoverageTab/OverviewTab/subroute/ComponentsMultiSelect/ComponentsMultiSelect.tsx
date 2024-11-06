@@ -27,7 +27,6 @@ export default function ComponentsMultiSelect() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const [componentSearch, setComponentSearch] = useState('')
   const [selectedComponents, setSelectedComponents] = useState(
-    // @ts-expect-errors, useLocation params needs to be updated to have full types
     params?.components
   )
 
@@ -44,7 +43,6 @@ export default function ComponentsMultiSelect() {
 
   const componentNames = useMemo(() => {
     const names = new Set<string>()
-    // @ts-expect-errors, useLocation params needs to be updated to have full types
     params?.components?.forEach((component: string) => names.add(component))
     if (!isUndefined(components)) {
       components?.forEach((component: { name: string }) =>

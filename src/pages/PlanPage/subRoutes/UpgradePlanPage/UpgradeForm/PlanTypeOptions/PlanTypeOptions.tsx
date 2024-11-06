@@ -85,7 +85,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
                   setSelectedPlan(yearlyProPlan)
                   setFormValue('newPlan', yearlyProPlan?.value)
                 }
-                updateParams({ plan: TierNames.PRO })
+                updateParams({ plan: TierName.PRO })
               } else {
                 if (monthlyPlan) {
                   setSelectedPlan(teamPlanMonth)
@@ -94,7 +94,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
                   setSelectedPlan(teamPlanYear)
                   setFormValue('newPlan', teamPlanYear?.value)
                 }
-                updateParams({ plan: TierNames.TEAM })
+                updateParams({ plan: TierName.TEAM })
               }
             }}
             options={[

@@ -29,12 +29,8 @@ export function useBundleAssetsTable({
   const { params } = useLocationParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
 
-  // @ts-expect-error - useLocationParams needs fixing
   const typeFilters = params?.types ?? []
-  // @ts-expect-error - useLocationParams needs fixing
   const loadTypes = params?.loading ?? []
-
-  // @ts-expect-error - useLocationParams needs fixing
   const trend = params?.trend ?? Trend.THREE_MONTHS
   const today = useMemo(() => new Date(), [])
 

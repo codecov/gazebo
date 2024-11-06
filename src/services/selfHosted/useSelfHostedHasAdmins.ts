@@ -1,12 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
+import { z } from 'zod'
 
 import Api from 'shared/api'
 
-export interface HasAdmins {
-  config?: {
-    hasAdmins?: boolean
-  }
-}
+export const HasAdminsSchema = z.object({
+  config: z
+    .object({
+      hasAdmins: z.boolean().nullable(),
+    })
+    .nullable(),
+})
 
 function fetchHasAdmins({ provider }: { provider: string }) {
   const query = `
@@ -28,7 +31,8 @@ export const useSelfHostedHasAdmins = (
   options = {}
 ) => {
   const opts = {
-    select: ({ data }: { data: HasAdmins }) => data?.config?.hasAdmins,
+    select: ({ data }: { data: z.infer<typeof HasAdminsSchema> }) =>
+      data?.config?.hasAdmins,
     keepPreviousData: true,
     ...options,
   }

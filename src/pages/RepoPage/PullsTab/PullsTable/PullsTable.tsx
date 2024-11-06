@@ -84,12 +84,8 @@ export default function PullsTable() {
     owner,
     repo,
     filters: {
-      // useLocationParams needs to be updated to have full types
-      // @ts-expect-errors
       state: params?.prStates,
     },
-    // useLocationParams needs to be updated to have full types
-    // @ts-expect-error
     orderingDirection: params?.order,
   })
 

@@ -51,22 +51,17 @@ function useRepoComponentsTable(isDesc = false) {
     repo,
   })
   const isAdmin = repoData?.isAdmin
-  // @ts-expect-error Need to type useLocationParams
   const isSearching = Boolean(params?.components?.length)
   const { after, interval } = createMeasurementVariables(
-    // @ts-expect-error Need to type useLocationParams
     params?.historicalTrend
-      ? // @ts-expect-error
-        params.historicalTrend
+      ? params.historicalTrend
       : TIME_OPTION_VALUES.LAST_3_MONTHS,
     repoData?.repository?.oldestCommitAt ?? undefined
   )
 
   const { data, isLoading } = useRepoComponents({
-    // @ts-expect-error Need to type useLocationParams
     filters: Boolean(params?.components?.length)
-      ? // @ts-expect-error Need to type useLocationParams
-        { components: params?.components }
+      ? { components: params?.components }
       : {},
     orderingDirection: getSortByDirection(isDesc),
     before: format(new Date(), 'yyyy-MM-dd'),

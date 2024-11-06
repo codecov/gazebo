@@ -3,8 +3,12 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { PropsWithChildren } from 'react'
+import { z } from 'zod'
 
-import { useSelfHostedHasAdmins, HasAdmins } from './useSelfHostedHasAdmins'
+import {
+  HasAdminsSchema,
+  useSelfHostedHasAdmins,
+} from './useSelfHostedHasAdmins'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -28,7 +32,7 @@ afterAll(() => {
 })
 
 describe('useSelfHostedHasAdmins', () => {
-  function setup({ data }: { data: HasAdmins }) {
+  function setup({ data }: { data: z.infer<typeof HasAdminsSchema> }) {
     server.use(
       graphql.query('HasAdmins', (info) => {
         return HttpResponse.json({ data })

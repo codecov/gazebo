@@ -22,7 +22,6 @@ const defaultQueryParams = {
 
 export const TypeSelector = forwardRef((_, ref) => {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
-  // @ts-expect-error - useLocationParams needs typing
   const [selectedTypes, setSelectedTypes] = useState(params?.types ?? [])
   const { provider, owner, repo, branch: branchParam } = useParams<URLParams>()
 
