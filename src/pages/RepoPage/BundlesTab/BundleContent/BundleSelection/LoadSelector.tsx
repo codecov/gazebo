@@ -26,7 +26,7 @@ const defaultQueryParams = {
 
 export const LoadSelector = forwardRef((_, ref) => {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
-
+  // @ts-expect-error - useLocationParams needs typing
   const [selectedLoading, setSelectedLoading] = useState(params?.loading ?? [])
 
   const { provider, owner, repo, branch: branchParam } = useParams<URLParams>()

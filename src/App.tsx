@@ -41,6 +41,7 @@ const HomePageRedirect = () => {
   const { data: currentUser } = useUser()
   const { data: internalUser } = useInternalUser({})
   const { params } = useLocationParams()
+  // @ts-expect-error useLocationParams needs to be typed
   const { setup_action: setupAction, to } = params
 
   let redirectURL = '/login'

@@ -368,7 +368,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Team' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
             )
           )
         })
@@ -541,7 +541,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Team' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
             )
           )
         })
@@ -747,7 +747,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Team' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
             )
           )
         })
@@ -817,7 +817,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Pro' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })
@@ -920,7 +920,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Team' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
             )
           )
         })
@@ -990,7 +990,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Pro' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })
@@ -1095,7 +1095,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Team' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
             )
           )
         })
@@ -1165,7 +1165,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Pro' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })
@@ -1268,7 +1268,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Team' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
             )
           )
         })
@@ -1338,7 +1338,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Pro' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })
@@ -1474,7 +1474,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Team' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
             )
           )
         })
@@ -1544,7 +1544,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Pro' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })
@@ -1647,7 +1647,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Team' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
             )
           )
         })
@@ -1717,7 +1717,7 @@ describe('PlanTypeOptions', () => {
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'Pro' }, { addQueryPrefix: true })
+              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })

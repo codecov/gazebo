@@ -51,16 +51,20 @@ function useRepoFlagsTable(isDesc: boolean) {
     repo,
   })
   const isAdmin = repoData?.isAdmin
+  // @ts-expect-errors, useLocation params needs to be updated to have full types
   const isSearching = Boolean(params?.search)
   const { afterDate, interval } = createMeasurementVariables(
+    // @ts-expect-errors, useLocation params needs to be updated to have full types
     params?.historicalTrend
-      ? params.historicalTrend
+      ? // @ts-expect-errors
+        params.historicalTrend
       : TIME_OPTION_VALUES.LAST_3_MONTHS,
     repoData?.repository?.oldestCommitAt ?? undefined
   )
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRepoFlags({
+      // @ts-expect-errors, useLocation params needs to be updated to have full types
       filters: { term: params?.search, flagsNames: params?.flags },
       orderingDirection: getSortByDirection(isDesc),
       beforeDate: format(new Date(), 'yyyy-MM-dd'),

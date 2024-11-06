@@ -38,7 +38,14 @@ describe('useGenerateUserToken', () => {
   function setup() {
     server.use(
       graphql.mutation(`CreateUserToken`, (info) => {
-        return HttpResponse.json({ data: { me: null } })
+        return HttpResponse.json({
+          data: {
+            createUserToken: {
+              error: null,
+              fullToken: 'some-token',
+            },
+          },
+        })
       })
     )
   }

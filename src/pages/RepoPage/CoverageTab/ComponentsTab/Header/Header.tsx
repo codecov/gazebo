@@ -34,6 +34,7 @@ const Header = ({
     components: [] as Component[],
   })
   const [selectedComponents, setSelectedComponents] = useState<Component[]>(
+    // @ts-expect-error need to type out useLocationParams
     params?.components
   )
 
@@ -48,6 +49,7 @@ const Header = ({
   )
 
   const value = TimeOptions.find(
+    // @ts-expect-error need to type out useLocationParams
     (item) => item.value === params.historicalTrend
   )
 

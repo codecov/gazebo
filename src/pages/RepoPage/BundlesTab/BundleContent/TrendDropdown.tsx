@@ -19,6 +19,7 @@ export function TrendDropdown() {
         variant="text"
         items={items}
         onChange={(selected: string) => updateParams({ trend: selected })}
+        // @ts-expect-error useLocationParams needs to be typed
         value={params?.trend || Trend.THREE_MONTHS}
         renderItem={(item: string) => <p className="capitalize">{item}</p>}
       />

@@ -2,39 +2,23 @@ import omitBy from 'lodash/omitBy'
 import qs from 'qs'
 import { useHistory, useLocation } from 'react-router-dom'
 
-export interface UseLocationParamsReturn<T> {
-  params: T
-  setParams: (params: T) => void
-  updateParams: (params: Partial<T>) => void
-}
-
-export function useLocationParams<T>(
-  defaultParams: T
-): UseLocationParamsReturn<T>
-
-export function useLocationParams<
-  T = Record<string, unknown>,
->(): UseLocationParamsReturn<T>
-
-export function useLocationParams(
-  defaultParams = {} as Record<string, unknown>
-): UseLocationParamsReturn<Record<string, unknown>> {
+export function useLocationParams(defaultParams: Record<string, unknown> = {}) {
   const { push } = useHistory()
   const { pathname, search, state } = useLocation()
-  const params = (state as Record<string, unknown>) || {
+  const params = state || {
     ...defaultParams,
     ...qs.parse(search, {
       ignoreQueryPrefix: true,
     }),
   }
 
-  function updateWindowLocation(newParams: Record<string, unknown>) {
+  function updateWindowLocation(params: Record<string, unknown>) {
     const locationParams = omitBy(
-      newParams,
+      params,
       (value, key) => value === defaultParams[key]
     )
 
-    push(`${pathname}?${qs.stringify(locationParams)}`, newParams)
+    push(`${pathname}?${qs.stringify(locationParams)}`, params)
   }
 
   // Create new state
