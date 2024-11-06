@@ -16,12 +16,10 @@ export function usePrefetchBranchFileEntry({
   branch,
   path,
   flags = [],
-  options = {},
 }: {
   branch: string
   path: string
   flags?: string[]
-  options?: Record<string, unknown>
 }) {
   const { provider, owner, repo } = useParams<URLParams>()
   const queryClient = useQueryClient()

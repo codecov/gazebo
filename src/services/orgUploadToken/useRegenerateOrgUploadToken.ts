@@ -1,24 +1,41 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
+import { z } from 'zod'
 
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
+
+const RequestSchema = z.object({
+  regenerateOrgUploadToken: z
+    .object({
+      orgUploadToken: z.string().nullish(),
+      error: z
+        .union([
+          z.object({
+            __typename: z.literal('UnauthorizedError'),
+            message: z.string(),
+          }),
+          z.object({
+            __typename: z.literal('ValidationError'),
+            message: z.string(),
+          }),
+          z.object({
+            __typename: z.literal('UnauthenticatedError'),
+            message: z.string(),
+          }),
+        ])
+        .nullish(),
+    })
+    .nullable(),
+})
 
 interface URLParams {
   provider: string
   owner: string
 }
 
-interface RegenerateOrgUploadTokenOutput {
-  regenerateOrgUploadToken?: {
-    orgUploadToken?: string
-    error?: {
-      __typename?: string
-    }
-  }
-}
-
 export function useRegenerateOrgUploadToken(
-  { onSuccess = (data: RegenerateOrgUploadTokenOutput) => {} } = {
+  { onSuccess = (data: z.infer<typeof RequestSchema>) => {} } = {
     onSuccess: () => {},
   }
 ) {
@@ -46,7 +63,16 @@ export function useRegenerateOrgUploadToken(
         mutationPath: 'regenerateOrgUploadToken',
       })
 
-      return data
+      const parsedRes = RequestSchema.safeParse(data.data)
+      if (!parsedRes.success) {
+        return Promise.reject({
+          status: 404,
+          data: {},
+          dev: 'useRegenerateOrgUploadToken - 404 schema parsing failed',
+        } satisfies NetworkErrorObject)
+      }
+
+      return parsedRes
     },
     useErrorBoundary: true,
     onSuccess: ({ data }) => {
