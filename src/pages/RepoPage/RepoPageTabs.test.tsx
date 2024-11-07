@@ -405,7 +405,7 @@ describe('RepoPageTabs', () => {
       expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/tests')
     })
 
-    it('renders beta badge', async () => {
+    it('renders new badge', async () => {
       setup({
         coverageEnabled: false,
       })
@@ -413,8 +413,8 @@ describe('RepoPageTabs', () => {
         wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
       })
 
-      const betaBadge = await screen.findByText('beta')
-      expect(betaBadge).toBeInTheDocument()
+      const newBadge = await screen.findByText('New')
+      expect(newBadge).toBeInTheDocument()
     })
   })
 
