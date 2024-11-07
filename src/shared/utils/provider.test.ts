@@ -131,38 +131,38 @@ describe('getProviderCommitURL', () => {
 describe('getProviderPullURL', () => {
   it('return gitlab PR URL', () => {
     expect(getProviderPullURL({ provider: 'gl', owner, repo, pullId })).toBe(
-      'https://gitlab.com/codecov/python/-/merge_requests/aebf'
+      'https://gitlab.com/codecov/python/-/merge_requests/12'
     )
   })
   it('return github PR URL', () => {
     expect(getProviderPullURL({ provider: 'gh', owner, repo, pullId })).toBe(
-      'https://github.com/codecov/python/pull/aebf'
+      'https://github.com/codecov/python/pull/12'
     )
   })
   it('return bb PR URL', () => {
     expect(getProviderPullURL({ provider: 'bb', owner, repo, pullId })).toBe(
-      'https://bitbucket.org/codecov/python/pull-requests/aebf'
+      'https://bitbucket.org/codecov/python/pull-requests/12'
     )
   })
   it('return ghe PR URL', () => {
     config.GHE_URL = 'https://github.mycompany.org'
 
     expect(getProviderPullURL({ provider: 'ghe', owner, repo, pullId })).toBe(
-      'https://github.mycompany.org/codecov/python/pull/aebf'
+      'https://github.mycompany.org/codecov/python/pull/12'
     )
   })
   it('return gle PR URL', () => {
     config.GLE_URL = 'https://gitlab.mycompany.org'
 
     expect(getProviderPullURL({ provider: 'gle', owner, repo, pullId })).toBe(
-      'https://gitlab.mycompany.org/codecov/python/-/merge_requests/aebf'
+      'https://gitlab.mycompany.org/codecov/python/-/merge_requests/12'
     )
   })
   it('return bbs PR URL', () => {
     config.BBS_URL = 'https://bitbucket.mycompany.org'
 
     expect(getProviderPullURL({ provider: 'bbs', owner, repo, pullId })).toBe(
-      'https://bitbucket.mycompany.org/codecov/python/pull-requests/aebf'
+      'https://bitbucket.mycompany.org/codecov/python/pull-requests/12'
     )
   })
 })
