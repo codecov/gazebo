@@ -15,7 +15,7 @@ import UploadReference from './UploadReference'
 interface UploadProps {
   upload: Upload
   isSelected?: boolean
-  onSelectChange: (isSelected: boolean) => void
+  onSelectChange?: (isSelected: boolean) => void
 }
 
 const UploadItem = ({
@@ -32,7 +32,7 @@ const UploadItem = ({
     id,
   },
   isSelected,
-  onSelectChange,
+  onSelectChange = () => {},
 }: UploadProps) => {
   const [checked, setChecked] = useState(true)
   const queryClient = useQueryClient()

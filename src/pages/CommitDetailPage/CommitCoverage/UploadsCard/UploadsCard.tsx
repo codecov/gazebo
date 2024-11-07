@@ -48,7 +48,6 @@ function UploadsCard() {
   } = useUploads({ filters: uploadFilters })
 
   const fillSelectedUploads = (provider: string) => {
-    // for a given provider, get their grouped uploads, and get their index, then fill the selectedProviderSelectedUploads state
     const providerUploads = groupedUploads[provider]
     const providerUploadsIndex = providerUploads?.map((_, i) => i)
     const providerList = new Set(providerUploadsIndex)
@@ -68,7 +67,6 @@ function UploadsCard() {
     }
 
     const totalUploads = groupedUploads[provider]?.length
-    console.log(selectedUploads)
     if (selectedUploads.size === totalUploads || selectedUploads === undefined)
       return SelectState.ALL_SELECTED
     if (selectedUploads.size === 0) return SelectState.NONE_SELECTED
@@ -76,7 +74,6 @@ function UploadsCard() {
   }
 
   const handleSelectAllForProviderGroup = (provider: string) => {
-    console.log('TESTIng')
     setSelectedProviderSelectedUploads((prevState) => ({
       ...prevState,
       [provider]:
@@ -92,13 +89,12 @@ function UploadsCard() {
     key: number
   ) => {
     setSelectedProviderSelectedUploads((prevState) => {
-      // Clone the current Set for the provider or create a new one if it doesn't exist
       const updatedSet = new Set(prevState[provider] || [])
 
       if (isSelected) {
-        updatedSet.add(key) // Add the key if selected
+        updatedSet.add(key)
       } else {
-        updatedSet.delete(key) // Remove the key if not selected
+        updatedSet.delete(key)
       }
 
       return {
@@ -157,7 +153,7 @@ function UploadsCard() {
         <div className="flex max-h-64 min-w-96 flex-1 flex-col divide-y divide-solid divide-ds-gray-secondary overflow-auto bg-ds-gray-primary dark:bg-ds-blue-default/5">
           {uploadFilters.searchTerm !== '' && searchResults
             ? searchResults.map((upload, i) => (
-                <UploadItem upload={upload} key={i} onSelectChange={() => {}} />
+                <UploadItem upload={upload} key={i} />
               ))
             : uploadsProviderList.map((title) => (
                 <Fragment key={title}>
