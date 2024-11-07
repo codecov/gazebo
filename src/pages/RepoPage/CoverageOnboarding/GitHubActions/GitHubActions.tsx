@@ -44,11 +44,11 @@ function GitHubActions() {
       install: 'npm install --save-dev jest',
       run: 'npx jest --coverage',
       workflow: `name: Run tests and upload coverage
-  
-  on: 
+
+on: 
   push
-  
-  jobs:
+
+jobs:
   test:
     name: Run tests and collect coverage
     runs-on: ubuntu-latest
@@ -57,16 +57,16 @@ function GitHubActions() {
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-  
+
       - name: Set up Node
         uses: actions/setup-node@v4
-  
+
       - name: Install dependencies
         run: npm install
-  
+
       - name: Run tests
         run: npx jest --coverage
-  
+
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -76,17 +76,17 @@ function GitHubActions() {
           slug: ${owner}/${repo}`
               : ''
           }
-  `,
+`,
     },
     Vitest: {
       install: 'npm install --save-dev vitest @vitest/coverage-v8',
       run: 'npx vitest run --coverage',
       workflow: `name: Run tests and upload coverage
-  
-  on: 
+
+on: 
   push
-  
-  jobs:
+
+jobs:
   test:
     name: Run tests and collect coverage
     runs-on: ubuntu-latest
@@ -95,16 +95,16 @@ function GitHubActions() {
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-  
+
       - name: Set up Node
         uses: actions/setup-node@v4
-  
+
       - name: Install dependencies
         run: npm install
-  
+
       - name: Run tests
         run: npx vitest run --coverage
-  
+
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -114,17 +114,17 @@ function GitHubActions() {
           slug: ${owner}/${repo}`
               : ''
           }
-  `,
+`,
     },
     Pytest: {
       install: 'pip install pytest pytest-cov',
       run: 'pytest --cov --cov-report=xml',
       workflow: `name: Run tests and upload coverage
-  
-  on: 
+
+on: 
   push
-  
-  jobs:
+
+jobs:
   test:
     name: Run tests and collect coverage
     runs-on: ubuntu-latest
@@ -133,16 +133,16 @@ function GitHubActions() {
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-  
+
       - name: Set up Python
         uses: actions/setup-python@v4
-  
+
       - name: Install dependencies
         run: pip install pytest pytest-cov
-  
+
       - name: Run tests
         run: pytest --cov --cov-report=xml
-  
+
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -152,17 +152,17 @@ function GitHubActions() {
           slug: ${owner}/${repo}`
               : ''
           }
-  `,
+`,
     },
     Go: {
       install: undefined,
       run: 'go test -coverprofile=coverage.txt',
       workflow: `name: Run tests and upload coverage
-  
-  on: 
+
+on: 
   push
-  
-  jobs:
+
+jobs:
   test:
     name: Run tests and collect coverage
     runs-on: ubuntu-latest
@@ -171,16 +171,16 @@ function GitHubActions() {
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-  
+
       - name: Set up Go
         uses: actions/setup-go@v5
-  
+
       - name: Install dependencies
         run: go mod download
-  
+
       - name: Run tests
         run: go test -coverprofile=coverage.txt
-  
+
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -190,7 +190,7 @@ function GitHubActions() {
           slug: ${owner}/${repo}`
               : ''
           }
-  `,
+`,
     },
   }
 
@@ -242,13 +242,14 @@ function Step1({
       <Card>
         <Card.Header>
           <Card.Title size="base">
-            Step 1: Generate and upload coverage reports in your CI
+            Step 1: Output a Coverage report file in your CI
           </Card.Title>
         </Card.Header>
         <Card.Content className="flex flex-col gap-4">
           <p>
-            Select your testing framework below to generate your coverage
-            reports. If your language isn&apos;t listed, visit our{' '}
+            Codecov generally supports xml and json format. Select your language
+            below to generate your coverage reports. If your language isn&apos;t
+            listed, visit our{' '}
             <A
               to={{ pageName: 'exampleRepos' }}
               isExternal
@@ -256,8 +257,8 @@ function Step1({
             >
               supported languages doc
             </A>{' '}
-            for example repositories. Codecov supports most <code>.xml</code>,{' '}
-            <code>.json</code>, and <code>.txt</code> report formats.
+            for example repositories. Codecov generally supports xml and json
+            formats.
           </p>
 
           <div className="max-w-64">

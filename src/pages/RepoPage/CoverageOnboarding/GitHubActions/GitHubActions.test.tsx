@@ -116,7 +116,9 @@ describe('GitHubActions', () => {
       setup({})
       render(<GitHubActions />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 2/ })
+      const header = await screen.findByRole('heading', {
+        name: /Step 1: Output a Coverage report file/,
+      })
       expect(header).toBeInTheDocument()
     })
 
@@ -124,9 +126,7 @@ describe('GitHubActions', () => {
       setup({})
       render(<GitHubActions />, { wrapper })
 
-      const blurb = await screen.findByText(
-        /Select your testing framework below/
-      )
+      const blurb = await screen.findByText(/Select your language below/)
       expect(blurb).toBeInTheDocument()
     })
 
@@ -251,13 +251,6 @@ describe('GitHubActions', () => {
 
           await user.click(go)
 
-          // const trigger = await screen.findByText((content) =>
-          //   content.startsWith('Your final GitHub Actions workflow')
-          // )
-          // expect(trigger).toBeInTheDocument()
-
-          // await user.click(trigger)
-
           const yaml = await screen.findByText(/go mod download/)
           expect(yaml).toBeInTheDocument()
         })
@@ -270,7 +263,7 @@ describe('GitHubActions', () => {
       setup({})
       render(<GitHubActions />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 1/ })
+      const header = await screen.findByRole('heading', { name: /Step 2: add/ })
       expect(header).toBeInTheDocument()
 
       const repositorySecretLink = await screen.findByRole('link', {
@@ -343,7 +336,9 @@ describe('GitHubActions', () => {
       setup({})
       render(<GitHubActions />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 3/ })
+      const header = await screen.findByRole('heading', {
+        name: /Step 3: Add Codecov to your GitHub Actions workflow yaml file/,
+      })
       expect(header).toBeInTheDocument()
     })
 
