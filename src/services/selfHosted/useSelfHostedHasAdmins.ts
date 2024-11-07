@@ -30,8 +30,7 @@ export const useSelfHostedHasAdmins = (
   options = {}
 ) => {
   const opts = {
-    select: ({ data }: { data: z.infer<typeof HasAdminsSchema> }) =>
-      data?.config?.hasAdmins,
+    select: (data: z.infer<typeof HasAdminsSchema>) => data?.config?.hasAdmins,
     keepPreviousData: true,
     ...options,
   }
@@ -51,7 +50,7 @@ export const useSelfHostedHasAdmins = (
           } satisfies NetworkErrorObject)
         }
 
-        return parsedRes
+        return parsedRes?.data
       }),
     ...opts,
   })
