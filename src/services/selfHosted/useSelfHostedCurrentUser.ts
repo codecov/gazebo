@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 
 const SelfHostedCurrentUserSchema = z
   .object({
@@ -30,7 +30,7 @@ export const useSelfHostedCurrentUser = (options = {}) => {
         const parsedData = SelfHostedCurrentUserSchema.safeParse(res)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useSelfHostedCurrentUser - 404 schema parsing failed',

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 
 export const SeatsSchema = z
   .object({
@@ -39,16 +39,16 @@ export const useSelfHostedSeatsConfig = (options = {}) => {
         const parsedRes = SeatsSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useSelfHostedSeatsConfig - 404 schema parsing failed',
           } satisfies NetworkErrorObject)
         }
 
-        return parsedRes ?? null
+        return parsedRes?.data ?? null
       }),
-    select: ({ data }) => data?.config,
+    select: (data) => data?.config,
     ...options,
   })
 }

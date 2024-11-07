@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 
 import { USER_TOKEN_TYPE } from './constants'
 
@@ -54,7 +54,7 @@ export function useGenerateUserToken({ provider }: { provider: string }) {
 
       const parsedData = UseGenerateTokenResponseSchema.safeParse(data)
       if (!parsedData.success) {
-        return Promise.reject({
+        return rejectNetworkError({
           status: 404,
           data: {},
           dev: 'useGenerateUserToken - 404 failed to parse',
