@@ -138,6 +138,7 @@ describe('useCommitCoverageDropdownSummary', () => {
             },
           },
         },
+        yamlErrors: [],
       }
 
       await waitFor(() =>
@@ -164,6 +165,7 @@ describe('useCommitCoverageDropdownSummary', () => {
         expect(result.current.data).toStrictEqual({
           uploadErrorCount: 0,
           commit: null,
+          yamlErrors: [],
         })
       )
     })
