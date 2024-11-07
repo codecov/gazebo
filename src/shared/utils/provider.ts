@@ -4,41 +4,37 @@ import config from 'config'
 import { Provider } from 'shared/api/helpers'
 
 export function providerToName(provider: Provider) {
-  return (
-    {
-      gh: 'Github',
-      bb: 'BitBucket',
-      gl: 'Gitlab',
-      ghe: 'Github Enterprise',
-      gle: 'Gitlab Enterprise',
-      bbs: 'BitBucket Server',
-      github: 'Github',
-      bitbucket: 'BitBucket',
-      gitlab: 'Gitlab',
-      github_enterprise: 'Github Enterprise',
-      gitlab_enterprise: 'Gitlab Enterprise',
-      bitbucket_server: 'BitBucket Server',
-    }[provider.toLowerCase()] || 'Github'
-  )
+  return {
+    gh: 'Github',
+    bb: 'BitBucket',
+    gl: 'Gitlab',
+    ghe: 'Github Enterprise',
+    gle: 'Gitlab Enterprise',
+    bbs: 'BitBucket Server',
+    github: 'Github',
+    bitbucket: 'BitBucket',
+    gitlab: 'Gitlab',
+    github_enterprise: 'Github Enterprise',
+    gitlab_enterprise: 'Gitlab Enterprise',
+    bitbucket_server: 'BitBucket Server',
+  }[provider.toLowerCase()]
 }
 
 export function providerToInternalProvider(provider: Provider) {
-  return (
-    {
-      gh: 'github',
-      bb: 'bitbucket',
-      gl: 'gitlab',
-      ghe: 'github_enterprise',
-      gle: 'gitlab_enterprise',
-      bbs: 'bitbucket_server',
-      github: 'github',
-      bitbucket: 'bitbucket',
-      gitlab: 'gitlab',
-      github_enterprise: 'github_enterprise',
-      gitlab_enterprise: 'gitlab_enterprise',
-      bitbucket_server: 'bitbucket_server',
-    }[provider.toLowerCase()] || 'github'
-  )
+  return {
+    gh: 'github',
+    bb: 'bitbucket',
+    gl: 'gitlab',
+    ghe: 'github_enterprise',
+    gle: 'gitlab_enterprise',
+    bbs: 'bitbucket_server',
+    github: 'github',
+    bitbucket: 'bitbucket',
+    gitlab: 'gitlab',
+    github_enterprise: 'github_enterprise',
+    gitlab_enterprise: 'gitlab_enterprise',
+    bitbucket_server: 'bitbucket_server',
+  }[provider.toLowerCase()]
 }
 
 export function getProviderCommitURL({
@@ -59,6 +55,7 @@ export function getProviderCommitURL({
     'Github Enterprise': `${config.GHE_URL}/${owner}/${repo}/commit/${commit}`,
     'Gitlab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/commit/${commit}`,
     'BitBucket Server': `${config.BBS_URL}/${owner}/${repo}/commits/${commit}`,
+    // @ts-expect-error
   }[providerToName(provider)]
 }
 
@@ -80,5 +77,6 @@ export function getProviderPullURL({
     'Github Enterprise': `${config.GHE_URL}/${owner}/${repo}/pull/${pullId}`,
     'Gitlab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/merge_requests/${pullId}`,
     'BitBucket Server': `${config.BBS_URL}/${owner}/${repo}/pull-requests/${pullId}`,
+    // @ts-expect-error
   }[providerToName(provider)]
 }
