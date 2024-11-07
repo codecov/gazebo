@@ -15,15 +15,15 @@ describe('useImage', () => {
 
   describe('successful network request', () => {
     beforeAll(() => {
-      global.Image = class {
+      ;(global as any).Image = class {
         constructor() {
           setTimeout(() => {
-            this.onload()
+            ;(this as any).onload()
           }, 100)
         }
 
         decode() {
-          return new Promise((resolve) => resolve())
+          return new Promise<void>((resolve) => resolve())
         }
       }
     })
@@ -44,10 +44,10 @@ describe('useImage', () => {
 
   describe('unsuccessful network request', () => {
     beforeAll(() => {
-      global.Image = class {
+      ;(global as any).Image = class {
         constructor() {
           setTimeout(() => {
-            this.onload()
+            ;(this as any).onload()
           }, 100)
         }
 

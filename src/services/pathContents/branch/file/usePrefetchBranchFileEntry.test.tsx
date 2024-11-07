@@ -4,6 +4,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { PrefetchBranchFileEntryCoverage } from 'services/pathContents/utils'
+
 import { usePrefetchBranchFileEntry } from './usePrefetchBranchFileEntry'
 
 const server = setupServer()
@@ -21,7 +23,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter
     initialEntries={['/gh/codecov/test-repo/tree/main/src/file.js']}
   >
@@ -120,12 +122,19 @@ describe('usePrefetchBranchFileEntry', () => {
 
     await result.current.runPrefetch()
 
-    await waitFor(() => queryClient.getQueryState().isFetching)
+    await waitFor(() => {
+      if (queryClient.isFetching()) {
+        throw new Error('still fetching')
+      }
+    })
 
-    expect(queryClient.getQueryState().data.content).toBe(
+    const data = queryClient.getQueryCache().getAll()[0]?.state
+      .data as NonNullable<PrefetchBranchFileEntryCoverage>
+
+    expect(data.content).toBe(
       mockData.owner.repository.commit.coverageAnalytics.coverageFile.content
     )
-    expect(queryClient.getQueryState().data.coverage).toStrictEqual({
+    expect(data.coverage).toStrictEqual({
       1: 1,
       2: 1,
       4: 1,
@@ -133,8 +142,8 @@ describe('usePrefetchBranchFileEntry', () => {
       7: 1,
       8: 1,
     })
-    expect(queryClient.getQueryState().data.flagNames).toStrictEqual(['a', 'b'])
-    expect(queryClient.getQueryState().data.isCriticalFile).toBe(true)
-    expect(queryClient.getQueryState().data.totals).toBe(0)
+    expect(data.flagNames).toStrictEqual(['a', 'b'])
+    expect(data.isCriticalFile).toBe(true)
+    expect(data.totals).toBe(0)
   })
 })

@@ -44,7 +44,7 @@ fragment CurrentUserFragment on Me {
 }
 `
 
-export function useUpdateProfile({ provider }) {
+export function useUpdateProfile({ provider }: { provider: string }) {
   const queryClient = useQueryClient()
   const mutation = `
     mutation UpdateProfile($input: UpdateProfileInput!) {
@@ -61,7 +61,7 @@ export function useUpdateProfile({ provider }) {
   `
 
   return useMutation({
-    mutationFn: ({ name, email }) => {
+    mutationFn: ({ name, email }: { name: string; email: string }) => {
       return Api.graphqlMutation({
         provider,
         query: mutation,
