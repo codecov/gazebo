@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { Plans } from 'shared/utils/billing'
 
 export const TrialStatuses = {
   NOT_STARTED: 'NOT_STARTED',
@@ -16,7 +17,7 @@ const PlanSchema = z.object({
   billingRate: z.string().nullable(),
   marketingName: z.string(),
   monthlyUploadLimit: z.number().nullable(),
-  value: z.string(),
+  value: z.nativeEnum(Plans),
   pretrialUsersCount: z.number().nullable(),
   trialEndDate: z.string().nullable(),
   trialStatus: z.nativeEnum(TrialStatuses),

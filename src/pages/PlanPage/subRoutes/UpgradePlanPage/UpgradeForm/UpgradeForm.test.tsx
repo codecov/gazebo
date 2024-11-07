@@ -6,9 +6,9 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import { IndividualPlan, TrialStatuses } from 'services/account'
+import { TrialStatuses } from 'services/account'
 import { accountDetailsParsedObj } from 'services/account/mocks'
-import { Plans } from 'shared/utils/billing'
+import { Plan, Plans } from 'shared/utils/billing'
 
 import UpgradeForm from './UpgradeForm'
 
@@ -379,7 +379,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_BASIC })
@@ -687,7 +687,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
@@ -990,7 +990,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
@@ -1317,7 +1317,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_SENTRYY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({
@@ -1637,7 +1637,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_TEAMY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({
@@ -1984,7 +1984,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       describe('user chooses less than the number of active users', () => {
         it('does not display an error', async () => {

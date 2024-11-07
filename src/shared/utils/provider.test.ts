@@ -3,8 +3,6 @@ import config from 'config'
 import {
   getProviderCommitURL,
   getProviderPullURL,
-  providerFeedback,
-  providerImage,
   providerToInternalProvider,
   providerToName,
 } from './provider'
@@ -86,94 +84,10 @@ describe('providerToName', () => {
   })
 })
 
-describe('providerImage', () => {
-  describe('when called for Github', () => {
-    it('returns correct logo url', () => {
-      // @ts-expect-error
-      expect(providerImage('Github')).toMatch(/github-icon.svg/)
-    })
-  })
-  describe('when called for Gitlab', () => {
-    it('returns correct logo url', () => {
-      // @ts-expect-error
-      expect(providerImage('Gitlab')).toMatch(/gitlab-icon.svg/)
-    })
-  })
-  describe('when called for BitBucket', () => {
-    it('returns correct logo url', () => {
-      // @ts-expect-error
-      expect(providerImage('BitBucket')).toMatch(/bitbucket-icon.svg/)
-    })
-  })
-  describe('when called for Github Enterprise', () => {
-    it('returns correct logo url', () => {
-      expect(providerImage('github_enterprise')).toMatch(/github-icon.svg/)
-    })
-  })
-  describe('when called for Gitlab Enterprise', () => {
-    it('returns correct logo url', () => {
-      expect(providerImage('gitlab_enterprise')).toMatch(/gitlab-icon.svg/)
-    })
-  })
-  describe('when called for BitBucket Server', () => {
-    it('returns correct logo url', () => {
-      expect(providerImage('bitbucket_server')).toMatch(/bitbucket-icon.svg/)
-    })
-  })
-})
-
-describe('providerFeedback', () => {
-  describe('when called for Github', () => {
-    it('returns correct url', () => {
-      // @ts-expect-error
-      expect(providerFeedback('Github')).toEqual(
-        'https://github.com/codecov/Codecov-user-feedback/issues/1'
-      )
-    })
-  })
-  describe('when called for Gitlab', () => {
-    it('returns correct url', () => {
-      // @ts-expect-error
-      expect(providerFeedback('Gitlab')).toEqual(
-        'https://gitlab.com/codecov-open-source/codecov-user-feedback/-/issues/1'
-      )
-    })
-  })
-  describe('when called for BitBucket', () => {
-    it('returns correct url', () => {
-      // @ts-expect-error
-      expect(providerFeedback('BitBucket')).toEqual(
-        'https://bitbucket.org/kylemann/codecov/issues/1/wed-love-your-feedback'
-      )
-    })
-  })
-  describe('when called for Github Enterprise', () => {
-    it('returns correct url', () => {
-      expect(providerFeedback('github_enterprise')).toEqual(
-        'https://github.com/codecov/Codecov-user-feedback/issues/1'
-      )
-    })
-  })
-  describe('when called for Gitlab Enterprise', () => {
-    it('returns correct url', () => {
-      expect(providerFeedback('gitlab_enterprise')).toEqual(
-        'https://gitlab.com/codecov-open-source/codecov-user-feedback/-/issues/1'
-      )
-    })
-  })
-  describe('when called for BitBucket Server', () => {
-    it('returns correct url', () => {
-      expect(providerFeedback('bitbucket_server')).toEqual(
-        'https://bitbucket.org/kylemann/codecov/issues/1/wed-love-your-feedback'
-      )
-    })
-  })
-})
-
 const repo = 'python'
 const owner = 'codecov'
 const commit = '12de'
-const pullId = 'aebf'
+const pullId = 12
 
 describe('getProviderCommitURL', () => {
   it('return gitlab commit URL', () => {
@@ -304,6 +218,7 @@ describe('providerToInternalProvider', () => {
 
   describe('when called with BitBucket', () => {
     it('returns bitbucket', () => {
+      // @ts-expect-error
       expect(providerToInternalProvider('BitBucket')).toBe('bitbucket')
     })
   })

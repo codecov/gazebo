@@ -1,11 +1,7 @@
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
-import {
-  IndividualPlan,
-  useAccountDetails,
-  useAvailablePlans,
-} from 'services/account'
+import { useAccountDetails, useAvailablePlans } from 'services/account'
 import { useLocationParams } from 'services/navigation'
 import { TierNames } from 'services/tier'
 import {
@@ -15,6 +11,8 @@ import {
   findTeamPlans,
   isMonthlyPlan,
   isTeamPlan,
+  Plan,
+  PlanName,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
@@ -26,8 +24,8 @@ import { UpgradeFormFields } from '../UpgradeForm'
 
 interface PlanTypeOptionsProps {
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (x: IndividualPlan) => void
-  newPlan: string
+  setSelectedPlan: (x?: Plan) => void
+  newPlan?: PlanName
 }
 
 const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
@@ -47,7 +45,8 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   })
 
   const hasTeamPlans = shouldDisplayTeamCard({ plans })
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  const plan =
+    accountDetails?.rootOrganization?.plan?.value ?? accountDetails?.plan?.value
   const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
 
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear

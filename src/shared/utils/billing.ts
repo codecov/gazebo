@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { AccountDetailsSchema } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 
-export const Plans = Object.freeze({
+export const Plans = {
   USERS_FREE: 'users-free',
   USERS_BASIC: 'users-basic',
   USERS_TRIAL: 'users-trial',
@@ -21,16 +21,17 @@ export const Plans = Object.freeze({
   USERS_TEAMY: 'users-teamy',
   USERS_ENTERPRISEM: 'users-enterprisem',
   USERS_ENTERPRISEY: 'users-enterprisey',
-})
+} as const
 
 export type PlanName = (typeof Plans)[keyof typeof Plans]
 
 export interface Plan {
   baseUnitPrice: number
   benefits: string[]
+  billingRate: string | null
   marketingName: string
-  value: string
-  monthlyUploadLimit?: number
+  value: PlanName
+  monthlyUploadLimit: number | null
   quantity?: number
 }
 
@@ -39,7 +40,7 @@ export const EnterprisePlans = Object.freeze({
   USERS_ENTERPRISEY: 'users-enterprisey',
 })
 
-export function isEnterprisePlan(plan: PlanName) {
+export function isEnterprisePlan(plan?: PlanName) {
   if (isString(plan)) {
     return (Object.values(EnterprisePlans) as string[]).includes(plan)
   }
@@ -47,34 +48,34 @@ export function isEnterprisePlan(plan: PlanName) {
   return false
 }
 
-export function isFreePlan(plan: PlanName) {
+export function isFreePlan(plan?: PlanName) {
   if (isString(plan)) {
     if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true
   }
   return false
 }
 
-export function isTeamPlan(plan: PlanName) {
+export function isTeamPlan(plan?: PlanName) {
   if (isString(plan)) {
     if (plan === Plans.USERS_TEAMM || plan === Plans.USERS_TEAMY) return true
   }
   return false
 }
-export function isBasicPlan(plan: PlanName) {
+export function isBasicPlan(plan?: PlanName) {
   if (isString(plan)) {
     return plan === Plans.USERS_BASIC
   }
   return false
 }
 
-export function isPaidPlan(plan: PlanName) {
+export function isPaidPlan(plan?: PlanName) {
   if (isString(plan)) {
     return isAnnualPlan(plan) || isMonthlyPlan(plan)
   }
   return false
 }
 
-export function isMonthlyPlan(plan: PlanName) {
+export function isMonthlyPlan(plan?: PlanName) {
   if (isString(plan)) {
     return (
       plan === Plans.USERS_INAPP ||
@@ -87,7 +88,7 @@ export function isMonthlyPlan(plan: PlanName) {
   return false
 }
 
-export function isAnnualPlan(plan: PlanName) {
+export function isAnnualPlan(plan?: PlanName) {
   if (isString(plan)) {
     return (
       plan === Plans.USERS_INAPPY ||
@@ -100,28 +101,28 @@ export function isAnnualPlan(plan: PlanName) {
   return false
 }
 
-export function isSentryPlan(plan: PlanName) {
+export function isSentryPlan(plan?: PlanName) {
   if (isString(plan)) {
     return plan === Plans.USERS_SENTRYM || plan === Plans.USERS_SENTRYY
   }
   return false
 }
 
-export function isCodecovProPlan(plan: PlanName) {
+export function isCodecovProPlan(plan?: PlanName) {
   if (isString(plan)) {
     return plan === Plans.USERS_PR_INAPPM || plan === Plans.USERS_PR_INAPPY
   }
   return false
 }
 
-export function isProPlan(plan: PlanName) {
+export function isProPlan(plan?: PlanName) {
   if (isString(plan)) {
     return isSentryPlan(plan) || isCodecovProPlan(plan)
   }
   return false
 }
 
-export function isTrialPlan(plan: PlanName) {
+export function isTrialPlan(plan?: PlanName) {
   if (isString(plan)) {
     return plan === Plans.USERS_TRIAL
   }
@@ -134,7 +135,7 @@ export const CollectionMethods = Object.freeze({
   AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
 })
 
-export function useProPlans({ plans }: { plans: Plan[] }) {
+export function useProPlans({ plans }: { plans?: Plan[] | null }) {
   const { enterpriseCloudPlanSupport } = useFlags({
     enterpriseCloudPlanSupport: true,
   })
@@ -161,7 +162,7 @@ export function useProPlans({ plans }: { plans: Plan[] }) {
   }
 }
 
-export const findProPlans = ({ plans }: { plans: Plan[] }) => {
+export const findProPlans = ({ plans }: { plans?: Plan[] | null }) => {
   const proPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_PR_INAPPM
   )
@@ -175,7 +176,7 @@ export const findProPlans = ({ plans }: { plans: Plan[] }) => {
   }
 }
 
-export const findSentryPlans = ({ plans }: { plans: Plan[] }) => {
+export const findSentryPlans = ({ plans }: { plans?: Plan[] | null }) => {
   const sentryPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_SENTRYM
   )
@@ -189,7 +190,7 @@ export const findSentryPlans = ({ plans }: { plans: Plan[] }) => {
   }
 }
 
-export const findTeamPlans = ({ plans }: { plans: Plan[] }) => {
+export const findTeamPlans = ({ plans }: { plans?: Plan[] | null }) => {
   const teamPlanMonth = plans?.find((plan) => plan.value === Plans.USERS_TEAMM)
   const teamPlanYear = plans?.find((plan) => plan.value === Plans.USERS_TEAMY)
 
@@ -203,8 +204,8 @@ export const canApplySentryUpgrade = ({
   plan,
   plans,
 }: {
-  plan: PlanName
-  plans: Plan[]
+  plan?: PlanName
+  plans?: Plan[] | null
 }) => {
   if (isEnterprisePlan(plan) || !isArray(plans)) {
     return false
@@ -216,7 +217,7 @@ export const canApplySentryUpgrade = ({
   )
 }
 
-export const shouldDisplayTeamCard = ({ plans }: { plans: Plan[] }) => {
+export const shouldDisplayTeamCard = ({ plans }: { plans?: Plan[] | null }) => {
   const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
 
   return !isUndefined(teamPlanMonth) && !isUndefined(teamPlanYear)
@@ -230,7 +231,7 @@ export const formatNumberToUSD = (value: number) =>
   }).format(value)
 
 export function getNextBillingDate(
-  accountDetails: z.infer<typeof AccountDetailsSchema>
+  accountDetails?: z.infer<typeof AccountDetailsSchema> | null
 ) {
   const timestamp = accountDetails?.subscriptionDetail?.latestInvoice?.periodEnd
   return timestamp ? format(fromUnixTime(timestamp), 'MMMM do, yyyy') : null

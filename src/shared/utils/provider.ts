@@ -1,9 +1,6 @@
 /* eslint-disable camelcase */
 import config from 'config'
 
-import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
-import githubLogo from 'assets/providers/github-icon.svg'
-import gitlabLogo from 'assets/providers/gitlab-icon.svg'
 import { Provider } from 'shared/api/helpers'
 
 export function providerToName(provider: Provider) {
@@ -26,47 +23,22 @@ export function providerToName(provider: Provider) {
 }
 
 export function providerToInternalProvider(provider: Provider) {
-  return {
-    gh: 'github',
-    bb: 'bitbucket',
-    gl: 'gitlab',
-    ghe: 'github_enterprise',
-    gle: 'gitlab_enterprise',
-    bbs: 'bitbucket_server',
-    github: 'github',
-    bitbucket: 'bitbucket',
-    gitlab: 'gitlab',
-    github_enterprise: 'github_enterprise',
-    gitlab_enterprise: 'gitlab_enterprise',
-    bitbucket_server: 'bitbucket_server',
-  }[provider.toLowerCase()]
-}
-
-export function providerImage(providerName: Provider) {
-  return {
-    Github: githubLogo,
-    Gitlab: gitlabLogo,
-    BitBucket: bitbucketLogo,
-    'Github Enterprise': githubLogo,
-    'Gitlab Enterprise': gitlabLogo,
-    'BitBucket Server': bitbucketLogo,
-  }[providerToName(providerName)]
-}
-
-export function providerFeedback(providerName: Provider) {
-  return {
-    Github: 'https://github.com/codecov/Codecov-user-feedback/issues/1',
-    Gitlab:
-      'https://gitlab.com/codecov-open-source/codecov-user-feedback/-/issues/1',
-    BitBucket:
-      'https://bitbucket.org/kylemann/codecov/issues/1/wed-love-your-feedback',
-    'Github Enterprise':
-      'https://github.com/codecov/Codecov-user-feedback/issues/1',
-    'Gitlab Enterprise':
-      'https://gitlab.com/codecov-open-source/codecov-user-feedback/-/issues/1',
-    'BitBucket Server':
-      'https://bitbucket.org/kylemann/codecov/issues/1/wed-love-your-feedback',
-  }[providerToName(providerName)]
+  return (
+    {
+      gh: 'github',
+      bb: 'bitbucket',
+      gl: 'gitlab',
+      ghe: 'github_enterprise',
+      gle: 'gitlab_enterprise',
+      bbs: 'bitbucket_server',
+      github: 'github',
+      bitbucket: 'bitbucket',
+      gitlab: 'gitlab',
+      github_enterprise: 'github_enterprise',
+      gitlab_enterprise: 'gitlab_enterprise',
+      bitbucket_server: 'bitbucket_server',
+    }[provider.toLowerCase()] || 'github'
+  )
 }
 
 export function getProviderCommitURL({
@@ -99,7 +71,7 @@ export function getProviderPullURL({
   provider: Provider
   owner: string
   repo: string
-  pullId: string
+  pullId: number
 }) {
   return {
     Github: `https://github.com/${owner}/${repo}/pull/${pullId}`,

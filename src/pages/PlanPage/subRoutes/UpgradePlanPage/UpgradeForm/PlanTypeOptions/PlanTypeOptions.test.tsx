@@ -7,7 +7,7 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import { Plans } from 'shared/utils/billing'
+import { PlanName, Plans } from 'shared/utils/billing'
 
 import PlanTypeOptions from './PlanTypeOptions'
 
@@ -182,7 +182,7 @@ const mockAccountDetailsTrial = {
 }
 
 type SetupArgs = {
-  planValue: string
+  planValue: PlanName
   hasSentryPlans: boolean
   hasTeamPlans: boolean
 }

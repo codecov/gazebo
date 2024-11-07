@@ -1,10 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, UseFormRegister, UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import {
-  IndividualPlan,
   useAccountDetails,
   useAvailablePlans,
   usePlanData,
@@ -13,6 +12,8 @@ import {
   canApplySentryUpgrade,
   getNextBillingDate,
   isTeamPlan,
+  Plan,
+  PlanName,
 } from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
@@ -21,7 +22,6 @@ import {
   MIN_SENTRY_SEATS,
 } from 'shared/utils/upgradeForm'
 
-import { NewPlanType } from './constants'
 import Controller from './Controllers/Controller'
 import { useUpgradeControls } from './hooks'
 import PlanTypeOptions from './PlanTypeOptions'
@@ -34,12 +34,12 @@ type URLParams = {
 }
 
 type UpgradeFormProps = {
-  selectedPlan: NonNullable<IndividualPlan>
-  setSelectedPlan: (plan: IndividualPlan) => void
+  selectedPlan: NonNullable<Plan>
+  setSelectedPlan: (plan?: Plan) => void
 }
 
 export type UpgradeFormFields = {
-  newPlan: NewPlanType
+  newPlan?: PlanName
   seats: number
 }
 
@@ -103,17 +103,17 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         <span>{owner}</span>
       </div>
       <PlanTypeOptions
-        setFormValue={setFormValue}
+        setFormValue={setFormValue as UseFormSetValue<UpgradeFormFields>}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
       />
       <Controller
-        selectedPlan={selectedPlan.value as NewPlanType}
+        selectedPlan={selectedPlan.value}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
         seats={seats}
-        setFormValue={setFormValue}
-        register={register}
+        setFormValue={setFormValue as UseFormSetValue<UpgradeFormFields>}
+        register={register as UseFormRegister<UpgradeFormFields>}
         errors={errors}
       />
       <UpdateBlurb

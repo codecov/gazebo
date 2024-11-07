@@ -43,9 +43,10 @@ function getPlans() {
   return [
     {
       marketingName: 'Basic',
-      value: 'users-free',
+      value: Plans.USERS_FREE,
       billingRate: null,
       baseUnitPrice: 0,
+      monthlyUploadLimit: null,
       benefits: [
         'Up to 5 users',
         'Unlimited public repositories',
@@ -54,9 +55,10 @@ function getPlans() {
     },
     {
       marketingName: 'Pro Team',
-      value: 'users-pr-inappm',
+      value: Plans.USERS_PR_INAPPM,
       billingRate: 'monthly',
       baseUnitPrice: 12,
+      monthlyUploadLimit: null,
       benefits: [
         'Configureable # of users',
         'Unlimited public repositories',
@@ -66,9 +68,10 @@ function getPlans() {
     },
     {
       marketingName: 'Pro Team',
-      value: 'users-pr-inappy',
+      value: Plans.USERS_PR_INAPPY,
       billingRate: 'annually',
       baseUnitPrice: 10,
+      monthlyUploadLimit: null,
       benefits: [
         'Configureable # of users',
         'Unlimited public repositories',
@@ -78,9 +81,10 @@ function getPlans() {
     },
     {
       marketingName: 'Pro Team',
-      value: 'users-enterprisem',
+      value: Plans.USERS_ENTERPRISEM,
       billingRate: 'monthly',
       baseUnitPrice: 12,
+      monthlyUploadLimit: null,
       benefits: [
         'Configureable # of users',
         'Unlimited public repositories',
@@ -90,9 +94,10 @@ function getPlans() {
     },
     {
       marketingName: 'Pro Team',
-      value: 'users-enterprisey',
+      value: Plans.USERS_ENTERPRISEY,
       billingRate: 'annually',
       baseUnitPrice: 10,
+      monthlyUploadLimit: null,
       benefits: [
         'Configureable # of users',
         'Unlimited public repositories',
@@ -102,9 +107,10 @@ function getPlans() {
     },
     {
       marketingName: 'Sentry Pro Team',
-      value: 'users-sentrym',
+      value: Plans.USERS_SENTRYM,
       billingRate: 'monthly',
       baseUnitPrice: 12,
+      monthlyUploadLimit: null,
       benefits: [
         'Includes 5 seats',
         'Unlimited public repositories',
@@ -115,9 +121,10 @@ function getPlans() {
     },
     {
       marketingName: 'Sentry Pro Team',
-      value: 'users-sentryy',
+      value: Plans.USERS_SENTRYY,
       billingRate: 'annually',
       baseUnitPrice: 10,
+      monthlyUploadLimit: null,
       benefits: [
         'Includes 5 seats',
         'Unlimited public repositories',
@@ -128,9 +135,10 @@ function getPlans() {
     },
     {
       marketingName: 'Team',
-      value: 'users-teamm',
+      value: Plans.USERS_TEAMM,
       billingRate: 'monthly',
       baseUnitPrice: 6,
+      monthlyUploadLimit: null,
       benefits: [
         'Up to 10 users',
         'Unlimited repositories',
@@ -141,9 +149,10 @@ function getPlans() {
     },
     {
       marketingName: 'Team',
-      value: 'users-teamy',
+      value: Plans.USERS_TEAMY,
       billingRate: 'yearly',
       baseUnitPrice: 5,
+      monthlyUploadLimit: null,
       benefits: [
         'Up to 10 users',
         'Unlimited repositories',
@@ -168,7 +177,6 @@ describe('isFreePlan', () => {
 
   it('Defaults to false otherwise', () => {
     expect(isFreePlan('users-inappy')).toBe(false)
-    // @ts-expect-error
     expect(isFreePlan(undefined)).toBe(false)
   })
 })
@@ -183,9 +191,10 @@ describe('shouldDisplayTeamCard', () => {
     const plans = [
       {
         marketingName: 'Pro Team',
-        value: 'users-pr-inappm',
+        value: Plans.USERS_PR_INAPPM,
         billingRate: 'monthly',
         baseUnitPrice: 12,
+        monthlyUploadLimit: null,
         benefits: [
           'Configureable # of users',
           'Unlimited public repositories',
@@ -195,9 +204,10 @@ describe('shouldDisplayTeamCard', () => {
       },
       {
         marketingName: 'Pro Team',
-        value: 'users-pr-inappy',
+        value: Plans.USERS_PR_INAPPY,
         billingRate: 'annually',
         baseUnitPrice: 10,
+        monthlyUploadLimit: null,
         benefits: [
           'Configureable # of users',
           'Unlimited public repositories',
@@ -223,7 +233,6 @@ describe('isEnterprisePlans', () => {
 
   it('defaults to false otherwise', () => {
     expect(isEnterprisePlan('users-inappy')).toBe(false)
-    // @ts-expect-error
     expect(isEnterprisePlan(undefined)).toBe(false)
   })
 })
@@ -249,6 +258,7 @@ describe('useProPlans', () => {
           value: 'users-pr-inappm',
           billingRate: 'monthly',
           baseUnitPrice: 12,
+          monthlyUploadLimit: null,
           benefits: [
             'Configureable # of users',
             'Unlimited public repositories',
@@ -261,6 +271,7 @@ describe('useProPlans', () => {
           value: 'users-pr-inappy',
           billingRate: 'annually',
           baseUnitPrice: 10,
+          monthlyUploadLimit: null,
           benefits: [
             'Configureable # of users',
             'Unlimited public repositories',
@@ -285,6 +296,7 @@ describe('useProPlans', () => {
           value: 'users-pr-inappm',
           billingRate: 'monthly',
           baseUnitPrice: 12,
+          monthlyUploadLimit: null,
           benefits: [
             'Configureable # of users',
             'Unlimited public repositories',
@@ -297,6 +309,7 @@ describe('useProPlans', () => {
           value: 'users-pr-inappy',
           billingRate: 'annually',
           baseUnitPrice: 10,
+          monthlyUploadLimit: null,
           benefits: [
             'Configureable # of users',
             'Unlimited public repositories',
@@ -396,7 +409,6 @@ describe('isAnnualPlan', () => {
 
   it('defaults to false otherwise', () => {
     expect(isAnnualPlan('users-inappm')).toBe(false)
-    // @ts-expect-error
     expect(isAnnualPlan(undefined)).toBe(false)
   })
 })
@@ -419,7 +431,6 @@ describe('isMonthlyPlan', () => {
 
   it('defaults to false otherwise', () => {
     expect(isMonthlyPlan('users-inappy')).toBe(false)
-    // @ts-expect-error
     expect(isMonthlyPlan(undefined)).toBe(false)
   })
 })
@@ -437,7 +448,6 @@ describe('isSentryPlan', () => {
 
   it('Defaults to false otherwise', () => {
     expect(isSentryPlan('users-inappy')).toBe(false)
-    // @ts-expect-error
     expect(isSentryPlan(undefined)).toBe(false)
   })
 })
@@ -464,7 +474,6 @@ describe('isPaidPlan', () => {
 
   it('defaults to false otherwise', () => {
     expect(isPaidPlan('users-free')).toBe(false)
-    // @ts-expect-error
     expect(isPaidPlan(undefined)).toBe(false)
   })
 })
@@ -479,6 +488,7 @@ describe('findSentryPlans', () => {
       value: 'users-sentrym',
       billingRate: 'monthly',
       baseUnitPrice: 12,
+      monthlyUploadLimit: null,
       benefits: [
         'Includes 5 seats',
         'Unlimited public repositories',
@@ -500,6 +510,7 @@ describe('findSentryPlans', () => {
       value: 'users-sentryy',
       billingRate: 'annually',
       baseUnitPrice: 10,
+      monthlyUploadLimit: null,
       benefits: [
         'Includes 5 seats',
         'Unlimited public repositories',
@@ -523,6 +534,7 @@ describe('findProPlans', () => {
       value: 'users-pr-inappm',
       billingRate: 'monthly',
       baseUnitPrice: 12,
+      monthlyUploadLimit: null,
       benefits: [
         'Configureable # of users',
         'Unlimited public repositories',
@@ -543,6 +555,7 @@ describe('findProPlans', () => {
       value: 'users-pr-inappy',
       billingRate: 'annually',
       baseUnitPrice: 10,
+      monthlyUploadLimit: null,
       benefits: [
         'Configureable # of users',
         'Unlimited public repositories',
@@ -565,6 +578,7 @@ describe('findTeamPlans', () => {
       value: 'users-teamm',
       billingRate: 'monthly',
       baseUnitPrice: 6,
+      monthlyUploadLimit: null,
       benefits: [
         'Up to 10 users',
         'Unlimited repositories',
@@ -586,6 +600,7 @@ describe('findTeamPlans', () => {
       value: 'users-teamy',
       billingRate: 'yearly',
       baseUnitPrice: 5,
+      monthlyUploadLimit: null,
       benefits: [
         'Up to 10 users',
         'Unlimited repositories',
