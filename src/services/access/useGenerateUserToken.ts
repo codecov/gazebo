@@ -10,7 +10,7 @@ const UseGenerateTokenResponseSchema = z.object({
   createUserToken: z
     .object({
       error: z
-        .union([
+        .discriminatedUnion('__typename', [
           z.object({
             __typename: z.literal('ValidationError'),
             message: z.string(),
