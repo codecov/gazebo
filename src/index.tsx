@@ -22,9 +22,8 @@ if (
   process.env.NODE_ENV === 'development' &&
   process.env.REACT_APP_MSW_BROWSER
 ) {
-  import('./mocks/browser').then(({ worker }) => {
-    worker.start()
-  })
+  const { worker } = require('./mocks/browser')
+  worker.start()
 }
 
 ReactModal.setAppElement('#root')
