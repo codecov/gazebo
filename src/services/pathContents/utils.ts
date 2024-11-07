@@ -30,3 +30,7 @@ export function extractCoverageFromResponse(
     ...(hashedPath && { hashedPath }),
   }
 }
+
+export type PrefetchBranchFileEntryCoverage = ReturnType<
+  typeof extractCoverageFromResponse
+>

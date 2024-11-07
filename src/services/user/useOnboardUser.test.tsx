@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
