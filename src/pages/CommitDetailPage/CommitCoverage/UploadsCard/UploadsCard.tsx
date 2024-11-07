@@ -67,7 +67,7 @@ function UploadsCard() {
     }
 
     const totalUploads = groupedUploads[provider]?.length
-    if (selectedUploads.size === totalUploads || selectedUploads === undefined)
+    if (selectedUploads === undefined || selectedUploads.size === totalUploads)
       return SelectState.ALL_SELECTED
     if (selectedUploads.size === 0) return SelectState.NONE_SELECTED
     return SelectState.SOME_SELECTED
