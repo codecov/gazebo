@@ -166,7 +166,7 @@ function UploadsCard() {
             : uploadsProviderList.map((title) => (
                 <Fragment key={title}>
                   <span
-                    className={`sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary px-4 py-1 text-sm font-semibold ${title === NONE ? 'text-ds-gray-quinary' : ''}`}
+                    className={`sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary px-4 py-1 text-sm font-semibold ${title === NONE ? 'text-ds-gray-quaternary' : ''}`}
                   >
                     <div className="flex items-center">
                       <Checkbox
