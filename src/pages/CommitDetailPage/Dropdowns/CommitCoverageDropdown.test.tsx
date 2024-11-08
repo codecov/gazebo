@@ -5,7 +5,9 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { z } from 'zod'
 
+import { RequestSchema } from 'services/commit/useCommitCoverageDropdownSummary'
 import SummaryDropdown from 'ui/SummaryDropdown'
 
 import CommitCoverageDropdown from './CommitCoverageDropdown'
@@ -42,7 +44,7 @@ const mockSummaryData = (
         },
       },
     },
-  }
+  } as z.infer<typeof RequestSchema>
 }
 
 const mockNoData = { owner: null }
@@ -69,6 +71,23 @@ const mockComparisonError = {
         compareWithParent: {
           __typename: 'MissingHeadCommit',
           message: 'Missing head commit',
+        },
+      },
+    },
+  },
+}
+
+const mockYamlError = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        compareWithParent: {
+          __typename: 'FirstPullRequest',
+          message: 'First pull request',
+        },
+        yamlErrors: {
+          edges: [{ node: { errorCode: 'invalid_yaml' } }],
         },
       },
     },
@@ -124,6 +143,7 @@ interface SetupArgs {
   uploadState?: 'COMPLETE' | 'ERROR'
   multipleUploads?: boolean
   firstPullRequest?: boolean
+  hasYamlError?: boolean
 }
 
 describe('CommitCoverageDropdown', () => {
@@ -137,6 +157,7 @@ describe('CommitCoverageDropdown', () => {
     uploadState = 'COMPLETE',
     multipleUploads = false,
     firstPullRequest = false,
+    hasYamlError = false,
   }: SetupArgs = {}) {
     const user = userEvent.setup()
 
@@ -148,6 +169,8 @@ describe('CommitCoverageDropdown', () => {
           return HttpResponse.json({ data: mockComparisonError })
         } else if (firstPullRequest) {
           return HttpResponse.json({ data: mockFirstPullRequest })
+        } else if (hasYamlError) {
+          return HttpResponse.json({ data: mockYamlError })
         }
 
         return HttpResponse.json({
@@ -361,6 +384,23 @@ describe('CommitCoverageDropdown', () => {
       )
 
       const errorMsg = await screen.findByText(/missing head commit/)
+      expect(errorMsg).toBeInTheDocument()
+    })
+  })
+
+  describe('there is a yaml error', () => {
+    it('renders the yaml error message', async () => {
+      setup({ hasYamlError: true })
+      render(
+        <CommitCoverageDropdown>
+          <p>Passed child</p>
+        </CommitCoverageDropdown>,
+        { wrapper }
+      )
+
+      const errorMsg = await screen.findByText(
+        /data unavailable due to invalid yaml/
+      )
       expect(errorMsg).toBeInTheDocument()
     })
   })

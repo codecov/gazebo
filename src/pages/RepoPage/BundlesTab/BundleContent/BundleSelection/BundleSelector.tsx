@@ -104,7 +104,6 @@ const BundleSelector = forwardRef<any, BranchSelectorProps>(
                 history.push(
                   bundlesLink.path({
                     branch,
-                    // @ts-expect-error - useNavLinks needs to be typed
                     bundle: encodeURIComponent(name),
                   })
                 )

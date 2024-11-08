@@ -1,7 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { ThemeContextProvider } from 'shared/ThemeContext'
@@ -35,7 +37,9 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <ThemeContextProvider>
       <MemoryRouter initialEntries={['/gh/codecov/']}>
-        <Route path="/:provider/:owner/">{children}</Route>
+        <Route path="/:provider/:owner/">
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
       </MemoryRouter>
     </ThemeContextProvider>
   </QueryClientProvider>
@@ -136,14 +140,9 @@ describe('CodecovAIPage', () => {
     expect(commandText).toBeInTheDocument()
 
     const commandOneText = await screen.findByText(
-      / the assistant will generate tests/
-    )
-    expect(commandOneText).toBeInTheDocument()
-
-    const commandTwoText = await screen.findByText(
       / the assistant will review the PR/
     )
-    expect(commandTwoText).toBeInTheDocument()
+    expect(commandOneText).toBeInTheDocument()
   })
 
   it('renders examples', async () => {
@@ -153,14 +152,23 @@ describe('CodecovAIPage', () => {
       /Here is an example of Codecov AI Reviewer in PR comments/
     )
     expect(reviewExample).toBeInTheDocument()
-
-    const testGenerator = await screen.findByText(
-      /Here is an example of Codecov AI Test Generator/
-    )
-    expect(testGenerator).toBeInTheDocument()
   })
 
-  //TODO: Once we have screenshots, test that they are visible
+  it('renders screenshot', async () => {
+    render(<CodecovAIPage />, { wrapper })
+    const user = userEvent.setup()
+    const trigger = await screen.findByText((content) =>
+      content.startsWith('Here is an example')
+    )
+    expect(trigger).toBeInTheDocument()
+
+    await user.click(trigger)
+
+    const screenshot = await screen.findByRole('img', {
+      name: /codecov pr review example/,
+    })
+    expect(screenshot).toBeInTheDocument()
+  })
 
   it('renders a link to the docs', async () => {
     render(<CodecovAIPage />, { wrapper })

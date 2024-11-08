@@ -10,8 +10,9 @@ function LearnMoreBlurb() {
           <p>
             Visit our guide to{' '}
             <A
-              to={{ pageName: 'quickStart' }}
-              hook="coverage-onboarding-learn-more"
+              to={{ pageName: 'codecovAIDocs' }}
+              hook="codecov-ai-docs-link"
+              data-testid="codecov-ai-docs-link"
               isExternal={true}
             >
               learn more

@@ -23,9 +23,8 @@ const InstallCodecovAI: React.FC = () => {
         <Card.Content>
           To enable the Codecov AI assistant in your GitHub organization, or on
           specific repositories, you need to install the Codecov AI GitHub App
-          Integration. This will allow the assistant to analyze pull requests,
-          provide insights, and generate new tests to help increase your code
-          coverage.
+          Integration. This will allow the assistant to analyze pull requests
+          and provide insights.
           <div className="mt-4 flex">
             <Button
               to={{
