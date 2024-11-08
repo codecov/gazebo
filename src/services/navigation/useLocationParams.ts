@@ -2,7 +2,7 @@ import omitBy from 'lodash/omitBy'
 import qs from 'qs'
 import { useHistory, useLocation } from 'react-router-dom'
 
-export function useLocationParams(defaultParams = {}) {
+export function useLocationParams(defaultParams: Record<string, unknown> = {}) {
   const { push } = useHistory()
   const { pathname, search, state } = useLocation()
   const params = state || {
@@ -12,7 +12,7 @@ export function useLocationParams(defaultParams = {}) {
     }),
   }
 
-  function updateWindowLocation(params) {
+  function updateWindowLocation(params: Record<string, unknown>) {
     const locationParams = omitBy(
       params,
       (value, key) => value === defaultParams[key]
@@ -22,12 +22,12 @@ export function useLocationParams(defaultParams = {}) {
   }
 
   // Create new state
-  function setParams(newParams) {
+  function setParams(newParams: Record<string, unknown>) {
     updateWindowLocation(newParams)
   }
 
   // Retain previous state
-  function updateParams(newParams) {
+  function updateParams(newParams: Record<string, unknown>) {
     updateWindowLocation({
       ...params,
       ...newParams,

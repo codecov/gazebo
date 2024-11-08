@@ -1,10 +1,11 @@
 import { renderHook } from '@testing-library/react'
+import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useNavLinks } from './useNavLinks'
 
 const wrapper =
-  (location) =>
+  (location: string): React.FC<PropsWithChildren> =>
   ({ children }) => (
     <MemoryRouter initialEntries={[location]} initialIndex={0}>
       <Route path="/:provider">{children}</Route>

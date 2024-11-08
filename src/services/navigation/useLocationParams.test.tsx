@@ -1,16 +1,16 @@
 import { act, renderHook } from '@testing-library/react'
-import { createMemoryHistory } from 'history'
+import { createMemoryHistory, Location, MemoryHistory } from 'history'
 import { Route, Router } from 'react-router-dom'
 
 import { useLocationParams } from './useLocationParams'
 
 describe('useLocationParams', () => {
-  let testLocation
-  let history
-  let wrapper
+  let testLocation: Location | string
+  let history: MemoryHistory
+  let wrapper: React.FC<React.PropsWithChildren>
 
-  function setup({ location } = {}) {
-    testLocation = location
+  function setup({ location }: { location?: Location | string } = {}) {
+    testLocation = location!
     history = createMemoryHistory()
 
     wrapper = ({ children }) => (
