@@ -1,32 +1,36 @@
 import { useQuery } from '@tanstack/react-query'
-import type { UseQueryOptions } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 
-export const ReposCoverageMeasurementsConfig = z
-  .object({
-    measurements: z.array(
-      z.object({
-        timestamp: z.string(),
-        avg: z.number().nullish(),
-      })
-    ),
+const ReposCoverageMeasurementsConfig = z.array(
+  z.object({
+    timestamp: z.string(),
+    avg: z.number().nullable(),
   })
-  .nullish()
+)
 
-type ReposCoverageMeasurementsData =
-  | z.infer<typeof ReposCoverageMeasurementsConfig>
-  | {}
+const RequestSchema = z.object({
+  owner: z
+    .object({
+      measurements: ReposCoverageMeasurementsConfig.nullable(),
+    })
+    .nullable(),
+})
 
 export interface UseReposCoverageMeasurementsArgs {
   provider: string
   owner: string
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
-  before?: string
-  after?: string
+  before?: string | Date
+  after?: string | Date
   repos?: string[]
-  opts?: UseQueryOptions<ReposCoverageMeasurementsData>
+  opts?: {
+    suspense?: boolean
+    keepPreviousData?: boolean
+    staleTime?: number
+  }
   isPublic?: boolean // by default, get both public and private repos
 }
 
@@ -89,9 +93,22 @@ export const useReposCoverageMeasurements = ({
           repos,
           isPublic,
         },
-      }).then(
-        (res) => ReposCoverageMeasurementsConfig.parse(res?.data?.owner) ?? {}
-      ),
-    ...(!!opts && opts),
+      }).then((res) => {
+        const parsedData = RequestSchema.safeParse(res?.data)
+
+        if (!parsedData.success) {
+          return rejectNetworkError({
+            status: 404,
+            data: {},
+            dev: 'useReposCoverageMeasurements - 404 schema parsing failed',
+            error: parsedData.error,
+          })
+        }
+
+        return {
+          measurements: parsedData.data?.owner?.measurements ?? null,
+        }
+      }),
+    ...(!!opts ? opts : {}),
   })
 }
