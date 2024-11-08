@@ -34,8 +34,9 @@ import { useSyncScrollMargin } from './useSyncScrollMargin'
 import { useSyncTotalWidth } from './useSyncTotalWidth'
 import { useSyncWrapperWidth } from './useSyncWrapperWidth'
 
-import './VirtualFileRenderer.css'
+// prism theme is required to come before so it doesn't override our custom css
 import 'shared/utils/prism/prismTheme.css'
+import './VirtualFileRenderer.css'
 
 export interface LineData {
   headNumber: string | null
@@ -255,14 +256,6 @@ const CodeBody = ({
               className="absolute left-0 top-0 pl-[192px]"
             >
               <div className="grid">
-                <div className="z-[-1] col-start-1 row-start-1 ">
-                  <ColorBar
-                    isHighlighted={
-                      location.hash === headHash || location.hash === baseHash
-                    }
-                    coverage={lineData?.[item.index]?.headCoverage}
-                  />
-                </div>
                 <div
                   className="col-start-1 row-start-1 flex flex-1 justify-between"
                   style={{
@@ -282,6 +275,14 @@ const CodeBody = ({
                       hitCount={lineData?.[item.index]?.hitCount}
                     />
                   ) : null}
+                </div>
+                <div className="z-[-1] col-start-1 row-start-1 ">
+                  <ColorBar
+                    isHighlighted={
+                      location.hash === headHash || location.hash === baseHash
+                    }
+                    coverage={lineData?.[item.index]?.headCoverage}
+                  />
                 </div>
               </div>
             </div>
