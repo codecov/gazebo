@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useSelfHostedSeatsConfig } from './useSelfHostedSeatsConfig'
@@ -16,7 +17,7 @@ const mockData = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const wrapper = ({ children }) => (
+const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh']}>
       <Route path="/:provider">{children}</Route>
@@ -41,7 +42,7 @@ afterAll(() => {
 describe('useSelfHostedSeatsConfig', () => {
   function setup() {
     server.use(
-      graphql.query('Seats', (req, res, ctx) => {
+      graphql.query('Seats', (info) => {
         return HttpResponse.json({ data: mockData })
       })
     )

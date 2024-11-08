@@ -5,6 +5,17 @@ import config from 'config'
 
 // Note to Terry, when we have more time automate all paths to pass through query search params.
 
+interface URLParams {
+  branch?: string
+  provider?: string
+  owner?: string
+  repo?: string
+  id?: string
+  pullId?: string
+  commit?: string
+  path?: string
+}
+
 export const ALL_BRANCHES = 'All branches'
 export function useNavLinks() {
   const {
@@ -16,19 +27,25 @@ export function useNavLinks() {
     pullId: pi,
     commit: c,
     path: pa,
-  } = useParams()
+  } = useParams<URLParams>()
 
   return {
     signOut: {
       text: 'Sign Out',
-      path: ({ provider = p } = { provider: p }) => {
+      path: ({ provider = p } = {}) => {
         return `${config.API_URL}/logout/${provider}`
       },
       isExternalLink: true,
     },
     signIn: {
       text: 'Log in',
-      path: ({ provider = p, to } = { provider: p }) => {
+      path: ({
+        provider = p,
+        to,
+      }: {
+        provider?: string
+        to?: string
+      } = {}): string => {
         const query = qs.stringify({ to }, { addQueryPrefix: true })
         return `${config.API_URL}/login/${provider}${query}`
       },
@@ -94,9 +111,15 @@ export function useNavLinks() {
     },
     upgradeOrgPlan: {
       text: 'Upgrade Plan',
-      path: (
-        { provider = p, owner = o, params = null } = { provider: p, owner: o }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        params = {},
+      }: {
+        provider?: string
+        owner?: string
+        params?: Record<string, unknown>
+      } = {}) => {
         if (params !== null) {
           const queryString = qs.stringify(params, {
             addQueryPrefix: true,
@@ -182,15 +205,19 @@ export function useNavLinks() {
       text: 'Commits',
     },
     commit: {
-      path: (
-        { provider = p, owner = o, repo = r, commit, queryParams = {} } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          commit: c,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        commit = c,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        commit?: string | number
+        queryParams?: Record<string, unknown>
+      } = {}) => {
         let query = ''
         if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -202,25 +229,38 @@ export function useNavLinks() {
       text: 'Commit',
     },
     commitFile: {
-      path: (
-        { provider = p, owner = o, repo = r, commit, path } = {
-          provider: p,
-          owner: o,
-          repo: r,
-        }
-      ) => `/${provider}/${owner}/${repo}/commit/${commit}/${path}`,
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        commit,
+        path,
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        commit: string
+        path: string
+      }) => `/${provider}/${owner}/${repo}/commit/${commit}/${path}`,
       isExternalLink: false,
       text: 'Commit File',
     },
     treeView: {
-      path: (
-        { provider = p, owner = o, repo = r, tree, ref, queryParams = {} } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        tree,
+        ref,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        tree?: string
+        ref?: string
+        queryParams?: Record<string, unknown>
+      } = {}) => {
         let query = ''
         if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -243,14 +283,21 @@ export function useNavLinks() {
       text: 'Tree View',
     },
     fileViewer: {
-      path: (
-        { provider = p, owner = o, repo = r, ref, tree, queryParams = {} } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        ref,
+        tree,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        ref: string
+        tree: string
+        queryParams?: Record<string, unknown>
+      }) => {
         const encodedRef = encodeURIComponent(ref)
         const encodedTree = encodeURIComponent(tree)
 
@@ -265,21 +312,21 @@ export function useNavLinks() {
       text: 'File Viewer',
     },
     commitTreeView: {
-      path: (
-        {
-          provider = p,
-          owner = o,
-          repo = r,
-          tree,
-          commit,
-          queryParams = {},
-        } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        tree,
+        commit,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        tree?: string
+        commit: string
+        queryParams?: Record<string, unknown>
+      }) => {
         let query = ''
         if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -294,21 +341,21 @@ export function useNavLinks() {
       text: 'Commit Tree View',
     },
     commitFileDiff: {
-      path: (
-        {
-          provider = p,
-          owner = o,
-          repo = r,
-          tree,
-          commit,
-          queryParams = {},
-        } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        tree,
+        commit,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        tree: string
+        commit: string
+        queryParams?: Record<string, unknown>
+      }) => {
         let query = ''
         if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -362,15 +409,19 @@ export function useNavLinks() {
       text: 'Overview',
     },
     coverage: {
-      path: (
-        { provider = p, owner = o, repo = r, queryParams = {}, branch = b } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          queryParams: {},
-          branch: b,
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        queryParams = {},
+        branch = b,
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        queryParams?: Record<string, unknown>
+        branch?: string
+      } = {}) => {
         let query = ''
         if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -436,15 +487,19 @@ export function useNavLinks() {
       text: 'Pulls',
     },
     pullDetail: {
-      path: (
-        { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          pullId: pi,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        pullId = pi,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        pullId?: string | number
+        queryParams?: Record<string, unknown>
+      } = {}) => {
         let query = ''
         if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -497,7 +552,10 @@ export function useNavLinks() {
     },
     prevLink: {
       text: 'Back',
-      path: ({ provider = p, ref } = { provider: p, ref: null }) => {
+      path: ({
+        provider = p,
+        ref,
+      }: { provider?: string; ref?: string } = {}) => {
         if (ref) {
           return decodeURIComponent(ref)
         }
@@ -533,15 +591,19 @@ export function useNavLinks() {
     },
     pullIndirectChanges: {
       text: 'Indirect changes',
-      path: (
-        { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          pullId: pi,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        pullId = pi,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        pullId?: string | number
+        queryParams?: Record<string, unknown>
+      } = {}) => {
         let query = ''
         if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -552,14 +614,19 @@ export function useNavLinks() {
     },
     commitIndirectChanges: {
       text: 'Indirect changes',
-      path: (
-        { provider = p, owner = o, repo = r, commit, queryParams = {} } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        commit,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        commit: string | number
+        queryParams?: Record<string, unknown>
+      }) => {
         let query = ''
         if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -571,15 +638,19 @@ export function useNavLinks() {
     },
     pullCommits: {
       text: 'Commits',
-      path: (
-        { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          pullId: pi,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        pullId = pi,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        pullId?: string | number
+        queryParams?: Record<string, unknown>
+      } = {}) => {
         let query = ''
         if (Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -590,15 +661,19 @@ export function useNavLinks() {
     },
     pullFlags: {
       text: 'Flags',
-      path: (
-        { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          pullId: pi,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        pullId = pi,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        pullId?: string | number
+        queryParams?: Record<string, unknown>
+      } = {}) => {
         let query = ''
         if (Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -609,15 +684,19 @@ export function useNavLinks() {
     },
     pullComponents: {
       text: 'Components',
-      path: (
-        { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          pullId: pi,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        pullId = pi,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        pullId?: string | number
+        queryParams?: Record<string, unknown>
+      } = {}) => {
         let query = ''
         if (Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -629,22 +708,21 @@ export function useNavLinks() {
     // Tree vs blogs gets strange, for some reason the code relies on a route param path not tree despite the path label. Could likely use a refactor.
     pullTreeView: {
       text: 'Pull tree view',
-      path: (
-        {
-          provider = p,
-          owner = o,
-          repo = r,
-          pullId = pi,
-          tree,
-          queryParams = {},
-        } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          pullId: pi,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        pullId = pi,
+        tree,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        pullId?: string | number
+        tree?: string
+        queryParams?: Record<string, unknown>
+      } = {}) => {
         // TODO: doesn't default to tree in the url, this diverges from the rest of the links how ever the breadcrumbs rely on it. We should make an alternative solution for the breadcrumb / to support converting to typescript.
         let query = ''
         if (Object.keys(queryParams).length > 0) {
@@ -659,23 +737,21 @@ export function useNavLinks() {
       isExternalLink: false,
     },
     pullFileView: {
-      path: (
-        {
-          provider = p,
-          owner = o,
-          repo = r,
-          tree = pa,
-          pullId = pi,
-          queryParams = {},
-        } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          pullId: pi,
-          tree: pa,
-          queryParams: {},
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        tree = pa,
+        pullId = pi,
+        queryParams = {},
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        tree?: string
+        pullId?: string | number
+        queryParams?: Record<string, unknown>
+      } = {}) => {
         let query = ''
         if (Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
@@ -699,12 +775,15 @@ export function useNavLinks() {
     },
     githubRepoActions: {
       text: 'GitHub Actions workflow yaml file',
-      path: (
-        { owner = o, repo = r, branch } = {
-          owner: o,
-          repo: r,
-        }
-      ) =>
+      path: ({
+        owner = o,
+        repo = r,
+        branch,
+      }: {
+        owner?: string
+        repo?: string
+        branch: string
+      }) =>
         `https://github.com/${owner}/${repo}/tree/${branch}/.github/workflows`,
       isExternalLink: true,
       openNewTab: true,
@@ -724,30 +803,33 @@ export function useNavLinks() {
     },
     circleCIyaml: {
       text: 'config.yml',
-      path: (
-        { owner = o, repo = r, branch } = {
-          owner: o,
-          repo: r,
-        }
-      ) =>
+      path: ({
+        owner = o,
+        repo = r,
+        branch,
+      }: {
+        owner?: string
+        repo?: string
+        branch: string
+      }) =>
         `https://github.com/${owner}/${repo}/tree/${branch}/.circleci/config`,
       isExternalLink: true,
       openNewTab: true,
     },
     bundles: {
-      path: (
-        {
-          provider = p,
-          owner = o,
-          repo = r,
-          branch = b,
-          bundle = undefined,
-        } = {
-          provider: p,
-          owner: o,
-          repo: r,
-        }
-      ) => {
+      path: ({
+        provider = p,
+        owner = o,
+        repo = r,
+        branch = b,
+        bundle = undefined,
+      }: {
+        provider?: string
+        owner?: string
+        repo?: string
+        branch?: string
+        bundle?: string | undefined
+      } = {}) => {
         if (branch && branch !== ALL_BRANCHES && bundle) {
           return `/${provider}/${owner}/${repo}/bundles/${branch}/${bundle}`
         }

@@ -168,7 +168,7 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     legacyUI: {
-      path: ({ pathname }) => config.BASE_URL + pathname,
+      path: ({ pathname }: { pathname: string }) => config.BASE_URL + pathname,
       isExternalLink: true,
       text: 'Legacy User Interface',
       openNewTab: true,

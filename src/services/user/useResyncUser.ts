@@ -8,7 +8,13 @@ import Api from 'shared/api'
 export const POLLING_INTERVAL = 2000
 export const PAGE_SIZE = 20
 
-function fetchIsSyncing({ provider, signal }) {
+function fetchIsSyncing({
+  provider,
+  signal,
+}: {
+  provider: string
+  signal?: AbortSignal
+}) {
   const query = `
       query IsSyncing {
         me {
@@ -21,7 +27,7 @@ function fetchIsSyncing({ provider, signal }) {
   })
 }
 
-function triggerSync(provider) {
+function triggerSync(provider: string) {
   const mutation = `
       mutation SyncData {
         syncWithGitProvider {
@@ -43,10 +49,15 @@ function triggerSync(provider) {
   })
 }
 
+interface URLParams {
+  provider: string
+  owner: string
+}
+
 // takes a callback for when the sync is finished
 // return if there is a sync in progress, and a function to trigger a sync
 export function useResyncUser() {
-  const { provider, owner } = useParams()
+  const { provider, owner } = useParams<URLParams>()
   const queryClient = useQueryClient()
 
   // we get the value we have from the cache as we need to for the interval refetch
@@ -75,7 +86,9 @@ export function useResyncUser() {
       })
 
       const numRepos =
-        data?.length > 0 ? data[data.length - 1]?.pages?.repos?.length : 0
+        data?.length > 0
+          ? (data[data.length - 1] as any)?.pages?.repos?.length
+          : 0
 
       if (numRepos < PAGE_SIZE) {
         queryClient.invalidateQueries({
@@ -87,7 +100,7 @@ export function useResyncUser() {
     },
     suspense: false,
     useErrorBoundary: false,
-    refetchInterval: isSyncing ? POLLING_INTERVAL : null,
+    refetchInterval: isSyncing ? POLLING_INTERVAL : undefined,
   })
 
   useEffect(() => {
