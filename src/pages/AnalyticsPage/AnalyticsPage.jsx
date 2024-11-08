@@ -42,7 +42,9 @@ function AnalyticsPage() {
     <div className="flex flex-col gap-4">
       {ownerData?.isCurrentUserPartOfOrg ? <Tabs /> : null}
       <ChartSelectors
-        params={params}
+        startDate={params?.startDate}
+        endDate={params?.endDate}
+        repositories={params?.repositories}
         updateParams={updateParams}
         active={true}
         sortItem={sortItem}
