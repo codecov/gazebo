@@ -15,7 +15,7 @@ export const TimeseriesInterval = {
 } as const
 
 type TrendKeys = keyof typeof Trend
-export type Trends = (typeof Trend)[TrendKeys]
+type Trends = (typeof Trend)[TrendKeys]
 export const Trend = {
   SEVEN_DAYS: '7 days',
   THIRTY_DAYS: '30 days',

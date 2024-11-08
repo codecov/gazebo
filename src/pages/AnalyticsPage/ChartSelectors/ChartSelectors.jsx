@@ -98,6 +98,7 @@ function RepoSelector({
 }
 
 RepoSelector.propTypes = {
+  params: PropTypes.object.isRequired,
   updateParams: PropTypes.func.isRequired,
   active: PropTypes.bool.isRequired,
   sortItem: PropTypes.object.isRequired,

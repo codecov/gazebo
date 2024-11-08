@@ -1,36 +1,32 @@
 import { useQuery } from '@tanstack/react-query'
+import type { UseQueryOptions } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
 
-const ReposCoverageMeasurementsConfig = z.array(
-  z.object({
-    timestamp: z.string(),
-    avg: z.number().nullable(),
+export const ReposCoverageMeasurementsConfig = z
+  .object({
+    measurements: z.array(
+      z.object({
+        timestamp: z.string(),
+        avg: z.number().nullish(),
+      })
+    ),
   })
-)
+  .nullish()
 
-const RequestSchema = z.object({
-  owner: z
-    .object({
-      measurements: ReposCoverageMeasurementsConfig.nullable(),
-    })
-    .nullable(),
-})
+type ReposCoverageMeasurementsData =
+  | z.infer<typeof ReposCoverageMeasurementsConfig>
+  | {}
 
 export interface UseReposCoverageMeasurementsArgs {
   provider: string
   owner: string
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
-  before?: string | Date
-  after?: string | Date
+  before?: string
+  after?: string
   repos?: string[]
-  opts?: {
-    suspense?: boolean
-    keepPreviousData?: boolean
-    staleTime?: number
-  }
+  opts?: UseQueryOptions<ReposCoverageMeasurementsData>
   isPublic?: boolean // by default, get both public and private repos
 }
 
@@ -93,22 +89,9 @@ export const useReposCoverageMeasurements = ({
           repos,
           isPublic,
         },
-      }).then((res) => {
-        const parsedData = RequestSchema.safeParse(res?.data)
-
-        if (!parsedData.success) {
-          return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useReposCoverageMeasurements - 404 schema parsing failed',
-            error: parsedData.error,
-          })
-        }
-
-        return {
-          measurements: parsedData.data?.owner?.measurements ?? null,
-        }
-      }),
-    ...(!!opts ? opts : {}),
+      }).then(
+        (res) => ReposCoverageMeasurementsConfig.parse(res?.data?.owner) ?? {}
+      ),
+    ...(!!opts && opts),
   })
 }

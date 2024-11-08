@@ -4,7 +4,7 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames, TTierNames } from 'services/tier'
+import { TierNames } from 'services/tier'
 
 import { useCoverage } from './useCoverage'
 
@@ -40,7 +40,7 @@ const mockPublicRepoMeasurements = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
       <Route path="/:provider/:owner/:repo">{children}</Route>
@@ -63,14 +63,9 @@ afterAll(() => {
   server.close()
 })
 
-interface SetupArgs {
-  nullFirstVal?: boolean
-  tierValue?: TTierNames
-}
-
 describe('useCoverage', () => {
   function setup(
-    { nullFirstVal, tierValue }: SetupArgs = {
+    { nullFirstVal, tierValue } = {
       nullFirstVal: false,
       tierValue: TierNames.PRO,
     }
@@ -98,15 +93,16 @@ describe('useCoverage', () => {
     const { result } = renderHook(
       () =>
         useCoverage({
-          startDate: new Date('2022/01/01'),
-          endDate: new Date('2022/01/02'),
-          repositories: [],
+          params: {
+            startDate: new Date('2022/01/01'),
+            endDate: new Date('2022/01/02'),
+          },
         }),
       { wrapper }
     )
 
     await waitFor(() =>
-      expect(result.current.data).toStrictEqual([
+      expect(result.current.data?.coverage).toStrictEqual([
         { coverage: 85, date: new Date('2023-01-01T00:00:00.000Z') },
         { coverage: 80, date: new Date('2023-01-02T00:00:00.000Z') },
         { coverage: 80, date: new Date('2023-01-02T00:00:00.000Z') },
@@ -122,19 +118,104 @@ describe('useCoverage', () => {
       const { result } = renderHook(
         () =>
           useCoverage({
-            startDate: new Date('2022/01/01'),
-            endDate: new Date('2022/01/02'),
-            repositories: [],
+            params: {
+              startDate: new Date('2022/01/01'),
+              endDate: new Date('2022/01/02'),
+            },
           }),
         { wrapper }
       )
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual([
+        expect(result.current.data?.coverage).toStrictEqual([
           { coverage: 0, date: new Date('2023-01-01T00:00:00.000Z') },
           { coverage: 80, date: new Date('2023-01-02T00:00:00.000Z') },
         ])
       )
+    })
+  })
+
+  describe('coverage axis label', () => {
+    it('returns the right format for days', async () => {
+      setup()
+      const { result } = renderHook(
+        () =>
+          useCoverage({
+            params: {
+              startDate: new Date('2022/01/01'),
+              endDate: new Date('2022/01/10'),
+            },
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => !!result.current.data.coverageAxisLabel)
+      const coverageAxisLabel = result.current.data.coverageAxisLabel
+
+      const message = coverageAxisLabel(new Date('2022/01/01'))
+      expect(message).toBe('Jan 1, 22')
+    })
+
+    it('returns the right format for weeks', async () => {
+      setup()
+      const { result } = renderHook(
+        () =>
+          useCoverage({
+            params: {
+              startDate: new Date('2022/01/01'),
+              endDate: new Date('2022/10/01'),
+            },
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => !!result.current.data.coverageAxisLabel)
+      const coverageAxisLabel = result.current.data.coverageAxisLabel
+
+      const message = coverageAxisLabel(new Date('2022/01/01'))
+      expect(message).toBe('Jan 1, 22')
+    })
+
+    it('returns the right format for default', async () => {
+      setup()
+      const { result } = renderHook(
+        () =>
+          useCoverage({
+            params: {
+              startDate: new Date('2022/01/01'),
+              endDate: new Date('2023/10/01'),
+            },
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => !!result.current.data.coverageAxisLabel)
+      const coverageAxisLabel = result.current.data.coverageAxisLabel
+
+      const message = coverageAxisLabel(new Date('2022/01/01'))
+      expect(message).toBe('Jan 2022')
+    })
+  })
+
+  describe('select', () => {
+    it('calls select', async () => {
+      let selectMock = vi.fn()
+      setup()
+      renderHook(
+        () =>
+          useCoverage({
+            params: {
+              startDate: new Date('2022/01/01'),
+              endDate: new Date('2022/01/02'),
+            },
+            options: { select: selectMock },
+          }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => expect(selectMock).toHaveBeenCalled())
     })
   })
 
@@ -144,15 +225,16 @@ describe('useCoverage', () => {
       const { result } = renderHook(
         () =>
           useCoverage({
-            startDate: new Date('2022/01/01'),
-            endDate: new Date('2022/01/02'),
-            repositories: [],
+            params: {
+              startDate: new Date('2022/01/01'),
+              endDate: new Date('2022/01/02'),
+            },
           }),
         { wrapper }
       )
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual([
+        expect(result.current.data?.coverage).toStrictEqual([
           { coverage: 80, date: new Date('2023-01-02T00:00:00.000Z') },
         ])
       )
