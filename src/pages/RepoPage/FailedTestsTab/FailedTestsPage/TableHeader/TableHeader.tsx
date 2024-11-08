@@ -39,7 +39,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
     <>
       <hr />
       <div className="flex items-center justify-between py-2">
-        <h2 className="text-lg font-semibold capitalize">
+        <h2 className="pl-4 text-lg font-semibold capitalize">
           {/* @ts-expect-error, params is not typed */}
           {getHeaderTitle(params?.parameter)} (
           {totalCount > 999 ? `${(totalCount / 1000).toFixed(1)}K` : totalCount}

@@ -89,7 +89,7 @@ function SelectorSection() {
   )
 
   return (
-    <div className="flex flex-1 flex-row justify-between">
+    <div className="flex flex-1 flex-col gap-2 md:flex-row md:justify-between md:gap-0">
       <BranchSelector />
       {selectedBranch === overview?.defaultBranch ? (
         <>
@@ -150,7 +150,7 @@ function SelectorSection() {
               />
             </div>
           </div>
-          <div className="flex flex-col gap-1 pl-4">
+          <div className="flex flex-col gap-1 px-4 md:pl-4">
             <h3 className="text-sm font-semibold text-ds-gray-octonary">
               Flags
             </h3>
