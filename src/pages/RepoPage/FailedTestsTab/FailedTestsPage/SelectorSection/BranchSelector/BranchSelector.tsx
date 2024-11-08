@@ -76,6 +76,16 @@ const BranchSelector = () => {
     )
   }
 
+  const sortedBranchList = overview?.defaultBranch
+    ? [
+        // Pins the default branch to the top of the list always, filters it from results otherwise
+        { name: overview.defaultBranch, head: null },
+        ...(branchList?.branches?.filter(
+          (branch) => branch.name !== overview.defaultBranch
+        ) ?? []),
+      ]
+    : (branchList?.branches ?? [])
+
   return (
     <div className="flex w-full flex-col gap-1 px-4 lg:w-64 xl:w-80">
       <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
@@ -89,7 +99,7 @@ const BranchSelector = () => {
           // @ts-expect-error - Select has some TS issues because it's still written in JS
           dataMarketing="branch-selector-test-results-tab"
           ariaName="test results branch selector"
-          items={branchList?.branches ?? []}
+          items={sortedBranchList}
           value={selection}
           onChange={(item: Branch) => {
             history.push(
