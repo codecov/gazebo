@@ -444,7 +444,7 @@ function Step3({
             >
               Learn more
             </A>{' '}
-            about generating coverage reports with {framework}
+            about generating coverage reports with {framework}.
           </p>
         </ExpandableSection.Content>
       </ExpandableSection>
