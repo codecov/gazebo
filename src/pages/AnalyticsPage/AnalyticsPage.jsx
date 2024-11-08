@@ -42,14 +42,16 @@ function AnalyticsPage() {
     <div className="flex flex-col gap-4">
       {ownerData?.isCurrentUserPartOfOrg ? <Tabs /> : null}
       <ChartSelectors
-        startDate={params?.startDate}
-        endDate={params?.endDate}
-        repositories={params?.repositories}
+        params={params}
         updateParams={updateParams}
         active={true}
         sortItem={sortItem}
       />
-      <Chart params={params} />
+      <Chart
+        startDate={params?.startDate}
+        endDate={params?.endDate}
+        repositories={params?.repositories}
+      />
       <ReposTable
         owner={owner}
         searchValue={params?.search}
