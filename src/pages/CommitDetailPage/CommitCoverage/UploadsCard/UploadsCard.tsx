@@ -47,53 +47,50 @@ function UploadsCard() {
     searchResults,
   } = useUploads({ filters: uploadFilters })
 
-  // Helper function to get all indices of provider uploads
-  const getAllProviderUploadIndices = (provider: string) => {
-    const providerUploads = groupedUploads[provider] || []
-    return new Set(providerUploads.map((_, i) => i))
+  const fillSelectedUploads = (provider: string) => {
+    const providerUploads = groupedUploads[provider]
+    const providerUploadsIndex = providerUploads?.map((_, i) => i)
+    const providerList = new Set(providerUploadsIndex)
+    setSelectedProviderSelectedUploads((prevState) => ({
+      ...prevState,
+      [provider]: new Set(providerUploadsIndex),
+    }))
+    return providerList
   }
 
-  // Function to determine the select state
   const determineCheckboxState = (provider: string) => {
-    const selectedUploads =
-      selectedProviderSelectedUploads[provider] || new Set()
-    const totalUploads = groupedUploads[provider]?.length || 0
+    let selectedUploads
+    if (selectedProviderSelectedUploads[provider] === undefined) {
+      selectedUploads = fillSelectedUploads(provider)
+    } else {
+      selectedUploads = selectedProviderSelectedUploads[provider]
+    }
 
-    if (selectedUploads.size === totalUploads && totalUploads > 0) {
+    const totalUploads = groupedUploads[provider]?.length
+    if (selectedUploads === undefined || selectedUploads.size === totalUploads)
       return SelectState.ALL_SELECTED
-    }
-    if (selectedUploads.size === 0) {
-      return SelectState.NONE_SELECTED
-    }
+    if (selectedUploads.size === 0) return SelectState.NONE_SELECTED
     return SelectState.SOME_SELECTED
   }
 
-  // Function to get the checkbox state for a provider
-  const getCheckboxState = (provider: string) => {
-    const checkboxState = determineCheckboxState(provider)
-    if (checkboxState === SelectState.ALL_SELECTED) {
-      return true
-    } else if (checkboxState === SelectState.SOME_SELECTED) {
-      return 'indeterminate'
-    } else {
-      return false
-    }
-  }
-
-  // Function to handle select all for a provider
   const handleSelectAllForProviderGroup = (provider: string) => {
-    const isAllSelected =
-      determineCheckboxState(provider) === SelectState.ALL_SELECTED
-
     setSelectedProviderSelectedUploads((prevState) => ({
       ...prevState,
-      [provider]: isAllSelected
-        ? new Set()
-        : getAllProviderUploadIndices(provider),
+      [provider]:
+        determineCheckboxState(provider) === SelectState.NONE_SELECTED
+          ? fillSelectedUploads(provider)
+          : new Set(),
     }))
   }
 
-  // Function to handle individual select change
+  const determineCheckboxCheckedState = (title: string) => {
+    return determineCheckboxState(title) === SelectState.ALL_SELECTED
+      ? true
+      : determineCheckboxState(title) === SelectState.SOME_SELECTED
+        ? 'indeterminate'
+        : false
+  }
+
   const onSelectChange = (
     provider: string,
     isSelected: boolean,
@@ -171,7 +168,7 @@ function UploadsCard() {
                   <span className="sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary px-4 py-1 text-sm font-semibold">
                     {title === NONE ? 'No provider' : title}
                     <Checkbox
-                      checked={getCheckboxState(title)}
+                      checked={determineCheckboxCheckedState(title)}
                       onClick={() => handleSelectAllForProviderGroup(title)}
                     />
                   </span>
@@ -180,7 +177,10 @@ function UploadsCard() {
                       upload={upload}
                       key={i}
                       isSelected={
-                        selectedProviderSelectedUploads[title]?.has(i) || false
+                        determineCheckboxState(title) ===
+                        SelectState.NONE_SELECTED
+                          ? false
+                          : selectedProviderSelectedUploads[title]?.has(i)
                       }
                       onSelectChange={(isSelected: boolean) =>
                         onSelectChange(title, isSelected, i)
@@ -212,8 +212,8 @@ interface UploadsFiltersProps {
 }
 
 function UploadsFilters({
-  uploadErrorCount,
-  flagErrorCount,
+  uploadErrorCount: erroredUploadCount,
+  flagErrorCount: flagErrorUploadCount,
   uploadFilters,
   setUploadFilters,
 }: UploadsFiltersProps) {
@@ -221,11 +221,11 @@ function UploadsFilters({
     <div className="flex flex-col">
       <div className="flex items-start justify-between">
         <div className="flex flex-col">
-          {flagErrorCount ? (
+          {flagErrorUploadCount ? (
             <div className="flex items-center gap-2 pb-2">
               <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
                 <Icon name="exclamation" size="sm" variant="solid" />
-                {flagErrorCount} flag errors
+                {flagErrorUploadCount} flag errors
               </div>
               {uploadFilters.flagErrors ? (
                 <button
@@ -250,11 +250,11 @@ function UploadsFilters({
               )}
             </div>
           ) : null}
-          {uploadErrorCount ? (
+          {erroredUploadCount ? (
             <div className="flex items-center gap-2 pb-2">
               <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">
                 <Icon name="exclamation" size="sm" variant="solid" />
-                {uploadErrorCount} upload errors
+                {erroredUploadCount} upload errors
               </div>
               {uploadFilters.uploadErrors ? (
                 <button
@@ -301,6 +301,7 @@ function UploadsFilters({
         ) : null}
       </div>
       <SearchField
+        /* @ts-expect-error needs to be converted to TS */
         placeholder="Search by upload or flag name"
         dataMarketing="uploads-list-searchx"
         searchValue={uploadFilters.searchTerm}
