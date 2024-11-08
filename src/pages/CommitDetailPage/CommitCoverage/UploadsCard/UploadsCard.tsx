@@ -14,6 +14,7 @@ import { useUploads } from './useUploads'
 
 import YamlModal from '../YamlModal'
 
+const INDETERMINATE_STATE = 'indeterminate'
 export interface UploadFilters {
   flagErrors: boolean
   uploadErrors: boolean
@@ -84,11 +85,13 @@ function UploadsCard() {
   }
 
   const determineCheckboxCheckedState = (title: string) => {
-    return determineCheckboxState(title) === SelectState.ALL_SELECTED
-      ? true
-      : determineCheckboxState(title) === SelectState.SOME_SELECTED
-        ? 'indeterminate'
-        : false
+    const currentCheckboxState = determineCheckboxState(title)
+    if (currentCheckboxState === SelectState.ALL_SELECTED) {
+      return true
+    } else if (currentCheckboxState === SelectState.SOME_SELECTED) {
+      return INDETERMINATE_STATE
+    }
+    return false
   }
 
   const onSelectChange = (
