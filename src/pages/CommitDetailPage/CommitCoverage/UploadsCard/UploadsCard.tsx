@@ -165,12 +165,18 @@ function UploadsCard() {
               ))
             : uploadsProviderList.map((title) => (
                 <Fragment key={title}>
-                  <span className="sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary px-4 py-1 text-sm font-semibold">
-                    {title === NONE ? 'No provider' : title}
-                    <Checkbox
-                      checked={determineCheckboxCheckedState(title)}
-                      onClick={() => handleSelectAllForProviderGroup(title)}
-                    />
+                  <span
+                    className={`sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary px-4 py-1 text-sm font-semibold ${title === NONE ? 'text-ds-gray-quinary' : ''}`}
+                  >
+                    <div className="flex items-center">
+                      <Checkbox
+                        checked={determineCheckboxCheckedState(title)}
+                        onClick={() => handleSelectAllForProviderGroup(title)}
+                      />
+                      <span className="ml-2">
+                        {title === NONE ? 'Provider not specified' : title}
+                      </span>
+                    </div>
                   </span>
                   {groupedUploads[title]?.map((upload, i) => (
                     <UploadItem
