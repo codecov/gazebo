@@ -89,7 +89,7 @@ function SelectorSection() {
   )
 
   return (
-    <div className="flex flex-1 flex-row justify-between">
+    <div className="flex flex-1 flex-col gap-2 md:flex-row md:justify-between md:gap-0">
       <BranchSelector />
       {selectedBranch === overview?.defaultBranch ? (
         <>
@@ -97,7 +97,7 @@ function SelectorSection() {
             <h3 className="text-sm font-semibold text-ds-gray-octonary">
               Historical trend
             </h3>
-            <div className="sm:w-52 lg:w-80">
+            <div className="w-full lg:w-64 xl:w-80">
               <Select
                 // @ts-expect-error Select is not typed
                 dataMarketing="select-historical-trend"
@@ -120,11 +120,11 @@ function SelectorSection() {
               60 day retention
             </A>
           </div>
-          <div className="flex flex-col gap-1 px-4">
+          <div className="flex flex-col gap-1 px-4 md:py-0">
             <h3 className="text-sm font-semibold text-ds-gray-octonary">
               Test suites
             </h3>
-            <div className="sm:w-52 lg:w-80">
+            <div className="w-full lg:w-64 xl:w-80">
               <MultiSelect
                 // @ts-expect-error MultiSelect is not typed
                 dataMarketing="select-test-suites"
@@ -150,11 +150,11 @@ function SelectorSection() {
               />
             </div>
           </div>
-          <div className="flex flex-col gap-1 pl-4">
+          <div className="flex flex-col gap-1 px-4 md:pl-4">
             <h3 className="text-sm font-semibold text-ds-gray-octonary">
               Flags
             </h3>
-            <div className="sm:w-52 lg:w-80">
+            <div className="w-full lg:w-64 xl:w-80">
               <MultiSelect
                 // @ts-expect-error MultiSelect is not typed
                 dataMarketing="select-flags"
