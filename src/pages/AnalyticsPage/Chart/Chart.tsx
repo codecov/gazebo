@@ -19,25 +19,21 @@ export const formatDate = (date: string) =>
   format(new Date(date), 'MMM d, yyyy')
 
 interface ChartProps {
-  params: {
-    startDate: Date | null
-    endDate: Date | null
-    repositories: string[]
-  }
+  startDate: Date | null
+  endDate: Date | null
+  repositories: string[]
 }
 
-function Chart({ params }: ChartProps) {
+function Chart({ startDate, endDate, repositories }: ChartProps) {
   const {
     data: coverage,
     isPreviousData,
     isLoading,
     isError,
   } = useCoverage({
-    params: {
-      startDate: params.startDate ? params.startDate : null,
-      endDate: params.endDate ? params.endDate : null,
-      repositories: params.repositories,
-    },
+    startDate,
+    endDate,
+    repositories,
     options: {
       suspense: false,
       keepPreviousData: true,

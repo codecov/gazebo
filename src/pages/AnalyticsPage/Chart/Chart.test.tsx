@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock } from 'vitest'
 
-import Chart from './Chart'
+import Chart, { formatDate } from './Chart'
 
 declare global {
   interface Window {
@@ -125,11 +125,9 @@ describe('Analytics coverage chart', () => {
     setup({})
     render(
       <Chart
-        params={{
-          startDate: new Date('2020-01-15'),
-          endDate: new Date('2020-01-19'),
-          repositories: [],
-        }}
+        startDate={new Date('2020-01-15')}
+        endDate={new Date('2020-01-19')}
+        repositories={[]}
       />,
       { wrapper }
     )
@@ -143,11 +141,9 @@ describe('Analytics coverage chart', () => {
       setup({})
       render(
         <Chart
-          params={{
-            startDate: new Date('2020-01-15'),
-            endDate: new Date('2020-01-19'),
-            repositories: [],
-          }}
+          startDate={new Date('2020-01-15')}
+          endDate={new Date('2020-01-19')}
+          repositories={[]}
         />,
         { wrapper }
       )
@@ -160,11 +156,9 @@ describe('Analytics coverage chart', () => {
       setup({})
       render(
         <Chart
-          params={{
-            startDate: new Date('2020-01-15'),
-            endDate: new Date('2020-01-19'),
-            repositories: [],
-          }}
+          startDate={new Date('2020-01-15')}
+          endDate={new Date('2020-01-19')}
+          repositories={[]}
         />,
         { wrapper }
       )
@@ -182,11 +176,9 @@ describe('Analytics coverage chart', () => {
       setup({ hasNoData: true })
       render(
         <Chart
-          params={{
-            startDate: new Date('2020-01-15'),
-            endDate: new Date('2020-01-19'),
-            repositories: [],
-          }}
+          startDate={new Date('2020-01-15')}
+          endDate={new Date('2020-01-19')}
+          repositories={[]}
         />,
         { wrapper }
       )
@@ -203,11 +195,9 @@ describe('Analytics coverage chart', () => {
       setup({ hasError: true })
       render(
         <Chart
-          params={{
-            startDate: new Date('2020-01-15'),
-            endDate: new Date('2020-01-19'),
-            repositories: [],
-          }}
+          startDate={new Date('2020-01-15')}
+          endDate={new Date('2020-01-19')}
+          repositories={[]}
         />,
         { wrapper }
       )
@@ -217,5 +207,11 @@ describe('Analytics coverage chart', () => {
       )
       expect(message).toBeInTheDocument()
     })
+  })
+})
+
+describe('formatDate', () => {
+  it('formats the date', () => {
+    expect(formatDate('2020-01-01')).toBe('Jan 1, 2020')
   })
 })
