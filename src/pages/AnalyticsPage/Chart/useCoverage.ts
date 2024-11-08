@@ -11,25 +11,28 @@ interface URLParams {
 }
 
 interface UseCoverageArgs {
-  params: {
-    endDate: Date | null
-    startDate: Date | null
-    repositories: string[]
-  }
+  endDate: Date | null
+  startDate: Date | null
+  repositories: string[]
   options?: {
     suspense?: boolean
     keepPreviousData?: boolean
   }
 }
 
-export const useCoverage = ({ params, options = {} }: UseCoverageArgs) => {
+export const useCoverage = ({
+  startDate,
+  endDate,
+  repositories,
+  options = {},
+}: UseCoverageArgs) => {
   const { provider, owner } = useParams<URLParams>()
 
   const { data: tierName } = useTier({ provider, owner })
   const shouldDisplayPublicReposOnly =
     tierName === TierNames.TEAM ? true : undefined
 
-  const queryVars = analyticsQuery(params)
+  const queryVars = analyticsQuery({ startDate, endDate, repositories })
 
   const { data, ...rest } = useReposCoverageMeasurements({
     provider,

@@ -98,11 +98,9 @@ describe('useCoverage', () => {
     const { result } = renderHook(
       () =>
         useCoverage({
-          params: {
-            startDate: new Date('2022/01/01'),
-            endDate: new Date('2022/01/02'),
-            repositories: [],
-          },
+          startDate: new Date('2022/01/01'),
+          endDate: new Date('2022/01/02'),
+          repositories: [],
         }),
       { wrapper }
     )
@@ -124,11 +122,9 @@ describe('useCoverage', () => {
       const { result } = renderHook(
         () =>
           useCoverage({
-            params: {
-              startDate: new Date('2022/01/01'),
-              endDate: new Date('2022/01/02'),
-              repositories: [],
-            },
+            startDate: new Date('2022/01/01'),
+            endDate: new Date('2022/01/02'),
+            repositories: [],
           }),
         { wrapper }
       )
@@ -148,11 +144,9 @@ describe('useCoverage', () => {
       const { result } = renderHook(
         () =>
           useCoverage({
-            params: {
-              startDate: new Date('2022/01/01'),
-              endDate: new Date('2022/01/02'),
-              repositories: [],
-            },
+            startDate: new Date('2022/01/01'),
+            endDate: new Date('2022/01/02'),
+            repositories: [],
           }),
         { wrapper }
       )
