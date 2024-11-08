@@ -89,7 +89,17 @@ const BranchSelector = () => {
           // @ts-expect-error - Select has some TS issues because it's still written in JS
           dataMarketing="branch-selector-test-results-tab"
           ariaName="test results branch selector"
-          items={branchList?.branches ?? []}
+          items={
+            overview?.defaultBranch
+              ? [
+                  // Pins the default branch to the top of the list always, filters it from results otherwise
+                  { name: overview.defaultBranch, head: null },
+                  ...(branchList?.branches?.filter(
+                    (branch) => branch.name !== overview.defaultBranch
+                  ) ?? []),
+                ]
+              : (branchList?.branches ?? [])
+          }
           value={selection}
           onChange={(item: Branch) => {
             history.push(

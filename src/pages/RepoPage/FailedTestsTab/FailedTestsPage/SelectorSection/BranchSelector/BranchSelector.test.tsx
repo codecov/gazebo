@@ -274,6 +274,21 @@ describe('BranchSelector', () => {
     })
 
     describe('user selects a branch', () => {
+      it('shows default branch as first option in dropdown', async () => {
+        const { queryClient, user } = setup()
+        render(<BranchSelector />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        const select = await screen.findByRole('button', {
+          name: 'test results branch selector',
+        })
+        await user.click(select)
+
+        const options = screen.getAllByRole('option')
+        expect(options[0]).toHaveTextContent('main')
+      })
+
       it('navigates to the selected branch', async () => {
         const { user, queryClient } = setup()
         render(<BranchSelector />, {
