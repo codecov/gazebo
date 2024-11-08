@@ -36,8 +36,9 @@ import { useSyncScrollMargin } from './useSyncScrollMargin'
 import { useSyncTotalWidth } from './useSyncTotalWidth'
 import { useSyncWrapperWidth } from './useSyncWrapperWidth'
 
-import './VirtualFileRenderer.css'
+// prism theme is required to come before so it doesn't override our custom css
 import 'shared/utils/prism/prismTheme.css'
+import './VirtualFileRenderer.css'
 
 interface CodeBodyProps {
   tokens: Token[][]
