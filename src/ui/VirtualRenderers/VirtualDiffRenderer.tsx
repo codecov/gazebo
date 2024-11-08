@@ -256,6 +256,14 @@ const CodeBody = ({
               className="absolute left-0 top-0 pl-[192px]"
             >
               <div className="grid">
+                <div className="z-[-1] col-start-1 row-start-1 ">
+                  <ColorBar
+                    isHighlighted={
+                      location.hash === headHash || location.hash === baseHash
+                    }
+                    coverage={lineData?.[item.index]?.headCoverage}
+                  />
+                </div>
                 <div
                   className="col-start-1 row-start-1 flex flex-1 justify-between"
                   style={{
@@ -275,14 +283,6 @@ const CodeBody = ({
                       hitCount={lineData?.[item.index]?.hitCount}
                     />
                   ) : null}
-                </div>
-                <div className="z-[-1] col-start-1 row-start-1 ">
-                  <ColorBar
-                    isHighlighted={
-                      location.hash === headHash || location.hash === baseHash
-                    }
-                    coverage={lineData?.[item.index]?.headCoverage}
-                  />
                 </div>
               </div>
             </div>

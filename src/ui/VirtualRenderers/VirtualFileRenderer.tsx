@@ -159,6 +159,12 @@ const CodeBody = ({
               className="absolute left-0 top-0 pl-[94px]"
             >
               <div className="grid">
+                <div className="z-[-1] col-start-1 row-start-1">
+                  <ColorBar
+                    isHighlighted={location.hash === `#L${lineNumber}`}
+                    coverage={coverage?.[lineNumber]}
+                  />
+                </div>
                 <div
                   className="col-start-1 row-start-1"
                   style={{
@@ -170,12 +176,6 @@ const CodeBody = ({
                   {tokens[item.index]?.map((token: Token, key: React.Key) => (
                     <span {...getTokenProps({ token, key })} key={key} />
                   ))}
-                </div>
-                <div className="z-[-1] col-start-1 row-start-1">
-                  <ColorBar
-                    isHighlighted={location.hash === `#L${lineNumber}`}
-                    coverage={coverage?.[lineNumber]}
-                  />
                 </div>
               </div>
             </div>
