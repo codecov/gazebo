@@ -43,8 +43,12 @@ fragment CurrentUserFragment on Me {
 }
 `
 
-export function useOnboardUser(opts) {
-  const { provider } = useParams()
+interface URLParams {
+  provider: string
+}
+
+export function useOnboardUser(opts?: Record<string, unknown>) {
+  const { provider } = useParams<URLParams>()
   const queryClient = useQueryClient()
   const mutation = `
       mutation OnboardUser($input: OnboardUserInput!) {
@@ -61,9 +65,9 @@ export function useOnboardUser(opts) {
     `
 
   return useMutation({
-    mutationFn: (input) => {
-      const formData = input?.formData
-      const selectedOrg = input?.selectedOrg
+    mutationFn: (input: { formData?: unknown; selectedOrg?: string }) => {
+      const formData = input.formData
+      const selectedOrg = input.selectedOrg
 
       return Api.graphqlMutation({
         provider,
