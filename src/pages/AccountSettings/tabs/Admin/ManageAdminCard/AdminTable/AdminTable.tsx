@@ -10,7 +10,7 @@ import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
 import { useInfiniteUsers, useUpdateUser } from 'services/users'
-import { getOwnerImg } from 'shared/utils'
+import { getOwnerImg } from 'shared/utils/ownerHelpers'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
