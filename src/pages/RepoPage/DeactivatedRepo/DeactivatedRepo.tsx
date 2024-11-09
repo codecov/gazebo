@@ -29,20 +29,19 @@ function DeactivatedRepo() {
           className="mx-auto mb-8"
           src={deactivatedRepo}
         />
-        <span className="text-3xl"> This repo has been deactivated </span>
+        <span className="text-3xl"> This repository has been deactivated </span>
         <span className="text-base">
           {isCurrentUserPartOfOrg ? (
             <>
-              To reactivate the repo go to{' '}
+              To resume uploading to it, please activate the repository in{' '}
               <A
-                to={{ pageName: 'settings' }}
+                to={{ pageName: 'configGeneral' }}
                 isExternal={false}
-                hook="link-to-settings"
+                hook="link-to-config-general"
               >
-                Settings{' '}
-              </A>{' '}
-              or upload a coverage report and it will be automatically
-              re-activated.
+                Configuration
+              </A>
+              {'.'}
             </>
           ) : (
             'Contact an administrator of your git organization to grant write-permissions in your git-provider for this repository.'
