@@ -12,7 +12,10 @@ import { MetricCard } from 'ui/MetricCard'
 import { Tooltip } from 'ui/Tooltip'
 
 import { useFlakeAggregates } from '../hooks/useFlakeAggregates'
-import { TestResultsFilterParameterType } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
+import {
+  TestResultsFilterParameter,
+  TestResultsFilterParameterType,
+} from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
 import { useTestResultsAggregates } from '../hooks/useTestResultsAggregates'
 import { defaultQueryParams } from '../SelectorSection'
 
@@ -127,7 +130,9 @@ const SlowestTestsCard = ({
           })}
           onClick={() => {
             updateParams({
-              parameter: isSelected ? '' : 'SLOWEST_TESTS',
+              parameter: isSelected
+                ? ''
+                : TestResultsFilterParameter.SLOWEST_TESTS,
             })
           }}
         >
@@ -175,7 +180,11 @@ const TotalFlakyTestsCard = ({
             'font-semibold': isSelected,
           })}
           onClick={() => {
-            updateParams({ parameter: isSelected ? '' : 'FLAKY_TESTS' })
+            updateParams({
+              parameter: isSelected
+                ? ''
+                : TestResultsFilterParameter.FLAKY_TESTS,
+            })
           }}
         >
           {flakeCount}
@@ -253,7 +262,11 @@ const TotalFailuresCard = ({
             'font-semibold': isSelected,
           })}
           onClick={() => {
-            updateParams({ parameter: isSelected ? '' : 'FAILED_TESTS' })
+            updateParams({
+              parameter: isSelected
+                ? ''
+                : TestResultsFilterParameter.FAILED_TESTS,
+            })
           }}
         >
           {totalFails}
@@ -300,7 +313,9 @@ const TotalSkippedTestsCard = ({
           })}
           onClick={() => {
             updateParams({
-              parameter: isSelected ? '' : 'SKIPPED_TESTS',
+              parameter: isSelected
+                ? ''
+                : TestResultsFilterParameter.SKIPPED_TESTS,
             })
           }}
         >
@@ -397,7 +412,10 @@ function MetricsSection() {
               }
               slowestTestsDuration={aggregates?.slowestTestsDuration}
               updateParams={updateParams}
-              isSelected={queryParams?.parameter === 'SLOWEST_TESTS'}
+              isSelected={
+                queryParams?.parameter ===
+                TestResultsFilterParameter.SLOWEST_TESTS
+              }
             />
           </div>
         </div>
@@ -419,7 +437,10 @@ function MetricsSection() {
                     flakeAggregates?.flakeCountPercentChange
                   }
                   updateParams={updateParams}
-                  isSelected={queryParams?.parameter === 'FLAKY_TESTS'}
+                  isSelected={
+                    queryParams?.parameter ===
+                    TestResultsFilterParameter.FLAKY_TESTS
+                  }
                 />
                 <AverageFlakeRateCard
                   flakeRate={flakeAggregates?.flakeRate}
@@ -433,13 +454,19 @@ function MetricsSection() {
               totalFails={aggregates?.totalFails}
               totalFailsPercentChange={aggregates?.totalFailsPercentChange}
               updateParams={updateParams}
-              isSelected={queryParams?.parameter === 'FAILED_TESTS'}
+              isSelected={
+                queryParams?.parameter ===
+                TestResultsFilterParameter.FAILED_TESTS
+              }
             />
             <TotalSkippedTestsCard
               totalSkips={aggregates?.totalSkips}
               totalSkipsPercentChange={aggregates?.totalSkipsPercentChange}
               updateParams={updateParams}
-              isSelected={queryParams?.parameter === 'SKIPPED_TESTS'}
+              isSelected={
+                queryParams?.parameter ===
+                TestResultsFilterParameter.SKIPPED_TESTS
+              }
             />
           </div>
         </div>

@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
 import { RepoNotFoundErrorSchema } from 'services/repo'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 
 const FlakeAggregatesSchema = z.object({
   owner: z
@@ -96,7 +96,7 @@ export const useFlakeAggregates = ({
         const parsedData = FlakeAggregatesSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useFlakeAggregates - 404 Failed to parse data',
@@ -106,7 +106,7 @@ export const useFlakeAggregates = ({
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useFlakeAggregates - 404 Not found error',
