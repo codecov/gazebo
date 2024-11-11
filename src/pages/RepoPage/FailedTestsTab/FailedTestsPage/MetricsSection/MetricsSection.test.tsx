@@ -8,6 +8,8 @@ import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import MetricsSection, { historicalTrendToCopy } from './MetricsSection'
 
+import { TestResultsFilterParameter } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
+
 const mockAggResponse = (
   planValue = 'users-enterprisem',
   isPrivate = false
@@ -196,7 +198,7 @@ describe('MetricsSection', () => {
         await user.click(select)
 
         expect(testLocation?.state).toStrictEqual({
-          parameter: 'SLOWEST_TESTS',
+          parameter: TestResultsFilterParameter.SLOWEST_TESTS,
           flags: [],
           historicalTrend: '',
           term: '',
@@ -253,7 +255,7 @@ describe('MetricsSection', () => {
         await user.click(select)
 
         expect(testLocation?.state).toStrictEqual({
-          parameter: 'FLAKY_TESTS',
+          parameter: TestResultsFilterParameter.FLAKY_TESTS,
           flags: [],
           historicalTrend: '',
           term: '',
@@ -327,7 +329,7 @@ describe('MetricsSection', () => {
         await user.click(select)
 
         expect(testLocation?.state).toStrictEqual({
-          parameter: 'FAILED_TESTS',
+          parameter: TestResultsFilterParameter.FAILED_TESTS,
           flags: [],
           historicalTrend: '',
           term: '',
@@ -384,7 +386,7 @@ describe('MetricsSection', () => {
         await user.click(select)
 
         expect(testLocation?.state).toStrictEqual({
-          parameter: 'SKIPPED_TESTS',
+          parameter: TestResultsFilterParameter.SKIPPED_TESTS,
           flags: [],
           historicalTrend: '',
           term: '',
