@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 import { RepoNotFoundErrorSchema } from 'services/repo'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 
 const TestResultsTestSuitesSchema = z.object({
   owner: z
@@ -72,7 +72,7 @@ export const useTestResultsTestSuites = ({ term }: { term?: string }) => {
         const parsedData = TestResultsTestSuitesSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useTestResultsTestSuites - 404 Failed to parse data',
@@ -82,7 +82,7 @@ export const useTestResultsTestSuites = ({ term }: { term?: string }) => {
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useTestResultsTestSuites - 404 Not found error',

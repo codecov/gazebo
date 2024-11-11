@@ -11,7 +11,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import { type NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
@@ -229,7 +229,7 @@ export const useInfiniteTestResults = ({
         const parsedData = GetTestResultsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useInfiniteTestResults - 404 Failed to parse data',
@@ -239,7 +239,7 @@ export const useInfiniteTestResults = ({
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useInfiniteTestResults - 404 Not found error',
@@ -247,7 +247,7 @@ export const useInfiniteTestResults = ({
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
