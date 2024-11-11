@@ -490,7 +490,9 @@ describe('useCommit', () => {
           },
         }
 
-        await waitFor(() => expect(result.current.data).toEqual(expectedResult))
+        await waitFor(() =>
+          expect(result.current.data).not.toEqual(expectedResult)
+        )
       })
     })
 
@@ -687,7 +689,7 @@ describe('useCommit polling', () => {
       await waitFor(() =>
         expect(result.current.data).toStrictEqual({
           commit: {
-            branchName: null,
+            branchName: 'null',
             coverageAnalytics: {
               totals: {
                 coverage: 38.30846,

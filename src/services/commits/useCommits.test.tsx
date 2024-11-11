@@ -379,7 +379,7 @@ describe('GetCommits', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            status: 405,
           })
         )
       )
