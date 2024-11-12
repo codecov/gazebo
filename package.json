@@ -176,8 +176,7 @@
     "micromatch": "^4.0.8",
     "express": "^4.21.0",
     "path-to-regexp@^1.7.0": "^1.9.0",
-    "path-to-regexp@^6.2.0": "^6.3.0",
-    "http-proxy-middleware": "^2.0.7"
+    "path-to-regexp@^6.2.0": "^6.3.0"
   },
   "packageManager": "yarn@4.5.0",
   "engineStrict": false
