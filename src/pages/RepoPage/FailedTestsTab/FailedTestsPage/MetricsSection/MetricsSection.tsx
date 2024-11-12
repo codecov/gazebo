@@ -220,7 +220,7 @@ const AverageFlakeRateCard = ({
         </MetricCard.Title>
       </MetricCard.Header>
       <MetricCard.Content>
-        {flakeRate}%
+        {flakeRate?.toFixed(2)}%
         {flakeRatePercentChange ? (
           <PercentBadge value={flakeRatePercentChange} />
         ) : null}
