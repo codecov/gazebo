@@ -141,7 +141,6 @@ function Button({
   disabled,
   hook,
   children,
-  type = 'button',
   ...props
 }: ExtendedButtonProps) {
   const className = cs(
@@ -166,7 +165,6 @@ function Button({
     disabled: disabled || isLoading,
     className,
     children: content,
-    type,
   }
 
   return to ? (
