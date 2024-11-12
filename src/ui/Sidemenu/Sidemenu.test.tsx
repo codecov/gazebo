@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
 import Sidemenu from './Sidemenu'
 
-const wrapper = ({ children }) => {
+const wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <MemoryRouter initialEntries={['/account/gh/codecov']}>
       <Switch>

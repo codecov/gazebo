@@ -1,5 +1,4 @@
 import cs from 'classnames'
-import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
 import Spinner from 'ui/Spinner'
@@ -95,11 +94,45 @@ const loadingVariantClasses = {
   secondary: `disabled:text-white disabled:border-ds-pink-tertiary disabled:bg-ds-pink-default`,
 }
 
-function pickVariant(variant, loading) {
-  const set = loading ? loadingVariantClasses : variantClasses
-
-  return set[variant]
+function pickVariant(
+  variant: keyof typeof variantClasses | keyof typeof loadingVariantClasses,
+  loading: boolean
+) {
+  return loading
+    ? loadingVariantClasses[variant as keyof typeof loadingVariantClasses]
+    : variantClasses[variant as keyof typeof variantClasses]
 }
+
+// using this type until AppLink is converted to TypeScript
+export interface AppLinkProps {
+  pageName: string
+  text?: string
+  options?: Object
+  activeClassName?: string
+  showExternalIcon?: boolean
+  type?: 'submit' | 'button' | 'reset'
+  children?: React.ReactNode
+  exact?: boolean
+}
+
+interface WithTo {
+  to: AppLinkProps
+  hook?: string
+}
+interface WithoutTo {
+  to?: never
+  hook: string
+}
+
+interface ButtonProps extends React.HTMLProps<HTMLButtonElement> {
+  variant?: keyof typeof variantClasses
+  isLoading?: boolean
+  disabled?: boolean
+}
+
+type ExtendedButtonProps = ButtonProps &
+  (WithTo | WithoutTo) &
+  Partial<AppLinkProps>
 
 function Button({
   to,
@@ -108,8 +141,9 @@ function Button({
   disabled,
   hook,
   children,
+  type = 'button',
   ...props
-}) {
+}: ExtendedButtonProps) {
   const className = cs(
     baseClass,
     { [baseDisabledClasses]: !isLoading },
@@ -132,6 +166,7 @@ function Button({
     disabled: disabled || isLoading,
     className,
     children: content,
+    type,
   }
 
   return to ? (
@@ -149,23 +184,6 @@ function Button({
       {content}
     </button>
   )
-}
-
-Button.propTypes = {
-  to: PropTypes.shape(AppLink.propTypes),
-  variant: PropTypes.oneOf(Object.keys(variantClasses)),
-  isLoading: PropTypes.bool,
-  disabled: PropTypes.bool,
-  hook: function (props, propName) {
-    if (
-      props['to'] === undefined &&
-      (props[propName] === undefined || typeof props[propName] != 'string')
-    ) {
-      return new Error(
-        'If not using prop "to" you must provide prop "hook" of type string.'
-      )
-    }
-  },
 }
 
 export default Button
