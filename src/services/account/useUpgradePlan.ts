@@ -35,7 +35,7 @@ export function useUpgradePlan({ provider, owner }: useUpgradePlanParams) {
       return Api.patch({ path, provider, body }).then((data) => {
         if (data?.checkoutSessionId) {
           // redirect to stripe checkout if there is a checkout session id
-          return redirectToStripe(data?.checkoutSessionId)
+          return redirectToStripe(data.checkoutSessionId)
         }
 
         return data
