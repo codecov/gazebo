@@ -870,7 +870,9 @@ describe('RepoPage', () => {
         })
         render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
-        const msg = await screen.findByText('This repo has been deactivated')
+        const msg = await screen.findByText(
+          'This repository has been deactivated'
+        )
         expect(msg).toBeInTheDocument()
       })
     })

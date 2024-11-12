@@ -5,12 +5,13 @@ import {
 import { useMemo } from 'react'
 import { z } from 'zod'
 
+import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import { type NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
@@ -19,7 +20,12 @@ const TestResultSchema = z.object({
   name: z.string(),
   commitsFailed: z.number().nullable(),
   failureRate: z.number().nullable(),
+  flakeRate: z.number().nullable(),
   avgDuration: z.number().nullable(),
+  totalFailCount: z.number(),
+  totalFlakyFailCount: z.number(),
+  totalSkipCount: z.number(),
+  totalPassCount: z.number(),
 })
 
 export const OrderingDirection = {
@@ -29,10 +35,21 @@ export const OrderingDirection = {
 
 export const OrderingParameter = {
   AVG_DURATION: 'AVG_DURATION',
+  FLAKE_RATE: 'FLAKE_RATE',
   FAILURE_RATE: 'FAILURE_RATE',
   COMMITS_WHERE_FAIL: 'COMMITS_WHERE_FAIL',
   UPDATED_AT: 'UPDATED_AT',
 } as const
+
+export const TestResultsFilterParameter = {
+  FLAKY_TESTS: 'FLAKY_TESTS',
+  FAILED_TESTS: 'FAILED_TESTS',
+  SLOWEST_TESTS: 'SLOWEST_TESTS',
+  SKIPPED_TESTS: 'SKIPPED_TESTS',
+} as const
+
+export type TestResultsFilterParameterType =
+  keyof typeof TestResultsFilterParameter
 
 export const TestResultsOrdering = z.object({
   direction: z.nativeEnum(OrderingDirection),
@@ -44,9 +61,16 @@ type TestResult = z.infer<typeof TestResultSchema>
 const GetTestResultsSchema = z.object({
   owner: z
     .object({
+      plan: z
+        .object({
+          value: z.string(),
+        })
+        .nullable(),
       repository: z.discriminatedUnion('__typename', [
         z.object({
           __typename: z.literal('Repository'),
+          private: z.boolean().nullable(),
+          defaultBranch: z.string().nullable(),
           testAnalytics: z
             .object({
               testResults: z.object({
@@ -59,6 +83,7 @@ const GetTestResultsSchema = z.object({
                   endCursor: z.string().nullable(),
                   hasNextPage: z.boolean(),
                 }),
+                totalCount: z.number(),
               }),
             })
             .nullable(),
@@ -82,9 +107,14 @@ query GetTestResults(
   $before: String
 ) {
   owner(username: $owner) {
+    plan {
+      value
+    }
     repository: repository(name: $repo) {
       __typename
       ... on Repository {
+        private
+        defaultBranch
         testAnalytics {
           testResults(
             filters: $filters
@@ -100,13 +130,19 @@ query GetTestResults(
                 avgDuration
                 name
                 failureRate
+                flakeRate
                 commitsFailed
+                totalFailCount
+                totalFlakyFailCount
+                totalSkipCount
+                totalPassCount
               }
             }
             pageInfo {
               endCursor
               hasNextPage
             }
+            totalCount
           }
         }
       }
@@ -127,6 +163,11 @@ interface UseTestResultsArgs {
   repo: string
   filters?: {
     branch?: string
+    flags?: string[]
+    interval?: MeasurementInterval
+    parameter?: TestResultsFilterParameterType
+    term?: string
+    test_suites?: string[]
   }
   ordering?: z.infer<typeof TestResultsOrdering>
   first?: number
@@ -136,6 +177,10 @@ interface UseTestResultsArgs {
   opts?: UseInfiniteQueryOptions<{
     testResults: TestResult[]
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
+    private: boolean | null
+    plan: string | null
+    defaultBranch: string | null
+    totalCount: number | null
   }>
 }
 
@@ -184,17 +229,18 @@ export const useInfiniteTestResults = ({
         const parsedData = GetTestResultsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useInfiniteTestResults - 404 Failed to parse data',
+            error: parsedData.error,
           } satisfies NetworkErrorObject)
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useInfiniteTestResults - 404 Not found error',
@@ -202,7 +248,7 @@ export const useInfiniteTestResults = ({
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -227,6 +273,12 @@ export const useInfiniteTestResults = ({
             hasNextPage: false,
             endCursor: null,
           },
+          totalCount:
+            data?.owner?.repository?.testAnalytics?.testResults?.totalCount ??
+            0,
+          private: data?.owner?.repository?.private ?? null,
+          plan: data?.owner?.plan?.value ?? null,
+          defaultBranch: data?.owner?.repository?.defaultBranch ?? null,
         }
       }),
     getNextPageParam: (lastPage) => {
@@ -245,6 +297,10 @@ export const useInfiniteTestResults = ({
   return {
     data: {
       testResults: memoedData,
+      totalCount: data?.pages?.[0]?.totalCount ?? 0,
+      private: data?.pages?.[0]?.private ?? null,
+      plan: data?.pages?.[0]?.plan ?? null,
+      defaultBranch: data?.pages?.[0]?.defaultBranch ?? null,
     },
     ...rest,
   }

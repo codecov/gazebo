@@ -1,4 +1,5 @@
 import {
+  CellContext,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -8,19 +9,29 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
+import qs from 'qs'
 import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
+import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
+import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
+import { Tooltip } from 'ui/Tooltip'
 
 import {
   OrderingDirection,
   OrderingParameter,
   useInfiniteTestResults,
-} from '../hooks'
+} from '../hooks/useInfiniteTestResults'
+import { TestResultsFilterParameterType } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
+import {
+  historicalTrendToCopy,
+  TooltipWithIcon,
+} from '../MetricsSection/MetricsSection'
+import { TableHeader } from '../TableHeader'
 
 const getDecodedBranch = (branch?: string) =>
   !!branch ? decodeURIComponent(branch) : undefined
@@ -67,6 +78,10 @@ export function getSortingOption(
       parameter = OrderingParameter.FAILURE_RATE
     }
 
+    if (state.id === 'flakeRate') {
+      parameter = OrderingParameter.FLAKE_RATE
+    }
+
     if (state.id === 'commitsFailed') {
       parameter = OrderingParameter.COMMITS_WHERE_FAIL
     }
@@ -84,44 +99,74 @@ export function getSortingOption(
 const isNumericValue = (value: string) =>
   value === 'avgDuration' ||
   value === 'failureRate' ||
-  value === 'commitsFailed'
+  value === 'commitsFailed' ||
+  value === 'flakeRate'
 
 interface FailedTestsColumns {
   name: string
   avgDuration: number | null
   failureRate: number | null
+  flakeRate?: React.ReactNode
   commitsFailed: number | null
   updatedAt: string
 }
 
 const columnHelper = createColumnHelper<FailedTestsColumns>()
 
-const columns = [
-  columnHelper.accessor('name', {
-    header: () => 'Test name',
-    cell: (info) => info.renderValue(),
-  }),
-  columnHelper.accessor('avgDuration', {
-    header: () => 'Average duration',
-    cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
-  }),
-  columnHelper.accessor('failureRate', {
-    header: () => 'Failure rate',
-    cell: (info) => {
-      const value = (info.renderValue() ?? 0) * 100
-      const isInt = Number.isInteger(info.renderValue())
-      return isInt ? `${value}%` : `${value.toFixed(2)}%`
-    },
-  }),
-  columnHelper.accessor('commitsFailed', {
-    header: () => 'Commits failed',
-    cell: (info) => (info.renderValue() ? info.renderValue() : 0),
-  }),
-  columnHelper.accessor('updatedAt', {
-    header: () => 'Last run',
-    cell: (info) => formatTimeToNow(info.renderValue()),
-  }),
-]
+const getColumns = ({
+  hideFlakeRate,
+  interval,
+}: {
+  hideFlakeRate: boolean
+  interval?: MeasurementInterval
+}) => {
+  const baseColumns = [
+    columnHelper.accessor('name', {
+      header: () => 'Test name',
+      cell: (info) => info.renderValue(),
+    }),
+    columnHelper.accessor('avgDuration', {
+      header: () => 'Avg. duration',
+      cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
+    }),
+    columnHelper.accessor('failureRate', {
+      header: () => 'Failure rate',
+      cell: (info) => {
+        const value = (info.renderValue() ?? 0) * 100
+        const isInt = Number.isInteger(info.renderValue())
+        return isInt ? `${value}%` : `${value.toFixed(2)}%`
+      },
+    }),
+    columnHelper.accessor('commitsFailed', {
+      header: () => 'Commits failed',
+      cell: (info) => (info.renderValue() ? info.renderValue() : 0),
+    }),
+    columnHelper.accessor('updatedAt', {
+      header: () => 'Last run',
+      cell: (info) => formatTimeToNow(info.renderValue()),
+    }),
+  ]
+
+  if (!hideFlakeRate) {
+    baseColumns.splice(3, 0, {
+      accessorKey: 'flakeRate',
+      header: () => (
+        <div className="flex items-center gap-1">
+          Flake rate
+          <TooltipWithIcon>
+            Shows how often a flake occurs by tracking how many times a test
+            goes from fail to pass or pass to fail on a given branch and commit
+            within the last {historicalTrendToCopy(interval)}.
+          </TooltipWithIcon>
+        </div>
+      ),
+      cell: (info: CellContext<FailedTestsColumns, number | null>) =>
+        info.renderValue(),
+    })
+  }
+
+  return baseColumns
+}
 
 interface URLParams {
   provider: string
@@ -139,6 +184,24 @@ const FailedTestsTable = () => {
     },
   ])
   const { provider, owner, repo, branch } = useParams<URLParams>()
+  const location = useLocation()
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+
+  let flags = undefined
+  if (Array.isArray(queryParams?.flags) && queryParams?.flags?.length > 0) {
+    flags = queryParams?.flags
+  }
+
+  let testSuites = undefined
+  if (
+    Array.isArray(queryParams?.testSuites) &&
+    queryParams?.testSuites?.length > 0
+  ) {
+    testSuites = queryParams?.testSuites
+  }
 
   const {
     data: testData,
@@ -153,26 +216,82 @@ const FailedTestsTable = () => {
     ordering: getSortingOption(sorting),
     filters: {
       branch: branch ? getDecodedBranch(branch) : undefined,
+      flags: flags as string[],
+      // eslint-disable-next-line camelcase
+      test_suites: testSuites as string[],
+      parameter: queryParams?.parameter as TestResultsFilterParameterType,
+      interval: queryParams?.historicalTrend as MeasurementInterval,
+      term: queryParams?.term as string,
     },
     opts: {
       suspense: false,
     },
   })
 
+  const isDefaultBranch = testData?.defaultBranch === branch
+  const isTeamOrFreePlan =
+    isTeamPlan(testData?.plan) || isFreePlan(testData?.plan)
+  // Only show flake rate column when on default branch for pro / enterprise plans or public repos
+  const hideFlakeRate =
+    (isTeamOrFreePlan && testData?.private) || (!!branch && !isDefaultBranch)
+
   const tableData = useMemo(() => {
-    return testData?.testResults
-  }, [testData])
+    if (!testData?.testResults) return []
+
+    return testData.testResults.map((result) => {
+      const value = (result.flakeRate ?? 0) * 100
+      const isFlakeInt = Number.isInteger(value)
+
+      const FlakeRateContent = (
+        <Tooltip delayDuration={0} skipDelayDuration={100}>
+          <Tooltip.Root>
+            <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
+              {isFlakeInt ? `${value}%` : `${value.toFixed(2)}%`}
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content
+                className="bg-ds-gray-primary p-2 text-xs text-ds-gray-octonary"
+                side="right"
+              >
+                {result.totalPassCount} Passed, {result.totalFailCount} Failed (
+                {result.totalFlakyFailCount} Flaky), {result.totalSkipCount}{' '}
+                Skipped
+                <Tooltip.Arrow className="size-4 fill-ds-gray-primary" />
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip>
+      )
+
+      return {
+        name: result.name,
+        avgDuration: result.avgDuration,
+        failureRate: result.failureRate,
+        flakeRate: FlakeRateContent,
+        commitsFailed: result.commitsFailed,
+        updatedAt: result.updatedAt,
+      }
+    })
+  }, [testData?.testResults])
+
+  const columns = useMemo(
+    () =>
+      getColumns({
+        hideFlakeRate,
+        interval: queryParams?.historicalTrend as MeasurementInterval,
+      }),
+    [hideFlakeRate, queryParams?.historicalTrend]
+  )
 
   const table = useReactTable({
     columns,
-    data: tableData ?? [],
+    data: tableData,
     state: {
       sorting,
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // debugAll: true,
   })
 
   useEffect(() => {
@@ -182,11 +301,24 @@ const FailedTestsTable = () => {
   }, [fetchNextPage, inView, hasNextPage])
 
   if (isEmpty(testData?.testResults) && !isLoading && !!branch) {
-    return <div>No test results found for this branch</div>
+    return (
+      <div className="flex flex-col gap-2">
+        <TableHeader
+          totalCount={testData?.totalCount}
+          isDefaultBranch={isDefaultBranch}
+        />
+        <hr />
+        <p className="mt-4 text-center">No test results found</p>
+      </div>
+    )
   }
 
   return (
     <>
+      <TableHeader
+        totalCount={testData?.totalCount}
+        isDefaultBranch={isDefaultBranch}
+      />
       <div className="tableui">
         <table>
           <colgroup>

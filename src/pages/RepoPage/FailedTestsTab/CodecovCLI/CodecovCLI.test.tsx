@@ -223,7 +223,7 @@ describe('CodecovCLI', () => {
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute(
         'href',
-        'https://docs.codecov.com/docs/test-result-ingestion-beta#failed-test-reporting'
+        'https://docs.codecov.com/docs/test-analytics#failed-test-reporting'
       )
     })
   })
