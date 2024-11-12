@@ -48,7 +48,7 @@ const mockFlakeAggResponse = {
         flakeAggregates: {
           flakeCount: 88,
           flakeCountPercentChange: 10.0,
-          flakeRate: 8,
+          flakeRate: 8.412412312,
           flakeRatePercentChange: 5.0,
         },
       },
@@ -291,7 +291,7 @@ describe('MetricsSection', () => {
       })
 
       const title = await screen.findByText('Avg. flake rate')
-      const context = await screen.findByText('8%')
+      const context = await screen.findByText('8.41%')
       const description = await screen.findByText(
         'The average flake rate across all branches.'
       )
