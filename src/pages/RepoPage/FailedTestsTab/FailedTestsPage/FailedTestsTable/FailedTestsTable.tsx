@@ -126,7 +126,7 @@ const getColumns = ({
       cell: (info) => info.renderValue(),
     }),
     columnHelper.accessor('avgDuration', {
-      header: () => 'Avg duration',
+      header: () => 'Avg. duration',
       cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
     }),
     columnHelper.accessor('failureRate', {
@@ -238,42 +238,40 @@ const FailedTestsTable = () => {
   const tableData = useMemo(() => {
     if (!testData?.testResults) return []
 
-    return (
-      testData.testResults.map((result) => {
-        const value = (result.flakeRate ?? 0) * 100
-        const isFlakeInt = Number.isInteger(value)
+    return testData.testResults.map((result) => {
+      const value = (result.flakeRate ?? 0) * 100
+      const isFlakeInt = Number.isInteger(value)
 
-        const FlakeRateContent = (
-          <Tooltip delayDuration={0} skipDelayDuration={100}>
-            <Tooltip.Root>
-              <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
-                {isFlakeInt ? `${value}%` : `${value.toFixed(2)}%`}
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className="bg-ds-gray-primary p-2 text-xs text-ds-gray-octonary"
-                  side="right"
-                >
-                  {result.totalPassCount} Passed, {result.totalFailCount} Failed
-                  ({result.totalFlakyFailCount} Flaky), {result.totalSkipCount}{' '}
-                  Skipped
-                  <Tooltip.Arrow className="size-4 fill-ds-gray-primary" />
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
-          </Tooltip>
-        )
+      const FlakeRateContent = (
+        <Tooltip delayDuration={0} skipDelayDuration={100}>
+          <Tooltip.Root>
+            <Tooltip.Trigger className="underline decoration-dotted decoration-1 underline-offset-4">
+              {isFlakeInt ? `${value}%` : `${value.toFixed(2)}%`}
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content
+                className="bg-ds-gray-primary p-2 text-xs text-ds-gray-octonary"
+                side="right"
+              >
+                {result.totalPassCount} Passed, {result.totalFailCount} Failed (
+                {result.totalFlakyFailCount} Flaky), {result.totalSkipCount}{' '}
+                Skipped
+                <Tooltip.Arrow className="size-4 fill-ds-gray-primary" />
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip>
+      )
 
-        return {
-          name: result.name,
-          avgDuration: result.avgDuration,
-          failureRate: result.failureRate,
-          flakeRate: FlakeRateContent,
-          commitsFailed: result.commitsFailed,
-          updatedAt: result.updatedAt,
-        }
-      }) ?? []
-    )
+      return {
+        name: result.name,
+        avgDuration: result.avgDuration,
+        failureRate: result.failureRate,
+        flakeRate: FlakeRateContent,
+        commitsFailed: result.commitsFailed,
+        updatedAt: result.updatedAt,
+      }
+    })
   }, [testData?.testResults])
 
   const columns = useMemo(

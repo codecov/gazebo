@@ -76,6 +76,7 @@ export const useTestResultsTestSuites = ({ term }: { term?: string }) => {
             status: 404,
             data: {},
             dev: 'useTestResultsTestSuites - 404 Failed to parse data',
+            error: parsedData.error,
           } satisfies NetworkErrorObject)
         }
 

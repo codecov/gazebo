@@ -22,18 +22,20 @@ const TestResultsAggregatesSchema = z.object({
           defaultBranch: z.string().nullable(),
           testAnalytics: z
             .object({
-              testResultsAggregates: z.object({
-                totalDuration: z.number(),
-                totalDurationPercentChange: z.number().nullable(),
-                slowestTestsDuration: z.number(),
-                slowestTestsDurationPercentChange: z.number().nullable(),
-                totalSlowTests: z.number(),
-                totalSlowTestsPercentChange: z.number().nullable(),
-                totalFails: z.number(),
-                totalFailsPercentChange: z.number().nullable(),
-                totalSkips: z.number(),
-                totalSkipsPercentChange: z.number().nullable(),
-              }),
+              testResultsAggregates: z
+                .object({
+                  totalDuration: z.number(),
+                  totalDurationPercentChange: z.number().nullable(),
+                  slowestTestsDuration: z.number(),
+                  slowestTestsDurationPercentChange: z.number().nullable(),
+                  totalSlowTests: z.number(),
+                  totalSlowTestsPercentChange: z.number().nullable(),
+                  totalFails: z.number(),
+                  totalFailsPercentChange: z.number().nullable(),
+                  totalSkips: z.number(),
+                  totalSkipsPercentChange: z.number().nullable(),
+                })
+                .nullable(),
             })
             .nullable(),
         }),
@@ -115,6 +117,7 @@ export const useTestResultsAggregates = ({
             status: 404,
             data: {},
             dev: 'useTestResultsAggregates - 404 Failed to parse data',
+            error: parsedData.error,
           } satisfies NetworkErrorObject)
         }
 

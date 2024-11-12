@@ -460,14 +460,13 @@ export function useStaticNavLinks() {
     testsAnalytics: {
       text: 'Tests Analytics',
       path: () =>
-        'https://docs.codecov.com/docs/test-result-ingestion-beta#failed-test-reporting',
+        'https://docs.codecov.com/docs/test-analytics#failed-test-reporting',
       isExternalLink: true,
       openNewTab: true,
     },
     testsAnalyticsDataRetention: {
       text: 'Test Analytics Data Retention',
-      path: () =>
-        'https://docs.codecov.com/docs/test-result-ingestion-beta#data-retention',
+      path: () => 'https://docs.codecov.com/docs/test-analytics#data-retention',
       isExternalLink: true,
       openNewTab: true,
     },
