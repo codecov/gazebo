@@ -196,7 +196,7 @@ describe('SelectorSection', () => {
 
       expect(link).toHaveAttribute(
         'href',
-        'https://docs.codecov.com/docs/test-result-ingestion-beta#data-retention'
+        'https://docs.codecov.com/docs/test-analytics#data-retention'
       )
     })
   })

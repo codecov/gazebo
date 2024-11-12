@@ -76,6 +76,7 @@ export const useTestResultsFlags = ({ term }: { term?: string }) => {
             status: 404,
             data: {},
             dev: 'useTestResultsFlags - 404 Failed to parse data',
+            error: parsedData.error,
           } satisfies NetworkErrorObject)
         }
 

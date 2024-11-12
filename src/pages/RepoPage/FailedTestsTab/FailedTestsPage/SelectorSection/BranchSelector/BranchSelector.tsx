@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { Branch, useBranch, useBranches } from 'services/branches'
@@ -76,15 +76,20 @@ const BranchSelector = () => {
     )
   }
 
-  const sortedBranchList = overview?.defaultBranch
-    ? [
+  const sortedBranchList = useMemo(() => {
+    if (!branchList?.branches) return []
+
+    if (overview?.defaultBranch) {
+      return [
         // Pins the default branch to the top of the list always, filters it from results otherwise
         { name: overview.defaultBranch, head: null },
-        ...(branchList?.branches?.filter(
+        ...branchList.branches.filter(
           (branch) => branch.name !== overview.defaultBranch
-        ) ?? []),
+        ),
       ]
-    : (branchList?.branches ?? [])
+    }
+    return branchList.branches
+  }, [overview?.defaultBranch, branchList.branches])
 
   return (
     <div className="flex w-full flex-col gap-1 px-4 lg:w-64 xl:w-80">

@@ -15,12 +15,14 @@ const FlakeAggregatesSchema = z.object({
           __typename: z.literal('Repository'),
           testAnalytics: z
             .object({
-              flakeAggregates: z.object({
-                flakeCount: z.number(),
-                flakeCountPercentChange: z.number().nullable(),
-                flakeRate: z.number(),
-                flakeRatePercentChange: z.number().nullable(),
-              }),
+              flakeAggregates: z
+                .object({
+                  flakeCount: z.number(),
+                  flakeCountPercentChange: z.number().nullable(),
+                  flakeRate: z.number(),
+                  flakeRatePercentChange: z.number().nullable(),
+                })
+                .nullable(),
             })
             .nullable(),
         }),
@@ -100,6 +102,7 @@ export const useFlakeAggregates = ({
             status: 404,
             data: {},
             dev: 'useFlakeAggregates - 404 Failed to parse data',
+            error: parsedData.error,
           } satisfies NetworkErrorObject)
         }
 
