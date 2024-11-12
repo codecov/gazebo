@@ -13,14 +13,26 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FailedTestsTable from './FailedTestsTable'
 
-import { OrderingDirection, OrderingParameter } from '../hooks'
+import {
+  OrderingDirection,
+  OrderingParameter,
+} from '../hooks/useInfiniteTestResults'
+
+vi.mock('../TableHeader/TableHeader', () => ({
+  default: () => 'Table Header',
+}))
 
 const node1 = {
   updatedAt: '2023-01-01T00:00:00Z',
   name: 'test-1',
   commitsFailed: 1,
   failureRate: 0.1,
+  flakeRate: 0.0,
   avgDuration: 10,
+  totalFailCount: 5,
+  totalFlakyFailCount: 14,
+  totalPassCount: 6,
+  totalSkipCount: 7,
 }
 
 const node2 = {
@@ -28,7 +40,12 @@ const node2 = {
   name: 'test-2',
   commitsFailed: 2,
   failureRate: 0.2,
+  flakeRate: 0.2,
   avgDuration: 20,
+  totalFailCount: 8,
+  totalFlakyFailCount: 15,
+  totalPassCount: 9,
+  totalSkipCount: 10,
 }
 
 const node3 = {
@@ -36,7 +53,12 @@ const node3 = {
   name: 'test-3',
   commitsFailed: 3,
   failureRate: 0.3,
+  flakeRate: 0.1,
   avgDuration: 30,
+  totalFailCount: 11,
+  totalFlakyFailCount: 16,
+  totalPassCount: 12,
+  totalSkipCount: 13,
 }
 
 const server = setupServer()
@@ -60,6 +82,24 @@ const wrapper =
 
 let consoleError: any
 let consoleWarn: any
+
+class ResizeObserverMock {
+  [x: string]: any
+  constructor(cb: any) {
+    this.cb = cb
+  }
+  observe() {
+    this.cb([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }])
+  }
+  unobserve() {
+    // do nothing
+  }
+  disconnect() {
+    // do nothing
+  }
+}
+
+global.window.ResizeObserver = ResizeObserverMock
 
 beforeAll(() => {
   server.listen()
@@ -85,11 +125,23 @@ afterAll(() => {
 interface SetupArgs {
   noEntries?: boolean
   bundleAnalysisEnabled?: boolean
+  planValue?: string
+  isPrivate?: boolean
 }
 
 describe('FailedTestsTable', () => {
-  function setup({ noEntries = false }: SetupArgs) {
-    const queryClient = new QueryClient()
+  function setup({
+    noEntries = false,
+    planValue = 'users-enterprisem',
+    isPrivate = false,
+  }: SetupArgs) {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          suspense: false,
+        },
+      },
+    })
 
     const user = userEvent.setup({ delay: null })
     const mockVariables = vi.fn()
@@ -102,8 +154,13 @@ describe('FailedTestsTable', () => {
           return HttpResponse.json({
             data: {
               owner: {
+                plan: {
+                  value: planValue,
+                },
                 repository: {
                   __typename: 'Repository',
+                  private: isPrivate,
+                  defaultBranch: 'main',
                   testAnalytics: {
                     testResults: {
                       edges: [],
@@ -111,6 +168,7 @@ describe('FailedTestsTable', () => {
                         hasNextPage: false,
                         endCursor: null,
                       },
+                      totalCount: 1234,
                     },
                   },
                 },
@@ -121,8 +179,13 @@ describe('FailedTestsTable', () => {
 
         const dataReturned = {
           owner: {
+            plan: {
+              value: planValue,
+            },
             repository: {
               __typename: 'Repository',
+              private: isPrivate,
+              defaultBranch: 'main',
               testAnalytics: {
                 testResults: {
                   edges: info.variables.after
@@ -134,6 +197,7 @@ describe('FailedTestsTable', () => {
                       ? 'aa'
                       : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
                   },
+                  totalCount: 1234,
                 },
               },
             },
@@ -147,6 +211,56 @@ describe('FailedTestsTable', () => {
   }
 
   describe('renders table headers', () => {
+    describe('when repo is private', () => {
+      describe('when plan is team plan', () => {
+        it('does not render flake rate column', async () => {
+          const { queryClient } = setup({
+            planValue: 'users-teamm',
+            isPrivate: true,
+          })
+          render(<FailedTestsTable />, {
+            wrapper: wrapper(queryClient),
+          })
+
+          await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+          const flakeRateColumn = screen.queryByText('Flake rate')
+          expect(flakeRateColumn).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when plan is free', () => {
+        it('does not render flake rate column', async () => {
+          const { queryClient } = setup({
+            planValue: 'users-free',
+            isPrivate: true,
+          })
+          render(<FailedTestsTable />, {
+            wrapper: wrapper(queryClient),
+          })
+
+          await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+          const flakeRateColumn = screen.queryByText('Flake rate')
+          expect(flakeRateColumn).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when not on default branch', () => {
+        it('does not render flake rate column', async () => {
+          const { queryClient } = setup({})
+          render(<FailedTestsTable />, {
+            wrapper: wrapper(queryClient, ['/gh/codecov/repo/tests/lol']),
+          })
+
+          await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+
+          const flakeRateColumn = screen.queryByText('Flake rate')
+          expect(flakeRateColumn).not.toBeInTheDocument()
+        })
+      })
+    })
+
     it('renders each column name', async () => {
       const { queryClient } = setup({})
       render(<FailedTestsTable />, {
@@ -156,17 +270,30 @@ describe('FailedTestsTable', () => {
       const nameColumn = await screen.findByText('Test name')
       expect(nameColumn).toBeInTheDocument()
 
-      const durationColumn = await screen.findByText('Average duration')
+      const durationColumn = await screen.findByText('Avg. duration')
       expect(durationColumn).toBeInTheDocument()
 
       const failureRateColumn = await screen.findByText('Failure rate')
       expect(failureRateColumn).toBeInTheDocument()
+
+      const flakeRateColumn = await screen.findByText('Flake rate')
+      expect(flakeRateColumn).toBeInTheDocument()
 
       const commitFailedColumn = await screen.findByText('Commits failed')
       expect(commitFailedColumn).toBeInTheDocument()
 
       const lastRunColumn = await screen.findByText('Last run')
       expect(lastRunColumn).toBeInTheDocument()
+    })
+
+    it('renders table header', async () => {
+      const { queryClient } = setup({})
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const tableHeader = await screen.findByText('Table Header')
+      expect(tableHeader).toBeInTheDocument()
     })
   })
 
@@ -189,11 +316,33 @@ describe('FailedTestsTable', () => {
       const failureRateColumn = await screen.findByText('10.00%')
       expect(failureRateColumn).toBeInTheDocument()
 
+      const flakeRateColumn = await screen.findByText('0%')
+      expect(flakeRateColumn).toBeInTheDocument()
+
       const commitFailedColumn = await screen.findByText('1')
       expect(commitFailedColumn).toBeInTheDocument()
 
       const lastRunColumn = await screen.findAllByText('over 1 year ago')
       expect(lastRunColumn.length).toBeGreaterThan(0)
+    })
+
+    it('shows additional info when hovering flake rate', async () => {
+      const { queryClient, user } = setup({})
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, false)
+
+      const flakeRateColumn = await screen.findByText('0%')
+      expect(flakeRateColumn).toBeInTheDocument()
+
+      await user.hover(flakeRateColumn)
+
+      const hoverObj = await screen.findAllByText(/6 Passed, 5 Failed /)
+
+      expect(hoverObj.length).toBeGreaterThan(0)
     })
   })
 
@@ -217,7 +366,7 @@ describe('FailedTestsTable', () => {
         wrapper: wrapper(queryClient),
       })
 
-      const durationColumn = await screen.findByText('Average duration')
+      const durationColumn = await screen.findByText('Avg. duration')
       await user.click(durationColumn)
 
       await waitFor(() => {
@@ -273,6 +422,40 @@ describe('FailedTestsTable', () => {
             ordering: {
               direction: OrderingDirection.ASC,
               parameter: OrderingParameter.FAILURE_RATE,
+            },
+          })
+        )
+      })
+    })
+
+    it('can sort on flake rate column', async () => {
+      const { queryClient, user, mockVariables } = setup({ noEntries: true })
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const flakeRateColumn = await screen.findByText('Flake rate')
+      await user.click(flakeRateColumn)
+
+      await waitFor(() => {
+        expect(mockVariables).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.DESC,
+              parameter: OrderingParameter.FLAKE_RATE,
+            },
+          })
+        )
+      })
+
+      await user.click(flakeRateColumn)
+
+      await waitFor(() => {
+        expect(mockVariables).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.ASC,
+              parameter: OrderingParameter.FLAKE_RATE,
             },
           })
         )
@@ -388,9 +571,7 @@ describe('FailedTestsTable', () => {
         wrapper: wrapper(queryClient, ['/gh/codecov/repo/tests/main']),
       })
 
-      const content = await screen.findByText(
-        'No test results found for this branch'
-      )
+      const content = await screen.findByText('No test results found')
       expect(content).toBeInTheDocument()
     })
   })

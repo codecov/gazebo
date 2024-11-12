@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { Branch, useBranch, useBranches } from 'services/branches'
@@ -76,20 +76,35 @@ const BranchSelector = () => {
     )
   }
 
+  const sortedBranchList = useMemo(() => {
+    if (!branchList?.branches) return []
+
+    if (overview?.defaultBranch) {
+      return [
+        // Pins the default branch to the top of the list always, filters it from results otherwise
+        { name: overview.defaultBranch, head: null },
+        ...branchList.branches.filter(
+          (branch) => branch.name !== overview.defaultBranch
+        ),
+      ]
+    }
+    return branchList.branches
+  }, [overview?.defaultBranch, branchList.branches])
+
   return (
-    <div className="md:w-64">
+    <div className="flex w-full flex-col gap-1 px-4 lg:w-64 xl:w-80">
       <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
         <span className="text-ds-gray-quinary">
           <Icon name="branch" size="sm" variant="developer" />
         </span>
         Branch Context
       </h3>
-      <span className="min-w-64 text-sm">
+      <span className="text-sm">
         <Select
           // @ts-expect-error - Select has some TS issues because it's still written in JS
           dataMarketing="branch-selector-test-results-tab"
           ariaName="test results branch selector"
-          items={branchList?.branches ?? []}
+          items={sortedBranchList}
           value={selection}
           onChange={(item: Branch) => {
             history.push(
