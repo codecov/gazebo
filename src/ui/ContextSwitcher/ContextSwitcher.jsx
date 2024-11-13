@@ -5,6 +5,8 @@ import { useParams } from 'react-router-dom'
 import { useIntersection } from 'react-use'
 import useClickAway from 'react-use/lib/useClickAway'
 
+import config, { DEFAULT_GH_APP } from 'config'
+
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
@@ -129,6 +131,12 @@ function ContextSwitcher({
   const defaultOrgUsername = currentUser?.defaultOrgUsername
 
   const isGh = providerToName(provider) === 'Github'
+  const isSelfHosted = config.IS_SELF_HOSTED
+  const isCustomGitHubApp = config.GH_APP !== DEFAULT_GH_APP
+
+  // self-hosted cannot use default "codecov" app (must set up custom one)
+  const shouldShowGitHubInstallLink =
+    isGh && (isSelfHosted ? isCustomGitHubApp : true)
 
   return (
     <div id="context-switcher" className="relative text-sm" ref={wrapperRef}>
@@ -167,7 +175,7 @@ function ContextSwitcher({
         role="listbox"
         aria-labelledby="listbox-label"
       >
-        {isGh ? (
+        {shouldShowGitHubInstallLink ? (
           <li className="flex justify-between border-b border-ds-border-line px-4 py-3">
             <A to={{ pageName: 'codecovAppInstallation' }}>
               <Icon name="plus-circle" />
