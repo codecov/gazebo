@@ -1,6 +1,5 @@
-import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -83,6 +82,9 @@ const mockPullData = (resultType) => {
         bundleAnalysisEnabled: true,
         pull: {
           pullId: 1,
+          commits: {
+            totalCount: 11,
+          },
           head: {
             commitid: '123',
             bundleAnalysis: {
@@ -405,48 +407,6 @@ describe('PullRequestPageContent', () => {
 
       const filesChangedTab = await screen.findByText('FilesChangedTab')
       expect(filesChangedTab).toBeInTheDocument()
-    })
-  })
-
-  describe('user lands on page', () => {
-    describe('coverage and bundle analysis is enabled', () => {
-      it('sends dropdown metric to sentry', async () => {
-        setup({
-          coverageEnabled: true,
-          bundleAnalysisEnabled: true,
-        })
-        render(<PullRequestPageContent />, {
-          wrapper: wrapper(),
-        })
-
-        await waitFor(() =>
-          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-            'pull_request_page.coverage_dropdown.opened',
-            1,
-            undefined
-          )
-        )
-      })
-    })
-
-    describe('bundle analysis is disabled', () => {
-      it('sends coverage page metric to sentry', async () => {
-        setup({
-          coverageEnabled: true,
-          bundleAnalysisEnabled: false,
-        })
-        render(<PullRequestPageContent />, {
-          wrapper: wrapper(),
-        })
-
-        await waitFor(() =>
-          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-            'pull_request_page.coverage_page.visited_page',
-            1,
-            undefined
-          )
-        )
-      })
     })
   })
 

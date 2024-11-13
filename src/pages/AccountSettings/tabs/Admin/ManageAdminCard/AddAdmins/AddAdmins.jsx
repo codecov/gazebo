@@ -9,7 +9,7 @@ import useClickAway from 'react-use/lib/useClickAway'
 import User from 'old_ui/User'
 import { ApiFilterEnum } from 'services/navigation'
 import { useUsers } from 'services/users'
-import { getOwnerImg } from 'shared/utils'
+import { getOwnerImg } from 'shared/utils/ownerHelpers'
 import TextInput from 'ui/TextInput'
 
 const styles = {

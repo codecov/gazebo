@@ -17,6 +17,7 @@ vi.mock('@sentry/react', async () => {
   return {
     ...originalModule,
     setUser: vi.fn(),
+    withScope: vi.fn(),
     metrics: {
       ...originalModule.metrics!,
       distribution: vi.fn(),
@@ -26,6 +27,8 @@ vi.mock('@sentry/react', async () => {
     },
   }
 })
+
+window.matchMedia = vi.fn().mockResolvedValue({ matches: false })
 
 beforeAll(() => {
   globalThis.jest = {

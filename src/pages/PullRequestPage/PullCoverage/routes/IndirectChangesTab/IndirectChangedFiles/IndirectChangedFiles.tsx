@@ -20,7 +20,7 @@ import TotalsNumber from 'ui/TotalsNumber'
 import { useIndirectChangedFilesTable } from './hooks'
 import NameColumn from './NameColumn/NameColumn'
 
-import FileDiff from '../FileDiff'
+import PullFileDiff from '../PullFileDiff'
 
 interface ImpactedFile {
   missesCount: number | undefined
@@ -117,7 +117,7 @@ function RenderSubComponent({ row }: { row: Row<ImpactedFile> }) {
   const nameColumn = row.original?.headName
   return (
     <Suspense fallback={<Loader />}>
-      <FileDiff path={nameColumn} />
+      <PullFileDiff path={nameColumn} />
     </Suspense>
   )
 }

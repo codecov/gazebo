@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -7,21 +7,6 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ViteOnboarding from './ViteOnboarding'
-
-const mocks = vi.hoisted(() => ({
-  increment: vi.fn(),
-}))
-
-vi.mock('@sentry/react', async () => {
-  const originalModule = await vi.importActual('@sentry/react')
-
-  return {
-    ...originalModule,
-    metrics: {
-      increment: mocks.increment,
-    },
-  }
-})
 
 const mockGetRepo = {
   owner: {
@@ -105,21 +90,6 @@ describe('ViteOnboarding', () => {
     return { user }
   }
 
-  describe('rendering onboarding', () => {
-    it('sends vite onboarding metric', async () => {
-      setup(null)
-      render(<ViteOnboarding />, { wrapper })
-
-      await waitFor(() =>
-        expect(mocks.increment).toHaveBeenCalledWith(
-          'bundles_tab.onboarding.visited_page',
-          1,
-          { tags: { bundler: 'vite' } }
-        )
-      )
-    })
-  })
-
   describe('step 1', () => {
     it('renders header', async () => {
       setup(null)
@@ -156,28 +126,6 @@ describe('ViteOnboarding', () => {
           )
           expect(npmInstallCommand).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(null)
-            render(<ViteOnboarding />, { wrapper })
-
-            const npmInstall = await screen.findByTestId('vite-npm-install')
-            const npmInstallCopy = await within(npmInstall).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(npmInstallCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.install_command',
-                1,
-                { tags: { package_manager: 'npm', bundler: 'vite' } }
-              )
-            )
-          })
-        })
       })
 
       describe('yarn', () => {
@@ -190,28 +138,6 @@ describe('ViteOnboarding', () => {
           )
           expect(yarnInstallCommand).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(null)
-            render(<ViteOnboarding />, { wrapper })
-
-            const yarnInstall = await screen.findByTestId('vite-yarn-install')
-            const yarnInstallCopy = await within(yarnInstall).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(yarnInstallCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.install_command',
-                1,
-                { tags: { package_manager: 'yarn', bundler: 'vite' } }
-              )
-            )
-          })
-        })
       })
 
       describe('pnpm', () => {
@@ -223,28 +149,6 @@ describe('ViteOnboarding', () => {
             'pnpm add @codecov/vite-plugin --save-dev'
           )
           expect(pnpmInstallCommand).toBeInTheDocument()
-        })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(null)
-            render(<ViteOnboarding />, { wrapper })
-
-            const pnpmInstall = await screen.findByTestId('vite-pnpm-install')
-            const pnpmInstallCopy = await within(pnpmInstall).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(pnpmInstallCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.install_command',
-                1,
-                { tags: { package_manager: 'pnpm', bundler: 'vite' } }
-              )
-            )
-          })
         })
       })
     })
@@ -295,28 +199,6 @@ describe('ViteOnboarding', () => {
         expect(token).toBeInTheDocument()
       })
     })
-
-    describe('user clicks copy button', () => {
-      it('sends metric to sentry', async () => {
-        const { user } = setup(true)
-        render(<ViteOnboarding />, { wrapper })
-
-        const uploadToken = await screen.findByTestId('vite-upload-token')
-        const uploadTokenCopy = await within(uploadToken).findByTestId(
-          'clipboard-code-snippet'
-        )
-
-        await user.click(uploadTokenCopy)
-
-        await waitFor(() =>
-          expect(mocks.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.copied.token',
-            1,
-            { tags: { bundler: 'vite' } }
-          )
-        )
-      })
-    })
   })
 
   describe('step 3', () => {
@@ -350,28 +232,6 @@ describe('ViteOnboarding', () => {
 
       const pluginText = await screen.findByText(/\/\/ vite.config.js/)
       expect(pluginText).toBeInTheDocument()
-    })
-
-    describe('user clicks copy button', () => {
-      it('sends metric to sentry', async () => {
-        const { user } = setup(true)
-        render(<ViteOnboarding />, { wrapper })
-
-        const pluginConfig = await screen.findByTestId('vite-plugin-config')
-        const pluginConfigCopy = await within(pluginConfig).findByTestId(
-          'clipboard-code-snippet'
-        )
-
-        await user.click(pluginConfigCopy)
-
-        await waitFor(() =>
-          expect(mocks.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.copied.config',
-            1,
-            { tags: { bundler: 'vite' } }
-          )
-        )
-      })
     })
   })
 
@@ -408,28 +268,6 @@ describe('ViteOnboarding', () => {
       )
       expect(gitCommit).toBeInTheDocument()
     })
-
-    describe('user clicks copy button', () => {
-      it('sends metric to sentry', async () => {
-        const { user } = setup(true)
-        render(<ViteOnboarding />, { wrapper })
-
-        const commitCommand = await screen.findByTestId('vite-commit-command')
-        const commitCommandCopy = await within(commitCommand).findByTestId(
-          'clipboard-code-snippet'
-        )
-
-        await user.click(commitCommandCopy)
-
-        await waitFor(() =>
-          expect(mocks.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.copied.commit',
-            1,
-            { tags: { bundler: 'vite' } }
-          )
-        )
-      })
-    })
   })
 
   describe('step 5', () => {
@@ -463,28 +301,6 @@ describe('ViteOnboarding', () => {
           const npmBuild = await screen.findByText('npm run build')
           expect(npmBuild).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(true)
-            render(<ViteOnboarding />, { wrapper })
-
-            const buildCommand = await screen.findByTestId('vite-npm-build')
-            const buildCommandCopy = await within(buildCommand).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(buildCommandCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.build_command',
-                1,
-                { tags: { package_manager: 'npm', bundler: 'vite' } }
-              )
-            )
-          })
-        })
       })
 
       describe('yarn', () => {
@@ -495,28 +311,6 @@ describe('ViteOnboarding', () => {
           const yarnBuild = await screen.findByText('yarn run build')
           expect(yarnBuild).toBeInTheDocument()
         })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(true)
-            render(<ViteOnboarding />, { wrapper })
-
-            const buildCommand = await screen.findByTestId('vite-yarn-build')
-            const buildCommandCopy = await within(buildCommand).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(buildCommandCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.build_command',
-                1,
-                { tags: { package_manager: 'yarn', bundler: 'vite' } }
-              )
-            )
-          })
-        })
       })
 
       describe('pnpm', () => {
@@ -526,28 +320,6 @@ describe('ViteOnboarding', () => {
 
           const pnpmBuild = await screen.findByText('pnpm run build')
           expect(pnpmBuild).toBeInTheDocument()
-        })
-
-        describe('user clicks copy button', () => {
-          it('sends metric to sentry', async () => {
-            const { user } = setup(true)
-            render(<ViteOnboarding />, { wrapper })
-
-            const buildCommand = await screen.findByTestId('vite-pnpm-build')
-            const buildCommandCopy = await within(buildCommand).findByTestId(
-              'clipboard-code-snippet'
-            )
-
-            await user.click(buildCommandCopy)
-
-            await waitFor(() =>
-              expect(mocks.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.copied.build_command',
-                1,
-                { tags: { package_manager: 'pnpm', bundler: 'vite' } }
-              )
-            )
-          })
         })
       })
     })

@@ -10,23 +10,6 @@ import { Plans } from 'shared/utils/billing'
 
 import UpdateButton from './UpdateButton'
 
-const mocks = vi.hoisted(() => ({
-  increment: vi.fn(),
-  gauge: vi.fn(),
-}))
-
-vi.mock('@sentry/react', async () => {
-  const originalModule = await vi.importActual('@sentry/react')
-  return {
-    ...originalModule,
-    metrics: {
-      ...originalModule.metrics!,
-      increment: mocks.increment,
-      gauge: mocks.gauge,
-    },
-  }
-})
-
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
@@ -45,10 +28,12 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -180,151 +165,6 @@ describe('UpdateButton', () => {
         const button = await screen.findByText('Update')
         expect(button).toBeInTheDocument()
         expect(button).toBeDisabled()
-      })
-    })
-
-    describe('sends metrics to sentry', () => {
-      it('updates counter on load and checkout', async () => {
-        const { user } = setup({ planValue: Plans.USERS_TEAMM })
-
-        const props = {
-          isValid: true,
-          newPlan: Plans.USERS_PR_INAPPM,
-          seats: 4,
-        }
-
-        render(<UpdateButton {...props} />, {
-          wrapper,
-        })
-
-        const button = await screen.findByText('Update')
-        expect(button).toBeInTheDocument()
-
-        expect(mocks.increment).toHaveBeenCalledWith(
-          'bundles_tab.bundle_details.visited_page',
-          undefined,
-          undefined
-        )
-        await user.click(button)
-        expect(mocks.increment).toHaveBeenCalledWith(
-          'billing_change.user.checkout_from_page',
-          undefined,
-          undefined
-        )
-      })
-
-      it('updates gauge on team to pro', async () => {
-        const { user } = setup({ planValue: Plans.USERS_TEAMM })
-
-        const props = {
-          isValid: true,
-          newPlan: Plans.USERS_PR_INAPPM,
-          seats: 4,
-        }
-
-        render(<UpdateButton {...props} />, {
-          wrapper,
-        })
-
-        const button = await screen.findByText('Update')
-        expect(button).toBeInTheDocument()
-        await user.click(button)
-        expect(mocks.gauge).toHaveBeenCalledWith(
-          'billing_change.user.seats_change',
-          -3,
-          {
-            tags: { plan: 'team' },
-          }
-        )
-        expect(mocks.gauge).toHaveBeenCalledWith(
-          'billing_change.user.seats_change',
-          4,
-          {
-            tags: { plan: 'pro' },
-          }
-        )
-      })
-
-      it('updates gauge on pro to team', async () => {
-        const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
-
-        const props = {
-          isValid: true,
-          newPlan: Plans.USERS_TEAMM,
-          seats: 2,
-        }
-
-        render(<UpdateButton {...props} />, {
-          wrapper,
-        })
-
-        const button = await screen.findByText('Update')
-        expect(button).toBeInTheDocument()
-        await user.click(button)
-        expect(mocks.gauge).toHaveBeenCalledWith(
-          'billing_change.user.seats_change',
-          2,
-          {
-            tags: { plan: 'team' },
-          }
-        )
-        expect(mocks.gauge).toHaveBeenCalledWith(
-          'billing_change.user.seats_change',
-          -4,
-          {
-            tags: { plan: 'pro' },
-          }
-        )
-      })
-
-      it('updates seat count on a team plan change', async () => {
-        const { user } = setup({ planValue: Plans.USERS_TEAMM })
-
-        const props = {
-          isValid: true,
-          newPlan: Plans.USERS_TEAMM,
-          seats: 5,
-        }
-
-        render(<UpdateButton {...props} />, {
-          wrapper,
-        })
-
-        const button = await screen.findByText('Update')
-        expect(button).toBeInTheDocument()
-        await user.click(button)
-        expect(mocks.gauge).toHaveBeenCalledWith(
-          'billing_change.user.seats_change',
-          2,
-          {
-            tags: { plan: 'team' },
-          }
-        )
-      })
-
-      it('updates seat count on a pro plan change', async () => {
-        const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
-
-        const props = {
-          isValid: true,
-          newPlan: Plans.USERS_PR_INAPPM,
-          seats: 1,
-        }
-
-        render(<UpdateButton {...props} />, {
-          wrapper,
-        })
-
-        const button = await screen.findByText('Update')
-        expect(button).toBeInTheDocument()
-        await user.click(button)
-        expect(mocks.gauge).toHaveBeenCalledWith(
-          'billing_change.user.seats_change',
-          -3,
-          {
-            tags: { plan: 'pro' },
-          }
-        )
       })
     })
   })

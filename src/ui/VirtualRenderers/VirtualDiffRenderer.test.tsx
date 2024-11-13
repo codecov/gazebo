@@ -19,6 +19,8 @@ import {
 const mocks = vi.hoisted(() => ({
   withProfiler: (component: any) => component,
   captureMessage: vi.fn(),
+  scrollWidth: 0,
+  clientWidth: 0,
 }))
 
 vi.mock('@sentry/react', () => {
@@ -52,6 +54,8 @@ class ResizeObserverMock {
       {
         contentRect: { width: 100 },
         target: {
+          scrollWidth: mocks.scrollWidth,
+          clientWidth: mocks.clientWidth,
           getAttribute: () => ({ scrollWidth: 100 }),
           getBoundingClientRect: () => ({ top: 100 }),
         },
@@ -150,6 +154,10 @@ const wrapper =
       />
     </MemoryRouter>
   )
+
+afterEach(() => {
+  vi.clearAllMocks()
+})
 
 describe('VirtualFileRenderer', () => {
   function setup() {
@@ -648,6 +656,52 @@ describe('CoverageHitCounter', () => {
 
       const hitCount = screen.queryByTestId('coverage-hit-counter')
       expect(hitCount).not.toBeInTheDocument()
+    })
+  })
+
+  describe('testing overflowing lines', () => {
+    describe('overflowing lines', () => {
+      beforeEach(() => {
+        mocks.scrollWidth = 200
+        mocks.clientWidth = 100
+      })
+
+      it('renders the scrollbar', () => {
+        render(
+          <VirtualDiffRenderer
+            code={code}
+            lineData={lineData}
+            fileName="tsx"
+            hashedPath="hashedPath"
+          />,
+          { wrapper: wrapper() }
+        )
+
+        const scrollBar = screen.getByTestId('virtual-renderer-scroll-bar')
+        expect(scrollBar).toBeInTheDocument()
+      })
+    })
+
+    describe('does not overflow', () => {
+      beforeEach(() => {
+        mocks.scrollWidth = 100
+        mocks.clientWidth = 100
+      })
+
+      it('does not render the scrollbar', () => {
+        render(
+          <VirtualDiffRenderer
+            code={code}
+            lineData={lineData}
+            fileName="tsx"
+            hashedPath="hashedPath"
+          />,
+          { wrapper: wrapper() }
+        )
+
+        const scrollBar = screen.queryByTestId('virtual-renderer-scroll-bar')
+        expect(scrollBar).not.toBeInTheDocument()
+      })
     })
   })
 })

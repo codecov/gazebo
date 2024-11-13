@@ -17,7 +17,7 @@ function _setFileLabel({
   return null
 }
 
-export function transformImpactedFileData(impactedFile: ImpactedFileType) {
+export function transformImpactedFileToDiff(impactedFile: ImpactedFileType) {
   if (isEmpty(impactedFile)) {
     return null
   }
