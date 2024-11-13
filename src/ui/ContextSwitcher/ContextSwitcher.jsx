@@ -182,11 +182,7 @@ function ContextSwitcher({
               Install Codecov GitHub app
             </A>
           </li>
-        ) : (
-          <li className="flex justify-between border-b border-ds-border-line px-4 py-3 text-xs font-semibold">
-            <span>Switch context</span>
-          </li>
-        )}
+        ) : null}
         {contexts.map((context) => (
           <ContextItem
             defaultOrgUsername={defaultOrgUsername}
