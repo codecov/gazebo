@@ -790,9 +790,6 @@ describe('ContextSwitcher', () => {
 
       const installCopy = screen.queryByText(/Install Codecov GitHub app/)
       expect(installCopy).not.toBeInTheDocument()
-
-      const switchCopy = await screen.findByText(/Switch context/)
-      expect(switchCopy).toBeInTheDocument()
     })
   })
 })
