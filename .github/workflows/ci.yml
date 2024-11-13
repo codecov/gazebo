@@ -202,6 +202,12 @@ jobs:
           ENABLE_TEST_REPORTER: true
           TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes-vitest.outputs.test_list_array)[matrix.runner-index]) }}
 
+      - name: Upload coverage using the Action
+        uses: codecov/codecov-action@v5.0.0-beta
+        with:
+          token: ${{ secrets.CODECOV_ORG_TOKEN }}
+          fail_ci_if_error: true
+
       - name: Upload test results to Codecov
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
