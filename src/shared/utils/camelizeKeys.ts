@@ -1,6 +1,8 @@
 import camelCase from 'lodash/camelCase'
 
-export function camelizeKeys(obj = {}) {
+export function camelizeKeys(
+  obj: Record<string, any> = {}
+): Record<string, any> {
   if (Array.isArray(obj)) {
     return obj.map((v) => camelizeKeys(v))
   } else if (obj !== null && obj.constructor === Object) {
