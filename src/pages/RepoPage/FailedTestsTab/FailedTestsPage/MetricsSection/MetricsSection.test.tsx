@@ -308,7 +308,7 @@ describe('MetricsSection', () => {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
 
-        const title = await screen.findByText('Failures')
+        const title = await screen.findByText('Cumulative Failures')
         const context = await screen.findByText(1)
         const description = await screen.findByText(
           'The number of test failures across all branches.'
