@@ -67,7 +67,7 @@ export default CircleCI
 interface Step1Props {
   tokenCopy: string
   uploadToken: string
-  providerName: string
+  providerName: Provider
 }
 
 function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {

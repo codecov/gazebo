@@ -20,7 +20,7 @@ export function providerToName(provider: Provider) {
   }[provider.toLowerCase()]
 }
 
-export function providerToInternalProvider(provider: Provider) {
+export function providerToInternalProvider(provider: Provider): Provider {
   return {
     gh: 'github',
     bb: 'bitbucket',
@@ -34,7 +34,7 @@ export function providerToInternalProvider(provider: Provider) {
     github_enterprise: 'github_enterprise',
     gitlab_enterprise: 'gitlab_enterprise',
     bitbucket_server: 'bitbucket_server',
-  }[provider.toLowerCase()]
+  }[provider.toLowerCase()] as Provider
 }
 
 export function getProviderCommitURL({

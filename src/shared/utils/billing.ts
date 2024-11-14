@@ -40,7 +40,7 @@ export const EnterprisePlans = Object.freeze({
   USERS_ENTERPRISEY: 'users-enterprisey',
 })
 
-export function isEnterprisePlan(plan?: PlanName) {
+export function isEnterprisePlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return (Object.values(EnterprisePlans) as string[]).includes(plan)
   }
@@ -48,34 +48,34 @@ export function isEnterprisePlan(plan?: PlanName) {
   return false
 }
 
-export function isFreePlan(plan?: PlanName) {
+export function isFreePlan(plan?: PlanName | null) {
   if (isString(plan)) {
     if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true
   }
   return false
 }
 
-export function isTeamPlan(plan?: PlanName) {
+export function isTeamPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     if (plan === Plans.USERS_TEAMM || plan === Plans.USERS_TEAMY) return true
   }
   return false
 }
-export function isBasicPlan(plan?: PlanName) {
+export function isBasicPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return plan === Plans.USERS_BASIC
   }
   return false
 }
 
-export function isPaidPlan(plan?: PlanName) {
+export function isPaidPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return isAnnualPlan(plan) || isMonthlyPlan(plan)
   }
   return false
 }
 
-export function isMonthlyPlan(plan?: PlanName) {
+export function isMonthlyPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return (
       plan === Plans.USERS_INAPP ||
@@ -88,7 +88,7 @@ export function isMonthlyPlan(plan?: PlanName) {
   return false
 }
 
-export function isAnnualPlan(plan?: PlanName) {
+export function isAnnualPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return (
       plan === Plans.USERS_INAPPY ||
@@ -101,28 +101,28 @@ export function isAnnualPlan(plan?: PlanName) {
   return false
 }
 
-export function isSentryPlan(plan?: PlanName) {
+export function isSentryPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return plan === Plans.USERS_SENTRYM || plan === Plans.USERS_SENTRYY
   }
   return false
 }
 
-export function isCodecovProPlan(plan?: PlanName) {
+export function isCodecovProPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return plan === Plans.USERS_PR_INAPPM || plan === Plans.USERS_PR_INAPPY
   }
   return false
 }
 
-export function isProPlan(plan?: PlanName) {
+export function isProPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return isSentryPlan(plan) || isCodecovProPlan(plan)
   }
   return false
 }
 
-export function isTrialPlan(plan?: PlanName) {
+export function isTrialPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return plan === Plans.USERS_TRIAL
   }

@@ -29,7 +29,7 @@ vi.mock('@sentry/react')
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -72,7 +72,7 @@ const proPlanYear = {
 
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro Team',
-  value: 'users-sentrym',
+  value: Plans.USERS_SENTRYY,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -88,7 +88,7 @@ const sentryPlanMonth = {
 
 const sentryPlanYear = {
   marketingName: 'Sentry Pro Team',
-  value: 'users-sentryy',
+  value: Plans.USERS_SENTRYY,
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
@@ -108,7 +108,7 @@ const teamPlanMonth = {
   billingRate: 'monthly',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamm',
+  value: Plans.USERS_TEAMM,
 }
 
 const teamPlanYear = {
@@ -117,12 +117,12 @@ const teamPlanYear = {
   billingRate: 'annually',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamy',
+  value: Plans.USERS_TEAMY,
 }
 
 const trialPlan = {
   marketingName: 'Pro Trial Team',
-  value: 'users-trial',
+  value: Plans.USERS_TRIAL,
   billingRate: null,
   baseUnitPrice: 12,
   benefits: ['Configurable # of users', 'Unlimited repos'],
@@ -227,14 +227,8 @@ const mockPlanDataResponseYearly = {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      suspense: true,
       retry: false,
     },
-  },
-  logger: {
-    error: () => {},
-    warn: () => {},
-    log: () => {},
   },
 })
 const server = setupServer()
@@ -302,7 +296,7 @@ describe('UpgradeForm', () => {
     mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      http.get(`/internal/:provider/:owner/account-details/`, (info) => {
+      http.get(`/internal/gh/codecov/account-details/`, (info) => {
         if (planValue === Plans.USERS_BASIC) {
           return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_PR_INAPPM) {
@@ -319,25 +313,19 @@ describe('UpgradeForm', () => {
           return HttpResponse.json(mockAccountDetailsSentryYearly)
         }
       }),
-      http.patch(
-        '/internal/:provider/:owner/account-details/',
-        async (info) => {
-          if (!successfulPatchRequest) {
-            if (errorDetails) {
-              return HttpResponse.json(
-                { detail: errorDetails },
-                { status: 500 }
-              )
-            }
-            return HttpResponse.json({ success: false }, { status: 500 })
+      http.patch('/internal/gh/codecov/account-details/', async (info) => {
+        if (!successfulPatchRequest) {
+          if (errorDetails) {
+            return HttpResponse.json({ detail: errorDetails }, { status: 500 })
           }
-          const body = await info.request.json()
-
-          patchRequest(body)
-
-          return HttpResponse.json({ success: true })
+          return HttpResponse.json({ success: false }, { status: 500 })
         }
-      ),
+        const body = await info.request.json()
+
+        patchRequest(body)
+
+        return HttpResponse.json({ success: true })
+      }),
       graphql.query('GetAvailablePlans', (info) => {
         return HttpResponse.json({
           data: {
