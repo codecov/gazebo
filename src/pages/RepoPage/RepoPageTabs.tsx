@@ -103,7 +103,7 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
       pageName: 'failedTests',
       children: (
         <>
-          Tests <Badge>beta</Badge>{' '}
+          Tests <Badge>New</Badge>{' '}
         </>
       ),
     })
@@ -112,7 +112,7 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
       pageName: 'failedTestsOnboarding',
       children: (
         <>
-          Tests <Badge>beta</Badge>{' '}
+          Tests <Badge>New</Badge>{' '}
         </>
       ),
     })

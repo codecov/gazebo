@@ -90,11 +90,11 @@ function CoverageOverviewTab() {
                   <div
                     className={cn('inline-table', {
                       'col-span-9': displaySunburst,
-                      'col-span-12 h-[21rem]': !displaySunburst,
+                      'col-span-12': !displaySunburst,
                     })}
                   >
                     <SilentNetworkErrorWrapper>
-                      <CoverageChart extendedChart={!displaySunburst} />
+                      <CoverageChart />
                     </SilentNetworkErrorWrapper>
                   </div>
                   {displaySunburst ? (

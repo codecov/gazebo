@@ -3,10 +3,30 @@ import { render, screen } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { type Mock } from 'vitest'
 
 import { TierNames, TTierNames } from 'services/tier'
 
 import CoverageOverviewTab from './OverviewTab'
+
+declare global {
+  interface Window {
+    ResizeObserver: unknown
+  }
+}
+
+vi.mock('recharts', async () => {
+  const OriginalModule = await vi.importActual('recharts')
+  return {
+    ...OriginalModule,
+    ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
+      // @ts-expect-error - something is off with the import actual but this does exist, and this mock does work
+      <OriginalModule.ResponsiveContainer width={800} height={800}>
+        {children}
+      </OriginalModule.ResponsiveContainer>
+    ),
+  }
+})
 
 vi.mock('./Summary', () => ({ default: () => 'Summary' }))
 vi.mock('./SummaryTeamPlan', () => ({ default: () => 'SummaryTeamPlan' }))
@@ -104,30 +124,9 @@ const branchesMock = {
       __typename: 'Repository',
       branches: {
         edges: [
-          {
-            node: {
-              name: 'main',
-              head: {
-                commitid: '1',
-              },
-            },
-          },
-          {
-            node: {
-              name: 'dummy',
-              head: {
-                commitid: '2',
-              },
-            },
-          },
-          {
-            node: {
-              name: 'dummy2',
-              head: {
-                commitid: '3',
-              },
-            },
-          },
+          { node: { name: 'main', head: { commitid: '1' } } },
+          { node: { name: 'dummy', head: { commitid: '2' } } },
+          { node: { name: 'dummy2', head: { commitid: '3' } } },
         ],
         pageInfo: {
           hasNextPage: false,
@@ -188,22 +187,10 @@ const mockBranchMeasurements = {
       __typename: 'Repository',
       coverageAnalytics: {
         measurements: [
-          {
-            timestamp: '2023-01-01T00:00:00+00:00',
-            max: 85,
-          },
-          {
-            timestamp: '2023-01-02T00:00:00+00:00',
-            max: 80,
-          },
-          {
-            timestamp: '2023-01-03T00:00:00+00:00',
-            max: 90,
-          },
-          {
-            timestamp: '2023-01-04T00:00:00+00:00',
-            max: 100,
-          },
+          { timestamp: '2023-01-01T00:00:00+00:00', max: 85 },
+          { timestamp: '2023-01-02T00:00:00+00:00', max: 80 },
+          { timestamp: '2023-01-03T00:00:00+00:00', max: 90 },
+          { timestamp: '2023-01-04T00:00:00+00:00', max: 100 },
         ],
       },
     },
@@ -230,15 +217,7 @@ const mockCoverageTabData = (fileCount = 10) => ({
   owner: {
     repository: {
       __typename: 'Repository',
-      branch: {
-        head: {
-          coverageAnalytics: {
-            totals: {
-              fileCount,
-            },
-          },
-        },
-      },
+      branch: { head: { coverageAnalytics: { totals: { fileCount } } } },
     },
   },
 })
@@ -253,14 +232,8 @@ const mockBranchComponents = {
           commitid: 'commit-123',
           coverageAnalytics: {
             components: [
-              {
-                id: 'compOneId',
-                name: 'compOneName',
-              },
-              {
-                id: 'compTwoId',
-                name: 'compTwoName',
-              },
+              { id: 'compOneId', name: 'compOneName' },
+              { id: 'compTwoId', name: 'compTwoName' },
             ],
           },
         },
@@ -274,17 +247,8 @@ const mockFlagSelect = {
     repository: {
       __typename: 'Repository',
       flags: {
-        edges: [
-          {
-            node: {
-              name: 'flag-1',
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: true,
-          endCursor: '1-flag-1',
-        },
+        edges: [{ node: { name: 'flag-1' } }],
+        pageInfo: { hasNextPage: true, endCursor: '1-flag-1' },
       },
     },
   },
@@ -329,6 +293,30 @@ const wrapper: (
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
+})
+
+beforeEach(() => {
+  let resizeObserverMock: Mock
+  /**
+   * ResizeObserver is not available, so we have to create a mock to avoid error coming
+   * from `react-resize-detector`.
+   * @see https://github.com/maslianok/react-resize-detector/issues/145
+   *
+   * This mock also allow us to use {@link notifyResizeObserverChange} to fire changes
+   * from inside our test.
+   */
+  resizeObserverMock = vi.fn().mockImplementation((callback) => {
+    return {
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn(),
+    }
+  })
+
+  // @ts-ignore
+  delete window.ResizeObserver
+
+  window.ResizeObserver = resizeObserverMock
 })
 
 afterEach(() => {
@@ -467,7 +455,7 @@ describe('Coverage overview tab', () => {
       wrapper: wrapper(['/gh/test-org/repoName']),
     })
 
-    const coverageAreaChart = await screen.findByTestId('coverage-area-chart')
+    const coverageAreaChart = await screen.findByTestId('chart-container')
     expect(coverageAreaChart).toBeInTheDocument()
   })
 
@@ -490,7 +478,7 @@ describe('Coverage overview tab', () => {
         wrapper: wrapper(['/gh/test-org/repoName']),
       })
 
-      const coverageChart = screen.queryByTestId('coverage-area-chart')
+      const coverageChart = screen.queryByTestId('chart-container')
       expect(coverageChart).not.toBeInTheDocument()
     })
   })

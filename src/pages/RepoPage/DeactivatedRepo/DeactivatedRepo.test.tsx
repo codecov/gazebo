@@ -68,7 +68,7 @@ describe('DeactivatedRepo', () => {
     it('renders corresponding message', async () => {
       render(<DeactivatedRepo />, { wrapper })
 
-      const message = await screen.findByText(/To reactivate the repo go to/)
+      const message = await screen.findByText(/To resume uploading to it/)
       expect(message).toBeInTheDocument()
     })
   })
