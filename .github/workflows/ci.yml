@@ -205,7 +205,6 @@ jobs:
       - name: Upload coverage using the Action
         uses: codecov/codecov-action@v5.0.0-beta
         with:
-          token: ${{ secrets.CODECOV_ORG_TOKEN }}
           fail_ci_if_error: true
 
       - name: Upload test results to Codecov
