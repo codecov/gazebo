@@ -10,7 +10,9 @@ describe('snakeifyKeys', () => {
 
   it('else passes through', () => {
     expect(snakeifyKeys([1, 2, 3])).toStrictEqual([1, 2, 3])
+    // @ts-expect-error
     expect(snakeifyKeys(1)).toStrictEqual(1)
+    // @ts-expect-error
     expect(snakeifyKeys('test')).toStrictEqual('test')
   })
 })
