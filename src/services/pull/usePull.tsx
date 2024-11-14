@@ -16,7 +16,6 @@ import {
 import Api from 'shared/api'
 import { type NetworkErrorObject } from 'shared/api/helpers'
 import { UploadTypeEnum } from 'shared/utils/commit'
-import { userHasAccess } from 'shared/utils/user'
 import A from 'ui/A'
 
 import { PullCompareWithBaseFragment } from './fragments'
@@ -372,10 +371,6 @@ export function usePull({
           pull: {
             ...pull,
           },
-          hasAccess: userHasAccess({
-            privateRepo: data?.owner?.repository?.private,
-            isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg,
-          }),
           defaultBranch: data?.owner?.repository?.defaultBranch,
         }
       }),

@@ -1,21 +1,11 @@
 import {
-  format,
   formatDistanceToNow,
   fromUnixTime,
   intervalToDuration,
   parseISO,
 } from 'date-fns'
-import { useMemo } from 'react'
 
-export function useDateFormatted(date, formatDescription = 'MMMM do yyyy') {
-  return useMemo(() => {
-    if (!date) return null
-    const parser = typeof date === 'string' ? parseISO : fromUnixTime
-    return format(parser(date), formatDescription)
-  }, [date, formatDescription])
-}
-
-export function formatTimeToNow(date) {
+export function formatTimeToNow(date?: string | number | null) {
   if (!date) return null
 
   const parsedDate =
@@ -25,7 +15,7 @@ export function formatTimeToNow(date) {
   })
 }
 
-export const formatTimeFromSeconds = (totalSeconds) => {
+export const formatTimeFromSeconds = (totalSeconds?: number | null) => {
   if (totalSeconds === 0) return '0s'
   if (!totalSeconds) return 'N/A'
 
