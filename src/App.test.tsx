@@ -163,6 +163,7 @@ beforeEach(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
+  vi.clearAllMocks()
 })
 
 afterAll(() => {
