@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.3
-FROM            alpine:3.17 as uploader
+FROM            alpine:3.20 as uploader
 USER            root
 WORKDIR         /tmp
 RUN             apk -U add gnupg curl
@@ -35,7 +35,7 @@ RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM
 
 COPY            docker/index.html /tmp/uploader
 
-FROM node:20-alpine3.17 as build
+FROM node:22-alpine3.20 as build
 ARG REACT_APP_ENV_ARG
 ARG REACT_APP_CODECOV_VERSION
 ENV REACT_APP_ENV=$REACT_APP_ENV_ARG
@@ -50,7 +50,7 @@ RUN yarn install
 RUN yarn build && rm -f build/mockServiceWorker.js
 
 
-FROM alpine:3.17
+FROM alpine:3.19
 ARG REACT_APP_CODECOV_VERSION
 ARG ENVIRONMENT
 ARG COMMIT_SHA

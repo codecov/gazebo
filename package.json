@@ -167,7 +167,7 @@
     "workerDirectory": "public"
   },
   "volta": {
-    "node": "20.15.1",
+    "node": "22.11.0",
     "yarn": "4.5.0"
   },
   "resolutions": {
