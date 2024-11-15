@@ -6,14 +6,14 @@ import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import { Plans } from 'shared/utils/billing'
+import { PlanName, Plans } from 'shared/utils/billing'
 
 import MetricsSection, { historicalTrendToCopy } from './MetricsSection'
 
 import { TestResultsFilterParameter } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
 
 const mockAggResponse = (
-  planValue = Plans.USERS_ENTERPRISEM,
+  planValue: PlanName = Plans.USERS_ENTERPRISEM,
   isPrivate = false
 ) => ({
   owner: {
@@ -103,7 +103,10 @@ afterAll(() => {
 })
 
 describe('MetricsSection', () => {
-  function setup(planValue = 'users-enterprisem', isPrivate = false) {
+  function setup(
+    planValue: PlanName = Plans.USERS_ENTERPRISEM,
+    isPrivate = false
+  ) {
     const user = userEvent.setup()
 
     server.use(
@@ -421,7 +424,7 @@ describe('MetricsSection', () => {
   describe('when on team plan', () => {
     describe('when repo is private', () => {
       it('does not render total flaky tests card', async () => {
-        setup('users-teamm', true)
+        setup(Plans.USERS_TEAMM, true)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
@@ -433,7 +436,7 @@ describe('MetricsSection', () => {
       })
 
       it('does not render avg flaky tests card', async () => {
-        setup('users-teamm', true)
+        setup(Plans.USERS_TEAMM, true)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
@@ -447,7 +450,7 @@ describe('MetricsSection', () => {
 
     describe('when repo is public', () => {
       it('renders total flaky tests card', async () => {
-        setup('users-teamm', false)
+        setup(Plans.USERS_TEAMM, false)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
@@ -459,7 +462,7 @@ describe('MetricsSection', () => {
       })
 
       it('renders avg flaky tests card', async () => {
-        setup('users-teamm', false)
+        setup(Plans.USERS_TEAMM, false)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
@@ -475,7 +478,7 @@ describe('MetricsSection', () => {
   describe('when on free plan', () => {
     describe('when repo is private', () => {
       it('does not render total flaky tests card', async () => {
-        setup('users-basic', true)
+        setup(Plans.USERS_BASIC, true)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
@@ -487,7 +490,7 @@ describe('MetricsSection', () => {
       })
 
       it('does not render avg flaky tests card', async () => {
-        setup('users-basic', true)
+        setup(Plans.USERS_BASIC, true)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
@@ -501,7 +504,7 @@ describe('MetricsSection', () => {
 
     describe('when repo is public', () => {
       it('renders total flaky tests card', async () => {
-        setup('users-basic', false)
+        setup(Plans.USERS_BASIC, false)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
@@ -513,7 +516,7 @@ describe('MetricsSection', () => {
       })
 
       it('renders avg flaky tests card', async () => {
-        setup('users-basic', false)
+        setup(Plans.USERS_BASIC, false)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
