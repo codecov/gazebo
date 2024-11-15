@@ -84,7 +84,7 @@ describe('useProPlanMonth', () => {
         },
         {
           marketingName: 'Pro Team',
-          value: Plans.USERS_ENTERPRISE,
+          value: Plans.USERS_ENTERPRISEM,
           billingRate: 'monthly',
           baseUnitPrice: 12,
           benefits: [
@@ -103,7 +103,7 @@ describe('useProPlanMonth', () => {
       expect(result.current).toEqual({
         proPlanMonth: {
           marketingName: 'Pro Team',
-          value: Plans.USERS_ENTERPRISE,
+          value: Plans.USERS_ENTERPRISEM,
           billingRate: 'monthly',
           baseUnitPrice: 12,
           benefits: [

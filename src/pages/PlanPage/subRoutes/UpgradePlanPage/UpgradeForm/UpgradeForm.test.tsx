@@ -72,7 +72,7 @@ const proPlanYear = {
 
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro Team',
-  value: Plans.USERS_SENTRYY,
+  value: Plans.USERS_SENTRYM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -227,6 +227,7 @@ const mockPlanDataResponseYearly = {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      suspense: true,
       retry: false,
     },
   },
@@ -296,7 +297,7 @@ describe('UpgradeForm', () => {
     mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, (info) => {
+      http.get(`/internal/:provider/:owner/account-details/`, (info) => {
         if (planValue === Plans.USERS_BASIC) {
           return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_PR_INAPPM) {
@@ -313,19 +314,25 @@ describe('UpgradeForm', () => {
           return HttpResponse.json(mockAccountDetailsSentryYearly)
         }
       }),
-      http.patch('/internal/gh/codecov/account-details/', async (info) => {
-        if (!successfulPatchRequest) {
-          if (errorDetails) {
-            return HttpResponse.json({ detail: errorDetails }, { status: 500 })
+      http.patch(
+        `/internal/:provider/:owner/account-details/`,
+        async (info) => {
+          if (!successfulPatchRequest) {
+            if (errorDetails) {
+              return HttpResponse.json(
+                { detail: errorDetails },
+                { status: 500 }
+              )
+            }
+            return HttpResponse.json({ success: false }, { status: 500 })
           }
-          return HttpResponse.json({ success: false }, { status: 500 })
+          const body = await info.request.json()
+
+          patchRequest(body)
+
+          return HttpResponse.json({ success: true })
         }
-        const body = await info.request.json()
-
-        patchRequest(body)
-
-        return HttpResponse.json({ success: true })
-      }),
+      ),
       graphql.query('GetAvailablePlans', (info) => {
         return HttpResponse.json({
           data: {
