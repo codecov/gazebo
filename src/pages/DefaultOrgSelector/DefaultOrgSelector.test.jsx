@@ -6,7 +6,6 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-
 import config from 'config'
 
 import { SentryBugReporter } from 'sentry'

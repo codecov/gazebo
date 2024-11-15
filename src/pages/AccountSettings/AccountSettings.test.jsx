@@ -9,7 +9,6 @@ import config from 'config'
 
 import { Plans } from 'shared/utils/billing'
 
-
 import AccountSettings from './AccountSettings'
 
 vi.mock('config')

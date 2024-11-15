@@ -149,7 +149,7 @@ describe('getDefaultValuesUpgradeForm', () => {
       })
 
       expect(data).toStrictEqual({
-        newPlan: 'users-teamm',
+        newPlan: Plans.USERS_TEAMM,
         seats: 2,
       })
     })

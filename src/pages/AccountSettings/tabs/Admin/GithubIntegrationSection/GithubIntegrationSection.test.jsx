@@ -8,7 +8,6 @@ import config from 'config'
 
 import { Plans } from 'shared/utils/billing'
 
-
 import GithubIntegrationSection from './GithubIntegrationSection'
 
 const server = setupServer()

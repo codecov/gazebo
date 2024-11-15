@@ -9,7 +9,6 @@ import config from 'config'
 
 import { Plans } from 'shared/utils/billing'
 
-
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
 
 vi.mock('config')

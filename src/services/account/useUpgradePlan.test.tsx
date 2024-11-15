@@ -115,7 +115,7 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: 'users-pr-inappy',
+          newPlan: Plans.USERS_PR_INAPPY,
         })
 
         await waitFor(() => {
@@ -149,7 +149,7 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: 'users-pr-inappy',
+          newPlan: Plans.USERS_PR_INAPPY,
         })
 
         await waitFor(() => expect(redirectToCheckout).not.toHaveBeenCalled())

@@ -34,7 +34,7 @@ const proPlanMonth = {
 
 const trialPlan = {
   marketingName: 'Trial Team',
-  value: Plans.USERS_PR_INAPPM,
+  value: Plans.USERS_TRIAL,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [

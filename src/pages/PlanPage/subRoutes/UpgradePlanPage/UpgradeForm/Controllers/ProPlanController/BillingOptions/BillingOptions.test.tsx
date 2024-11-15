@@ -195,7 +195,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              'users-pr-inappm'
+              Plans.USERS_PR_INAPPM
             )
           )
         })
@@ -272,7 +272,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              'users-pr-inappy'
+              Plans.USERS_PR_INAPPY
             )
           )
         })
