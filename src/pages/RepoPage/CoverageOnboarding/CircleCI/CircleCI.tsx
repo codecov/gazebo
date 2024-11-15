@@ -52,7 +52,7 @@ function CircleCI() {
       <Step1
         tokenCopy={tokenCopy}
         uploadToken={uploadToken}
-        providerName={providerName}
+        providerName={providerName!}
       />
       <Step2 defaultBranch={data?.repository?.defaultBranch ?? ''} />
       <Step3 />
@@ -67,7 +67,7 @@ export default CircleCI
 interface Step1Props {
   tokenCopy: string
   uploadToken: string
-  providerName: Provider
+  providerName: string
 }
 
 function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {

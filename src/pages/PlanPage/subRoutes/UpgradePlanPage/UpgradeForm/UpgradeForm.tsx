@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm, UseFormRegister, UseFormSetValue } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -67,7 +67,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
     formState: { isValid, errors },
     setValue: setFormValue,
     trigger,
-  } = useForm({
+  } = useForm<UpgradeFormFields>({
     defaultValues: getDefaultValuesUpgradeForm({
       accountDetails,
       plans,
@@ -103,7 +103,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         <span>{owner}</span>
       </div>
       <PlanTypeOptions
-        setFormValue={setFormValue as UseFormSetValue<UpgradeFormFields>}
+        setFormValue={setFormValue}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
       />
@@ -112,8 +112,8 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
         seats={seats}
-        setFormValue={setFormValue as UseFormSetValue<UpgradeFormFields>}
-        register={register as UseFormRegister<UpgradeFormFields>}
+        setFormValue={setFormValue}
+        register={register}
         errors={errors}
       />
       <UpdateBlurb
