@@ -1,7 +1,11 @@
 /* eslint-disable camelcase */
 import { z } from 'zod'
 
-import { TrialStatuses } from 'services/account'
+import {
+  AccountDetailsSchema,
+  TrialStatus,
+  TrialStatuses,
+} from 'services/account'
 import {
   canApplySentryUpgrade,
   findProPlans,
@@ -12,6 +16,8 @@ import {
   isSentryPlan,
   isTeamPlan,
   isTrialPlan,
+  Plan,
+  PlanName,
   Plans,
 } from 'shared/utils/billing'
 
@@ -25,12 +31,19 @@ export const UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE = `Team plan is only available 
 export function extractSeats({
   quantity,
   value,
-  activatedUserCount,
-  inactiveUserCount,
+  activatedUserCount = 0,
+  inactiveUserCount = 0,
   isSentryUpgrade,
   trialStatus,
+}: {
+  quantity: number
+  value?: PlanName
+  activatedUserCount?: number
+  inactiveUserCount?: number
+  isSentryUpgrade: boolean
+  trialStatus?: TrialStatus
 }) {
-  const totalMembers = (inactiveUserCount ?? 0) + (activatedUserCount ?? 0)
+  const totalMembers = inactiveUserCount + activatedUserCount
   const minPlansSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS_PRO
   const freePlanSeats = Math.max(minPlansSeats, totalMembers)
   const paidPlansSeats = Math.max(minPlansSeats, quantity)
@@ -46,9 +59,14 @@ export function extractSeats({
 
 export const getSchema = ({
   accountDetails,
-  minSeats,
+  minSeats = 1,
   trialStatus,
   selectedPlan,
+}: {
+  accountDetails?: z.infer<typeof AccountDetailsSchema>
+  minSeats?: number
+  trialStatus?: TrialStatus
+  selectedPlan?: Plan
 }) =>
   z.object({
     seats: z.coerce
@@ -78,7 +96,7 @@ export const getSchema = ({
           return val
         }
 
-        if (val < accountDetails?.activatedUserCount) {
+        if (val < (accountDetails?.activatedUserCount ?? 0)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: 'Must deactivate more users before downgrading plans',
@@ -99,6 +117,12 @@ export const calculatePrice = ({
   isSentryUpgrade,
   sentryPrice,
   isSelectedPlanTeam,
+}: {
+  seats: number
+  baseUnitPrice: number
+  isSentryUpgrade: boolean
+  sentryPrice: number
+  isSelectedPlanTeam: boolean
 }) => {
   let price = Math.floor(seats) * baseUnitPrice
 
@@ -112,7 +136,15 @@ export const calculatePrice = ({
   return price
 }
 
-export function shouldRenderCancelLink(cancelAtPeriodEnd, plan, trialStatus) {
+export function shouldRenderCancelLink({
+  cancelAtPeriodEnd,
+  plan,
+  trialStatus,
+}: {
+  cancelAtPeriodEnd: boolean
+  plan: Plan
+  trialStatus: TrialStatus
+}) {
   // cant cancel a free plan
   if (isFreePlan(plan?.value)) {
     return false
@@ -132,17 +164,35 @@ export function shouldRenderCancelLink(cancelAtPeriodEnd, plan, trialStatus) {
 }
 
 // Pro Plan Utils
-export const calculatePriceProPlan = ({ seats, baseUnitPrice }) => {
+export const calculatePriceProPlan = ({
+  seats,
+  baseUnitPrice = 0,
+}: {
+  seats: number
+  baseUnitPrice?: number
+}) => {
   return Math.floor(seats) * baseUnitPrice
 }
 
 // Team Plan Utils
-export const calculatePriceTeamPlan = ({ seats, baseUnitPrice }) => {
+export const calculatePriceTeamPlan = ({
+  seats,
+  baseUnitPrice = 0,
+}: {
+  seats: number
+  baseUnitPrice?: number
+}) => {
   return Math.floor(seats) * baseUnitPrice
 }
 
 // Sentry Plan Utils
-export const calculatePriceSentryPlan = ({ seats, baseUnitPrice }) => {
+export const calculatePriceSentryPlan = ({
+  seats,
+  baseUnitPrice = 0,
+}: {
+  seats: number
+  baseUnitPrice?: number
+}) => {
   let price = SENTRY_PRICE
 
   if (seats > 5) {
@@ -152,14 +202,22 @@ export const calculatePriceSentryPlan = ({ seats, baseUnitPrice }) => {
   return price
 }
 
-export const calculateSentryNonBundledCost = ({ baseUnitPrice }) =>
-  MIN_SENTRY_SEATS * baseUnitPrice * 12 - SENTRY_PRICE * 12
+export const calculateSentryNonBundledCost = ({
+  baseUnitPrice = 0,
+}: {
+  baseUnitPrice?: number
+}) => MIN_SENTRY_SEATS * baseUnitPrice * 12 - SENTRY_PRICE * 12
 
 export const getDefaultValuesUpgradeForm = ({
   accountDetails,
   plans,
   trialStatus,
   selectedPlan,
+}: {
+  accountDetails?: z.infer<typeof AccountDetailsSchema> | null
+  plans?: Plan[] | null
+  trialStatus?: TrialStatus
+  selectedPlan?: Plan | null
 }) => {
   const currentPlan = accountDetails?.plan
   const currentPlanValue = currentPlan?.value
