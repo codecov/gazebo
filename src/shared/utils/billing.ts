@@ -5,7 +5,6 @@ import isUndefined from 'lodash/isUndefined'
 import { z } from 'zod'
 
 import { AccountDetailsSchema } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 
 export const Plans = {
   USERS_FREE: 'users-free',
@@ -136,25 +135,13 @@ export const CollectionMethods = Object.freeze({
 })
 
 export function useProPlans({ plans }: { plans?: Plan[] | null }) {
-  const { enterpriseCloudPlanSupport } = useFlags({
-    enterpriseCloudPlanSupport: true,
-  })
+  const proPlanMonth = plans?.find(
+    (plan) => plan.value === Plans.USERS_PR_INAPPM
+  )
 
-  const proPlanMonth = enterpriseCloudPlanSupport
-    ? plans?.find(
-        (plan) =>
-          plan.value === Plans.USERS_PR_INAPPM ||
-          plan.value === EnterprisePlans.USERS_ENTERPRISEM
-      )
-    : plans?.find((plan) => plan.value === Plans.USERS_PR_INAPPM)
-
-  const proPlanYear = enterpriseCloudPlanSupport
-    ? plans?.find(
-        (plan) =>
-          plan.value === Plans.USERS_PR_INAPPY ||
-          plan.value === EnterprisePlans.USERS_ENTERPRISEY
-      )
-    : plans?.find((plan) => plan.value === Plans.USERS_PR_INAPPY)
+  const proPlanYear = plans?.find(
+    (plan) => plan.value === Plans.USERS_PR_INAPPY
+  )
 
   return {
     proPlanMonth,

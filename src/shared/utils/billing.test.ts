@@ -244,80 +244,37 @@ describe('useProPlans', () => {
     })
   }
 
-  describe('flag is true', () => {
-    beforeEach(() => {
-      setup(true)
-    })
+  it('does not contain enterprise plans', () => {
+    setup(false)
+    const { result } = renderHook(() => useProPlans({ plans: getPlans() }))
 
-    it('contains enterprise plans', async () => {
-      const { result } = renderHook(() => useProPlans({ plans: getPlans() }))
-
-      expect(result.current).toEqual({
-        proPlanMonth: {
-          marketingName: 'Pro Team',
-          value: Plans.USERS_PR_INAPPM,
-          billingRate: 'monthly',
-          baseUnitPrice: 12,
-          monthlyUploadLimit: null,
-          benefits: [
-            'Configureable # of users',
-            'Unlimited public repositories',
-            'Unlimited private repositories',
-            'Priorty Support',
-          ],
-        },
-        proPlanYear: {
-          marketingName: 'Pro Team',
-          value: Plans.USERS_PR_INAPPY,
-          billingRate: 'annually',
-          baseUnitPrice: 10,
-          monthlyUploadLimit: null,
-          benefits: [
-            'Configureable # of users',
-            'Unlimited public repositories',
-            'Unlimited private repositories',
-            'Priorty Support',
-          ],
-        },
-      })
-    })
-  })
-
-  describe('flag is false', () => {
-    beforeEach(() => {
-      setup(false)
-    })
-    it('does not contain enterprise plans', () => {
-      const { result } = renderHook(() => useProPlans({ plans: getPlans() }))
-
-      expect(result.current).toEqual({
-        proPlanMonth: {
-          marketingName: 'Pro Team',
-          value: Plans.USERS_PR_INAPPM,
-          billingRate: 'monthly',
-          baseUnitPrice: 12,
-          monthlyUploadLimit: null,
-          benefits: [
-            'Configureable # of users',
-            'Unlimited public repositories',
-            'Unlimited private repositories',
-            'Priorty Support',
-          ],
-        },
-        proPlanYear: {
-          marketingName: 'Pro Team',
-          value: Plans.USERS_PR_INAPPY,
-          billingRate: 'annually',
-          baseUnitPrice: 10,
-          monthlyUploadLimit: null,
-          benefits: [
-            'Configureable # of users',
-            'Unlimited public repositories',
-            'Unlimited private repositories',
-            'Priorty Support',
-          ],
-        },
-      })
+    expect(result.current).toEqual({
+      proPlanMonth: {
+        marketingName: 'Pro Team',
+        value: Plans.USERS_PR_INAPPM,
+        billingRate: 'monthly',
+        baseUnitPrice: 12,
+        monthlyUploadLimit: null,
+        benefits: [
+          'Configureable # of users',
+          'Unlimited public repositories',
+          'Unlimited private repositories',
+          'Priorty Support',
+        ],
+      },
+      proPlanYear: {
+        marketingName: 'Pro Team',
+        value: Plans.USERS_PR_INAPPY,
+        billingRate: 'annually',
+        baseUnitPrice: 10,
+        monthlyUploadLimit: null,
+        benefits: [
+          'Configureable # of users',
+          'Unlimited public repositories',
+          'Unlimited private repositories',
+          'Priorty Support',
+        ],
+      },
     })
   })
 })
