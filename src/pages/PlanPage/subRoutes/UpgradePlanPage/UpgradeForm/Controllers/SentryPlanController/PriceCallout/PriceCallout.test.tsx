@@ -13,7 +13,7 @@ import PriceCallout from './PriceCallout'
 const availablePlans = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -25,7 +25,7 @@ const availablePlans = [
   },
   {
     marketingName: 'Sentry Pro Team',
-    value: 'users-sentrym',
+    value: Plans.USERS_SENTRYM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -40,7 +40,7 @@ const availablePlans = [
   },
   {
     marketingName: 'Sentry Pro Team',
-    value: 'users-sentryy',
+    value: Plans.USERS_SENTRYY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [

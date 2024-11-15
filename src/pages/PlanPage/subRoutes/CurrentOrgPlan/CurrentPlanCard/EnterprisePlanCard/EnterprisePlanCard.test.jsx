@@ -2,11 +2,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import EnterprisePlanCard from './EnterprisePlanCard'
 
 const enterprisePlan = {
   marketingName: 'Enterprise',
-  value: 'users-enterprisey',
+  value: Plans.USERS_ENTERPRISEY,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [

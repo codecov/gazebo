@@ -4,6 +4,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import ActivationAlert from './ActivationAlert'
 
 vi.mock('./FreePlanSeatsTakenAlert', () => ({
@@ -48,7 +50,7 @@ const mockTrialData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   trialStatus: 'ONGOING',
   trialStartDate: '2023-01-01T08:55:25',
   trialEndDate: '2023-01-10T08:55:25',
@@ -61,7 +63,7 @@ const mockTrialData = {
 describe('ActivationAlert', () => {
   function setup(
     privateRepos = true,
-    value = 'users-basic',
+    value = Plans.USERS_BASIC,
     hasSeatsLeft = true
   ) {
     server.use(
@@ -81,7 +83,7 @@ describe('ActivationAlert', () => {
                 billingRate: 'monthly',
                 marketingName: 'Users Basic',
                 monthlyUploadLimit: 250,
-                value: 'users-basic',
+                value: Plans.USERS_BASIC,
               },
             },
           },

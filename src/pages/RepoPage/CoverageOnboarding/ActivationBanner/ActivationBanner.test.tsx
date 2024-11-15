@@ -48,7 +48,7 @@ const mockTrialData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   trialStatus: 'ONGOING',
   trialStartDate: '2023-01-01T08:55:25',
   trialEndDate: '2023-01-10T08:55:25',
@@ -62,7 +62,7 @@ describe('ActivationBanner', () => {
   function setup(
     privateRepos = true,
     trialStatus = 'NOT_STARTED',
-    value = 'users-basic',
+    value = Plans.USERS_BASIC,
     hasSeatsLeft = true
   ) {
     server.use(
@@ -83,7 +83,7 @@ describe('ActivationBanner', () => {
                 billingRate: 'monthly',
                 marketingName: 'Users Basic',
                 monthlyUploadLimit: 250,
-                value: 'users-basic',
+                value: Plans.USERS_BASIC,
               },
             },
           },

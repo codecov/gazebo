@@ -6,9 +6,12 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+
 import config from 'config'
 
 import { SentryBugReporter } from 'sentry'
+
+import { Plans } from 'shared/utils/billing'
 
 import DefaultOrgSelector from './DefaultOrgSelector'
 
@@ -38,7 +41,7 @@ const mockTrialData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   trialStatus: 'ONGOING',
   trialStartDate: '2023-01-01T08:55:25',
   trialEndDate: '2023-01-10T08:55:25',
@@ -72,7 +75,7 @@ const mockUserData = {
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: 'users-basic',
+      plan: Plans.USERS_BASIC,
       staff: false,
       hasYaml: false,
       bot: null,
@@ -116,7 +119,7 @@ const mockBusinessUserData = {
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: 'users-basic',
+      plan: Plans.USERS_BASIC,
       staff: false,
       hasYaml: false,
       bot: null,
@@ -177,7 +180,7 @@ describe('DefaultOrgSelector', () => {
     useUserData,
     isValidUser = true,
     trialStatus = 'NOT_STARTED',
-    value = 'users-basic',
+    value = Plans.USERS_BASIC,
     privateRepos = true,
   } = {}) {
     const mockMutationVariables = vi.fn()
@@ -218,7 +221,7 @@ describe('DefaultOrgSelector', () => {
                 billingRate: 'monthly',
                 marketingName: 'Users Basic',
                 monthlyUploadLimit: 250,
-                value: 'users-basic',
+                value: Plans.USERS_BASIC,
               },
             },
           },
@@ -822,7 +825,7 @@ describe('DefaultOrgSelector', () => {
     it('does not fire trial mutation', async () => {
       const { user, mockTrialMutationVariables } = setup({
         useUserData: mockUserData,
-        value: 'users-free',
+        value: Plans.USERS_FREE,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -1063,7 +1066,7 @@ describe('DefaultOrgSelector', () => {
             },
           },
         },
-        value: 'users-basic',
+        value: Plans.USERS_BASIC,
       })
 
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
@@ -1126,7 +1129,7 @@ describe('DefaultOrgSelector', () => {
             },
           },
         },
-        value: 'users-basic',
+        value: Plans.USERS_BASIC,
         privateRepos: false,
       })
 

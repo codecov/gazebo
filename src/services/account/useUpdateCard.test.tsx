@@ -6,6 +6,8 @@ import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock } from 'vitest'
 
+import { Plans } from 'shared/utils/billing'
+
 import { useUpdateCard } from './useUpdateCard'
 
 const mocks = vi.hoisted(() => ({
@@ -42,7 +44,7 @@ const accountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
-    value: 'users-inappm',
+    value: Plans.USERS_PR_INAPPM,
   },
   activatedUserCount: 2,
   inactiveUserCount: 1,

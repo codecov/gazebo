@@ -255,7 +255,7 @@ describe('useProPlans', () => {
       expect(result.current).toEqual({
         proPlanMonth: {
           marketingName: 'Pro Team',
-          value: 'users-pr-inappm',
+          value: Plans.USERS_PR_INAPPM,
           billingRate: 'monthly',
           baseUnitPrice: 12,
           monthlyUploadLimit: null,
@@ -268,7 +268,7 @@ describe('useProPlans', () => {
         },
         proPlanYear: {
           marketingName: 'Pro Team',
-          value: 'users-pr-inappy',
+          value: Plans.USERS_PR_INAPPY,
           billingRate: 'annually',
           baseUnitPrice: 10,
           monthlyUploadLimit: null,
@@ -293,7 +293,7 @@ describe('useProPlans', () => {
       expect(result.current).toEqual({
         proPlanMonth: {
           marketingName: 'Pro Team',
-          value: 'users-pr-inappm',
+          value: Plans.USERS_PR_INAPPM,
           billingRate: 'monthly',
           baseUnitPrice: 12,
           monthlyUploadLimit: null,
@@ -306,7 +306,7 @@ describe('useProPlans', () => {
         },
         proPlanYear: {
           marketingName: 'Pro Team',
-          value: 'users-pr-inappy',
+          value: Plans.USERS_PR_INAPPY,
           billingRate: 'annually',
           baseUnitPrice: 10,
           monthlyUploadLimit: null,
@@ -485,7 +485,7 @@ describe('findSentryPlans', () => {
 
     const expectedResult = {
       marketingName: 'Sentry Pro Team',
-      value: 'users-sentrym',
+      value: Plans.USERS_SENTRYM,
       billingRate: 'monthly',
       baseUnitPrice: 12,
       monthlyUploadLimit: null,
@@ -507,7 +507,7 @@ describe('findSentryPlans', () => {
 
     const expectedResult = {
       marketingName: 'Sentry Pro Team',
-      value: 'users-sentryy',
+      value: Plans.USERS_SENTRYY,
       billingRate: 'annually',
       baseUnitPrice: 10,
       monthlyUploadLimit: null,
@@ -531,7 +531,7 @@ describe('findProPlans', () => {
 
     const expectedResult = {
       marketingName: 'Pro Team',
-      value: 'users-pr-inappm',
+      value: Plans.USERS_PR_INAPPM,
       billingRate: 'monthly',
       baseUnitPrice: 12,
       monthlyUploadLimit: null,
@@ -552,7 +552,7 @@ describe('findProPlans', () => {
 
     const expectedResult = {
       marketingName: 'Pro Team',
-      value: 'users-pr-inappy',
+      value: Plans.USERS_PR_INAPPY,
       billingRate: 'annually',
       baseUnitPrice: 10,
       monthlyUploadLimit: null,
@@ -575,7 +575,7 @@ describe('findTeamPlans', () => {
 
     const expectedResult = {
       marketingName: 'Team',
-      value: 'users-teamm',
+      value: Plans.USERS_TEAMM,
       billingRate: 'monthly',
       baseUnitPrice: 6,
       monthlyUploadLimit: null,
@@ -597,7 +597,7 @@ describe('findTeamPlans', () => {
 
     const expectedResult = {
       marketingName: 'Team',
-      value: 'users-teamy',
+      value: Plans.USERS_TEAMY,
       billingRate: 'yearly',
       baseUnitPrice: 5,
       monthlyUploadLimit: null,
@@ -618,7 +618,7 @@ describe('canApplySentryUpgrade', () => {
   it('returns true when list contains monthly plan', () => {
     const result = canApplySentryUpgrade({
       plan: Plans.USERS_PR_INAPPM,
-      plans: [{ value: 'users-sentrym' }] as Plan[],
+      plans: [{ value: Plans.USERS_SENTRYM }] as Plan[],
     })
 
     expect(result).toBeTruthy()
@@ -627,7 +627,7 @@ describe('canApplySentryUpgrade', () => {
   it('returns true when list contains annual plan', () => {
     const result = canApplySentryUpgrade({
       plan: Plans.USERS_PR_INAPPM,
-      plans: [{ value: 'users-sentryy' }] as Plan[],
+      plans: [{ value: Plans.USERS_SENTRYY }] as Plan[],
     })
 
     expect(result).toBeTruthy()
@@ -636,7 +636,7 @@ describe('canApplySentryUpgrade', () => {
   it('returns false when plans are not in list', () => {
     const result = canApplySentryUpgrade({
       plan: Plans.USERS_PR_INAPPM,
-      plans: [{ value: 'users-free' }] as Plan[],
+      plans: [{ value: Plans.USERS_FREE }] as Plan[],
     })
 
     expect(result).toBeFalsy()
@@ -645,7 +645,7 @@ describe('canApplySentryUpgrade', () => {
   it('returns false when user has enterprise plan', () => {
     const result = canApplySentryUpgrade({
       plan: Plans.USERS_ENTERPRISEM,
-      plans: [{ value: 'users-sentryy' }] as Plan[],
+      plans: [{ value: Plans.USERS_SENTRYY }] as Plan[],
     })
 
     expect(result).toBeFalsy()

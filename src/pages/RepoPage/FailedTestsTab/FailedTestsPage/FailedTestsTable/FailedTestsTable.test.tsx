@@ -11,6 +11,8 @@ import { setupServer } from 'msw/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import FailedTestsTable from './FailedTestsTable'
 
 import {
@@ -132,7 +134,7 @@ interface SetupArgs {
 describe('FailedTestsTable', () => {
   function setup({
     noEntries = false,
-    planValue = 'users-enterprisem',
+    planValue = Plans.USERS_ENTERPRISEM,
     isPrivate = false,
   }: SetupArgs) {
     const queryClient = new QueryClient({
@@ -215,7 +217,7 @@ describe('FailedTestsTable', () => {
       describe('when plan is team plan', () => {
         it('does not render flake rate column', async () => {
           const { queryClient } = setup({
-            planValue: 'users-teamm',
+            planValue: Plans.USERS_TEAMM,
             isPrivate: true,
           })
           render(<FailedTestsTable />, {
@@ -232,7 +234,7 @@ describe('FailedTestsTable', () => {
       describe('when plan is free', () => {
         it('does not render flake rate column', async () => {
           const { queryClient } = setup({
-            planValue: 'users-free',
+            planValue: Plans.USERS_FREE,
             isPrivate: true,
           })
           render(<FailedTestsTable />, {

@@ -21,7 +21,7 @@ const teamPlanMonth = {
   billingRate: 'monthly',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamm',
+  value: Plans.USERS_TEAMM,
 }
 
 const teamPlanYear = {
@@ -30,13 +30,13 @@ const teamPlanYear = {
   billingRate: 'annually',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamy',
+  value: Plans.USERS_TEAMY,
 }
 
 const allPlans = [
   {
     marketingName: 'Basic',
-    value: 'users-free',
+    value: Plans.USERS_FREE,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -48,7 +48,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro',
-    value: 'users-pr-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -61,7 +61,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro',
-    value: 'users-pr-inappy',
+    value: Plans.USERS_PR_INAPPY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [

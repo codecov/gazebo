@@ -8,6 +8,7 @@ import { z } from 'zod'
 
 import { PlanUpdatedPlanNotificationContext } from 'pages/PlanPage/context'
 import { AccountDetailsSchema } from 'services/account'
+import { Plans } from 'shared/utils/billing'
 import { AlertOptions, type AlertOptionsType } from 'ui/Alert'
 
 import CurrentOrgPlan from './CurrentOrgPlan'
@@ -30,7 +31,7 @@ const mockedAccountDetails = {
   planProvider: 'github',
   rootOrganization: {},
   plan: {
-    value: 'users-free',
+    value: Plans.USERS_FREE,
   },
   usesInvoice: false,
 } as z.infer<typeof AccountDetailsSchema>
@@ -173,7 +174,7 @@ describe('CurrentOrgPlan', () => {
             billingRate: 'monthly',
             marketingName: 'Pro',
             quantity: 39,
-            value: 'users-pr-inappm',
+            value: Plans.USERS_PR_INAPPM,
           },
         } as z.infer<typeof AccountDetailsSchema>,
       })
@@ -191,7 +192,7 @@ describe('CurrentOrgPlan', () => {
             billingRate: 'monthly',
             marketingName: 'Pro',
             quantity: 39,
-            value: 'users-pr-inappm',
+            value: Plans.USERS_PR_INAPPM,
           },
           scheduleDetail: {
             scheduledPhase: {
@@ -218,7 +219,7 @@ describe('CurrentOrgPlan', () => {
             billingRate: 'monthly',
             marketingName: 'Pro',
             quantity: 39,
-            value: 'users-pr-inappm',
+            value: Plans.USERS_PR_INAPPM,
           },
         } as z.infer<typeof AccountDetailsSchema>,
       })
@@ -241,7 +242,7 @@ describe('CurrentOrgPlan', () => {
             billingRate: 'monthly',
             marketingName: 'Pro',
             quantity: 39,
-            value: 'users-pr-inappm',
+            value: Plans.USERS_PR_INAPPM,
           },
           subscriptionDetail: {
             cancelAtPeriodEnd: true,
@@ -266,7 +267,7 @@ describe('CurrentOrgPlan', () => {
             planProvider: 'gitlab',
             rootOrganization: null,
             plan: {
-              value: 'users-free',
+              value: Plans.USERS_FREE,
               baseUnitPrice: 12,
               benefits: ['a', 'b'],
               billingRate: '1',
@@ -302,7 +303,7 @@ describe('CurrentOrgPlan', () => {
             planProvider: 'github',
             rootOrganization: {},
             plan: {
-              value: 'users-free',
+              value: Plans.USERS_FREE,
               baseUnitPrice: 12,
               benefits: ['a', 'b'],
               billingRate: '1',

@@ -9,6 +9,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import config from 'config'
 
 import { TrialStatuses } from 'services/account'
+import { Plans } from 'shared/utils/billing'
 
 import TrialBanner from './TrialBanner'
 
@@ -16,7 +17,7 @@ vi.mock('config')
 
 const proPlanMonth = {
   marketingName: 'Pro Team',
-  value: 'users-pr-inappm',
+  value: Plans.USERS_PR_INAPPM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -33,7 +34,7 @@ const proPlanMonth = {
 
 const trialPlan = {
   marketingName: 'Trial Team',
-  value: 'users-trial',
+  value: Plans.USERS_PR_INAPPM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -50,7 +51,7 @@ const trialPlan = {
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [

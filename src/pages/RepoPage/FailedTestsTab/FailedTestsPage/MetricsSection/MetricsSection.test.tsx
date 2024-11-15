@@ -6,12 +6,14 @@ import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import MetricsSection, { historicalTrendToCopy } from './MetricsSection'
 
 import { TestResultsFilterParameter } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
 
 const mockAggResponse = (
-  planValue = 'users-enterprisem',
+  planValue = Plans.USERS_ENTERPRISEM,
   isPrivate = false
 ) => ({
   owner: {

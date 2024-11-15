@@ -7,6 +7,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { Plans } from 'shared/utils/billing'
+
+
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
 
 vi.mock('config')
@@ -17,7 +20,7 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: 'free-plan',
+  value: Plans.USERS_BASIC,
   trialStatus: 'NOT_STARTED',
   trialStartDate: '',
   trialEndDate: '',
@@ -51,7 +54,7 @@ const mockCurrentUser = (username) => ({
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: 'users-basic',
+      plan: Plans.USERS_BASIC,
       staff: false,
       hasYaml: false,
       bot: null,
@@ -117,14 +120,14 @@ describe('AccountSettingsSideMenu', () => {
       owner = 'codecov',
       isSelfHosted = false,
       hideAccessTab = false,
-      planValue = 'free-plan',
+      planValue = Plans.USERS_BASIC,
     } = {
       isAdmin: false,
       username: 'codecov',
       isSelfHosted: false,
       owner: 'codecov',
       hideAccessTab: false,
-      planValue: 'free-plan',
+      planValue: Plans.USERS_BASIC,
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
@@ -288,7 +291,7 @@ describe('AccountSettingsSideMenu', () => {
 
         describe("okta access is displayed according to the user's plan", () => {
           it('displays okta access tab if user is on enterprise', async () => {
-            setup({ isAdmin: true, planValue: 'users-enterprisem' })
+            setup({ isAdmin: true, planValue: Plans.USERS_ENTERPRISEM })
 
             render(<AccountSettingsSideMenu />, {
               wrapper: wrapper(),
@@ -339,7 +342,7 @@ describe('AccountSettingsSideMenu', () => {
             setup({
               isAdmin: true,
               username: 'cool-new-user',
-              planValue: 'users-enterprisem',
+              planValue: Plans.USERS_ENTERPRISEM,
             })
 
             render(<AccountSettingsSideMenu />, {
@@ -411,7 +414,7 @@ describe('AccountSettingsSideMenu', () => {
 
       describe("okta access is displayed according to the user's plan", () => {
         it('displays okta access tab if user is on enterprise', async () => {
-          setup({ planValue: 'users-enterprisem' })
+          setup({ planValue: Plans.USERS_ENTERPRISEM })
 
           render(<AccountSettingsSideMenu />, {
             wrapper: wrapper(),

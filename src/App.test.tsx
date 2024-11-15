@@ -9,6 +9,7 @@ import { type Mock, vi } from 'vitest'
 import config from 'config'
 
 import { useLocationParams } from 'services/navigation'
+import { Plans } from 'shared/utils/billing'
 
 import App from './App'
 
@@ -85,7 +86,7 @@ const user = {
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: 'users-basic',
+      plan: Plans.USERS_BASIC,
       staff: false,
       hasYaml: false,
       bot: null,

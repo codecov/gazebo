@@ -14,7 +14,7 @@ import BillingOptions from './BillingOptions'
 const availablePlans = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -30,7 +30,7 @@ const availablePlans = [
     billingRate: 'monthly',
     marketingName: 'Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamm',
+    value: Plans.USERS_TEAMM,
   },
   {
     baseUnitPrice: 4,
@@ -38,7 +38,7 @@ const availablePlans = [
     billingRate: 'annually',
     marketingName: 'Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamy',
+    value: Plans.USERS_TEAMY,
   },
 ]
 
@@ -48,7 +48,7 @@ const mockPlanDataResponse = {
   billingRate: 'monthly',
   marketingName: 'Team',
   monthlyUploadLimit: 250,
-  value: 'test-plan',
+  value: Plans.USERS_TEAMM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',

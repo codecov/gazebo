@@ -6,6 +6,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
+import { Plans } from 'shared/utils/billing'
 
 import ActionsBilling from './ActionsBilling'
 
@@ -24,7 +25,7 @@ vi.mock('shared/useRedirect', async () => {
 const allPlans = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -36,7 +37,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -49,7 +50,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappy',
+    value: Plans.USERS_PR_INAPPY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [
@@ -62,7 +63,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisem',
+    value: Plans.USERS_ENTERPRISEM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -75,7 +76,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisey',
+    value: Plans.USERS_ENTERPRISEY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [
@@ -94,7 +95,7 @@ const sentryPlans = [
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     monthlyUploadLimit: null,
-    value: 'users-sentrym',
+    value: Plans.USERS_SENTRYM,
     billingRate: 'monthly',
   },
 ]
@@ -105,7 +106,7 @@ const mockedFreeAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
@@ -117,7 +118,7 @@ const mockedProAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
@@ -129,7 +130,7 @@ const sentryMockedAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: 'users-sentrym',
+    value: Plans.USERS_SENTRYM,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
@@ -141,7 +142,7 @@ const mockTrialAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: 'users-trial',
+    value: Plans.USERS_TRIAL,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
@@ -154,7 +155,7 @@ const mockTrialData = {
     billingRate: 'monthly',
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
     trialStatus: 'ONGOING',
     trialStartDate: '2023-01-01T08:55:25',
     trialEndDate: '2023-01-10T08:55:25',
