@@ -1,5 +1,7 @@
 import { renderHook } from '@testing-library/react'
 
+import { Plans } from 'shared/utils/billing'
+
 import { useProPlanMonth } from './useProPlanMonth'
 
 const mocks = vi.hoisted(() => ({
@@ -26,7 +28,7 @@ describe('useProPlanMonth', () => {
       const plans = [
         {
           marketingName: 'Basic',
-          value: 'users-free',
+          value: Plans.USERS_FREE,
           billingRate: null,
           baseUnitPrice: 0,
           benefits: [
@@ -37,7 +39,7 @@ describe('useProPlanMonth', () => {
         },
         {
           marketingName: 'Pro Team',
-          value: 'users-pr-inappm',
+          value: Plans.USERS_PR_INAPPM,
           billingRate: 'monthly',
           baseUnitPrice: 12,
           benefits: [
@@ -55,7 +57,7 @@ describe('useProPlanMonth', () => {
       expect(result.current).toEqual({
         proPlanMonth: {
           marketingName: 'Pro Team',
-          value: 'users-pr-inappm',
+          value: Plans.USERS_PR_INAPPM,
           billingRate: 'monthly',
           baseUnitPrice: 12,
           benefits: [
@@ -71,7 +73,7 @@ describe('useProPlanMonth', () => {
       const plans = [
         {
           marketingName: 'Basic',
-          value: 'users-free',
+          value: Plans.USERS_FREE,
           billingRate: null,
           baseUnitPrice: 0,
           benefits: [
@@ -82,7 +84,7 @@ describe('useProPlanMonth', () => {
         },
         {
           marketingName: 'Pro Team',
-          value: 'users-enterprisem',
+          value: Plans.USERS_ENTERPRISEM,
           billingRate: 'monthly',
           baseUnitPrice: 12,
           benefits: [
@@ -101,7 +103,7 @@ describe('useProPlanMonth', () => {
       expect(result.current).toEqual({
         proPlanMonth: {
           marketingName: 'Pro Team',
-          value: 'users-enterprisem',
+          value: Plans.USERS_ENTERPRISEM,
           billingRate: 'monthly',
           baseUnitPrice: 12,
           benefits: [
@@ -128,7 +130,7 @@ describe('useProPlanMonth', () => {
       expect(result.current).toEqual({
         proPlanMonth: {
           marketingName: 'Pro Team',
-          value: 'users-pr-inappm',
+          value: Plans.USERS_PR_INAPPM,
           billingRate: 'monthly',
           baseUnitPrice: 12,
           benefits: [
@@ -147,7 +149,7 @@ function getPlans() {
   return [
     {
       marketingName: 'Basic',
-      value: 'users-free',
+      value: Plans.USERS_FREE,
       billingRate: null,
       baseUnitPrice: 0,
       benefits: [
@@ -158,7 +160,7 @@ function getPlans() {
     },
     {
       marketingName: 'Pro Team',
-      value: 'users-pr-inappm',
+      value: Plans.USERS_PR_INAPPM,
       billingRate: 'monthly',
       baseUnitPrice: 12,
       benefits: [
@@ -170,7 +172,7 @@ function getPlans() {
     },
     {
       marketingName: 'Pro Team',
-      value: 'users-pr-inappy',
+      value: Plans.USERS_PR_INAPPY,
       billingRate: 'annually',
       baseUnitPrice: 10,
       benefits: [
@@ -182,7 +184,7 @@ function getPlans() {
     },
     {
       marketingName: 'Pro Team',
-      value: 'users-enterprisem',
+      value: Plans.USERS_ENTERPRISE,
       billingRate: 'monthly',
       baseUnitPrice: 12,
       benefits: [
@@ -194,7 +196,7 @@ function getPlans() {
     },
     {
       marketingName: 'Pro Team',
-      value: 'users-enterprisey',
+      value: Plans.USERS_ENTERPRISEY,
       billingRate: 'annually',
       baseUnitPrice: 10,
       benefits: [

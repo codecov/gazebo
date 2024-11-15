@@ -186,7 +186,6 @@ export type PullSchemaType = z.infer<typeof PullSchema>
 
 const RepositorySchema = z.object({
   defaultBranch: z.string().nullable(),
-  private: z.boolean(),
   __typename: z.literal('Repository'),
   pull: PullSchema.nullable(),
 })
@@ -194,7 +193,6 @@ const RepositorySchema = z.object({
 const RequestSchema = z.object({
   owner: z
     .object({
-      isCurrentUserPartOfOrg: z.boolean(),
       repository: z.discriminatedUnion('__typename', [
         RepositorySchema,
         RepoNotFoundErrorSchema,
@@ -216,7 +214,6 @@ const query = `query Pull(
       __typename
       ... on Repository {
         defaultBranch
-      	private
         pull(id: $pullId) {
           behindBy
           behindByCommit

@@ -7,6 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import config from 'config'
 
 import { User } from 'services/user'
+import { Plans } from 'shared/utils/billing'
 
 import { useUserAccessGate } from './useUserAccessGate'
 
@@ -73,7 +74,7 @@ const mockTrackingMetadata = {
   service: 'github',
   ownerid: 123,
   serviceId: '123',
-  plan: 'users-basic',
+  plan: Plans.USERS_BASIC,
   staff: false,
   hasYaml: false,
   bot: null,

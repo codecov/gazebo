@@ -1,4 +1,5 @@
 import { useFlags } from 'shared/featureFlags'
+import { Plans } from 'shared/utils/billing'
 
 export function useProPlanMonth({ plans }) {
   const { enterpriseCloudPlanSupport } = useFlags({
@@ -8,9 +9,10 @@ export function useProPlanMonth({ plans }) {
   const proPlanMonth = enterpriseCloudPlanSupport
     ? plans.find(
         (plan) =>
-          plan.value === 'users-pr-inappm' || plan.value === 'users-enterprisem'
+          plan.value === Plans.USERS_PR_INAPPM ||
+          plan.value === Plans.USERS_ENTERPRISEM
       )
-    : plans.find((plan) => plan.value === 'users-pr-inappm')
+    : plans.find((plan) => plan.value === Plans.USERS_PR_INAPPM)
 
   return {
     proPlanMonth,

@@ -3,8 +3,6 @@ import config from 'config'
 import {
   getProviderCommitURL,
   getProviderPullURL,
-  providerFeedback,
-  providerImage,
   providerToInternalProvider,
   providerToName,
 } from './provider'
@@ -62,6 +60,7 @@ describe('providerToName', () => {
 
   describe('when called with BitBucket', () => {
     it('returns BitBucket', () => {
+      // @ts-expect-error
       expect(providerToName('BitBucket')).toBe('BitBucket')
     })
   })
@@ -85,88 +84,10 @@ describe('providerToName', () => {
   })
 })
 
-describe('providerImage', () => {
-  describe('when called for Github', () => {
-    it('returns correct logo url', () => {
-      expect(providerImage('Github')).toMatch(/github-icon.svg/)
-    })
-  })
-  describe('when called for Gitlab', () => {
-    it('returns correct logo url', () => {
-      expect(providerImage('Gitlab')).toMatch(/gitlab-icon.svg/)
-    })
-  })
-  describe('when called for BitBucket', () => {
-    it('returns correct logo url', () => {
-      expect(providerImage('BitBucket')).toMatch(/bitbucket-icon.svg/)
-    })
-  })
-  describe('when called for Github Enterprise', () => {
-    it('returns correct logo url', () => {
-      expect(providerImage('github_enterprise')).toMatch(/github-icon.svg/)
-    })
-  })
-  describe('when called for Gitlab Enterprise', () => {
-    it('returns correct logo url', () => {
-      expect(providerImage('gitlab_enterprise')).toMatch(/gitlab-icon.svg/)
-    })
-  })
-  describe('when called for BitBucket Server', () => {
-    it('returns correct logo url', () => {
-      expect(providerImage('bitbucket_server')).toMatch(/bitbucket-icon.svg/)
-    })
-  })
-})
-
-describe('providerFeedback', () => {
-  describe('when called for Github', () => {
-    it('returns correct url', () => {
-      expect(providerFeedback('Github')).toEqual(
-        'https://github.com/codecov/Codecov-user-feedback/issues/1'
-      )
-    })
-  })
-  describe('when called for Gitlab', () => {
-    it('returns correct url', () => {
-      expect(providerFeedback('Gitlab')).toEqual(
-        'https://gitlab.com/codecov-open-source/codecov-user-feedback/-/issues/1'
-      )
-    })
-  })
-  describe('when called for BitBucket', () => {
-    it('returns correct url', () => {
-      expect(providerFeedback('BitBucket')).toEqual(
-        'https://bitbucket.org/kylemann/codecov/issues/1/wed-love-your-feedback'
-      )
-    })
-  })
-  describe('when called for Github Enterprise', () => {
-    it('returns correct url', () => {
-      expect(providerFeedback('github_enterprise')).toEqual(
-        'https://github.com/codecov/Codecov-user-feedback/issues/1'
-      )
-    })
-  })
-  describe('when called for Gitlab Enterprise', () => {
-    it('returns correct url', () => {
-      expect(providerFeedback('gitlab_enterprise')).toEqual(
-        'https://gitlab.com/codecov-open-source/codecov-user-feedback/-/issues/1'
-      )
-    })
-  })
-  describe('when called for BitBucket Server', () => {
-    it('returns correct url', () => {
-      expect(providerFeedback('bitbucket_server')).toEqual(
-        'https://bitbucket.org/kylemann/codecov/issues/1/wed-love-your-feedback'
-      )
-    })
-  })
-})
-
 const repo = 'python'
 const owner = 'codecov'
 const commit = '12de'
-const pullId = 'aebf'
+const pullId = 12
 
 describe('getProviderCommitURL', () => {
   it('return gitlab commit URL', () => {
@@ -210,38 +131,38 @@ describe('getProviderCommitURL', () => {
 describe('getProviderPullURL', () => {
   it('return gitlab PR URL', () => {
     expect(getProviderPullURL({ provider: 'gl', owner, repo, pullId })).toBe(
-      'https://gitlab.com/codecov/python/-/merge_requests/aebf'
+      'https://gitlab.com/codecov/python/-/merge_requests/12'
     )
   })
   it('return github PR URL', () => {
     expect(getProviderPullURL({ provider: 'gh', owner, repo, pullId })).toBe(
-      'https://github.com/codecov/python/pull/aebf'
+      'https://github.com/codecov/python/pull/12'
     )
   })
   it('return bb PR URL', () => {
     expect(getProviderPullURL({ provider: 'bb', owner, repo, pullId })).toBe(
-      'https://bitbucket.org/codecov/python/pull-requests/aebf'
+      'https://bitbucket.org/codecov/python/pull-requests/12'
     )
   })
   it('return ghe PR URL', () => {
     config.GHE_URL = 'https://github.mycompany.org'
 
     expect(getProviderPullURL({ provider: 'ghe', owner, repo, pullId })).toBe(
-      'https://github.mycompany.org/codecov/python/pull/aebf'
+      'https://github.mycompany.org/codecov/python/pull/12'
     )
   })
   it('return gle PR URL', () => {
     config.GLE_URL = 'https://gitlab.mycompany.org'
 
     expect(getProviderPullURL({ provider: 'gle', owner, repo, pullId })).toBe(
-      'https://gitlab.mycompany.org/codecov/python/-/merge_requests/aebf'
+      'https://gitlab.mycompany.org/codecov/python/-/merge_requests/12'
     )
   })
   it('return bbs PR URL', () => {
     config.BBS_URL = 'https://bitbucket.mycompany.org'
 
     expect(getProviderPullURL({ provider: 'bbs', owner, repo, pullId })).toBe(
-      'https://bitbucket.mycompany.org/codecov/python/pull-requests/aebf'
+      'https://bitbucket.mycompany.org/codecov/python/pull-requests/12'
     )
   })
 })
@@ -297,6 +218,7 @@ describe('providerToInternalProvider', () => {
 
   describe('when called with BitBucket', () => {
     it('returns bitbucket', () => {
+      // @ts-expect-error
       expect(providerToInternalProvider('BitBucket')).toBe('bitbucket')
     })
   })

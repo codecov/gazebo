@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import UpgradeDetails from './UpgradeDetails'
 
 vi.mock('./SentryPlanDetails', () => ({
@@ -16,7 +18,7 @@ vi.mock('./TeamPlanDetails', () => ({
 
 const proPlanYear = {
   marketingName: 'Pro',
-  value: 'users-pr-inappy',
+  value: Plans.USERS_PR_INAPPY,
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
@@ -30,7 +32,7 @@ const proPlanYear = {
 
 const proPlanMonth = {
   marketingName: 'Pro',
-  value: 'users-pr-inappm',
+  value: Plans.USERS_PR_INAPPM,
   billingRate: 'monthly',
   baseUnitPrice: 10,
   benefits: [
@@ -45,7 +47,7 @@ const proPlanMonth = {
 const sentryPlanYear = {
   marketingName: 'Sentry Pro',
   baseUnitPrice: 10,
-  value: 'users-sentryy',
+  value: Plans.USERS_SENTRYY,
   billingRate: 'annually',
   benefits: [
     'Includes 5 seats',
@@ -59,7 +61,7 @@ const sentryPlanYear = {
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro',
   baseUnitPrice: 10,
-  value: 'users-sentrym',
+  value: Plans.USERS_SENTRYM,
   billingRate: 'monthly',
   benefits: [
     'Includes 5 seats',
@@ -76,7 +78,7 @@ const teamPlanYear = {
   billingRate: 'annually',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamy',
+  value: Plans.USERS_TEAMY,
 }
 
 const teamPlanMonth = {
@@ -85,7 +87,7 @@ const teamPlanMonth = {
   billingRate: 'monthly',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamm',
+  value: Plans.USERS_TEAMM,
 }
 
 type WrapperClosure = (
