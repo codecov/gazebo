@@ -157,9 +157,12 @@ beforeAll(() => {
 
 beforeEach(() => {
   config.IS_SELF_HOSTED = false
+  mockedUseLocationParams.mockReturnValue({ params: {} })
+})
+
+afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
-  mockedUseLocationParams.mockReturnValue({ params: {} })
 })
 
 afterAll(() => {
