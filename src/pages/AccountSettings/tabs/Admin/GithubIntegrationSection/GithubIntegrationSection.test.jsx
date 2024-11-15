@@ -56,7 +56,7 @@ describe('GithubIntegrationSection', () => {
       http.get(`/internal/gh/codecov/account-details/`, (info) => {
         return HttpResponse.json({
           plan: {
-            marketingName: 'users-basic',
+            marketingName: Plans.USERS_BASIC,
             baseUnitPrice: 12,
             benefits: ['Configurable # of users', 'Unlimited repos'],
             quantity: 5,

@@ -9,6 +9,7 @@ import { type Mock } from 'vitest'
 import config from 'config'
 
 import { useImage } from 'services/image'
+import { Plans } from 'shared/utils/billing'
 
 import UserDropdown from './UserDropdown'
 
@@ -36,7 +37,7 @@ const mockUser = {
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: 'users-basic',
+      plan: Plans.USERS_BASIC,
       staff: false,
       hasYaml: false,
       bot: null,
