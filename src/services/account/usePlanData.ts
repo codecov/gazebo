@@ -11,6 +11,8 @@ export const TrialStatuses = {
   CANNOT_TRIAL: 'CANNOT_TRIAL',
 } as const
 
+export type TrialStatus = (typeof TrialStatuses)[keyof typeof TrialStatuses]
+
 const PlanSchema = z.object({
   baseUnitPrice: z.number(),
   benefits: z.array(z.string()),
