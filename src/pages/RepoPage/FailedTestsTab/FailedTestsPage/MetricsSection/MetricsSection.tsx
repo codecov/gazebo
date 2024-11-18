@@ -276,7 +276,7 @@ const TotalFailuresCard = ({
         ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
-        The number of test failures across all branches.
+        The number of test failures on your default branch.
       </MetricCard.Description>
     </MetricCard>
   )

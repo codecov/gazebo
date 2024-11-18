@@ -316,7 +316,7 @@ describe('MetricsSection', () => {
         const title = await screen.findByText('Cumulative Failures')
         const context = await screen.findByText(1)
         const description = await screen.findByText(
-          'The number of test failures across all branches.'
+          'The number of test failures on your default branch.'
         )
 
         expect(title).toBeInTheDocument()
