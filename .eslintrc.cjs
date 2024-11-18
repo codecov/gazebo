@@ -368,9 +368,7 @@ module.exports = {
     // http://eslint.org/docs/rules/
     'array-callback-return': 'warn',
     'default-case': ['warn', { commentPattern: '^no default$' }],
-    'dot-location': ['warn', 'property'],
     eqeqeq: ['warn', 'smart'],
-    'new-parens': 'warn',
     'no-array-constructor': 'warn',
     'no-caller': 'warn',
     'no-cond-assign': ['warn', 'except-parens'],
@@ -397,23 +395,11 @@ module.exports = {
     'no-labels': ['warn', { allowLoop: true, allowSwitch: false }],
     'no-lone-blocks': 'warn',
     'no-loop-func': 'warn',
-    'no-mixed-operators': [
-      'warn',
-      {
-        groups: [
-          ['&', '|', '^', '~', '<<', '>>', '>>>'],
-          ['==', '!=', '===', '!==', '>', '>=', '<', '<='],
-          ['&&', '||'],
-          ['in', 'instanceof'],
-        ],
-        allowSamePrecedence: false,
-      },
-    ],
     'no-multi-str': 'warn',
     'no-global-assign': 'warn',
     'no-unsafe-negation': 'warn',
     'no-new-func': 'warn',
-    'no-new-object': 'warn',
+    'no-object-constructor': 'warn',
     'no-new-symbol': 'warn',
     'no-new-wrappers': 'warn',
     'no-obj-calls': 'warn',
@@ -465,10 +451,7 @@ module.exports = {
       },
     ],
     'no-with': 'warn',
-    'no-whitespace-before-property': 'warn',
-    'react-hooks/exhaustive-deps': 'warn',
     'require-yield': 'warn',
-    'rest-spread-spacing': ['warn', 'never'],
     strict: ['warn', 'never'],
     'unicode-bom': ['warn', 'never'],
     'use-isnan': 'warn',
@@ -498,20 +481,8 @@ module.exports = {
 
     // https://github.com/yannickcr/eslint-plugin-react/tree/master/docs/rules
     'react/forbid-foreign-prop-types': ['warn', { allowInPropTypes: true }],
-    'react/jsx-no-comment-textnodes': 'warn',
-    'react/jsx-no-duplicate-props': 'warn',
-    'react/jsx-no-target-blank': 'warn',
-    'react/jsx-no-undef': 'error',
     'react/jsx-pascal-case': ['warn', { allowAllCaps: true, ignore: [] }],
-    'react/no-danger-with-children': 'warn',
-    // Disabled because of undesirable warnings
-    // See https://github.com/facebook/create-react-app/issues/5204 for
-    // blockers until its re-enabled
-    // 'react/no-deprecated': 'warn',
-    'react/no-direct-mutation-state': 'warn',
-    'react/no-is-mounted': 'warn',
     'react/no-typos': 'error',
-    'react/require-render-return': 'error',
     'react/style-prop-object': 'warn',
 
     // https://github.com/evcohen/eslint-plugin-jsx-a11y/tree/master/docs/rules
@@ -538,5 +509,6 @@ module.exports = {
 
     // https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks
     'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
   },
 }
