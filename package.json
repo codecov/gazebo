@@ -101,7 +101,6 @@
     "@storybook/builder-vite": "^8.3.4",
     "@storybook/manager-api": "^8.3.4",
     "@storybook/node-logger": "^8.3.4",
-    "@storybook/preset-create-react-app": "^8.3.4",
     "@storybook/react": "^8.3.4",
     "@storybook/react-vite": "^8.3.4",
     "@storybook/theming": "^8.3.4",
