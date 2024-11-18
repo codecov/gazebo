@@ -414,7 +414,7 @@ function Step3({
           </CodeSnippet>
         </Card.Content>
       </Card>
-      <ExpandableSection className="-mt-px" defaultOpen>
+      <ExpandableSection className="-mt-px">
         <ExpandableSection.Trigger>
           <p className="font-normal">
             Your final GitHub Actions workflow for a project using{' '}
