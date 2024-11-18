@@ -7,13 +7,13 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import { Plans } from 'shared/utils/billing'
+import { PlanName, Plans } from 'shared/utils/billing'
 
 import PlanTypeOptions from './PlanTypeOptions'
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -26,7 +26,7 @@ const basicPlan = {
 
 const proPlanMonth = {
   marketingName: 'Pro Team',
-  value: 'users-pr-inappm',
+  value: Plans.USERS_PR_INAPPM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -40,7 +40,7 @@ const proPlanMonth = {
 
 const proPlanYear = {
   marketingName: 'Pro Team',
-  value: 'users-pr-inappy',
+  value: Plans.USERS_PR_INAPPY,
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
@@ -54,7 +54,7 @@ const proPlanYear = {
 
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro Team',
-  value: 'users-sentrym',
+  value: Plans.USERS_SENTRYM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -68,7 +68,7 @@ const sentryPlanMonth = {
 
 const sentryPlanYear = {
   marketingName: 'Sentry Pro Team',
-  value: 'users-sentryy',
+  value: Plans.USERS_SENTRYY,
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
@@ -86,7 +86,7 @@ const teamPlanMonth = {
   billingRate: 'monthly',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamm',
+  value: Plans.USERS_TEAMM,
 }
 
 const teamPlanYear = {
@@ -95,12 +95,12 @@ const teamPlanYear = {
   billingRate: 'annually',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamy',
+  value: Plans.USERS_TEAMY,
 }
 
 const trialPlan = {
   marketingName: 'Pro Trial Team',
-  value: 'users-trial',
+  value: Plans.USERS_TRIAL,
   billingRate: null,
   baseUnitPrice: 12,
   benefits: ['Configurable # of users', 'Unlimited repos'],
@@ -182,7 +182,7 @@ const mockAccountDetailsTrial = {
 }
 
 type SetupArgs = {
-  planValue: string
+  planValue: PlanName
   hasSentryPlans: boolean
   hasTeamPlans: boolean
 }

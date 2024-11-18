@@ -8,6 +8,7 @@ import {
   formatNumberToUSD,
   getNextBillingDate,
   isAnnualPlan,
+  PlanName,
   Plans,
 } from 'shared/utils/billing'
 import {
@@ -16,11 +17,10 @@ import {
 } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
-import { NewPlanType } from '../../../constants'
 import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
-  newPlan: NewPlanType
+  newPlan?: PlanName
   seats: number
   setFormValue: UseFormSetValue<UpgradeFormFields>
 }

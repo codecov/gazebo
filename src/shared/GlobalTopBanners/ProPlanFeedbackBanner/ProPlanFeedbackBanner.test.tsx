@@ -8,6 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
 import { TierNames } from 'services/tier'
+import { Plans } from 'shared/utils/billing'
 
 import ProPlanFeedbackBanner from './ProPlanFeedbackBanner'
 
@@ -27,7 +28,7 @@ const mockTrialData = {
     billingRate: 'monthly',
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
     trialStatus: TrialStatuses.EXPIRED,
     trialStartDate: '2023-01-01T08:55:25',
     trialEndDate: '2023-01-10T08:55:25',
@@ -42,7 +43,7 @@ const mockTrialData = {
     billingRate: 'monthly',
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
   },
 }
 

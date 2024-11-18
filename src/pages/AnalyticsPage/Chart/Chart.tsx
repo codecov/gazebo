@@ -56,7 +56,7 @@ function Chart({ startDate, endDate, repositories }: ChartProps) {
     )
   }
 
-  if (coverage.length < 2) {
+  if (coverage.length < 1) {
     return (
       <div className="flex max-h-[260px] min-h-[200px] w-full items-center justify-center">
         <p>Not enough coverage data to display chart.</p>

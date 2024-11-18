@@ -6,6 +6,7 @@ import {
 } from 'services/codecovEventMetrics'
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
+import { Provider } from 'shared/api/helpers'
 import { useFlags } from 'shared/featureFlags'
 import { providerToInternalProvider } from 'shared/utils/provider'
 import A from 'ui/A'
@@ -25,7 +26,7 @@ workflows:
 `
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
   repo: string
 }
@@ -51,7 +52,7 @@ function CircleCI() {
       <Step1
         tokenCopy={tokenCopy}
         uploadToken={uploadToken}
-        providerName={providerName}
+        providerName={providerName!}
       />
       <Step2 defaultBranch={data?.repository?.defaultBranch ?? ''} />
       <Step3 />

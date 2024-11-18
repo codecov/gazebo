@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import { providerToName } from 'shared/utils'
+import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 

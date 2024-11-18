@@ -1,11 +1,12 @@
 import { useParams } from 'react-router-dom'
 
+import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import { Alert } from 'ui/Alert'
 
 const GitHubRateLimitExceededBanner = () => {
-  const { provider } = useParams<{ provider: string }>()
+  const { provider } = useParams<{ provider: Provider }>()
   const isGh = providerToName(provider) === 'Github'
 
   if (!isGh) return null

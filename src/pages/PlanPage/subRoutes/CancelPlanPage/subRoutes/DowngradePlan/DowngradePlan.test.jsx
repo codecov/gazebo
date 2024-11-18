@@ -5,6 +5,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import DowngradePlan from './DowngradePlan'
 
 const mockAccountDetails = {
@@ -13,7 +15,7 @@ const mockAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
-    value: 'users-inappm',
+    value: Plans.USERS_PR_INAPPM,
   },
   activatedUserCount: 2,
   inactiveUserCount: 1,

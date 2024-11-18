@@ -5,6 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plan, PretrialPlan, TrialStatuses } from 'services/account'
+import { Plans } from 'shared/utils/billing'
 
 import PaidPlanCard from './PaidPlanCard'
 
@@ -23,7 +24,7 @@ vi.mock('shared/plan/ScheduledPlanDetails', () => ({
 
 const mockProPlan = {
   marketingName: 'Pro',
-  value: 'users-pr-inappm',
+  value: Plans.USERS_PR_INAPPM,
   billingRate: 'monthly',
   baseUnitPrice: 0,
   benefits: ['Unlimited public repositories', 'Unlimited private repositories'],
@@ -39,7 +40,7 @@ const mockProPlan = {
 
 const mockTeamPlan = {
   marketingName: 'Team',
-  value: 'users-teamm',
+  value: Plans.USERS_TEAMM,
   billingRate: 'monthly',
   baseUnitPrice: 123,
   benefits: ['Team benefits', 'Unlimited private repositories'],

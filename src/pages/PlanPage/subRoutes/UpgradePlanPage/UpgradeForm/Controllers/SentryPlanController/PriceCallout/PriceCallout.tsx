@@ -8,6 +8,7 @@ import {
   formatNumberToUSD,
   getNextBillingDate,
   isAnnualPlan,
+  PlanName,
   Plans,
 } from 'shared/utils/billing'
 import {
@@ -17,11 +18,10 @@ import {
 } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
-import { NewPlanType } from '../../../constants'
 import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
-  newPlan: NewPlanType
+  newPlan?: PlanName
   seats: number
   setFormValue: UseFormSetValue<UpgradeFormFields>
 }
@@ -52,7 +52,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
 
   if (isPerYear) {
     const nonBundledCost = calculateSentryNonBundledCost({
-      baseUnitPrice: sentryPlanYear.baseUnitPrice,
+      baseUnitPrice: sentryPlanYear?.baseUnitPrice,
     })
 
     return (
@@ -84,7 +84,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
   }
 
   const nonBundledCost = calculateSentryNonBundledCost({
-    baseUnitPrice: sentryPlanMonth.baseUnitPrice,
+    baseUnitPrice: sentryPlanMonth?.baseUnitPrice,
   })
   return (
     <div className="bg-ds-gray-primary p-4">

@@ -4,6 +4,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { PlanName, Plans } from 'shared/utils/billing'
+
 import ActivationAlert from './ActivationAlert'
 
 vi.mock('./FreePlanSeatsTakenAlert', () => ({
@@ -48,7 +50,7 @@ const mockTrialData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   trialStatus: 'ONGOING',
   trialStartDate: '2023-01-01T08:55:25',
   trialEndDate: '2023-01-10T08:55:25',
@@ -61,7 +63,7 @@ const mockTrialData = {
 describe('ActivationAlert', () => {
   function setup(
     privateRepos = true,
-    value = 'users-basic',
+    value: PlanName = Plans.USERS_BASIC,
     hasSeatsLeft = true
   ) {
     server.use(
@@ -81,7 +83,7 @@ describe('ActivationAlert', () => {
                 billingRate: 'monthly',
                 marketingName: 'Users Basic',
                 monthlyUploadLimit: 250,
-                value: 'users-basic',
+                value: Plans.USERS_BASIC,
               },
             },
           },
@@ -101,7 +103,7 @@ describe('ActivationAlert', () => {
   })
 
   it('renders FreePlanSeatsTakenAlert when on free plan and no seats left', async () => {
-    setup(false, 'users-basic', false)
+    setup(false, Plans.USERS_BASIC, false)
     render(<ActivationAlert />, { wrapper })
 
     const freePlanSeatsTakenAlert = await screen.findByText(
@@ -111,7 +113,7 @@ describe('ActivationAlert', () => {
   })
 
   it('renders PaidPlanSeatsTakenAlert when on paid plan and no seats left', async () => {
-    setup(false, 'users-pro', false)
+    setup(false, Plans.USERS_PR_INAPPM, false)
     render(<ActivationAlert />, { wrapper })
 
     const paidPlanSeatsTakenAlert = await screen.findByText(
@@ -121,7 +123,7 @@ describe('ActivationAlert', () => {
   })
 
   it('renders ActivationRequiredAlert when on paid plan and some seats left', async () => {
-    setup(false, 'users-pro', true)
+    setup(false, Plans.USERS_PR_INAPPM, true)
     render(<ActivationAlert />, { wrapper })
 
     const activationRequiredAlert = await screen.findByText(

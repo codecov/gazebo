@@ -5,7 +5,7 @@ function BenefitList({
   iconName,
   iconColor,
 }: {
-  benefits: string[]
+  benefits?: string[]
   iconName: string
   iconColor?: string
 }) {

@@ -2,6 +2,7 @@ import cs from 'classnames'
 import capitalize from 'lodash/capitalize'
 import { useParams } from 'react-router-dom'
 
+import { Provider } from 'shared/api/helpers'
 import { formatTimeToNow } from 'shared/utils/dates'
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
@@ -14,7 +15,7 @@ import { usePullHeadDataTeam } from './hooks'
 import { pullStateToColor } from '../constants'
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
   repo: string
   pullId: string

@@ -5,6 +5,8 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import type { MockInstance } from 'vitest'
 
+import { Plans } from 'shared/utils/billing'
+
 import { useUpgradePlan } from './useUpgradePlan'
 
 const mocks = vi.hoisted(() => ({
@@ -41,7 +43,7 @@ const accountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
-    value: 'users-inappm',
+    value: Plans.USERS_PR_INAPPM,
   },
   activatedUserCount: 2,
   inactiveUserCount: 1,
@@ -113,7 +115,7 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: 'users-pr-inappy',
+          newPlan: Plans.USERS_PR_INAPPY,
         })
 
         await waitFor(() => {
@@ -147,7 +149,7 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: 'users-pr-inappy',
+          newPlan: Plans.USERS_PR_INAPPY,
         })
 
         await waitFor(() => expect(redirectToCheckout).not.toHaveBeenCalled())

@@ -6,9 +6,9 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import { IndividualPlan, TrialStatuses } from 'services/account'
+import { TrialStatuses } from 'services/account'
 import { accountDetailsParsedObj } from 'services/account/mocks'
-import { Plans } from 'shared/utils/billing'
+import { Plan, Plans } from 'shared/utils/billing'
 
 import UpgradeForm from './UpgradeForm'
 
@@ -29,7 +29,7 @@ vi.mock('@sentry/react')
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -72,7 +72,7 @@ const proPlanYear = {
 
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro Team',
-  value: 'users-sentrym',
+  value: Plans.USERS_SENTRYM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -88,7 +88,7 @@ const sentryPlanMonth = {
 
 const sentryPlanYear = {
   marketingName: 'Sentry Pro Team',
-  value: 'users-sentryy',
+  value: Plans.USERS_SENTRYY,
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
@@ -108,7 +108,7 @@ const teamPlanMonth = {
   billingRate: 'monthly',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamm',
+  value: Plans.USERS_TEAMM,
 }
 
 const teamPlanYear = {
@@ -117,12 +117,12 @@ const teamPlanYear = {
   billingRate: 'annually',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamy',
+  value: Plans.USERS_TEAMY,
 }
 
 const trialPlan = {
   marketingName: 'Pro Trial Team',
-  value: 'users-trial',
+  value: Plans.USERS_TRIAL,
   billingRate: null,
   baseUnitPrice: 12,
   benefits: ['Configurable # of users', 'Unlimited repos'],
@@ -198,7 +198,7 @@ const mockPlanDataResponseMonthly = {
   billingRate: 'monthly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: 'test-plan',
+  value: Plans.USERS_PR_INAPPM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -214,7 +214,7 @@ const mockPlanDataResponseYearly = {
   billingRate: 'yearly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: 'test-plan',
+  value: Plans.USERS_PR_INAPPY,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -230,11 +230,6 @@ const queryClient = new QueryClient({
       suspense: true,
       retry: false,
     },
-  },
-  logger: {
-    error: () => {},
-    warn: () => {},
-    log: () => {},
   },
 })
 const server = setupServer()
@@ -320,7 +315,7 @@ describe('UpgradeForm', () => {
         }
       }),
       http.patch(
-        '/internal/:provider/:owner/account-details/',
+        `/internal/:provider/:owner/account-details/`,
         async (info) => {
           if (!successfulPatchRequest) {
             if (errorDetails) {
@@ -379,7 +374,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_BASIC })
@@ -687,7 +682,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
@@ -990,7 +985,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
@@ -1317,7 +1312,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_SENTRYY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({
@@ -1637,7 +1632,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_TEAMY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({
@@ -1984,7 +1979,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<IndividualPlan>,
+        } as NonNullable<Plan>,
       }
       describe('user chooses less than the number of active users', () => {
         it('does not display an error', async () => {

@@ -18,7 +18,7 @@ vi.mock('./GitHubActions', () => ({
 vi.mock('./CodecovCLI', () => ({
   default: () => 'Codecov CLI tab',
 }))
-vi.mock('./FailedTestsTable/FailedTestsTable.tsx', () => ({
+vi.mock('./FailedTestsTable/FailedTestsTable', () => ({
   default: () => 'Failed Tests Table',
 }))
 vi.mock('./FailedTestsTable/BranchSelector', () => ({
@@ -26,6 +26,9 @@ vi.mock('./FailedTestsTable/BranchSelector', () => ({
 }))
 vi.mock('../ActivationAlert', () => ({
   default: () => 'Activation Alert',
+}))
+vi.mock('./FailedTestsPage/FailedTestsPage', () => ({
+  default: () => 'Failed Tests Page',
 }))
 
 vi.mock('shared/useRedirect', async () => {
@@ -251,21 +254,12 @@ describe('FailedTestsTab', () => {
       expect(content).toBeInTheDocument()
     })
 
-    it('renders Failed Tests Table', async () => {
+    it('renders Failed Tests Page', async () => {
       setup({ testEnabled: true })
       render(<FailedTestsTab />, {
         wrapper: wrapper('/gh/codecov/cool-repo/tests'),
       })
-      const content = await screen.findByText(/Failed Tests Table/)
-      expect(content).toBeInTheDocument()
-    })
-
-    it('renders Branch Selector', async () => {
-      setup({ testEnabled: true })
-      render(<FailedTestsTab />, {
-        wrapper: wrapper('/gh/codecov/cool-repo/tests'),
-      })
-      const content = await screen.findByText(/Branch Selector/)
+      const content = await screen.findByText(/Failed Tests Page/)
       expect(content).toBeInTheDocument()
     })
   })
@@ -285,7 +279,7 @@ describe('FailedTestsTab', () => {
       expect(activationAlert).toBeInTheDocument()
     })
 
-    it('renders failed tests table if public repo', async () => {
+    it('renders failed tests page if public repo', async () => {
       setup({
         testEnabled: true,
         isCurrentUserActivated: false,
@@ -295,8 +289,8 @@ describe('FailedTestsTab', () => {
         wrapper: wrapper('/gh/codecov/cool-repo/tests'),
       })
 
-      const activationAlert = await screen.findByText(/Failed Tests Table/)
-      expect(activationAlert).toBeInTheDocument()
+      const page = await screen.findByText(/Failed Tests Page/)
+      expect(page).toBeInTheDocument()
     })
   })
 })

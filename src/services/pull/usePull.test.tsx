@@ -164,7 +164,6 @@ describe('usePull', () => {
         await waitFor(() =>
           expect(result.current.data).toEqual({
             defaultBranch: 'main',
-            hasAccess: true,
             pull: {
               behindBy: 82367894,
               behindByCommit: '1798hvs8ofhn',

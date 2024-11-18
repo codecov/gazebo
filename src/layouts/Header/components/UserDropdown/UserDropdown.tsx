@@ -3,13 +3,14 @@ import { useHistory, useParams } from 'react-router-dom'
 import config from 'config'
 
 import { useUser } from 'services/user'
+import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
 import Avatar from 'ui/Avatar'
 import Button from 'ui/Button'
 import { Dropdown } from 'ui/Dropdown/Dropdown'
 
 interface URLParams {
-  provider: string
+  provider: Provider
 }
 
 type DropdownItem = {
