@@ -386,8 +386,7 @@ function Step3({
           ? `
       slug: ${owner}/${repo}`
           : ''
-      }
-    `
+      }`
 
   return (
     <div>
