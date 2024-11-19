@@ -226,7 +226,7 @@ const AverageFlakeRateCard = ({
         ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
-        The average flake rate across all branches.
+        The average flake rate on your default branch.
       </MetricCard.Description>
     </MetricCard>
   )
