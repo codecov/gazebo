@@ -298,7 +298,7 @@ describe('MetricsSection', () => {
       const title = await screen.findByText('Avg. flake rate')
       const context = await screen.findByText('8.41%')
       const description = await screen.findByText(
-        'The average flake rate across all branches.'
+        'The average flake rate on your default branch.'
       )
 
       expect(title).toBeInTheDocument()
@@ -316,7 +316,7 @@ describe('MetricsSection', () => {
         const title = await screen.findByText('Cumulative Failures')
         const context = await screen.findByText(1)
         const description = await screen.findByText(
-          'The number of test failures across all branches.'
+          'The number of test failures on your default branch.'
         )
 
         expect(title).toBeInTheDocument()
