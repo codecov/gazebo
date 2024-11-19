@@ -4,7 +4,7 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Trend } from 'shared/utils/legacyCharts'
+import { Trend } from 'shared/utils/timeseriesCharts'
 
 import { useRepoCoverageTimeseries } from './useRepoCoverageTimeseries'
 

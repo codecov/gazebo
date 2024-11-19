@@ -1,5 +1,6 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
+import { PlanName } from 'shared/utils/billing'
 import { MIN_NB_SEATS_PRO } from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
@@ -7,12 +8,11 @@ import BillingOptions from './BillingOptions'
 import PriceCallout from './PriceCallout'
 import UserCount from './UserCount'
 
-import { NewPlanType } from '../../constants'
 import { UpgradeFormFields } from '../../UpgradeForm'
 
 interface ProPlanControllerProps {
   seats: number
-  newPlan: NewPlanType
+  newPlan?: PlanName
 
   register: UseFormRegister<UpgradeFormFields>
   setFormValue: UseFormSetValue<UpgradeFormFields>

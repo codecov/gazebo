@@ -4,6 +4,16 @@ export const MEASUREMENT_INTERVAL = {
   INTERVAL_1_DAY: 'INTERVAL_1_DAY',
 } as const
 
+export type MeasurementInterval = keyof typeof MEASUREMENT_INTERVAL
+
+export const MeasurementTimeOptions = [
+  { label: 'Last 30 days', value: MEASUREMENT_INTERVAL.INTERVAL_30_DAY },
+  { label: 'Last 7 days', value: MEASUREMENT_INTERVAL.INTERVAL_7_DAY },
+  { label: 'Last day', value: MEASUREMENT_INTERVAL.INTERVAL_1_DAY },
+] as const
+
+export type MeasurementTimeOption = (typeof MeasurementTimeOptions)[number]
+
 export const MEASUREMENT_TIME_INTERVALS = {
   ALL_TIME: MEASUREMENT_INTERVAL.INTERVAL_30_DAY,
   LAST_6_MONTHS: MEASUREMENT_INTERVAL.INTERVAL_7_DAY,

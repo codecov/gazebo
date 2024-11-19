@@ -3,6 +3,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { Plans } from 'shared/utils/billing'
+
 import ChangePlanLink from './ChangePlanLink'
 
 const wrapper =
@@ -18,7 +20,7 @@ describe('Members ChangePlanLink', () => {
     it('Renders change plan link', async () => {
       const mockedAccountDetailsNonEnterprise = {
         plan: {
-          value: 'users-basic',
+          value: Plans.USERS_BASIC,
         },
         subscriptionDetail: {
           collectionMethod: 'paid',
@@ -44,7 +46,7 @@ describe('Members ChangePlanLink', () => {
     it('Does not render change plan link', async () => {
       const mockedAccountDetailsNonEnterprise = {
         plan: {
-          value: 'users-basic',
+          value: Plans.USERS_BASIC,
         },
         subscriptionDetail: {
           collectionMethod: 'paid',
@@ -65,7 +67,7 @@ describe('Members ChangePlanLink', () => {
     it('Does not render change plan link', async () => {
       const mockedAccountDetailsEnterprise = {
         plan: {
-          value: 'users-enterprisem',
+          value: Plans.USERS_ENTERPRISE,
         },
         subscriptionDetail: {
           collectionMethod: 'paid',
@@ -86,7 +88,7 @@ describe('Members ChangePlanLink', () => {
     it('Does not render change plan link', async () => {
       const mockedAccountDetailsInvoiceUser = {
         plan: {
-          value: 'users-pr-inappm',
+          value: Plans.USERS_PR_INAPPM,
         },
         subscriptionDetail: {
           collectionMethod: 'send_invoice',

@@ -4,6 +4,8 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import BillingDetails from './BillingDetails'
 
 vi.mock('./PaymentCard/PaymentCard', () => ({ default: () => 'Payment Card' }))
@@ -46,7 +48,7 @@ const mockSubscription = {
     },
   },
   plan: {
-    value: 'users-pr-inappy',
+    value: Plans.USERS_PR_INAPPY,
   },
   currentPeriodEnd: 1606851492,
   cancelAtPeriodEnd: false,

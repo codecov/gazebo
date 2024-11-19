@@ -1,22 +1,20 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
-import { IndividualPlan } from 'services/account'
-import { isSentryPlan, isTeamPlan } from 'shared/utils/billing'
+import { isSentryPlan, isTeamPlan, Plan, PlanName } from 'shared/utils/billing'
 
 import ProPlanController from './ProPlanController'
 import SentryPlanController from './SentryPlanController'
 import TeamPlanController from './TeamPlanController'
 
-import { NewPlanType } from '../constants'
 import { UpgradeFormFields } from '../UpgradeForm'
 
 interface BillingControlsProps {
   seats: number
-  newPlan: NewPlanType
-  selectedPlan: NewPlanType
+  newPlan?: PlanName
+  selectedPlan: PlanName
   register: UseFormRegister<UpgradeFormFields>
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (plan: IndividualPlan) => void
+  setSelectedPlan: (plan?: Plan) => void
   errors?: {
     seats?: {
       message?: string

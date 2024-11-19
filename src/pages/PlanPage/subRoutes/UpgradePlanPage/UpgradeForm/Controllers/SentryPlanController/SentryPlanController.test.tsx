@@ -26,7 +26,7 @@ vi.mock('@stripe/react-stripe-js')
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -39,7 +39,7 @@ const basicPlan = {
 
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro',
-  value: 'users-sentrym',
+  value: Plans.USERS_SENTRYM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -55,7 +55,7 @@ const sentryPlanMonth = {
 
 const sentryPlanYear = {
   marketingName: 'Sentry Pro',
-  value: 'users-sentryy',
+  value: Plans.USERS_SENTRYY,
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
@@ -106,7 +106,7 @@ const mockPlanDataResponseMonthly = {
   billingRate: 'monthly',
   marketingName: 'Pro',
   monthlyUploadLimit: 2500,
-  value: 'test-plan',
+  value: Plans.USERS_SENTRYM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -122,7 +122,7 @@ const mockPlanDataResponseYearly = {
   billingRate: 'yearly',
   marketingName: 'Pro',
   monthlyUploadLimit: 2500,
-  value: 'test-plan',
+  value: Plans.USERS_SENTRYY,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',

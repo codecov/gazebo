@@ -10,6 +10,7 @@ import config from 'config'
 import { useImage } from 'services/image'
 import { useImpersonate } from 'services/impersonate'
 import { useInternalUser, useUser } from 'services/user'
+import { Plans } from 'shared/utils/billing'
 
 import BaseLayout from './BaseLayout'
 
@@ -73,7 +74,7 @@ const mockTrackingMetadata = {
   service: 'github',
   ownerid: 123,
   serviceId: '123',
-  plan: 'users-basic',
+  plan: Plans.USERS_BASIC,
   staff: false,
   hasYaml: false,
   bot: null,

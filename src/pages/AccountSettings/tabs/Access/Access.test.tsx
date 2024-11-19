@@ -7,6 +7,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import Access from './Access'
 
 window.confirm = vi.fn(() => true)
@@ -35,7 +37,7 @@ const mockSignedInUser = {
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: 'users-basic',
+      plan: Plans.USERS_BASIC,
       staff: false,
       hasYaml: false,
       bot: null,

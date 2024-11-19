@@ -5,6 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
+import { Plans } from 'shared/utils/billing'
 
 import ExceededUploadsAlert from './ExceededUploadsAlert'
 
@@ -28,7 +29,7 @@ const mockPlanDataResponse = {
   billingRate: 'monthly',
   marketingName: 'some-name',
   monthlyUploadLimit: 123,
-  value: 'test-plan',
+  value: Plans.USERS_PR_INAPPM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',

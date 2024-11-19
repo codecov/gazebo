@@ -21,8 +21,8 @@ const BundleSelection: React.FC = () => {
   }, [resetFilterSelects])
 
   return (
-    <div className="flex flex-col gap-8 border-b border-ds-gray-tertiary pb-6 pt-4 md:flex-row md:justify-between">
-      <div className="flex flex-col gap-4 md:flex-row">
+    <div className="flex flex-col gap-8 border-b border-ds-gray-tertiary pb-6 pt-4">
+      <div className="flex flex-col gap-4 md:w-full md:flex-row md:justify-between">
         <BranchSelector resetBundleSelect={resetBundleSelect} />
         <BundleSelector
           ref={bundleSelectRef}

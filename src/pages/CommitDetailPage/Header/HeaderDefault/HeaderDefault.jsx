@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
-import { getProviderCommitURL, getProviderPullURL } from 'shared/utils'
 import { formatTimeToNow } from 'shared/utils/dates'
+import { getProviderCommitURL, getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
 import CIStatusLabel from 'ui/CIStatus'
 import Icon from 'ui/Icon'

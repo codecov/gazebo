@@ -7,6 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { Plans } from 'shared/utils/billing'
+
 import AccountSettings from './AccountSettings'
 
 vi.mock('config')
@@ -29,7 +31,7 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: 'free-plan',
+  value: Plans.USERS_BASIC,
   trialStatus: 'NOT_STARTED',
   trialStartDate: '',
   trialEndDate: '',
@@ -63,7 +65,7 @@ const mockCurrentUser = (username) => ({
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: 'users-basic',
+      plan: Plans.USERS_BASIC,
       staff: false,
       hasYaml: false,
       bot: null,
@@ -129,14 +131,14 @@ describe('AccountSettings', () => {
       username = 'codecov',
       isAdmin = false,
       hideAccessTab = true,
-      planValue = 'free-plan',
+      planValue = Plans.USERS_BASIC,
     } = {
       isSelfHosted: false,
       owner: 'codecov',
       username: 'codecov',
       isAdmin: false,
       hideAccessTab: true,
-      planValue: 'free-plan',
+      planValue: Plans.USERS_BASIC,
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
@@ -357,7 +359,7 @@ describe('AccountSettings', () => {
   describe('on okta access route', () => {
     it('renders okta access tab for enterprise users', async () => {
       setup({
-        planValue: 'users-enterprisem',
+        planValue: Plans.USERS_ENTERPRISEM,
         isSelfHosted: false,
       })
 

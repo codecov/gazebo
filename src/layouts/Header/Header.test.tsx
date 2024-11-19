@@ -9,6 +9,7 @@ import config from 'config'
 
 import { useImpersonate } from 'services/impersonate'
 import { User } from 'services/user'
+import { Plans } from 'shared/utils/billing'
 
 import Header from './Header'
 
@@ -58,7 +59,7 @@ const mockUser = {
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: 'users-basic',
+      plan: Plans.USERS_BASIC,
       staff: false,
       hasYaml: false,
       bot: null,
