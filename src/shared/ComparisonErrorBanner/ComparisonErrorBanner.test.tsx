@@ -88,7 +88,7 @@ describe('ComparisonErrorBanner', () => {
       const title = await screen.findByText('Missing Head Report')
       expect(title).toBeInTheDocument()
       const description = await screen.findByText(
-        'Unable to compare commits because the head commit did not upload a coverage report.'
+        'Unable to compare commits because the head commit did not upload a coverage report. THIS IS A TEST'
       )
       expect(description).toBeInTheDocument()
     })
