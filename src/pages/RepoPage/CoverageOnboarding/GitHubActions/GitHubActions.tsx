@@ -195,7 +195,7 @@ jobs:
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       <Step1
         framework={framework}
         frameworkInstructions={frameworkInstructions}
