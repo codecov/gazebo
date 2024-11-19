@@ -116,7 +116,9 @@ describe('GitHubActions', () => {
       setup({})
       render(<GitHubActions />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 2/ })
+      const header = await screen.findByRole('heading', {
+        name: /Step 1: Output a Coverage report file/,
+      })
       expect(header).toBeInTheDocument()
     })
 
@@ -124,9 +126,7 @@ describe('GitHubActions', () => {
       setup({})
       render(<GitHubActions />, { wrapper })
 
-      const blurb = await screen.findByText(
-        /Select your testing framework below/
-      )
+      const blurb = await screen.findByText(/Select your language below/)
       expect(blurb).toBeInTheDocument()
     })
 
@@ -263,94 +263,6 @@ describe('GitHubActions', () => {
         })
       })
     })
-
-    describe('example collapsible', () => {
-      it('renders', async () => {
-        setup({})
-        render(<GitHubActions />, { wrapper })
-
-        const trigger = await screen.findByText((content) =>
-          content.startsWith('Your final GitHub Actions workflow')
-        )
-        expect(trigger).toBeInTheDocument()
-      })
-
-      describe('when the collapsible is open', () => {
-        it('renders example GHA yaml', async () => {
-          const { user } = setup({})
-          render(<GitHubActions />, { wrapper })
-
-          const trigger = await screen.findByText((content) =>
-            content.startsWith('Your final GitHub Actions workflow')
-          )
-          expect(trigger).toBeInTheDocument()
-
-          let example = screen.queryByText(
-            /name: Run tests and upload coverage/
-          )
-          expect(example).not.toBeInTheDocument()
-
-          await user.click(trigger)
-
-          example = await screen.findByText(
-            /name: Run tests and upload coverage/
-          )
-          expect(example).toBeInTheDocument()
-        })
-
-        describe('if using repo token', () => {
-          it('does not show repo slug in yaml', async () => {
-            const { user } = setup({})
-            render(<GitHubActions />, { wrapper })
-
-            const trigger = await screen.findByText((content) =>
-              content.startsWith('Your final GitHub Actions workflow')
-            )
-            expect(trigger).toBeInTheDocument()
-
-            await user.click(trigger)
-
-            const slug = screen.queryByText(/slug: codecov\/cool-repo/)
-            expect(slug).not.toBeInTheDocument()
-          })
-        })
-
-        describe('if using org token', () => {
-          it('shows repo slug in yaml', async () => {
-            const { user } = setup({ hasOrgUploadToken: true })
-            render(<GitHubActions />, { wrapper })
-
-            const trigger = await screen.findByText((content) =>
-              content.startsWith('Your final GitHub Actions workflow')
-            )
-            expect(trigger).toBeInTheDocument()
-
-            await user.click(trigger)
-
-            const slug = await screen.findByText(/slug: codecov\/cool-repo/)
-            expect(slug).toBeInTheDocument()
-          })
-        })
-
-        it('renders learn more blurb', async () => {
-          const { user } = setup({})
-          render(<GitHubActions />, { wrapper })
-
-          const trigger = await screen.findByText((content) =>
-            content.startsWith('Your final GitHub Actions workflow')
-          )
-          expect(trigger).toBeInTheDocument()
-
-          let blurb = screen.queryByText(/about generating coverage reports/)
-          expect(blurb).not.toBeInTheDocument()
-
-          await user.click(trigger)
-
-          blurb = await screen.findByText(/about generating coverage reports/)
-          expect(blurb).toBeInTheDocument()
-        })
-      })
-    })
   })
 
   describe('step two', () => {
@@ -358,7 +270,7 @@ describe('GitHubActions', () => {
       setup({})
       render(<GitHubActions />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 1/ })
+      const header = await screen.findByRole('heading', { name: /Step 2: add/ })
       expect(header).toBeInTheDocument()
 
       const repositorySecretLink = await screen.findByRole('link', {
@@ -427,6 +339,137 @@ describe('GitHubActions', () => {
   })
 
   describe('step three', () => {
+    it('renders header', async () => {
+      setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const header = await screen.findByRole('heading', {
+        name: /Step 3: Add Codecov to your GitHub Actions workflow yaml file/,
+      })
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders body', async () => {
+      setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const body = await screen.findByText(
+        /After tests run, this will upload your coverage report to Codecov:/
+      )
+      expect(body).toBeInTheDocument()
+    })
+
+    it('renders upload config box', async () => {
+      setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const config = await screen.findByText(
+        /- name: Upload coverage reports to Codecov/
+      )
+      expect(config).toBeInTheDocument()
+    })
+
+    describe('when org upload token exists', () => {
+      it('renders slug copy', async () => {
+        const { user } = setup({ hasOrgUploadToken: true })
+        render(<GitHubActions />, { wrapper })
+
+        const slug = await screen.findByText(/slug: codecov\/cool-repo/)
+        expect(slug).toBeInTheDocument()
+
+        const trigger = await screen.findByText((content) =>
+          content.startsWith('Your final GitHub Actions workflow')
+        )
+        expect(trigger).toBeInTheDocument()
+
+        await user.click(trigger)
+
+        const slugs = await screen.findAllByText(/slug: codecov\/cool-repo/)
+        expect(slugs).toHaveLength(2)
+      })
+    })
+
+    describe('example collapsible', () => {
+      describe('when the collapsible is open', () => {
+        it('renders example GHA yaml by default', async () => {
+          const { user } = setup({})
+          render(<GitHubActions />, { wrapper })
+
+          const trigger = await screen.findByText((content) =>
+            content.startsWith('Your final GitHub Actions workflow')
+          )
+          expect(trigger).toBeInTheDocument()
+
+          let example = screen.queryByText(
+            /name: Run tests and upload coverage/
+          )
+          expect(example).not.toBeInTheDocument()
+
+          await user.click(trigger)
+
+          example = await screen.findByText(
+            /name: Run tests and upload coverage/
+          )
+          expect(example).toBeInTheDocument()
+        })
+
+        describe('if using repo token', () => {
+          it('does not show repo slug in yaml', async () => {
+            const { user } = setup({})
+            render(<GitHubActions />, { wrapper })
+
+            const trigger = await screen.findByText((content) =>
+              content.startsWith('Your final GitHub Actions workflow')
+            )
+            expect(trigger).toBeInTheDocument()
+
+            await user.click(trigger)
+
+            const slug = screen.queryByText(/slug: codecov\/cool-repo/)
+            expect(slug).not.toBeInTheDocument()
+          })
+        })
+
+        describe('if using org token', () => {
+          it('shows repo slug in yaml', async () => {
+            const { user } = setup({ hasOrgUploadToken: true })
+            render(<GitHubActions />, { wrapper })
+
+            const slug = await screen.findByText(/slug: codecov\/cool-repo/)
+            expect(slug).toBeInTheDocument()
+            const trigger = await screen.findByText((content) =>
+              content.startsWith('Your final GitHub Actions workflow')
+            )
+            expect(trigger).toBeInTheDocument()
+
+            await user.click(trigger)
+
+            const slugs = await screen.findAllByText(/slug: codecov\/cool-repo/)
+            expect(slugs).toHaveLength(2)
+          })
+        })
+
+        it('renders learn more blurb', async () => {
+          const { user } = setup({})
+          render(<GitHubActions />, { wrapper })
+
+          const trigger = await screen.findByText((content) =>
+            content.startsWith('Your final GitHub Actions workflow')
+          )
+          expect(trigger).toBeInTheDocument()
+
+          let blurb = screen.queryByText(/about generating coverage reports/)
+          expect(blurb).not.toBeInTheDocument()
+          await user.click(trigger)
+
+          blurb = await screen.findByText(/about generating coverage reports/)
+          expect(blurb).toBeInTheDocument()
+        })
+      })
+    })
+  })
+
+  describe('step four', () => {
     beforeEach(() => setup({}))
     it('renders body', async () => {
       render(<GitHubActions />, { wrapper })
@@ -477,17 +520,10 @@ describe('GitHubActions', () => {
       const user = userEvent.setup()
       render(<GitHubActions />, { wrapper })
 
-      // Expand the yaml example dropdown to make that snippet visible
-      const trigger = await screen.findByText((content) =>
-        content.startsWith('Your final GitHub Actions workflow')
-      )
-      expect(trigger).toBeInTheDocument()
-
-      await user.click(trigger)
-
       const copyCommands = await screen.findAllByTestId(
         'clipboard-code-snippet'
       )
+
       expect(copyCommands.length).toEqual(5)
 
       const promises: Promise<void>[] = []
