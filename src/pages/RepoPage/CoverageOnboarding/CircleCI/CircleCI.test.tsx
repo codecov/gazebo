@@ -104,7 +104,8 @@ describe('CircleCI', () => {
         return HttpResponse.json({ data: { storeEventMetric: null } })
       })
     )
-    return { mockMetricMutationVariables }
+    const user = userEvent.setup()
+    return { mockMetricMutationVariables, user }
   }
 
   describe('step one', () => {
@@ -114,23 +115,19 @@ describe('CircleCI', () => {
 
       const header = await screen.findByRole('heading', { name: /Step 1/ })
       expect(header).toBeInTheDocument()
-
-      const environmentVariableLink = await screen.findByRole('link', {
-        name: /environment variables/,
-      })
-      expect(environmentVariableLink).toBeInTheDocument()
-      expect(environmentVariableLink).toHaveAttribute(
-        'href',
-        'https://app.circleci.com/settings/project/github/codecov/cool-repo/environment-variables'
-      )
     })
 
     it('renders body', async () => {
       setup({})
       render(<CircleCI />, { wrapper })
 
+      const link = await screen.findByRole('link', {
+        name: 'Environment variables',
+      })
+      expect(link).toBeInTheDocument()
+
       const body = await screen.findByText(
-        'Environment variables in CircleCI can be found in project settings.'
+        /in CircleCI can be found in project settings/
       )
       expect(body).toBeInTheDocument()
     })
@@ -170,6 +167,41 @@ describe('CircleCI', () => {
         expect(token).toBeInTheDocument()
       })
     })
+
+    describe('has dropdown', () => {
+      it('renders dropdown click target', async () => {
+        setup({})
+        render(<CircleCI />, { wrapper })
+
+        const trigger = await screen.findByText((content) =>
+          content.startsWith(
+            'Your environment variable in CircleCI should look like this:'
+          )
+        )
+        expect(trigger).toBeInTheDocument()
+      })
+      it('renders dropdown content after clicked', async () => {
+        const { user } = setup({})
+        render(<CircleCI />, { wrapper })
+
+        let content = screen.queryByRole('img', {
+          name: /settings environment variable/,
+        })
+        expect(content).not.toBeInTheDocument()
+
+        const trigger = await screen.findByText((content) =>
+          content.startsWith(
+            'Your environment variable in CircleCI should look like this:'
+          )
+        )
+        await user.click(trigger)
+
+        content = await screen.findByRole('img', {
+          name: /settings environment variable/,
+        })
+        expect(content).toBeInTheDocument()
+      })
+    })
   })
 
   describe('step two', () => {
@@ -181,13 +213,18 @@ describe('CircleCI', () => {
       const header = await screen.findByRole('heading', { name: /Step 2/ })
       expect(header).toBeInTheDocument()
 
-      const CircleCIWorkflowLink = await screen.findByRole('link', {
-        name: /config.yml/,
+      const CircleCIJSWorkflowLink = await screen.findByRole('link', {
+        name: 'config.yml',
       })
-      expect(CircleCIWorkflowLink).toBeInTheDocument()
-      expect(CircleCIWorkflowLink).toHaveAttribute(
+      expect(CircleCIJSWorkflowLink).toBeInTheDocument()
+
+      const CircleCIJSExampleLink = await screen.findByRole('link', {
+        name: /javascript config.yml/,
+      })
+      expect(CircleCIJSExampleLink).toBeInTheDocument()
+      expect(CircleCIJSExampleLink).toHaveAttribute(
         'href',
-        'https://github.com/codecov/cool-repo/tree/main/.circleci/config'
+        'https://github.com/codecov/example-javascript/blob/main/.circleci/config.yml'
       )
     })
 
@@ -203,7 +240,7 @@ describe('CircleCI', () => {
     it('renders yaml code', async () => {
       render(<CircleCI />, { wrapper })
 
-      const yamlCode = await screen.findByText(/codecov\/codecov@4.0.1/)
+      const yamlCode = await screen.findByText(/codecov\/codecov@5.0.3/)
       expect(yamlCode).toBeInTheDocument()
     })
 
