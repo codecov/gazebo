@@ -1,4 +1,6 @@
-import { TrialStatuses } from 'services/account'
+import { z } from 'zod'
+
+import { AccountDetailsSchema, Plan, TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import {
@@ -96,19 +98,19 @@ describe('calculatePriceTeamPlan', () => {
 })
 
 describe('getDefaultValuesUpgradeForm', () => {
-  const proPlanYear = { value: Plans.USERS_PR_INAPPY }
-  const sentryPlanYear = { value: Plans.USERS_SENTRYY }
-  const teamPlanMonth = { value: Plans.USERS_TEAMM }
+  const proPlanYear = { value: Plans.USERS_PR_INAPPY } as Plan
+  const sentryPlanYear = { value: Plans.USERS_SENTRYY } as Plan
+  const teamPlanMonth = { value: Plans.USERS_TEAMM } as Plan
 
   describe('when current plan is basic', () => {
     it('returns pro year plan', () => {
       const accountDetails = {
         plan: { value: Plans.USERS_BASIC, quantity: 1 },
-      }
+      } as z.infer<typeof AccountDetailsSchema>
 
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
-        proPlanYear,
+        selectedPlan: proPlanYear,
         plans: [proPlanYear],
       })
 
@@ -121,11 +123,11 @@ describe('getDefaultValuesUpgradeForm', () => {
     it('returns sentry year plan if user is sentry upgrade', () => {
       const accountDetails = {
         plan: { value: Plans.USERS_BASIC, quantity: 1 },
-      }
+      } as z.infer<typeof AccountDetailsSchema>
 
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
-        proPlanYear,
+        selectedPlan: proPlanYear,
         plans: [proPlanYear, sentryPlanYear],
       })
 
@@ -140,16 +142,16 @@ describe('getDefaultValuesUpgradeForm', () => {
     it('returns team monthly plan', () => {
       const accountDetails = {
         plan: { value: Plans.USERS_TEAMM, quantity: 1, billingRate: 'monthly' },
-      }
+      } as z.infer<typeof AccountDetailsSchema>
 
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
-        proPlanYear,
+        selectedPlan: proPlanYear,
         plans: [teamPlanMonth],
       })
 
       expect(data).toStrictEqual({
-        newPlan: 'users-teamm',
+        newPlan: Plans.USERS_TEAMM,
         seats: 2,
       })
     })
@@ -157,11 +159,11 @@ describe('getDefaultValuesUpgradeForm', () => {
     it('returns pro sentry plan if user is sentry upgrade', () => {
       const accountDetails = {
         plan: { value: Plans.USERS_TEAMM, quantity: 1 },
-      }
+      } as z.infer<typeof AccountDetailsSchema>
 
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
-        proPlanYear,
+        selectedPlan: proPlanYear,
         plans: [proPlanYear, sentryPlanYear],
       })
 
@@ -175,11 +177,11 @@ describe('getDefaultValuesUpgradeForm', () => {
   it('returns current plan if the user is on a paid plan', () => {
     const accountDetails = {
       plan: { value: Plans.USERS_PR_INAPPM, quantity: 2 },
-    }
+    } as z.infer<typeof AccountDetailsSchema>
 
     const data = getDefaultValuesUpgradeForm({
       accountDetails,
-      proPlanYear,
+      selectedPlan: proPlanYear,
       plans: [proPlanYear],
     })
 
@@ -194,7 +196,7 @@ describe('getSchema', () => {
   it('passes parsing when all conditions are met', () => {
     const accountDetails = {
       activatedUserCount: 2,
-    }
+    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
     const response = schema.safeParse({
@@ -208,13 +210,13 @@ describe('getSchema', () => {
   it('fails to parse when newPlan is not a string', () => {
     const accountDetails = {
       activatedUserCount: 2,
-    }
+    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
     const response = schema.safeParse({ seats: 5, newPlan: 5 })
     expect(response.success).toEqual(false)
 
-    const [issue] = response.error.issues
+    const [issue] = response.error!.issues
     expect(issue).toEqual(
       expect.objectContaining({
         message: 'Plan type is required to be a string',
@@ -225,13 +227,13 @@ describe('getSchema', () => {
   it('fails to parse when seats is not a number', () => {
     const accountDetails = {
       activatedUserCount: 2,
-    }
+    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
     const response = schema.safeParse({ seats: 'ahh' })
     expect(response.success).toEqual(false)
 
-    const [issue] = response.error.issues
+    const [issue] = response.error!.issues
     expect(issue).toEqual(
       expect.objectContaining({
         message: 'Seats is required to be a number',
@@ -242,13 +244,13 @@ describe('getSchema', () => {
   it('fails to parse when the seats are below the minimum', () => {
     const accountDetails = {
       activatedUserCount: 2,
-    }
+    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
     const response = schema.safeParse({ seats: 3 })
     expect(response.success).toEqual(false)
 
-    const [issue] = response.error.issues
+    const [issue] = response.error!.issues
     expect(issue).toEqual(
       expect.objectContaining({
         message: 'You cannot purchase a per user plan for less than 5 users',
@@ -259,13 +261,13 @@ describe('getSchema', () => {
   it('fails to parse when seats are below activated seats', () => {
     const accountDetails = {
       activatedUserCount: 5,
-    }
+    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({ accountDetails, minSeats: 1 })
 
     const response = schema.safeParse({ seats: 3 })
     expect(response.success).toBe(false)
 
-    const [issue] = response.error.issues
+    const [issue] = response.error!.issues
     expect(issue).toEqual(
       expect.objectContaining({
         message: 'Must deactivate more users before downgrading plans',
@@ -279,7 +281,7 @@ describe('getSchema', () => {
       plan: {
         value: Plans.USERS_TRIAL,
       },
-    }
+    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({
       accountDetails,
       minSeats: 5,
@@ -300,12 +302,12 @@ describe('getSchema', () => {
         plan: {
           value: Plans.USERS_INAPPY,
         },
-      }
+      } as z.infer<typeof AccountDetailsSchema>
       const schema = getSchema({
         accountDetails,
         selectedPlan: {
           value: Plans.USERS_TEAMY,
-        },
+        } as Plan,
       })
 
       const response = schema.safeParse({
@@ -314,7 +316,7 @@ describe('getSchema', () => {
       })
       expect(response.success).toBe(false)
 
-      const [issue] = response.error.issues
+      const [issue] = response.error!.issues
       expect(issue).toEqual(
         expect.objectContaining({
           message: 'Team plan is only available for 10 seats or fewer.',
@@ -327,12 +329,12 @@ describe('getSchema', () => {
         plan: {
           value: Plans.USERS_INAPPY,
         },
-      }
+      } as z.infer<typeof AccountDetailsSchema>
       const schema = getSchema({
         accountDetails,
         selectedPlan: {
           value: Plans.USERS_TEAMY,
-        },
+        } as Plan,
       })
 
       const response = schema.safeParse({
@@ -350,12 +352,12 @@ describe('getSchema', () => {
       plan: {
         value: Plans.USERS_INAPPY,
       },
-    }
+    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({
       accountDetails,
       selectedPlan: {
         value: Plans.USERS_TEAMM,
-      },
+      } as Plan,
     })
 
     const response = schema.safeParse({
@@ -383,7 +385,7 @@ describe('extractSeats', () => {
         quantity: 1,
         isSentryUpgrade: true,
         activatedUserCount: 0,
-        inactivatedUserCount: 0,
+        inactiveUserCount: 0,
       })
       expect(seats).toEqual(5)
     })
@@ -407,7 +409,7 @@ describe('extractSeats', () => {
         quantity: 1,
         isSentryUpgrade: false,
         activatedUserCount: 0,
-        inactivatedUserCount: 0,
+        inactiveUserCount: 0,
       })
       expect(seats).toEqual(2)
     })
@@ -508,11 +510,11 @@ describe('extractSeats', () => {
 describe('shouldRenderCancelLink', () => {
   it('returns true', () => {
     // eslint-disable-next-line testing-library/render-result-naming-convention
-    const value = shouldRenderCancelLink(
-      false,
-      { value: Plans.USERS_PR_INAPPY },
-      ''
-    )
+    const value = shouldRenderCancelLink({
+      cancelAtPeriodEnd: false,
+      plan: { value: Plans.USERS_PR_INAPPY } as Plan,
+      trialStatus: TrialStatuses.NOT_STARTED,
+    })
 
     expect(value).toBeTruthy()
   })
@@ -520,39 +522,39 @@ describe('shouldRenderCancelLink', () => {
   describe('user is on a free plan', () => {
     it('returns false', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
-      const value = shouldRenderCancelLink(
-        false,
-        { value: Plans.USERS_BASIC },
-        ''
-      )
+      const cancelLinkResult = shouldRenderCancelLink({
+        cancelAtPeriodEnd: false,
+        plan: { value: Plans.USERS_BASIC } as Plan,
+        trialStatus: TrialStatuses.NOT_STARTED,
+      })
 
-      expect(value).toBeFalsy()
+      expect(cancelLinkResult).toBeFalsy()
     })
   })
 
   describe('user is currently on a trial', () => {
     it('returns false', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
-      const value = shouldRenderCancelLink(
-        false,
-        { value: Plans.USERS_TRIAL },
-        TrialStatuses.ONGOING
-      )
+      const cancelLinkResult = shouldRenderCancelLink({
+        cancelAtPeriodEnd: false,
+        plan: { value: Plans.USERS_TRIAL } as Plan,
+        trialStatus: TrialStatuses.ONGOING,
+      })
 
-      expect(value).toBeFalsy()
+      expect(cancelLinkResult).toBeFalsy()
     })
   })
 
   describe('user has already cancelled their plan', () => {
     it('returns false', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
-      const value = shouldRenderCancelLink(
-        true,
-        { value: Plans.USERS_PR_INAPPY },
-        ''
-      )
+      const cancelLinkResult = shouldRenderCancelLink({
+        cancelAtPeriodEnd: true,
+        plan: { value: Plans.USERS_PR_INAPPY } as Plan,
+        trialStatus: TrialStatuses.NOT_STARTED,
+      })
 
-      expect(value).toBeFalsy()
+      expect(cancelLinkResult).toBeFalsy()
     })
   })
 
@@ -560,16 +562,16 @@ describe('shouldRenderCancelLink', () => {
     it('sets new plan to team', () => {
       const accountDetails = {
         plan: { value: Plans.USERS_BASIC, quantity: 1 },
-      }
+      } as z.infer<typeof AccountDetailsSchema>
       const plans = [
-        { value: Plans.USERS_TEAMY },
-        { value: Plans.USERS_PR_INAPPY },
+        { value: Plans.USERS_TEAMY } as Plan,
+        { value: Plans.USERS_PR_INAPPY } as Plan,
       ]
 
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
         plans,
-        selectedPlan: { value: Plans.USERS_TEAMY },
+        selectedPlan: { value: Plans.USERS_TEAMY } as Plan,
       })
 
       expect(data).toStrictEqual({

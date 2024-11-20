@@ -12,7 +12,7 @@ import PlanDetailsControls from './PlanDetailsControls'
 
 const proPlanMonth = {
   marketingName: 'Pro Team',
-  value: 'users-pr-inappm',
+  value: Plans.USERS_PR_INAPPM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -26,7 +26,7 @@ const proPlanMonth = {
 
 const proPlanYear = {
   marketingName: 'Pro Team',
-  value: 'users-pr-inappy',
+  value: Plans.USERS_PR_INAPPY,
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
@@ -40,7 +40,7 @@ const proPlanYear = {
 
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro Team',
-  value: 'users-sentrym',
+  value: Plans.USERS_SENTRYM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -54,7 +54,7 @@ const sentryPlanMonth = {
 
 const sentryPlanYear = {
   marketingName: 'Sentry Pro Team',
-  value: 'users-sentryy',
+  value: Plans.USERS_SENTRYY,
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
@@ -72,7 +72,7 @@ const teamPlanMonth = {
   billingRate: 'monthly',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamm',
+  value: Plans.USERS_TEAMM,
 }
 
 const teamPlanYear = {
@@ -81,7 +81,7 @@ const teamPlanYear = {
   billingRate: 'annually',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamy',
+  value: Plans.USERS_TEAMY,
 }
 
 const server = setupServer()

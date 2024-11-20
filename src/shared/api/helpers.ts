@@ -53,7 +53,7 @@ export const AllProvidersArray = [
   'bitbucket_server',
 ] as const
 type AllProviders = typeof AllProvidersArray
-type Provider = AllProviders[number]
+export type Provider = AllProviders[number]
 
 export const ProviderCookieKeyMapping = {
   gh: 'github-token',

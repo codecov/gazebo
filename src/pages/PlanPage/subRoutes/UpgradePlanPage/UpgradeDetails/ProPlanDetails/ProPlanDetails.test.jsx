@@ -17,7 +17,7 @@ vi.mock('shared/plan/ScheduledPlanDetails', () => ({
 
 const proPlanYear = {
   marketingName: 'Pro',
-  value: 'users-pr-inappy',
+  value: Plans.USERS_PR_INAPPY,
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
@@ -32,7 +32,7 @@ const proPlanYear = {
 
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro',
-  value: 'users-sentrym',
+  value: Plans.USERS_SENTRYM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -47,7 +47,7 @@ const sentryPlanMonth = {
 
 const sentryPlanYear = {
   marketingName: 'Sentry Pro',
-  value: 'users-sentryy',
+  value: Plans.USERS_SENTRYY,
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
@@ -63,7 +63,7 @@ const sentryPlanYear = {
 const allPlansWithoutSentry = [
   {
     marketingName: 'Basic',
-    value: 'users-free',
+    value: Plans.USERS_FREE,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -75,7 +75,7 @@ const allPlansWithoutSentry = [
   },
   {
     marketingName: 'Pro',
-    value: 'users-pr-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -89,7 +89,7 @@ const allPlansWithoutSentry = [
   proPlanYear,
   {
     marketingName: 'Pro',
-    value: 'users-enterprisem',
+    value: Plans.USERS_ENTERPRISEM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -102,7 +102,7 @@ const allPlansWithoutSentry = [
   },
   {
     marketingName: 'Pro',
-    value: 'users-enterprisey',
+    value: Plans.USERS_ENTERPRISEY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [
@@ -121,7 +121,7 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',

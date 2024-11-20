@@ -4,6 +4,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import TeamPlanCard from './TeamPlanCard'
 
 vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
@@ -11,7 +13,7 @@ vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
 const mockAvailablePlans = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -23,7 +25,7 @@ const mockAvailablePlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -36,7 +38,7 @@ const mockAvailablePlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappy',
+    value: Plans.USERS_PR_INAPPY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [
@@ -49,7 +51,7 @@ const mockAvailablePlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisem',
+    value: Plans.USERS_ENTERPRISEM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -62,7 +64,7 @@ const mockAvailablePlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisey',
+    value: Plans.USERS_ENTERPRISEY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [
@@ -79,7 +81,7 @@ const mockAvailablePlans = [
     billingRate: 'monthly',
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamm',
+    value: Plans.USERS_TEAMM,
   },
   {
     baseUnitPrice: 5,
@@ -87,7 +89,7 @@ const mockAvailablePlans = [
     billingRate: 'yearly',
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamy',
+    value: Plans.USERS_TEAMY,
   },
 ]
 

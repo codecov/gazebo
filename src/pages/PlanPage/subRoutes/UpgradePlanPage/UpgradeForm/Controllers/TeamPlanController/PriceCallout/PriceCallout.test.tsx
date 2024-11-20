@@ -13,7 +13,7 @@ import PriceCallout from './PriceCallout'
 const availablePlans = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -25,7 +25,7 @@ const availablePlans = [
   },
   {
     marketingName: 'Pro',
-    value: 'users-pr-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -38,7 +38,7 @@ const availablePlans = [
   },
   {
     marketingName: 'Team',
-    value: 'users-teamm',
+    value: Plans.USERS_TEAMM,
     billingRate: 'monthly',
     baseUnitPrice: 5,
     benefits: ['Patch coverage analysis'],
@@ -46,7 +46,7 @@ const availablePlans = [
   },
   {
     marketingName: 'Team',
-    value: 'users-teamy',
+    value: Plans.USERS_TEAMY,
     billingRate: 'yearly',
     baseUnitPrice: 4,
     benefits: ['Patch coverage analysis'],

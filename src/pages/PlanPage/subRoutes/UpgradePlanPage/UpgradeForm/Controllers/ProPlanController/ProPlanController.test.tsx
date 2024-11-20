@@ -26,7 +26,7 @@ vi.mock('services/toastNotification', async () => {
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -69,7 +69,7 @@ const proPlanYear = {
 
 const trialPlan = {
   marketingName: 'Pro Trial Team',
-  value: 'users-trial',
+  value: Plans.USERS_TRIAL,
   billingRate: null,
   baseUnitPrice: 12,
   benefits: ['Configurable # of users', 'Unlimited repos'],
@@ -120,7 +120,7 @@ const mockPlanDataResponseMonthly = {
   billingRate: 'monthly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: 'test-plan',
+  value: Plans.USERS_PR_INAPPM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -136,7 +136,7 @@ const mockPlanDataResponseYearly = {
   billingRate: 'yearly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: 'test-plan',
+  value: Plans.USERS_PR_INAPPY,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',

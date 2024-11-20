@@ -6,13 +6,14 @@ import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
 import { RepoNotFoundErrorSchema } from 'services/repo'
 import Api from 'shared/api'
 import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { Plans } from 'shared/utils/billing'
 
 const TestResultsAggregatesSchema = z.object({
   owner: z
     .object({
       plan: z
         .object({
-          value: z.string(),
+          value: z.nativeEnum(Plans),
         })
         .nullable(),
       repository: z.discriminatedUnion('__typename', [

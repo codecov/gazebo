@@ -1,8 +1,10 @@
 import { useNavLinks } from 'services/navigation'
-import { providerImage, providerToName } from 'shared/utils/provider'
+import { Provider } from 'shared/api/helpers'
+import { loginProviderImage } from 'shared/utils/loginProviders'
+import { providerToName } from 'shared/utils/provider'
 
 interface SyncButtonProps {
-  provider: 'gh' | 'gl' | 'bb' | 'ghe' | 'gle' | 'bbs'
+  provider: Provider
 }
 
 const SyncButton: React.FC<SyncButtonProps> = ({ provider }) => {
@@ -19,7 +21,7 @@ const SyncButton: React.FC<SyncButtonProps> = ({ provider }) => {
         <img
           alt={`Logo of ${providerToName(provider)}`}
           className="mx-4 block size-6"
-          src={providerImage(provider)}
+          src={loginProviderImage(provider)}
         />
         Sync with {providerToName(provider)}
       </a>

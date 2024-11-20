@@ -14,7 +14,7 @@ import BillingOptions from './BillingOptions'
 const allPlans = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -26,7 +26,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -39,7 +39,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappy',
+    value: Plans.USERS_PR_INAPPY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [
@@ -58,7 +58,7 @@ const mockPlanDataResponse = {
   billingRate: 'monthly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: 'test-plan',
+  value: Plans.USERS_PR_INAPPM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -195,7 +195,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              'users-pr-inappm'
+              Plans.USERS_PR_INAPPM
             )
           )
         })
@@ -272,7 +272,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              'users-pr-inappy'
+              Plans.USERS_PR_INAPPY
             )
           )
         })

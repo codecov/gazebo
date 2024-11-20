@@ -6,6 +6,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { Plans } from 'shared/utils/billing'
+
 import GithubIntegrationSection from './GithubIntegrationSection'
 
 const server = setupServer()
@@ -54,11 +56,11 @@ describe('GithubIntegrationSection', () => {
       http.get(`/internal/gh/codecov/account-details/`, (info) => {
         return HttpResponse.json({
           plan: {
-            marketingName: 'users-basic',
+            marketingName: Plans.USERS_BASIC,
             baseUnitPrice: 12,
             benefits: ['Configurable # of users', 'Unlimited repos'],
             quantity: 5,
-            value: 'users-inappm',
+            value: Plans.USERS_INAPPM,
           },
           activatedUserCount: 2,
           inactiveUserCount: 1,

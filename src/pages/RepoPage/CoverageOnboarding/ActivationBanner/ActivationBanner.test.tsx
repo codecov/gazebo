@@ -4,6 +4,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { PlanName, Plans } from 'shared/utils/billing'
+
 import ActivationBanner from './ActivationBanner'
 
 vi.mock('./TrialEligibleBanner', () => ({
@@ -48,7 +50,7 @@ const mockTrialData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   trialStatus: 'ONGOING',
   trialStartDate: '2023-01-01T08:55:25',
   trialEndDate: '2023-01-10T08:55:25',
@@ -62,7 +64,7 @@ describe('ActivationBanner', () => {
   function setup(
     privateRepos = true,
     trialStatus = 'NOT_STARTED',
-    value = 'users-basic',
+    value: PlanName = Plans.USERS_BASIC,
     hasSeatsLeft = true
   ) {
     server.use(
@@ -83,7 +85,7 @@ describe('ActivationBanner', () => {
                 billingRate: 'monthly',
                 marketingName: 'Users Basic',
                 monthlyUploadLimit: 250,
-                value: 'users-basic',
+                value: Plans.USERS_BASIC,
               },
             },
           },
@@ -101,7 +103,7 @@ describe('ActivationBanner', () => {
   })
 
   it('does not render trial eligible banner if user is not eligible to trial', async () => {
-    setup(false, 'ONGOING', 'users-basic', true)
+    setup(false, 'ONGOING', Plans.USERS_BASIC, true)
     const { container } = render(<ActivationBanner />, { wrapper })
 
     await waitFor(() => queryClient.isFetching)
@@ -111,7 +113,7 @@ describe('ActivationBanner', () => {
   })
 
   it('renders activation required banner if user is not on free plan and has seats left', async () => {
-    setup(true, 'ONGOING', 'users-pro', true)
+    setup(true, 'ONGOING', Plans.USERS_PR_INAPPM, true)
     render(<ActivationBanner />, { wrapper })
 
     const ActivationRequiredBanner = await screen.findByText(
@@ -121,7 +123,7 @@ describe('ActivationBanner', () => {
   })
 
   it('renders seats limit reached banner if user has no seats left and on free plan', async () => {
-    setup(true, 'ONGOING', 'users-basic', false)
+    setup(true, 'ONGOING', Plans.USERS_BASIC, false)
     render(<ActivationBanner />, { wrapper })
 
     const FreePlanSeatsLimitBanner = await screen.findByText(
@@ -131,7 +133,7 @@ describe('ActivationBanner', () => {
   })
 
   it('renders seats limit reached banner if user has no seats left and on paid plan', async () => {
-    setup(true, 'ONGOING', 'users-inappy', false)
+    setup(true, 'ONGOING', Plans.USERS_PR_INAPPY, false)
     render(<ActivationBanner />, { wrapper })
 
     const PaidPlanSeatsLimitBanner = await screen.findByText(

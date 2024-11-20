@@ -3,12 +3,14 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
+import { Plans } from 'shared/utils/billing'
+
 import { useInfiniteTestResults } from './useInfiniteTestResults'
 
 const mockTestResults = {
   owner: {
     plan: {
-      value: 'users-enterprisem',
+      value: Plans.USERS_ENTERPRISEM,
     },
     repository: {
       __typename: 'Repository',
@@ -78,7 +80,7 @@ const mockNotFoundError = {
       message: 'Repository not found',
     },
     plan: {
-      value: 'users-enterprisem',
+      value: Plans.USERS_ENTERPRISEM,
     },
   },
 }
@@ -86,7 +88,7 @@ const mockNotFoundError = {
 const mockOwnerNotActivatedError = {
   owner: {
     plan: {
-      value: 'users-enterprisem',
+      value: Plans.USERS_ENTERPRISEM,
     },
     repository: {
       __typename: 'OwnerNotActivatedError',

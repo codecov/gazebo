@@ -23,7 +23,7 @@ const teamPlans = [
     billingRate: 'monthly',
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamm',
+    value: Plans.USERS_TEAMM,
   },
   {
     baseUnitPrice: 5,
@@ -31,14 +31,14 @@ const teamPlans = [
     billingRate: 'yearly',
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamy',
+    value: Plans.USERS_TEAMY,
   },
 ]
 
 const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -50,7 +50,7 @@ const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -70,7 +70,7 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',

@@ -5,6 +5,8 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { MockInstance } from 'vitest'
 
+import { Plans } from 'shared/utils/billing'
+
 import { useTestResultsAggregates } from './useTestResultsAggregates'
 
 const queryClient = new QueryClient({
@@ -41,7 +43,7 @@ const mockNotFoundError = {
       message: 'repo not found',
     },
     plan: {
-      value: 'users-basic',
+      value: Plans.USERS_BASIC,
     },
   },
 }
@@ -52,7 +54,7 @@ const mockIncorrectResponse = {
       invalid: 'invalid',
     },
     plan: {
-      value: 'users-basic',
+      value: Plans.USERS_BASIC,
     },
   },
 }
@@ -60,7 +62,7 @@ const mockIncorrectResponse = {
 const mockResponse = {
   owner: {
     plan: {
-      value: 'users-basic',
+      value: Plans.USERS_BASIC,
     },
     repository: {
       __typename: 'Repository',

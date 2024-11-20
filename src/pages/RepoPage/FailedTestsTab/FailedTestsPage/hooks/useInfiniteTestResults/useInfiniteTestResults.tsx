@@ -12,6 +12,7 @@ import {
 } from 'services/repo'
 import Api from 'shared/api'
 import { type NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { PlanName, Plans } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
@@ -63,7 +64,7 @@ const GetTestResultsSchema = z.object({
     .object({
       plan: z
         .object({
-          value: z.string(),
+          value: z.nativeEnum(Plans),
         })
         .nullable(),
       repository: z.discriminatedUnion('__typename', [
@@ -178,7 +179,7 @@ interface UseTestResultsArgs {
     testResults: TestResult[]
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
     private: boolean | null
-    plan: string | null
+    plan: PlanName | null
     defaultBranch: string | null
     totalCount: number | null
   }>
