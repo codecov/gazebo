@@ -465,6 +465,14 @@ describe('GitHubActions', () => {
           blurb = await screen.findByText(/about generating coverage reports/)
           expect(blurb).toBeInTheDocument()
         })
+
+        it('uses correct version of codecov-action', async () => {
+          setup({})
+          render(<GitHubActions />, { wrapper })
+
+          const version = await screen.findByText(/codecov\/codecov-action@v5/)
+          expect(version).toBeInTheDocument()
+        })
       })
     })
   })

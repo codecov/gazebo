@@ -240,7 +240,7 @@ describe('CircleCI', () => {
     it('renders yaml code', async () => {
       render(<CircleCI />, { wrapper })
 
-      const yamlCode = await screen.findByText(/codecov\/codecov@5.0.3/)
+      const yamlCode = await screen.findByText(/codecov\/codecov@5/)
       expect(yamlCode).toBeInTheDocument()
     })
 

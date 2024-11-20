@@ -19,7 +19,7 @@ import ExampleBlurb from '../ExampleBlurb'
 import LearnMoreBlurb from '../LearnMoreBlurb'
 
 const orbsString = `orbs:
-  codecov: codecov/codecov@5.0.3
+  codecov: codecov/codecov@5
 workflows:
   upload-to-codecov:
     jobs:

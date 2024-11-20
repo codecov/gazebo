@@ -68,7 +68,7 @@ jobs:
         run: npx jest --coverage
 
       - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: \${{ secrets.CODECOV_TOKEN }}${
             orgUploadToken
@@ -106,7 +106,7 @@ jobs:
         run: npx vitest run --coverage
 
       - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: \${{ secrets.CODECOV_TOKEN }}${
             orgUploadToken
@@ -144,7 +144,7 @@ jobs:
         run: pytest --cov --cov-report=xml
 
       - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: \${{ secrets.CODECOV_TOKEN }}${
             orgUploadToken
@@ -182,7 +182,7 @@ jobs:
         run: go test -coverprofile=coverage.txt
 
       - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: \${{ secrets.CODECOV_TOKEN }}${
             orgUploadToken
@@ -379,7 +379,7 @@ function Step3({
   const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
 
   const step3Config = `- name: Upload coverage reports to Codecov
-    uses: codecov/codecov-action@v4
+    uses: codecov/codecov-action@v5
     with:
       token: \${{ secrets.CODECOV_TOKEN }}${
         orgUploadToken
