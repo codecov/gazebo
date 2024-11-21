@@ -129,7 +129,7 @@ describe('ActivationRequiredSelfHosted', () => {
           name: /Manage members/,
         })
         expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/admin/gh/access')
+        expect(link).toHaveAttribute('href', '/admin/gh/users')
       })
     })
   })

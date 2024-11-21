@@ -40,9 +40,9 @@ function SeatsAvailable({ isAdmin }: { isAdmin: boolean }) {
           <div className="left-[100px] md:relative">
             {isAdmin ? (
               <Button
-                hook="trial-eligible-banner-access"
+                hook="activation-required-self-hosted-banner-users"
                 to={{
-                  pageName: 'access',
+                  pageName: 'users',
                 }}
                 disabled={false}
                 variant="primary"

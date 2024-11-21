@@ -38,7 +38,7 @@ function SeatsAvailable({ isAdmin }: { isAdmin: boolean }) {
       </div>
       {isAdmin ? (
         <Button
-          to={{ pageName: 'access' }}
+          to={{ pageName: 'users' }}
           disabled={undefined}
           hook={undefined}
           variant="primary"
