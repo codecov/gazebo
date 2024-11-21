@@ -75,6 +75,7 @@ function createTableData({
                 pageName: 'coverage',
                 options: { queryParams: { flags: [value.name] } },
               }}
+              variant="link"
               isExternal={false}
               hook={'flag-to-coverage-page'}
             >
