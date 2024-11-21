@@ -49,7 +49,7 @@ interface SetupArgs {
 describe('useReposCoverageMeasurements', () => {
   function setup({ hasNoData = false, hasParsingError = false }: SetupArgs) {
     server.use(
-      graphql.query('GetReposCoverageMeasurements', (info) => {
+      graphql.query('GetReposCoverageMeasurements', () => {
         if (hasNoData) {
           return HttpResponse.json({ data: { owner: null } })
         } else if (hasParsingError) {

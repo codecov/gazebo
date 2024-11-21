@@ -56,7 +56,7 @@ function useRepoComponentsTable(isDesc = false) {
   const { after, interval } = createMeasurementVariables(
     // @ts-expect-error Need to type useLocationParams
     params?.historicalTrend
-      ? // @ts-expect-error
+      ? // @ts-expect-error - useLocationParams has type issues
         params.historicalTrend
       : TIME_OPTION_VALUES.LAST_3_MONTHS,
     repoData?.repository?.oldestCommitAt ?? undefined

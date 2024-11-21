@@ -39,14 +39,14 @@ const Title = ({
     <div className="flex flex-1 flex-row items-center gap-4 lg:w-auto">
       <Avatar user={user} border="light" />
       <div className="flex flex-col">
-        {/* @ts-ignore */}
+        {/* @ts-expect-error - type issues with A */}
         <A to={{ pageName: 'commit', options: { commit: commitid, flags } }}>
           <h2 className="text-sm font-semibold text-ds-secondary-text">
             {commitMessage()}
           </h2>
         </A>
         <p className="text-xs">
-          {/* @ts-ignore */}
+          {/* @ts-expect-error - type issues with A */}
           <A to={{ pageName: 'owner' }}>
             <span className="text-ds-secondary-text">{author?.username}</span>
           </A>

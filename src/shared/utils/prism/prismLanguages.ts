@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck - We're adding this here because there are no types for the prismjs package even after installing the @types/prismjs package
 ;(async () => {
   // import languages with no extends()

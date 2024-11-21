@@ -11,7 +11,7 @@ const UploadReference = ({ ciUrl, name, buildCode }: UploadReferenceProps) => {
 
   if (ciUrl) {
     return (
-      // @ts-expect-error
+      // @ts-expect-error - A hasn't been typed yet
       <A href={ciUrl} hook="ci job" isExternal={true}>
         {uploadRef}
       </A>

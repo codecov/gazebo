@@ -42,8 +42,7 @@ const DeleteFlagModal = ({ isOpen, closeModal, flagName }: Props) => {
               to={undefined}
               disabled={false}
               onClick={() => {
-                // TODO: fix when we convert the hooks to TS
-                // @ts-expect-error
+                // @ts-expect-error - fix when we convert the hooks to TS
                 mutate({ flagName })
                 closeModal()
               }}

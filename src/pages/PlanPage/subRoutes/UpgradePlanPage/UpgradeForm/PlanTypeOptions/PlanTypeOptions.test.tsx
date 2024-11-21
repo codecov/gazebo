@@ -200,7 +200,7 @@ describe('PlanTypeOptions', () => {
     }
   ) {
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, (info) => {
+      http.get(`/internal/gh/codecov/account-details/`, () => {
         if (planValue === Plans.USERS_BASIC) {
           return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_PR_INAPPY) {
@@ -215,7 +215,7 @@ describe('PlanTypeOptions', () => {
           return HttpResponse.json(mockAccountDetailsSentryYearly)
         }
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: {
             owner: {

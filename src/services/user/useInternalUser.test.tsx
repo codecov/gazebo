@@ -28,7 +28,7 @@ afterAll(() => {
 describe('useInternalUser', () => {
   function setup(hasError = false) {
     server.use(
-      http.get('/internal/user', (info) => {
+      http.get('/internal/user', () => {
         if (hasError) {
           return HttpResponse.json({}, { status: 400 })
         }

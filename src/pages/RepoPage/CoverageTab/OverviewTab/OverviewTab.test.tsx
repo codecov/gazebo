@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { type Mock } from 'vitest'
 
 import { TierNames, TTierNames } from 'services/tier'
 
@@ -296,7 +295,6 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
-  let resizeObserverMock: Mock
   /**
    * ResizeObserver is not available, so we have to create a mock to avoid error coming
    * from `react-resize-detector`.
@@ -305,7 +303,7 @@ beforeEach(() => {
    * This mock also allow us to use {@link notifyResizeObserverChange} to fire changes
    * from inside our test.
    */
-  resizeObserverMock = vi.fn().mockImplementation(() => {
+  const resizeObserverMock = vi.fn().mockImplementation(() => {
     return {
       observe: vi.fn(),
       unobserve: vi.fn(),
@@ -313,7 +311,7 @@ beforeEach(() => {
     }
   })
 
-  // @ts-ignore
+  // @ts-expect-error - deleting so we can override with the mock
   delete window.ResizeObserver
 
   window.ResizeObserver = resizeObserverMock

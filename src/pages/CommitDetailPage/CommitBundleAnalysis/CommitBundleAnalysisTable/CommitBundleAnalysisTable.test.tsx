@@ -133,7 +133,7 @@ describe('CommitBundleAnalysisTable', () => {
   ) {
     const user = userEvent.setup()
     server.use(
-      graphql.query('CommitBundleList', (info) => {
+      graphql.query('CommitBundleList', () => {
         if (isEmptyList) {
           return HttpResponse.json({ data: mockEmptyCommitBundleListData })
         } else if (nonComparisonType) {
@@ -242,13 +242,12 @@ describe('CommitBundleAnalysisTable', () => {
 
 describe('useTableData', () => {
   function setup(
-    { isEmptyList = false, nonComparisonType = false }: SetupArgs = {
-      isEmptyList: false,
+    { nonComparisonType = false }: SetupArgs = {
       nonComparisonType: false,
     }
   ) {
     server.use(
-      graphql.query('CommitBundleList', (info) => {
+      graphql.query('CommitBundleList', () => {
         if (nonComparisonType) {
           return HttpResponse.json({ data: mockNonComparisonTypeData })
         } else {

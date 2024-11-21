@@ -12,7 +12,7 @@ describe('Icon', () => {
 
   describe("when rendered with a SVG we don't have", () => {
     it('renders nothing', () => {
-      // @ts-expect-error
+      // @ts-expect-error - testing with a string that doesn't exist
       const { container } = render(<Icon name="icon-we-dont-have" />)
 
       expect(container).toBeEmptyDOMElement()

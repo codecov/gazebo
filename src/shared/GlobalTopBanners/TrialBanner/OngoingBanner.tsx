@@ -33,7 +33,7 @@ const OngoingBanner: React.FC<OngoingBannerProps> = ({ dateDiff }) => {
           <span className="pr-2 text-xl">&#128075;</span>
           <span className="font-semibold">
             <DayCount dateDiff={dateDiff} />
-            {/* @ts-expect-error */}
+            {/* @ts-expect-error - A hasn't been typed yet */}
             <A to={{ pageName: 'upgradeOrgPlan' }}>&nbsp;Upgrade now</A>.
           </span>
         </p>

@@ -76,7 +76,7 @@ describe('ComponentMeasurements', () => {
     isNotFoundError = false,
   } = {}) {
     server.use(
-      graphql.query('ComponentMeasurements', (info) => {
+      graphql.query('ComponentMeasurements', () => {
         if (isSchemaInvalid) {
           return HttpResponse.json({})
         }

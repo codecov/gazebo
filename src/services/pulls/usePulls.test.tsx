@@ -290,7 +290,7 @@ describe('GetPulls', () => {
   })
 
   describe('when __typename is NotFoundError', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -330,7 +330,7 @@ describe('GetPulls', () => {
   })
 
   describe('when __typename is OwnerNotActivatedError', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -370,7 +370,7 @@ describe('GetPulls', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null

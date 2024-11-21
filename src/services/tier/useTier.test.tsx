@@ -52,7 +52,7 @@ describe('useTier', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {

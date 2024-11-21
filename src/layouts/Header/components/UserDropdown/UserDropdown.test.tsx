@@ -113,10 +113,10 @@ describe('UserDropdown', () => {
     config.API_URL = ''
 
     server.use(
-      http.post('/logout', (info) => {
+      http.post('/logout', () => {
         return HttpResponse.json({}, { status: 205 })
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: mockUser })
       })
     )

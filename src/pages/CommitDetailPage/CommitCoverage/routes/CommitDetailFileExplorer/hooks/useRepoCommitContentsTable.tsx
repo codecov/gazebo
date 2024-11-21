@@ -169,7 +169,6 @@ export function useRepoCommitContentsTable() {
     data,
     pathContentsType: commitData?.pathContentsType,
     isLoading: commitIsLoading,
-    // @ts-ignore
     isSearching: !!search,
     sortBy,
     setSortBy,

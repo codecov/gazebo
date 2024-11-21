@@ -11,8 +11,13 @@ import Icon from 'ui/Icon'
 
 const DropdownContext = React.createContext({ isOpen: false })
 
-interface DropdownProps
-  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root> {}
+// this interface is being temporarily commented out, if we need to add custom
+// props to DropdownProps, we can uncomment it and remove the type below
+// interface DropdownProps
+//   extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root> {}
+type DropdownProps = React.ComponentPropsWithoutRef<
+  typeof DropdownMenuPrimitive.Root
+>
 
 const Root = ({ ...props }: DropdownProps) => {
   const { defaultOpen = false } = props

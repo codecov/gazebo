@@ -35,7 +35,7 @@ beforeAll(() => {
     ...globalThis.jest,
     // This is a bit of a hack to get Vitest fake timers setup to work with waitFor and findBy's
     // GH Issue: https://github.com/testing-library/react-testing-library/issues/1197#issuecomment-1693824628
-    // @ts-ignore-error
+    // @ts-expect-error - see above description
     advanceTimersByTime: vi.advanceTimersByTime.bind(vi),
 
     /*

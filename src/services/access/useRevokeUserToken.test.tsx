@@ -40,7 +40,7 @@ interface SetupArgs {
 describe('useRevokeUserToken', () => {
   function setup(dataReturned: SetupArgs) {
     server.use(
-      graphql.mutation('RevokeUserToken', (info) => {
+      graphql.mutation('RevokeUserToken', () => {
         return HttpResponse.json({ data: dataReturned })
       })
     )

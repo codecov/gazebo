@@ -63,7 +63,7 @@ afterAll(() => {
 describe('FailedTestsPage', () => {
   function setup() {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({})
       })
     )

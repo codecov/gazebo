@@ -122,7 +122,7 @@ describe('BundleMessage', () => {
     }
   ) {
     server.use(
-      graphql.query('PullBADropdownSummary', (info) => {
+      graphql.query('PullBADropdownSummary', () => {
         if (noData) {
           return HttpResponse.json({ data: mockNoData })
         } else if (firstPullRequest) {

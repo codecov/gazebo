@@ -97,7 +97,7 @@ describe('usePullComponents', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('PullComponentsSelector', (info) => {
+      graphql.query('PullComponentsSelector', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

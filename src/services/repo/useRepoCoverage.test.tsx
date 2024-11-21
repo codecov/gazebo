@@ -89,7 +89,7 @@ describe('useRepoCoverage', () => {
     nullBranch = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoCoverage', (info) => {
+      graphql.query('GetRepoCoverage', () => {
         if (nullBranch) {
           return HttpResponse.json({ data: mockNullBranch })
         } else if (badResponse) {

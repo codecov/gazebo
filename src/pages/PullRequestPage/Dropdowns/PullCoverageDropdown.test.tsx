@@ -114,7 +114,7 @@ describe('PullCoverageDropdown', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('PullCoverageDropdownSummary', (info) => {
+      graphql.query('PullCoverageDropdownSummary', () => {
         if (noData) {
           return HttpResponse.json({ data: mockNoData })
         } else if (comparisonError) {

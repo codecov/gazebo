@@ -12,7 +12,7 @@ const ExpiredBanner: React.FC = () => {
         <p className="font-semibold">
           <span className="pr-2 text-xl">&#127881;</span>
           The organization&apos;s 14-day free Codecov Pro trial has ended.{' '}
-          {/* @ts-expect-error */}
+          {/* @ts-expect-error - A hasn't been typed yet */}
           <A to={{ pageName: 'upgradeOrgPlan' }}>
             Add payment method
             <Icon name="chevronRight" size="sm" variant="solid" />

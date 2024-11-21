@@ -59,7 +59,7 @@ afterAll(() => {
 describe('LoginLayout', () => {
   function setup() {
     server.use(
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: { me: null } })
       })
     )

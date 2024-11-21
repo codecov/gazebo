@@ -5,7 +5,10 @@ import { cn } from 'shared/utils/cn'
 
 const metricCard = cva(['flex', 'flex-col', 'gap-1', 'px-4'])
 
-interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {}
+// this interface is being temporarily commented out, if we need to add custom
+// props to MetricCardProps, we can uncomment it and remove the type below
+// interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {}
+type MetricCardProps = React.HTMLAttributes<HTMLDivElement>
 
 const MetricCardRoot = React.forwardRef<HTMLDivElement, MetricCardProps>(
   ({ className, children, ...props }, ref) => (

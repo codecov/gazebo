@@ -92,7 +92,7 @@ describe('useTestResultsAggregates', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query('GetTestResultsAggregates', (info) => {
+      graphql.query('GetTestResultsAggregates', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {

@@ -119,7 +119,7 @@ describe('PlanDetailsControls', () => {
     { hasSentryPlans = false }: SetupArgs = { hasSentryPlans: false }
   ) {
     server.use(
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         if (hasSentryPlans) {
           return HttpResponse.json({
             data: {

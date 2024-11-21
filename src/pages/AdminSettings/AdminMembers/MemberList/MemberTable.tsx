@@ -71,7 +71,7 @@ interface CreateTableArgs {
 const createTable = ({ tableData, seatData, mutate }: CreateTableArgs) => {
   return tableData?.map(
     ({ ownerid, activated, email, isAdmin, name, username }) => {
-      let maxSeats = seatData?.seatsUsed === seatData?.seatsLimit
+      const maxSeats = seatData?.seatsUsed === seatData?.seatsLimit
       const disableToggle = maxSeats && !activated
 
       return {

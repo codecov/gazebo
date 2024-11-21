@@ -141,7 +141,7 @@ describe('useBundleTrendData', () => {
     isUnsuccessfulParseError,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBundleTrend', (info) => {
+      graphql.query('GetBundleTrend', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockRepoNotFound })
         } else if (isOwnerNotActivatedError) {

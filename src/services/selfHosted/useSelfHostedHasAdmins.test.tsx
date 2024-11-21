@@ -31,7 +31,7 @@ afterAll(() => {
 describe('useSelfHostedHasAdmins', () => {
   function setup({ data }: { data: z.infer<typeof HasAdminsSchema> }) {
     server.use(
-      graphql.query('HasAdmins', (info) => {
+      graphql.query('HasAdmins', () => {
         return HttpResponse.json({ data })
       })
     )

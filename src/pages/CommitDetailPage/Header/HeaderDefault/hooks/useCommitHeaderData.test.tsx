@@ -85,7 +85,7 @@ describe('useCommitHeaderData', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CommitPageHeaderData', (info) => {
+      graphql.query('CommitPageHeaderData', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -170,7 +170,7 @@ describe('useCommitHeaderData', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -206,7 +206,7 @@ describe('useCommitHeaderData', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -242,7 +242,7 @@ describe('useCommitHeaderData', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null

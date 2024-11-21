@@ -80,7 +80,7 @@ describe('Header', () => {
     nullPull = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullHeadDataTeam', (info) => {
+      graphql.query('PullHeadDataTeam', () => {
         if (nullPull) {
           return HttpResponse.json({ data: { owner: { repository: null } } })
         }

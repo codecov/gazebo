@@ -76,7 +76,7 @@ describe('ActivationBanner', () => {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {

@@ -149,7 +149,7 @@ describe('useBranchBundleSummary', () => {
 
         return HttpResponse.json({ data: mockBranchBundleSummary })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )

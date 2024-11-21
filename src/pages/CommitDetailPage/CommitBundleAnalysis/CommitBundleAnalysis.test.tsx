@@ -196,7 +196,7 @@ describe('CommitBundleAnalysis', () => {
     }
   ) {
     server.use(
-      graphql.query('CommitPageData', (info) => {
+      graphql.query('CommitPageData', () => {
         return HttpResponse.json({
           data: mockCommitPageData({
             coverageEnabled,
@@ -206,7 +206,7 @@ describe('CommitBundleAnalysis', () => {
           }),
         })
       }),
-      graphql.query('CommitBADropdownSummary', (info) => {
+      graphql.query('CommitBADropdownSummary', () => {
         if (noData) {
           return HttpResponse.json({ data: mockNoData })
         } else if (firstPullRequest) {
@@ -217,7 +217,7 @@ describe('CommitBundleAnalysis', () => {
 
         return HttpResponse.json({ data: mockSummaryData(uncompress) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview({ coverageEnabled, bundleAnalysisEnabled }),
         })

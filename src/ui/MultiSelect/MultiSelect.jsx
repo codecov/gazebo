@@ -191,9 +191,11 @@ const MultiSelect = forwardRef(
     }))
 
     const toggleItem = (selectedItem) => {
-      isItemSelected(selectedItem, selectedItems)
-        ? removeSelectedItem(selectedItem)
-        : addSelectedItem(selectedItem)
+      if (isItemSelected(selectedItem, selectedItems)) {
+        removeSelectedItem(selectedItem)
+      } else {
+        addSelectedItem(selectedItem)
+      }
     }
 
     const listItems = [
@@ -231,7 +233,11 @@ const MultiSelect = forwardRef(
         switch (type) {
           case useCombobox.stateChangeTypes.InputKeyDownEnter:
           case useCombobox.stateChangeTypes.ItemClick:
-            isAllButton(selectedItem) ? reset() : toggleItem(selectedItem)
+            if (isAllButton(selectedItem)) {
+              reset()
+            } else {
+              toggleItem(selectedItem)
+            }
             break
           default:
             break

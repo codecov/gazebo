@@ -118,8 +118,8 @@ afterAll(() => {
 
 interface SetupArgs {
   content?: string | null
-  owner?: {} | null
-  coverage?: {} | null
+  owner?: object | null
+  coverage?: object | null
   isCriticalFile?: boolean
 }
 

@@ -83,7 +83,7 @@ describe('useRepo', () => {
     isOwnerNotActivatedError?: boolean
   }) {
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         if (failedToParseError) {
           return HttpResponse.json({ data: {} })
         } else if (isOwnerNotActivatedError) {

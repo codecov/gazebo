@@ -149,10 +149,10 @@ afterAll(() => {
 describe('BundleChart', () => {
   function setup() {
     server.use(
-      graphql.query('GetBundleTrend', (info) => {
+      graphql.query('GetBundleTrend', () => {
         return HttpResponse.json({ data: mockBundleTrendData })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )

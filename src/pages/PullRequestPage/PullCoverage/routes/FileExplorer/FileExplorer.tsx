@@ -31,7 +31,7 @@ function FileExplorer() {
         </div>
         <div className="flex gap-2">
           <SearchField
-            // @ts-expect-error
+            // @ts-expect-error - SearchField hasn't been typed yet
             dataMarketing="pull-files-search"
             placeholder="Search for files"
             searchValue={params?.search}

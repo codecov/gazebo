@@ -195,7 +195,7 @@ export default function TermsOfService() {
             </div>
             <EmailInput
               register={register}
-              // @ts-expect-error
+              // @ts-expect-error - the types on this need to be updated to match the type of message
               marketingEmailMessage={formErrors?.marketingEmail?.message}
               showEmailRequired={
                 watch('marketingConsent') && !currentUser?.email

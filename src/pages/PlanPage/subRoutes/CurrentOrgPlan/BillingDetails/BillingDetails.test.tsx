@@ -62,7 +62,7 @@ describe('BillingDetails', () => {
     }
   ) {
     server.use(
-      http.get('/internal/gh/:owner/account-details/', (info) => {
+      http.get('/internal/gh/:owner/account-details/', () => {
         if (hasSubscription) {
           return HttpResponse.json({
             subscriptionDetail: hasTax

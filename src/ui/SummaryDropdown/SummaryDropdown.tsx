@@ -24,8 +24,11 @@ const SummaryDropdownRoot = forwardRef<
 
 SummaryDropdownRoot.displayName = 'SummaryDropdownRoot'
 
-interface ItemProps
-  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> {}
+// this interface is being temporarily commented out, if we need to add custom
+// props to ItemProps, we can uncomment it and remove the type below
+// interface ItemProps
+// extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> {}
+type ItemProps = React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
 
 const SummaryItem = forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,

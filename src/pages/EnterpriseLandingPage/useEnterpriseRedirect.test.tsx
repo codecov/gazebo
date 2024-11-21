@@ -42,7 +42,7 @@ describe('useEnterpriseRedirect', () => {
     config.ENTERPRISE_DEFAULT_PROVIDER = defaultProvider
 
     server.use(
-      graphql.query('EnterpriseLandingPageUser', (info) => {
+      graphql.query('EnterpriseLandingPageUser', () => {
         if (sendUser) {
           return HttpResponse.json({
             data: {

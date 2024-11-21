@@ -85,7 +85,7 @@ describe('useCoverage', () => {
         }
         return HttpResponse.json({ data: mockRepoMeasurements })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({
           data: { owner: { plan: { tierName: tierValue } } },
         })

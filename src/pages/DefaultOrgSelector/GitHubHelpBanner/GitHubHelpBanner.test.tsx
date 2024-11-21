@@ -45,7 +45,7 @@ describe('GitHubHelpBanner', () => {
     const mutation = vi.fn()
 
     server.use(
-      graphql.query('IsSyncing', (info) => {
+      graphql.query('IsSyncing', () => {
         return HttpResponse.json({ data: { me: { isSyncing: false } } })
       }),
       graphql.mutation('SyncData', (info) => {

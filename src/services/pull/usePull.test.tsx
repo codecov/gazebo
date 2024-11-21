@@ -138,9 +138,9 @@ const repo = 'gazebo'
 describe('usePull', () => {
   afterEach(() => queryClient.clear())
 
-  function setup(data: {}) {
+  function setup(data: object) {
     server.use(
-      graphql.query('Pull', (info) => {
+      graphql.query('Pull', () => {
         return HttpResponse.json({ data })
       })
     )

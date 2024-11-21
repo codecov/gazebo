@@ -44,7 +44,7 @@ afterAll(() => {
 describe('useOnboardUser', () => {
   function setup() {
     server.use(
-      graphql.mutation('OnboardUser', (info) => {
+      graphql.mutation('OnboardUser', () => {
         const newUser = {
           ...user,
           onboardingCompleted: true,
