@@ -7,7 +7,7 @@ const restrictedGlobals = require('confusing-browser-globals')
 
 module.exports = {
   extends: [
-    // 'eslint:recommended',
+    'eslint:recommended',
     // 'plugin:@typescript-eslint/recommended',
     'plugin:tailwindcss/recommended',
     'plugin:@tanstack/eslint-plugin-query/recommended',

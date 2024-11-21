@@ -34,7 +34,7 @@ import {
 import { TableHeader } from '../TableHeader'
 
 const getDecodedBranch = (branch?: string) =>
-  !!branch ? decodeURIComponent(branch) : undefined
+  branch ? decodeURIComponent(branch) : undefined
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">

@@ -23,8 +23,7 @@ describe('useRedirect', () => {
     it('location replace was called (redirected)', async () => {
       const { result } = renderHook(() => useRedirect({ href }))
 
-      const { hardRedirect } = result?.current
-      hardRedirect()
+      result?.current?.hardRedirect()
 
       expect(window.location.replace).toHaveBeenCalledTimes(1)
     })

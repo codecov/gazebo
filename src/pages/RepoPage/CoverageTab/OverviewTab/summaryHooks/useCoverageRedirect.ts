@@ -66,7 +66,7 @@ export function useCoverageRedirect() {
           repo,
           ref,
           branch,
-          name: !!newBranch ? encodeURIComponent(newBranch) : undefined,
+          name: newBranch ? encodeURIComponent(newBranch) : undefined,
         },
       })
     },

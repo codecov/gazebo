@@ -194,7 +194,7 @@ describe('DefaultOrgSelector', () => {
 
     server.use(
       graphql.query('UseMyOrganizations', (info) => {
-        if (!!info.variables.after) {
+        if (info.variables.after) {
           fetchNextPage(info.variables.after)
         }
         return HttpResponse.json({ data: myOrganizationsData })
