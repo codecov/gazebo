@@ -83,7 +83,8 @@ describe('useUpdateRepo', () => {
           wrapper: wrapper(),
         })
 
-        result.current.mutate()
+        // @ts-expect-error - mutation hasn't been typed yet
+        result.current.mutate({ activated: true })
 
         await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
       })
