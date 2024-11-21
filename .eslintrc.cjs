@@ -3,12 +3,13 @@
 // This is dangerous as it hides accidentally undefined variables.
 // We blacklist the globals that we deem potentially confusing.
 // To use them, explicitly reference them, e.g. `window.name` or `window.status`.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const restrictedGlobals = require('confusing-browser-globals')
 
 module.exports = {
   extends: [
     'eslint:recommended',
-    // 'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended',
     'plugin:tailwindcss/recommended',
     'plugin:@tanstack/eslint-plugin-query/recommended',
     'plugin:react/recommended',
@@ -369,6 +370,16 @@ module.exports = {
     // Everything below, copied from https://github.com/facebook/create-react-app/blob/main/packages/eslint-config-react-app/index.js#L97
     // http://eslint.org/docs/rules/
     'no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+        destructuredArrayIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        ignoreRestSiblings: true,
+      },
+    ],
+    '@typescript-eslint/no-unused-vars': [
       'error',
       {
         argsIgnorePattern: '^_',
