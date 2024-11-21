@@ -7,7 +7,7 @@ import Icon from 'ui/Icon'
 
 export default function NameColumn({ row, getValue }) {
   const nameColumn = row.getValue('headName')
-  const [fileNames] = nameColumn?.props?.children
+  const fileNames = nameColumn?.props?.children?.[0]
   const path = fileNames?.props?.children
   const { provider, owner, repo, pullId } = useParams()
 

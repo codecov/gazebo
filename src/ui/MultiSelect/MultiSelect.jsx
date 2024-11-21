@@ -199,7 +199,7 @@ const MultiSelect = forwardRef(
     const listItems = [
       SELECT_ALL_BUTTON,
       ...selectedItems,
-      ...items?.filter((item) => !isItemSelected(item, selectedItems)),
+      ...(items?.filter((item) => !isItemSelected(item, selectedItems)) ?? []),
     ]
 
     const {

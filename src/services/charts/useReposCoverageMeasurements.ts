@@ -109,6 +109,6 @@ export const useReposCoverageMeasurements = ({
           measurements: parsedData.data?.owner?.measurements ?? null,
         }
       }),
-    ...(!!opts ? opts : {}),
+    ...(opts ? opts : {}),
   })
 }

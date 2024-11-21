@@ -127,7 +127,9 @@ export const setupSentry = ({
     if (!tracePropagationTargets.includes(hostname)) {
       tracePropagationTargets.push(hostname)
     }
-  } catch {}
+  } catch {
+    // do nothing
+  }
 
   Sentry.init({
     dsn: config.SENTRY_DSN,

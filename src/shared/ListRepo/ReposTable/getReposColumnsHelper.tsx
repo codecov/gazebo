@@ -28,11 +28,11 @@ export const getReposColumnsHelper = ({
       const repo = info.row.original
 
       let pageName = 'new'
-      if (!!repo?.isDemo) {
+      if (repo?.isDemo) {
         pageName = 'demoRepo'
-      } else if (!!repo?.coverageEnabled) {
+      } else if (repo?.coverageEnabled) {
         pageName = 'repo'
-      } else if (!!repo?.bundleAnalysisEnabled) {
+      } else if (repo?.bundleAnalysisEnabled) {
         pageName = 'bundles'
       }
 

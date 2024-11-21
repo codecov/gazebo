@@ -64,7 +64,7 @@ function useRepoComponentsTable(isDesc = false) {
 
   const { data, isLoading } = useRepoComponents({
     // @ts-expect-error Need to type useLocationParams
-    filters: Boolean(params?.components?.length)
+    filters: params?.components?.length
       ? // @ts-expect-error Need to type useLocationParams
         { components: params?.components }
       : {},

@@ -340,7 +340,7 @@ interface URLParams {
 }
 
 const getDecodedBranch = (branch?: string) =>
-  !!branch ? decodeURIComponent(branch) : undefined
+  branch ? decodeURIComponent(branch) : undefined
 
 export const historicalTrendToCopy = (interval?: MeasurementInterval) => {
   switch (interval) {
@@ -426,10 +426,10 @@ function MetricsSection() {
           <div
             className={cn(
               'grid',
-              !!flakeAggregates ? 'grid-cols-4' : 'grid-cols-2'
+              flakeAggregates ? 'grid-cols-4' : 'grid-cols-2'
             )}
           >
-            {!!flakeAggregates ? (
+            {flakeAggregates ? (
               <>
                 <TotalFlakyTestsCard
                   flakeCount={flakeAggregates?.flakeCount}

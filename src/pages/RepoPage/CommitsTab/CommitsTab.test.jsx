@@ -219,11 +219,11 @@ describe('CommitsTab', () => {
 
     server.use(
       graphql.query('GetBranches', (info) => {
-        if (!!info?.variables?.after) {
+        if (info?.variables?.after) {
           fetchNextPage(info?.variables?.after)
         }
 
-        if (!!info?.variables?.filters?.searchValue) {
+        if (info?.variables?.filters?.searchValue) {
           branchSearch(info?.variables?.filters?.searchValue)
         }
 
@@ -236,11 +236,11 @@ describe('CommitsTab', () => {
         return HttpResponse.json({ data: mockBranches(hasNextPage) })
       }),
       graphql.query('GetCommits', (info) => {
-        if (!!info?.variables?.filters?.branchName) {
+        if (info?.variables?.filters?.branchName) {
           branchName(info?.variables?.filters?.branchName)
         }
 
-        if (!!info?.variables?.filters?.search) {
+        if (info?.variables?.filters?.search) {
           commitSearch(info?.variables?.filters?.search)
         }
 
