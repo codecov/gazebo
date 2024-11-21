@@ -22,10 +22,9 @@ export function useRevokeUserToken({ provider }: { provider: string }) {
           input: { tokenid },
         },
         mutationPath: 'revokeUserToken',
+      }).then(() => {
+        queryClient.invalidateQueries(['sessions'])
       })
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
     useErrorBoundary: true,
   })
