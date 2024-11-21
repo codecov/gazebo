@@ -45,6 +45,7 @@ export const DiffLine: Story = {
           lineContent={line}
           getTokenProps={({ token, key }) => ({
             children: token.content,
+            key,
           })}
         />
       </MemoryRouter>

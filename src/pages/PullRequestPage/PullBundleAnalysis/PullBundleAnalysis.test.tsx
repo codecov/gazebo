@@ -154,7 +154,7 @@ describe('PullBundleAnalysis', () => {
     bundleAnalysisEnabled = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullPageData', (info) => {
+      graphql.query('PullPageData', () => {
         return HttpResponse.json({
           data: mockPullPageData(
             compareType,
@@ -164,10 +164,10 @@ describe('PullBundleAnalysis', () => {
           ),
         })
       }),
-      graphql.query('PullBADropdownSummary', (info) => {
+      graphql.query('PullBADropdownSummary', () => {
         return HttpResponse.json({ data: mockSummaryData })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview({ coverageEnabled, bundleAnalysisEnabled }),
         })

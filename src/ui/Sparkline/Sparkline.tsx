@@ -108,7 +108,7 @@ const Sparkline: React.FC<SparklineProps> = ({
     >
       <caption className="sr-only">{description}</caption>
       <tbody className="flex flex-1 flex-row">
-        {data.map(({ start, end, mode, value }, i) => {
+        {data.map(({ start, end, mode, value }, _i) => {
           // Inline styles are not performant but because this is memoized it should be ok.
           const properties = {
             '--start': start

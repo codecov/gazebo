@@ -105,7 +105,7 @@ describe('MyContextSwitcher', () => {
 
         return HttpResponse.json({ data: queryData })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         if (noData) {
           return HttpResponse.json({ data: { me: null } })
         }

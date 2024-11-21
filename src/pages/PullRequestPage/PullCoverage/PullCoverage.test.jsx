@@ -237,7 +237,7 @@ describe('PullRequestPageContent', () => {
         }
         return HttpResponse.json({ data: mockPullData(resultType) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview({
             bundleAnalysisEnabled,
@@ -245,14 +245,14 @@ describe('PullRequestPageContent', () => {
           }),
         })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({
           data: {
             owner: { plan: { tierName: tierValue } },
           },
         })
       }),
-      graphql.query('GetRepoRateLimitStatus', (info) => {
+      graphql.query('GetRepoRateLimitStatus', () => {
         return HttpResponse.json({
           data: mockRepoRateLimitStatus({ isGithubRateLimited }),
         })

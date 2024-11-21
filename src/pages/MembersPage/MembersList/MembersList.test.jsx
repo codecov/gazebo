@@ -89,17 +89,17 @@ describe('MembersList', () => {
     let sendActivatedUser = false
 
     server.use(
-      http.get('/internal/:provider/codecov/account-details', (info) => {
+      http.get('/internal/:provider/codecov/account-details', () => {
         return HttpResponse.json(accountDetails)
       }),
-      http.get('/internal/:provider/codecov/users', (info) => {
+      http.get('/internal/:provider/codecov/users', () => {
         if (sendActivatedUser) {
           sendActivatedUser = false
           return HttpResponse.json(mockActiveUserRequest)
         }
         return HttpResponse.json(mockNonActiveUserRequest)
       }),
-      http.patch('/internal/:provider/codecov/users/:ownerid', (info) => {
+      http.patch('/internal/:provider/codecov/users/:ownerid', () => {
         sendActivatedUser = true
         mockActivateUser()
         return HttpResponse.json({})

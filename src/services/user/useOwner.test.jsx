@@ -40,7 +40,7 @@ afterAll(() => {
 describe('useOwner', () => {
   function setup(dataReturned = undefined) {
     server.use(
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: { owner: dataReturned } })
       })
     )

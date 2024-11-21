@@ -80,7 +80,7 @@ interface SetupArgs {
 describe('useTreePaths', () => {
   function setup({ repoOverviewData }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: repoOverviewData })
       })
     )

@@ -172,7 +172,7 @@ describe('Components Tab', () => {
     isCurrentUserPartOfOrg?: boolean
   }) {
     server.use(
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         if (tierValue === TierNames.TEAM) {
           return HttpResponse.json({
             data: { owner: { plan: { tierName: TierNames.TEAM } } },
@@ -182,12 +182,12 @@ describe('Components Tab', () => {
           data: { owner: { plan: { tierName: TierNames.PRO } } },
         })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({
           data: mockRepoSettings(isPrivate, isCurrentUserPartOfOrg),
         })
       }),
-      graphql.query('BackfillComponentMemberships', (info) => {
+      graphql.query('BackfillComponentMemberships', () => {
         return HttpResponse.json({ data })
       }),
       graphql.query('FlagsSelect', (info) => {

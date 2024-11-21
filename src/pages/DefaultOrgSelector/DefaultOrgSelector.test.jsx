@@ -199,13 +199,13 @@ describe('DefaultOrgSelector', () => {
         }
         return HttpResponse.json({ data: myOrganizationsData })
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         if (!isValidUser) {
           return HttpResponse.json({ data: { me: null } })
         }
         return HttpResponse.json({ data: useUserData })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {

@@ -246,23 +246,23 @@ describe('CommitsTab', () => {
 
         return HttpResponse.json({ data: mockCommits })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         if (returnBranch) {
           return HttpResponse.json({ data: mockBranch(returnBranch) })
         }
 
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
       }),
-      graphql.query('GetBranchCommits', (info) => {
+      graphql.query('GetBranchCommits', () => {
         if (branchHasCommits) {
           return HttpResponse.json({ data: mockBranchHasCommits })
         }

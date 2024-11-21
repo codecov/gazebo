@@ -51,7 +51,7 @@ const wrapper = ({ children }) => (
 describe('useDeleteFlag', () => {
   function setup(data = {}, triggerError = false) {
     server.use(
-      graphql.mutation('deleteFlag', (info) => {
+      graphql.mutation('deleteFlag', () => {
         if (triggerError) {
           return HttpResponse.json({ errors: [] }, { status: 500 })
         } else {

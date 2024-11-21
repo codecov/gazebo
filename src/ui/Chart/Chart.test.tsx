@@ -65,7 +65,7 @@ describe('Chart', () => {
      * This mock also allow us to use {@link notifyResizeObserverChange} to fire changes
      * from inside our test.
      */
-    resizeObserverMock = vi.fn().mockImplementation((callback) => {
+    resizeObserverMock = vi.fn().mockImplementation((_callback) => {
       return {
         observe: vi.fn(),
         unobserve: vi.fn(),

@@ -254,19 +254,19 @@ describe('CommitDetailFileExplorerTable', () => {
 
         return HttpResponse.json({ data: mockTreeData })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockFlagBackfillData })
       }),
-      graphql.query('CommitComponents', (info) => {
+      graphql.query('CommitComponents', () => {
         return HttpResponse.json({ data: mockCommitComponentData })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({ data: mockOwnerTier })
       }),
-      graphql.query('FlagsSelect', (info) => {
+      graphql.query('FlagsSelect', () => {
         return HttpResponse.json({ data: mockFlagsResponse })
       })
     )

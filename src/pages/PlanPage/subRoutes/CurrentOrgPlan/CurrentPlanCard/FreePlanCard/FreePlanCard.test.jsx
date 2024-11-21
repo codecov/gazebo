@@ -208,10 +208,10 @@ describe('FreePlanCard', () => {
     }
   ) {
     server.use(
-      graphql.query('PlanPageData', (info) => {
+      graphql.query('PlanPageData', () => {
         return HttpResponse.json({ data: { owner } })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -227,12 +227,12 @@ describe('FreePlanCard', () => {
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: { owner: { availablePlans: plans } },
         })
       }),
-      http.get('/internal/bb/critical-role/account-details/', (info) => {
+      http.get('/internal/bb/critical-role/account-details/', () => {
         return HttpResponse.json({ numberOfUploads: 250 })
       })
     )

@@ -5,8 +5,6 @@ import FileHeader from './FileHeader'
 vi.mock('ui/CopyClipboard', () => ({ CopyClipboard: () => 'Copy Clipboard' }))
 
 describe('FileHeader', () => {
-  function setup(props) {}
-
   describe('when provided with all props', () => {
     it('renders progress percent and change percent', () => {
       render(
@@ -59,14 +57,6 @@ describe('FileHeader', () => {
   })
 
   describe('when there are no coverage numbers', () => {
-    beforeEach(() => {
-      setup({
-        header: '-16,7, +16,7',
-        headName: 'folder/file.js',
-        coverage: [],
-      })
-    })
-
     it('renders progress percent and change percent', () => {
       render(
         <FileHeader

@@ -55,7 +55,7 @@ afterAll(() => {
 describe('ReachingUploadLimitAlert', () => {
   function setup() {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {

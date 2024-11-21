@@ -212,13 +212,13 @@ describe('Actions Billing', () => {
     }))
 
     server.use(
-      http.get('/internal/gh/critical-role/account-details/', (info) => {
+      http.get('/internal/gh/critical-role/account-details/', () => {
         return HttpResponse.json(accountDetails)
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({ data: { owner: { availablePlans: plans } } })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({ data: { owner: trialPlanData } })
       }),
       graphql.mutation('startTrial', (info) => {

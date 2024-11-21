@@ -41,8 +41,7 @@ const wrapper = ({ children }) => (
 // mocking all the stripe components; and trusting the library :)
 vi.mock('@stripe/react-stripe-js', () => {
   function makeFakeComponent(name) {
-    // mocking onReady to be called after a bit of time
-    return function Component({ onReady }) {
+    return function Component() {
       return name
     }
   }

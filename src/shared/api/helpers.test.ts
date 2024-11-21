@@ -111,7 +111,7 @@ describe('rejectNetworkError', () => {
         data: {},
         dev: 'useCoolHook - 404 not found',
         error: Error('not found'),
-      }).catch((e) => {})
+      }).catch((_e) => {})
 
       expect(mocks.addBreadcrumb).toHaveBeenCalledWith({
         category: 'network.error',
@@ -127,7 +127,7 @@ describe('rejectNetworkError', () => {
         data: {},
         dev: 'useCoolHook - 404 not found',
         error: Error('not found'),
-      }).catch((e) => {})
+      }).catch((_e) => {})
 
       expect(mocks.setFingerprint).toHaveBeenCalledWith([
         'useCoolHook - 404 not found',
@@ -140,7 +140,7 @@ describe('rejectNetworkError', () => {
         data: {},
         dev: 'useCoolHook - 404 not found',
         error: Error('not found'),
-      }).catch((e) => {})
+      }).catch((_e) => {})
 
       expect(mocks.captureMessage).toHaveBeenCalledWith('Network Error')
     })
@@ -152,7 +152,7 @@ describe('rejectNetworkError', () => {
         status: 404,
         data: {},
         dev: 'useCoolHook - 404 not found',
-      }).catch((e) => {})
+      }).catch((_e) => {})
 
       expect(mocks.addBreadcrumb).not.toHaveBeenCalled()
       expect(mocks.setFingerprint).not.toHaveBeenCalled()

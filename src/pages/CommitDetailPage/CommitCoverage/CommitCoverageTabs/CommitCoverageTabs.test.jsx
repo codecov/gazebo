@@ -111,25 +111,24 @@ afterAll(() => {
 
 describe('CommitCoverageTabs', () => {
   function setup(
-    { flagValue = false, tierValue = TierNames.PRO, isPrivate = false } = {
-      flagValue: false,
+    { tierValue = TierNames.PRO, isPrivate = false } = {
       tierValue: TierNames.PRO,
       isPrivate: false,
     }
   ) {
     server.use(
-      graphql.query('FlagsSelect', (info) => {
+      graphql.query('FlagsSelect', () => {
         return HttpResponse.json({ data: mockFlagsResponse })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillResponse })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({
           data: { owner: { plan: { tierName: tierValue } } },
         })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
       })
     )

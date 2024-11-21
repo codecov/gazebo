@@ -184,7 +184,7 @@ const wrapper = ({ children }) => (
 describe('PlanUpgradeTeam', () => {
   function setup({ plan = mockPlanBasic } = { plan: mockPlanBasic }) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -195,7 +195,7 @@ describe('PlanUpgradeTeam', () => {
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: { owner: { availablePlans: mockAvailablePlans } },
         })

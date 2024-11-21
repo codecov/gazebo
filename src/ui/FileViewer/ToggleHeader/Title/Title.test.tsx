@@ -234,7 +234,7 @@ describe('TitleFlags', () => {
 
         return HttpResponse.json({ data: mockFirstResponse })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: backfillData })
       })
     )

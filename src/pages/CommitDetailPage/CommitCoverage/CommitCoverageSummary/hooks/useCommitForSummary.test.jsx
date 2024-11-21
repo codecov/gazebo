@@ -153,7 +153,7 @@ afterAll(() => {
 describe('usePullForCompareSummary', () => {
   function setup() {
     server.use(
-      graphql.query('Commit', (info) => {
+      graphql.query('Commit', () => {
         return HttpResponse.json({
           data: {
             owner: { repository: { __typename: 'Repository', ...data } },

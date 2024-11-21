@@ -43,7 +43,7 @@ interface SetupArgs {
 describe('useOwnerRateLimitStatus', () => {
   function setup({ isUnsuccessfulParseError = false }: SetupArgs) {
     server.use(
-      graphql.query('GetOwnerRateLimitStatus', (info) => {
+      graphql.query('GetOwnerRateLimitStatus', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }

@@ -82,10 +82,10 @@ afterAll(() => {
 describe('ToggleHeader', () => {
   function setup() {
     server.use(
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillResponse })
       }),
-      graphql.query('FlagsSelect', (info) => {
+      graphql.query('FlagsSelect', () => {
         return HttpResponse.json({ data: mockFlagResponse })
       })
     )

@@ -63,7 +63,7 @@ describe('HeaderDefault', () => {
     }))
 
     server.use(
-      graphql.query('CommitPageHeaderData', (info) => {
+      graphql.query('CommitPageHeaderData', () => {
         return HttpResponse.json({ data: mockData(pullId) })
       })
     )
