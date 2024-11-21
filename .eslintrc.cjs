@@ -7,6 +7,8 @@ const restrictedGlobals = require('confusing-browser-globals')
 
 module.exports = {
   extends: [
+    // 'eslint:recommended',
+    // 'plugin:@typescript-eslint/recommended',
     'plugin:tailwindcss/recommended',
     'plugin:@tanstack/eslint-plugin-query/recommended',
     'plugin:react/recommended',
@@ -30,9 +32,15 @@ module.exports = {
     // JS Rules
     // Copied from https://github.com/facebook/create-react-app/blob/main/packages/eslint-config-react-app/base.js
     {
-      files: ['**/*.js?(x)', '**/*.test.js?(x)'],
+      files: [
+        '**/*.js?(x)',
+        '**/*.cjs?(x)',
+        '**/*.mjs?(x)',
+        '**/*.test.js?(x)',
+      ],
       parser: '@babel/eslint-parser',
       plugins: ['react'],
+      extends: ['plugin:@typescript-eslint/disable-type-checked'],
       env: {
         browser: true,
         commonjs: true,
@@ -68,7 +76,7 @@ module.exports = {
         ecmaFeatures: {
           jsx: true,
         },
-
+        project: ['./tsconfig.json'],
         // typescript-eslint specific options
         warnOnUnsupportedTypeScriptVersion: true,
       },
@@ -122,6 +130,7 @@ module.exports = {
         ],
         'no-useless-constructor': 'off',
         '@typescript-eslint/no-useless-constructor': 'warn',
+        '@typescript-eslint/no-explicit-any': 'off',
       },
     },
     // Testing Library
@@ -370,11 +379,7 @@ module.exports = {
     ],
     // Everything below, copied from https://github.com/facebook/create-react-app/blob/main/packages/eslint-config-react-app/index.js#L97
     // http://eslint.org/docs/rules/
-    'array-callback-return': 'warn',
-    'default-case': ['warn', { commentPattern: '^no default$' }],
-    eqeqeq: ['warn', 'smart'],
-    'no-array-constructor': 'warn',
-    'no-caller': 'warn',
+    // modified recommended rules
     'no-cond-assign': ['warn', 'except-parens'],
     'no-const-assign': 'warn',
     'no-control-regex': 'warn',
@@ -385,45 +390,60 @@ module.exports = {
     'no-duplicate-case': 'warn',
     'no-empty-character-class': 'warn',
     'no-empty-pattern': 'warn',
-    'no-eval': 'warn',
     'no-ex-assign': 'warn',
+    'no-fallthrough': 'warn',
+    'no-func-assign': 'warn',
+    'no-invalid-regexp': 'warn',
+    'no-global-assign': 'warn',
+    'no-unsafe-negation': 'warn',
+    'no-new-symbol': 'warn',
+    'no-obj-calls': 'warn',
+    'no-octal': 'warn',
+    'no-redeclare': 'warn',
+    'no-regex-spaces': 'warn',
+    'no-self-assign': 'warn',
+    'no-shadow-restricted-names': 'warn',
+    'no-sparse-arrays': 'warn',
+    'no-this-before-super': 'warn',
+    'no-undef': 'error',
+    'no-unreachable': 'warn',
+    'no-unused-labels': 'warn',
+    'no-unused-vars': ['warn', { args: 'none', ignoreRestSiblings: true }],
+    'no-useless-escape': 'warn',
+    'no-with': 'warn',
+    'require-yield': 'warn',
+    'use-isnan': 'warn',
+    'valid-typeof': 'warn',
+    'getter-return': 'warn',
+
+    // custom applied base rules
+    'array-callback-return': 'warn',
+    'default-case': ['warn', { commentPattern: '^no default$' }],
+    eqeqeq: ['warn', 'smart'],
+    'no-array-constructor': 'warn',
+    'no-caller': 'warn',
+    'no-eval': 'warn',
     'no-extend-native': 'warn',
     'no-extra-bind': 'warn',
     'no-extra-label': 'warn',
-    'no-fallthrough': 'warn',
-    'no-func-assign': 'warn',
     'no-implied-eval': 'warn',
-    'no-invalid-regexp': 'warn',
     'no-iterator': 'warn',
     'no-label-var': 'warn',
     'no-labels': ['warn', { allowLoop: true, allowSwitch: false }],
     'no-lone-blocks': 'warn',
     'no-loop-func': 'warn',
     'no-multi-str': 'warn',
-    'no-global-assign': 'warn',
-    'no-unsafe-negation': 'warn',
     'no-new-func': 'warn',
     'no-object-constructor': 'warn',
-    'no-new-symbol': 'warn',
     'no-new-wrappers': 'warn',
-    'no-obj-calls': 'warn',
-    'no-octal': 'warn',
     'no-octal-escape': 'warn',
-    'no-redeclare': 'warn',
-    'no-regex-spaces': 'warn',
     'no-restricted-syntax': ['warn', 'WithStatement'],
     'no-script-url': 'warn',
-    'no-self-assign': 'warn',
     'no-self-compare': 'warn',
     'no-sequences': 'warn',
-    'no-shadow-restricted-names': 'warn',
-    'no-sparse-arrays': 'warn',
     'no-template-curly-in-string': 'warn',
-    'no-this-before-super': 'warn',
     'no-throw-literal': 'warn',
-    'no-undef': 'error',
     'no-restricted-globals': ['error'].concat(restrictedGlobals),
-    'no-unreachable': 'warn',
     'no-unused-expressions': [
       'error',
       {
@@ -432,8 +452,6 @@ module.exports = {
         allowTaggedTemplates: true,
       },
     ],
-    'no-unused-labels': 'warn',
-    'no-unused-vars': ['warn', { args: 'none', ignoreRestSiblings: true }],
     'no-use-before-define': [
       'warn',
       {
@@ -445,7 +463,6 @@ module.exports = {
     'no-useless-computed-key': 'warn',
     'no-useless-concat': 'warn',
     'no-useless-constructor': 'warn',
-    'no-useless-escape': 'warn',
     'no-useless-rename': [
       'warn',
       {
@@ -454,12 +471,8 @@ module.exports = {
         ignoreExport: false,
       },
     ],
-    'no-with': 'warn',
-    'require-yield': 'warn',
     strict: ['warn', 'never'],
     'unicode-bom': ['warn', 'never'],
-    'use-isnan': 'warn',
-    'valid-typeof': 'warn',
     'no-restricted-properties': [
       'error',
       {
@@ -475,7 +488,6 @@ module.exports = {
           'Please use import() instead. More info: https://facebook.github.io/create-react-app/docs/code-splitting',
       },
     ],
-    'getter-return': 'warn',
 
     // https://github.com/benmosher/eslint-plugin-import/tree/master/docs/rules
     'import/first': 'error',
