@@ -107,7 +107,7 @@ const CommitDetailPage: React.FC = () => {
     return <NotFound />
   }
 
-  let defaultDropdown: Array<'coverage' | 'bundle'> = []
+  const defaultDropdown: Array<'coverage' | 'bundle'> = []
   // default to displaying only coverage
   let displayMode: TDisplayMode = DISPLAY_MODE.COVERAGE
   if (

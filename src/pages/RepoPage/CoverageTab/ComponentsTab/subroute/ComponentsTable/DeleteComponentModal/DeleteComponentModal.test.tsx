@@ -43,7 +43,7 @@ afterAll(() => {
 describe('DeleteComponentModal', () => {
   function setup() {
     server.use(
-      graphql.mutation('deleteComponentMeasurements', (info) => {
+      graphql.mutation('deleteComponentMeasurements', () => {
         return HttpResponse.json({
           data: { deleteComponentMeasurements: null },
         })

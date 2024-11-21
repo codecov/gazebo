@@ -52,7 +52,7 @@ const chartConfig = {
 
 describe('Chart', () => {
   let resizeObserverMock: Mock
-  let oldConsoleWarn = console.warn
+  const oldConsoleWarn = console.warn
 
   beforeEach(() => {
     console.warn = () => null
@@ -73,7 +73,7 @@ describe('Chart', () => {
       }
     })
 
-    // @ts-ignore
+    // @ts-expect-error - need to remove the default resize observer
     delete window.ResizeObserver
 
     window.ResizeObserver = resizeObserverMock
@@ -524,7 +524,7 @@ describe('Chart', () => {
   })
 
   describe('chart is not wrapped in a container', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null

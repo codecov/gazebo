@@ -114,7 +114,7 @@ afterAll(() => server.close())
 describe('CurrentPlanCard', () => {
   function setup(planDetails: TestPlan = freePlanDetails) {
     server.use(
-      http.get('/internal/bb/critical-role/account-details/', (http) => {
+      http.get('/internal/bb/critical-role/account-details/', () => {
         return HttpResponse.json(planDetails)
       })
     )

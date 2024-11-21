@@ -48,7 +48,7 @@ window.scrollTo = scrollToMock
 window.scrollY = 100
 
 class ResizeObserverMock {
-  callback = (x: any) => null
+  callback = (_x: any) => null
 
   constructor(callback: any) {
     this.callback = callback
@@ -247,10 +247,10 @@ describe('CommitFileDiff', () => {
     }))
 
     server.use(
-      graphql.query('ImpactedFileComparedWithParent', (info) => {
+      graphql.query('ImpactedFileComparedWithParent', () => {
         return HttpResponse.json({ data: baseMock(impactedFile) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(bundleAnalysisEnabled) })
       })
     )

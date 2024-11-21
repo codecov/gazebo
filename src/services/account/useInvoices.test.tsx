@@ -46,7 +46,7 @@ describe('useInvoices', () => {
 
   function setup(hasError = false) {
     server.use(
-      graphql.query('Invoices', (info) => {
+      graphql.query('Invoices', () => {
         if (hasError) {
           return HttpResponse.json({ data: {} })
         }

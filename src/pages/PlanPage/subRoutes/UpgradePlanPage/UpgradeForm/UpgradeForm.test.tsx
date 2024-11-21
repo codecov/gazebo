@@ -297,7 +297,7 @@ describe('UpgradeForm', () => {
     mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      http.get(`/internal/:provider/:owner/account-details/`, (info) => {
+      http.get(`/internal/:provider/:owner/account-details/`, () => {
         if (planValue === Plans.USERS_BASIC) {
           return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_PR_INAPPM) {
@@ -333,7 +333,7 @@ describe('UpgradeForm', () => {
           return HttpResponse.json({ success: true })
         }
       ),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -349,7 +349,7 @@ describe('UpgradeForm', () => {
           },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         const planResponse = monthlyPlan
           ? mockPlanDataResponseMonthly
           : mockPlanDataResponseYearly

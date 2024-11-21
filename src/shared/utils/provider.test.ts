@@ -60,8 +60,7 @@ describe('providerToName', () => {
 
   describe('when called with BitBucket', () => {
     it('returns BitBucket', () => {
-      // @ts-expect-error
-      expect(providerToName('BitBucket')).toBe('BitBucket')
+      expect(providerToName('bitbucket')).toBe('BitBucket')
     })
   })
 
@@ -218,8 +217,7 @@ describe('providerToInternalProvider', () => {
 
   describe('when called with BitBucket', () => {
     it('returns bitbucket', () => {
-      // @ts-expect-error
-      expect(providerToInternalProvider('BitBucket')).toBe('bitbucket')
+      expect(providerToInternalProvider('bitbucket')).toBe('bitbucket')
     })
   })
 

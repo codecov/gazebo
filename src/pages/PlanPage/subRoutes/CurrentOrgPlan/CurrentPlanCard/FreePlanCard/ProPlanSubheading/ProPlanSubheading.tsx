@@ -28,7 +28,7 @@ function ProPlanSubheading() {
   ) {
     return (
       <p className="text-ds-gray-quinary">
-        {/* @ts-expect-error */}
+        {/* @ts-expect-error - A hasn't been typed yet */}
         Includes 14-day free trial <A to={{ pageName: 'freeTrialFaqs' }}>FAQ</A>
       </p>
     )
@@ -43,7 +43,7 @@ function ProPlanSubheading() {
   ) {
     return (
       <p className="text-ds-gray-quinary">
-        {/* @ts-expect-error */}
+        {/* @ts-expect-error - A hasn't been typed yet */}
         Current trial <A to={{ pageName: 'freeTrialFaqs' }}>FAQ</A>
       </p>
     )

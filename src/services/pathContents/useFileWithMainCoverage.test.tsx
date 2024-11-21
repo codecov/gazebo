@@ -115,7 +115,7 @@ describe('useFileWithMainCoverage', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CoverageForFile', (info) => {
+      graphql.query('CoverageForFile', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

@@ -50,7 +50,7 @@ describe('useOrgUploadToken', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetOrgUploadToken', (info) => {
+      graphql.query('GetOrgUploadToken', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {

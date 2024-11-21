@@ -90,7 +90,7 @@ const UploadItem = ({
             <span className="text-xs text-ds-gray-quinary">carry-forward</span>
           )}
         </div>
-        {/* @ts-expect-error */}
+        {/* @ts-expect-error - A hasn't been typed yet */}
         <A href={downloadUrl} hook="download report" download isExternal>
           Download
         </A>

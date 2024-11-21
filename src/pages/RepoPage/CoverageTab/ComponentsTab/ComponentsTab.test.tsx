@@ -48,7 +48,7 @@ const mockRepoSettings = (
 
 const server = setupServer()
 const queryClient = new QueryClient()
-let testLocation = {
+const testLocation = {
   pathname: '',
 }
 

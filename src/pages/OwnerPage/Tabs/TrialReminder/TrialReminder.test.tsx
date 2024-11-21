@@ -90,7 +90,7 @@ describe('TrialReminder', () => {
     mockedConfig.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -106,7 +106,7 @@ describe('TrialReminder', () => {
           },
         })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
           data: { owner: { isCurrentUserPartOfOrg: userPartOfOrg } },
         })

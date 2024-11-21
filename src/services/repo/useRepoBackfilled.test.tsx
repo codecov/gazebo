@@ -83,7 +83,7 @@ describe('useRepoBackfilled', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockRepoNotFound })
         } else if (isOwnerNotActivatedError) {

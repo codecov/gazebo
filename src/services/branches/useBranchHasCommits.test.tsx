@@ -113,7 +113,7 @@ describe('useBranchHasCommits', () => {
     commitsIsNull = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBranchCommits', (info) => {
+      graphql.query('GetBranchCommits', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

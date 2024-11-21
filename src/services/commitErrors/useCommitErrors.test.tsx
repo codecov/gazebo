@@ -74,7 +74,7 @@ describe('useCommitErrors', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query(`CommitErrors`, (info) => {
+      graphql.query(`CommitErrors`, () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

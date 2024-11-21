@@ -145,7 +145,7 @@ describe('useComparisonForCommitAndParent', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('ImpactedFileComparedWithParent', (info) => {
+      graphql.query('ImpactedFileComparedWithParent', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

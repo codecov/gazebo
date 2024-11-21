@@ -86,13 +86,13 @@ interface SetupArgs {
 }
 
 describe('useRepoCoverageTimeseries', () => {
-  let config = vi.fn()
+  const config = vi.fn()
 
   function setup(
     { noCoverageData = false }: SetupArgs = { noCoverageData: false }
   ) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       }),
       graphql.query('GetBranchCoverageMeasurements', (info) => {

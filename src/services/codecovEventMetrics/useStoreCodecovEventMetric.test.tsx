@@ -54,7 +54,7 @@ describe('useStoreCodecovEventMetric', () => {
     const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
-      graphql.mutation('storeEventMetric', (info) => {
+      graphql.mutation('storeEventMetric', () => {
         return HttpResponse.json({ data: { storeEventMetric: null } })
       })
     )

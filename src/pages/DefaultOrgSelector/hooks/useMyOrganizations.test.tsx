@@ -52,7 +52,7 @@ describe('useMyOrganizations', () => {
     spy.mockImplementation(thrownMock)
 
     server.use(
-      graphql.query('UseMyOrganizations', (info) => {
+      graphql.query('UseMyOrganizations', () => {
         if (apiError) {
           return HttpResponse.json(
             {

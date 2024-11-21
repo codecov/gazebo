@@ -203,7 +203,7 @@ describe('TitleFlags', () => {
   interface SetupArgs {
     isIntersecting?: boolean
     noNextPage?: boolean
-    backfillData?: {}
+    backfillData?: object
   }
 
   function setup(

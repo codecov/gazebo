@@ -75,7 +75,7 @@ describe('useSentryToken', () => {
     const mockRemoveItem = vi.spyOn(window.localStorage.__proto__, 'removeItem')
 
     server.use(
-      graphql.mutation('SendSentryToken', (info) => {
+      graphql.mutation('SendSentryToken', () => {
         if (isValidationError) {
           return HttpResponse.json({
             data: {

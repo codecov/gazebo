@@ -150,7 +150,7 @@ describe('useRepoBranchContents', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('BranchContents', (info) => {
+      graphql.query('BranchContents', () => {
         if (isMissingCoverage) {
           return HttpResponse.json({ data: mockDataMissingCoverage })
         } else if (isUnknownPath) {
@@ -276,7 +276,7 @@ describe('useRepoBranchContents', () => {
     })
 
     describe('request rejects', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null

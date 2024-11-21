@@ -249,10 +249,10 @@ describe('AssetsTable', () => {
 
         return HttpResponse.json({ data: mockAssets(multipleAssets) })
       }),
-      graphql.query('BundleAssetModules', (info) => {
+      graphql.query('BundleAssetModules', () => {
         return HttpResponse.json({ data: mockBundleAssetModules })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )

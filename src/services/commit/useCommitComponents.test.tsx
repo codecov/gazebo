@@ -89,7 +89,7 @@ describe('useCommitComponents', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('CommitComponents', (info) => {
+      graphql.query('CommitComponents', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

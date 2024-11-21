@@ -65,7 +65,7 @@ beforeEach(() => {
     }
   })
 
-  // @ts-ignore
+  // @ts-expect-error - we're deleting the window resize observer which is being replaced by a mock
   delete window.ResizeObserver
 
   window.ResizeObserver = resizeObserverMock

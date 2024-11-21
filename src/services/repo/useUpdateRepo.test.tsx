@@ -69,7 +69,7 @@ const repoDetails = {
 describe('useUpdateRepo', () => {
   function setup() {
     server.use(
-      http.patch(`internal/github/codecov/repos/test/`, (info) => {
+      http.patch(`internal/github/codecov/repos/test/`, () => {
         return HttpResponse.json(repoDetails)
       })
     )
@@ -83,8 +83,7 @@ describe('useUpdateRepo', () => {
           wrapper: wrapper(),
         })
 
-        // @ts-expect-error
-        result.current.mutate({})
+        result.current.mutate()
 
         await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
       })

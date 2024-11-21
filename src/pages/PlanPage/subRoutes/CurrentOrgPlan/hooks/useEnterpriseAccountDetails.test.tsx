@@ -41,7 +41,7 @@ interface SetupArgs {
 describe('useEnterpriseAccountDetails', () => {
   function setup({ badResponse = false }: SetupArgs) {
     server.use(
-      graphql.query('EnterpriseAccountDetails', (info) => {
+      graphql.query('EnterpriseAccountDetails', () => {
         if (badResponse) {
           return HttpResponse.json({})
         }

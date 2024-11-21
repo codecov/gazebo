@@ -75,7 +75,7 @@ describe('useFlakeAggregates', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query('GetFlakeAggregates', (info) => {
+      graphql.query('GetFlakeAggregates', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {

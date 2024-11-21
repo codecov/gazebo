@@ -83,7 +83,7 @@ export function useRepoCoverageTimeseries({
     // set set initial t
     let prevPercent = data?.measurements?.[0]?.max ?? 0
     coverage = data?.measurements?.map((measurement) => {
-      let coverage = measurement?.max ?? prevPercent
+      const coverage = measurement?.max ?? prevPercent
 
       // can save on a few reassignments
       if (prevPercent !== coverage) {

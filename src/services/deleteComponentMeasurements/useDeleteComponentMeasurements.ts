@@ -55,7 +55,7 @@ export function useDeleteComponentMeasurements() {
         queryClient.invalidateQueries(['RepoFlags'])
       }
     },
-    onError: (e) => {
+    onError: (_e) => {
       addToast({
         type: 'error',
         text: 'There was an error deleting your component measurements',

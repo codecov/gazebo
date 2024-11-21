@@ -93,7 +93,7 @@ describe('useCommitBADropdownSummary', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('CommitBADropdownSummary', (info) => {
+      graphql.query('CommitBADropdownSummary', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -168,7 +168,7 @@ describe('useCommitBADropdownSummary', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -204,7 +204,7 @@ describe('useCommitBADropdownSummary', () => {
   })
 
   describe('returns NotFoundError __typename', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -240,7 +240,7 @@ describe('useCommitBADropdownSummary', () => {
   })
 
   describe('returns OwnerNotActivatedError __typename', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null

@@ -70,7 +70,7 @@ describe('CodecovAIPage', () => {
     aiEnabledRepos = ['repo-1', 'repo-2']
   ) {
     server.use(
-      graphql.query('GetCodecovAIAppInstallInfo', (info) => {
+      graphql.query('GetCodecovAIAppInstallInfo', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -79,7 +79,7 @@ describe('CodecovAIPage', () => {
           },
         })
       }),
-      graphql.query('GetCodecovAIInstalledRepos', (info) => {
+      graphql.query('GetCodecovAIInstalledRepos', () => {
         return HttpResponse.json({
           data: {
             owner: {

@@ -64,7 +64,7 @@ describe('ProPlanSubheading', () => {
     hasPrivateRepos = true,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {

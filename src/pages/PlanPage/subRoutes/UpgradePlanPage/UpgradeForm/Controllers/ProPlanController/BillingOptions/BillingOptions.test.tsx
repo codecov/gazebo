@@ -97,7 +97,7 @@ afterAll(() => {
 describe('BillingOptions', () => {
   function setup() {
     server.use(
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -106,7 +106,7 @@ describe('BillingOptions', () => {
           },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {

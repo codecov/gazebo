@@ -31,7 +31,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-let testLocation: { pathname: string; search: string } = {
+const testLocation: { pathname: string; search: string } = {
   pathname: '',
   search: '',
 }

@@ -79,7 +79,7 @@ describe('Repo breadcrumb context', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({
           data: {
             owner: {

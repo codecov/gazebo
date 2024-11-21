@@ -140,7 +140,7 @@ describe('useAvailablePlans', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {

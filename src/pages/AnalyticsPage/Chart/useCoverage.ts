@@ -61,7 +61,7 @@ export const useCoverage = ({
     // set prevPercent so we can reuse value if next value is null
     let prevPercent = data?.measurements?.[0]?.avg ?? 0
     const coverage = data?.measurements?.map((measurement) => {
-      let coverage = measurement?.avg ?? prevPercent
+      const coverage = measurement?.avg ?? prevPercent
 
       // can save on a few reassignments
       if (prevPercent !== coverage) {

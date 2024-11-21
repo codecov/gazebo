@@ -90,7 +90,7 @@ const DismissButton: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   return (
     <>
-      {/* @ts-ignore */}
+      {/* @ts-expect-error - button hasn't been typed yet */}
       <Button
         variant="plain"
         hook={`dismiss-${localStorageKey}`}

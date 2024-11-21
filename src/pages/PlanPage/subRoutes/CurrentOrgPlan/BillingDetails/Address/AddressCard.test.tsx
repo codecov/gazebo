@@ -51,7 +51,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 vi.mock('@stripe/react-stripe-js', () => {
   function makeFakeComponent(name: string) {
     // mocking onReady to be called after a bit of time
-    return function Component({ onReady }: { onReady?: any }) {
+    return function Component({ _onReady }: { _onReady?: any }) {
       return name
     }
   }

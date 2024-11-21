@@ -117,7 +117,7 @@ describe('Error Boundary', () => {
     beforeEach(() => {
       const spySentry = vi.spyOn(Sentry, 'withScope')
       spySentry.mockImplementation((callback) => {
-        // @ts-ignore - this test is skipped
+        // @ts-expect-error - this test is skipped
         callback({ setTag: sentryMockScope })
       })
     })
