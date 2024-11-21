@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { http, HttpResponse } from 'msw'
+import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -40,7 +40,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 describe('ActivationRequiredSelfHosted', () => {
-  function setup(isAdmin: boolean) {
+  function setup(isAdmin: boolean, seatsUsed: number, seatsLimit: number) {
     server.use(
       http.get('/internal/users/current', (info) =>
         HttpResponse.json({
@@ -51,60 +51,109 @@ describe('ActivationRequiredSelfHosted', () => {
           username: 'testuser',
           activated: true,
         })
-      )
+      ),
+      graphql.query('Seats', (info) => {
+        return HttpResponse.json({
+          data: {
+            config: {
+              seatsUsed,
+              seatsLimit,
+            },
+          },
+        })
+      })
     )
   }
-  it('renders the banner with correct content', async () => {
-    setup(false)
-    render(<ActivationRequiredSelfHosted />, { wrapper })
 
-    const bannerHeading = await screen.findByRole('heading', {
-      name: /Activation Required/,
+  describe('When seats limit is not reached', () => {
+    it('renders the banner with correct content', async () => {
+      setup(false, 2, 10)
+      render(<ActivationRequiredSelfHosted />, { wrapper })
+
+      const bannerHeading = await screen.findByRole('heading', {
+        name: /Activation Required/,
+      })
+      expect(bannerHeading).toBeInTheDocument()
+
+      const description = await screen.findByText(
+        /You have available seats, but activation is needed./
+      )
+      expect(description).toBeInTheDocument()
     })
-    expect(bannerHeading).toBeInTheDocument()
 
-    const description = await screen.findByText(
-      /You have available seats, but activation is needed./
-    )
-    expect(description).toBeInTheDocument()
-  })
+    it('renders contact admin copy if not admin', async () => {
+      setup(false, 2, 10)
+      render(<ActivationRequiredSelfHosted />, { wrapper })
 
-  it('renders contact admin copy if not admin', async () => {
-    setup(false)
-    render(<ActivationRequiredSelfHosted />, { wrapper })
-
-    const contactAdminCopy = await screen.findByText(
-      /Contact your admin for activation./
-    )
-    expect(contactAdminCopy).toBeInTheDocument()
-  })
-
-  it('does not render manage members link if not admin', async () => {
-    setup(false)
-    render(<ActivationRequiredSelfHosted />, { wrapper })
-
-    await waitFor(() => queryClient.isFetching)
-    await waitFor(() => !queryClient.isFetching)
-
-    const manageMembersLink = screen.queryByRole('link', {
-      name: /Manage members/,
+      const contactAdminCopy = await screen.findByText(
+        /Contact your admin for activation./
+      )
+      expect(contactAdminCopy).toBeInTheDocument()
     })
-    expect(manageMembersLink).not.toBeInTheDocument()
-  })
 
-  describe('when admin', () => {
-    it('renders manage members link', async () => {
-      setup(true)
+    it('does not render manage members link if not admin', async () => {
+      setup(false, 2, 10)
       render(<ActivationRequiredSelfHosted />, { wrapper })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
 
-      const manageMembersLink = await screen.findByRole('link', {
+      const manageMembersLink = screen.queryByRole('link', {
         name: /Manage members/,
       })
-      expect(manageMembersLink).toBeInTheDocument()
-      expect(manageMembersLink).toHaveAttribute('href', '/admin/gh/access')
+      expect(manageMembersLink).not.toBeInTheDocument()
+    })
+
+    describe('when admin', () => {
+      it('renders manage members link', async () => {
+        setup(true, 2, 10)
+        render(<ActivationRequiredSelfHosted />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const manageMembersLink = await screen.findByRole('link', {
+          name: /Manage members/,
+        })
+        expect(manageMembersLink).toBeInTheDocument()
+        expect(manageMembersLink).toHaveAttribute('href', '/admin/gh/access')
+      })
+    })
+  })
+
+  describe('When seats limit is reached', () => {
+    it('renders the banner with correct content', async () => {
+      setup(false, 10, 10)
+      render(<ActivationRequiredSelfHosted />, { wrapper })
+
+      const bannerHeading = await screen.findByRole('heading', {
+        name: /Seats Limit Reached/,
+      })
+      expect(bannerHeading).toBeInTheDocument()
+    })
+
+    it('renders the correct description', async () => {
+      setup(false, 10, 10)
+      render(<ActivationRequiredSelfHosted />, { wrapper })
+
+      const description = await screen.findByText(
+        /Your organization has utilized all available seats./
+      )
+      expect(description).toBeInTheDocument()
+    })
+
+    it('renders contact sales link', async () => {
+      setup(false, 10, 10)
+      render(<ActivationRequiredSelfHosted />, { wrapper })
+
+      const contactSalesLink = await screen.findByRole('link', {
+        name: /Contact Sales/,
+      })
+      expect(contactSalesLink).toBeInTheDocument()
+      expect(contactSalesLink).toHaveAttribute(
+        'href',
+        'https://about.codecov.io/sales'
+      )
     })
   })
 })

@@ -1,10 +1,34 @@
 import upsideDownUmbrella from 'layouts/shared/NetworkErrorBoundary/assets/error-upsidedown-umbrella.svg'
-import { useSelfHostedCurrentUser } from 'services/selfHosted'
+import {
+  useSelfHostedCurrentUser,
+  useSelfHostedSeatsConfig,
+} from 'services/selfHosted'
+import A from 'ui/A'
 import Button from 'ui/Button'
 
-const ActivationRequiredSelfHosted = () => {
-  const { data } = useSelfHostedCurrentUser()
+function SeatsLimitReached() {
+  return (
+    <div className="flex flex-col items-center justify-center gap-8 bg-ds-gray-primary pb-28 pt-12 text-center">
+      <img src={upsideDownUmbrella} alt="Forbidden" className="w-36" />
+      <div className="flex w-2/5 flex-col gap-1">
+        <h1 className="text-2xl">Activation Required</h1>
+        <p>Your organization has utilized all available seats.</p>
+        <div className="mt-5">
+          <A
+            to={{ pageName: 'sales' }}
+            isExternal
+            hook="contact-sales-self-hosted"
+          >
+            Contact Sales
+          </A>{' '}
+          to increase your seat count.
+        </div>
+      </div>
+    </div>
+  )
+}
 
+function SeatsAvailable({ isAdmin }: { isAdmin: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center gap-8 bg-ds-gray-primary pb-28 pt-12 text-center">
       <img src={upsideDownUmbrella} alt="Forbidden" className="w-36" />
@@ -12,7 +36,7 @@ const ActivationRequiredSelfHosted = () => {
         <h1 className="text-2xl">Activation Required</h1>
         <p>You have available seats, but activation is needed.</p>
       </div>
-      {data?.isAdmin ? (
+      {isAdmin ? (
         <Button
           to={{ pageName: 'access' }}
           disabled={undefined}
@@ -25,6 +49,22 @@ const ActivationRequiredSelfHosted = () => {
         <p>Contact your admin for activation.</p>
       )}
     </div>
+  )
+}
+
+function ActivationRequiredSelfHosted() {
+  const { data } = useSelfHostedCurrentUser()
+  const { data: selfHostedSeats } = useSelfHostedSeatsConfig()
+
+  const hasSelfHostedSeats =
+    selfHostedSeats?.seatsUsed &&
+    selfHostedSeats?.seatsLimit &&
+    selfHostedSeats?.seatsUsed < selfHostedSeats?.seatsLimit
+
+  return hasSelfHostedSeats ? (
+    <SeatsAvailable isAdmin={data?.isAdmin ?? false} />
+  ) : (
+    <SeatsLimitReached />
   )
 }
 
