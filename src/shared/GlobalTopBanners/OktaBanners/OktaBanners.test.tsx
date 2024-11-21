@@ -42,7 +42,7 @@ afterAll(() => server.close())
 describe('OktaBanners', () => {
   function setup(data = {}) {
     server.use(
-      graphql.query('GetOktaConfig', (info) => {
+      graphql.query('GetOktaConfig', () => {
         return HttpResponse.json({ data: data })
       })
     )

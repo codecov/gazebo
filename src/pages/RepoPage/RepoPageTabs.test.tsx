@@ -123,7 +123,6 @@ interface SetupArgs {
   bundleAnalysisEnabled?: boolean
   tierName?: TTierNames
   isCurrentUserPartOfOrg?: boolean
-  componentTab?: boolean
   testAnalyticsEnabled?: boolean
 }
 
@@ -135,11 +134,10 @@ describe('RepoPageTabs', () => {
     isRepoPrivate,
     tierName = TierNames.PRO,
     isCurrentUserPartOfOrg = true,
-    componentTab = true,
     testAnalyticsEnabled = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview({
             language,
@@ -151,10 +149,10 @@ describe('RepoPageTabs', () => {
         })
       }),
 
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({ data: { owner: { plan: { tierName } } } })
       }),
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockRepo({ isCurrentUserPartOfOrg }) })
       })
     )
@@ -446,7 +444,7 @@ describe('useRepoTabs', () => {
     isCurrentUserPartOfOrg = true,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview({
             language,
@@ -457,10 +455,10 @@ describe('useRepoTabs', () => {
           }),
         })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({ data: { owner: { plan: { tierName } } } })
       }),
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockRepo({ isCurrentUserPartOfOrg }) })
       })
     )

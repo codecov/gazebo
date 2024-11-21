@@ -202,7 +202,7 @@ describe('UpgradePlanPage', () => {
     }
   ) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -214,7 +214,7 @@ describe('UpgradePlanPage', () => {
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         if (includeSentryPlans) {
           return HttpResponse.json({
             data: {
@@ -235,7 +235,7 @@ describe('UpgradePlanPage', () => {
           })
         }
       }),
-      http.get('/internal/gh/codecov/account-details', (info) => {
+      http.get('/internal/gh/codecov/account-details', () => {
         if (planValue === Plans.USERS_SENTRYY) {
           return HttpResponse.json({
             plan: sentryPlanYear,

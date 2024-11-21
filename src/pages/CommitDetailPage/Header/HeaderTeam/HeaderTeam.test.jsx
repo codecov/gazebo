@@ -71,7 +71,7 @@ describe('HeaderTeam', () => {
     }))
 
     server.use(
-      graphql.query('CommitPageHeaderDataTeam', (info) => {
+      graphql.query('CommitPageHeaderDataTeam', () => {
         return HttpResponse.json({ data: mockData(pullId) })
       })
     )

@@ -34,7 +34,7 @@ const wrapper = ({ children }) => (
 describe('useRegenerateOrgUploadToken', () => {
   function setup() {
     server.use(
-      graphql.mutation('regenerateOrgUploadToken', (info) => {
+      graphql.mutation('regenerateOrgUploadToken', () => {
         return HttpResponse.json({ data })
       })
     )

@@ -189,7 +189,7 @@ function SunburstChart({
       reactHoverCallback({ target: p, type: 'file' })
     }
 
-    function mouseout(_event, p) {
+    function mouseout(_event, _p) {
       select(this).attr('fill-opacity', 1)
     }
 

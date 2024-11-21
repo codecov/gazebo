@@ -72,10 +72,10 @@ describe('YAMLTab', () => {
     useIsCurrentUserAnAdmin.mockReturnValue(true)
 
     server.use(
-      graphql.query('YamlConfig', (info) => {
+      graphql.query('YamlConfig', () => {
         return HttpResponse.json({ data: dataReturned.YamlConfig })
       }),
-      graphql.mutation('UpdateYamlConfig', (info) => {
+      graphql.mutation('UpdateYamlConfig', () => {
         return HttpResponse.json(dataReturned.UpdateYamlConfig)
       })
     )

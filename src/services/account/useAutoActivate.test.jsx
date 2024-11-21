@@ -45,12 +45,9 @@ describe('useAutoActivate', () => {
   describe('options is set', () => {
     function setup() {
       server.use(
-        http.patch(
-          `/internal/${provider}/${owner}/account-details/`,
-          (info) => {
-            return HttpResponse.json({})
-          }
-        )
+        http.patch(`/internal/${provider}/${owner}/account-details/`, () => {
+          return HttpResponse.json({})
+        })
       )
     }
 
@@ -113,12 +110,9 @@ describe('useAutoActivate', () => {
   describe('opts is not set', () => {
     function setup() {
       server.use(
-        http.patch(
-          `/internal/${provider}/${owner}/account-details/`,
-          (info) => {
-            return HttpResponse.json({})
-          }
-        )
+        http.patch(`/internal/${provider}/${owner}/account-details/`, () => {
+          return HttpResponse.json({})
+        })
       )
     }
 

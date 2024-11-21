@@ -58,7 +58,7 @@ const overviewMock = {
 describe('useConvertD3ToBreadcrumbs', () => {
   function setup({ repoOverviewData }) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: repoOverviewData })
       })
     )

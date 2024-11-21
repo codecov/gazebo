@@ -43,9 +43,9 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('useUpdateUser', () => {
-  function setup({ ownerid, body, opts = {} }) {
+  function setup({ body }) {
     server.use(
-      http.patch(`/internal/:provider/:owner/users/:ownerid`, (info) => {
+      http.patch(`/internal/:provider/:owner/users/:ownerid`, () => {
         return HttpResponse.json(body)
       })
     )

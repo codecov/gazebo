@@ -75,10 +75,10 @@ describe('Members Activation', () => {
     planValue = mockedAccountDetails.plan.value
   ) {
     server.use(
-      http.get('/internal/:provider/:owner/account-details/', (info) => {
+      http.get('/internal/:provider/:owner/account-details/', () => {
         return HttpResponse.json(accountDetails)
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {

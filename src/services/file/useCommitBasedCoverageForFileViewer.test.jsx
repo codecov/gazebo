@@ -66,14 +66,9 @@ afterAll(() => {
 })
 
 describe('useCommitBasedCoverageForFileViewer', () => {
-  function setup({
-    mainCoverageData,
-    coverageWithFlags,
-    selectedFlags,
-    selectedComponents,
-  }) {
+  function setup({ mainCoverageData, coverageWithFlags, selectedFlags }) {
     server.use(
-      graphql.query('CoverageForFile', (info) => {
+      graphql.query('CoverageForFile', () => {
         if (Object.keys(coverageWithFlags).length > 0) {
           return HttpResponse.json({
             data: mockFileMainCoverage(coverageWithFlags, selectedFlags),

@@ -81,7 +81,7 @@ describe('PlanPage', () => {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('PlanPageData', (info) => {
+      graphql.query('PlanPageData', () => {
         return HttpResponse.json({ data: { owner } })
       })
     )

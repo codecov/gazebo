@@ -122,7 +122,7 @@ describe('TrialBanner', () => {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         let plan: any = basicPlan
 
         if (isTrialPlan) {
@@ -154,7 +154,7 @@ describe('TrialBanner', () => {
           },
         })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
           data: { owner: { isCurrentUserPartOfOrg } },
         })

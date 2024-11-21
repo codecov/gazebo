@@ -70,13 +70,13 @@ describe('Sunburst', () => {
     coverageTreeStatus = 200,
   }) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: repoOverviewData })
       }),
-      graphql.query('RepoConfig', (info) => {
+      graphql.query('RepoConfig', () => {
         return HttpResponse.json({ data: repoConfigMock })
       }),
-      http.get('/internal/:provider/:owner/:repo/coverage/tree', (info) => {
+      http.get('/internal/:provider/:owner/:repo/coverage/tree', () => {
         return HttpResponse.json(
           { data: coverageTreeRes },
           { status: coverageTreeStatus }

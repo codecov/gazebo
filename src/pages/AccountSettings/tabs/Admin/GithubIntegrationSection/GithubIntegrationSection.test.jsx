@@ -53,7 +53,7 @@ describe('GithubIntegrationSection', () => {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, (info) => {
+      http.get(`/internal/gh/codecov/account-details/`, () => {
         return HttpResponse.json({
           plan: {
             marketingName: Plans.USERS_BASIC,

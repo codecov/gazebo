@@ -35,7 +35,7 @@ afterAll(() => {
 describe('useYamlConfig', () => {
   function setup(dataReturned = {}) {
     server.use(
-      http.post('/graphql/gh', (info) => {
+      http.post('/graphql/gh', () => {
         return HttpResponse.json({ data: dataReturned })
       })
     )

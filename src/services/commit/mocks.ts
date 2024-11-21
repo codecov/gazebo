@@ -1,6 +1,6 @@
 import { graphql, HttpResponse } from 'msw'
 
-export const commitErrored = graphql.query('Commit', (info) => {
+export const commitErrored = graphql.query('Commit', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -57,7 +57,7 @@ export const commitOnePending = graphql.query('Commit', (info) => {
   })
 })
 
-export const commitOneCarriedForward = graphql.query('Commit', (info) => {
+export const commitOneCarriedForward = graphql.query('Commit', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -93,7 +93,7 @@ export const commitOneCarriedForward = graphql.query('Commit', (info) => {
   })
 })
 
-export const commitEmptyUploads = graphql.query('Commit', (info) => {
+export const commitEmptyUploads = graphql.query('Commit', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -106,7 +106,7 @@ export const commitEmptyUploads = graphql.query('Commit', (info) => {
   })
 })
 
-export const compareTotalsEmpty = graphql.query('CompareTotals', (info) => {
+export const compareTotalsEmpty = graphql.query('CompareTotals', () => {
   return HttpResponse.json({ data: { owner: null } })
 })
 

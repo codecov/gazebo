@@ -78,10 +78,10 @@ describe('ProPlanFeedbackBanner', () => {
     const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({ data: mockProTier })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({ data: mockTrialData })
       })
     )

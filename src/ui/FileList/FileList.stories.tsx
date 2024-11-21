@@ -272,7 +272,7 @@ function Example() {
                       baseCoverage={
                         coverage[Math.floor(Math.random() * 3) % 3] ?? null
                       }
-                      getTokenProps={({ token, key }) => ({})}
+                      getTokenProps={() => ({})}
                     />
                   )}
                 />

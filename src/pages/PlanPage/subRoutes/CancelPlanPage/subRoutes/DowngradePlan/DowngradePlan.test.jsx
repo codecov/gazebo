@@ -55,7 +55,7 @@ afterAll(() => {
 describe('DowngradePlan', () => {
   function setup() {
     server.use(
-      http.all('/internal/gh/codecov/account-details', (info) => {
+      http.all('/internal/gh/codecov/account-details', () => {
         return HttpResponse.json(mockAccountDetails)
       })
     )

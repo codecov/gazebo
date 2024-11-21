@@ -62,10 +62,10 @@ describe('OwnerPage', () => {
     }
   ) {
     server.use(
-      graphql.query('OwnerPageData', (info) => {
+      graphql.query('OwnerPageData', () => {
         return HttpResponse.json({ data: { owner } })
       }),
-      graphql.mutation('SendSentryToken', (info) => {
+      graphql.mutation('SendSentryToken', () => {
         if (!successfulMutation) {
           return HttpResponse.json({
             data: {

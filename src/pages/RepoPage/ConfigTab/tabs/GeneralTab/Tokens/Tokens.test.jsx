@@ -49,7 +49,7 @@ describe('Tokens', () => {
     })
 
     server.use(
-      graphql.query('GetRepoSettings', (req, res, ctx) => {
+      graphql.query('GetRepoSettings', () => {
         return HttpResponse.json({
           data: {
             owner: {

@@ -47,7 +47,7 @@ describe('useRepoActivation', () => {
 
   function setup({ failMutation = false } = {}) {
     server.use(
-      http.patch('/internal/github/codecov/repos/codecov-client/', (info) => {
+      http.patch('/internal/github/codecov/repos/codecov-client/', () => {
         mutate()
 
         if (failMutation) {

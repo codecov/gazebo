@@ -3,11 +3,11 @@ import { http, HttpResponse } from 'msw'
 
 const repoUri = '/internal/charts/:provider/:owner/coverage/repository'
 
-export const repoCoverageHandler = http.post(repoUri, (info) => {
+export const repoCoverageHandler = http.post(repoUri, () => {
   return HttpResponse.json(exampleYearlyRes)
 })
 
-export const repoCoverageHandler404 = http.post(repoUri, (info) => {
+export const repoCoverageHandler404 = http.post(repoUri, () => {
   return HttpResponse.json({}, { status: 404 })
 })
 

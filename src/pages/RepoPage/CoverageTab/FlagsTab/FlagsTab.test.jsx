@@ -113,7 +113,7 @@ describe('Flags Tab', () => {
     mocks.useRepoBackfilled.mockReturnValue(data)
 
     server.use(
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         if (tierValue === TierNames.TEAM) {
           return HttpResponse.json({
             data: { owner: { plan: { tierName: TierNames.TEAM } } },
@@ -123,7 +123,7 @@ describe('Flags Tab', () => {
           data: { owner: { plan: { tierName: TierNames.PRO } } },
         })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({
           data: mockRepoSettings(isPrivate, isCurrentUserPartOfOrg),
         })

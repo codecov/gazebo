@@ -65,7 +65,7 @@ describe('TeamPlanFeedbackBanner', () => {
     const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         if (isPro) {
           return HttpResponse.json({ data: mockProTier })
         }

@@ -23,7 +23,7 @@ afterAll(() => server.close())
 describe('useActivateMeasurements', () => {
   function setup() {
     server.use(
-      graphql.mutation('ActivateMeasurements', (info) => {
+      graphql.mutation('ActivateMeasurements', () => {
         return HttpResponse.json({ data: { activateMeasurements: null } })
       })
     )
@@ -70,7 +70,7 @@ describe('useActivateMeasurements', () => {
 
       it('returns expected output', async () => {
         server.use(
-          graphql.mutation('ActivateMeasurements', (info) => {
+          graphql.mutation('ActivateMeasurements', () => {
             return HttpResponse.json({
               data: {
                 activateMeasurements: {
@@ -117,7 +117,7 @@ describe('useActivateMeasurements', () => {
 
       it('returns expected output', async () => {
         server.use(
-          graphql.mutation('ActivateMeasurements', (info) => {
+          graphql.mutation('ActivateMeasurements', () => {
             return HttpResponse.json({
               data: {
                 activateMeasurements: {

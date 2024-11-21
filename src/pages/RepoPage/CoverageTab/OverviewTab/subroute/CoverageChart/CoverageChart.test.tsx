@@ -57,7 +57,7 @@ beforeEach(() => {
    * This mock also allow us to use {@link notifyResizeObserverChange} to fire changes
    * from inside our test.
    */
-  resizeObserverMock = vi.fn().mockImplementation((callback) => {
+  resizeObserverMock = vi.fn().mockImplementation(() => {
     return {
       observe: vi.fn(),
       unobserve: vi.fn(),
@@ -156,16 +156,16 @@ describe('CoverageChart', () => {
     noData = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: repoOverviewData })
       }),
-      graphql.query('GetBranches', (info) => {
+      graphql.query('GetBranches', () => {
         return HttpResponse.json({ data: branchesData })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({ data: branchMock })
       }),
-      graphql.query('GetBranchCoverageMeasurements', (info) => {
+      graphql.query('GetBranchCoverageMeasurements', () => {
         if (coverageRepoStatus) {
           return HttpResponse.json(
             { errors: [{ message: 'error' }] },

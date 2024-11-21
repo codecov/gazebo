@@ -304,7 +304,7 @@ describe('useCommit', () => {
           return HttpResponse.json({ data: dataToReturn })
         }
       }),
-      graphql.query(`CompareTotals`, (info) => {
+      graphql.query(`CompareTotals`, () => {
         if (skipPolling) {
           return HttpResponse.json({ data: { owner: null } })
         }
@@ -640,10 +640,10 @@ describe('useCommit polling', () => {
   function setup() {
     nbCallCompare = 0
     server.use(
-      graphql.query(`Commit`, (info) => {
+      graphql.query(`Commit`, () => {
         return HttpResponse.json({ data: dataReturned })
       }),
-      graphql.query(`CompareTotals`, (info) => {
+      graphql.query(`CompareTotals`, () => {
         nbCallCompare++
         // after 10 calls, the server returns that the commit is processed
         if (nbCallCompare < 1) {

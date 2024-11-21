@@ -45,7 +45,7 @@ describe('AutoActivateMembers', () => {
   function setup() {
     const user = userEvent.setup()
     server.use(
-      graphql.query('SelfHostedSettings', (info) => {
+      graphql.query('SelfHostedSettings', () => {
         return HttpResponse.json({ data: mockResponse })
       }),
 

@@ -200,7 +200,7 @@ describe('PullRequestPage', () => {
     bundleAnalysisEnabled = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullHeadData', (info) => {
+      graphql.query('PullHeadData', () => {
         return HttpResponse.json({ data: mockPullHeadData })
       }),
       graphql.query('PullPageData', (info) => {
@@ -232,20 +232,20 @@ describe('PullRequestPage', () => {
           },
         })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(privateRepo) })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({
           data: {
             owner: { plan: { tierName: tierValue } },
           },
         })
       }),
-      graphql.query('PullCoverageDropdownSummary', (info) => {
+      graphql.query('PullCoverageDropdownSummary', () => {
         return HttpResponse.json({ data: mockPullCoverageDropdownSummary })
       }),
-      graphql.query('PullBADropdownSummary', (info) => {
+      graphql.query('PullBADropdownSummary', () => {
         return HttpResponse.json({ data: mockPullBADropdownSummary })
       })
     )

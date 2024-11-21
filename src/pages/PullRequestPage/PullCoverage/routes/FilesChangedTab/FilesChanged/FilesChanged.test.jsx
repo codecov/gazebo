@@ -187,7 +187,7 @@ afterAll(() => server.close())
 describe('FilesChanged', () => {
   function setup({ overrideComparison, headState } = {}) {
     server.use(
-      graphql.query('Pull', (info) => {
+      graphql.query('Pull', () => {
         return HttpResponse.json({
           data: mockPull({ overrideComparison, headState }),
         })

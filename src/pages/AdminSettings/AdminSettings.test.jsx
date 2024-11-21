@@ -57,10 +57,10 @@ afterAll(() => {
 describe('AdminSettings', () => {
   function setup({ data = {} }) {
     server.use(
-      http.get('/internal/users/current', (info) => {
+      http.get('/internal/users/current', () => {
         return HttpResponse.json({ ...user, ...data })
       }),
-      graphql.query('CurrentUser', (req, res, ctx) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: { me: null } })
       })
     )

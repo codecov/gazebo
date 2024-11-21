@@ -60,7 +60,7 @@ describe('useRegenerateRepositoryToken', () => {
     mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      graphql.mutation('RegenerateRepositoryToken', (info) => {
+      graphql.mutation('RegenerateRepositoryToken', () => {
         if (triggerError) {
           return HttpResponse.json({ errors: [] }, { status: 500 })
         }

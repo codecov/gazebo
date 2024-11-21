@@ -132,7 +132,7 @@ describe('usePullTeam', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetPullTeam', (info) => {
+      graphql.query('GetPullTeam', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -145,7 +145,7 @@ describe('usePullTeam', () => {
           return HttpResponse.json({ data: mockPullData })
         }
       }),
-      graphql.query('GetPullCompareTotalsTeam', (info) => {
+      graphql.query('GetPullCompareTotalsTeam', () => {
         return HttpResponse.json({ data: mockCompareData })
       })
     )
@@ -343,10 +343,10 @@ describe('usePullTeam polling', () => {
   function setup() {
     let nbCallCompare = 0
     server.use(
-      graphql.query(`GetPullTeam`, (info) => {
+      graphql.query(`GetPullTeam`, () => {
         return HttpResponse.json({ data: mockPullData })
       }),
-      graphql.query(`GetPullCompareTotalsTeam`, (info) => {
+      graphql.query(`GetPullCompareTotalsTeam`, () => {
         nbCallCompare++
 
         if (nbCallCompare < 9) {

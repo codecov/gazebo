@@ -36,10 +36,10 @@ afterAll(() => server.close())
 describe('Profile', () => {
   function setup() {
     server.use(
-      http.get('/internal/users/current', (info) => {
+      http.get('/internal/users/current', () => {
         return HttpResponse.json(mockUser)
       }),
-      graphql.query('Seats', (info) => {
+      graphql.query('Seats', () => {
         return HttpResponse.json({
           data: { config: { seatsUsed: 0, seatsLimit: 10 } },
         })

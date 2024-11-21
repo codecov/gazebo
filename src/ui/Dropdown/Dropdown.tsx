@@ -49,10 +49,11 @@ interface TriggerProps
   extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>,
     VariantProps<typeof trigger> {}
 
+// TODO: remove forwardRef
 const Trigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
   TriggerProps
->(({ children, className, ...props }, forwardedRef) => {
+>(({ children, className, ...props }, _forwardedRef) => {
   const { isOpen } = React.useContext(DropdownContext)
 
   // below removes stray lingering outline after dropdown is closed

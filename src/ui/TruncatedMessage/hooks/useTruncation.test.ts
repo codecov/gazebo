@@ -4,7 +4,7 @@ import { useTruncation } from './useTruncation'
 
 let entry: {} | undefined = {}
 class ResizeObserver {
-  callback = (x: any) => null
+  callback = (_x: any) => null
 
   constructor(callback: any) {
     this.callback = callback
