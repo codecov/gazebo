@@ -3,10 +3,23 @@ import { useParams } from 'react-router-dom'
 import config from 'config'
 
 import { useSelfHostedHasAdmins } from 'services/selfHosted'
+import { Provider } from 'shared/api/helpers'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 
-const useHideBanner = ({ provider, hasAdmins, isFetching, isSelfHosted }) => {
+interface Props {
+  provider: Provider
+  hasAdmins?: boolean | null
+  isFetching?: boolean
+  isSelfHosted?: boolean
+}
+
+const useHideBanner = ({
+  provider,
+  hasAdmins,
+  isFetching,
+  isSelfHosted,
+}: Props) => {
   if (!isSelfHosted || !provider || hasAdmins || isFetching) {
     return true
   }
@@ -14,8 +27,12 @@ const useHideBanner = ({ provider, hasAdmins, isFetching, isSelfHosted }) => {
   return false
 }
 
+interface URLParams {
+  provider: Provider
+}
+
 const MissingDesignatedAdmins = () => {
-  const { provider } = useParams()
+  const { provider } = useParams<URLParams>()
   const { data: hasAdmins, isFetching } = useSelfHostedHasAdmins(
     { provider },
     { enabled: !!provider && !!config.IS_SELF_HOSTED }
@@ -40,6 +57,7 @@ const MissingDesignatedAdmins = () => {
       <p>
         Your organization does not have designated admins to manage the install.
         To resolve this, please add the admins in the install.yml.{' '}
+        {/* To be typed in UI part 4 */}
         <A
           isExternal
           href="https://docs.codecov.com/v5.0/docs/configuration#instance-wide-admins"

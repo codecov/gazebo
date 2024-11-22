@@ -4,19 +4,26 @@ import { useRedirect } from './hooks'
 
 const href = `/account/gh/test-user/billing`
 describe('useRedirect', () => {
-  let originalLocation
+  let originalLocation: Location
 
   beforeAll(() => {
     originalLocation = global.window.location
-    delete global.window.location
-    global.window.location = {
-      replace: vi.fn(),
-    }
+    Object.defineProperty(global.window, 'location', {
+      configurable: true,
+      enumerable: true,
+      value: {
+        replace: vi.fn(),
+      },
+    })
   })
 
   afterAll(() => {
     vi.resetAllMocks()
-    window.location = originalLocation
+    Object.defineProperty(global.window, 'location', {
+      configurable: true,
+      enumerable: true,
+      value: originalLocation,
+    })
   })
 
   describe('When data is loaded', () => {
