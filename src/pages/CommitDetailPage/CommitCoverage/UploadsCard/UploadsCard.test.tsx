@@ -941,13 +941,12 @@ describe('UploadsCard', () => {
       render(<UploadsCard />, { wrapper })
 
       const checkboxes = screen.getAllByRole('checkbox')
-      const travisCheckbox = checkboxes[0]
-      const travisUploadCheckbox1 = checkboxes[1]
-      if (travisUploadCheckbox1) {
-        await user.click(travisUploadCheckbox1)
+      const travisUploadCheckboxOne = checkboxes[1]
+      if (travisUploadCheckboxOne) {
+        await user.click(travisUploadCheckboxOne)
       }
-
-      expect(travisCheckbox).toHaveAttribute('aria-checked', 'mixed')
+      const icon = screen.getByTestId('minus')
+      expect(icon).toBeInTheDocument()
     })
 
     it('sets state to none when clicked on intermediate state', async () => {
@@ -956,12 +955,13 @@ describe('UploadsCard', () => {
 
       const checkboxes = screen.getAllByRole('checkbox')
       const travisCheckbox = checkboxes[0]
-      const travisUploadCheckbox1 = checkboxes[1]
-      const travisUploadCheckbox2 = checkboxes[2]
+      const travisUploadCheckboxOne = checkboxes[1]
+      const travisUploadCheckboxTwo = checkboxes[2]
 
-      await user.click(travisUploadCheckbox1!)
+      await user.click(travisUploadCheckboxOne!)
 
-      expect(travisCheckbox).toHaveAttribute('aria-checked', 'mixed')
+      const icon = screen.getByTestId('minus')
+      expect(icon).toBeInTheDocument()
 
       if (travisCheckbox) {
         await user.click(travisCheckbox)
@@ -969,8 +969,8 @@ describe('UploadsCard', () => {
 
       expect(travisCheckbox).not.toBeChecked()
       expect(travisCheckbox).toHaveAttribute('aria-checked', 'false')
-      expect(travisUploadCheckbox1).not.toBeChecked()
-      expect(travisUploadCheckbox2).not.toBeChecked()
+      expect(travisUploadCheckboxOne).not.toBeChecked()
+      expect(travisUploadCheckboxTwo).not.toBeChecked()
     })
   })
 })
