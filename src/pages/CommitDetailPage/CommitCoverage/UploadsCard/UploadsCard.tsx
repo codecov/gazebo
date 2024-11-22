@@ -2,6 +2,7 @@ import flatMap from 'lodash/flatMap'
 import { Fragment, useState } from 'react'
 
 import { useCommitErrors } from 'services/commitErrors'
+import { cn } from 'shared/utils/cn'
 import { NONE } from 'shared/utils/extractUploads'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
@@ -14,7 +15,6 @@ import { useUploads } from './useUploads'
 
 import YamlModal from '../YamlModal'
 
-const INDETERMINATE_STATE = 'indeterminate'
 export interface UploadFilters {
   flagErrors: boolean
   uploadErrors: boolean
@@ -84,14 +84,14 @@ function UploadsCard() {
     }))
   }
 
-  const determineCheckboxCheckedState = (title: string) => {
+  const determineCheckboxIcon = (title: string) => {
     const currentCheckboxState = determineCheckboxState(title)
     if (currentCheckboxState === SelectState.ALL_SELECTED) {
-      return true
+      return 'check'
     } else if (currentCheckboxState === SelectState.SOME_SELECTED) {
-      return INDETERMINATE_STATE
+      return 'minus'
     }
-    return false
+    return undefined
   }
 
   const onSelectChange = (
@@ -169,11 +169,15 @@ function UploadsCard() {
             : uploadsProviderList.map((title) => (
                 <Fragment key={title}>
                   <span
-                    className={`sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary px-4 py-1 text-sm font-semibold ${title === NONE ? 'text-ds-gray-quaternary' : ''}`}
+                    className={cn(
+                      'sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary px-4 py-1 text-sm font-semibold',
+                      title === NONE && 'text-ds-gray-quaternary'
+                    )}
                   >
                     <div className="flex items-center">
                       <Checkbox
-                        checked={determineCheckboxCheckedState(title)}
+                        icon={determineCheckboxIcon(title)}
+                        checked={determineCheckboxIcon(title) !== undefined}
                         onClick={() => handleSelectAllForProviderGroup(title)}
                       />
                       <span className="ml-2">
