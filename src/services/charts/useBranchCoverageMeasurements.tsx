@@ -1,4 +1,4 @@
-import { QueryOptions, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import {
@@ -25,8 +25,6 @@ const MeasurementsSchema = z.object({
     })
   ),
 })
-
-type Measurements = z.infer<typeof MeasurementsSchema>
 
 const GetBranchCoverageMeasurementsSchema = z.object({
   owner: z
@@ -85,10 +83,15 @@ interface UseBranchCoverageMeasurementsArgs {
   owner: string
   repo: string
   interval: MeasurementIntervals
-  before: Date
-  after: Date
+  before: Date | null
+  after: Date | null
   branch: string
-  opts?: QueryOptions<Measurements>
+  opts?: {
+    enabled?: boolean
+    suspense?: boolean
+    keepPreviousData?: boolean
+    staleTime?: number
+  }
 }
 
 export const useBranchCoverageMeasurements = ({

@@ -7,15 +7,16 @@ import {
   findProPlans,
   isAnnualPlan,
   isMonthlyPlan,
+  PlanName,
   Plans,
 } from 'shared/utils/billing'
 import OptionButton from 'ui/OptionButton'
 
-import { NewPlanType, OptionPeriod, TimePeriods } from '../../../constants'
+import { OptionPeriod, TimePeriods } from '../../../constants'
 import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface BillingControlsProps {
-  newPlan: NewPlanType
+  newPlan?: PlanName
   setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 

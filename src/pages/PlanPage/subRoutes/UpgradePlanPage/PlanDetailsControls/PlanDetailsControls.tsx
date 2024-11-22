@@ -1,18 +1,19 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { IndividualPlan, useAvailablePlans } from 'services/account'
+import { useAvailablePlans } from 'services/account'
 import {
   findProPlans,
   findSentryPlans,
   findTeamPlans,
+  Plan,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
 
 interface PlanDetailsControlsProps {
-  setSelectedPlan: (x: IndividualPlan) => void
-  setValue: (x: string, y: string) => void
+  setSelectedPlan: (x?: Plan) => void
+  setValue: (x: string, y?: string) => void
   isSentryUpgrade: boolean
 }
 

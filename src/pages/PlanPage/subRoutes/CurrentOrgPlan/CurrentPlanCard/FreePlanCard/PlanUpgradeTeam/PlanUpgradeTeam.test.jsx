@@ -6,6 +6,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
+import { Plans } from 'shared/utils/billing'
 
 import PlanUpgradeTeam from './PlanUpgradeTeam'
 
@@ -17,7 +18,7 @@ const mockPlanBasic = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -33,7 +34,7 @@ const mockPlanPro = {
   billingRate: 'monthly',
   marketingName: 'Pro',
   monthlyUploadLimit: null,
-  value: 'users-pr-inappm',
+  value: Plans.USERS_PR_INAPPM,
   trialStatus: TrialStatuses.CANNOT_TRIAL,
   trialStartDate: '',
   trialEndDate: '',
@@ -49,7 +50,7 @@ const mockPlanTrialing = {
   billingRate: 'monthly',
   marketingName: 'Trial',
   monthlyUploadLimit: null,
-  value: 'users-trial',
+  value: Plans.USERS_TRIAL,
   trialStatus: TrialStatuses.ONGOING,
   trialStartDate: '2023-01-01T08:55:25',
   trialEndDate: '2023-01-10T08:55:25',
@@ -62,7 +63,7 @@ const mockPlanTrialing = {
 const mockAvailablePlans = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -74,7 +75,7 @@ const mockAvailablePlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -87,7 +88,7 @@ const mockAvailablePlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappy',
+    value: Plans.USERS_PR_INAPPY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [
@@ -100,7 +101,7 @@ const mockAvailablePlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisem',
+    value: Plans.USERS_ENTERPRISEM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -113,7 +114,7 @@ const mockAvailablePlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisey',
+    value: Plans.USERS_ENTERPRISEY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [
@@ -130,7 +131,7 @@ const mockAvailablePlans = [
     billingRate: 'monthly',
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamm',
+    value: Plans.USERS_TEAMM,
   },
   {
     baseUnitPrice: 5,
@@ -138,7 +139,7 @@ const mockAvailablePlans = [
     billingRate: 'yearly',
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamy',
+    value: Plans.USERS_TEAMY,
   },
 ]
 
@@ -148,7 +149,7 @@ const mockPreTrialPlanInfo = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
 }
 
 const server = setupServer()

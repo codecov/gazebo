@@ -1,9 +1,12 @@
 import { z } from 'zod'
 
 import { PlanSchema } from 'services/account'
-import { isAnnualPlan, isFreePlan, isTeamPlan } from 'shared/utils/billing'
-
-import { NewPlanType } from '../constants'
+import {
+  isAnnualPlan,
+  isFreePlan,
+  isTeamPlan,
+  PlanName,
+} from 'shared/utils/billing'
 
 const UpdateBlurb = ({
   currentPlan,
@@ -14,7 +17,7 @@ const UpdateBlurb = ({
 }: {
   currentPlan?: z.infer<typeof PlanSchema>
   selectedPlan?: z.infer<typeof PlanSchema>
-  newPlanName: NewPlanType
+  newPlanName?: PlanName
   seats: number
   nextBillingDate: string
 }) => {

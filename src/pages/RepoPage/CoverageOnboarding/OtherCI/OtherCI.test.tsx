@@ -207,7 +207,7 @@ describe('OtherCI', () => {
         setup({ hasOrgUploadToken: true })
         render(<OtherCI />, { wrapper })
 
-        const box = await screen.findByText(/-r cool-repo/)
+        const box = await screen.findByText(/-r codecov\/cool-repo/)
         expect(box).toBeInTheDocument()
       })
     })
@@ -217,7 +217,7 @@ describe('OtherCI', () => {
         setup({})
         render(<OtherCI />, { wrapper })
 
-        const box = screen.queryByText(/-r cool-repo/)
+        const box = screen.queryByText(/-r codecov\/cool-repo/)
         expect(box).not.toBeInTheDocument()
       })
     })

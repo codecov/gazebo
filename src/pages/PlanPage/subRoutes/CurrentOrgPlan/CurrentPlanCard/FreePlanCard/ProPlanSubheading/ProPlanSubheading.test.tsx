@@ -5,6 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
+import { Plans } from 'shared/utils/billing'
 
 import ProPlanSubheading from './ProPlanSubheading'
 
@@ -14,7 +15,7 @@ const mockResponse = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -59,7 +60,7 @@ interface SetupArgs {
 describe('ProPlanSubheading', () => {
   function setup({
     trialStatus = TrialStatuses.NOT_STARTED,
-    planValue = 'users-basic',
+    planValue = Plans.USERS_BASIC,
     hasPrivateRepos = true,
   }: SetupArgs) {
     server.use(

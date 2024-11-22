@@ -2,15 +2,13 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
-import { isFreePlan } from 'shared/utils/billing'
+import { isFreePlan, PlanName } from 'shared/utils/billing'
 import Button from 'ui/Button'
-
-import { NewPlanType } from '../constants'
 
 interface BillingControlsProps {
   seats: number
   isValid: boolean
-  newPlan: NewPlanType
+  newPlan?: PlanName
 }
 
 const UpdateButton: React.FC<BillingControlsProps> = ({
@@ -21,7 +19,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
 
-  const currentPlanValue = accountDetails?.plan?.value || '0'
+  const currentPlanValue = accountDetails?.plan?.value
   const currentPlanQuantity = accountDetails?.plan?.quantity || 0
 
   const isSamePlan = newPlan === currentPlanValue

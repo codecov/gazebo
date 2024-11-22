@@ -1,15 +1,12 @@
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
-import {
-  IndividualPlan,
-  useAccountDetails,
-  useAvailablePlans,
-} from 'services/account'
+import { useAccountDetails, useAvailablePlans } from 'services/account'
 import {
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
+  Plan,
 } from 'shared/utils/billing'
 import { UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE } from 'shared/utils/upgradeForm'
 
@@ -24,7 +21,7 @@ interface Errors {
 interface ErrorBannerProps {
   errors: Errors
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (plan: IndividualPlan) => void
+  setSelectedPlan: (plan?: Plan) => void
 }
 
 export default function ErrorBanner({
@@ -37,7 +34,8 @@ export default function ErrorBanner({
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { proPlanYear } = findProPlans({ plans })
   const { sentryPlanYear } = findSentryPlans({ plans })
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  const plan =
+    accountDetails?.rootOrganization?.plan?.value ?? accountDetails?.plan?.value
   const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
 
@@ -52,7 +50,7 @@ export default function ErrorBanner({
           className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
           onClick={() => {
             setSelectedPlan(yearlyProPlan)
-            setFormValue('newPlan', yearlyProPlan.value, {
+            setFormValue('newPlan', yearlyProPlan?.value, {
               shouldValidate: true,
             })
           }}

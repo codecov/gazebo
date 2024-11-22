@@ -8,6 +8,7 @@ import {
   flagsSelectHandler,
 } from 'services/repo/mocks'
 import { randomUsersHandler } from 'services/users/mocks'
+import { Plans } from 'shared/utils/billing'
 
 export const handlers = [
   repoCoverageHandler,
@@ -42,7 +43,7 @@ graphql.query('CurrentUser', (info) => {
           service: 'github',
           ownerid: 3456556,
           serviceId: '87824812',
-          plan: 'users-basic',
+          plan: Plans.USERS_BASIC,
           staff: true,
           hasYaml: false,
           bot: null,

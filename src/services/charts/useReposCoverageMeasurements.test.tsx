@@ -2,36 +2,25 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { type MockInstance } from 'vitest'
 
 import { useReposCoverageMeasurements } from './useReposCoverageMeasurements'
 
 const mockReposMeasurements = {
   owner: {
     measurements: [
-      {
-        timestamp: '2023-01-01T00:00:00+00:00',
-        avg: 85,
-      },
-      {
-        timestamp: '2023-01-02T00:00:00+00:00',
-        avg: 80,
-      },
-      {
-        timestamp: '2023-01-03T00:00:00+00:00',
-        avg: 90,
-      },
-      {
-        timestamp: '2023-01-04T00:00:00+00:00',
-        avg: 100,
-      },
+      { timestamp: '2023-01-01T00:00:00+00:00', avg: 85 },
+      { timestamp: '2023-01-02T00:00:00+00:00', avg: 80 },
+      { timestamp: '2023-01-03T00:00:00+00:00', avg: 90 },
+      { timestamp: '2023-01-04T00:00:00+00:00', avg: 100 },
     ],
   },
 }
 
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper =
   (): React.FC<React.PropsWithChildren> =>
@@ -39,20 +28,31 @@ const wrapper =
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   )
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  hasNoData?: boolean
+  hasParsingError?: boolean
+}
+
 describe('useReposCoverageMeasurements', () => {
-  function setup({ hasNoData = false }: { hasNoData: boolean }) {
+  function setup({ hasNoData = false, hasParsingError = false }: SetupArgs) {
     server.use(
       graphql.query('GetReposCoverageMeasurements', (info) => {
         if (hasNoData) {
+          return HttpResponse.json({ data: { owner: null } })
+        } else if (hasParsingError) {
           return HttpResponse.json({ data: {} })
         }
 
@@ -77,22 +77,10 @@ describe('useReposCoverageMeasurements', () => {
 
       const expectedData = {
         measurements: [
-          {
-            timestamp: '2023-01-01T00:00:00+00:00',
-            avg: 85,
-          },
-          {
-            timestamp: '2023-01-02T00:00:00+00:00',
-            avg: 80,
-          },
-          {
-            timestamp: '2023-01-03T00:00:00+00:00',
-            avg: 90,
-          },
-          {
-            timestamp: '2023-01-04T00:00:00+00:00',
-            avg: 100,
-          },
+          { timestamp: '2023-01-01T00:00:00+00:00', avg: 85 },
+          { timestamp: '2023-01-02T00:00:00+00:00', avg: 80 },
+          { timestamp: '2023-01-03T00:00:00+00:00', avg: 90 },
+          { timestamp: '2023-01-04T00:00:00+00:00', avg: 100 },
         ],
       }
 
@@ -115,7 +103,46 @@ describe('useReposCoverageMeasurements', () => {
           { wrapper: wrapper() }
         )
 
-        await waitFor(() => expect(result.current.data).toStrictEqual({}))
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual({
+            measurements: null,
+          })
+        )
+      })
+    })
+
+    describe('parsing error', () => {
+      let consoleSpy: MockInstance
+
+      beforeEach(() => {
+        consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
+      })
+
+      afterEach(() => {
+        consoleSpy.mockRestore()
+      })
+
+      it('returns an empty object', async () => {
+        setup({ hasParsingError: true })
+
+        const { result } = renderHook(
+          () =>
+            useReposCoverageMeasurements({
+              provider: 'gh',
+              owner: 'codecov',
+              interval: 'INTERVAL_7_DAY',
+            }),
+          { wrapper: wrapper() }
+        )
+
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+            })
+          )
+        )
       })
     })
   })

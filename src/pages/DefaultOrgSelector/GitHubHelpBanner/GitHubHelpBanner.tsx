@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useResyncUser } from 'services/user'
+import { Provider } from 'shared/api/helpers'
 import AppInstallModal from 'shared/AppInstallModal'
-import { providerToName } from 'shared/utils'
+import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
@@ -42,7 +43,7 @@ function ResyncButton() {
 
 function GitHubHelpBanner() {
   const [showModal, setShowModal] = useState(false)
-  const { provider } = useParams<{ provider: string }>()
+  const { provider } = useParams<{ provider: Provider }>()
   if (providerToName(provider) !== 'Github') return null
 
   return (
