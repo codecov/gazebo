@@ -32,7 +32,7 @@ afterAll(() => {
 
 const wrapper =
   (initialEntries = ['/gh/test-org']) =>
-  ({ children }) => (
+  ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={initialEntries}>
         <Suspense fallback={<p>Loading</p>}>
@@ -48,6 +48,11 @@ describe('SelfHostedLicenseExpiration', () => {
     seatsLimit = 50,
     seatsUsed = 10,
     expirationDate = '2020-05-09T00:00:00',
+  }: {
+    isUndefined?: boolean
+    seatsLimit?: number | null
+    seatsUsed?: number | null
+    expirationDate?: string | null
   }) {
     const user = userEvent.setup({ delay: null })
 
