@@ -358,107 +358,56 @@ describe('Header Navigator', () => {
   })
 
   describe('when on members page', () => {
-    describe('user is part of the org', () => {
-      it('should render MyContextSwitcher with members link', async () => {
-        const { user } = setup({})
-        render(<Navigator currentUser={mockUser} />, {
-          wrapper: wrapper('/members/gh/codecov'),
-        })
-
-        const contextSwitcher = await screen.findAllByText('codecov')
-        expect(contextSwitcher).not.toHaveLength(0)
-
-        await user.click(contextSwitcher[0]!)
-
-        const sentryOrg = await screen.findByRole('link', { name: 'sentry' })
-        expect(sentryOrg).toBeInTheDocument()
-        expect(sentryOrg).toHaveAttribute('href', '/members/gh/sentry')
+    it('should render MyContextSwitcher with members link', async () => {
+      const { user } = setup({})
+      render(<Navigator currentUser={mockUser} />, {
+        wrapper: wrapper('/members/gh/codecov'),
       })
-    })
 
-    describe('user is not part of the org', () => {
-      it('should not render the members link', async () => {
-        setup({ isMyOrg: false })
-        render(<Navigator currentUser={mockUser} />, {
-          wrapper: wrapper('/members/gh/not-codecov'),
-        })
+      const contextSwitcher = await screen.findAllByText('codecov')
+      expect(contextSwitcher).not.toHaveLength(0)
 
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
+      await user.click(contextSwitcher[0]!)
 
-        const contextSwitcher = screen.queryByText('codecov')
-        expect(contextSwitcher).not.toBeInTheDocument()
-      })
+      const sentryOrg = await screen.findByRole('link', { name: 'sentry' })
+      expect(sentryOrg).toBeInTheDocument()
+      expect(sentryOrg).toHaveAttribute('href', '/members/gh/sentry')
     })
   })
 
   describe('when on plan page', () => {
-    describe('user is part of the org', () => {
-      it('should render MyContextSwitcher with plan link', async () => {
-        const { user } = setup({})
-        render(<Navigator currentUser={mockUser} />, {
-          wrapper: wrapper('/plan/gh/codecov'),
-        })
-
-        const contextSwitcher = await screen.findAllByText('codecov')
-        expect(contextSwitcher).not.toHaveLength(0)
-
-        await user.click(contextSwitcher[0]!)
-
-        const sentryOrg = await screen.findByRole('link', { name: 'sentry' })
-        expect(sentryOrg).toBeInTheDocument()
-        expect(sentryOrg).toHaveAttribute('href', '/plan/gh/sentry')
+    it('should render MyContextSwitcher with plan link', async () => {
+      const { user } = setup({})
+      render(<Navigator currentUser={mockUser} />, {
+        wrapper: wrapper('/plan/gh/codecov'),
       })
-    })
 
-    describe('user is not part of the org', () => {
-      it('should not render the plan link', async () => {
-        setup({ isMyOrg: false })
-        render(<Navigator currentUser={mockUser} />, {
-          wrapper: wrapper('/plan/gh/not-codecov'),
-        })
+      const contextSwitcher = await screen.findAllByText('codecov')
+      expect(contextSwitcher).not.toHaveLength(0)
 
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
+      await user.click(contextSwitcher[0]!)
 
-        const contextSwitcher = screen.queryByText('codecov')
-        expect(contextSwitcher).not.toBeInTheDocument()
-      })
+      const sentryOrg = await screen.findByRole('link', { name: 'sentry' })
+      expect(sentryOrg).toBeInTheDocument()
+      expect(sentryOrg).toHaveAttribute('href', '/plan/gh/sentry')
     })
   })
 
   describe('when on account page', () => {
-    describe('user is part of the org', () => {
-      it('should render MyContextSwitcher with account link', async () => {
-        const { user } = setup({})
-        render(<Navigator currentUser={mockUser} />, {
-          wrapper: wrapper('/account/gh/codecov'),
-        })
-
-        const contextSwitcher = await screen.findAllByText('codecov')
-        expect(contextSwitcher).not.toHaveLength(0)
-
-        await user.click(contextSwitcher[0]!)
-
-        const sentryOrg = await screen.findByRole('link', { name: 'sentry' })
-        expect(sentryOrg).toBeInTheDocument()
-        expect(sentryOrg).toHaveAttribute('href', '/account/gh/sentry')
+    it('should render MyContextSwitcher with account link', async () => {
+      const { user } = setup({})
+      render(<Navigator currentUser={mockUser} />, {
+        wrapper: wrapper('/account/gh/codecov'),
       })
-    })
 
-    describe('user is not part of the org', () => {
-      it('should not render the account link', async () => {
-        setup({ isMyOrg: false })
-        render(<Navigator currentUser={mockUser} />, {
-          wrapper: wrapper('/account/gh/not-codecov'),
-        })
+      const contextSwitcher = await screen.findAllByText('codecov')
+      expect(contextSwitcher).not.toHaveLength(0)
 
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
+      await user.click(contextSwitcher[0]!)
 
-        const contextSwitcher = screen.queryByText('codecov')
-        expect(contextSwitcher).not.toBeInTheDocument()
-      })
+      const sentryOrg = await screen.findByRole('link', { name: 'sentry' })
+      expect(sentryOrg).toBeInTheDocument()
+      expect(sentryOrg).toHaveAttribute('href', '/account/gh/sentry')
     })
   })
 })

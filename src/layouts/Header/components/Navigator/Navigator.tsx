@@ -9,8 +9,6 @@ import Label from 'ui/Label'
 
 import MyContextSwitcher from './MyContextSwitcher'
 
-const PRIVATE_PAGES = new Set(['membersTab', 'planTab', 'accountAdmin'])
-
 interface NavigatorProps {
   currentUser?: Me
   hasRepoAccess?: boolean
@@ -91,11 +89,6 @@ function Navigator({ currentUser, hasRepoAccess }: NavigatorProps) {
     pageName = 'planTab'
   } else if (path.startsWith('/account/:provider/:owner')) {
     pageName = 'accountAdmin'
-  }
-
-  // Don't show any private pages if the user is not part of the org
-  if (isCurrentUserPartOfOrg === false && PRIVATE_PAGES.has(pageName)) {
-    return null
   }
 
   return (
