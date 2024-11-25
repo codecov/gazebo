@@ -108,16 +108,20 @@ function Navigator({ currentUser, hasRepoAccess }: NavigatorProps) {
     pageName = 'accountAdmin'
   }
 
-  return (
-    <div className="flex items-center">
-      <MyContextSwitcher pageName={pageName} />
-      {isCurrentUserPartOfOrg === false ? (
-        <Label variant="plain" className="ml-2 hidden sm:block">
-          Viewing as visitor
-        </Label>
-      ) : null}
-    </div>
-  )
+  if (ownerData) {
+    return (
+      <div className="flex items-center">
+        <MyContextSwitcher pageName={pageName} />
+        {isCurrentUserPartOfOrg === false ? (
+          <Label variant="plain" className="ml-2 hidden sm:block">
+            Viewing as visitor
+          </Label>
+        ) : null}
+      </div>
+    )
+  }
+
+  return null
 }
 
 export default Navigator
