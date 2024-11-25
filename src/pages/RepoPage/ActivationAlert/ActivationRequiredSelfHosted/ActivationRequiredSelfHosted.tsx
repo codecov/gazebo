@@ -6,9 +6,12 @@ import {
 import A from 'ui/A'
 import Button from 'ui/Button'
 
+const alertWrapperClassName =
+  'flex flex-col items-center justify-center gap-8 bg-ds-gray-primary pb-28 pt-12 text-center'
+
 function SeatsLimitReached() {
   return (
-    <div className="flex flex-col items-center justify-center gap-8 bg-ds-gray-primary pb-28 pt-12 text-center">
+    <div className={alertWrapperClassName}>
       <img src={upsideDownUmbrella} alt="Forbidden" className="w-36" />
       <div className="flex w-2/5 flex-col gap-1">
         <h1 className="text-2xl">Activation Required</h1>
@@ -30,7 +33,7 @@ function SeatsLimitReached() {
 
 function SeatsAvailable({ isAdmin }: { isAdmin: boolean }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-8 bg-ds-gray-primary pb-28 pt-12 text-center">
+    <div className={alertWrapperClassName}>
       <img src={upsideDownUmbrella} alt="Forbidden" className="w-36" />
       <div className="flex w-2/5 flex-col gap-1">
         <h1 className="text-2xl">Activation Required</h1>

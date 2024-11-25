@@ -6,7 +6,7 @@ import { usePlanData } from 'services/account'
 import { isFreePlan } from 'shared/utils/billing'
 
 import ActivationRequiredAlert from './ActivationRequiredAlert'
-import ActivationRequiredSelfHostet from './ActivationRequiredSelfHosted'
+import ActivationRequiredSelfHosted from './ActivationRequiredSelfHosted'
 import FreePlanSeatsTakenAlert from './FreePlanSeatsTakenAlert'
 import PaidPlanSeatsTakenAlert from './PaidPlanSeatsTakenAlert'
 import UnauthorizedRepoDisplay from './UnauthorizedRepoDisplay'
@@ -33,7 +33,7 @@ function ActivationAlert() {
     !isFreePlan(planData?.plan?.value) && planData?.plan?.hasSeatsLeft
 
   if (config.IS_SELF_HOSTED) {
-    return <ActivationRequiredSelfHostet />
+    return <ActivationRequiredSelfHosted />
   }
 
   if (renderFreePlanSeatsTakenAlert) {
