@@ -6,6 +6,7 @@ import {
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { type MockInstance } from 'vitest'
 
 import { NavigatorDataQueryOpts } from './NavigatorDataQueryOpts'
 
@@ -66,17 +67,23 @@ afterAll(() => {
 interface SetupArgs {
   isFound?: boolean
   isOwnerNotActivated?: boolean
+  isParsingError?: boolean
 }
 
 describe('NavigatorDataQueryOpts', () => {
-  function setup({ isFound = true, isOwnerNotActivated = false }: SetupArgs) {
+  function setup({
+    isFound = true,
+    isOwnerNotActivated = false,
+    isParsingError = false,
+  }: SetupArgs) {
     server.use(
       graphql.query('NavigatorData', () => {
         if (isOwnerNotActivated) {
           return HttpResponse.json({ data: mockOwnerNotActivatedData })
-        }
-        if (!isFound) {
+        } else if (!isFound) {
           return HttpResponse.json({ data: mockNotFoundErrorData })
+        } else if (isParsingError) {
+          return HttpResponse.json({ data: {} })
         }
         return HttpResponse.json({ data: mockRepositoryData })
       })
@@ -154,6 +161,42 @@ describe('NavigatorDataQueryOpts', () => {
           hasRepoAccess: false,
           isCurrentUserPartOfOrg: true,
         })
+      )
+    })
+  })
+
+  describe('parsing error occurs', () => {
+    let consoleSpy: MockInstance
+    beforeEach(() => {
+      consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => null)
+    })
+    afterEach(() => {
+      consoleSpy.mockRestore()
+    })
+
+    it('rejects the network request', async () => {
+      setup({ isParsingError: true })
+
+      const { result } = renderHook(
+        () =>
+          useQueryV5(
+            NavigatorDataQueryOpts({
+              provider: 'gh',
+              owner: 'test-owner',
+              repo: 'test-repo',
+            })
+          ),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+            dev: 'NavigatorDataQueryOpts - 404 Failed to parse data',
+          })
+        )
       )
     })
   })
