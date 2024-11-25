@@ -14,7 +14,11 @@ import SeatDetails from './components/SeatDetails'
 import ThemeToggle from './components/ThemeToggle'
 import UserDropdown from './components/UserDropdown'
 
-function Header() {
+interface HeaderProps {
+  hasRepoAccess?: boolean
+}
+
+function Header({ hasRepoAccess }: HeaderProps) {
   const { isImpersonating } = useImpersonate()
   const { data: currentUser } = useUser()
   const syncPageMatch = useRouteMatch('/sync')
@@ -30,7 +34,10 @@ function Header() {
       <nav className="container flex h-14 min-h-14 w-full items-center">
         {!syncPageMatch?.isExact ? (
           <div className="flex-1">
-            <Navigator currentUser={currentUser} />
+            <Navigator
+              currentUser={currentUser}
+              hasRepoAccess={hasRepoAccess}
+            />
           </div>
         ) : null}
         {!currentUser ? null : (
