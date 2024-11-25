@@ -99,13 +99,19 @@ afterAll(() => {
   server.close()
 })
 
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={[`/gh/codecov/test-repo`]}>
-    <Route path="/:provider/:owner/:repo">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
+const wrapper =
+  (
+    initialEntries = '/gh/codecov/test-repo'
+  ): React.FC<React.PropsWithChildren> =>
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path="/:provider/:owner/:repo">
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </Route>
+    </MemoryRouter>
+  )
 
 type SetupArgs = {
   user?: User
@@ -125,7 +131,7 @@ describe('Header', () => {
     it('shows impersonating banner', async () => {
       setup({})
       mockedUseImpersonate.mockReturnValue({ isImpersonating: true })
-      render(<Header />, { wrapper })
+      render(<Header />, { wrapper: wrapper() })
 
       const impersonatingBanner = await screen.findByText('Impersonating')
       expect(impersonatingBanner).toBeInTheDocument()
@@ -134,7 +140,7 @@ describe('Header', () => {
   describe('when are not logged in', () => {
     it('shows guest header', async () => {
       setup({ user: mockNullUser })
-      render(<Header />, { wrapper })
+      render(<Header />, { wrapper: wrapper() })
 
       const guestHeader = await screen.findByText('Why Test Code?')
       expect(guestHeader).toBeInTheDocument()
@@ -142,7 +148,7 @@ describe('Header', () => {
 
     it('shows navigator', async () => {
       setup({})
-      render(<Header />, { wrapper })
+      render(<Header />, { wrapper: wrapper() })
 
       const navigator = await screen.findByText('Navigator')
       expect(navigator).toBeInTheDocument()
@@ -150,7 +156,7 @@ describe('Header', () => {
 
     it('does not show user/help dropdowns', async () => {
       setup({})
-      render(<Header />, { wrapper })
+      render(<Header />, { wrapper: wrapper() })
 
       const userDropdown = screen.queryByText('User Dropdown')
       expect(userDropdown).not.toBeInTheDocument()
@@ -162,7 +168,7 @@ describe('Header', () => {
   describe('when logged in', () => {
     it('shows navigator', async () => {
       setup({})
-      render(<Header />, { wrapper })
+      render(<Header />, { wrapper: wrapper() })
 
       const navigator = await screen.findByText('Navigator')
       expect(navigator).toBeInTheDocument()
@@ -170,7 +176,7 @@ describe('Header', () => {
 
     it('shows help dropdown', async () => {
       setup({})
-      render(<Header />, { wrapper })
+      render(<Header />, { wrapper: wrapper() })
 
       const helpDropdown = await screen.findByText(/Help Dropdown/)
       expect(helpDropdown).toBeInTheDocument()
@@ -178,7 +184,7 @@ describe('Header', () => {
 
     it('shows user dropdown', async () => {
       setup({})
-      render(<Header />, { wrapper })
+      render(<Header />, { wrapper: wrapper() })
 
       const userDropdown = await screen.findByText(/User Dropdown/)
       expect(userDropdown).toBeInTheDocument()
@@ -186,7 +192,7 @@ describe('Header', () => {
 
     it('has toggle for light/dark mode', async () => {
       setup({})
-      render(<Header />, { wrapper })
+      render(<Header />, { wrapper: wrapper() })
 
       const toggle = await screen.findByText(/Theme Toggle/)
       expect(toggle).toBeInTheDocument()
@@ -198,7 +204,7 @@ describe('Header', () => {
       it('shows guest header', async () => {
         config.IS_SELF_HOSTED = true
         setup({ user: mockNullUser })
-        render(<Header />, { wrapper })
+        render(<Header />, { wrapper: wrapper() })
 
         const guestHeader = await screen.findByText('Why Test Code?')
         expect(guestHeader).toBeInTheDocument()
@@ -206,7 +212,7 @@ describe('Header', () => {
 
       it('shows navigator', async () => {
         setup({})
-        render(<Header />, { wrapper })
+        render(<Header />, { wrapper: wrapper() })
 
         const navigator = await screen.findByText('Navigator')
         expect(navigator).toBeInTheDocument()
@@ -214,7 +220,7 @@ describe('Header', () => {
 
       it('does not show user/help dropdowns', async () => {
         setup({})
-        render(<Header />, { wrapper })
+        render(<Header />, { wrapper: wrapper() })
 
         const userDropdown = screen.queryByText('User Dropdown')
         expect(userDropdown).not.toBeInTheDocument()
@@ -227,7 +233,7 @@ describe('Header', () => {
       it('shows seat details', async () => {
         config.IS_SELF_HOSTED = true
         setup({})
-        render(<Header />, { wrapper })
+        render(<Header />, { wrapper: wrapper() })
 
         const text = await screen.findByText(/Seat Details/)
         expect(text).toBeInTheDocument()
@@ -236,11 +242,21 @@ describe('Header', () => {
       it('shows Admin link', async () => {
         config.IS_SELF_HOSTED = true
         setup({})
-        render(<Header />, { wrapper })
+        render(<Header />, { wrapper: wrapper() })
 
         const text = await screen.findByText(/Admin Link/)
         expect(text).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('when on sync page', () => {
+    it('does not show navigator', async () => {
+      setup({})
+      render(<Header />, { wrapper: wrapper('/sync') })
+
+      const navigator = screen.queryByText('Navigator')
+      expect(navigator).not.toBeInTheDocument()
     })
   })
 })
