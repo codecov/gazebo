@@ -30,30 +30,20 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
-  (initialEntries = '/gh/codecov') =>
+const wrapper: ({
+  initialEntries,
+  path,
+}: {
+  initialEntries: string
+  path: string
+}) => React.FC<React.PropsWithChildren> =
+  ({ initialEntries, path }) =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <RepoBreadcrumbProvider>
-          <Route path="/:provider/:owner/:repo" exact>
+          <Route path={path}>
             <RepoBaseCrumbSetter />
-            {children}
-          </Route>
-          <Route path="/admin/:provider">{children}</Route>
-          <Route path="/analytics/:provider/:owner" exact>
-            {children}
-          </Route>
-          <Route path="/members/:provider/:owner" exact>
-            {children}
-          </Route>
-          <Route path="/plan/:provider/:owner" exact>
-            {children}
-          </Route>
-          <Route path="/account/:provider/:owner" exact>
-            {children}
-          </Route>
-          <Route path="/:provider/:owner" exact>
             {children}
           </Route>
         </RepoBreadcrumbProvider>
@@ -212,7 +202,10 @@ describe('Header Navigator', () => {
       it('should render repo breadcrumb', async () => {
         setup({})
         render(<Navigator currentUser={mockUser} hasRepoAccess={true} />, {
-          wrapper: wrapper('/gh/codecov/test-repo'),
+          wrapper: wrapper({
+            initialEntries: '/gh/codecov/test-repo',
+            path: '/:provider/:owner/:repo',
+          }),
         })
 
         const org = await screen.findByText('codecov')
@@ -225,7 +218,10 @@ describe('Header Navigator', () => {
       it('should show Viewing as Visitor if appropriate', async () => {
         setup({ isMyOrg: false })
         render(<Navigator currentUser={mockUser} hasRepoAccess={true} />, {
-          wrapper: wrapper('/gh/not-codecov/test-repo'),
+          wrapper: wrapper({
+            initialEntries: '/gh/not-codecov/test-repo',
+            path: '/:provider/:owner/:repo',
+          }),
         })
 
         const org = await screen.findByText('not-codecov')
@@ -236,11 +232,14 @@ describe('Header Navigator', () => {
       })
     })
 
-    describe('user does not have access to the repo', () => {
+    describe('user does not have access and the org exists', () => {
       it('renders MyContextSwitcher', async () => {
         setup({ isMyOrg: false })
         render(<Navigator currentUser={mockUser} hasRepoAccess={false} />, {
-          wrapper: wrapper('/gh/not-codecov/test-repo'),
+          wrapper: wrapper({
+            initialEntries: '/gh/not-codecov/test-repo',
+            path: '/:provider/:owner/:repo',
+          }),
         })
 
         const contextSwitcher = await screen.findByText('not-codecov')
@@ -250,11 +249,31 @@ describe('Header Navigator', () => {
       it('should show Viewing as Visitor', async () => {
         setup({ isMyOrg: false })
         render(<Navigator currentUser={mockUser} hasRepoAccess={false} />, {
-          wrapper: wrapper('/gh/not-codecov/test-repo'),
+          wrapper: wrapper({
+            initialEntries: '/gh/not-codecov/test-repo',
+            path: '/:provider/:owner/:repo',
+          }),
         })
 
         const text = await screen.findByText('Viewing as visitor')
         expect(text).toBeInTheDocument()
+      })
+    })
+
+    describe('user does not exist', () => {
+      it('should not render anything', async () => {
+        setup({ isMyOrg: false })
+        const { container } = render(
+          <Navigator currentUser={undefined} hasRepoAccess={false} />,
+          {
+            wrapper: wrapper({
+              initialEntries: '/gh/not-codecov/test-repo',
+              path: '/:provider/:owner/:repo',
+            }),
+          }
+        )
+
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
   })
@@ -263,7 +282,10 @@ describe('Header Navigator', () => {
     it('should render admin breadcrumb', async () => {
       setup({})
       render(<Navigator currentUser={mockUser} />, {
-        wrapper: wrapper('/admin/gh/access'),
+        wrapper: wrapper({
+          initialEntries: '/admin/gh/access',
+          path: '/admin/:provider',
+        }),
       })
 
       const defaultOrg = await screen.findByText('codecov')
@@ -279,7 +301,10 @@ describe('Header Navigator', () => {
       it('renders the org dropdown', async () => {
         setup({ isMyOrg: true })
         render(<Navigator currentUser={mockUser} />, {
-          wrapper: wrapper('/gh/codecov'),
+          wrapper: wrapper({
+            initialEntries: '/gh/codecov',
+            path: '/:provider/:owner',
+          }),
         })
 
         const org = await screen.findByRole('button', { name: 'codecov' })
@@ -289,7 +314,10 @@ describe('Header Navigator', () => {
       it('does not render Viewing as Visitor', async () => {
         setup({ isMyOrg: true })
         render(<Navigator currentUser={mockUser} />, {
-          wrapper: wrapper('/gh/codecov'),
+          wrapper: wrapper({
+            initialEntries: '/gh/codecov',
+            path: '/:provider/:owner',
+          }),
         })
 
         await waitFor(() => queryClient.isFetching())
@@ -304,7 +332,10 @@ describe('Header Navigator', () => {
       it('should still render the user orgs dropdown', async () => {
         const { user } = setup({ isMyOrg: false })
         render(<Navigator currentUser={mockUser} />, {
-          wrapper: wrapper('/gh/not-codecov'),
+          wrapper: wrapper({
+            initialEntries: '/gh/not-codecov',
+            path: '/:provider/:owner',
+          }),
         })
 
         const org = await screen.findByText('not-codecov')
@@ -319,7 +350,10 @@ describe('Header Navigator', () => {
       it('renders viewing as a visitor', async () => {
         setup({ isMyOrg: false })
         render(<Navigator currentUser={mockUser} />, {
-          wrapper: wrapper('/gh/not-codecov'),
+          wrapper: wrapper({
+            initialEntries: '/gh/not-codecov',
+            path: '/:provider/:owner',
+          }),
         })
 
         const viewingAsVisitor = await screen.findByText('Viewing as visitor')
@@ -330,7 +364,10 @@ describe('Header Navigator', () => {
     it('should show the fallback if not logged in', async () => {
       const { user } = setup({ isMyOrg: false })
       render(<Navigator currentUser={undefined} />, {
-        wrapper: wrapper('/gh/not-codecov'),
+        wrapper: wrapper({
+          initialEntries: '/gh/not-codecov',
+          path: '/:provider/:owner',
+        }),
       })
 
       await waitFor(() => queryClient.isFetching())
@@ -350,7 +387,10 @@ describe('Header Navigator', () => {
     it('should render MyContextSwitcher with analytics link', async () => {
       const { user } = setup({})
       render(<Navigator currentUser={mockUser} />, {
-        wrapper: wrapper('/analytics/gh/codecov'),
+        wrapper: wrapper({
+          initialEntries: '/analytics/gh/codecov',
+          path: '/analytics/:provider/:owner',
+        }),
       })
 
       const contextSwitcher = await screen.findAllByText('codecov')
@@ -368,7 +408,10 @@ describe('Header Navigator', () => {
     it('should render MyContextSwitcher with members link', async () => {
       const { user } = setup({})
       render(<Navigator currentUser={mockUser} />, {
-        wrapper: wrapper('/members/gh/codecov'),
+        wrapper: wrapper({
+          initialEntries: '/members/gh/codecov',
+          path: '/members/:provider/:owner',
+        }),
       })
 
       const contextSwitcher = await screen.findAllByText('codecov')
@@ -386,7 +429,10 @@ describe('Header Navigator', () => {
     it('should render MyContextSwitcher with plan link', async () => {
       const { user } = setup({})
       render(<Navigator currentUser={mockUser} />, {
-        wrapper: wrapper('/plan/gh/codecov'),
+        wrapper: wrapper({
+          initialEntries: '/plan/gh/codecov',
+          path: '/plan/:provider/:owner',
+        }),
       })
 
       const contextSwitcher = await screen.findAllByText('codecov')
@@ -404,7 +450,10 @@ describe('Header Navigator', () => {
     it('should render MyContextSwitcher with account link', async () => {
       const { user } = setup({})
       render(<Navigator currentUser={mockUser} />, {
-        wrapper: wrapper('/account/gh/codecov'),
+        wrapper: wrapper({
+          initialEntries: '/account/gh/codecov',
+          path: '/account/:provider/:owner',
+        }),
       })
 
       const contextSwitcher = await screen.findAllByText('codecov')
