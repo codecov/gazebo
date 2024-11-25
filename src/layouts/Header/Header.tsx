@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { useRouteMatch } from 'react-router-dom'
 
 import config from 'config'
 
@@ -16,6 +17,7 @@ import UserDropdown from './components/UserDropdown'
 function Header() {
   const { isImpersonating } = useImpersonate()
   const { data: currentUser } = useUser()
+  const syncPageMatch = useRouteMatch('/sync')
 
   return (
     <header>
@@ -26,9 +28,11 @@ function Header() {
         </div>
       ) : null}
       <nav className="container flex h-14 min-h-14 w-full items-center">
-        <div className="flex-1">
-          <Navigator currentUser={currentUser} />
-        </div>
+        {!syncPageMatch?.isExact ? (
+          <div className="flex-1">
+            <Navigator currentUser={currentUser} />
+          </div>
+        ) : null}
         {!currentUser ? null : (
           <div className="flex items-center justify-end gap-4">
             {config.IS_SELF_HOSTED ? (
