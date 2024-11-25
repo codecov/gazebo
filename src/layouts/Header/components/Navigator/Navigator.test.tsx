@@ -246,17 +246,37 @@ describe('Header Navigator', () => {
         expect(contextSwitcher).toBeInTheDocument()
       })
 
-      it('should show Viewing as Visitor', async () => {
-        setup({ isMyOrg: false })
-        render(<Navigator currentUser={mockUser} hasRepoAccess={false} />, {
-          wrapper: wrapper({
-            initialEntries: '/gh/not-codecov/test-repo',
-            path: '/:provider/:owner/:repo',
-          }),
-        })
+      describe('the user is not a visitor', () => {
+        it('should not show Viewing as Visitor', async () => {
+          setup({ isMyOrg: true })
+          render(<Navigator currentUser={mockUser} hasRepoAccess={false} />, {
+            wrapper: wrapper({
+              initialEntries: '/gh/not-codecov/test-repo',
+              path: '/:provider/:owner/:repo',
+            }),
+          })
 
-        const text = await screen.findByText('Viewing as visitor')
-        expect(text).toBeInTheDocument()
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isFetching())
+
+          const text = screen.queryByText('Viewing as visitor')
+          expect(text).not.toBeInTheDocument()
+        })
+      })
+
+      describe('the user is a visitor', () => {
+        it('should show Viewing as Visitor', async () => {
+          setup({ isMyOrg: false })
+          render(<Navigator currentUser={mockUser} hasRepoAccess={false} />, {
+            wrapper: wrapper({
+              initialEntries: '/gh/not-codecov/test-repo',
+              path: '/:provider/:owner/:repo',
+            }),
+          })
+
+          const text = await screen.findByText('Viewing as visitor')
+          expect(text).toBeInTheDocument()
+        })
       })
     })
 
