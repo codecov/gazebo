@@ -41,7 +41,8 @@ function Navigator({ currentUser, hasRepoAccess }: NavigatorProps) {
       )
     }
     // User exists and org exists, this provides the user an escape hatch to
-    // navigate away from the repo page
+    // navigate away from the repo page, we still need to check to see if the
+    // user belongs to the org because of okta enforcement on private repos
     else if (currentUser && ownerData) {
       return (
         <div className="flex items-center">
