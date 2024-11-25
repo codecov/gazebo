@@ -27,7 +27,16 @@ function Navigator({ currentUser, hasRepoAccess }: NavigatorProps) {
   // think of a better way to do this and be this clear of what's happening
   if (path.startsWith('/:provider/:owner/:repo')) {
     if (hasRepoAccess === false) {
-      return null
+      return (
+        <div className="flex items-center">
+          <MyContextSwitcher pageName={'owner'} />
+          {isCurrentUserPartOfOrg === false ? (
+            <Label variant="plain" className="ml-2 hidden sm:block">
+              Viewing as visitor
+            </Label>
+          ) : null}
+        </div>
+      )
     }
 
     return (

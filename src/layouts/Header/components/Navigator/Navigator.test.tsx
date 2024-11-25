@@ -237,17 +237,24 @@ describe('Header Navigator', () => {
     })
 
     describe('user does not have access to the repo', () => {
-      it('should not show Viewing as Visitor', async () => {
+      it('renders MyContextSwitcher', async () => {
         setup({ isMyOrg: false })
         render(<Navigator currentUser={mockUser} hasRepoAccess={false} />, {
           wrapper: wrapper('/gh/not-codecov/test-repo'),
         })
 
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
+        const contextSwitcher = await screen.findByText('not-codecov')
+        expect(contextSwitcher).toBeInTheDocument()
+      })
 
-        const text = screen.queryByText('Viewing as visitor')
-        expect(text).not.toBeInTheDocument()
+      it('should show Viewing as Visitor', async () => {
+        setup({ isMyOrg: false })
+        render(<Navigator currentUser={mockUser} hasRepoAccess={false} />, {
+          wrapper: wrapper('/gh/not-codecov/test-repo'),
+        })
+
+        const text = await screen.findByText('Viewing as visitor')
+        expect(text).toBeInTheDocument()
       })
     })
   })
