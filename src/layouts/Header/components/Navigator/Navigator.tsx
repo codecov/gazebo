@@ -9,11 +9,14 @@ import Label from 'ui/Label'
 
 import MyContextSwitcher from './MyContextSwitcher'
 
+const PRIVATE_PAGES = new Set(['membersTab', 'planTab', 'accountAdmin'])
+
 interface NavigatorProps {
   currentUser?: Me
+  hasRepoAccess?: boolean
 }
 
-function Navigator({ currentUser }: NavigatorProps) {
+function Navigator({ currentUser, hasRepoAccess }: NavigatorProps) {
   const { owner } = useParams<{ owner: string }>()
   const { data: ownerData } = useOwnerPageData({ enabled: !!owner })
   const { path } = useRouteMatch()
@@ -22,7 +25,13 @@ function Navigator({ currentUser }: NavigatorProps) {
   const isCurrentUserPartOfOrg = ownerData?.isCurrentUserPartOfOrg
 
   // Repo page
+  // slightly annoyed that we have to have a nested if here but i couldn't
+  // think of a better way to do this and be this clear of what's happening
   if (path.startsWith('/:provider/:owner/:repo')) {
+    if (hasRepoAccess === false) {
+      return null
+    }
+
     return (
       <div className="flex items-center">
         <span className="inline-block">
@@ -41,6 +50,7 @@ function Navigator({ currentUser }: NavigatorProps) {
   if (path.startsWith('/admin/:provider')) {
     const defaultOrg =
       currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
+
     return (
       <Breadcrumb
         paths={[
@@ -57,7 +67,8 @@ function Navigator({ currentUser }: NavigatorProps) {
   }
 
   // Fallback instead of MyContextSwitcher if not logged in
-  if (!currentUser) {
+  // If the owner doesn't exist, don't show anything
+  if (!currentUser && ownerData) {
     return (
       <div className="flex items-center">
         <Avatar user={ownerData} />
@@ -80,6 +91,11 @@ function Navigator({ currentUser }: NavigatorProps) {
     pageName = 'planTab'
   } else if (path.startsWith('/account/:provider/:owner')) {
     pageName = 'accountAdmin'
+  }
+
+  // Don't show any private pages if the user is not part of the org
+  if (isCurrentUserPartOfOrg === false && PRIVATE_PAGES.has(pageName)) {
+    return null
   }
 
   return (
