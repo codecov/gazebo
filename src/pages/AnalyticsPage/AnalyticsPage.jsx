@@ -1,4 +1,3 @@
-import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
@@ -6,21 +5,11 @@ import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos'
 import { useOwner } from 'services/user'
 import ReposTable from 'shared/ListRepo/ReposTable'
-import LoadingLogo from 'ui/LoadingLogo'
 
+import Chart from './Chart'
 import ChartSelectors from './ChartSelectors'
 import './analytics.css'
 import Tabs from './Tabs'
-
-const Chart = lazy(() => import('./Chart'))
-
-function SuspenseFallback() {
-  return (
-    <div className="flex h-64 items-center justify-center">
-      <LoadingLogo />
-    </div>
-  )
-}
 
 const defaultQueryParams = {
   search: '',
@@ -58,9 +47,11 @@ function AnalyticsPage() {
         active={true}
         sortItem={sortItem}
       />
-      <Suspense fallback={<SuspenseFallback />}>
-        <Chart params={params} />
-      </Suspense>
+      <Chart
+        startDate={params?.startDate}
+        endDate={params?.endDate}
+        repositories={params?.repositories}
+      />
       <ReposTable
         owner={owner}
         searchValue={params?.search}

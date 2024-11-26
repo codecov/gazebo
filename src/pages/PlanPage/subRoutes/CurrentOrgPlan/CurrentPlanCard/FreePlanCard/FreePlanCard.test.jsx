@@ -6,6 +6,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
+import { Plans } from 'shared/utils/billing'
 
 import FreePlanCard from './FreePlanCard'
 
@@ -14,7 +15,7 @@ vi.mock('./PlanUpgradeTeam', () => ({ default: () => 'PlanUpgradeTeam' }))
 const allPlans = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_BASIC,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -26,7 +27,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -39,7 +40,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappy',
+    value: Plans.USERS_PR_INAPPY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [
@@ -52,7 +53,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisem',
+    value: Plans.USERS_ENTERPRISEM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -65,7 +66,7 @@ const allPlans = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisey',
+    value: Plans.USERS_ENTERPRISEY,
     billingRate: 'annually',
     baseUnitPrice: 10,
     benefits: [
@@ -82,7 +83,7 @@ const allPlans = [
     billingRate: 'monthly',
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamm',
+    value: Plans.USERS_TEAMM,
   },
   {
     baseUnitPrice: 5,
@@ -90,14 +91,14 @@ const allPlans = [
     billingRate: 'yearly',
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamy',
+    value: Plans.USERS_TEAMY,
   },
 ]
 
 const sentryPlans = [
   {
     marketingName: 'Sentry',
-    value: 'users-sentrym',
+    value: Plans.USERS_SENTRYM,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: ['Includes 5 seats', 'Unlimited public repositories'],
@@ -105,7 +106,7 @@ const sentryPlans = [
   },
   {
     marketingName: 'Sentry',
-    value: 'users-sentryy',
+    value: Plans.USERS_SENTRYY,
     billingRate: null,
     baseUnitPrice: 10,
     benefits: ['Includes 5 seats', 'Unlimited private repositories'],
@@ -115,7 +116,7 @@ const sentryPlans = [
 
 const freePlan = {
   marketingName: 'Free',
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', '250 free uploads'],
@@ -134,7 +135,7 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -150,7 +151,7 @@ const mockPreTrialPlanInfo = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
 }
 
 const server = setupServer()
@@ -192,7 +193,7 @@ describe('FreePlanCard', () => {
       },
       plans = allPlans,
       trialStatus = TrialStatuses.CANNOT_TRIAL,
-      planValue = 'users-basic',
+      planValue = Plans.USERS_BASIC,
       planUserCount = 1,
     } = {
       owner: {
@@ -201,7 +202,7 @@ describe('FreePlanCard', () => {
         numberOfUploads: 10,
       },
       trialStatus: TrialStatuses.CANNOT_TRIAL,
-      planValue: 'users-basic',
+      planValue: Plans.USERS_BASIC,
       plans: allPlans,
       planUserCount: 1,
     }

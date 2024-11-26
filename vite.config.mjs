@@ -28,7 +28,6 @@ export default defineConfig((config) => {
         bundleName: process.env.CODECOV_BUNDLE_NAME,
         apiUrl: process.env.CODECOV_API_URL,
         uploadToken: process.env.CODECOV_ORG_TOKEN,
-        debug: true
       })
     )
   }

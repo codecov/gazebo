@@ -5,6 +5,8 @@ import { setupServer } from 'msw/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { PlanName, Plans } from 'shared/utils/billing'
+
 import CurrentPlanCard from './CurrentPlanCard'
 
 vi.mock('./FreePlanCard', () => ({ default: () => 'Free plan card' }))
@@ -19,7 +21,7 @@ const proPlanDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
-    value: 'users-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: null,
   },
 }
@@ -27,7 +29,7 @@ const proPlanDetails = {
 const freePlanDetails = {
   plan: {
     marketingName: 'Basic',
-    value: 'users-free',
+    value: Plans.USERS_FREE,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -41,7 +43,7 @@ const freePlanDetails = {
 const enterprisePlan = {
   plan: {
     marketingName: 'Enterprise',
-    value: 'users-enterprisey',
+    value: Plans.USERS_ENTERPRISEY,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -55,7 +57,7 @@ const enterprisePlan = {
 const usesInvoiceTeamPlan = {
   plan: {
     marketingName: 'blah',
-    value: 'users-teamm',
+    value: Plans.USERS_TEAMM,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -74,8 +76,18 @@ const trialPlanDetails = {
     billingRate: null,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
-    value: 'users-trial',
+    value: Plans.USERS_TRIAL,
   },
+}
+
+interface TestPlan {
+  plan: {
+    marketingName: string
+    value: PlanName
+    billingRate: null
+    baseUnitPrice: number
+    benefits: string[]
+  }
 }
 
 const queryClient = new QueryClient({
@@ -100,7 +112,7 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('CurrentPlanCard', () => {
-  function setup(planDetails = freePlanDetails) {
+  function setup(planDetails: TestPlan = freePlanDetails) {
     server.use(
       http.get('/internal/bb/critical-role/account-details/', (http) => {
         return HttpResponse.json(planDetails)

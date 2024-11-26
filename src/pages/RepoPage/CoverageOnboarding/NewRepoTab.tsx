@@ -10,8 +10,9 @@ import {
 } from 'services/codecovEventMetrics'
 import { useNavLinks } from 'services/navigation'
 import { useRepo } from 'services/repo'
+import { Provider } from 'shared/api/helpers'
 import { useRedirect } from 'shared/useRedirect'
-import { providerToName } from 'shared/utils'
+import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
@@ -37,7 +38,7 @@ const CI_PROVIDERS = {
 type CIProviderValue = (typeof CI_PROVIDERS)[keyof typeof CI_PROVIDERS]
 type CIUrls = Record<keyof typeof CI_PROVIDERS, string>
 
-const getInitialProvider = (provider: string, path: string, urls: CIUrls) => {
+const getInitialProvider = (provider: Provider, path: string, urls: CIUrls) => {
   const defaultProvider =
     providerToName(provider) !== 'Github'
       ? CI_PROVIDERS.OtherCI
@@ -52,7 +53,7 @@ const getInitialProvider = (provider: string, path: string, urls: CIUrls) => {
 }
 
 interface CISelectorProps {
-  provider: string
+  provider: Provider
   owner: string
   repo: string
 }
@@ -124,7 +125,7 @@ function Content() {
 }
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
   repo: string
 }

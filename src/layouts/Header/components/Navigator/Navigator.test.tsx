@@ -7,6 +7,7 @@ import { useLayoutEffect } from 'react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { RepoBreadcrumbProvider, useCrumbs } from 'pages/RepoPage/context'
+import { Plans } from 'shared/utils/billing'
 
 import Navigator from './Navigator'
 
@@ -83,7 +84,7 @@ const mockUser = {
     service: 'github',
     ownerid: 123,
     serviceId: '123',
-    plan: 'users-basic',
+    plan: Plans.USERS_BASIC,
     staff: false,
     hasYaml: false,
     bot: null,

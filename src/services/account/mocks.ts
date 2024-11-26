@@ -1,3 +1,5 @@
+import { Plans } from 'shared/utils/billing'
+
 /* eslint-disable camelcase */
 export const invoiceObject = {
   amountDue: 1407.0,
@@ -39,7 +41,7 @@ export const accountDetailsObject = {
   plan_auto_activate: true,
   plan: {
     marketing_name: 'Pro Team',
-    value: 'users-pr-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billing_rate: 'monthly',
     base_unit_price: 12,
     benefits: [
@@ -78,7 +80,7 @@ export const accountDetailsObject = {
             end: 1636479475,
             start: 1634910008,
           },
-          plan_name: 'users-pr-inappm',
+          plan_name: Plans.USERS_PR_INAPPM,
           quantity: 21,
         },
         {
@@ -90,7 +92,7 @@ export const accountDetailsObject = {
             end: 1636479475,
             start: 1634910008,
           },
-          plan_name: 'users-pr-inappm',
+          plan_name: Plans.USERS_PR_INAPPM,
           quantity: 23,
         },
       ],
@@ -153,7 +155,7 @@ export const accountDetailsParsedObj = {
   planAutoActivate: true,
   plan: {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: 'monthly',
     baseUnitPrice: 12,
     benefits: [
@@ -192,7 +194,7 @@ export const accountDetailsParsedObj = {
             end: 1636479475,
             start: 1634910008,
           },
-          planName: 'users-pr-inappm',
+          planName: Plans.USERS_PR_INAPPM,
           quantity: 21,
         },
         {
@@ -204,7 +206,7 @@ export const accountDetailsParsedObj = {
             end: 1636479475,
             start: 1634910008,
           },
-          planName: 'users-pr-inappm',
+          planName: Plans.USERS_PR_INAPPM,
           quantity: 23,
         },
       ],

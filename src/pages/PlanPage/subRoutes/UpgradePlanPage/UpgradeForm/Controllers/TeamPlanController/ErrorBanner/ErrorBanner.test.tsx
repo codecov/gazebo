@@ -14,7 +14,7 @@ import ErrorBanner from './ErrorBanner'
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: 'users-basic',
+  value: Plans.USERS_BASIC,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -31,7 +31,7 @@ const teamPlanMonth = {
   billingRate: 'monthly',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamm',
+  value: Plans.USERS_TEAMM,
   quantity: 10,
 }
 
@@ -41,7 +41,7 @@ const teamPlanYear = {
   billingRate: 'annually',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamy',
+  value: Plans.USERS_TEAMY,
   quantity: 5,
 }
 
@@ -93,7 +93,7 @@ const mockPlanDataResponseMonthly = {
   billingRate: 'monthly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 2500,
-  value: 'test-plan',
+  value: Plans.USERS_TEAMM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -108,7 +108,7 @@ const mockPlanDataResponseYearly = {
   billingRate: 'yearly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 2500,
-  value: 'test-plan',
+  value: Plans.USERS_TEAMM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
