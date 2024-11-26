@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { AccountDetailsSchema } from 'services/account'
 
 export const Plans = {
+  USERS: 'users',
   USERS_FREE: 'users-free',
   USERS_BASIC: 'users-basic',
   USERS_TRIAL: 'users-trial',
