@@ -85,7 +85,6 @@ export const BundleDetails: React.FC = () => {
       reportGroups: types,
       loadTypes: loadTypes,
     },
-    opts: { enabled: bundle !== '' },
   })
 
   if (!bundle || !summaryData || !summaryData.bundleSummary) {

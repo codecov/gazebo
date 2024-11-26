@@ -1,4 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
+import {
+  queryOptions as queryOptionsV5,
+  useSuspenseQuery as useSuspenseQueryV5,
+} from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -8,7 +11,7 @@ import {
   useRepoOverview,
 } from 'services/repo'
 import Api from 'shared/api/api'
-import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BundleDataSchema = z.object({
@@ -120,42 +123,27 @@ query BundleSummary(
   }
 }`
 
-interface UseBundleSummaryArgs {
+interface BundleSummaryQueryOptsArgs {
   provider: string
   owner: string
   repo: string
-  branch?: string
+  branch: string | null | undefined
   bundle: string
   filters?: {
     reportGroups?: string[]
     loadTypes?: string[]
   }
-  opts?: {
-    enabled?: boolean
-  }
 }
 
-export const useBundleSummary = ({
+export const BundleSummaryQueryOpts = ({
   provider,
   owner,
   repo,
-  branch: branchParam,
+  branch,
   bundle,
-  filters = {},
-  opts = {},
-}: UseBundleSummaryArgs) => {
-  const { data: overview } = useRepoOverview({
-    provider,
-    owner,
-    repo,
-    opts: {
-      enabled: !branchParam,
-    },
-  })
-
-  const branch = branchParam ?? overview?.defaultBranch
-
-  return useQuery({
+  filters,
+}: BundleSummaryQueryOptsArgs) =>
+  queryOptionsV5({
     queryKey: ['BundleSummary', provider, owner, repo, branch, bundle, filters],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -170,7 +158,7 @@ export const useBundleSummary = ({
           return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useBundleSummary - 404 Failed to parse data',
+            dev: 'BundleSummaryQueryOpts - 404 Failed to parse data',
             error: parsedData.error,
           })
         }
@@ -178,15 +166,15 @@ export const useBundleSummary = ({
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useBundleSummary - 404 Not found error',
-          } satisfies NetworkErrorObject)
+            dev: 'BundleSummaryQueryOpts - 404 Not found error',
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -198,8 +186,8 @@ export const useBundleSummary = ({
                 </p>
               ),
             },
-            dev: 'useBundleSummary - 403 Owner not activated',
-          } satisfies NetworkErrorObject)
+            dev: 'BundleSummaryQueryOpts - 403 Owner not activated',
+          })
         }
 
         let bundleSummary = null
@@ -214,6 +202,47 @@ export const useBundleSummary = ({
 
         return { bundleSummary }
       }),
-    enabled: opts?.enabled,
   })
+
+interface UseBundleSummaryArgs {
+  provider: string
+  owner: string
+  repo: string
+  branch?: string
+  bundle: string
+  filters?: {
+    reportGroups?: string[]
+    loadTypes?: string[]
+  }
+}
+
+export const useBundleSummary = ({
+  provider,
+  owner,
+  repo,
+  branch: branchParam,
+  bundle,
+  filters = {},
+}: UseBundleSummaryArgs) => {
+  const { data: overview } = useRepoOverview({
+    provider,
+    owner,
+    repo,
+    opts: {
+      enabled: !branchParam,
+    },
+  })
+
+  const branch = branchParam ?? overview?.defaultBranch
+
+  return useSuspenseQueryV5(
+    BundleSummaryQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      filters,
+    })
+  )
 }

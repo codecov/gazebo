@@ -9,7 +9,7 @@ import cs from 'classnames'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBundleAssetModules } from 'services/bundleAnalysis'
+import { useBundleAssetModules } from 'services/bundleAnalysis/useBundleAssetModules'
 import {
   formatSizeToString,
   formatTimeToString,
@@ -78,7 +78,6 @@ const ModulesTable: React.FC<ModulesTableProps> = ({ asset }) => {
     branch,
     bundle,
     asset,
-    opts: { enabled: bundle !== '' },
   })
 
   const tableData = useMemo(() => {
