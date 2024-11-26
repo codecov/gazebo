@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 // import { BUNDLE_LOAD_TYPE_ITEMS } from 'pages/RepoPage/BundlesTab/BundleContent/constants'
@@ -8,7 +8,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 export const BUNDLE_TREND_INTERVALS = [
@@ -134,7 +134,7 @@ query GetBundleTrend(
   }
 }`
 
-interface UseBundleTrendDataArgs {
+interface BundleTrendDataQueryOptsArgs {
   provider: string
   owner: string
   repo: string
@@ -148,11 +148,9 @@ interface UseBundleTrendDataArgs {
     // temp removing while we don't have filtering by types implemented
     // loadTypes: Array<(typeof BUNDLE_LOAD_TYPE_ITEMS)[number]>
   }
-  enabled?: boolean
-  suspense?: boolean
 }
 
-export const useBundleTrendData = ({
+export const BundleTrendDataQueryOpts = ({
   provider,
   owner,
   repo,
@@ -162,12 +160,8 @@ export const useBundleTrendData = ({
   before,
   after,
   filters,
-  enabled = true,
-  suspense = false,
-}: UseBundleTrendDataArgs) => {
-  return useQuery({
-    enabled: enabled,
-    suspense: suspense,
+}: BundleTrendDataQueryOptsArgs) =>
+  queryOptionsV5({
     queryKey: [
       'GetBundleTrend',
       provider,
@@ -199,25 +193,26 @@ export const useBundleTrendData = ({
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useBundleTrendData - 404 Failed to parse schema',
-          } satisfies NetworkErrorObject)
+            dev: 'BundleTrendDataQueryOpts - 404 Failed to parse schema',
+            error: parsedData.error,
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useBundleTrendData - 404 Not found error',
-          } satisfies NetworkErrorObject)
+            dev: 'BundleTrendDataQueryOpts - 404 Not found error',
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -229,8 +224,8 @@ export const useBundleTrendData = ({
                 </p>
               ),
             },
-            dev: 'useBundleTrendData - 403 Owner not activated',
-          } satisfies NetworkErrorObject)
+            dev: 'BundleTrendDataQueryOpts - 403 Owner not activated',
+          })
         }
 
         const bundleReport =
@@ -244,4 +239,3 @@ export const useBundleTrendData = ({
         return []
       }),
   })
-}

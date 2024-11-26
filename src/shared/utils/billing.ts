@@ -8,6 +8,7 @@ import { AccountDetailsSchema } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 
 export const Plans = {
+  USERS: 'users',
   USERS_FREE: 'users-free',
   USERS_BASIC: 'users-basic',
   USERS_TRIAL: 'users-trial',
