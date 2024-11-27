@@ -20,15 +20,17 @@ const getNumberClasses = ({
   value?: number | null
   plain?: boolean
   showChange?: boolean
-}) =>
-  cn({
+}) => {
+  const hasValue = typeof value === 'number'
+
+  return cn({
     'bg-ds-coverage-uncovered':
-      value && parseFloat(value.toFixed(2)) < 0 && !plain,
+      hasValue && parseFloat(value.toFixed(2)) < 0 && !plain,
     'bg-ds-coverage-covered':
-      value && parseFloat(value.toFixed(2)) >= 0 && !plain,
-    "before:content-['+']":
-      value && parseFloat(value.toFixed(2)) > 0 && showChange,
+      hasValue && parseFloat(value.toFixed(2)) >= 0 && !plain,
+    "before:content-['+']": hasValue && showChange,
   })
+}
 
 const validateValue = (value?: number | null) =>
   (value && !isNaN(value)) || value === 0
