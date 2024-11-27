@@ -31,7 +31,7 @@ describe('FrameworkTabs', () => {
 
     expect(vitestButton).toHaveClass('border-b-2 border-ds-gray-octonary')
 
-    const codeSnippet = screen.getByText('vitest --reporter=junit')
+    const codeSnippet = screen.getByText('vitest --reporter=junit --outputFile=test-report.junit.xml')
     expect(codeSnippet).toBeInTheDocument()
   })
 
