@@ -1,7 +1,11 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { type MockInstance } from 'vitest'
 
 import { useBundleAssets } from './useBundleAssets'
@@ -10,21 +14,11 @@ const node1 = {
   name: 'asset-1',
   extension: 'js',
   bundleData: {
-    loadTime: {
-      threeG: 1,
-      highSpeed: 2,
-    },
-    size: {
-      uncompress: 3,
-      gzip: 4,
-    },
+    loadTime: { threeG: 1, highSpeed: 2 },
+    size: { uncompress: 3, gzip: 4 },
   },
   measurements: {
-    change: {
-      size: {
-        uncompress: 5,
-      },
-    },
+    change: { size: { uncompress: 5 } },
     measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
   },
 }
@@ -33,21 +27,11 @@ const node2 = {
   name: 'asset-2',
   extension: 'js',
   bundleData: {
-    loadTime: {
-      threeG: 1,
-      highSpeed: 2,
-    },
-    size: {
-      uncompress: 3,
-      gzip: 4,
-    },
+    loadTime: { threeG: 1, highSpeed: 2 },
+    size: { uncompress: 3, gzip: 4 },
   },
   measurements: {
-    change: {
-      size: {
-        uncompress: 5,
-      },
-    },
+    change: { size: { uncompress: 5 } },
     measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
   },
 }
@@ -56,21 +40,11 @@ const node3 = {
   name: 'asset-3',
   extension: 'js',
   bundleData: {
-    loadTime: {
-      threeG: 1,
-      highSpeed: 2,
-    },
-    size: {
-      uncompress: 3,
-      gzip: 4,
-    },
+    loadTime: { threeG: 1, highSpeed: 2 },
+    size: { uncompress: 3, gzip: 4 },
   },
   measurements: {
-    change: {
-      size: {
-        uncompress: 5,
-      },
-    },
+    change: { size: { uncompress: 5 } },
     measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
   },
 }
@@ -116,16 +90,14 @@ const mockOwnerNotActivated = {
 }
 
 const server = setupServer()
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -134,7 +106,7 @@ beforeAll(() => {
 
 afterEach(() => {
   vi.clearAllMocks()
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -243,7 +215,7 @@ describe('useBundleAssets', () => {
 
       await waitFor(() => {
         expect(result.current.data).toEqual({
-          pageParams: [undefined],
+          pageParams: [''],
           pages: [
             {
               assets: [node1, node2],
@@ -277,7 +249,7 @@ describe('useBundleAssets', () => {
 
         await waitFor(() => {
           expect(result.current.data).toEqual({
-            pageParams: [undefined],
+            pageParams: [''],
             pages: [
               {
                 assets: [node1, node2],
@@ -298,7 +270,7 @@ describe('useBundleAssets', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
-            pageParams: [undefined, 'cursor-2'],
+            pageParams: ['', 'cursor-2'],
             pages: [
               {
                 assets: [node1, node2],
@@ -344,7 +316,7 @@ describe('useBundleAssets', () => {
 
         await waitFor(() => {
           expect(result.current.data).toEqual({
-            pageParams: [undefined],
+            pageParams: [''],
             pages: [
               {
                 assets: [],
@@ -380,7 +352,7 @@ describe('useBundleAssets', () => {
 
       await waitFor(() => {
         expect(result.current.data).toEqual({
-          pageParams: [undefined],
+          pageParams: [''],
           pages: [{ assets: [], bundleData: null, pageInfo: null }],
         })
       })

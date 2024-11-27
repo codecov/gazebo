@@ -9,13 +9,10 @@ import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
-const MEASUREMENT_INTERVALS = {
-  INTERVAL_1_DAY: 'INTERVAL_1_DAY',
-  INTERVAL_7_DAY: 'INTERVAL_7_DAY',
-  INTERVAL_30_DAY: 'INTERVAL_30_DAY',
-} as const
-
-type MeasurementIntervals = keyof typeof MEASUREMENT_INTERVALS
+type MeasurementIntervals =
+  | 'INTERVAL_1_DAY'
+  | 'INTERVAL_7_DAY'
+  | 'INTERVAL_30_DAY'
 
 const MeasurementsSchema = z.object({
   measurements: z.array(

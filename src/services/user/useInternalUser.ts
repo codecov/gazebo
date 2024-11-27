@@ -47,7 +47,7 @@ export const useInternalUser = (opts: UseInternalUserArgs) =>
           path: '/user',
           signal,
         })
-      } catch (e) {
+      } catch (_e) {
         return {} as InternalUserData
       }
 
