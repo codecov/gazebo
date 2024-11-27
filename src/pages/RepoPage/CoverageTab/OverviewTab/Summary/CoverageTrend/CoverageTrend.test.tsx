@@ -132,7 +132,7 @@ describe('CoverageTrend', () => {
       setup({ hasBranchMeasurements: true })
       render(<CoverageTrend />, { wrapper })
 
-      const change = await screen.findByText(/40.00%+/)
+      const change = await screen.findByText(/20.00%+/)
       expect(change).toBeInTheDocument()
     })
   })

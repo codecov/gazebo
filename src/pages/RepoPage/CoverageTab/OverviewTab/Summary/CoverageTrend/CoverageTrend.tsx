@@ -47,11 +47,7 @@ function CoverageTrend() {
         {isLoading ? (
           <Spinner />
         ) : data?.measurements?.length > 0 ? (
-          <TotalsNumber
-            value={data?.measurements[0]?.coverage}
-            light
-            showChange
-          />
+          <TotalsNumber value={data?.coverageChange ?? 0} light showChange />
         ) : (
           <p className="text-sm font-medium">
             No coverage reports found in this timespan.
