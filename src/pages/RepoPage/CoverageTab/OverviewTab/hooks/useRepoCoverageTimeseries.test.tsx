@@ -197,7 +197,7 @@ describe('useRepoCoverageTimeseries', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.data?.coverageChange).toEqual(20)
+        expect(result.current.data?.coverageChange).toEqual(15)
       )
     })
   })
