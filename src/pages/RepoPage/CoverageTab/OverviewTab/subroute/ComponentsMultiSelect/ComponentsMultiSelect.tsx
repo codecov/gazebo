@@ -54,7 +54,7 @@ export default function ComponentsMultiSelect() {
     try {
       const regex = new RegExp(componentSearch, 'i')
       return Array.from(names).filter((name: string) => regex.test(name))
-    } catch (e) {
+    } catch (_e) {
       return Array.from(names).filter((name: string) =>
         name.toLowerCase().includes(componentSearch.toLowerCase())
       )
