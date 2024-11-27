@@ -30,6 +30,7 @@ export const enabledIcons = [
   'light-bulb',
   'lock-closed',
   'merge',
+  'minus',
   'moon',
   'no-symbol',
   'plus-circle',
