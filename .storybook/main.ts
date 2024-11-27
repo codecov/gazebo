@@ -10,7 +10,6 @@ const config: StorybookConfig = {
     '@storybook/addon-a11y',
     '@storybook/addon-links',
     '@storybook/addon-essentials',
-    '@storybook/preset-create-react-app',
     '@chromatic-com/storybook',
   ],
   docs: {},
