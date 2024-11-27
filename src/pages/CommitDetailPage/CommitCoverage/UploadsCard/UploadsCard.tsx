@@ -124,6 +124,39 @@ function UploadsCard() {
   const uploadErrorCount = flatMap(erroredUploads).length
   const flagErrorCount = flatMap(flagErrorUploads).length
 
+  const getUrlsFromUploads = async (
+    provider: string,
+    groupedUploads: Record<string, Array<{ downloadUrl: string }>>
+  ) => {
+    const uploads = groupedUploads[provider]
+    if (!uploads?.length) return
+
+    uploads.forEach(async (upload) => {
+      if (upload.downloadUrl) {
+        try {
+          const response = await fetch(upload.downloadUrl, {
+            headers: {
+              'Content-Type': 'text/plain',
+            },
+          })
+          const blob = await response.blob()
+          const filename = upload.downloadUrl.split('/').pop() || 'download.txt'
+
+          // Force download
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.setAttribute('download', filename)
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(link.href)
+        } catch (error) {
+          console.error('Download failed:', error)
+        }
+      }
+    })
+  }
+
   return (
     <>
       <Card className="overflow-x-hidden">
@@ -174,15 +207,26 @@ function UploadsCard() {
                       title === NONE && 'text-ds-gray-quaternary'
                     )}
                   >
-                    <div className="flex items-center">
-                      <Checkbox
-                        icon={determineCheckboxIcon(title)}
-                        checked={determineCheckboxIcon(title) !== undefined}
-                        onClick={() => handleSelectAllForProviderGroup(title)}
-                      />
-                      <span className="ml-2">
-                        {title === NONE ? 'Provider not specified' : title}
-                      </span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <Checkbox
+                          icon={determineCheckboxIcon(title)}
+                          checked={determineCheckboxIcon(title) !== undefined}
+                          onClick={() => handleSelectAllForProviderGroup(title)}
+                        />
+                        <span className="ml-2">
+                          {title === NONE ? 'Provider not specified' : title}
+                        </span>
+                      </div>
+                      {/* Download button moved to the right end */}
+                      <button
+                        onClick={() =>
+                          getUrlsFromUploads(title, groupedUploads)
+                        }
+                        className="text-ds-blue-default hover:underline"
+                      >
+                        Download
+                      </button>
                     </div>
                   </span>
                   {groupedUploads[title]?.map((upload, i) => (
