@@ -5563,6 +5563,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/theming@npm:^8.4.5":
+  version: 8.4.5
+  resolution: "@storybook/theming@npm:8.4.5"
+  peerDependencies:
+    storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
+  checksum: 10c0/9dbb92605f88eef3a5d4ca3b01a8815939e9a08c9eb3cef55e05c8f196c6bcd1a92ab1592ff0a489256382e172587c385a7cfdac227feb64e21cba65017fa818
+  languageName: node
+  linkType: hard
+
 "@stripe/react-stripe-js@npm:^2.7.1":
   version: 2.7.3
   resolution: "@stripe/react-stripe-js@npm:2.7.3"
@@ -10241,7 +10250,7 @@ __metadata:
     "@storybook/node-logger": "npm:^8.3.4"
     "@storybook/react": "npm:^8.3.4"
     "@storybook/react-vite": "npm:^8.3.4"
-    "@storybook/theming": "npm:^8.3.4"
+    "@storybook/theming": "npm:^8.4.5"
     "@stripe/react-stripe-js": "npm:^2.7.1"
     "@stripe/stripe-js": "npm:^3.4.0"
     "@tailwindcss/container-queries": "npm:^0.1.1"
