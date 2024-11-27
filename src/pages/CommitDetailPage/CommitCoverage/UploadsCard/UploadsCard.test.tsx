@@ -815,4 +815,162 @@ describe('UploadsCard', () => {
       })
     })
   })
+  describe('select all interactor', () => {
+    beforeEach(() => {
+      setup({
+        uploadsProviderList: ['travis', 'circleci'],
+        uploadsOverview: 'uploads overview',
+        groupedUploads: {
+          travis: [
+            {
+              id: 1,
+              name: 'travis-upload-1',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-25T16:36:19.559474+00:00',
+              updatedAt: '2020-08-25T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis1',
+              ciUrl: 'https://travis-ci.com/job/1',
+              uploadType: 'UPLOADED',
+              jobCode: 'job1',
+              buildCode: 'build1',
+              errors: [],
+            },
+            {
+              id: 2,
+              name: 'travis-upload-2',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-26T16:36:19.559474+00:00',
+              updatedAt: '2020-08-26T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis2',
+              ciUrl: 'https://travis-ci.com/job/2',
+              uploadType: 'UPLOADED',
+              jobCode: 'job2',
+              buildCode: 'build2',
+              errors: [],
+            },
+          ],
+          circleci: [
+            {
+              id: 3,
+              name: 'circleci-upload-1',
+              state: 'PROCESSED',
+              provider: 'circleci',
+              createdAt: '2020-08-27T16:36:19.559474+00:00',
+              updatedAt: '2020-08-27T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/circleci1',
+              ciUrl: 'https://circleci.com/job/1',
+              uploadType: 'UPLOADED',
+              jobCode: 'job3',
+              buildCode: 'build3',
+              errors: [],
+            },
+            {
+              id: 4,
+              name: 'circleci-upload-2',
+              state: 'PROCESSED',
+              provider: 'circleci',
+              createdAt: '2020-08-28T16:36:19.559474+00:00',
+              updatedAt: '2020-08-28T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/circleci2',
+              ciUrl: 'https://circleci.com/job/2',
+              uploadType: 'UPLOADED',
+              jobCode: 'job4',
+              buildCode: 'build4',
+              errors: [],
+            },
+          ],
+        },
+        erroredUploads: {},
+        flagErrorUploads: {},
+        searchResults: [],
+        hasNoUploads: false,
+      })
+    })
+
+    it('renders the provider title', async () => {
+      render(<UploadsCard />, { wrapper })
+      expect(screen.getByText('travis')).toBeInTheDocument()
+      expect(screen.getByText('circleci')).toBeInTheDocument()
+    })
+
+    it('selects all by default', async () => {
+      render(<UploadsCard />, { wrapper })
+      const checkboxes = screen.getAllByRole('checkbox')
+      expect(checkboxes).toHaveLength(6) // 2 providers + 4 uploads
+      checkboxes.forEach((checkbox) => {
+        expect(checkbox).toBeChecked()
+      })
+    })
+
+    it('unselects all when clicked', async () => {
+      const user = userEvent.setup()
+      render(<UploadsCard />, { wrapper })
+
+      const checkboxes = screen.getAllByRole('checkbox')
+      const travisCheckbox = checkboxes[0]
+      const travisUploadCheckbox1 = checkboxes[1]
+      const travisUploadCheckbox2 = checkboxes[2]
+
+      expect(travisCheckbox).toBeChecked()
+      expect(travisUploadCheckbox1).toBeChecked()
+      expect(travisUploadCheckbox2).toBeChecked()
+
+      await user.click(travisCheckbox!)
+
+      expect(travisCheckbox).not.toBeChecked()
+      expect(travisUploadCheckbox1).not.toBeChecked()
+      expect(travisUploadCheckbox2).not.toBeChecked()
+
+      // 'circleci' uploads remain checked
+      const circleciCheckbox = checkboxes[3]
+      const circleciUploadCheckbox1 = checkboxes[4]
+      const circleciUploadCheckbox2 = checkboxes[5]
+      expect(circleciCheckbox).toBeChecked()
+      expect(circleciUploadCheckbox1).toBeChecked()
+      expect(circleciUploadCheckbox2).toBeChecked()
+    })
+
+    it('shows an intermediate state', async () => {
+      const user = userEvent.setup()
+      render(<UploadsCard />, { wrapper })
+
+      const checkboxes = screen.getAllByRole('checkbox')
+      const travisUploadCheckboxOne = checkboxes[1]
+      if (travisUploadCheckboxOne) {
+        await user.click(travisUploadCheckboxOne)
+      }
+      const icon = screen.getByTestId('minus')
+      expect(icon).toBeInTheDocument()
+    })
+
+    it('sets state to none when clicked on intermediate state', async () => {
+      const user = userEvent.setup()
+      render(<UploadsCard />, { wrapper })
+
+      const checkboxes = screen.getAllByRole('checkbox')
+      const travisCheckbox = checkboxes[0]
+      const travisUploadCheckboxOne = checkboxes[1]
+      const travisUploadCheckboxTwo = checkboxes[2]
+
+      await user.click(travisUploadCheckboxOne!)
+
+      const icon = screen.getByTestId('minus')
+      expect(icon).toBeInTheDocument()
+
+      if (travisCheckbox) {
+        await user.click(travisCheckbox)
+      }
+
+      expect(travisCheckbox).not.toBeChecked()
+      expect(travisCheckbox).toHaveAttribute('aria-checked', 'false')
+      expect(travisUploadCheckboxOne).not.toBeChecked()
+      expect(travisUploadCheckboxTwo).not.toBeChecked()
+    })
+  })
 })
