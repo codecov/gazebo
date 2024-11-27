@@ -129,6 +129,7 @@ interface SetupArgs {
   bundleAnalysisEnabled?: boolean
   planValue?: string
   isPrivate?: boolean
+  isFirstPullRequest?: boolean
 }
 
 describe('FailedTestsTable', () => {
@@ -136,6 +137,7 @@ describe('FailedTestsTable', () => {
     noEntries = false,
     planValue = Plans.USERS_ENTERPRISEM,
     isPrivate = false,
+    isFirstPullRequest = false,
   }: SetupArgs) {
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -162,6 +164,7 @@ describe('FailedTestsTable', () => {
                 repository: {
                   __typename: 'Repository',
                   private: isPrivate,
+                  isFirstPullRequest,
                   defaultBranch: 'main',
                   testAnalytics: {
                     testResults: {
@@ -187,6 +190,7 @@ describe('FailedTestsTable', () => {
             repository: {
               __typename: 'Repository',
               private: isPrivate,
+              isFirstPullRequest,
               defaultBranch: 'main',
               testAnalytics: {
                 testResults: {
@@ -345,6 +349,23 @@ describe('FailedTestsTable', () => {
       const hoverObj = await screen.findAllByText(/6 Passed, 5 Failed /)
 
       expect(hoverObj.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('when first pull request', () => {
+    it('renders no data message', async () => {
+      const { queryClient } = setup({ isFirstPullRequest: true })
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const noDataMessage = await screen.findByText('No data yet')
+      expect(noDataMessage).toBeInTheDocument()
+
+      const mergeIntoMainMessage = await screen.findByText(
+        'To see data for the main branch, merge your PR into the main branch.'
+      )
+      expect(mergeIntoMainMessage).toBeInTheDocument()
     })
   })
 

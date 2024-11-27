@@ -300,6 +300,24 @@ const FailedTestsTable = () => {
     }
   }, [fetchNextPage, inView, hasNextPage])
 
+  if (testData?.isFirstPullRequest) {
+    return (
+      <div className="flex flex-col gap-2">
+        <TableHeader
+          totalCount={testData?.totalCount}
+          isDefaultBranch={isDefaultBranch}
+        />
+        <hr />
+        <div className="mt-4 text-center text-ds-gray-quinary">
+          <p>No data yet</p>
+          <p>
+            To see data for the main branch, merge your PR into the main branch.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   if (isEmpty(testData?.testResults) && !isLoading && !!branch) {
     return (
       <div className="flex flex-col gap-2">
