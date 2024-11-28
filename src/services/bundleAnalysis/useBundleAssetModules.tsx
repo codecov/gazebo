@@ -1,5 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
-import isNull from 'lodash/isNull'
+import {
+  queryOptions as queryOptionsV5,
+  useSuspenseQuery as useSuspenseQueryV5,
+} from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -8,6 +10,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BundleAssetModuleSchema = z.object({
@@ -131,33 +134,24 @@ query BundleAssetModules(
   }
 }`
 
-interface UseBundleAssetModulesArgs {
+interface BundleAssetModulesQueryOptsArgs {
   provider: string
   owner: string
   repo: string
   branch: string
   bundle: string
   asset: string
-  opts?: {
-    enabled?: boolean
-  }
 }
 
-export const useBundleAssetModules = ({
+export const BundleAssetModulesQueryOpts = ({
   provider,
   owner,
   repo,
   branch,
   bundle,
   asset,
-  opts = {},
-}: UseBundleAssetModulesArgs) => {
-  let enabled = true
-  if (opts.enabled) {
-    enabled = opts.enabled
-  }
-
-  return useQuery({
+}: BundleAssetModulesQueryOptsArgs) => {
+  return queryOptionsV5({
     queryKey: [
       'BundleAssetModules',
       provider,
@@ -183,23 +177,26 @@ export const useBundleAssetModules = ({
         const parsedData = RequestSchema.safeParse(res.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'BundleAssetModulesQueryOpts - 404 Failed to parse',
+            error: parsedData.error,
           })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'BundleAssetModulesQueryOpts - 404 Repository not found',
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -211,6 +208,7 @@ export const useBundleAssetModules = ({
                 </p>
               ),
             },
+            dev: 'BundleAssetModulesQueryOpts - 403 Owner not activated',
           })
         }
 
@@ -220,14 +218,42 @@ export const useBundleAssetModules = ({
             ?.bundleAnalysisReport
         if (
           bundleReport?.__typename === 'BundleAnalysisReport' &&
-          !isNull(bundleReport.bundle) &&
-          !isNull(bundleReport.bundle.asset)
+          bundleReport.bundle !== null &&
+          bundleReport.bundle.asset !== null
         ) {
           modules = bundleReport.bundle.asset.modules
         }
 
         return { modules }
       }),
-    enabled: enabled,
   })
+}
+
+interface UseBundleAssetModulesArgs {
+  provider: string
+  owner: string
+  repo: string
+  branch: string
+  bundle: string
+  asset: string
+}
+
+export const useBundleAssetModules = ({
+  provider,
+  owner,
+  repo,
+  branch,
+  bundle,
+  asset,
+}: UseBundleAssetModulesArgs) => {
+  return useSuspenseQueryV5(
+    BundleAssetModulesQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      asset,
+    })
+  )
 }

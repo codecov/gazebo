@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -99,11 +103,7 @@ const mockAssets = {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
               bundle: {
-                bundleData: {
-                  size: {
-                    uncompress: 12,
-                  },
-                },
+                bundleData: { size: { uncompress: 12 } },
                 assetsPaginated: {
                   edges: [
                     {
@@ -121,11 +121,7 @@ const mockAssets = {
                           },
                         },
                         measurements: {
-                          change: {
-                            size: {
-                              uncompress: 5,
-                            },
-                          },
+                          change: { size: { uncompress: 5 } },
                           measurements: [
                             { timestamp: '2022-10-10T11:59:59', avg: 6 },
                           ],
@@ -179,14 +175,8 @@ const mockBundleTrendData = {
                   {
                     assetType: 'REPORT_SIZE',
                     measurements: [
-                      {
-                        timestamp: '2024-06-15T00:00:00+00:00',
-                        avg: null,
-                      },
-                      {
-                        timestamp: '2024-06-16T00:00:00+00:00',
-                        avg: null,
-                      },
+                      { timestamp: '2024-06-15T00:00:00+00:00', avg: null },
+                      { timestamp: '2024-06-16T00:00:00+00:00', avg: null },
                       {
                         timestamp: '2024-06-17T00:00:00+00:00',
                         avg: 6834699.8,
@@ -199,10 +189,7 @@ const mockBundleTrendData = {
                         timestamp: '2024-06-19T00:00:00+00:00',
                         avg: 6824833.33333,
                       },
-                      {
-                        timestamp: '2024-06-20T00:00:00+00:00',
-                        avg: 6812341,
-                      },
+                      { timestamp: '2024-06-20T00:00:00+00:00', avg: 6812341 },
                     ],
                   },
                 ],
@@ -250,25 +237,30 @@ const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper =
   (
     initialEntries = '/gh/codecov/test-repo/bundles'
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/bundles/:branch/:bundle',
-            '/:provider/:owner/:repo/bundles/:branch',
-            '/:provider/:owner/:repo/bundles',
-          ]}
-        >
-          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/bundles/:branch/:bundle',
+              '/:provider/:owner/:repo/bundles/:branch',
+              '/:provider/:owner/:repo/bundles',
+            ]}
+          >
+            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -277,6 +269,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
