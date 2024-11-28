@@ -215,6 +215,22 @@ describe('Header Navigator', () => {
         expect(repo).toBeInTheDocument()
       })
 
+      it('should not show Viewing as Visitor if appropriate', async () => {
+        setup({ isMyOrg: false })
+        render(<Navigator currentUser={mockUser} hasRepoAccess={true} />, {
+          wrapper: wrapper({
+            initialEntries: '/gh/not-codecov/test-repo',
+            path: '/:provider/:owner/:repo',
+          }),
+        })
+
+        const org = await screen.findByText('not-codecov')
+        expect(org).toBeInTheDocument()
+
+        const text = screen.queryByText('Viewing as visitor')
+        expect(text).not.toBeInTheDocument()
+      })
+
       it('should show Viewing as Visitor if appropriate', async () => {
         setup({ isMyOrg: false })
         render(<Navigator currentUser={mockUser} hasRepoAccess={true} />, {
