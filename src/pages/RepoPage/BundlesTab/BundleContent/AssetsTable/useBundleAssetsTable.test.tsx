@@ -40,11 +40,8 @@ const mockedBundleAssets = {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
               bundle: {
-                bundleData: {
-                  size: {
-                    uncompress: 12,
-                  },
-                },
+                info: { pluginName: '@codecov/vite-plugin' },
+                bundleData: { size: { uncompress: 12 } },
                 assetsPaginated: {
                   edges: [
                     {
@@ -52,21 +49,11 @@ const mockedBundleAssets = {
                         name: 'asset-1',
                         extension: 'js',
                         bundleData: {
-                          loadTime: {
-                            threeG: 1,
-                            highSpeed: 2,
-                          },
-                          size: {
-                            uncompress: 3,
-                            gzip: 4,
-                          },
+                          loadTime: { threeG: 1, highSpeed: 2 },
+                          size: { uncompress: 3, gzip: 4 },
                         },
                         measurements: {
-                          change: {
-                            size: {
-                              uncompress: 5,
-                            },
-                          },
+                          change: { size: { uncompress: 5 } },
                           measurements: [
                             { timestamp: '2022-10-10T11:59:59', avg: 6 },
                           ],
@@ -74,10 +61,7 @@ const mockedBundleAssets = {
                       },
                     },
                   ],
-                  pageInfo: {
-                    hasNextPage: false,
-                    endCursor: null,
-                  },
+                  pageInfo: { hasNextPage: false, endCursor: null },
                 },
               },
             },
@@ -166,37 +150,19 @@ describe('useBundleAssetsTable', () => {
           assets: [
             {
               bundleData: {
-                loadTime: {
-                  highSpeed: 2,
-                  threeG: 1,
-                },
-                size: {
-                  gzip: 4,
-                  uncompress: 3,
-                },
+                loadTime: { highSpeed: 2, threeG: 1 },
+                size: { gzip: 4, uncompress: 3 },
               },
               extension: 'js',
               measurements: {
-                change: {
-                  size: {
-                    uncompress: 5,
-                  },
-                },
-                measurements: [
-                  {
-                    avg: 6,
-                    timestamp: '2022-10-10T11:59:59',
-                  },
-                ],
+                change: { size: { uncompress: 5 } },
+                measurements: [{ avg: 6, timestamp: '2022-10-10T11:59:59' }],
               },
               name: 'asset-1',
             },
           ],
-          bundleData: {
-            size: {
-              uncompress: 12,
-            },
-          },
+          bundleData: { size: { uncompress: 12 } },
+          bundleInfo: { pluginName: '@codecov/vite-plugin' },
           pageInfo: {
             endCursor: null,
             hasNextPage: false,
