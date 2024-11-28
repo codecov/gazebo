@@ -1,9 +1,13 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useCommitPageData } from './useCommitPageData'
+import { CommitPageDataQueryOpts } from './CommitPageDataQueryOpts'
 
 const mockCommitData = {
   owner: {
@@ -54,13 +58,15 @@ const mockNullOwner = {
 
 const mockUnsuccessfulParseError = {}
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -68,7 +74,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -115,12 +121,14 @@ describe('useCommitPageData', () => {
 
           const { result } = renderHook(
             () =>
-              useCommitPageData({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                commitId: 'id-1',
-              }),
+              useQueryV5(
+                CommitPageDataQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'cool-repo',
+                  commitId: 'id-1',
+                })
+              ),
             { wrapper }
           )
 
@@ -156,12 +164,14 @@ describe('useCommitPageData', () => {
 
           const { result } = renderHook(
             () =>
-              useCommitPageData({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                commitId: 'id-1',
-              }),
+              useQueryV5(
+                CommitPageDataQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'cool-repo',
+                  commitId: 'id-1',
+                })
+              ),
             { wrapper }
           )
 
@@ -199,12 +209,14 @@ describe('useCommitPageData', () => {
 
         const { result } = renderHook(
           () =>
-            useCommitPageData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              commitId: 'id-1',
-            }),
+            useQueryV5(
+              CommitPageDataQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                commitId: 'id-1',
+              })
+            ),
           { wrapper }
         )
 
@@ -235,12 +247,14 @@ describe('useCommitPageData', () => {
 
         const { result } = renderHook(
           () =>
-            useCommitPageData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              commitId: 'id-1',
-            }),
+            useQueryV5(
+              CommitPageDataQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                commitId: 'id-1',
+              })
+            ),
           { wrapper }
         )
 
@@ -271,12 +285,14 @@ describe('useCommitPageData', () => {
 
         const { result } = renderHook(
           () =>
-            useCommitPageData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              commitId: 'id-1',
-            }),
+            useQueryV5(
+              CommitPageDataQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                commitId: 'id-1',
+              })
+            ),
           { wrapper }
         )
 

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import {
@@ -14,6 +14,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BundleAnalysisComparisonResult = z.union([
@@ -111,20 +112,20 @@ query CommitPageData($owner: String!, $repo: String!, $commitId: String!) {
   }
 }`
 
-interface UseCommitPageDataArgs {
+interface CommitPageDataQueryArgs {
   provider: string
   owner: string
   repo: string
   commitId: string
 }
 
-export const useCommitPageData = ({
+export const CommitPageDataQueryOpts = ({
   provider,
   owner,
   repo,
   commitId,
-}: UseCommitPageDataArgs) =>
-  useQuery({
+}: CommitPageDataQueryArgs) =>
+  queryOptionsV5({
     queryKey: ['CommitPageData', provider, owner, repo, commitId, query],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -141,23 +142,26 @@ export const useCommitPageData = ({
         const parsedData = CommitPageDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'CommitPageDataQueryOpts - 404 Failed to parse schema',
+            error: parsedData.error,
           })
         }
 
         const { data } = parsedData
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'CommitPageDataQueryOpts - 404 Not found',
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -169,6 +173,7 @@ export const useCommitPageData = ({
                 </p>
               ),
             },
+            dev: 'CommitPageDataQueryOpts - 403 Owner not activated',
           })
         }
 
