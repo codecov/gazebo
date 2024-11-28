@@ -1,6 +1,7 @@
+import { useQuery as useQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
-import { usePullPageData } from '../../../hooks/usePullPageData'
+import { PullPageDataQueryOpts } from '../../queries/PullPageDataQueryOpts'
 
 type URLParams = {
   owner: string
@@ -11,14 +12,16 @@ type URLParams = {
 
 export const useTabsCounts = () => {
   const { owner, repo, pullId, provider } = useParams<URLParams>()
-  const { data: pullPageData, isLoading: pullsLoading } = usePullPageData({
-    provider,
-    owner,
-    repo,
-    pullId,
-  })
+  const { data: pullPageData, isPending: pullsPending } = useQueryV5(
+    PullPageDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      pullId,
+    })
+  )
 
-  if (pullsLoading) {
+  if (pullsPending) {
     return {
       flagsCount: 0,
       componentsCount: 0,
