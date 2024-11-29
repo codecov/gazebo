@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -10,31 +14,23 @@ vi.mock('./ComponentsNotConfigured', () => ({
   default: () => 'ComponentsNotConfigured',
 }))
 
-const queryClient = new QueryClient()
-const server = setupServer()
-
-const wrapper =
-  (initialEntries = '/gh/codecov/gazebo/pull/123/components') =>
-  ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider/:owner/:repo/pull/:pullId/components">
-          {children}
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
-
-beforeAll(() => {
-  server.listen()
-})
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => {
-  server.close()
-})
+const mockPullComponentsResponse = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      pull: {
+        compareWithBase: {
+          __typename: 'Comparison',
+          componentComparisons: [
+            { name: 'component-1' },
+            { name: 'component-2' },
+            { name: 'component-3' },
+          ],
+        },
+      },
+    },
+  },
+}
 
 const mockPull = {
   owner: {
@@ -46,25 +42,51 @@ const mockPull = {
           componentComparisons: [
             {
               name: 'secondTest',
-              headTotals: {
-                percentCovered: 82.71,
-              },
-              baseTotals: {
-                percentCovered: 80.0,
-              },
-              patchTotals: {
-                percentCovered: 59.0,
-              },
+              headTotals: { percentCovered: 82.71 },
+              baseTotals: { percentCovered: 80.0 },
+              patchTotals: { percentCovered: 59.0 },
             },
           ],
         },
-        head: {
-          branchName: 'abc',
-        },
+        head: { branchName: 'abc' },
       },
     },
   },
 }
+
+const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const wrapper =
+  (initialEntries = '/gh/codecov/gazebo/pull/123/components') =>
+  ({ children }) => (
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider/:owner/:repo/pull/:pullId/components">
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
+  )
+
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  queryClientV5.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
 
 describe('ComponentsTable', () => {
   function setup(overrideData) {
@@ -79,8 +101,10 @@ describe('ComponentsTable', () => {
         if (overrideData) {
           return HttpResponse.json({ data: overrideData })
         }
-
         return HttpResponse.json({ data: mockPull })
+      }),
+      graphql.query('PullComponentsSelector', () => {
+        return HttpResponse.json({ data: mockPullComponentsResponse })
       })
     )
 
@@ -88,13 +112,8 @@ describe('ComponentsTable', () => {
   }
 
   describe('when there are no components in the new tab', () => {
-    beforeEach(() => {
-      setup({
-        owner: null,
-      })
-    })
-
     it('will render card with no dismiss button', async () => {
+      setup({ owner: null })
       render(<ComponentsTable />, { wrapper: wrapper() })
 
       const componentNotConfigured = await screen.findByText(
@@ -105,11 +124,8 @@ describe('ComponentsTable', () => {
   })
 
   describe('when rendered with populated data in the new tab', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('shows title and body', async () => {
+      setup()
       render(<ComponentsTable />, { wrapper: wrapper() })
 
       const nameTableField = await screen.findByText(`Name`)
@@ -158,6 +174,7 @@ describe('ComponentsTable', () => {
 
   describe('when loading', () => {
     it('renders spinner', () => {
+      setup()
       render(<ComponentsTable />, { wrapper: wrapper() })
 
       const spinner = screen.getByTestId('spinner')
