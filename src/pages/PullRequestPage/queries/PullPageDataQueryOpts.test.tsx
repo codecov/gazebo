@@ -1,9 +1,13 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { usePullPageData } from './usePullPageData'
+import { PullPageDataQueryOpts } from './PullPageDataQueryOpts'
 
 const mockPullData = {
   owner: {
@@ -96,13 +100,15 @@ const mockNullOwner = {
 
 const mockUnsuccessfulParseError = {}
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -110,7 +116,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -125,7 +131,7 @@ interface SetupArgs {
   isNullOwner?: boolean
 }
 
-describe('usePullPageData', () => {
+describe('PullPageDataQueryOpts', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
@@ -159,12 +165,14 @@ describe('usePullPageData', () => {
 
           const { result } = renderHook(
             () =>
-              usePullPageData({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                pullId: '1',
-              }),
+              useQueryV5(
+                PullPageDataQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'cool-repo',
+                  pullId: '1',
+                })
+              ),
             {
               wrapper,
             }
@@ -213,12 +221,14 @@ describe('usePullPageData', () => {
 
           const { result } = renderHook(
             () =>
-              usePullPageData({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                pullId: '1',
-              }),
+              useQueryV5(
+                PullPageDataQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'cool-repo',
+                  pullId: '1',
+                })
+              ),
             {
               wrapper,
             }
@@ -253,12 +263,14 @@ describe('usePullPageData', () => {
         setup({ isNotFoundError: true })
         const { result } = renderHook(
           () =>
-            usePullPageData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              pullId: '1',
-            }),
+            useQueryV5(
+              PullPageDataQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                pullId: '1',
+              })
+            ),
           {
             wrapper,
           }
@@ -290,12 +302,14 @@ describe('usePullPageData', () => {
         setup({ isOwnerNotActivatedError: true })
         const { result } = renderHook(
           () =>
-            usePullPageData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              pullId: '1',
-            }),
+            useQueryV5(
+              PullPageDataQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                pullId: '1',
+              })
+            ),
           {
             wrapper,
           }
@@ -327,12 +341,14 @@ describe('usePullPageData', () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
-            usePullPageData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              pullId: '1',
-            }),
+            useQueryV5(
+              PullPageDataQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                pullId: '1',
+              })
+            ),
           {
             wrapper,
           }
@@ -355,13 +371,15 @@ describe('usePullPageData', () => {
 
         const { result } = renderHook(
           () =>
-            usePullPageData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              pullId: '1',
-              isTeamPlan: true,
-            }),
+            useQueryV5(
+              PullPageDataQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                pullId: '1',
+                isTeamPlan: true,
+              })
+            ),
           {
             wrapper,
           }
