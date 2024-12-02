@@ -1,24 +1,13 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTabsCounts } from './useTabsCounts'
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-
-const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
-  (initialEntries = '/bb/critical-role/bells-hells/pull/9') =>
-  ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
 
 const mockPullData = {
   owner: {
@@ -86,12 +75,26 @@ const mockFirstPullData = {
 
 const server = setupServer()
 
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
+  (initialEntries = '/bb/critical-role/bells-hells/pull/9') =>
+  ({ children }) => (
+    <QueryClientProviderV5 client={queryClientV5}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProviderV5>
+  )
+
 beforeAll(() => {
   server.listen()
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -112,17 +115,14 @@ describe('useTabsCount', () => {
   }
 
   describe('calling hook', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('returns the correct data', async () => {
+      setup({})
       const { result } = renderHook(() => useTabsCounts(), {
         wrapper: wrapper(),
       })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      await waitFor(() => queryClientV5.isFetching)
+      await waitFor(() => !queryClientV5.isFetching)
 
       await waitFor(() =>
         expect(result.current).toStrictEqual({
@@ -137,11 +137,8 @@ describe('useTabsCount', () => {
   })
 
   describe('first pull request', () => {
-    beforeEach(() => {
-      setup({ firstPullRequest: true })
-    })
-
     it('returns 0s for comparison data', async () => {
+      setup({ firstPullRequest: true })
       const { result } = renderHook(() => useTabsCounts(), {
         wrapper: wrapper(),
       })
@@ -160,6 +157,7 @@ describe('useTabsCount', () => {
 
   describe('when usePullPageData is loading', () => {
     it('should return 0s for tab counts', async () => {
+      setup({})
       const { result } = renderHook(() => useTabsCounts(), {
         wrapper: wrapper(),
       })

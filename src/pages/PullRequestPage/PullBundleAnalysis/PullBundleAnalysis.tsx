@@ -1,3 +1,4 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -9,7 +10,10 @@ import BundleMessage from './BundleMessage'
 import EmptyTable from './EmptyTable'
 import FirstPullBanner from './FirstPullBanner'
 
-import { TBundleAnalysisComparisonResult, usePullPageData } from '../hooks'
+import {
+  PullPageDataQueryOpts,
+  TBundleAnalysisComparisonResult,
+} from '../queries/PullPageDataQueryOpts'
 
 const PullBundleComparisonTable = lazy(
   () => import('./PullBundleComparisonTable')
@@ -82,13 +86,15 @@ const PullBundleAnalysis: React.FC = () => {
   const { provider, owner, repo, pullId } = useParams<URLParams>()
 
   // we can set team plan true here because we don't care about the fields it will skip - tho we should really stop doing this and just return null on the API if they're on a team plan so we can save on requests made
-  const { data } = usePullPageData({
-    provider,
-    owner,
-    repo,
-    pullId,
-    isTeamPlan: true,
-  })
+  const { data } = useSuspenseQueryV5(
+    PullPageDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      pullId,
+      isTeamPlan: true,
+    })
+  )
 
   const bundleCompareType =
     data?.pull?.bundleAnalysisCompareWithBase?.__typename

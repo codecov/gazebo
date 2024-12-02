@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import {
@@ -14,6 +14,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BundleAnalysisComparisonResult = z.union([
@@ -167,7 +168,7 @@ query PullPageData(
   }
 }`
 
-interface UsePullPageDataArgs {
+interface PullPageDataQueryArgs {
   provider: string
   owner: string
   repo: string
@@ -175,14 +176,14 @@ interface UsePullPageDataArgs {
   isTeamPlan?: boolean
 }
 
-export const usePullPageData = ({
+export const PullPageDataQueryOpts = ({
   provider,
   owner,
   repo,
   pullId,
   isTeamPlan = false,
-}: UsePullPageDataArgs) =>
-  useQuery({
+}: PullPageDataQueryArgs) =>
+  queryOptionsV5({
     queryKey: [
       'PullPageData',
       provider,
@@ -208,23 +209,26 @@ export const usePullPageData = ({
         const parsedData = PullPageDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'PullPageDataQueryOpts - 404 Failed to parse schema',
+            error: parsedData.error,
           })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'PullPageDataQueryOpts - 404 Not found',
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -236,6 +240,7 @@ export const usePullPageData = ({
                 </p>
               ),
             },
+            dev: 'PullPageDataQueryOpts - 403 Owner not activated',
           })
         }
 

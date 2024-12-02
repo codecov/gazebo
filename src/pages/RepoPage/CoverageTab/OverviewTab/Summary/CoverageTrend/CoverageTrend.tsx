@@ -9,41 +9,50 @@ import TotalsNumber from 'ui/TotalsNumber'
 import { useBranchSelector, useRepoCoverageTimeseries } from '../../hooks'
 import TrendDropdown from '../TrendDropdown'
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
 function CoverageTrend() {
-  const { repo, owner, provider } = useParams()
+  const { repo, owner, provider } = useParams<URLParams>()
   const { data: overview } = useRepoOverview({
     provider,
     repo,
     owner,
   })
+
   const { data: branchesData } = useBranches({ provider, repo, owner })
+
   const { selection } = useBranchSelector({
-    branches: branchesData?.branches,
-    defaultBranch: overview?.defaultBranch,
+    branches: branchesData?.branches ?? [],
+    defaultBranch: overview?.defaultBranch ?? '',
   })
 
-  const { data, isFetching } = useRepoCoverageTimeseries(
-    {
-      branch: selection?.name,
+  const { data, isLoading } = useRepoCoverageTimeseries({
+    branch: selection?.name,
+    options: {
+      enabled: !!selection?.name,
+      suspense: false,
+      keepPreviousData: true,
     },
-    { enabled: !!selection?.name, suspense: false, keepPreviousData: true }
-  )
+  })
 
   return (
     <SummaryField>
       <TrendDropdown />
       <div className="flex items-center gap-2 pb-[1.3rem]">
         {/* ^ CSS doesn't want to render like the others without a p tag in the dom. */}
-        {data?.coverage?.length > 0 ? (
-          <>
-            <TotalsNumber value={data?.coverageChange} light showChange />
-          </>
+        {isLoading ? (
+          <Spinner />
+        ) : data?.measurements?.length > 0 ? (
+          <TotalsNumber value={data?.coverageChange ?? 0} light showChange />
         ) : (
           <p className="text-sm font-medium">
             No coverage reports found in this timespan.
           </p>
         )}
-        {isFetching && <Spinner />}
       </div>
     </SummaryField>
   )

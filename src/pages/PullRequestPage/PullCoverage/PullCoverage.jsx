@@ -1,3 +1,4 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { lazy, Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
@@ -14,7 +15,7 @@ import Spinner from 'ui/Spinner'
 import PullCoverageTabs from './PullCoverageTabs'
 import CompareSummarySkeleton from './Summary/CompareSummary/CompareSummarySkeleton'
 
-import { usePullPageData } from '../hooks'
+import { PullPageDataQueryOpts } from '../queries/PullPageDataQueryOpts'
 
 const CompareSummary = lazy(() => import('./Summary'))
 const FirstPullBanner = lazy(() => import('./FirstPullBanner'))
@@ -40,13 +41,15 @@ function PullCoverageContent() {
 
   const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
-  const { data } = usePullPageData({
-    provider,
-    owner,
-    repo,
-    pullId,
-    isTeamPlan,
-  })
+  const { data } = useSuspenseQueryV5(
+    PullPageDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      pullId,
+      isTeamPlan,
+    })
+  )
 
   const resultType = data?.pull?.compareWithBase?.__typename
 
@@ -129,13 +132,15 @@ function PullCoverage() {
 
   const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
-  const { data } = usePullPageData({
-    provider,
-    owner,
-    repo,
-    pullId,
-    isTeamPlan,
-  })
+  const { data } = useSuspenseQueryV5(
+    PullPageDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      pullId,
+      isTeamPlan,
+    })
+  )
 
   return (
     <div className="mx-4 flex flex-col gap-4 md:mx-0">

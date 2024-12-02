@@ -9,7 +9,7 @@ import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import TabNavigation from 'ui/TabNavigation'
 
-import { useTabsCounts } from './hooks'
+import { useTabsCounts } from './useTabsCounts'
 
 function PullCoverageTabs() {
   const { provider, owner, repo, pullId } = useParams()
