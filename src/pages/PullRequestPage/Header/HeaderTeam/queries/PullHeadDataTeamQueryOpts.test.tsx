@@ -1,9 +1,13 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { usePullHeadDataTeam } from './usePullHeadDataTeam'
+import { PullHeadDataTeamQueryOpts } from './PullHeadDataTeamQueryOpts'
 
 const mockPullData = {
   owner: {
@@ -56,13 +60,15 @@ const mockNullOwner = {
 
 const mockUnsuccessfulParseError = {}
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -70,7 +76,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -116,15 +122,15 @@ describe('usePullHeadDataTeam', () => {
           setup({})
           const { result } = renderHook(
             () =>
-              usePullHeadDataTeam({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                pullId: '1',
-              }),
-            {
-              wrapper,
-            }
+              useQueryV5(
+                PullHeadDataTeamQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'cool-repo',
+                  pullId: '1',
+                })
+              ),
+            { wrapper }
           )
 
           await waitFor(() => result.current.isLoading)
@@ -161,15 +167,15 @@ describe('usePullHeadDataTeam', () => {
           setup({ isNullOwner: true })
           const { result } = renderHook(
             () =>
-              usePullHeadDataTeam({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                pullId: '1',
-              }),
-            {
-              wrapper,
-            }
+              useQueryV5(
+                PullHeadDataTeamQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'cool-repo',
+                  pullId: '1',
+                })
+              ),
+            { wrapper }
           )
 
           await waitFor(() => result.current.isLoading)
@@ -200,15 +206,15 @@ describe('usePullHeadDataTeam', () => {
 
         const { result } = renderHook(
           () =>
-            usePullHeadDataTeam({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              pullId: '1',
-            }),
-          {
-            wrapper,
-          }
+            useQueryV5(
+              PullHeadDataTeamQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                pullId: '1',
+              })
+            ),
+          { wrapper }
         )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -237,15 +243,15 @@ describe('usePullHeadDataTeam', () => {
         setup({ isOwnerNotActivatedError: true })
         const { result } = renderHook(
           () =>
-            usePullHeadDataTeam({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              pullId: '1',
-            }),
-          {
-            wrapper,
-          }
+            useQueryV5(
+              PullHeadDataTeamQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                pullId: '1',
+              })
+            ),
+          { wrapper }
         )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -274,15 +280,15 @@ describe('usePullHeadDataTeam', () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
-            usePullHeadDataTeam({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              pullId: '1',
-            }),
-          {
-            wrapper,
-          }
+            useQueryV5(
+              PullHeadDataTeamQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                pullId: '1',
+              })
+            ),
+          { wrapper }
         )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
