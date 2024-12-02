@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -156,15 +160,27 @@ const internalUserHasSyncedProviders = {
   termsAgreement: true,
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      suspense: false,
+const mockNavigatorData = {
+  owner: {
+    isCurrentUserPartOfOrg: true,
+    repository: {
+      __typename: 'Repository',
+      name: 'test-repo',
     },
   },
-})
+}
+
 const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false, suspense: false },
+  },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: {
+    queries: { retry: false },
+  },
+})
 
 let testLocation: ReturnType<typeof useLocation>
 const wrapper: (
@@ -172,18 +188,20 @@ const wrapper: (
 ) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/bb/batman/batcave']) =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo">{children}</Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo">{children}</Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -192,6 +210,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
   vi.clearAllMocks()
 })
@@ -236,7 +255,7 @@ describe('BaseLayout', () => {
       }),
       // Self hosted only
       graphql.query('HasAdmins', (info) => {
-        return HttpResponse.json({ data: {} })
+        return HttpResponse.json({ data: { config: null } })
       }),
       graphql.query('Seats', (info) => {
         return HttpResponse.json({ data: {} })
@@ -260,6 +279,9 @@ describe('BaseLayout', () => {
       }),
       graphql.mutation('updateDefaultOrganization', (info) => {
         return HttpResponse.json({ data: {} })
+      }),
+      graphql.query('NavigatorData', () => {
+        return HttpResponse.json({ data: mockNavigatorData })
       }),
       http.get('/internal/users/current', (info) => {
         return HttpResponse.json({})

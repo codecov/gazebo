@@ -41,12 +41,12 @@ afterAll(() => {
 })
 
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh/test-owner') =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <Switch>
-          <Route path="/:provider" exact>
+          <Route path="/:provider/:owner" exact>
             <div>Click away</div>
             {children}
           </Route>
@@ -72,15 +72,12 @@ describe('ContextSwitcher', () => {
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     afterEach(() => {
       vi.clearAllMocks()
     })
 
     it('does not render the listed items initially', () => {
+      setup()
       render(
         <ContextSwitcher
           activeContext={{
@@ -117,9 +114,7 @@ describe('ContextSwitcher', () => {
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       expect(screen.queryByRole('listbox')).toHaveClass('hidden')
@@ -169,9 +164,7 @@ describe('ContextSwitcher', () => {
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const button = await screen.findByRole('button', { expanded: false })
@@ -228,9 +221,7 @@ describe('ContextSwitcher', () => {
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const button = await screen.findByRole(
@@ -251,15 +242,12 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when rendered with no active context', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     afterEach(() => {
       vi.clearAllMocks()
     })
 
     it('renders manage access restrictions', async () => {
+      setup()
       render(
         <ContextSwitcher
           activeContext={{
@@ -296,9 +284,7 @@ describe('ContextSwitcher', () => {
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const installCopy = await screen.findByText(/Install Codecov GitHub app/)
@@ -688,6 +674,39 @@ describe('ContextSwitcher', () => {
           expect(mutate).not.toHaveBeenCalled()
         })
       })
+    })
+  })
+
+  describe('when the owner does not exist', () => {
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
+    it('renders the owner url param', async () => {
+      setup()
+      render(
+        <ContextSwitcher
+          activeContext={undefined}
+          contexts={[
+            {
+              owner: {
+                username: 'codecov',
+                avatarUrl: 'https://github.com/codecov.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        { wrapper: wrapper() }
+      )
+
+      const button = screen.getByRole('button')
+      expect(button).toHaveTextContent('test-owner')
     })
   })
 })

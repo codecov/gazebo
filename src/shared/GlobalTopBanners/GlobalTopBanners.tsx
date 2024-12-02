@@ -14,13 +14,33 @@ const GlobalTopBanners: React.FC = () => {
   return (
     <SilentNetworkErrorWrapper>
       <div className="[&>*:last-child]:block">
-        <OktaBanners />
-        <RequestInstallBanner />
-        <TrialBanner />
-        <TeamPlanFeedbackBanner />
-        <ProPlanFeedbackBanner />
-        <BundleFeedbackBanner />
-        <TokenlessBanner />
+        <SilentNetworkErrorWrapper>
+          <OktaBanners />
+        </SilentNetworkErrorWrapper>
+
+        <SilentNetworkErrorWrapper>
+          <RequestInstallBanner />
+        </SilentNetworkErrorWrapper>
+
+        <SilentNetworkErrorWrapper>
+          <TrialBanner />
+        </SilentNetworkErrorWrapper>
+
+        <SilentNetworkErrorWrapper>
+          <TeamPlanFeedbackBanner />
+        </SilentNetworkErrorWrapper>
+
+        <SilentNetworkErrorWrapper>
+          <ProPlanFeedbackBanner />
+        </SilentNetworkErrorWrapper>
+
+        <SilentNetworkErrorWrapper>
+          <BundleFeedbackBanner />
+        </SilentNetworkErrorWrapper>
+
+        <SilentNetworkErrorWrapper>
+          <TokenlessBanner />
+        </SilentNetworkErrorWrapper>
       </div>
     </SilentNetworkErrorWrapper>
   )
