@@ -122,7 +122,7 @@ function ContextSwitcher({
   onLoadMore,
   activeContext,
 }) {
-  const { provider } = useParams()
+  const { provider, owner } = useParams()
   const [toggle, setToggle] = useState(false)
   const wrapperRef = useCloseOnLooseFocus({ setToggle })
   const intersectionRef = useLoadMore({ onLoadMore })
@@ -147,7 +147,7 @@ function ContextSwitcher({
         onClick={() => setToggle((toggle) => !toggle)}
       >
         <Avatar user={activeContext} />
-        <p className="ml-1">{activeContext?.username}</p>
+        <p className="ml-1">{activeContext?.username ?? owner}</p>
         <span
           aria-hidden="true"
           className={cs('transition-transform', {

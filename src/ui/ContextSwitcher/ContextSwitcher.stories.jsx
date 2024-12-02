@@ -4,7 +4,7 @@ import ContextSwitcher from './ContextSwitcher'
 
 const Template = (args) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>
-    <Route path="/:provider/">
+    <Route path="/:provider/:owner">
       <ContextSwitcher {...args} />
     </Route>
   </MemoryRouter>
