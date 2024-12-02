@@ -168,15 +168,20 @@ afterAll(() => {
 
 interface SetupArgs {
   isMyOrg?: boolean
+  orgDoesNotExist?: boolean
 }
 
 describe('Header Navigator', () => {
-  function setup({ isMyOrg = true }: SetupArgs) {
+  function setup({ isMyOrg = true, orgDoesNotExist = false }: SetupArgs) {
     server.use(
       graphql.query('MyContexts', (info) => {
         return HttpResponse.json({ data: mockMyContexts })
       }),
       graphql.query('DetailOwner', (info) => {
+        if (orgDoesNotExist) {
+          return HttpResponse.json({ data: { owner: null } })
+        }
+
         if (!isMyOrg) {
           return HttpResponse.json({ data: mockDetailOwnerNotMyOrg })
         }
@@ -215,8 +220,8 @@ describe('Header Navigator', () => {
         expect(repo).toBeInTheDocument()
       })
 
-      it('should not show Viewing as Visitor if appropriate', async () => {
-        setup({ isMyOrg: false })
+      it('should not show Viewing as Visitor when user is part of the org', async () => {
+        setup({ isMyOrg: true })
         render(<Navigator currentUser={mockUser} hasRepoAccess={true} />, {
           wrapper: wrapper({
             initialEntries: '/gh/not-codecov/test-repo',
@@ -228,7 +233,7 @@ describe('Header Navigator', () => {
         expect(org).toBeInTheDocument()
 
         const text = screen.queryByText('Viewing as visitor')
-        expect(text).not.toBeInTheDocument()
+        await waitFor(() => expect(text).not.toBeInTheDocument())
       })
 
       it('should show Viewing as Visitor if appropriate', async () => {
@@ -394,6 +399,21 @@ describe('Header Navigator', () => {
 
         const viewingAsVisitor = await screen.findByText('Viewing as visitor')
         expect(viewingAsVisitor).toBeInTheDocument()
+      })
+    })
+
+    describe('when the owner does not exist', () => {
+      it('renders the owner url param in the button', async () => {
+        setup({ orgDoesNotExist: true })
+        render(<Navigator currentUser={mockUser} />, {
+          wrapper: wrapper({
+            initialEntries: '/gh/random-org',
+            path: '/:provider/:owner',
+          }),
+        })
+
+        const button = await screen.findByRole('button')
+        await waitFor(() => expect(button).toHaveTextContent('random-org'))
       })
     })
 

@@ -20,7 +20,7 @@ function Navigator({ currentUser, hasRepoAccess }: NavigatorProps) {
   const { path } = useRouteMatch()
   const { breadcrumbs } = useCrumbs()
 
-  const isCurrentUserPartOfOrg = ownerData?.isCurrentUserPartOfOrg
+  const isCurrentUserPartOfOrg = Boolean(ownerData?.isCurrentUserPartOfOrg)
 
   // Repo page
   // slightly annoyed that we have to have a nested if here but i couldn't
@@ -62,7 +62,6 @@ function Navigator({ currentUser, hasRepoAccess }: NavigatorProps) {
   }
 
   // Self-hosted admin settings
-
   if (path.startsWith('/admin/:provider')) {
     const defaultOrg =
       currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
@@ -109,20 +108,16 @@ function Navigator({ currentUser, hasRepoAccess }: NavigatorProps) {
     pageName = 'accountAdmin'
   }
 
-  if (ownerData) {
-    return (
-      <div className="flex items-center">
-        <MyContextSwitcher pageName={pageName} />
-        {isCurrentUserPartOfOrg === false ? (
-          <Label variant="plain" className="ml-2 hidden sm:block">
-            Viewing as visitor
-          </Label>
-        ) : null}
-      </div>
-    )
-  }
-
-  return null
+  return (
+    <div className="flex items-center">
+      <MyContextSwitcher pageName={pageName} />
+      {isCurrentUserPartOfOrg === false ? (
+        <Label variant="plain" className="ml-2 hidden sm:block">
+          Viewing as visitor
+        </Label>
+      ) : null}
+    </div>
+  )
 }
 
 export default Navigator
