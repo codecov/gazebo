@@ -1,7 +1,11 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import Header from './HeaderDefault'
@@ -33,16 +37,18 @@ const mockPullData = ({
   },
 })
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
+  <QueryClientProviderV5 client={queryClientV5}>
     <MemoryRouter initialEntries={['/gh/test-org/test-repo/pull/12']}>
-      <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+      <Route path="/:provider/:owner/:repo/pull/:pullId">
+        <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+      </Route>
     </MemoryRouter>
-  </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -50,7 +56,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -133,8 +139,8 @@ describe('Header', () => {
           setup({ nullPull: true })
           render(<Header />, { wrapper })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
+          await waitFor(() => queryClientV5.isFetching)
+          await waitFor(() => !queryClientV5.isFetching)
 
           const open = screen.queryByText(/open/i)
           expect(open).not.toBeInTheDocument()

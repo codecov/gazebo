@@ -1,15 +1,16 @@
-import cs from 'classnames'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import capitalize from 'lodash/capitalize'
 import { useParams } from 'react-router-dom'
 
 import { Provider } from 'shared/api/helpers'
+import { cn } from 'shared/utils/cn'
 import { formatTimeToNow } from 'shared/utils/dates'
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
 import CIStatusLabel from 'ui/CIStatus'
 import Icon from 'ui/Icon'
 
-import { usePullHeadData } from './hooks'
+import { PullHeadDataQueryOpts } from './queries/PullHeadDataQueryOpts'
 
 import { pullStateToColor } from '../constants'
 
@@ -22,7 +23,9 @@ interface URLParams {
 
 function HeaderDefault() {
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { data } = usePullHeadData({ provider, owner, repo, pullId })
+  const { data } = useSuspenseQueryV5(
+    PullHeadDataQueryOpts({ provider, owner, repo, pullId })
+  )
 
   const pull = data?.pull
 
@@ -33,8 +36,8 @@ function HeaderDefault() {
           {pull?.title}
           {pull?.state ? (
             <span
-              className={cs(
-                'text-white font-bold px-3 py-0.5 text-xs rounded',
+              className={cn(
+                'rounded px-3 py-0.5 text-xs font-bold text-white',
                 pullStateToColor[pull?.state]
               )}
             >
