@@ -1,4 +1,7 @@
-import { useQueryClient } from '@tanstack/react-query'
+import {
+  useQueryClient as useQueryClientV5,
+  useSuspenseQuery as useSuspenseQueryV5,
+} from '@tanstack/react-queryV5'
 import qs from 'qs'
 import { lazy, Suspense, useLayoutEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
@@ -12,7 +15,7 @@ import SummaryDropdown from 'ui/SummaryDropdown'
 import CommitBundleDropdown from './Dropdowns/CommitBundleDropdown'
 import CommitCoverageDropdown from './Dropdowns/CommitCoverageDropdown'
 import Header from './Header'
-import { useCommitPageData } from './hooks'
+import { CommitPageDataQueryOpts } from './queries/CommitPageDataQueryOpts'
 
 const CommitCoverage = lazy(() => import('./CommitCoverage'))
 const CommitBundleAnalysis = lazy(() => import('./CommitBundleAnalysis'))
@@ -44,15 +47,17 @@ const CommitDetailPage: React.FC = () => {
   const shortSHA = commitSha?.slice(0, 7)
 
   // reset cache when user navigates to the commit detail page
-  const queryClient = useQueryClient()
-  queryClient.setQueryData(['IgnoredUploadIds'], [])
+  const queryClientV5 = useQueryClientV5()
+  queryClientV5.setQueryData(['IgnoredUploadIds'], [])
 
-  const { data: commitPageData, isLoading } = useCommitPageData({
-    provider,
-    owner,
-    repo,
-    commitId: commitSha,
-  })
+  const { data: commitPageData, isLoading } = useSuspenseQueryV5(
+    CommitPageDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      commitId: commitSha,
+    })
+  )
 
   const { setBreadcrumbs, setBaseCrumbs } = useCrumbs()
   useLayoutEffect(() => {

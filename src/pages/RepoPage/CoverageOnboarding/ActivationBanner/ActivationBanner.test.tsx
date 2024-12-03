@@ -4,6 +4,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { PlanName, Plans } from 'shared/utils/billing'
 
 import ActivationBanner from './ActivationBanner'
@@ -19,6 +21,9 @@ vi.mock('./FreePlanSeatsLimitBanner', () => ({
 }))
 vi.mock('./PaidPlanSeatsLimitBanner', () => ({
   default: () => 'PaidPlanSeatsLimitBanner',
+}))
+vi.mock('./ActivationRequiredSelfHosted', () => ({
+  default: () => 'ActivationRequiredSelfHostedBanner',
 }))
 
 const queryClient = new QueryClient()
@@ -65,8 +70,11 @@ describe('ActivationBanner', () => {
     privateRepos = true,
     trialStatus = 'NOT_STARTED',
     value: PlanName = Plans.USERS_BASIC,
-    hasSeatsLeft = true
+    hasSeatsLeft = true,
+    isSelfHosted = false
   ) {
+    config.IS_SELF_HOSTED = isSelfHosted
+
     server.use(
       graphql.query('GetPlanData', (info) => {
         return HttpResponse.json({
@@ -140,5 +148,15 @@ describe('ActivationBanner', () => {
       /PaidPlanSeatsLimitBanner/
     )
     expect(PaidPlanSeatsLimitBanner).toBeInTheDocument()
+  })
+
+  it('renders activation required self hosted banner if user is self hosted', async () => {
+    setup(true, 'ONGOING', Plans.USERS_BASIC, true, true)
+    render(<ActivationBanner />, { wrapper })
+
+    const ActivationRequiredSelfHostedBanner = await screen.findByText(
+      /ActivationRequiredSelfHostedBanner/
+    )
+    expect(ActivationRequiredSelfHostedBanner).toBeInTheDocument()
   })
 })

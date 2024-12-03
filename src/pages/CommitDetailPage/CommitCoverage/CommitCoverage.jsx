@@ -1,3 +1,4 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import isEmpty from 'lodash/isEmpty'
 import { lazy, Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
@@ -22,7 +23,7 @@ import ErroredUploads from './ErroredUploads'
 import FirstPullBanner from './FirstPullBanner'
 import YamlErrorBanner from './YamlErrorBanner'
 
-import { useCommitPageData } from '../hooks'
+import { CommitPageDataQueryOpts } from '../queries/CommitPageDataQueryOpts'
 
 const CommitDetailFileExplorer = lazy(
   () => import('./routes/CommitDetailFileExplorer')
@@ -45,12 +46,14 @@ function CommitRoutes() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const { data: tierName } = useTier({ owner, provider })
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { data: commitPageData } = useCommitPageData({
-    provider,
-    owner,
-    repo,
-    commitId: commitSha,
-  })
+  const { data: commitPageData } = useSuspenseQueryV5(
+    CommitPageDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      commitId: commitSha,
+    })
+  )
 
   const compareTypeName = commitPageData?.commit?.compareWithParent?.__typename
   const ErrorBannerComponent = (
@@ -174,12 +177,14 @@ function CommitCoverage() {
   const { data: tierName } = useTier({ owner, provider })
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
-  const { data: commitPageData } = useCommitPageData({
-    provider,
-    owner,
-    repo,
-    commitId: commitSha,
-  })
+  const { data: commitPageData } = useSuspenseQueryV5(
+    CommitPageDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      commitId: commitSha,
+    })
+  )
 
   const showCommitSummary = !(overview.private && tierName === TierNames.TEAM)
   const showFirstPullBanner =

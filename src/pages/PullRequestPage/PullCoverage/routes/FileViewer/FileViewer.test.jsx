@@ -1,7 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileViewer from './FileViewer'
@@ -85,10 +90,20 @@ const mockPullData = {
   repository: {
     __typename: 'Repository',
     private: true,
+    coverageEnabled: true,
+    bundleAnalysisEnabled: true,
     pull: {
       pullId: 1,
+      commits: {
+        totalCount: 11,
+      },
       head: {
         commitid: '123',
+        bundleAnalysis: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
+        },
       },
       compareWithBase: {
         __typename: 'Comparison',
@@ -98,27 +113,35 @@ const mockPullData = {
         componentComparisonsCount: 6,
         directChangedFilesCount: 0,
       },
+      bundleAnalysisCompareWithBase: {
+        __typename: 'BundleAnalysisComparison',
+      },
     },
   },
 }
 
+const server = setupServer()
 const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper =
   (
     initialEntries = ['/gh/codecov/cool-repo/pull/123/blob/directory/file.js']
   ) =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/pull/:pullId/blob/:path+">
-          {children}
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/pull/:pullId/blob/:path+">
+            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -126,6 +149,7 @@ beforeAll(() => {
 })
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 afterAll(() => {
@@ -159,10 +183,9 @@ describe('FileViewer', () => {
   }
 
   describe('rendering component', () => {
-    beforeEach(() => setup())
-
     describe('displaying the tree path', () => {
       it('displays repo link', async () => {
+        setup()
         render(<FileViewer />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'cool-repo' })
@@ -174,6 +197,7 @@ describe('FileViewer', () => {
       })
 
       it('displays directory link', async () => {
+        setup()
         render(<FileViewer />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'directory' })
@@ -185,6 +209,7 @@ describe('FileViewer', () => {
       })
 
       it('displays file name', async () => {
+        setup()
         render(<FileViewer />, { wrapper: wrapper() })
 
         const fileName = await screen.findByText('file.js')
@@ -192,6 +217,7 @@ describe('FileViewer', () => {
       })
 
       it('renders ComponentsSelector', async () => {
+        setup()
         render(<FileViewer />, { wrapper: wrapper() })
 
         const selector = await screen.findByText('ComponentsSelector')
@@ -201,6 +227,7 @@ describe('FileViewer', () => {
 
     describe('displaying the file viewer', () => {
       it('sets the correct url link', async () => {
+        setup()
         render(<FileViewer />, { wrapper: wrapper() })
 
         const copyLink = await screen.findByRole('link', {

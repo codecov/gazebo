@@ -15,6 +15,7 @@ const mockTestResults = {
     repository: {
       __typename: 'Repository',
       private: false,
+      isFirstPullRequest: false,
       defaultBranch: 'main',
       testAnalytics: {
         testResults: {

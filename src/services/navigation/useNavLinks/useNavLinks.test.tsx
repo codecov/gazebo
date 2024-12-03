@@ -1761,34 +1761,6 @@ describe('useNavLinks', () => {
     })
   })
 
-  describe('circleCIEnvVars', () => {
-    it('returns the correct link with nothing passed', () => {
-      const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/cool-repo'),
-      })
-
-      const path = result.current.circleCIEnvVars.path()
-      expect(path).toBe(
-        'https://app.circleci.com/settings/project/gh/codecov/cool-repo/environment-variables'
-      )
-    })
-
-    it('can override the params', () => {
-      const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/codecov/cool-repo'),
-      })
-
-      const path = result.current.circleCIEnvVars.path({
-        provider: 'bb',
-        owner: 'test-owner',
-        repo: 'test-repo',
-      })
-      expect(path).toBe(
-        'https://app.circleci.com/settings/project/bb/test-owner/test-repo/environment-variables'
-      )
-    })
-  })
-
   describe('circleCI yaml', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {

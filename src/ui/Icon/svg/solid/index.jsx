@@ -137,7 +137,7 @@ import lockClosed from './lock-closed.svg?react'
 // import microphone from './microphone.svg?react'
 // import minusCircle from './minus-circle.svg?react'
 // import minusSm from './minus-sm.svg?react'
-// import minus from './minus.svg?react'
+import minus from './minus.svg?react'
 import moon from './moon.svg?react'
 // import musicNote from './music-note.svg?react'
 // import newspaper from './newspaper.svg?react'
@@ -256,6 +256,7 @@ export {
   informationCircle,
   lightBulb,
   lockClosed,
+  minus,
   moon,
   noSymbol,
   plusCircle,

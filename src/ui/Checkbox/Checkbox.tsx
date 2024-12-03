@@ -4,10 +4,15 @@ import React from 'react'
 import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 
+interface CheckboxProps
+  extends React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> {
+  icon?: 'check' | 'minus'
+}
+
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
->(({ className, ...props }, ref) => (
+  CheckboxProps
+>(({ icon = 'check', className, ...props }, ref) => (
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
@@ -21,9 +26,9 @@ const Checkbox = React.forwardRef<
     >
       <Icon
         className="[&_path]:stroke-white [&_path]:stroke-[4px]"
-        name="check"
+        name={icon}
         size="sm"
-        label="check"
+        label={icon}
         variant="outline"
       />
     </CheckboxPrimitive.Indicator>
