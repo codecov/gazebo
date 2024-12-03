@@ -1,4 +1,3 @@
-import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useMyContexts, useOwner } from 'services/user'
@@ -22,9 +21,6 @@ function MyContextSwitcher({ pageName }: MyContextSwitcherProps) {
     isLoading,
   } = useMyContexts({ provider })
   const { data: activeContext } = useOwner({ username: owner })
-  const memoizedOnLoadMore = useCallback(() => {
-    hasNextPage && fetchNextPage()
-  }, [hasNextPage, fetchNextPage])
 
   if (!myContexts || !myContexts?.currentUser) return null
 
@@ -48,7 +44,7 @@ function MyContextSwitcher({ pageName }: MyContextSwitcherProps) {
         contexts={contexts}
         currentUser={currentUser}
         isLoading={isLoading}
-        onLoadMore={memoizedOnLoadMore}
+        onLoadMore={() => hasNextPage && fetchNextPage()}
       />
     </div>
   )

@@ -9,7 +9,7 @@ import {
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
 import PropTypes from 'prop-types'
-import { useCallback, useContext, useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -175,11 +175,6 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
     owner,
   })
 
-  const fetchNextPageCallback = useCallback(
-    () => fetchNextPage(),
-    [fetchNextPage]
-  )
-
   const isCurrentUserPartOfOrg = !!reposData?.pages?.[0]?.isCurrentUserPartOfOrg
 
   const tableData = useMemo(() => {
@@ -271,7 +266,7 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
           <Button
             hook="load-more"
             isLoading={isFetchingNextPage}
-            onClick={fetchNextPageCallback}
+            onClick={() => fetchNextPage()}
             to={undefined}
             disabled={false}
           >
