@@ -1,10 +1,14 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useComponentComparison } from './useComponentComparison'
+import { ComponentComparisonQueryOpts } from './ComponentComparisonQueryOpts'
 
 const mockResponse = {
   owner: {
@@ -15,22 +19,14 @@ const mockResponse = {
           __typename: 'Comparison',
           componentComparisons: [
             {
-              name: 'kevdak',
-              patchTotals: {
-                percentCovered: 31.46,
-              },
-              headTotals: {
-                percentCovered: 71.46,
-              },
-              baseTotals: {
-                percentCovered: 51.46,
-              },
+              name: 'test-component',
+              patchTotals: { percentCovered: 31.46 },
+              headTotals: { percentCovered: 71.46 },
+              baseTotals: { percentCovered: 51.46 },
             },
           ],
         },
-        head: {
-          branchName: 'abc',
-        },
+        head: { branchName: 'abc' },
       },
     },
   },
@@ -56,17 +52,19 @@ const mockOwnerNotActivatedError = {
 
 const mockUnsuccessfulParseError = {}
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter
-    initialEntries={['/gh/matt-mercer/exandria/pull/123/components']}
-  >
-    <Route path="/:provider/:owner/:repo/pull/:pullId/components">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <MemoryRouter
+      initialEntries={['/gh/test-org/test-repo/pull/123/components']}
+    >
+      <Route path="/:provider/:owner/:repo/pull/:pullId/components">
+        {children}
+      </Route>
+    </MemoryRouter>
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
@@ -74,7 +72,7 @@ const server = setupServer()
 beforeAll(() => server.listen())
 beforeEach(() => {
   server.resetHandlers()
-  queryClient.clear()
+  queryClientV5.clear()
 })
 afterAll(() => server.close())
 
@@ -118,9 +116,18 @@ describe('useComponentComparison', () => {
       it('returns data for the owner page', async () => {
         setup({})
 
-        const { result } = renderHook(() => useComponentComparison(), {
-          wrapper,
-        })
+        const { result } = renderHook(
+          () =>
+            useQueryV5(
+              ComponentComparisonQueryOpts({
+                provider: 'gh',
+                owner: 'test-org',
+                repo: 'test-repo',
+                pullId: '123',
+              })
+            ),
+          { wrapper }
+        )
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
@@ -129,22 +136,14 @@ describe('useComponentComparison', () => {
                 __typename: 'Comparison',
                 componentComparisons: [
                   {
-                    name: 'kevdak',
-                    patchTotals: {
-                      percentCovered: 31.46,
-                    },
-                    headTotals: {
-                      percentCovered: 71.46,
-                    },
-                    baseTotals: {
-                      percentCovered: 51.46,
-                    },
+                    name: 'test-component',
+                    patchTotals: { percentCovered: 31.46 },
+                    headTotals: { percentCovered: 71.46 },
+                    baseTotals: { percentCovered: 51.46 },
                   },
                 ],
               },
-              head: {
-                branchName: 'abc',
-              },
+              head: { branchName: 'abc' },
             },
           })
         )
@@ -164,9 +163,18 @@ describe('useComponentComparison', () => {
 
       it('throws a 404', async () => {
         setup({ isNotFoundError: true })
-        const { result } = renderHook(() => useComponentComparison(), {
-          wrapper,
-        })
+        const { result } = renderHook(
+          () =>
+            useQueryV5(
+              ComponentComparisonQueryOpts({
+                provider: 'gh',
+                owner: 'test-org',
+                repo: 'test-repo',
+                pullId: '123',
+              })
+            ),
+          { wrapper }
+        )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
@@ -192,9 +200,18 @@ describe('useComponentComparison', () => {
 
       it('throws a 403', async () => {
         setup({ isOwnerNotActivatedError: true })
-        const { result } = renderHook(() => useComponentComparison(), {
-          wrapper,
-        })
+        const { result } = renderHook(
+          () =>
+            useQueryV5(
+              ComponentComparisonQueryOpts({
+                provider: 'gh',
+                owner: 'test-org',
+                repo: 'test-repo',
+                pullId: '123',
+              })
+            ),
+          { wrapper }
+        )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
@@ -220,9 +237,18 @@ describe('useComponentComparison', () => {
 
       it('throws a 404', async () => {
         setup({ isUnsuccessfulParseError: true })
-        const { result } = renderHook(() => useComponentComparison(), {
-          wrapper,
-        })
+        const { result } = renderHook(
+          () =>
+            useQueryV5(
+              ComponentComparisonQueryOpts({
+                provider: 'gh',
+                owner: 'test-org',
+                repo: 'test-repo',
+                pullId: '123',
+              })
+            ),
+          { wrapper }
+        )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -244,14 +270,18 @@ describe('useComponentComparison', () => {
 
       const { result } = renderHook(
         () =>
-          useComponentComparison({
-            filters: {
-              components: componentsFilter,
-            },
-          }),
-        {
-          wrapper,
-        }
+          useQueryV5(
+            ComponentComparisonQueryOpts({
+              provider: 'gh',
+              owner: 'test-org',
+              repo: 'test-repo',
+              pullId: '123',
+              filters: {
+                components: componentsFilter,
+              },
+            })
+          ),
+        { wrapper }
       )
 
       await waitFor(() => result.current.isLoading)

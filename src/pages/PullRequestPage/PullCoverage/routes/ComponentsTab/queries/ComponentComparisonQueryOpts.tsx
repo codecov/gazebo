@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { type ParsedQs } from 'qs'
-import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import {
@@ -16,9 +15,8 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
-
-import { query } from './query'
 
 const ComponentsComparisonSchema = z
   .object({
@@ -74,24 +72,86 @@ const ComponentComparisonSchema = z.object({
     .nullable(),
 })
 
-interface URLParams {
+const query = `
+query PullComponentComparison(
+  $owner: String!
+  $repo: String!
+  $pullId: Int!
+  $filters: ComponentsFilters
+) {
+  owner(username: $owner) {
+    repository(name: $repo) {
+      __typename
+      ... on Repository {
+        pull(id: $pullId) {
+          compareWithBase {
+            __typename
+            ... on Comparison {
+              componentComparisons(filters: $filters) {
+                name
+                patchTotals {
+                  percentCovered
+                }
+                headTotals {
+                  percentCovered
+                }
+                baseTotals {
+                  percentCovered
+                }
+              }
+            }
+            ... on FirstPullRequest {
+              message
+            }
+            ... on MissingBaseCommit {
+              message
+            }
+            ... on MissingHeadCommit {
+              message
+            }
+            ... on MissingComparison {
+              message
+            }
+            ... on MissingBaseReport {
+              message
+            }
+            ... on MissingHeadReport {
+              message
+            }
+          }
+          head {
+            branchName
+          }
+        }
+      }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
+      }
+    }
+  }
+}`
+
+interface ComponentComparisonQueryArgs {
   provider: string
   owner: string
   repo: string
   pullId: string
-}
-
-interface ComponentComparisonParams {
   filters?: {
     components?: string[] | ParsedQs[]
   }
 }
 
-export function useComponentComparison({
+export function ComponentComparisonQueryOpts({
+  provider,
+  owner,
+  repo,
+  pullId,
   filters,
-}: ComponentComparisonParams = {}) {
-  const { provider, owner, repo, pullId } = useParams<URLParams>()
-  return useQuery({
+}: ComponentComparisonQueryArgs) {
+  return queryOptionsV5({
     queryKey: [
       'PullComponentComparison',
       provider,
@@ -114,26 +174,29 @@ export function useComponentComparison({
           pullId: parseInt(pullId, 10),
         },
       }).then((res) => {
-        const parsedData = ComponentComparisonSchema.safeParse(res?.data)
+        const parsedRes = ComponentComparisonSchema.safeParse(res?.data)
 
-        if (!parsedData.success) {
-          return Promise.reject({
+        if (!parsedRes.success) {
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: `ComponentComparisonQueryOpts - 404 Failed to parse`,
+            error: parsedRes.error,
           })
         }
 
-        const data = parsedData.data
+        const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: `ComponentComparisonQueryOpts - 404 Not Found`,
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -145,12 +208,11 @@ export function useComponentComparison({
                 </p>
               ),
             },
+            dev: `ComponentComparisonQueryOpts - 403 Owner Not Activated`,
           })
         }
 
-        return {
-          pull: data?.owner?.repository?.pull,
-        }
+        return { pull: data?.owner?.repository?.pull }
       }),
   })
 }
