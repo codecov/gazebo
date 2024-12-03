@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import {
@@ -134,20 +134,20 @@ const query = `
   }
 `
 
-interface UsePullHeadDataTeamArgs {
+interface PullHeadDataTeamQueryArgs {
   provider: string
   owner: string
   repo: string
   pullId: string
 }
 
-export const usePullHeadDataTeam = ({
+export const PullHeadDataTeamQueryOpts = ({
   provider,
   owner,
   repo,
   pullId,
-}: UsePullHeadDataTeamArgs) =>
-  useQuery({
+}: PullHeadDataTeamQueryArgs) =>
+  queryOptionsV5({
     queryKey: ['PullHeaderTeam', provider, owner, repo, pullId, query],
     queryFn: ({ signal }) =>
       Api.graphql({
