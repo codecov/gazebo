@@ -416,7 +416,7 @@ describe('CommitCoverage', () => {
       defaultOptions: { queries: { retry: false, suspense: true } },
     })
     const queryClientV5 = new QueryClientV5({
-      defaultOptions: { queries: { retry: false, suspense: true } },
+      defaultOptions: { queries: { retry: false } },
     })
 
     server.use(
