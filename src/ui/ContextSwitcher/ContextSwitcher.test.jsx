@@ -679,6 +679,39 @@ describe('ContextSwitcher', () => {
     })
   })
 
+  describe('when the owner does not exist', () => {
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
+    it('renders the owner url param', async () => {
+      setup()
+      render(
+        <ContextSwitcher
+          activeContext={undefined}
+          contexts={[
+            {
+              owner: {
+                username: 'codecov',
+                avatarUrl: 'https://github.com/codecov.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        { wrapper: wrapper() }
+      )
+
+      const button = screen.getByRole('button')
+      expect(button).toHaveTextContent('test-owner')
+    })
+  })
+
   describe('when on self-hosted', () => {
     beforeEach(() => {
       config.IS_SELF_HOSTED = true
