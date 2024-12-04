@@ -45,7 +45,7 @@ function TriggerSyncBanner() {
                 to={undefined}
                 hook="backfill-task"
                 variant="primary"
-                onClick={mutate}
+                onClick={() => mutate()}
                 disabled={false}
               >
                 Enable flag analytics

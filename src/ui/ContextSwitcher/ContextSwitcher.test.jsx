@@ -43,12 +43,12 @@ afterAll(() => {
 })
 
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh/test-owner') =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <Switch>
-          <Route path="/:provider" exact>
+          <Route path="/:provider/:owner" exact>
             <div>Click away</div>
             {children}
           </Route>
@@ -74,15 +74,12 @@ describe('ContextSwitcher', () => {
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     afterEach(() => {
       vi.clearAllMocks()
     })
 
     it('does not render the listed items initially', () => {
+      setup()
       render(
         <ContextSwitcher
           activeContext={{
@@ -119,9 +116,7 @@ describe('ContextSwitcher', () => {
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       expect(screen.queryByRole('listbox')).toHaveClass('hidden')
@@ -171,9 +166,7 @@ describe('ContextSwitcher', () => {
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const button = await screen.findByRole('button', { expanded: false })
@@ -230,9 +223,7 @@ describe('ContextSwitcher', () => {
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const button = await screen.findByRole(
@@ -253,15 +244,12 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when rendered with no active context', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     afterEach(() => {
       vi.clearAllMocks()
     })
 
     it('renders manage access restrictions', async () => {
+      setup()
       render(
         <ContextSwitcher
           activeContext={{
@@ -298,9 +286,7 @@ describe('ContextSwitcher', () => {
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const installCopy = await screen.findByText(/Install Codecov GitHub app/)

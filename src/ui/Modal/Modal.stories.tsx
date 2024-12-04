@@ -23,7 +23,7 @@ const RenderTemplate: React.FC<{ args: ModalProps }> = ({ args }) => {
       <Button
         hook="open"
         onClick={() => setIsOpen(true)}
-        to=""
+        to={undefined}
         disabled={false}
       >
         Open
@@ -46,7 +46,7 @@ export const ModalWithFooter: Story = {
     title: 'Modal with a footer',
     body: 'The footer will appear under a line, good place for buttons',
     footer: (
-      <Button to="" disabled={false} hook="">
+      <Button to={undefined} disabled={false} hook="">
         Footer here
       </Button>
     ),
@@ -87,7 +87,7 @@ export const BaseModalOnly: React.FC = () => (
           </div>
         }
         footer={
-          <Button to="" disabled={false} hook="">
+          <Button to={undefined} disabled={false} hook="">
             Footer here
           </Button>
         }

@@ -2,7 +2,7 @@ import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
-import { providerToName } from 'shared/utils'
+import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'

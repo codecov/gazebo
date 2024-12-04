@@ -37,26 +37,8 @@ function GitHubActions() {
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken ?? ''
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
-  return (
-    <div className="flex flex-col gap-6">
-      <Step1 orgUploadToken={orgUploadToken} owner={owner} repo={repo} />
-      <Step2 tokenCopy={tokenCopy} uploadToken={uploadToken} />
-      <Step3 />
-      <FeedbackCTA />
-      <LearnMoreBlurb />
-    </div>
-  )
-}
+  const [framework, setFramework] = useState<Framework>('Jest')
 
-type Framework = 'Jest' | 'Vitest' | 'Pytest' | 'Go'
-
-interface Step1Props {
-  orgUploadToken: string | null | undefined
-  owner: string
-  repo: string
-}
-
-function Step1({ orgUploadToken, owner, repo }: Step1Props) {
   const frameworkInstructions = {
     Jest: {
       install: 'npm install --save-dev jest',
@@ -86,7 +68,7 @@ jobs:
         run: npx jest --coverage
 
       - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: \${{ secrets.CODECOV_TOKEN }}${
             orgUploadToken
@@ -124,7 +106,7 @@ jobs:
         run: npx vitest run --coverage
 
       - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: \${{ secrets.CODECOV_TOKEN }}${
             orgUploadToken
@@ -162,7 +144,7 @@ jobs:
         run: pytest --cov --cov-report=xml
 
       - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: \${{ secrets.CODECOV_TOKEN }}${
             orgUploadToken
@@ -200,7 +182,7 @@ jobs:
         run: go test -coverprofile=coverage.txt
 
       - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: \${{ secrets.CODECOV_TOKEN }}${
             orgUploadToken
@@ -212,7 +194,47 @@ jobs:
     },
   }
 
-  const [framework, setFramework] = useState<Framework>('Jest')
+  return (
+    <div className="flex flex-col gap-5">
+      <Step1
+        framework={framework}
+        frameworkInstructions={frameworkInstructions}
+        owner={owner}
+        setFramework={setFramework}
+      />
+      <Step2 tokenCopy={tokenCopy} uploadToken={uploadToken} />
+      <Step3
+        framework={framework}
+        frameworkInstructions={frameworkInstructions}
+        orgUploadToken={orgUploadToken}
+        owner={owner}
+        repo={repo}
+      />
+      <Step4 />
+      <FeedbackCTA />
+      <LearnMoreBlurb />
+    </div>
+  )
+}
+
+type Framework = 'Jest' | 'Vitest' | 'Pytest' | 'Go'
+type FrameworkInstructions = {
+  [key in Framework]: { install?: string; run?: string; workflow?: string }
+}
+
+interface Step1Props {
+  framework: Framework
+  frameworkInstructions: FrameworkInstructions
+  owner: string
+  setFramework: (value: Framework) => void
+}
+
+function Step1({
+  framework,
+  frameworkInstructions,
+  owner,
+  setFramework,
+}: Step1Props) {
   const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
 
   return (
@@ -220,13 +242,14 @@ jobs:
       <Card>
         <Card.Header>
           <Card.Title size="base">
-            Step 1: Generate and upload coverage reports in your CI
+            Step 1: Output a Coverage report file in your CI
           </Card.Title>
         </Card.Header>
         <Card.Content className="flex flex-col gap-4">
           <p>
-            Select your testing framework below to generate your coverage
-            reports. If your language isn&apos;t listed, visit our{' '}
+            Codecov generally supports xml and json format. Select your language
+            below to generate your coverage reports. If your language isn&apos;t
+            listed, visit our{' '}
             <A
               to={{ pageName: 'exampleRepos' }}
               isExternal
@@ -234,8 +257,8 @@ jobs:
             >
               supported languages doc
             </A>{' '}
-            for example repositories. Codecov supports most <code>.xml</code>,{' '}
-            <code>.json</code>, and <code>.txt</code> report formats.
+            for example repositories. Codecov generally supports xml and json
+            formats.
           </p>
 
           <div className="max-w-64">
@@ -280,39 +303,6 @@ jobs:
           </CodeSnippet>
         </Card.Content>
       </Card>
-      <ExpandableSection className="-mt-px">
-        <ExpandableSection.Trigger>
-          <p className="font-normal">
-            Your final GitHub Actions workflow for a project using{' '}
-            <span className="text-codecov-code">{framework}</span> could look
-            something like this:
-          </p>
-        </ExpandableSection.Trigger>
-        <ExpandableSection.Content>
-          <CodeSnippet
-            clipboard={frameworkInstructions[framework].workflow}
-            clipboardOnClick={() =>
-              storeEventMetric({
-                owner,
-                event: EVENT_METRICS.COPIED_TEXT,
-                jsonPayload: { text: `coverage GHA ${framework} action` },
-              })
-            }
-          >
-            {frameworkInstructions[framework].workflow}
-          </CodeSnippet>
-          <p className="pt-4">
-            <A
-              to={{ pageName: 'exampleRepos' }}
-              isExternal
-              hook="supported-languages-docs"
-            >
-              Learn more
-            </A>{' '}
-            about generating coverage reports with {framework}
-          </p>
-        </ExpandableSection.Content>
-      </ExpandableSection>
     </div>
   )
 }
@@ -371,12 +361,102 @@ function Step2({ tokenCopy, uploadToken }: Step2Props) {
   )
 }
 
-function Step3() {
+interface Step3Props {
+  framework: Framework
+  frameworkInstructions: FrameworkInstructions
+  orgUploadToken: string | null | undefined
+  owner: string
+  repo: string
+}
+
+function Step3({
+  framework,
+  frameworkInstructions,
+  orgUploadToken,
+  owner,
+  repo,
+}: Step3Props) {
+  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
+
+  const step3Config = `- name: Upload coverage reports to Codecov
+    uses: codecov/codecov-action@v5
+    with:
+      token: \${{ secrets.CODECOV_TOKEN }}${
+        orgUploadToken
+          ? `
+      slug: ${owner}/${repo}`
+          : ''
+      }`
+
+  return (
+    <div>
+      <Card>
+        <Card.Header>
+          <Card.Title size="base">
+            Step 3: Add Codecov to your GitHub Actions workflow yaml file
+          </Card.Title>
+        </Card.Header>
+        <Card.Content className="flex flex-col gap-4">
+          <p>
+            After tests run, this will upload your coverage report to Codecov:
+          </p>
+          <CodeSnippet
+            clipboard={step3Config}
+            clipboardOnClick={() =>
+              storeEventMetric({
+                owner,
+                event: EVENT_METRICS.COPIED_TEXT,
+                jsonPayload: { text: `coverage GHA ${framework} upload` },
+              })
+            }
+          >
+            {step3Config}
+          </CodeSnippet>
+        </Card.Content>
+      </Card>
+      <ExpandableSection className="-mt-px">
+        <ExpandableSection.Trigger>
+          <p className="font-normal">
+            Your final GitHub Actions workflow for a project using{' '}
+            <span className="text-codecov-code">{framework}</span> could look
+            something like this:
+          </p>
+        </ExpandableSection.Trigger>
+        <ExpandableSection.Content>
+          <CodeSnippet
+            clipboard={frameworkInstructions[framework].workflow}
+            clipboardOnClick={() =>
+              storeEventMetric({
+                owner,
+                event: EVENT_METRICS.COPIED_TEXT,
+                jsonPayload: { text: `coverage GHA ${framework} action` },
+              })
+            }
+          >
+            {frameworkInstructions[framework].workflow}
+          </CodeSnippet>
+          <p className="pt-4">
+            <A
+              to={{ pageName: 'exampleRepos' }}
+              isExternal
+              hook="supported-languages-docs"
+            >
+              Learn more
+            </A>{' '}
+            about generating coverage reports with {framework}.
+          </p>
+        </ExpandableSection.Content>
+      </ExpandableSection>
+    </div>
+  )
+}
+
+function Step4() {
   return (
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 3: merge to main or your preferred feature branch
+          Step 4: merge to main or your preferred feature branch
         </Card.Title>
       </Card.Header>
       <Card.Content>

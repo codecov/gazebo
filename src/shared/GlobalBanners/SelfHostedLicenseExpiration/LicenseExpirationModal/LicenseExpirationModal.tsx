@@ -78,7 +78,6 @@ const LicenseExpirationModal: React.FC<LicenseExpirationModalArgs> = ({
       }
       footer={
         <div className="flex gap-2">
-          {/* @ts-expect-error */}
           <Button
             to={{ pageName: 'generateSelfHostedLicense' }}
             showExternalIcon={false}

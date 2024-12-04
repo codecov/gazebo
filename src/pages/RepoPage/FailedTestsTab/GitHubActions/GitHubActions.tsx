@@ -51,7 +51,7 @@ const JobsScript = `jobs:
           pytest --cov --junitxml=junit.xml
       # Copy and paste the codecov/test-results-action here
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: \${{ secrets.CODECOV_TOKEN }}
       - name: Upload test results to Codecov

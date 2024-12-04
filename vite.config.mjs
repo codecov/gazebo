@@ -28,7 +28,6 @@ export default defineConfig((config) => {
         bundleName: process.env.CODECOV_BUNDLE_NAME,
         apiUrl: process.env.CODECOV_API_URL,
         uploadToken: process.env.CODECOV_ORG_TOKEN,
-        debug: true
       })
     )
   }
@@ -69,6 +68,31 @@ export default defineConfig((config) => {
           entryFileNames: 'assets/[name].[hash:22].js',
           chunkFileNames: 'assets/[name].[hash:22].js',
           assetFileNames: 'assets/[name].[hash:22][extname]',
+          manualChunks: {
+            vendor_react: ['react', 'react-dom', 'react/jsx-runtime'],
+            vendor_react_router: [
+              'react-router',
+              'react-router-dom',
+              'react-router-dom-v5-compat',
+            ],
+            vendor_date_fns: ['date-fns'],
+            vendor_lodash: [
+              'lodash/get',
+              'lodash/isEqual',
+              'lodash/isNull',
+              'lodash/isNil',
+              'lodash/isEmpty',
+              'lodash/isString',
+              'lodash/isNumber',
+              'lodash/isBoolean',
+              'lodash/isUndefined',
+              'lodash/isArray',
+              'lodash/gt',
+              'lodash/omit',
+              'lodash/flatMap',
+              'lodash/groupBy',
+            ],
+          },
         },
       },
     },

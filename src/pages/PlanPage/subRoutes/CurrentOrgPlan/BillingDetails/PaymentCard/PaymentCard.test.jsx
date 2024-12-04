@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { ThemeContextProvider } from 'shared/ThemeContext'
+import { Plans } from 'shared/utils/billing'
 
 import PaymentCard from './PaymentCard'
 
@@ -27,7 +28,7 @@ const subscriptionDetail = {
     },
   },
   plan: {
-    value: 'users-pr-inappy',
+    value: Plans.USERS_PR_INAPPY,
   },
   currentPeriodEnd: 1606851492,
   cancelAtPeriodEnd: false,

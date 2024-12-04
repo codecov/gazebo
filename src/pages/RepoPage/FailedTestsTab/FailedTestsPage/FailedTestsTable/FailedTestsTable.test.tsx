@@ -11,6 +11,8 @@ import { setupServer } from 'msw/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import FailedTestsTable from './FailedTestsTable'
 
 import {
@@ -127,13 +129,15 @@ interface SetupArgs {
   bundleAnalysisEnabled?: boolean
   planValue?: string
   isPrivate?: boolean
+  isFirstPullRequest?: boolean
 }
 
 describe('FailedTestsTable', () => {
   function setup({
     noEntries = false,
-    planValue = 'users-enterprisem',
+    planValue = Plans.USERS_ENTERPRISEM,
     isPrivate = false,
+    isFirstPullRequest = false,
   }: SetupArgs) {
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -160,6 +164,7 @@ describe('FailedTestsTable', () => {
                 repository: {
                   __typename: 'Repository',
                   private: isPrivate,
+                  isFirstPullRequest,
                   defaultBranch: 'main',
                   testAnalytics: {
                     testResults: {
@@ -185,6 +190,7 @@ describe('FailedTestsTable', () => {
             repository: {
               __typename: 'Repository',
               private: isPrivate,
+              isFirstPullRequest,
               defaultBranch: 'main',
               testAnalytics: {
                 testResults: {
@@ -215,7 +221,7 @@ describe('FailedTestsTable', () => {
       describe('when plan is team plan', () => {
         it('does not render flake rate column', async () => {
           const { queryClient } = setup({
-            planValue: 'users-teamm',
+            planValue: Plans.USERS_TEAMM,
             isPrivate: true,
           })
           render(<FailedTestsTable />, {
@@ -232,7 +238,7 @@ describe('FailedTestsTable', () => {
       describe('when plan is free', () => {
         it('does not render flake rate column', async () => {
           const { queryClient } = setup({
-            planValue: 'users-free',
+            planValue: Plans.USERS_FREE,
             isPrivate: true,
           })
           render(<FailedTestsTable />, {
@@ -343,6 +349,23 @@ describe('FailedTestsTable', () => {
       const hoverObj = await screen.findAllByText(/6 Passed, 5 Failed /)
 
       expect(hoverObj.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('when first pull request', () => {
+    it('renders no data message', async () => {
+      const { queryClient } = setup({ isFirstPullRequest: true })
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const noDataMessage = await screen.findByText('No data yet')
+      expect(noDataMessage).toBeInTheDocument()
+
+      const mergeIntoMainMessage = await screen.findByText(
+        'To see data for the main branch, merge your PR into the main branch.'
+      )
+      expect(mergeIntoMainMessage).toBeInTheDocument()
     })
   })
 

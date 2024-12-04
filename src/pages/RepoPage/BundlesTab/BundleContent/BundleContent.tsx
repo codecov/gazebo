@@ -3,7 +3,7 @@ import { Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import { useBranchBundleSummary } from 'services/bundleAnalysis'
+import { useBranchBundleSummary } from 'services/bundleAnalysis/useBranchBundleSummary'
 import Spinner from 'ui/Spinner'
 import { ToggleElement } from 'ui/ToggleElement'
 

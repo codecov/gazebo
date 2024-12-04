@@ -36,10 +36,10 @@ export const OrderingParameter = {
   PATCH_COVERAGE: 'PATCH_COVERAGE',
 } as const
 
-const ImpactedFilesOrdering = z.object({
-  direction: z.nativeEnum(OrderingDirection).optional(),
-  parameter: z.nativeEnum(OrderingParameter).optional(),
-})
+interface ImpactedFilesOrdering {
+  direction?: (typeof OrderingDirection)[keyof typeof OrderingDirection]
+  parameter?: (typeof OrderingParameter)[keyof typeof OrderingParameter]
+}
 
 const CoverageObjSchema = z.object({
   coverage: z.number().nullable(),
@@ -275,7 +275,7 @@ interface UseCommitTeamArgs {
   filters?: {
     hasUnintendedChanges?: boolean
     flags?: Array<string>
-    ordering?: z.infer<typeof ImpactedFilesOrdering>
+    ordering?: ImpactedFilesOrdering
   }
   refetchInterval?: number
 }

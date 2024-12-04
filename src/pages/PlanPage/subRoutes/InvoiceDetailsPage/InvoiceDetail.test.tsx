@@ -1,8 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import InvoiceDetail from './InvoiceDetail'
+import { Plans } from 'shared/utils/billing'
 
+import InvoiceDetail from './InvoiceDetail'
 const mocks = vi.hoisted(() => ({
   useAccountDetails: vi.fn(),
   useInvoice: vi.fn(),
@@ -47,7 +48,7 @@ const invoice = {
       amount: -9449,
       currency: 'usd',
       period: { end: 1610473200, start: 1609298708 },
-      value: 'users-pr-inappm',
+      value: Plans.USERS_PR_INAPPM,
       quantity: 19,
     },
     {
@@ -55,7 +56,7 @@ const invoice = {
       amount: 72000,
       currency: 'usd',
       period: { end: 1640834708, start: 1609298708 },
-      value: 'users-pr-inappy',
+      value: Plans.USERS_PR_INAPPY,
       quantity: 6,
     },
     {
@@ -63,7 +64,7 @@ const invoice = {
       amount: 72000,
       currency: 'usd',
       period: { end: null, start: null },
-      value: 'same period doesnt render date',
+      value: null,
       quantity: 1,
     },
   ],

@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
-import { providerToInternalProvider } from 'shared/utils'
+import { Provider } from 'shared/api/helpers'
+import { providerToInternalProvider } from 'shared/utils/provider'
 
 interface SunburstCoverageArgs {
-  provider: string
+  provider: Provider
   owner: string
   repo: string
   query?: {

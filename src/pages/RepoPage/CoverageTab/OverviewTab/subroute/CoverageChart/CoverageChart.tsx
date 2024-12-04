@@ -65,7 +65,7 @@ function CoverageChart() {
     )
   }
 
-  if (data?.measurements.length < 2) {
+  if (data?.measurements.length < 1) {
     return (
       <div className="flex min-h-[250px] items-center justify-center xl:min-h-[380px]">
         <p className="text-center">

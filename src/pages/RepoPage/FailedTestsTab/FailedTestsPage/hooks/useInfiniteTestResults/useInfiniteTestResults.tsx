@@ -12,6 +12,7 @@ import {
 } from 'services/repo'
 import Api from 'shared/api'
 import { type NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { PlanName, Plans } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
@@ -63,7 +64,7 @@ const GetTestResultsSchema = z.object({
     .object({
       plan: z
         .object({
-          value: z.string(),
+          value: z.nativeEnum(Plans),
         })
         .nullable(),
       repository: z.discriminatedUnion('__typename', [
@@ -71,6 +72,7 @@ const GetTestResultsSchema = z.object({
           __typename: z.literal('Repository'),
           private: z.boolean().nullable(),
           defaultBranch: z.string().nullable(),
+          isFirstPullRequest: z.boolean(),
           testAnalytics: z
             .object({
               testResults: z.object({
@@ -113,6 +115,7 @@ query GetTestResults(
     repository: repository(name: $repo) {
       __typename
       ... on Repository {
+        isFirstPullRequest
         private
         defaultBranch
         testAnalytics {
@@ -178,9 +181,10 @@ interface UseTestResultsArgs {
     testResults: TestResult[]
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
     private: boolean | null
-    plan: string | null
+    plan: PlanName | null
     defaultBranch: string | null
     totalCount: number | null
+    isFirstPullRequest: boolean | null
   }>
 }
 
@@ -279,6 +283,8 @@ export const useInfiniteTestResults = ({
           private: data?.owner?.repository?.private ?? null,
           plan: data?.owner?.plan?.value ?? null,
           defaultBranch: data?.owner?.repository?.defaultBranch ?? null,
+          isFirstPullRequest:
+            data?.owner?.repository?.isFirstPullRequest ?? null,
         }
       }),
     getNextPageParam: (lastPage) => {
@@ -301,6 +307,7 @@ export const useInfiniteTestResults = ({
       private: data?.pages?.[0]?.private ?? null,
       plan: data?.pages?.[0]?.plan ?? null,
       defaultBranch: data?.pages?.[0]?.defaultBranch ?? null,
+      isFirstPullRequest: data?.pages?.[0]?.isFirstPullRequest ?? null,
     },
     ...rest,
   }

@@ -16,7 +16,6 @@ import {
 import Api from 'shared/api'
 import { type NetworkErrorObject } from 'shared/api/helpers'
 import { UploadTypeEnum } from 'shared/utils/commit'
-import { userHasAccess } from 'shared/utils/user'
 import A from 'ui/A'
 
 import { PullCompareWithBaseFragment } from './fragments'
@@ -34,10 +33,10 @@ export const OrderingParameter = {
   CHANGE_COVERAGE: 'CHANGE_COVERAGE',
 } as const
 
-const ImpactedFilesOrdering = z.object({
-  direction: z.nativeEnum(OrderingDirection).optional(),
-  parameter: z.nativeEnum(OrderingParameter).optional(),
-})
+interface ImpactedFilesOrdering {
+  direction?: (typeof OrderingDirection)[keyof typeof OrderingDirection]
+  parameter?: (typeof OrderingParameter)[keyof typeof OrderingParameter]
+}
 
 const percentCoveredSchema = z.object({
   percentCovered: z.number().nullable(),
@@ -187,7 +186,6 @@ export type PullSchemaType = z.infer<typeof PullSchema>
 
 const RepositorySchema = z.object({
   defaultBranch: z.string().nullable(),
-  private: z.boolean(),
   __typename: z.literal('Repository'),
   pull: PullSchema.nullable(),
 })
@@ -195,7 +193,6 @@ const RepositorySchema = z.object({
 const RequestSchema = z.object({
   owner: z
     .object({
-      isCurrentUserPartOfOrg: z.boolean(),
       repository: z.discriminatedUnion('__typename', [
         RepositorySchema,
         RepoNotFoundErrorSchema,
@@ -217,7 +214,6 @@ const query = `query Pull(
       __typename
       ... on Repository {
         defaultBranch
-      	private
         pull(id: $pullId) {
           behindBy
           behindByCommit
@@ -294,7 +290,7 @@ interface UsePullArgs {
   pullId: string
   filters?: {
     hasUnintendedChanges?: boolean
-    ordering?: z.infer<typeof ImpactedFilesOrdering>
+    ordering?: ImpactedFilesOrdering
   }
   options?: {
     suspense?: boolean
@@ -372,10 +368,6 @@ export function usePull({
           pull: {
             ...pull,
           },
-          hasAccess: userHasAccess({
-            privateRepo: data?.owner?.repository?.private,
-            isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg,
-          }),
           defaultBranch: data?.owner?.repository?.defaultBranch,
         }
       }),

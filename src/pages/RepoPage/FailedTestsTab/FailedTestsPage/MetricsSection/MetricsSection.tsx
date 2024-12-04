@@ -226,7 +226,7 @@ const AverageFlakeRateCard = ({
         ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
-        The average flake rate across all branches.
+        The average flake rate on your default branch.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -249,10 +249,10 @@ const TotalFailuresCard = ({
     <MetricCard>
       <MetricCard.Header>
         <MetricCard.Title className="flex items-center gap-2">
-          Failures
+          Cumulative Failures
           <TooltipWithIcon>
-            The number of failures indicate the number of errors that caused the
-            tests to fail.
+            The sum of all test failures, incremented each time any test has
+            failed.
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
@@ -276,7 +276,7 @@ const TotalFailuresCard = ({
         ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
-        The number of test failures across all branches.
+        The number of test failures on your default branch.
       </MetricCard.Description>
     </MetricCard>
   )

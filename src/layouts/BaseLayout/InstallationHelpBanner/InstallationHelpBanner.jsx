@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useResyncUser } from 'services/user'
-import { providerToName } from 'shared/utils'
+import { providerToName } from 'shared/utils/provider'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TopBanner from 'ui/TopBanner'

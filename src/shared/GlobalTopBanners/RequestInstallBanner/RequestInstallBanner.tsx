@@ -4,8 +4,9 @@ import { useParams, useRouteMatch } from 'react-router-dom'
 import config from 'config'
 
 import { useLocationParams } from 'services/navigation'
+import { Provider } from 'shared/api/helpers'
 import AppInstallModal from 'shared/AppInstallModal'
-import { providerToName } from 'shared/utils'
+import { providerToName } from 'shared/utils/provider'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import TopBanner, { saveToLocalStorage } from 'ui/TopBanner'
@@ -13,7 +14,7 @@ import TopBanner, { saveToLocalStorage } from 'ui/TopBanner'
 const APP_INSTALL_BANNER_KEY = 'request-install-banner'
 
 interface URLParams {
-  provider: string
+  provider: Provider
 }
 
 const defaultQueryParams = {

@@ -1,4 +1,4 @@
-import cs from 'classnames'
+import { cn } from 'shared/utils/cn'
 
 const getVariantClasses = ({
   light,
@@ -7,7 +7,7 @@ const getVariantClasses = ({
   light?: boolean
   large?: boolean
 }) =>
-  cs({
+  cn({
     'text-xl font-light': large,
     'font-semibold': !large && !light,
   })
@@ -20,12 +20,17 @@ const getNumberClasses = ({
   value?: number | null
   plain?: boolean
   showChange?: boolean
-}) =>
-  cs({
-    'bg-ds-coverage-covered': value && value > 0 && !plain,
-    'bg-ds-coverage-uncovered': value && value < 0 && !plain,
-    "before:content-['+']": value && value > 0 && showChange,
+}) => {
+  const hasValue = typeof value === 'number'
+
+  return cn({
+    'bg-ds-coverage-uncovered':
+      hasValue && parseFloat(value.toFixed(2)) < 0 && !plain,
+    'bg-ds-coverage-covered':
+      hasValue && parseFloat(value.toFixed(2)) >= 0 && !plain,
+    "before:content-['+']": hasValue && showChange,
   })
+}
 
 const validateValue = (value?: number | null) =>
   (value && !isNaN(value)) || value === 0
