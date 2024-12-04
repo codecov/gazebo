@@ -266,7 +266,7 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
           <Button
             hook="load-more"
             isLoading={isFetchingNextPage}
-            onClick={fetchNextPage}
+            onClick={() => fetchNextPage()}
             to={undefined}
             disabled={false}
           >

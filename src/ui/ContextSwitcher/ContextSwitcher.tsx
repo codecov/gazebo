@@ -1,11 +1,11 @@
 import cs from 'classnames'
-import PropTypes from 'prop-types'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useIntersection } from 'react-use'
 import useClickAway from 'react-use/lib/useClickAway'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
+import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Avatar from 'ui/Avatar'
@@ -13,7 +13,15 @@ import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
-function LoadMoreTrigger({ intersectionRef, onLoadMore }) {
+interface LoadMoreTriggerProps {
+  onLoadMore?: () => void
+  intersectionRef: React.Ref<HTMLSpanElement>
+}
+
+function LoadMoreTrigger({
+  intersectionRef,
+  onLoadMore,
+}: LoadMoreTriggerProps) {
   if (!onLoadMore) {
     return null
   }
@@ -28,12 +36,22 @@ function LoadMoreTrigger({ intersectionRef, onLoadMore }) {
   )
 }
 
-LoadMoreTrigger.propTypes = {
-  onLoadMore: PropTypes.func,
-  intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+interface ContextItemProps {
+  context: {
+    owner: { username: string | null } | null
+    pageName: string
+  }
+  defaultOrgUsername: string | null
+  setToggle: (arg: boolean) => void
+  owner?: string
 }
 
-function ContextItem({ context, defaultOrgUsername, setToggle, owner }) {
+function ContextItem({
+  context,
+  defaultOrgUsername,
+  setToggle,
+  owner,
+}: ContextItemProps) {
   const { owner: contextOwner, pageName } = context
   const orgUsername = contextOwner?.username
   const { mutate } = useUpdateDefaultOrganization()
@@ -44,13 +62,15 @@ function ContextItem({ context, defaultOrgUsername, setToggle, owner }) {
       id="listbox-option-0"
     >
       <Button
+        disabled={false}
+        hook="context-switcher-toggle"
         to={{ pageName: pageName, options: { owner: orgUsername } }}
         variant="listbox"
         onClick={() => {
           setToggle(false)
           if (defaultOrgUsername === orgUsername) return
 
-          mutate({ username: orgUsername })
+          mutate({ username: orgUsername ?? null })
         }}
       >
         <Avatar user={contextOwner} />
@@ -61,24 +81,21 @@ function ContextItem({ context, defaultOrgUsername, setToggle, owner }) {
     </li>
   )
 }
-ContextItem.propTypes = {
-  context: PropTypes.shape({
-    owner: PropTypes.shape({ username: PropTypes.string }),
-    pageName: PropTypes.string,
-  }),
-  defaultOrgUsername: PropTypes.string,
-  setToggle: PropTypes.func.isRequired,
-  owner: PropTypes.string,
-}
 
-function useCloseOnLooseFocus({ setToggle }) {
+function useCloseOnLooseFocus({
+  setToggle,
+}: {
+  setToggle: React.Dispatch<React.SetStateAction<boolean>>
+}) {
   const ref = useRef(null)
-  useClickAway(ref, () => setToggle((toggle) => (!toggle ? toggle : false)))
+  useClickAway(ref, () =>
+    setToggle((toggle: boolean) => (!toggle ? toggle : false))
+  )
 
   return ref
 }
 
-function useLoadMore({ onLoadMore }) {
+function useLoadMore({ onLoadMore }: { onLoadMore: (() => void) | undefined }) {
   const ref = useRef(null)
   const intersection = useIntersection(ref, {
     root: null,
@@ -101,7 +118,7 @@ function useLoadMore({ onLoadMore }) {
   return ref
 }
 
-const Loader = ({ isLoading }) => {
+const Loader = ({ isLoading }: { isLoading: boolean }) => {
   if (!isLoading) return null
   return (
     <span className="flex justify-center pb-2 pt-1">
@@ -110,8 +127,31 @@ const Loader = ({ isLoading }) => {
   )
 }
 
-Loader.propTypes = {
-  isLoading: PropTypes.bool.isRequired,
+interface Context {
+  owner: {
+    avatarUrl: string
+    username: string | null
+  } | null
+  pageName: string
+}
+
+export interface Props {
+  buttonVariant?: 'default' | 'outlined'
+  contexts: Context[]
+  currentUser: {
+    defaultOrgUsername: string | null
+  }
+  activeContext: {
+    avatarUrl: string
+    username: string
+  }
+  onLoadMore?: () => void
+  isLoading: boolean
+}
+
+interface URLParams {
+  provider: Provider
+  owner: string
 }
 
 function ContextSwitcher({
@@ -121,9 +161,9 @@ function ContextSwitcher({
   isLoading,
   onLoadMore,
   activeContext,
-}) {
-  const { provider, owner } = useParams()
-  const [toggle, setToggle] = useState(false)
+}: Props) {
+  const { provider, owner } = useParams<URLParams>()
+  const [toggle, setToggle] = useState<boolean>(false)
   const wrapperRef = useCloseOnLooseFocus({ setToggle })
   const intersectionRef = useLoadMore({ onLoadMore })
   const defaultOrgUsername = currentUser?.defaultOrgUsername
@@ -136,10 +176,8 @@ function ContextSwitcher({
         type="button"
         className={cs(
           '"relative flex gap-1 items-center text-xl font-semibold w-full rounded-md py-1.5 text-left text-gray-900 focus:outline-none"',
-          {
-            [buttonVariant.outlined]:
-              'ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 shadow-sm',
-          }
+          buttonVariant === 'outlined' &&
+            'ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 shadow-sm'
         )}
         id="listbox-label"
         aria-haspopup="listbox"
@@ -155,7 +193,7 @@ function ContextSwitcher({
             'rotate-0': !toggle,
           })}
         >
-          <Icon variant="solid" name="chevron-down" />
+          <Icon variant="solid" name="chevronDown" />
         </span>
       </button>
       <ul
@@ -163,14 +201,18 @@ function ContextSwitcher({
           'absolute z-10 max-h-64 w-screen max-w-[500px] overflow-y-auto rounded-md bg-ds-background shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-ds-container dark:shadow-lg dark:ring-1 dark:ring-ds-gray-tertiary',
           { hidden: !toggle }
         )}
-        tabIndex="-1"
+        tabIndex={-1}
         role="listbox"
         aria-labelledby="listbox-label"
       >
         {isGh ? (
           <li className="flex justify-between border-b border-ds-border-line px-4 py-3">
-            <A to={{ pageName: 'codecovAppInstallation' }}>
-              <Icon name="plus-circle" />
+            <A
+              to={{ pageName: 'codecovAppInstallation' }}
+              isExternal
+              hook="context-switcher-gh-install-link"
+            >
+              <Icon name="plusCircle" />
               Install Codecov GitHub app
             </A>
           </li>
@@ -184,7 +226,6 @@ function ContextSwitcher({
             defaultOrgUsername={defaultOrgUsername}
             context={context}
             key={context?.owner?.username}
-            currentContext={activeContext}
             setToggle={setToggle}
             owner={activeContext?.username}
           />
@@ -197,28 +238,6 @@ function ContextSwitcher({
       </ul>
     </div>
   )
-}
-
-ContextSwitcher.propTypes = {
-  buttonVariant: PropTypes.oneOf(['default', 'outlined']),
-  contexts: PropTypes.arrayOf(
-    PropTypes.shape({
-      owner: PropTypes.shape({
-        avatarUrl: PropTypes.string.isRequired,
-        username: PropTypes.string,
-      }),
-      pageName: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  currentUser: PropTypes.shape({
-    defaultOrgUsername: PropTypes.string,
-  }),
-  activeContext: PropTypes.shape({
-    avatarUrl: PropTypes.string.isRequired,
-    username: PropTypes.string.isRequired,
-  }),
-  onLoadMore: PropTypes.func,
-  isLoading: PropTypes.bool,
 }
 
 export default ContextSwitcher

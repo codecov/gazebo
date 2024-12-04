@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
 import TabNavigation from './TabNavigation'
 
-const wrapper = ({ children }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>
     <Switch>
       <Route path="/:provider/:owner" exact>

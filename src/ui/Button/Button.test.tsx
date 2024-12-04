@@ -33,25 +33,6 @@ describe('Button', () => {
     })
   })
 
-  describe('when rendered without `to` prop', () => {
-    let mockError
-
-    beforeEach(() => {
-      mockError = vi.fn()
-      const spy = vi.spyOn(console, 'error')
-      spy.mockImplementation(mockError)
-    })
-
-    afterEach(() => {
-      vi.clearAllMocks()
-    })
-
-    it('PropTypes warning is thrown that developers need to provide a hook prop if not using to', () => {
-      render(<Button>hola</Button>, { wrapper: MemoryRouter })
-      expect(mockError).toHaveBeenCalledTimes(1)
-    })
-  })
-
   describe('when isLoading', () => {
     it('disables the button', () => {
       render(

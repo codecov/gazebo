@@ -1,8 +1,12 @@
-import PropTypes from 'prop-types'
-
 import AppLink from 'shared/AppLink'
 
-function TabNavigation({ tabs, component }) {
+interface TabNavigationProps {
+  // TODO: will need AppLink to be typed first - should be array of AppLinkProps
+  tabs: any[]
+  component?: React.ReactNode
+}
+
+function TabNavigation({ tabs, component }: TabNavigationProps) {
   return (
     <div className="mx-0 flex flex-col-reverse justify-between gap-2 border-b border-ds-gray-tertiary @md/commit-detail-page:!flex-col-reverse @4xl/commit-detail-page:!flex-row md:flex-col xl:flex-row">
       <nav className="flex overflow-auto">
@@ -18,11 +22,6 @@ function TabNavigation({ tabs, component }) {
       {component || null}
     </div>
   )
-}
-
-TabNavigation.propTypes = {
-  tabs: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
-  component: PropTypes.node,
 }
 
 export default TabNavigation

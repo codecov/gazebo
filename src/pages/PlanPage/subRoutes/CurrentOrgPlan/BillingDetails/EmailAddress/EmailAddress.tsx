@@ -86,7 +86,6 @@ function EmailAddress() {
             </p>
           )}
           <div className="flex gap-1">
-            {/* @ts-expect-error */}
             <Button
               hook="update-email"
               type="submit"
@@ -95,7 +94,6 @@ function EmailAddress() {
             >
               Update
             </Button>
-            {/* @ts-expect-error */}
             <Button
               type="button"
               hook="cancel-email"

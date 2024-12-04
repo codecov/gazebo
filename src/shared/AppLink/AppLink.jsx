@@ -97,6 +97,7 @@ AppLink.propTypes = {
   // You can find the page name in this file
   // https://github.com/codecov/gazebo/blob/main/src/services/navigation/useNavLinks.js
   pageName: PropTypes.string.isRequired,
+  exact: PropTypes.bool,
   text: PropTypes.string,
   options: PropTypes.object,
   activeClassName: PropTypes.string,
