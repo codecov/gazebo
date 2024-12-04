@@ -956,5 +956,16 @@ export function useNavLinks() {
       text: 'Okta access',
       isExternalLink: false,
     },
+    githubOrgSecrets: {
+      text: 'GitHub Org',
+      path: (
+        { owner = o } = {
+          owner: o,
+        }
+      ) =>
+        `https://github.com/organizations/${owner}/settings/secrets/actions/new`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
