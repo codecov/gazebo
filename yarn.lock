@@ -67,6 +67,103 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@amplitude/analytics-browser@npm:^2.11.9":
+  version: 2.11.9
+  resolution: "@amplitude/analytics-browser@npm:2.11.9"
+  dependencies:
+    "@amplitude/analytics-client-common": "npm:^2.3.5"
+    "@amplitude/analytics-core": "npm:^2.5.4"
+    "@amplitude/analytics-remote-config": "npm:^0.4.0"
+    "@amplitude/analytics-types": "npm:^2.8.4"
+    "@amplitude/plugin-autocapture-browser": "npm:^1.0.2"
+    "@amplitude/plugin-page-view-tracking-browser": "npm:^2.3.5"
+    tslib: "npm:^2.4.1"
+  checksum: 10c0/e318032768d47807ea64970bdc2c291870437dc234e8300c972aa6aaa29fe921218e62aae3ad7b9f815c1417ef490fab23c84c24bc4c47feff64f4dbc0905670
+  languageName: node
+  linkType: hard
+
+"@amplitude/analytics-client-common@npm:>=1 <3, @amplitude/analytics-client-common@npm:^2.3.5":
+  version: 2.3.5
+  resolution: "@amplitude/analytics-client-common@npm:2.3.5"
+  dependencies:
+    "@amplitude/analytics-connector": "npm:^1.4.8"
+    "@amplitude/analytics-core": "npm:^2.5.4"
+    "@amplitude/analytics-types": "npm:^2.8.4"
+    tslib: "npm:^2.4.1"
+  checksum: 10c0/6a2e7acdcb5b5f4e080f0679a9141f70994dfe3399e89834c60a119ec0118401f904f539553d0335770744e57f63c2b6458bfb0538e1ef72082f3229ff87e016
+  languageName: node
+  linkType: hard
+
+"@amplitude/analytics-connector@npm:^1.4.8":
+  version: 1.6.2
+  resolution: "@amplitude/analytics-connector@npm:1.6.2"
+  dependencies:
+    "@amplitude/experiment-core": "npm:^0.10.1"
+  checksum: 10c0/2be4c3c18e8c0dbba9e2e767efa29b6e345d5706d0b051cd37ef4106fb73aad9d163a7f104a9d6e2da6cc544d996dec328e15f41907729382267bb015f8cb82b
+  languageName: node
+  linkType: hard
+
+"@amplitude/analytics-core@npm:>=1 <3, @amplitude/analytics-core@npm:^2.5.4":
+  version: 2.5.4
+  resolution: "@amplitude/analytics-core@npm:2.5.4"
+  dependencies:
+    "@amplitude/analytics-types": "npm:^2.8.4"
+    tslib: "npm:^2.4.1"
+  checksum: 10c0/b089e4abb6d911aaca601bd9bb28ced5e684afc117071cf2637d44959451867f0b9cd09413f9da240348c8f1d6e35b434f9f7b32b3ee32e309217171d88b7f0c
+  languageName: node
+  linkType: hard
+
+"@amplitude/analytics-remote-config@npm:^0.4.0":
+  version: 0.4.1
+  resolution: "@amplitude/analytics-remote-config@npm:0.4.1"
+  dependencies:
+    "@amplitude/analytics-client-common": "npm:>=1 <3"
+    "@amplitude/analytics-core": "npm:>=1 <3"
+    "@amplitude/analytics-types": "npm:>=1 <3"
+    tslib: "npm:^2.4.1"
+  checksum: 10c0/9bd4bc880e1c44760097948b002525651da8de32b204a83a5d5e216a3cf4556e1b886963d741a495bcd76927a9f82bf346c5b44fb0d326d10ae8d464c62a8101
+  languageName: node
+  linkType: hard
+
+"@amplitude/analytics-types@npm:>=1 <3, @amplitude/analytics-types@npm:^2.8.2, @amplitude/analytics-types@npm:^2.8.4":
+  version: 2.8.4
+  resolution: "@amplitude/analytics-types@npm:2.8.4"
+  checksum: 10c0/5261cdf18f6ccd9455f8642c512090aea98e17108cc153115a3d5d2406267d591d124e7ae876213ace0f8836d4d808edb8e904498c99404f1856a6c3e957d2ae
+  languageName: node
+  linkType: hard
+
+"@amplitude/experiment-core@npm:^0.10.1":
+  version: 0.10.1
+  resolution: "@amplitude/experiment-core@npm:0.10.1"
+  dependencies:
+    js-base64: "npm:^3.7.5"
+  checksum: 10c0/d434fb5907eac799f17b753af016f02df53dca6371f4add2d05fd7c21a41e6f97ecce4bd7cb9d7bb52cca00d5456b07fb78dc7426499b807289d9c5c00af6ccd
+  languageName: node
+  linkType: hard
+
+"@amplitude/plugin-autocapture-browser@npm:^1.0.2":
+  version: 1.0.4
+  resolution: "@amplitude/plugin-autocapture-browser@npm:1.0.4"
+  dependencies:
+    "@amplitude/analytics-client-common": "npm:>=1 <3"
+    "@amplitude/analytics-types": "npm:^2.8.2"
+    rxjs: "npm:^7.8.1"
+    tslib: "npm:^2.4.1"
+  checksum: 10c0/c3812c89f11c95fa065f29e2532507aed1c135177b6280bde575988d5598c5909daa35804e9d84b76d86a04227c07bc424a04bb4a7900ea4bfd62bbd282623f4
+  languageName: node
+  linkType: hard
+
+"@amplitude/plugin-page-view-tracking-browser@npm:^2.3.5":
+  version: 2.3.5
+  resolution: "@amplitude/plugin-page-view-tracking-browser@npm:2.3.5"
+  dependencies:
+    "@amplitude/analytics-client-common": "npm:^2.3.5"
+    "@amplitude/analytics-types": "npm:^2.8.4"
+    tslib: "npm:^2.4.1"
+  checksum: 10c0/76b812b1268226dc4c495e9ad90d1941a987aa85ab146e02a5746b9c8a38d284fb5be869312ce69f9649c001e00578c8572306c03cf17a3f6655216ca75859e2
+  languageName: node
+  linkType: hard
+
 "@ampproject/remapping@npm:^2.2.0, @ampproject/remapping@npm:^2.2.1":
   version: 2.3.0
   resolution: "@ampproject/remapping@npm:2.3.0"
@@ -10216,6 +10313,7 @@ __metadata:
   resolution: "gazebo@workspace:."
   dependencies:
     "@acemarke/react-prod-sourcemaps": "npm:^0.3.1"
+    "@amplitude/analytics-browser": "npm:^2.11.9"
     "@babel/eslint-parser": "npm:^7.25.9"
     "@babel/plugin-proposal-private-property-in-object": "npm:^7.21.11"
     "@chromatic-com/storybook": "npm:^1"
@@ -11528,6 +11626,13 @@ __metadata:
   bin:
     jiti: bin/jiti.js
   checksum: 10c0/05b9ed58cd30d0c3ccd3c98209339e74f50abd9a17e716f65db46b6a35812103f6bde6e134be7124d01745586bca8cc5dae1d0d952267c3ebe55171949c32e56
+  languageName: node
+  linkType: hard
+
+"js-base64@npm:^3.7.5":
+  version: 3.7.7
+  resolution: "js-base64@npm:3.7.7"
+  checksum: 10c0/3c905a7e78b601e4751b5e710edd0d6d045ce2d23eb84c9df03515371e1b291edc72808dc91e081cb9855aef6758292a2407006f4608ec3705373dd8baf2f80f
   languageName: node
   linkType: hard
 
@@ -14911,6 +15016,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rxjs@npm:^7.8.1":
+  version: 7.8.1
+  resolution: "rxjs@npm:7.8.1"
+  dependencies:
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/3c49c1ecd66170b175c9cacf5cef67f8914dcbc7cd0162855538d365c83fea631167cacb644b3ce533b2ea0e9a4d0b12175186985f89d75abe73dbd8f7f06f68
+  languageName: node
+  linkType: hard
+
 "sade@npm:^1.7.3":
   version: 1.8.1
   resolution: "sade@npm:1.8.1"
@@ -16041,6 +16155,13 @@ __metadata:
   version: 2.6.3
   resolution: "tslib@npm:2.6.3"
   checksum: 10c0/2598aef53d9dbe711af75522464b2104724d6467b26a60f2bdac8297d2b5f1f6b86a71f61717384aa8fd897240467aaa7bcc36a0700a0faf751293d1331db39a
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.4.1":
+  version: 2.8.1
+  resolution: "tslib@npm:2.8.1"
+  checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
   languageName: node
   linkType: hard
 
