@@ -38,7 +38,6 @@ query BranchContents(
                     }
                   }
                 }
-                totalCount
                 pageInfo {
                   hasNextPage
                   endCursor

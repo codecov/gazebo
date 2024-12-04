@@ -46,7 +46,6 @@ const PathContentEdgeSchema = z.object({
 export const PathContentConnectionSchema = z.object({
   __typename: z.literal('PathContentConnection'),
   edges: z.array(PathContentEdgeSchema),
-  totalCount: z.number(),
   pageInfo: z.object({
     hasNextPage: z.boolean(),
     endCursor: z.string().nullable(),

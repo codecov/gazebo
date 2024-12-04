@@ -18,14 +18,26 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockNoFiles = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'PathContents',
+  owner: {
+    username: 'nicholas-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
+            },
+          },
         },
       },
     },
@@ -33,14 +45,22 @@ const mockNoFiles = {
 }
 
 const mockMissingCoverage = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'MissingCoverage',
+  owner: {
+    username: 'nicholas-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'MissingCoverage',
+            message: 'No coverage data available.',
+          },
         },
       },
     },
@@ -48,14 +68,23 @@ const mockMissingCoverage = {
 }
 
 const mockUnknownPath = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'UnknownPath',
+  owner: {
+    username: 'nicholas-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'UnknownPath',
+            message:
+              'Unknown filepath. Please ensure that files/directories exist and are not empty.',
+          },
         },
       },
     },
@@ -63,25 +92,39 @@ const mockUnknownPath = {
 }
 
 const mockTreeData = {
-  username: 'codecov-tree',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentDir',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
-              name: 'src',
-              path: 'src',
-              percentCovered: 100.0,
+  owner: {
+    username: 'codecov-tree',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [
+              {
+                node: {
+                  __typename: 'PathContentDir',
+                  hits: 9,
+                  misses: 0,
+                  partials: 0,
+                  lines: 10,
+                  name: 'src',
+                  path: 'src',
+                  percentCovered: 100.0,
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
             },
-          ],
-          __typename: 'PathContents',
+          },
         },
       },
     },
@@ -89,35 +132,51 @@ const mockTreeData = {
 }
 
 const mockDataMultipleRows = {
-  username: 'codecov-tree',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentDir',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
-              name: 'src',
-              path: 'src',
-              percentCovered: 100.0,
+  owner: {
+    username: 'codecov-tree',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [
+              {
+                node: {
+                  __typename: 'PathContentDir',
+                  hits: 9,
+                  misses: 0,
+                  partials: 0,
+                  lines: 10,
+                  name: 'src',
+                  path: 'src',
+                  percentCovered: 100.0,
+                },
+              },
+              {
+                node: {
+                  __typename: 'PathContentDir',
+                  hits: 9,
+                  misses: 2,
+                  partials: 1,
+                  lines: 999,
+                  name: 'tests',
+                  path: 'tests',
+                  percentCovered: 100.0,
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
             },
-            {
-              __typename: 'PathContentDir',
-              hits: 9,
-              misses: 2,
-              partials: 1,
-              lines: 999,
-              name: 'tests',
-              path: 'tests',
-              percentCovered: 100.0,
-            },
-          ],
-          __typename: 'PathContents',
+          },
         },
       },
     },
@@ -125,26 +184,40 @@ const mockDataMultipleRows = {
 }
 
 const mockTreeDataNested = {
-  username: 'codecov-tree',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentFile',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
-              name: 'file.js',
-              path: 'a/b/c/file.js',
-              percentCovered: 100.0,
-              isCriticalFile: false,
+  owner: {
+    username: 'codecov-tree',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [
+              {
+                node: {
+                  __typename: 'PathContentFile',
+                  hits: 9,
+                  misses: 0,
+                  partials: 0,
+                  lines: 10,
+                  name: 'file.js',
+                  path: 'a/b/c/file.js',
+                  percentCovered: 100.0,
+                  isCriticalFile: false,
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
             },
-          ],
-          __typename: 'PathContents',
+          },
         },
       },
     },
@@ -152,13 +225,22 @@ const mockTreeDataNested = {
 }
 
 const mockNoHeadReport = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          __typename: 'MissingHeadReport',
+  owner: {
+    username: 'nicholas-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'MissingHeadReport',
+            message: 'No coverage report uploaded for this branch head commit',
+          },
         },
       },
     },
@@ -230,21 +312,21 @@ describe('CodeTreeTable', () => {
         }
 
         if (missingCoverage) {
-          return HttpResponse.json({ data: { owner: mockMissingCoverage } })
+          return HttpResponse.json({ data: mockMissingCoverage })
         } else if (unknownPath) {
-          return HttpResponse.json({ data: { owner: mockUnknownPath } })
+          return HttpResponse.json({ data: mockUnknownPath })
         } else if (noHeadReport) {
-          return HttpResponse.json({ data: { owner: mockNoHeadReport } })
+          return HttpResponse.json({ data: mockNoHeadReport })
         } else if (noFiles || info?.variables?.filters?.searchValue) {
-          return HttpResponse.json({ data: { owner: mockNoFiles } })
+          return HttpResponse.json({ data: mockNoFiles })
         } else if (noFlagCoverage) {
-          return HttpResponse.json({ data: { owner: mockNoFiles } })
+          return HttpResponse.json({ data: mockNoFiles })
         } else if (hasMultipleRows) {
-          return HttpResponse.json({ data: { owner: mockDataMultipleRows } })
+          return HttpResponse.json({ data: mockDataMultipleRows })
         } else if (isNestedTreeData) {
-          return HttpResponse.json({ data: { owner: mockTreeDataNested } })
+          return HttpResponse.json({ data: mockTreeDataNested })
         } else {
-          return HttpResponse.json({ data: { owner: mockTreeData } })
+          return HttpResponse.json({ data: mockTreeData })
         }
       }),
       graphql.query('GetRepoOverview', (info) => {

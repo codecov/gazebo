@@ -4,7 +4,7 @@ import { MissingHeadReportSchema } from 'services/comparison'
 import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
 import {
   MissingCoverageSchema,
-  PathContentConnectionSchema,
+  PathContentsResultSchema,
   UnknownPathSchema,
 } from 'services/pathContents/branch/dir'
 import {
@@ -21,8 +21,13 @@ const RepositoryConfigSchema = z.object({
     .nullable(),
 })
 
+export const PathContentsSchema = z.object({
+  __typename: z.literal('PathContents'),
+  results: z.array(PathContentsResultSchema),
+})
+
 const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
-  PathContentConnectionSchema,
+  PathContentsSchema,
   UnknownPathSchema,
   MissingCoverageSchema,
   MissingHeadReportSchema,

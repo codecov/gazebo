@@ -19,20 +19,26 @@ const mockData = {
       },
       branch: {
         head: {
-          pathContents: {
-            results: [
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [
               {
-                __typename: 'PathContentDir',
-                hits: 9,
-                misses: 0,
-                partials: 0,
-                lines: 10,
-                name: 'src',
-                path: 'src',
-                percentCovered: 100.0,
+                node: {
+                  __typename: 'PathContentDir',
+                  hits: 9,
+                  misses: 0,
+                  partials: 0,
+                  lines: 10,
+                  name: 'src',
+                  path: 'src',
+                  percentCovered: 100.0,
+                },
               },
             ],
-            __typename: 'PathContents',
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
+            },
           },
         },
       },
@@ -53,9 +59,9 @@ const mockDataUnknownPath = {
       },
       branch: {
         head: {
-          pathContents: {
-            __typename: 'UnknownPath',
+          deprecatedPathContents: {
             message: 'path cannot be found',
+            __typename: 'UnknownPath',
           },
         },
       },
@@ -76,7 +82,7 @@ const mockDataMissingCoverage = {
       },
       branch: {
         head: {
-          pathContents: {
+          deprecatedPathContents: {
             message: 'files missing coverage',
             __typename: 'MissingCoverage',
           },
@@ -88,6 +94,7 @@ const mockDataMissingCoverage = {
 
 const mockDataRepositoryNotFound = {
   owner: {
+    username: 'cool-user',
     repository: {
       __typename: 'NotFoundError',
       message: 'repository not found',
@@ -97,6 +104,7 @@ const mockDataRepositoryNotFound = {
 
 const mockDataOwnerNotActivated = {
   owner: {
+    username: 'cool-user',
     repository: {
       __typename: 'OwnerNotActivatedError',
       message: 'owner not activated',
@@ -187,26 +195,30 @@ describe('useRepoBranchContents', () => {
         )
 
         await waitFor(() =>
-          expect(result.current.data).toEqual(
-            expect.objectContaining({
-              results: [
-                {
-                  __typename: 'PathContentDir',
-                  hits: 9,
-                  misses: 0,
-                  partials: 0,
-                  lines: 10,
-                  name: 'src',
-                  path: 'src',
-                  percentCovered: 100.0,
-                },
-              ],
-              indicationRange: {
-                upperRange: 80,
-                lowerRange: 60,
+          expect(result.current.data?.pages[0]).toEqual({
+            results: [
+              {
+                __typename: 'PathContentDir',
+                hits: 9,
+                misses: 0,
+                partials: 0,
+                lines: 10,
+                name: 'src',
+                path: 'src',
+                percentCovered: 100.0,
               },
-            })
-          )
+            ],
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            pathContentsType: 'PathContentConnection',
+            __typename: undefined,
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
+            },
+          })
         )
       })
     })
@@ -229,16 +241,16 @@ describe('useRepoBranchContents', () => {
         )
 
         await waitFor(() =>
-          expect(result.current.data).toEqual(
-            expect.objectContaining({
-              indicationRange: {
-                upperRange: 80,
-                lowerRange: 60,
-              },
-              results: null,
-              pathContentsType: 'MissingCoverage',
-            })
-          )
+          expect(result.current.data?.pages[0]).toEqual({
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            results: null,
+            pathContentsType: 'MissingCoverage',
+            __typename: undefined,
+            pageInfo: undefined,
+          })
         )
       })
     })
@@ -261,16 +273,16 @@ describe('useRepoBranchContents', () => {
         )
 
         await waitFor(() =>
-          expect(result.current.data).toEqual(
-            expect.objectContaining({
-              indicationRange: {
-                upperRange: 80,
-                lowerRange: 60,
-              },
-              results: null,
-              pathContentsType: 'UnknownPath',
-            })
-          )
+          expect(result.current.data?.pages[0]).toEqual({
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            results: null,
+            pathContentsType: 'UnknownPath',
+            __typename: undefined,
+            pageInfo: undefined,
+          })
         )
       })
     })

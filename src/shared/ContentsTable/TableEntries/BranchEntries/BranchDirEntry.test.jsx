@@ -20,20 +20,26 @@ const mockData = {
       },
       branch: {
         head: {
-          pathContents: {
-            __typename: 'PathContents',
-            results: [
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [
               {
-                __typename: 'PathContentDir',
-                name: 'src',
-                path: null,
-                percentCovered: 0.0,
-                hits: 4,
-                misses: 2,
-                lines: 7,
-                partials: 1,
+                node: {
+                  __typename: 'PathContentDir',
+                  name: 'src',
+                  path: null,
+                  percentCovered: 0.0,
+                  hits: 4,
+                  misses: 2,
+                  lines: 7,
+                  partials: 1,
+                },
               },
             ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
+            },
           },
         },
       },
@@ -170,24 +176,24 @@ describe('BranchDirEntry', () => {
 
     await waitFor(() => queryClient.getQueryState().isFetching)
     await waitFor(() => !queryClient.getQueryState().isFetching)
-
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({
-        __typename: 'PathContents',
+        __typename: undefined,
         indicationRange: {
-          upperRange: 80,
           lowerRange: 60,
+          upperRange: 80,
         },
+        pathContentsType: 'PathContentConnection',
         results: [
           {
             __typename: 'PathContentDir',
+            hits: 4,
+            lines: 7,
+            misses: 2,
             name: 'src',
+            partials: 1,
             path: null,
             percentCovered: 0,
-            hits: 4,
-            misses: 2,
-            lines: 7,
-            partials: 1,
           },
         ],
       })

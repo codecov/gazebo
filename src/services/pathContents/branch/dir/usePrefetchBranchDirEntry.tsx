@@ -10,6 +10,7 @@ import {
 import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
+import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
 import { query } from './constants'
@@ -33,14 +34,22 @@ const PathContentDirSchema = BasePathContentSchema.extend({
   __typename: z.literal('PathContentDir'),
 })
 
-const PathContentsResultSchema = z.discriminatedUnion('__typename', [
+export const PathContentsResultSchema = z.discriminatedUnion('__typename', [
   PathContentFileSchema,
   PathContentDirSchema,
 ])
 
-const PathContentsSchema = z.object({
-  __typename: z.literal('PathContents'),
-  results: z.array(PathContentsResultSchema),
+const PathContentEdgeSchema = z.object({
+  node: PathContentsResultSchema,
+})
+
+const PathContentConnectionSchema = z.object({
+  __typename: z.literal('PathContentConnection'),
+  edges: z.array(PathContentEdgeSchema),
+  pageInfo: z.object({
+    hasNextPage: z.boolean(),
+    endCursor: z.string().nullable(),
+  }),
 })
 
 const UnknownPathSchema = z.object({
@@ -59,7 +68,7 @@ const MissingHeadReportSchema = z.object({
 })
 
 const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
-  PathContentsSchema,
+  PathContentConnectionSchema,
   UnknownPathSchema,
   MissingCoverageSchema,
   MissingHeadReportSchema,
@@ -72,7 +81,7 @@ const RepositorySchema = z.object({
   branch: z.object({
     head: z
       .object({
-        pathContents: PathContentsUnionSchema.nullish(),
+        deprecatedPathContents: PathContentsUnionSchema.nullish(),
       })
       .nullable(),
   }),
@@ -81,6 +90,7 @@ const RepositorySchema = z.object({
 const BranchContentsSchema = z.object({
   owner: z
     .object({
+      username: z.string().nullable(),
       repository: z.discriminatedUnion('__typename', [
         RepositorySchema,
         RepoNotFoundErrorSchema,
@@ -138,6 +148,7 @@ export function usePrefetchBranchDirEntry({
             branch,
             path,
             filters,
+            first: 20,
           },
         }).then((res) => {
           const parsedRes = BranchContentsSchema.safeParse(res?.data)
@@ -180,20 +191,32 @@ export function usePrefetchBranchDirEntry({
           }
 
           let results
-          if (
-            data?.owner?.repository?.branch?.head?.pathContents?.__typename ===
-            'PathContents'
-          ) {
-            results =
-              data?.owner?.repository?.branch?.head?.pathContents?.results
+          const pathContentsType =
+            data?.owner?.repository?.branch?.head?.deprecatedPathContents
+              ?.__typename
+          if (pathContentsType === 'PathContentConnection') {
+            results = mapEdges({
+              edges:
+                data?.owner?.repository?.branch?.head?.deprecatedPathContents
+                  ?.edges ?? [],
+            })
+
+            return {
+              results: results ?? null,
+              pathContentsType,
+              indicationRange:
+                data?.owner?.repository?.repositoryConfig?.indicationRange,
+              __typename:
+                res?.data?.owner?.repository?.branch?.head?.__typename,
+            }
           }
 
           return {
-            __typename:
-              data?.owner?.repository?.branch?.head?.pathContents?.__typename,
             results: results ?? null,
+            pathContentsType,
             indicationRange:
               data?.owner?.repository?.repositoryConfig?.indicationRange,
+            __typename: res?.data?.owner?.repository?.branch?.head?.__typename,
           }
         }),
       staleTime: 10000,

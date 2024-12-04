@@ -18,14 +18,26 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockNoFiles = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'PathContents',
+  owner: {
+    username: 'cool-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
+            },
+          },
         },
       },
     },
@@ -33,14 +45,23 @@ const mockNoFiles = {
 }
 
 const mockUnknownPath = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'UnknownPath',
+  owner: {
+    username: 'cool-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'UnknownPath',
+            message:
+              'Unknown filepath. Please ensure that files/directories exist and are not empty.',
+          },
         },
       },
     },
@@ -48,14 +69,22 @@ const mockUnknownPath = {
 }
 
 const mockMissingCoverage = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'MissingCoverage',
+  owner: {
+    username: 'cool-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'MissingCoverage',
+            message: 'No coverage data available.',
+          },
         },
       },
     },
@@ -63,26 +92,40 @@ const mockMissingCoverage = {
 }
 
 const mockListData = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentFile',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
-              name: 'file.js',
-              path: 'a/b/c/file.js',
-              percentCovered: 100.0,
-              isCriticalFile: false,
+  owner: {
+    username: 'cool-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [
+              {
+                node: {
+                  __typename: 'PathContentFile',
+                  hits: 9,
+                  misses: 0,
+                  partials: 0,
+                  lines: 10,
+                  name: 'file.js',
+                  path: 'a/b/c/file.js',
+                  percentCovered: 100.0,
+                  isCriticalFile: false,
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
             },
-          ],
-          __typename: 'PathContents',
+          },
         },
       },
     },
@@ -90,14 +133,22 @@ const mockListData = {
 }
 
 const mockNoHeadReport = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          __typename: 'MissingHeadReport',
-          results: [],
+  owner: {
+    username: 'cool-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'MissingHeadReport',
+            message: 'No coverage report uploaded for this branch head commit',
+          },
         },
       },
     },
@@ -165,18 +216,18 @@ describe('FileListTable', () => {
         }
 
         if (noHeadReport) {
-          return HttpResponse.json({ data: { owner: mockNoHeadReport } })
+          return HttpResponse.json({ data: mockNoHeadReport })
         } else if (noFiles || info?.variables?.filters?.searchValue) {
-          return HttpResponse.json({ data: { owner: mockNoFiles } })
+          return HttpResponse.json({ data: mockNoFiles })
         } else if (noFlagCoverage) {
-          return HttpResponse.json({ data: { owner: mockNoFiles } })
+          return HttpResponse.json({ data: mockNoFiles })
         } else if (missingCoverage) {
-          return HttpResponse.json({ data: { owner: mockMissingCoverage } })
+          return HttpResponse.json({ data: mockMissingCoverage })
         } else if (unknownPath) {
-          return HttpResponse.json({ data: { owner: mockUnknownPath } })
+          return HttpResponse.json({ data: mockUnknownPath })
         }
 
-        return HttpResponse.json({ data: { owner: mockListData } })
+        return HttpResponse.json({ data: mockListData })
       }),
       graphql.query('GetRepoOverview', (info) => {
         return HttpResponse.json({ data: mockOverview })
