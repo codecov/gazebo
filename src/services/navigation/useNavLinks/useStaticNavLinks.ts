@@ -200,7 +200,8 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     codecovGithubAppSelectTarget: {
-      path: () => 'https://github.com/apps/codecov/installations/select_target',
+      path: () =>
+        `https://github.com/apps/${config.GH_APP}/installations/select_target`,
       isExternalLink: true,
       text: 'Codecov Github App',
       openNewTab: true,

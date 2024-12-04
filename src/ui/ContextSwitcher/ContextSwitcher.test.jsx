@@ -5,6 +5,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import config, { DEFAULT_GH_APP } from 'config'
+
 import { useImage } from 'services/image'
 
 import ContextSwitcher from './ContextSwitcher'
@@ -707,6 +709,106 @@ describe('ContextSwitcher', () => {
 
       const button = screen.getByRole('button')
       expect(button).toHaveTextContent('test-owner')
+    })
+  })
+
+  describe('when on self-hosted', () => {
+    beforeEach(() => {
+      config.IS_SELF_HOSTED = true
+      setup()
+    })
+
+    afterEach(() => {
+      config.GH_APP = DEFAULT_GH_APP
+      vi.clearAllMocks()
+    })
+
+    it('renders the custom app link if set', async () => {
+      config.GH_APP = 'custom-app'
+      render(
+        <ContextSwitcher
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://github.com/laudna.png?size=40',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'https://github.com/spotify.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      const installCopy = await screen.findByText(/Install Codecov GitHub app/)
+      expect(installCopy).toBeInTheDocument()
+      expect(installCopy).toHaveAttribute(
+        'href',
+        'https://github.com/apps/custom-app/installations/new'
+      )
+      expect(installCopy).not.toHaveAttribute(
+        'href',
+        'https://github.com/apps/codecov/installations/new'
+      )
+    })
+
+    it('renders no link if custom app env var is not set', async () => {
+      config.IS_SELF_HOSTED = true
+      render(
+        <ContextSwitcher
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://github.com/laudna.png?size=40',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'https://github.com/spotify.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      const installCopy = screen.queryByText(/Install Codecov GitHub app/)
+      expect(installCopy).not.toBeInTheDocument()
     })
   })
 })
