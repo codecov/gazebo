@@ -526,5 +526,14 @@ module.exports = {
     // https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
+
+    // test new ones for bpr
+    eqeqeq: ['error', 'always'],
+    '@typescript-eslint/no-floating-promises': 'error',
+    'no-prototype-builtins': 'error',
+    'no-unsafe-optional-chaining': [
+      'error',
+      { disallowArithmeticOperators: true },
+    ],
   },
 }

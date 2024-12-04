@@ -159,7 +159,7 @@ Button.propTypes = {
   hook: function (props, propName) {
     if (
       props['to'] === undefined &&
-      (props[propName] === undefined || typeof props[propName] != 'string')
+      (props[propName] === undefined || typeof props[propName] !== 'string')
     ) {
       return new Error(
         'If not using prop "to" you must provide prop "hook" of type string.'
