@@ -3,15 +3,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import ContextSwitcher from './ContextSwitcher'
 
-<<<<<<< HEAD:src/ui/ContextSwitcher/ContextSwitcher.stories.jsx
-const Template = (args) => (
-  <MemoryRouter initialEntries={['/gh/codecov']}>
-    <Route path="/:provider/:owner">
-      <ContextSwitcher {...args} />
-    </Route>
-  </MemoryRouter>
-)
-=======
 const meta: Meta<typeof ContextSwitcher> = {
   title: 'Components/ContextSwitcher',
   component: ContextSwitcher,
@@ -20,7 +11,6 @@ const meta: Meta<typeof ContextSwitcher> = {
 export default meta
 
 type Story = StoryObj<typeof ContextSwitcher>
->>>>>>> eebb37c1b (refactor: Convert ContextSwitcher to TS):src/ui/ContextSwitcher/ContextSwitcher.stories.tsx
 
 const contexts = [
   {
@@ -53,7 +43,7 @@ export const SimpleContextSwitcher: Story = {
   },
   render: (args) => (
     <MemoryRouter initialEntries={['/gh/codecov']}>
-      <Route path="/:provider/">
+      <Route path="/:provider/:owner">
         <ContextSwitcher {...args} />
       </Route>
     </MemoryRouter>
