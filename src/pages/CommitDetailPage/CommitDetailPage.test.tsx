@@ -25,7 +25,7 @@ const mockNotFoundCommit = {
     isCurrentUserPartOfOrg: false,
     repository: {
       __typename: 'Repository',
-      private: null,
+      private: false,
       bundleAnalysisEnabled: null,
       coverageEnabled: null,
       commit: null,
