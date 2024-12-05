@@ -183,30 +183,28 @@ export function useRepoBranchContents({
           }
 
           let results = null
-          const pathContentsType =
+          const pathContents =
             data?.owner?.repository?.branch?.head?.deprecatedPathContents
-              ?.__typename
-          if (pathContentsType === 'PathContentConnection') {
+          if (
+            pathContents &&
+            pathContents?.__typename === 'PathContentConnection'
+          ) {
             results = mapEdges({
-              edges:
-                data?.owner?.repository?.branch?.head?.deprecatedPathContents
-                  ?.edges ?? [],
+              edges: pathContents?.edges,
             })
 
             return {
               results,
-              pathContentsType,
+              pathContentsType: pathContents.__typename,
               indicationRange:
                 data?.owner?.repository?.repositoryConfig?.indicationRange,
-              pageInfo:
-                data?.owner?.repository?.branch?.head?.deprecatedPathContents
-                  ?.pageInfo,
+              pageInfo: pathContents?.pageInfo,
             }
           }
 
           return {
             results,
-            pathContentsType,
+            pathContentsType: pathContents?.__typename,
             indicationRange:
               data?.owner?.repository?.repositoryConfig?.indicationRange,
             pageInfo: null,

@@ -178,7 +178,6 @@ describe('BranchDirEntry', () => {
     await waitFor(() => !queryClient.getQueryState().isFetching)
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({
-        __typename: undefined,
         indicationRange: {
           lowerRange: 60,
           upperRange: 80,

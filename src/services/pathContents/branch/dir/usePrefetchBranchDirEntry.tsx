@@ -207,8 +207,6 @@ export function usePrefetchBranchDirEntry({
               pathContentsType: pathContent.__typename,
               indicationRange:
                 data?.owner?.repository?.repositoryConfig?.indicationRange,
-              __typename:
-                res?.data?.owner?.repository?.branch?.head?.__typename,
             }
           }
 
@@ -217,7 +215,6 @@ export function usePrefetchBranchDirEntry({
             pathContentsType: pathContent?.__typename,
             indicationRange:
               data?.owner?.repository?.repositoryConfig?.indicationRange,
-            __typename: res?.data?.owner?.repository?.branch?.head?.__typename,
           }
         }),
       staleTime: 10000,

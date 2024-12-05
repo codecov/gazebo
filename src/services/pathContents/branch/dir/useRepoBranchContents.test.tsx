@@ -6,47 +6,40 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepoBranchContents } from './useRepoBranchContents'
 
-const mockData = {
-  owner: {
-    username: 'cool-user',
-    repository: {
-      __typename: 'Repository',
-      repositoryConfig: {
-        indicationRange: {
-          upperRange: 80,
-          lowerRange: 60,
-        },
-      },
-      branch: {
-        head: {
-          deprecatedPathContents: {
-            __typename: 'PathContentConnection',
-            edges: [
-              {
-                node: {
-                  __typename: 'PathContentDir',
-                  hits: 9,
-                  misses: 0,
-                  partials: 0,
-                  lines: 10,
-                  name: 'src',
-                  path: 'src',
-                  percentCovered: 100.0,
-                },
-              },
-            ],
-            pageInfo: {
-              hasNextPage: true,
-              endCursor: 'cursor1',
-            },
-          },
-        },
-      },
-    },
-  },
+const node1 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 0,
+  partials: 0,
+  lines: 10,
+  name: 'src1',
+  path: 'src1',
+  percentCovered: 100.0,
 }
 
-const mockDataPage2 = {
+const node2 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 0,
+  partials: 0,
+  lines: 10,
+  name: 'src2',
+  path: 'src2',
+  percentCovered: 100.0,
+}
+
+const node3 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 0,
+  partials: 0,
+  lines: 10,
+  name: 'src3',
+  path: 'src3',
+  percentCovered: 100.0,
+}
+
+const mockData = (after: boolean) => ({
   owner: {
     username: 'cool-user',
     repository: {
@@ -61,30 +54,19 @@ const mockDataPage2 = {
         head: {
           deprecatedPathContents: {
             __typename: 'PathContentConnection',
-            edges: [
-              {
-                node: {
-                  __typename: 'PathContentDir',
-                  hits: 5,
-                  misses: 2,
-                  partials: 1,
-                  lines: 8,
-                  name: 'tests',
-                  path: 'tests',
-                  percentCovered: 75.0,
-                },
-              },
-            ],
+            edges: after
+              ? [{ node: node3 }]
+              : [{ node: node1 }, { node: node2 }],
             pageInfo: {
-              hasNextPage: false,
-              endCursor: null,
+              hasNextPage: after ? false : true,
+              endCursor: after ? 'cursor1' : 'cursor0',
             },
           },
         },
       },
     },
   },
-}
+})
 
 const mockDataUnknownPath = {
   owner: {
@@ -211,11 +193,9 @@ describe('useRepoBranchContents', () => {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }
 
-        if (variables.after === 'cursor1') {
-          return HttpResponse.json({ data: mockDataPage2 })
-        }
-
-        return HttpResponse.json({ data: mockData })
+        return HttpResponse.json({
+          data: mockData(variables.after === 'cursor0'),
+        })
       })
     )
   }
@@ -240,18 +220,7 @@ describe('useRepoBranchContents', () => {
 
         await waitFor(() =>
           expect(result.current.data?.pages[0]).toEqual({
-            results: [
-              {
-                __typename: 'PathContentDir',
-                hits: 9,
-                misses: 0,
-                partials: 0,
-                lines: 10,
-                name: 'src',
-                path: 'src',
-                percentCovered: 100.0,
-              },
-            ],
+            results: [node1, node2],
             indicationRange: {
               upperRange: 80,
               lowerRange: 60,
@@ -259,7 +228,7 @@ describe('useRepoBranchContents', () => {
             pathContentsType: 'PathContentConnection',
             pageInfo: {
               hasNextPage: true,
-              endCursor: 'cursor1',
+              endCursor: 'cursor0',
             },
           })
         )
@@ -269,23 +238,12 @@ describe('useRepoBranchContents', () => {
         await result.current.fetchNextPage()
 
         await waitFor(() => {
-          expect(result.current.data?.pages).toHaveLength(2)
+          expect(result.current.data?.pages).toHaveLength(1)
         })
 
         await waitFor(() => {
           expect(result.current.data?.pages[1]).toEqual({
-            results: [
-              {
-                __typename: 'PathContentDir',
-                hits: 5,
-                misses: 2,
-                partials: 1,
-                lines: 8,
-                name: 'tests',
-                path: 'tests',
-                percentCovered: 75.0,
-              },
-            ],
+            results: [node3],
             indicationRange: {
               upperRange: 80,
               lowerRange: 60,
@@ -293,12 +251,14 @@ describe('useRepoBranchContents', () => {
             pathContentsType: 'PathContentConnection',
             pageInfo: {
               hasNextPage: false,
-              endCursor: null,
+              endCursor: 'cursor1',
             },
           })
         })
 
-        expect(result.current.hasNextPage).toBe(false)
+        await waitFor(() => {
+          expect(result.current.data?.pages).toHaveLength(2)
+        })
       })
     })
 
