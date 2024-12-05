@@ -8,7 +8,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import OutputCoverageStep from './OutputCoverageStep'
