@@ -250,6 +250,7 @@ describe('ContextSwitcher', () => {
 
     it('renders manage access restrictions', async () => {
       setup()
+      config.GH_APP = 'codecov'
       render(
         <ContextSwitcher
           activeContext={{
@@ -715,6 +716,7 @@ describe('ContextSwitcher', () => {
   describe('when on self-hosted', () => {
     beforeEach(() => {
       config.IS_SELF_HOSTED = true
+      config.GH_APP = 'codecov'
       setup()
     })
 

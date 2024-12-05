@@ -51,6 +51,7 @@ describe('GithubIntegrationSection', () => {
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
+    config.GH_APP = 'codecov'
 
     server.use(
       http.get(`/internal/gh/codecov/account-details/`, (info) => {
