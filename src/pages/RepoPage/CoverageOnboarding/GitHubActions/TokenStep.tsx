@@ -105,13 +105,13 @@ function GitHubOrgSecretExample({
 interface OrgOrRepoTokenSelectorProps {
   isUsingGlobalToken: boolean
   handleValueChange: (value: string) => void
-  previouslyGeneratedOrgToken: boolean
+  hasOrgUploadToken: boolean
 }
 
 function OrgOrRepoTokenSelector({
   isUsingGlobalToken,
   handleValueChange,
-  previouslyGeneratedOrgToken,
+  hasOrgUploadToken,
 }: OrgOrRepoTokenSelectorProps) {
   const { owner } = useParams<URLParams>()
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
@@ -144,27 +144,29 @@ function OrgOrRepoTokenSelector({
           </RadioTileGroup.Description>
         </RadioTileGroup.Item>
       </RadioTileGroup>
-      {!previouslyGeneratedOrgToken && (
-        <div className="flex items-center justify-between pb-3.5 pt-7">
-          <p className="font-semibold">Generate a global upload token</p>
-          <div>
-            <Button
-              variant="default"
-              hook="generate-org-upload-token"
-              onClick={() => regenerateToken()}
-              disabled={isLoading || !isAdmin}
-              to={undefined}
-            >
-              Generate
-            </Button>
+      {!hasOrgUploadToken && (
+        <>
+          <div className="flex items-center justify-between pb-3.5 pt-7">
+            <p className="font-semibold">Generate a global upload token</p>
+            <div>
+              <Button
+                variant="default"
+                hook="generate-org-upload-token"
+                onClick={() => regenerateToken()}
+                disabled={isLoading || !isAdmin}
+                to={undefined}
+              >
+                Generate
+              </Button>
+            </div>
           </div>
-        </div>
+          <p>
+            You need to be an{' '}
+            <span className="font-semibold">organization admin</span> to
+            generate a global upload token.
+          </p>
+        </>
       )}
-      <p>
-        You need to be an{' '}
-        <span className="font-semibold">organization admin</span> to generate a
-        global upload token.
-      </p>
     </div>
   )
 }
@@ -253,10 +255,6 @@ function TokenStepSection({
   const handleValueChange = (value: string) => {
     setIsUsingGlobalToken(value === TOKEN_OPTIONS.GLOBAL)
   }
-  // console.log('qwerty: ', isUploadTokenRequired && previouslyGeneratedOrgToken)
-  // console.log('orgUploadToken: ', orgUploadToken)
-  // console.log('isUsingGlobalToken && orgUploadToken: ', isUsingGlobalToken && orgUploadToken)
-  // console.log('!isUsingGlobalToken && repoUploadToken: ', !isUsingGlobalToken && repoUploadToken)
   return (
     <>
       {isUploadTokenRequired && previouslyGeneratedOrgToken ? (
@@ -268,7 +266,9 @@ function TokenStepSection({
               <Card.Title size="base">
                 Step 2: Select an upload token to add as a secret on GitHub
                 {!isUploadTokenRequired && (
-                  <span className="italic">-optional</span>
+                  <span className="ml-3.5 text-sm font-normal italic">
+                    -optional
+                  </span>
                 )}
               </Card.Title>
             </Card.Header>
@@ -277,7 +277,7 @@ function TokenStepSection({
                 <OrgOrRepoTokenSelector
                   isUsingGlobalToken={isUsingGlobalToken}
                   handleValueChange={handleValueChange}
-                  previouslyGeneratedOrgToken={previouslyGeneratedOrgToken}
+                  hasOrgUploadToken={!!orgUploadToken}
                 />
               )}
             </Card.Content>
