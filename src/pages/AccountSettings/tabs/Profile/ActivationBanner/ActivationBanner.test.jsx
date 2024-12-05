@@ -61,10 +61,10 @@ describe('ActivationBanner', () => {
     const querySeats = { ...mockSeatData, ...overrideSeatData }
 
     server.use(
-      http.get('/internal/users/current', (info) => {
+      http.get('/internal/users/current', () => {
         return HttpResponse.json(restUsersCurrent)
       }),
-      graphql.query('Seats', (info) => {
+      graphql.query('Seats', () => {
         return HttpResponse.json({ data: querySeats })
       }),
       http.patch('/internal/users/current', async (info) => {

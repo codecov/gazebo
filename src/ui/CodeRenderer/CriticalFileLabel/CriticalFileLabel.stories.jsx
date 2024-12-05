@@ -1,6 +1,6 @@
 import CriticalFileLabel from '.'
 
-const Template = (args) => <CriticalFileLabel />
+const Template = (args) => <CriticalFileLabel {...args} />
 
 export const CriticalFileLabelDefault = Template.bind({})
 

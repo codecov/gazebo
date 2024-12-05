@@ -34,7 +34,7 @@ afterAll(() => {
 describe('DeactivatedRepo', () => {
   function setup(isCurrentUserPartOfOrg = true) {
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({
           data: {
             owner: {

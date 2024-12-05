@@ -48,7 +48,7 @@ describe('InstallationHelpBanner', () => {
     const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
-      graphql.query('IsSyncing', (info) => {
+      graphql.query('IsSyncing', () => {
         return HttpResponse.json({
           data: {
             me: {

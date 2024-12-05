@@ -153,7 +153,7 @@ describe('useBundleChartData', () => {
         queryVarMock(info.variables)
         return HttpResponse.json({ data: mockBundleTrendData })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )

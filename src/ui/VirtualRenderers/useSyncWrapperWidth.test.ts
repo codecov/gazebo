@@ -3,7 +3,7 @@ import { act, renderHook } from '@testing-library/react'
 import { useSyncWrapperWidth } from './useSyncWrapperWidth'
 
 class ResizeObserverMock {
-  callback = (x: any) => null
+  callback = (_x: any) => null
 
   constructor(callback: any) {
     this.callback = callback

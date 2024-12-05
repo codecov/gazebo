@@ -97,7 +97,7 @@ describe('useBranchCoverageMeasurements', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBranchCoverageMeasurements', (info) => {
+      graphql.query('GetBranchCoverageMeasurements', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

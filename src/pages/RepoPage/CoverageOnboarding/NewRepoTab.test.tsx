@@ -129,7 +129,7 @@ describe('NewRepoTab', () => {
     mockGetItem.mockReturnValue(null)
 
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({
           data: mockGetRepo(
             noUploadToken,
@@ -139,7 +139,7 @@ describe('NewRepoTab', () => {
           ),
         })
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: mockCurrentUser })
       }),
       graphql.mutation('storeEventMetric', (info) => {

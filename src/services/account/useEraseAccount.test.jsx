@@ -42,7 +42,7 @@ afterAll(() => {
 describe('useEraseAccount', () => {
   function setup() {
     server.use(
-      http.delete(`/internal/${provider}/${owner}/account-details/`, (info) => {
+      http.delete(`/internal/${provider}/${owner}/account-details/`, () => {
         return HttpResponse.json({})
       })
     )

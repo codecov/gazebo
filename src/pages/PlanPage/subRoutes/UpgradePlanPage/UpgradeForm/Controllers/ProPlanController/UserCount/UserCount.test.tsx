@@ -58,7 +58,7 @@ describe('UserCount', () => {
     }
   ) {
     server.use(
-      http.get('/internal/gh/codecov/account-details', (info) => {
+      http.get('/internal/gh/codecov/account-details', () => {
         return HttpResponse.json({
           activatedUserCount,
           activatedStudentCount,

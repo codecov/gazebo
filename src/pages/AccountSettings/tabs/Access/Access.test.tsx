@@ -127,13 +127,13 @@ describe('AccessTab', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('MySessions', (info) => {
+      graphql.query('MySessions', () => {
         return HttpResponse.json({ data: mockSessionInfo })
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: mockSignedInUser })
       }),
-      graphql.mutation('DeleteSession', (info) => {
+      graphql.mutation('DeleteSession', () => {
         return HttpResponse.json({ data: {} })
       })
     )

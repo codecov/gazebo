@@ -143,7 +143,7 @@ describe('PullBundleHeadTable', () => {
   ) {
     const user = userEvent.setup()
     server.use(
-      graphql.query('PullBundleHeadList', (info) => {
+      graphql.query('PullBundleHeadList', () => {
         if (isEmptyList) {
           return HttpResponse.json({ data: mockBranchBundlesEmpty })
         } else if (isUnknownError) {
@@ -152,7 +152,7 @@ describe('PullBundleHeadTable', () => {
 
         return HttpResponse.json({ data: mockBranchBundles })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )
@@ -249,7 +249,7 @@ describe('useTableData', () => {
     }
   ) {
     server.use(
-      graphql.query('PullBundleHeadList', (info) => {
+      graphql.query('PullBundleHeadList', () => {
         if (isEmptyList) {
           return HttpResponse.json({ data: mockBranchBundlesEmpty })
         } else if (isUnknownError) {
@@ -257,7 +257,7 @@ describe('useTableData', () => {
         }
         return HttpResponse.json({ data: mockBranchBundles })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )

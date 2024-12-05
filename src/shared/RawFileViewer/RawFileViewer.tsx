@@ -72,7 +72,6 @@ interface CodeRendererContentProps {
   content?: string | null
   path: string
   coverageData?: Dictionary<'H' | 'M' | 'P'>
-  stickyPadding: number
 }
 
 function CodeRendererContent({
@@ -80,7 +79,6 @@ function CodeRendererContent({
   content,
   path,
   coverageData,
-  stickyPadding,
 }: CodeRendererContentProps) {
   if (isUnsupportedFileType) {
     return (
@@ -114,7 +112,6 @@ interface RawFileViewerProps {
   title: string | React.ReactNode
   sticky?: boolean
   withKey?: boolean
-  stickyPadding?: number
   commit: string
   showFlagsSelect?: boolean
   showComponentsSelect?: boolean
@@ -126,7 +123,6 @@ function RawFileViewer({
   title,
   sticky = false,
   withKey = true,
-  stickyPadding,
   commit,
   showFlagsSelect = false,
   showComponentsSelect = false,
@@ -186,8 +182,6 @@ function RawFileViewer({
           content={content}
           path={path}
           coverageData={coverageData}
-          // just adding a fallback value here, as we'll be removing it with the move to the virtual file renderer
-          stickyPadding={stickyPadding ?? 0}
         />
       </div>
     </div>

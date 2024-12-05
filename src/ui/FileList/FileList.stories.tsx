@@ -243,7 +243,7 @@ function Example() {
                         {row.original.path}
                       </span>
                     </div>
-                    {/* @ts-expect-error */}
+                    {/* @ts-expect-error - A hasn't been typed yet */}
                     <A href="#" isExternal hook="commit full file">
                       View full file
                     </A>
@@ -272,7 +272,7 @@ function Example() {
                       baseCoverage={
                         coverage[Math.floor(Math.random() * 3) % 3] ?? null
                       }
-                      getTokenProps={({ token, key }) => ({})}
+                      getTokenProps={() => ({})}
                     />
                   )}
                 />

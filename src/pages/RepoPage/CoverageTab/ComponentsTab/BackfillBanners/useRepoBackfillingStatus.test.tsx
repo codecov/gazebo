@@ -70,7 +70,7 @@ const mockBackfillInProgress = {
 describe('BackfillComponentMemberships', () => {
   function setup(data = mockBackfillComplete) {
     server.use(
-      graphql.query('BackfillComponentMemberships', (info) => {
+      graphql.query('BackfillComponentMemberships', () => {
         return HttpResponse.json({ data })
       })
     )

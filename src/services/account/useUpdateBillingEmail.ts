@@ -23,7 +23,7 @@ export function useUpdateBillingEmail({ provider, owner }: UsePlanDataArgs) {
       }
       return Api.patch({ path, provider, body })
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries(['accountDetails'])
     },
   })

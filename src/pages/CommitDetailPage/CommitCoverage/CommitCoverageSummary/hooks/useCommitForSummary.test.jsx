@@ -153,7 +153,7 @@ afterAll(() => {
 describe('usePullForCompareSummary', () => {
   function setup() {
     server.use(
-      graphql.query('Commit', (info) => {
+      graphql.query('Commit', () => {
         return HttpResponse.json({
           data: {
             owner: { repository: { __typename: 'Repository', ...data } },
@@ -182,15 +182,12 @@ describe('usePullForCompareSummary', () => {
 
 describe('getPullDataForCompareSummary', () => {
   it('returns all values accordingly', () => {
-    const { compareWithParent, coverageAnalytics, parent, state, commitid } =
-      data?.commit
-
     const returnedData = getCommitDataForSummary({
-      compareWithParent,
-      totals: coverageAnalytics?.totals,
-      parent,
-      state,
-      commitid,
+      compareWithParent: data?.commit?.compareWithParent,
+      totals: data?.commit?.coverageAnalytics?.totals,
+      parent: data?.commit?.parent,
+      state: data?.commit?.state,
+      commitid: data?.commit?.commitid,
     })
     expect(returnedData).toEqual(successfulExpectedData)
   })

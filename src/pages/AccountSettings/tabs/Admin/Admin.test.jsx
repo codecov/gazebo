@@ -90,7 +90,7 @@ afterAll(() => {
 describe('AdminTab', () => {
   function setup() {
     server.use(
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: user })
       })
     )

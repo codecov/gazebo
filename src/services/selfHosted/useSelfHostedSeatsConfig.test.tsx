@@ -42,7 +42,7 @@ afterAll(() => {
 describe('useSelfHostedSeatsConfig', () => {
   function setup() {
     server.use(
-      graphql.query('Seats', (info) => {
+      graphql.query('Seats', () => {
         return HttpResponse.json({ data: mockData })
       })
     )

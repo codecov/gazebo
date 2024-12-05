@@ -102,7 +102,7 @@ interface SetupArgs {
 describe('ModulesTable', () => {
   function setup({ noAssets = false }: SetupArgs) {
     server.use(
-      graphql.query('BundleAssetModules', (info) => {
+      graphql.query('BundleAssetModules', () => {
         if (noAssets) {
           return HttpResponse.json({ data: mockMissingHeadReport })
         }

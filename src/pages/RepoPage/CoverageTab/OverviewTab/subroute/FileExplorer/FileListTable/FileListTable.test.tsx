@@ -178,7 +178,7 @@ describe('FileListTable', () => {
 
         return HttpResponse.json({ data: { owner: mockListData } })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       })
     )

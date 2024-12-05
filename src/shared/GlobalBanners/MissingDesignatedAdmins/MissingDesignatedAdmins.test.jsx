@@ -45,7 +45,7 @@ const wrapper =
 describe('MissingDesignatedAdmins', () => {
   function setup(overrideData) {
     server.use(
-      graphql.query('HasAdmins', (info) => {
+      graphql.query('HasAdmins', () => {
         if (overrideData) {
           return HttpResponse.json({ data: overrideData })
         }

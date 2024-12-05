@@ -124,10 +124,10 @@ interface SetupArgs {
 describe('useJSorTSPendoTracking', () => {
   function setup({ enablePendo = false, language = 'javascript' }: SetupArgs) {
     server.use(
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: mockUser })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(language) })
       }),
       graphql.query('DetailOwner', (info) => {

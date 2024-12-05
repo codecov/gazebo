@@ -84,7 +84,7 @@ describe('NameColumn', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('ImpactedFileComparison', (info) => {
+      graphql.query('ImpactedFileComparison', () => {
         return HttpResponse.json({ data: mockSingularImpactedFilesData })
       })
     )

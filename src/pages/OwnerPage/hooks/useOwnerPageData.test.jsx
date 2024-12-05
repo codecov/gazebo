@@ -36,7 +36,7 @@ afterAll(() => server.close())
 describe('useOwnerPageData', () => {
   function setup() {
     server.use(
-      graphql.query('OwnerPageData', (info) => {
+      graphql.query('OwnerPageData', () => {
         return HttpResponse.json({ data: { owner: mockOwner } })
       })
     )

@@ -91,7 +91,7 @@ describe('useUpdateCard', () => {
         server.use(
           http.patch(
             `/internal/${provider}/${owner}/account-details/update_payment`,
-            (info) => {
+            () => {
               return HttpResponse.json(accountDetails)
             }
           )
@@ -127,7 +127,7 @@ describe('useUpdateCard', () => {
         server.use(
           http.patch(
             `/internal/${provider}/${owner}/account-details/update_payment`,
-            (info) => {
+            () => {
               return HttpResponse.json(accountDetails)
             }
           )

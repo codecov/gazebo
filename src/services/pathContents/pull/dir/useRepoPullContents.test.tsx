@@ -141,7 +141,7 @@ describe('useRepoPullContents', () => {
     isUnknownPath = false,
   }) {
     server.use(
-      graphql.query('PullPathContents', (info) => {
+      graphql.query('PullPathContents', () => {
         if (invalidSchema) {
           return HttpResponse.json({ data: {} })
         } else if (repositoryNotFound) {

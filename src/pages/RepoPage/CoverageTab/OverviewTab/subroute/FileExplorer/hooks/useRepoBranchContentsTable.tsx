@@ -68,7 +68,7 @@ export function useRepoBranchContentsTable(sortItem?: {
 
   const urlPath = pathParam || ''
   // useLocationParams needs to be updated to have full types
-  // @ts-expect-error
+  // @ts-expect-error - type issues with useLocationParams
   const isSearching = !!params?.search
   const selectedDisplayType = determineDisplayType(
     queryParams?.displayType,
@@ -190,12 +190,12 @@ export function useRepoBranchContentsTable(sortItem?: {
     data: finalizedTableRows ?? [],
     indicationRange: branchData?.indicationRange,
     // useLocationParams needs to be updated to have full types
-    // @ts-expect-error
+    // @ts-expect-error - type issues with useLocationParams
     hasFlagsSelected: params?.flags ? params?.flags?.length > 0 : false,
-    // @ts-expect-error
+    // @ts-expect-error - type issues with useLocationParams
     hasComponentsSelected: params?.components
       ? // useLocationParams needs to be updated to have full types
-        // @ts-expect-error
+        // @ts-expect-error - type issues with useLocationParams
         params?.components?.length > 0
       : false,
     isLoading,

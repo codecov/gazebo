@@ -113,10 +113,10 @@ describe('PriceCallout', () => {
     }
 
     server.use(
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({ data: { owner: { availablePlans } } })
       }),
-      http.get('internal/gh/codecov/account-details/', (info) => {
+      http.get('internal/gh/codecov/account-details/', () => {
         return HttpResponse.json(mockAccountDetails)
       })
     )

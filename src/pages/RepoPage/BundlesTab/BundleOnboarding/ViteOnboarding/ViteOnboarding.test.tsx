@@ -77,10 +77,10 @@ describe('ViteOnboarding', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockGetRepo })
       }),
-      graphql.query('GetOrgUploadToken', (info) => {
+      graphql.query('GetOrgUploadToken', () => {
         return HttpResponse.json({
           data: mockGetOrgUploadToken(hasOrgUploadToken),
         })

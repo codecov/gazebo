@@ -43,7 +43,7 @@ describe('useMyContexts', () => {
           return HttpResponse.json({})
         }
 
-        const orgList = !!info.variables?.after ? orgList2 : orgList1
+        const orgList = info.variables?.after ? orgList2 : orgList1
         const hasNextPage = info.variables?.after ? false : true
         const endCursor = info.variables?.after ? 'second' : 'first'
 

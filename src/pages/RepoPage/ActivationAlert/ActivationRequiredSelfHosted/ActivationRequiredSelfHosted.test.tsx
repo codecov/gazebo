@@ -44,7 +44,7 @@ afterAll(() => {
 describe('ActivationRequiredSelfHosted', () => {
   function setup(isAdmin: boolean, seatsUsed: number, seatsLimit: number) {
     server.use(
-      http.get('/internal/users/current', (info) =>
+      http.get('/internal/users/current', () =>
         HttpResponse.json({
           isAdmin,
           email: 'user@example.com',
@@ -54,7 +54,7 @@ describe('ActivationRequiredSelfHosted', () => {
           activated: true,
         })
       ),
-      graphql.query('Seats', (info) => {
+      graphql.query('Seats', () => {
         return HttpResponse.json({
           data: {
             config: {

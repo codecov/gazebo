@@ -55,7 +55,7 @@ describe('ReposTableTeam', () => {
       graphql.query('GetReposTeam', (info) => {
         mockApiVars(info.variables)
 
-        if (!!info.variables.after) {
+        if (info.variables.after) {
           fetchNextPage(info.variables.after)
         }
 

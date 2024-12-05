@@ -70,7 +70,7 @@ describe('UpdateButton', () => {
     }
   ) {
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, (info) => {
+      http.get(`/internal/gh/codecov/account-details/`, () => {
         if (planValue === Plans.USERS_BASIC) {
           return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_TEAMM) {

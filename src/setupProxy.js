@@ -1,6 +1,6 @@
-const { createProxyMiddleware } = require('http-proxy-middleware')
+import { createProxyMiddleware } from 'http-proxy-middleware'
 
-module.exports = function (app) {
+function runProxy(app) {
   if (process.env.PROXY_TO) {
     app.use(
       '/internal',
@@ -18,3 +18,5 @@ module.exports = function (app) {
     )
   }
 }
+
+export default runProxy

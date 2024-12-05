@@ -87,14 +87,14 @@ interface SetupArgs {
 describe('FilesChangedTab', () => {
   function setup({ planValue, isPrivate = false }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         if (planValue === 'team') {
           return HttpResponse.json({ data: mockTeamTier })
         }
 
         return HttpResponse.json({ data: mockProTier })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
       })
     )

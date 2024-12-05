@@ -81,7 +81,7 @@ describe('useBranch', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

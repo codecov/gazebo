@@ -71,7 +71,7 @@ afterAll(() => {
 describe('useUsers', () => {
   function setup() {
     server.use(
-      http.get(`/internal/:provider/:owner/users`, (info) => {
+      http.get(`/internal/:provider/:owner/users`, () => {
         return HttpResponse.json(users)
       })
     )

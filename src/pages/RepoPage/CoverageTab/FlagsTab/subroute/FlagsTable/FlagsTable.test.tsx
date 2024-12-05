@@ -230,10 +230,10 @@ describe('FlagsTable', () => {
 
         return HttpResponse.json({ data: mockFlagMeasurements({}) })
       }),
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockGetRepo({ isAdmin }) })
       }),
-      graphql.query('RepoConfig', (info) =>
+      graphql.query('RepoConfig', () =>
         HttpResponse.json({ data: mockRepoConfig })
       )
     )

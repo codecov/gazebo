@@ -37,7 +37,7 @@ afterAll(() => {
 describe('useGenerateUserToken', () => {
   function setup() {
     server.use(
-      graphql.mutation(`CreateUserToken`, (info) => {
+      graphql.mutation(`CreateUserToken`, () => {
         return HttpResponse.json({
           data: {
             createUserToken: {

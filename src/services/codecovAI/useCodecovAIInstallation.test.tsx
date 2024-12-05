@@ -46,7 +46,7 @@ interface SetupArgs {
 describe('useCodecovAIInstallation', () => {
   function setup({ isUnsuccessfulParseError = false }: SetupArgs) {
     server.use(
-      graphql.query('GetCodecovAIAppInstallInfo', (info) => {
+      graphql.query('GetCodecovAIAppInstallInfo', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }
@@ -76,7 +76,7 @@ describe('useCodecovAIInstallation', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null

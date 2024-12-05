@@ -31,7 +31,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-let testLocation: { pathname: string; search: string } = {
+const testLocation: { pathname: string; search: string } = {
   pathname: '',
   search: '',
 }
@@ -255,11 +255,11 @@ describe('useUserAccessGate', () => {
     const mockMutationVariables = vi.fn()
 
     server.use(
-      http.get('/internal/user', (info) => {
+      http.get('/internal/user', () => {
         return HttpResponse.json(internalUser)
       }),
 
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: user })
       }),
       graphql.mutation('updateDefaultOrganization', async (info) => {

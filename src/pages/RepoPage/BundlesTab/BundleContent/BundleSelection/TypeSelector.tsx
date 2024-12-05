@@ -53,7 +53,7 @@ export const TypeSelector = forwardRef((_, ref) => {
       <span className="max-w-64 text-sm">
         <MultiSelect
           ref={ref}
-          // @ts-ignore
+          // @ts-expect-error - MultiSelect hasn't been typed yet
           disabled={bundleData?.bundles?.length === 0 || bundlesIsFetching}
           hook="bundle-type-selector"
           ariaName="bundle tab types selector"

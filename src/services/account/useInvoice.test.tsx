@@ -41,7 +41,7 @@ afterAll(() => {
 describe('useInvoice', () => {
   function setup(hasError = false) {
     server.use(
-      graphql.query('Invoice', (info) => {
+      graphql.query('Invoice', () => {
         if (hasError) {
           return HttpResponse.json({ data: {} })
         }

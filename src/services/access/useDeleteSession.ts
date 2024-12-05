@@ -26,7 +26,7 @@ export function useDeleteSession({ provider }: UseDeleteSessionArgs) {
         query,
         variables,
         mutationPath: 'deleteSession',
-      }).then((res) => {
+      }).then(() => {
         queryClient.invalidateQueries(['sessions'])
       })
     },

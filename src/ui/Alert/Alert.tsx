@@ -40,7 +40,7 @@ export function variantToIcon(
   variant?: string | null,
   customIconName?: keyof OutlineIconCollection | null
 ) {
-  let className = 'float-left -mt-1 mr-2 align-middle'
+  const className = 'float-left -mt-1 mr-2 align-middle'
   switch (variant) {
     case AlertOptions.ERROR:
       return (

@@ -135,7 +135,7 @@ describe('useRepoBranchContentsTable', () => {
 
         return HttpResponse.json({ data: mockBranchContentData })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       })
     )

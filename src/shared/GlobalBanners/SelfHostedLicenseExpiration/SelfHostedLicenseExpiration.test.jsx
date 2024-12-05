@@ -52,7 +52,7 @@ describe('SelfHostedLicenseExpiration', () => {
     const user = userEvent.setup({ delay: null })
 
     server.use(
-      graphql.query('SelfHostedSeatsAndLicense', (info) => {
+      graphql.query('SelfHostedSeatsAndLicense', () => {
         if (isUndefined) {
           return HttpResponse.json({ data: { config: undefined } })
         }

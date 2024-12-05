@@ -50,7 +50,7 @@ describe('OktaConfigForm', () => {
     const mutate = vi.fn()
 
     server.use(
-      graphql.query('GetOktaConfig', (info) => {
+      graphql.query('GetOktaConfig', () => {
         return HttpResponse.json({
           data: {
             owner: {

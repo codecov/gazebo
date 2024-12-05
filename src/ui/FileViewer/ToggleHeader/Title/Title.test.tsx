@@ -203,7 +203,7 @@ describe('TitleFlags', () => {
   interface SetupArgs {
     isIntersecting?: boolean
     noNextPage?: boolean
-    backfillData?: {}
+    backfillData?: object
   }
 
   function setup(
@@ -234,7 +234,7 @@ describe('TitleFlags', () => {
 
         return HttpResponse.json({ data: mockFirstResponse })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: backfillData })
       })
     )

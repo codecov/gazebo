@@ -38,12 +38,12 @@ afterAll(() => {
 describe('OktaAccess', () => {
   function setup({ isAdmin = false } = {}) {
     server.use(
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
           data: { owner: { username: 'codecov', isAdmin } },
         })
       }),
-      graphql.query('GetOktaConfig', (info) => {
+      graphql.query('GetOktaConfig', () => {
         return HttpResponse.json({
           data: {
             owner: {

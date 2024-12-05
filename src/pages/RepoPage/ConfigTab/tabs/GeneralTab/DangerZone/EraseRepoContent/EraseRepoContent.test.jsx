@@ -83,7 +83,7 @@ describe('EraseRepoContent', () => {
     mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      graphql.mutation('EraseRepository', async (info) => {
+      graphql.mutation('EraseRepository', async () => {
         mutate()
         if (isLoading) {
           // https://mswjs.io/docs/api/delay/

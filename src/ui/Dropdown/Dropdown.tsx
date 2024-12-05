@@ -11,8 +11,13 @@ import Icon from 'ui/Icon'
 
 const DropdownContext = React.createContext({ isOpen: false })
 
-interface DropdownProps
-  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root> {}
+// this interface is being temporarily commented out, if we need to add custom
+// props to DropdownProps, we can uncomment it and remove the type below
+// interface DropdownProps
+//   extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root> {}
+type DropdownProps = React.ComponentPropsWithoutRef<
+  typeof DropdownMenuPrimitive.Root
+>
 
 const Root = ({ ...props }: DropdownProps) => {
   const { defaultOpen = false } = props
@@ -49,10 +54,11 @@ interface TriggerProps
   extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>,
     VariantProps<typeof trigger> {}
 
+// TODO: remove forwardRef
 const Trigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
   TriggerProps
->(({ children, className, ...props }, forwardedRef) => {
+>(({ children, className, ...props }, _forwardedRef) => {
   const { isOpen } = React.useContext(DropdownContext)
 
   // below removes stray lingering outline after dropdown is closed

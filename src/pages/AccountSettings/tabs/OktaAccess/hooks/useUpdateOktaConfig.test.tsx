@@ -63,14 +63,14 @@ describe('useUpdateOktaConfig', () => {
     mockedToastNotification.mockReturnValue(addToast)
 
     server.use(
-      graphql.mutation(`SaveOktaConfig`, (info) => {
+      graphql.mutation(`SaveOktaConfig`, () => {
         return HttpResponse.json({ data: response })
       })
     )
   }
 
   describe('when calling the mutation', () => {
-    let consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     afterAll(() => {
       consoleSpy.mockRestore()

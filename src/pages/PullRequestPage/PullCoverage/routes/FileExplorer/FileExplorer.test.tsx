@@ -252,7 +252,7 @@ describe('FileExplorer', () => {
 
     // Mock so the components selector will be populated
     server.use(
-      graphql.query('PullComponentsSelector', (info) => {
+      graphql.query('PullComponentsSelector', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -277,7 +277,7 @@ describe('FileExplorer', () => {
 
     // Mock so the flags selector will be populated
     server.use(
-      graphql.query('PullFlagsSelect', (info) => {
+      graphql.query('PullFlagsSelect', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -298,18 +298,18 @@ describe('FileExplorer', () => {
           },
         })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillData })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({
           data: { owner: { plan: { tierName: TierNames.PRO } } },
         })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettings })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: {
             owner: {

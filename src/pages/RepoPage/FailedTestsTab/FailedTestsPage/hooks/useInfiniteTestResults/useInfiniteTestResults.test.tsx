@@ -139,7 +139,7 @@ describe('useInfiniteTestResults', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetTestResults', (info) => {
+      graphql.query('GetTestResults', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -236,7 +236,7 @@ describe('useInfiniteTestResults', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -272,7 +272,7 @@ describe('useInfiniteTestResults', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -308,7 +308,7 @@ describe('useInfiniteTestResults', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null

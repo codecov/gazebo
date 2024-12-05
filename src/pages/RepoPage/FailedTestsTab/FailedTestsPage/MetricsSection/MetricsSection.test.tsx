@@ -110,12 +110,12 @@ describe('MetricsSection', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetTestResultsAggregates', (info) => {
+      graphql.query('GetTestResultsAggregates', () => {
         return HttpResponse.json({
           data: mockAggResponse(planValue, isPrivate),
         })
       }),
-      graphql.query('GetFlakeAggregates', (info) => {
+      graphql.query('GetFlakeAggregates', () => {
         return HttpResponse.json({ data: mockFlakeAggResponse })
       })
     )

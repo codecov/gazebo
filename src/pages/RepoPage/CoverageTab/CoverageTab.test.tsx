@@ -94,10 +94,10 @@ interface SetupArgs {
 describe('CoverageTab', () => {
   function setup({ tierName = TierNames.PRO }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({ data: { owner: { plan: { tierName } } } })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettingsTeam })
       })
     )

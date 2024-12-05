@@ -94,7 +94,7 @@ const mockData = {
 describe('usePrefetchBranchFileEntry', () => {
   function setup() {
     server.use(
-      graphql.query('CoverageForFile', (info) => {
+      graphql.query('CoverageForFile', () => {
         return HttpResponse.json({ data: mockData })
       })
     )

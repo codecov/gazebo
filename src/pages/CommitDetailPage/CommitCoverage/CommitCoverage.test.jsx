@@ -420,17 +420,17 @@ describe('CommitCoverage', () => {
     })
 
     server.use(
-      graphql.query('Commit', (info) => {
+      graphql.query('Commit', () => {
         if (hasErroredUploads) {
           return HttpResponse.json({ data: mockErroredUploads })
         }
 
         return HttpResponse.json({ data: mockCommitData })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettingsTeamData(isPrivate) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview({
             coverageEnabled,
@@ -439,25 +439,25 @@ describe('CommitCoverage', () => {
           }),
         })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({ data: mockOwnerTier(tierName) })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockRepoBackfilledData })
       }),
-      graphql.query('CommitErrors', (info) => {
+      graphql.query('CommitErrors', () => {
         return HttpResponse.json({ data: mockCommitErrors(hasCommitErrors) })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: mockOwnerData })
       }),
-      graphql.query('CompareTotals', (info) => {
+      graphql.query('CompareTotals', () => {
         return HttpResponse.json({ data: mockCompareTotals })
       }),
-      graphql.query('CommitComponents', (info) => {
+      graphql.query('CommitComponents', () => {
         return HttpResponse.json({ data: mockCommitComponentData })
       }),
-      graphql.query('CommitPageData', (info) => {
+      graphql.query('CommitPageData', () => {
         return HttpResponse.json({
           data: mockCommitPageData(
             hasCommitPageMissingCommitDataError,
@@ -466,7 +466,7 @@ describe('CommitCoverage', () => {
           ),
         })
       }),
-      graphql.query('GetRepoRateLimitStatus', (info) => {
+      graphql.query('GetRepoRateLimitStatus', () => {
         return HttpResponse.json({
           data: mockRepoRateLimitStatus({ isGithubRateLimited }),
         })

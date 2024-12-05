@@ -152,7 +152,7 @@ interface UseCompareTotalsTeamArgs {
   owner: string
   repo: string
   pullId: string
-  filters?: {}
+  filters?: object
   opts?: UseQueryOptions<z.infer<typeof PullSchema> | null>
 }
 
@@ -213,7 +213,7 @@ export function usePullCompareTotalsTeam({
               detail: (
                 <p>
                   Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
+                  {/* @ts-expect-error - A hasn't been typed yet */}
                   <A to={{ pageName: 'membersTab' }}>click here </A> to activate
                   your account.
                 </p>

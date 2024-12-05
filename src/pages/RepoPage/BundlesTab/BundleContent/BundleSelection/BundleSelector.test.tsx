@@ -128,7 +128,7 @@ describe('BundleSelector', () => {
     const mockFilterReset = vi.fn()
 
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         if (nullOverview) {
           return HttpResponse.json({ data: { owner: null } })
         }
@@ -142,7 +142,7 @@ describe('BundleSelector', () => {
           },
         })
       }),
-      graphql.query('BranchBundlesNames', (info) => {
+      graphql.query('BranchBundlesNames', () => {
         if (missingHeadReport) {
           return HttpResponse.json({ data: mockBadBundles })
         }

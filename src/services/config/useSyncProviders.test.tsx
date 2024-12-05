@@ -40,7 +40,7 @@ interface SetupArgs {
 describe('useSyncProviders', () => {
   function setup({ syncProviders, hasParsingError }: SetupArgs) {
     server.use(
-      graphql.query('GetSyncProviders', (info) => {
+      graphql.query('GetSyncProviders', () => {
         if (hasParsingError) {
           return HttpResponse.json({ data: { idk: true } })
         }

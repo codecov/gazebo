@@ -78,7 +78,7 @@ describe('useRepoSettingsTeam', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {

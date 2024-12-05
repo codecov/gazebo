@@ -61,7 +61,7 @@ const mockInvoice = ({ status = 'paid' } = {}) => {
         description: null,
         amount: 72000,
         currency: 'usd',
-        // @ts-expect-error
+        // @ts-expect-error - only using properties that are present for the test
         period: { end: null, start: null },
         value: null,
         quantity: 1,
@@ -127,7 +127,7 @@ describe('Invoice Header', () => {
       render(
         <InvoiceHeader
           invoice={mockInvoice()}
-          // @ts-expect-error
+          // @ts-expect-error - using reduced types for testing
           accountDetails={accountDetails()}
         />,
         {
@@ -166,7 +166,7 @@ describe('Invoice Header', () => {
       render(
         <InvoiceHeader
           invoice={mockInvoice({ status: 'draft' })}
-          // @ts-expect-error
+          // @ts-expect-error - using reduced types for testing
           accountDetails={accountDetails()}
         />,
         {
@@ -184,7 +184,7 @@ describe('Invoice Header', () => {
       render(
         <InvoiceHeader
           invoice={mockInvoice()}
-          // @ts-expect-error
+          // @ts-expect-error - using reduced types for testing
           accountDetails={accountDetails({ collectionMethod: 'send_invoice' })}
         />,
         {

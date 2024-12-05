@@ -247,12 +247,11 @@ afterAll(() => {
 interface SetupArgs {
   pendingCommit?: boolean
   noCoveredFiles?: boolean
-  temp?: string
 }
 
 describe('FilesChangedTableTeam', () => {
   function setup(
-    { pendingCommit = false, noCoveredFiles = false, temp }: SetupArgs = {
+    { pendingCommit = false, noCoveredFiles = false }: SetupArgs = {
       pendingCommit: false,
       noCoveredFiles: false,
     }

@@ -36,7 +36,7 @@ afterAll(() => server.close())
 describe('usePlanPageData', () => {
   function setup({ invalidSchema = false }) {
     server.use(
-      graphql.query('PlanPageData', (info) => {
+      graphql.query('PlanPageData', () => {
         if (invalidSchema) {
           return HttpResponse.json({ data: {} })
         }

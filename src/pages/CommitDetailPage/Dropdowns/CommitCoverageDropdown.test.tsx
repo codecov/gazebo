@@ -162,7 +162,7 @@ describe('CommitCoverageDropdown', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('CommitDropdownSummary', (info) => {
+      graphql.query('CommitDropdownSummary', () => {
         if (noData) {
           return HttpResponse.json({ data: mockNoData })
         } else if (comparisonError) {

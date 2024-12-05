@@ -161,7 +161,7 @@ describe('CommitDetailPage', () => {
     }
   ) {
     server.use(
-      graphql.query('CommitPageData', (info) => {
+      graphql.query('CommitPageData', () => {
         if (notFoundCommit) {
           return HttpResponse.json({ data: mockNotFoundCommit })
         }
@@ -173,13 +173,13 @@ describe('CommitDetailPage', () => {
           }),
         })
       }),
-      graphql.query('CommitBADropdownSummary', (info) => {
+      graphql.query('CommitBADropdownSummary', () => {
         return HttpResponse.json({ data: mockBundleDropdownSummary })
       }),
-      graphql.query('CommitDropdownSummary', (info) => {
+      graphql.query('CommitDropdownSummary', () => {
         return HttpResponse.json({ data: mockCoverageDropdownSummary })
       }),
-      graphql.query('CommitComponents', (info) => {
+      graphql.query('CommitComponents', () => {
         return HttpResponse.json({ data: { owner: null } })
       })
     )

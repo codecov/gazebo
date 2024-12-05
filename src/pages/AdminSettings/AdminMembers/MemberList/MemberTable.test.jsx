@@ -133,7 +133,7 @@ describe('MemberTable', () => {
 
         return HttpResponse.json({})
       }),
-      graphql.query('SelfHostedSettings', (req, res, ctx) => {
+      graphql.query('SelfHostedSettings', () => {
         if (seatsOpen) {
           return HttpResponse.json({ data: mockOpenSeatsTaken })
         }

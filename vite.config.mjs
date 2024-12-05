@@ -65,9 +65,9 @@ export default defineConfig((config) => {
       sourcemap: runSentryPlugin,
       rollupOptions: {
         output: {
-          entryFileNames: 'assets/[name].[hash:22].js',
-          chunkFileNames: 'assets/[name].[hash:22].js',
-          assetFileNames: 'assets/[name].[hash:22][extname]',
+          entryFileNames: 'assets/[name].[hash:21].js',
+          chunkFileNames: 'assets/[name].[hash:21].js',
+          assetFileNames: 'assets/[name].[hash:21][extname]',
           manualChunks: {
             vendor_react: ['react', 'react-dom', 'react/jsx-runtime'],
             vendor_react_router: [

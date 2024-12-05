@@ -8,7 +8,7 @@ vi.mock('./hooks')
 
 describe('TruncatedMessage', () => {
   function setup({ canTruncate = false }) {
-    // @ts-expect-error
+    // @ts-expect-error - mocking out the hook
     useTruncation.mockImplementation(() => ({
       ref: () => {},
       canTruncate,

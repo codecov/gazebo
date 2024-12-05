@@ -108,7 +108,7 @@ const AccountUsageAlert = ({
         <Alert.Title>Your account is using 100% of its seats</Alert.Title>
         <Alert.Description>
           You might want to add more seats for your team to ensure availability.{' '}
-          {/* @ts-expect-error */}
+          {/* @ts-expect-error - A hasn't been typed yet */}
           <A to={{ pageName: 'enterpriseSupport' }}>Contact support</A> to
           update your plan.
         </Alert.Description>
@@ -120,7 +120,7 @@ const AccountUsageAlert = ({
         <Alert.Title>Your account is using 90% of its seats</Alert.Title>
         <Alert.Description>
           You might want to add more seats for your team to ensure availability.{' '}
-          {/* @ts-expect-error */}
+          {/* @ts-expect-error - A hasn't been typed yet */}
           <A to={{ pageName: 'enterpriseSupport' }}>Contact support</A> to
           update your plan.
         </Alert.Description>

@@ -47,7 +47,7 @@ afterAll(() => {
 describe('useAccountDetails', () => {
   function setup() {
     server.use(
-      http.get(`/internal/${provider}/${owner}/account-details/`, (info) => {
+      http.get(`/internal/${provider}/${owner}/account-details/`, () => {
         return HttpResponse.json(accountDetailsObject)
       })
     )

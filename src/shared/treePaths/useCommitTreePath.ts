@@ -5,7 +5,7 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import { getFilePathParts } from 'shared/utils/url'
 
-function getTreeLocation(paths: string[], location: string, index: number) {
+function getTreeLocation(paths: string[], index: number) {
   return dropRight(paths, paths.length - index - 1).join('/')
 }
 
@@ -37,7 +37,7 @@ export function useCommitTreePaths() {
       pageName: 'commitTreeView',
       text: location,
       options: {
-        tree: getTreeLocation(filePaths, location, index),
+        tree: getTreeLocation(filePaths, index),
         commit,
         queryParams,
       },

@@ -52,16 +52,13 @@ describe('EmailAddress', () => {
     const mutate = vi.fn()
 
     server.use(
-      http.get('/internal/gh/codecov/account-details', (info) => {
+      http.get('/internal/gh/codecov/account-details', () => {
         return HttpResponse.json(mockAccountDetails)
       }),
-      http.patch(
-        '/internal/gh/codecov/account-details/update_email',
-        (info) => {
-          mutate()
-          return HttpResponse.json({})
-        }
-      )
+      http.patch('/internal/gh/codecov/account-details/update_email', () => {
+        mutate()
+        return HttpResponse.json({})
+      })
     )
 
     return { user, mutate }
@@ -136,7 +133,7 @@ describe('EmailAddress', () => {
 
         const input = await screen.findByPlaceholderText('Your email')
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for (let _ of testEmail) {
+        for (const _ of testEmail) {
           await user.type(input, '{backspace}')
         }
         await user.type(input, 'another-email@gmail.com')
@@ -176,7 +173,7 @@ describe('EmailAddress', () => {
 
       const input = await screen.findByPlaceholderText('Your email')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      for (let _ of testEmail) {
+      for (const _ of testEmail) {
         await user.type(input, '{backspace}')
       }
 
@@ -198,7 +195,7 @@ describe('EmailAddress', () => {
 
       const input = await screen.findByPlaceholderText('Your email')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      for (let _ of testEmail) {
+      for (const _ of testEmail) {
         await user.type(input, '{backspace}')
       }
       await user.type(input, 'rand123tasdf')

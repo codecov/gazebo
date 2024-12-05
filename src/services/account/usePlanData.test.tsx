@@ -59,7 +59,7 @@ afterAll(() => {
 describe('usePlanData', () => {
   function setup({ trialData }: { trialData: any }) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({ data: { owner: { ...trialData } } })
       })
     )

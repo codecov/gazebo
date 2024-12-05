@@ -76,7 +76,7 @@ describe('RepoATSInfo', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('RepoATSInfo', (info) => {
+      graphql.query('RepoATSInfo', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -145,7 +145,7 @@ describe('RepoATSInfo', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -180,7 +180,7 @@ describe('RepoATSInfo', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -215,7 +215,7 @@ describe('RepoATSInfo', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null

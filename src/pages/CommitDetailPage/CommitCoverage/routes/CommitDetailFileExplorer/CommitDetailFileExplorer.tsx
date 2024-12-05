@@ -31,7 +31,7 @@ function CommitDetailFileExplorer() {
         </div>
         <div className="flex gap-2">
           <SearchField
-            //@ts-expect-error
+            // @ts-expect-error - SearchField hasn't been typed yet
             dataMarketing="commit-files-search"
             placeholder="Search for files"
             searchValue={params?.search}

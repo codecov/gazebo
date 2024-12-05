@@ -54,7 +54,7 @@ interface SetupArgs {
 describe('useSaveTermsAgreement', () => {
   function setup({ apiError = false }: SetupArgs = { apiError: false }) {
     server.use(
-      graphql.mutation('SigningTermsAgreement', (info) => {
+      graphql.mutation('SigningTermsAgreement', () => {
         if (apiError) {
           return HttpResponse.json(
             { errors: [{ message: 'error' }] },
@@ -63,7 +63,7 @@ describe('useSaveTermsAgreement', () => {
         }
         return HttpResponse.json({})
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: { me: { username: '123' } } })
       })
     )

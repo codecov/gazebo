@@ -43,7 +43,7 @@ interface SetupArgs {
 describe('useLoginProviders', () => {
   function setup({ loginProviders, hasParsingError }: SetupArgs) {
     server.use(
-      graphql.query('GetLoginProviders', (info) => {
+      graphql.query('GetLoginProviders', () => {
         if (hasParsingError) {
           return HttpResponse.json({ data: { idk: true } })
         }

@@ -70,7 +70,7 @@ describe('BranchDirEntry', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('BranchContents', (info) => {
+      graphql.query('BranchContents', () => {
         return HttpResponse.json({ data: mockData })
       })
     )
