@@ -43,7 +43,7 @@ function GitHubActions() {
       (!previouslyGeneratedOrgToken && orgUploadToken))
 
   useEffect(() => {
-    // Only set the value if it hasn't been set before
+    // Only set this on initial render
     if (previouslyGeneratedOrgToken.current === undefined) {
       previouslyGeneratedOrgToken.current = orgUploadToken
     }
@@ -206,7 +206,6 @@ jobs:
 `,
     },
   }
-
   return (
     <div className="flex flex-col gap-5">
       <OutputCoverageStep
@@ -219,9 +218,6 @@ jobs:
         previouslyGeneratedOrgToken={
           previouslyGeneratedOrgToken.current !== undefined
         }
-        // uploadToken={uploadToken}
-        // isUsingGlobalToken={isUsingGlobalToken}
-        // handleValueChange={handleValueChange}
       />
       <WorkflowYMLStep
         framework={framework}

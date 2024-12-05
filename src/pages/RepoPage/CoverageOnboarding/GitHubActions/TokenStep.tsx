@@ -104,14 +104,12 @@ function GitHubOrgSecretExample({
 
 interface OrgOrRepoTokenSelectorProps {
   isUsingGlobalToken: boolean
-  orgUploadToken?: string | null
   handleValueChange: (value: string) => void
   previouslyGeneratedOrgToken: boolean
 }
 
 function OrgOrRepoTokenSelector({
   isUsingGlobalToken,
-  orgUploadToken,
   handleValueChange,
   previouslyGeneratedOrgToken,
 }: OrgOrRepoTokenSelectorProps) {
@@ -228,9 +226,6 @@ const AddTokenStep = ({
 }
 
 interface TokenStepSectionProps {
-  // uploadToken: string
-  // isUsingGlobalToken: boolean
-  // handleValueChange: (value: string) => void
   previouslyGeneratedOrgToken: boolean
 }
 
@@ -258,6 +253,10 @@ function TokenStepSection({
   const handleValueChange = (value: string) => {
     setIsUsingGlobalToken(value === TOKEN_OPTIONS.GLOBAL)
   }
+  // console.log('qwerty: ', isUploadTokenRequired && previouslyGeneratedOrgToken)
+  // console.log('orgUploadToken: ', orgUploadToken)
+  // console.log('isUsingGlobalToken && orgUploadToken: ', isUsingGlobalToken && orgUploadToken)
+  // console.log('!isUsingGlobalToken && repoUploadToken: ', !isUsingGlobalToken && repoUploadToken)
   return (
     <>
       {isUploadTokenRequired && previouslyGeneratedOrgToken ? (
@@ -277,7 +276,6 @@ function TokenStepSection({
               {(!previouslyGeneratedOrgToken || !isUploadTokenRequired) && (
                 <OrgOrRepoTokenSelector
                   isUsingGlobalToken={isUsingGlobalToken}
-                  orgUploadToken={orgUploadToken}
                   handleValueChange={handleValueChange}
                   previouslyGeneratedOrgToken={previouslyGeneratedOrgToken}
                 />
