@@ -167,7 +167,7 @@ describe('TokenStepSection', () => {
     expect(screen.getByText(/-optional/)).toBeInTheDocument()
   })
 
-  it.only('does not show org token when it is not generated', async () => {
+  it('does not show org token when it is not generated', async () => {
     setup({})
     mocks.useOrgUploadToken.mockImplementation(() => ({
       data: null,

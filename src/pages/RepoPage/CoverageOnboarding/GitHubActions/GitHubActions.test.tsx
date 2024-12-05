@@ -6,6 +6,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { ThemeContextProvider } from 'shared/ThemeContext'
+
 import GitHubActions from './GitHubActions'
 
 const mocks = vi.hoisted(() => ({
@@ -45,6 +47,31 @@ const mockGetOrgUploadToken = {
   },
 }
 
+const mockGetUploadTokenRequired = {
+  owner: {
+    orgUploadToken: 'org-token-asdf-1234',
+    uploadTokenRequired: true,
+    isAdmin: true,
+  },
+}
+
+const mockDetailOwner = {
+  owner: {
+    ownerid: '1234',
+    username: 'codecov',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/1234?v=4',
+    isCurrentUserPartOfOrg: true,
+    isAdmin: true,
+  },
+}
+
+const mockRegenerateOrgUploadToken = {
+  regenerateOrgUploadToken: {
+    error: null,
+    orgUploadToken: 'new-org-token-asdf-1234',
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -58,14 +85,16 @@ const server = setupServer()
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new']}>
-      <Route
-        path={[
-          '/:provider/:owner/:repo/new',
-          '/:provider/:owner/:repo/new/other-ci',
-        ]}
-      >
-        <Suspense fallback={null}>{children}</Suspense>
-      </Route>
+      <ThemeContextProvider>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/new',
+            '/:provider/:owner/:repo/new/other-ci',
+          ]}
+        >
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+      </ThemeContextProvider>
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -104,12 +133,48 @@ describe('GitHubActions', () => {
       graphql.mutation('storeEventMetric', (info) => {
         mockMetricMutationVariables(info?.variables)
         return HttpResponse.json({ data: { storeEventMetric: null } })
+      }),
+      graphql.query('GetUploadTokenRequired', () => {
+        return HttpResponse.json({ data: mockGetUploadTokenRequired })
+      }),
+      graphql.query('DetailOwner', () => {
+        return HttpResponse.json({ data: mockDetailOwner })
+      }),
+      graphql.mutation('regenerateOrgUploadToken', () => {
+        return HttpResponse.json({ data: mockRegenerateOrgUploadToken })
       })
     )
     const user = userEvent.setup()
 
     return { mockMetricMutationVariables, user }
   }
+
+  describe('when Go is selected', () => {
+    it('updates example yaml', async () => {
+      const { user } = setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const selector = await screen.findByRole('combobox')
+      expect(selector).toBeInTheDocument()
+
+      await user.click(selector)
+
+      const go = await screen.findByText('Go')
+      expect(go).toBeInTheDocument()
+
+      await user.click(go)
+
+      const trigger = await screen.findByText((content) =>
+        content.startsWith('Your final GitHub Actions workflow')
+      )
+      expect(trigger).toBeInTheDocument()
+
+      await user.click(trigger)
+
+      const yaml = await screen.findByText(/go mod download/)
+      expect(yaml).toBeInTheDocument()
+    })
+  })
 
   describe('feedback CTA', () => {
     beforeEach(() => setup({}))
@@ -146,10 +211,9 @@ describe('GitHubActions', () => {
 
   describe('user copies text', () => {
     it('stores codecov metric', async () => {
-      const { mockMetricMutationVariables } = setup({})
+      const { mockMetricMutationVariables } = setup({ hasOrgUploadToken: true })
       const user = userEvent.setup()
       render(<GitHubActions />, { wrapper })
-
       const copyCommands = await screen.findAllByTestId(
         'clipboard-code-snippet'
       )
