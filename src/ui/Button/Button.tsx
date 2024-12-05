@@ -107,7 +107,7 @@ function pickVariant(
 export interface AppLinkProps {
   pageName: string
   text?: string
-  options?: Object
+  options?: object
   activeClassName?: string
   showExternalIcon?: boolean
   type?: 'submit' | 'button' | 'reset'
