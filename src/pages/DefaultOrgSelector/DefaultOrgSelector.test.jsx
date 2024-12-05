@@ -189,6 +189,7 @@ describe('DefaultOrgSelector', () => {
     window.open = mockWindow
     const fetchNextPage = vi.fn()
     config.SENTRY_DSN = undefined
+    config.GH_APP = 'codecov'
     const user = userEvent.setup()
 
     server.use(

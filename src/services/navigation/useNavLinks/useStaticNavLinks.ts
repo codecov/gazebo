@@ -194,7 +194,7 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     codecovGithubApp: {
-      path: () => 'https://github.com/apps/codecov',
+      path: () => `https://github.com/apps/${config.GH_APP}`,
       isExternalLink: true,
       text: 'Codecov Github App',
       openNewTab: true,
