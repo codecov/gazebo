@@ -190,20 +190,21 @@ export function usePrefetchBranchDirEntry({
             } satisfies NetworkErrorObject)
           }
 
-          let results
-          const pathContentsType =
+          let results = null
+          const pathContent =
             data?.owner?.repository?.branch?.head?.deprecatedPathContents
-              ?.__typename
-          if (pathContentsType === 'PathContentConnection') {
+
+          if (
+            pathContent &&
+            pathContent?.__typename === 'PathContentConnection'
+          ) {
             results = mapEdges({
-              edges:
-                data?.owner?.repository?.branch?.head?.deprecatedPathContents
-                  ?.edges ?? [],
+              edges: pathContent?.edges,
             })
 
             return {
-              results: results ?? null,
-              pathContentsType,
+              results,
+              pathContentsType: pathContent.__typename,
               indicationRange:
                 data?.owner?.repository?.repositoryConfig?.indicationRange,
               __typename:
@@ -212,8 +213,8 @@ export function usePrefetchBranchDirEntry({
           }
 
           return {
-            results: results ?? null,
-            pathContentsType,
+            results,
+            pathContentsType: pathContent?.__typename,
             indicationRange:
               data?.owner?.repository?.repositoryConfig?.indicationRange,
             __typename: res?.data?.owner?.repository?.branch?.head?.__typename,

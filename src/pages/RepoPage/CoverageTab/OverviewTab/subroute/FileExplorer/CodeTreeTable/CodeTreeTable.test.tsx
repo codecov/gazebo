@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import qs from 'qs'
+import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CodeTreeTable from './CodeTreeTable'
@@ -131,7 +132,40 @@ const mockTreeData = {
   },
 }
 
-const mockDataMultipleRows = {
+const node1 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 0,
+  partials: 0,
+  lines: 10,
+  name: 'dir1',
+  path: 'dir1',
+  percentCovered: 100.0,
+}
+
+const node2 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 2,
+  partials: 1,
+  lines: 999,
+  name: 'dir2',
+  path: 'dir2',
+  percentCovered: 100.0,
+}
+
+const node3 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 2,
+  partials: 1,
+  lines: 999,
+  name: 'dir3',
+  path: 'dir3',
+  percentCovered: 100.0,
+}
+
+const mockDataMultipleRows = (after: string) => ({
   owner: {
     username: 'codecov-tree',
     repository: {
@@ -146,42 +180,19 @@ const mockDataMultipleRows = {
         head: {
           deprecatedPathContents: {
             __typename: 'PathContentConnection',
-            edges: [
-              {
-                node: {
-                  __typename: 'PathContentDir',
-                  hits: 9,
-                  misses: 0,
-                  partials: 0,
-                  lines: 10,
-                  name: 'src',
-                  path: 'src',
-                  percentCovered: 100.0,
-                },
-              },
-              {
-                node: {
-                  __typename: 'PathContentDir',
-                  hits: 9,
-                  misses: 2,
-                  partials: 1,
-                  lines: 999,
-                  name: 'tests',
-                  path: 'tests',
-                  percentCovered: 100.0,
-                },
-              },
-            ],
+            edges: after
+              ? [{ node: node3 }]
+              : [{ node: node1 }, { node: node2 }],
             pageInfo: {
-              hasNextPage: false,
-              endCursor: null,
+              hasNextPage: after ? true : false,
+              endCursor: after ? 'cursor3' : 'cursor2',
             },
           },
         },
       },
     },
   },
-}
+})
 
 const mockTreeDataNested = {
   owner: {
@@ -322,7 +333,9 @@ describe('CodeTreeTable', () => {
         } else if (noFlagCoverage) {
           return HttpResponse.json({ data: mockNoFiles })
         } else if (hasMultipleRows) {
-          return HttpResponse.json({ data: mockDataMultipleRows })
+          return HttpResponse.json({
+            data: mockDataMultipleRows(info.variables.after),
+          })
         } else if (isNestedTreeData) {
           return HttpResponse.json({ data: mockTreeDataNested })
         } else {
@@ -755,6 +768,31 @@ describe('CodeTreeTable', () => {
           })
         })
       })
+    })
+  })
+  describe('testing pagination', () => {
+    it('displays the first page', async () => {
+      setup({ hasMultipleRows: true })
+      render(<CodeTreeTable />, { wrapper: wrapper() })
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, false)
+
+      const page1Dir1 = await screen.findByText('dir1')
+      expect(page1Dir1).toBeInTheDocument()
+
+      const page1Dir2 = await screen.findByText('dir2')
+      expect(page1Dir2).toBeInTheDocument()
+    })
+
+    it('displays the second page', async () => {
+      setup({ hasMultipleRows: true })
+      render(<CodeTreeTable />, { wrapper: wrapper() })
+
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, true)
+
+      const page2Dir1 = await screen.findByText('dir3')
+      expect(page2Dir1).toBeInTheDocument()
     })
   })
 })

@@ -36,6 +36,46 @@ const mockData = {
               },
             ],
             pageInfo: {
+              hasNextPage: true,
+              endCursor: 'cursor1',
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+const mockDataPage2 = {
+  owner: {
+    username: 'cool-user',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [
+              {
+                node: {
+                  __typename: 'PathContentDir',
+                  hits: 5,
+                  misses: 2,
+                  partials: 1,
+                  lines: 8,
+                  name: 'tests',
+                  path: 'tests',
+                  percentCovered: 75.0,
+                },
+              },
+            ],
+            pageInfo: {
               hasNextPage: false,
               endCursor: null,
             },
@@ -158,7 +198,7 @@ describe('useRepoBranchContents', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('BranchContents', (info) => {
+      graphql.query('BranchContents', ({ variables }) => {
         if (isMissingCoverage) {
           return HttpResponse.json({ data: mockDataMissingCoverage })
         } else if (isUnknownPath) {
@@ -171,6 +211,10 @@ describe('useRepoBranchContents', () => {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }
 
+        if (variables.after === 'cursor1') {
+          return HttpResponse.json({ data: mockDataPage2 })
+        }
+
         return HttpResponse.json({ data: mockData })
       })
     )
@@ -178,7 +222,7 @@ describe('useRepoBranchContents', () => {
 
   describe('when called', () => {
     describe('when data is loaded', () => {
-      it('returns the data', async () => {
+      it('returns the data and handles pagination', async () => {
         setup({})
         const { result } = renderHook(
           () =>
@@ -213,13 +257,48 @@ describe('useRepoBranchContents', () => {
               lowerRange: 60,
             },
             pathContentsType: 'PathContentConnection',
-            __typename: undefined,
+            pageInfo: {
+              hasNextPage: true,
+              endCursor: 'cursor1',
+            },
+          })
+        )
+
+        expect(result.current.hasNextPage).toBe(true)
+
+        await result.current.fetchNextPage()
+
+        await waitFor(() => {
+          expect(result.current.data?.pages).toHaveLength(2)
+        })
+
+        await waitFor(() => {
+          expect(result.current.data?.pages[1]).toEqual({
+            results: [
+              {
+                __typename: 'PathContentDir',
+                hits: 5,
+                misses: 2,
+                partials: 1,
+                lines: 8,
+                name: 'tests',
+                path: 'tests',
+                percentCovered: 75.0,
+              },
+            ],
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            pathContentsType: 'PathContentConnection',
             pageInfo: {
               hasNextPage: false,
               endCursor: null,
             },
           })
-        )
+        })
+
+        expect(result.current.hasNextPage).toBe(false)
       })
     })
 
@@ -248,8 +327,7 @@ describe('useRepoBranchContents', () => {
             },
             results: null,
             pathContentsType: 'MissingCoverage',
-            __typename: undefined,
-            pageInfo: undefined,
+            pageInfo: null,
           })
         )
       })
@@ -280,8 +358,7 @@ describe('useRepoBranchContents', () => {
             },
             results: null,
             pathContentsType: 'UnknownPath',
-            __typename: undefined,
-            pageInfo: undefined,
+            pageInfo: null,
           })
         )
       })

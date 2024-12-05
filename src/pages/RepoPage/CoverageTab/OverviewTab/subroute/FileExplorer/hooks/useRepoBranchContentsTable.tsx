@@ -115,8 +115,6 @@ export function useRepoBranchContentsTable(sortItem?: {
     },
   })
 
-  const indicationRange = branchData?.pages?.[0]?.indicationRange
-
   const { treePaths } = useTreePaths()
 
   const finalizedTableRows = useMemo(() => {
@@ -127,6 +125,11 @@ export function useRepoBranchContentsTable(sortItem?: {
     const tableData = branchData?.pages?.flatMap((page) => page?.results) ?? []
     if (!tableData?.length) {
       return []
+    }
+
+    const indicationRange = branchData?.pages?.[0]?.indicationRange ?? {
+      lowerRange: 0,
+      upperRange: 100,
     }
 
     const rawTableRows = tableData.map((result) => {
@@ -161,8 +164,8 @@ export function useRepoBranchContentsTable(sortItem?: {
           amount={result.percentCovered}
           color={determineProgressColor({
             coverage: result.percentCovered,
-            lowerRange: indicationRange?.lowerRange || 0,
-            upperRange: indicationRange?.upperRange || 100,
+            lowerRange: indicationRange.lowerRange,
+            upperRange: indicationRange.upperRange,
           })}
         />
       )
@@ -177,34 +180,21 @@ export function useRepoBranchContentsTable(sortItem?: {
       }
     })
 
-    const adjustedTableData = adjustListIfUpDir({
+    return adjustListIfUpDir({
       treePaths,
       displayType: selectedDisplayType,
       rawTableRows: rawTableRows as Row[],
     })
-
-    return adjustedTableData
-  }, [
-    branchData?.pages,
-    branch,
-    indicationRange,
-    treePaths,
-    urlPath,
-    selectedDisplayType,
-  ])
+  }, [branchData?.pages, branch, treePaths, urlPath, selectedDisplayType])
 
   return {
     data: finalizedTableRows ?? [],
     indicationRange: branchData?.pages?.[0]?.indicationRange,
     // useLocationParams needs to be updated to have full types
     // @ts-expect-error
-    hasFlagsSelected: params?.flags ? params?.flags?.length > 0 : false,
+    hasFlagsSelected: params?.flags?.length > 0,
     // @ts-expect-error
-    hasComponentsSelected: params?.components
-      ? // useLocationParams needs to be updated to have full types
-        // @ts-expect-error
-        params?.components?.length > 0
-      : false,
+    hasComponentsSelected: params?.components?.length > 0,
     isLoading,
     fetchNextPage,
     hasNextPage,

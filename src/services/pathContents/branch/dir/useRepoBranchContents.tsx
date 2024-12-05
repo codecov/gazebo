@@ -182,7 +182,7 @@ export function useRepoBranchContents({
             } satisfies NetworkErrorObject)
           }
 
-          let results
+          let results = null
           const pathContentsType =
             data?.owner?.repository?.branch?.head?.deprecatedPathContents
               ?.__typename
@@ -194,12 +194,10 @@ export function useRepoBranchContents({
             })
 
             return {
-              results: results ?? null,
+              results,
               pathContentsType,
               indicationRange:
                 data?.owner?.repository?.repositoryConfig?.indicationRange,
-              __typename:
-                res?.data?.owner?.repository?.branch?.head?.__typename,
               pageInfo:
                 data?.owner?.repository?.branch?.head?.deprecatedPathContents
                   ?.pageInfo,
@@ -207,22 +205,16 @@ export function useRepoBranchContents({
           }
 
           return {
-            results: results ?? null,
+            results,
             pathContentsType,
             indicationRange:
               data?.owner?.repository?.repositoryConfig?.indicationRange,
-            __typename: res?.data?.owner?.repository?.branch?.head?.__typename,
-            pageInfo: undefined,
+            pageInfo: null,
           }
         })
       })
     },
-    getNextPageParam: (lastPage) => {
-      if (lastPage?.pageInfo?.hasNextPage) {
-        return lastPage?.pageInfo.endCursor
-      }
-      return undefined
-    },
+    getNextPageParam: (lastPage) => lastPage.pageInfo?.endCursor ?? undefined,
     ...options,
   })
 }
