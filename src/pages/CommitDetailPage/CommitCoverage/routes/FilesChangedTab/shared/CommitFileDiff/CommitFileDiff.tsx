@@ -1,7 +1,8 @@
+import { useQuery as useQueryV5 } from '@tanstack/react-queryV5'
 import { Fragment, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useIgnoredIds } from 'pages/CommitDetailPage/hooks/useIgnoredIds'
+import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
 import {
   ImpactedFileType,
   useComparisonForCommitAndParent,
@@ -68,7 +69,7 @@ function DiffRenderer({
   const { commitFileDiff } = useNavLinks()
   const { provider, owner, repo, commit } = useParams<URLParams>()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { data: ignoredUploadIds } = useIgnoredIds()
+  const { data: ignoredUploadIds } = useQueryV5(IgnoredIdsQueryOptions())
 
   const fileDiff = useMemo(() => {
     const transformedData = transformImpactedFileToDiff(impactedFile)

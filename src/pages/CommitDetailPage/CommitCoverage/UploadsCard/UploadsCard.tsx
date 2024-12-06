@@ -1,6 +1,8 @@
+import { useQueryClient as useQueryClientV5 } from '@tanstack/react-queryV5'
 import flatMap from 'lodash/flatMap'
 import { Fragment, useState } from 'react'
 
+import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
 import { useCommitErrors } from 'services/commitErrors'
 import { cn } from 'shared/utils/cn'
 import { NONE } from 'shared/utils/extractUploads'
@@ -28,6 +30,7 @@ export const SelectState = {
 } as const
 
 function UploadsCard() {
+  const queryClientV5 = useQueryClientV5()
   const [showYAMLModal, setShowYAMLModal] = useState(false)
   const [uploadFilters, setUploadFilters] = useState<UploadFilters>({
     flagErrors: false,
@@ -52,10 +55,22 @@ function UploadsCard() {
     const providerUploads = groupedUploads[provider]
     const providerUploadsIndex = providerUploads?.map((_, i) => i)
     const providerList = new Set(providerUploadsIndex)
-    setSelectedProviderSelectedUploads((prevState) => ({
-      ...prevState,
-      [provider]: new Set(providerUploadsIndex),
-    }))
+    setSelectedProviderSelectedUploads((prevState) => {
+      const updatedIds = {
+        ...prevState,
+        [provider]: new Set(providerUploadsIndex),
+      }
+
+      // Ids added are ignored, so we need to use the previous state to remove them, we also use a Set to remove duplicates
+      queryClientV5.setQueryData(
+        IgnoredIdsQueryOptions().queryKey,
+        Array.from(
+          new Set(Object.values(prevState).flatMap((ids) => Array.from(ids)))
+        )
+      )
+
+      return updatedIds
+    })
     return providerList
   }
 
@@ -75,13 +90,24 @@ function UploadsCard() {
   }
 
   const handleSelectAllForProviderGroup = (provider: string) => {
-    setSelectedProviderSelectedUploads((prevState) => ({
-      ...prevState,
-      [provider]:
-        determineCheckboxState(provider) === SelectState.NONE_SELECTED
-          ? fillSelectedUploads(provider)
-          : new Set(),
-    }))
+    setSelectedProviderSelectedUploads((prevState) => {
+      const updatedIds = {
+        ...prevState,
+        [provider]:
+          determineCheckboxState(provider) === SelectState.NONE_SELECTED
+            ? fillSelectedUploads(provider)
+            : new Set<number>(),
+      }
+
+      // Ids added are ignored, so we need to use the previous state to remove them, we also use a Set to remove duplicates
+      queryClientV5.setQueryData(
+        IgnoredIdsQueryOptions().queryKey,
+        Array.from(
+          new Set(Object.values(prevState).flatMap((ids) => Array.from(ids)))
+        )
+      )
+      return updatedIds
+    })
   }
 
   const determineCheckboxIcon = (title: string) => {

@@ -1,7 +1,8 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient as useQueryClientV5 } from '@tanstack/react-queryV5'
 import without from 'lodash/without'
 import { useEffect, useState } from 'react'
 
+import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
 import { UploadTypeEnum } from 'shared/utils/commit'
 import { formatTimeToNow } from 'shared/utils/dates'
 import { Upload } from 'shared/utils/extractUploads'
@@ -35,7 +36,7 @@ const UploadItem = ({
   onSelectChange = () => {},
 }: UploadProps) => {
   const [checked, setChecked] = useState(true)
-  const queryClient = useQueryClient()
+  const queryClientV5 = useQueryClientV5()
   const isCarriedForward = uploadType === UploadTypeEnum.CARRIED_FORWARD
 
   useEffect(() => setChecked(isSelected ?? true), [isSelected])
@@ -53,13 +54,13 @@ const UploadItem = ({
 
               if (checked && id != null) {
                 // User is unchecking
-                queryClient.setQueryData(
-                  ['IgnoredUploadIds'],
+                queryClientV5.setQueryData(
+                  IgnoredIdsQueryOptions().queryKey,
                   (oldData?: number[]) => [...(oldData ?? []), id]
                 )
               } else if (id != null) {
-                queryClient.setQueryData(
-                  ['IgnoredUploadIds'],
+                queryClientV5.setQueryData(
+                  IgnoredIdsQueryOptions().queryKey,
                   (oldData?: number[]) => without(oldData, id)
                 )
               }
