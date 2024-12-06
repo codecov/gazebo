@@ -37,7 +37,7 @@ interface Params {
   provider: string
 }
 
-interface StoreEventMetricMutationArgs {
+export interface StoreEventMetricMutationArgs {
   owner: string
   event: EventMetric
   jsonPayload: object
