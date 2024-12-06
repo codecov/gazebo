@@ -140,7 +140,7 @@ query BundleAssets(
                 ... on BundleAnalysisReport {
                   bundle(name: $bundle, filters: $filters) {
                     info {
-                      plugin_name
+                      pluginName
                     }
                     bundleData {
                       size {
