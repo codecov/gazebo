@@ -10,6 +10,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
+import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
 import { ImpactedFileType } from 'services/commit'
 
 import CommitFileDiff from './CommitFileDiff'
@@ -431,8 +432,8 @@ describe('CommitFileDiff', () => {
 
       describe('there are ignored ids', () => {
         beforeEach(() => {
-          queryClient.setQueryData(['IgnoredUploadIds'], [0])
-          queryClientV5.setQueryData(['IgnoredUploadIds'], [0])
+          queryClient.setQueryData(IgnoredIdsQueryOptions().queryKey, [0])
+          queryClientV5.setQueryData(IgnoredIdsQueryOptions().queryKey, [0])
         })
 
         it('renders hit count icon', async () => {

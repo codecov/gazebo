@@ -16,6 +16,7 @@ import CommitBundleDropdown from './Dropdowns/CommitBundleDropdown'
 import CommitCoverageDropdown from './Dropdowns/CommitCoverageDropdown'
 import Header from './Header'
 import { CommitPageDataQueryOpts } from './queries/CommitPageDataQueryOpts'
+import { IgnoredIdsQueryOptions } from './queries/IgnoredIdsQueryOptions'
 
 const CommitCoverage = lazy(() => import('./CommitCoverage'))
 const CommitBundleAnalysis = lazy(() => import('./CommitBundleAnalysis'))
@@ -48,7 +49,7 @@ const CommitDetailPage: React.FC = () => {
 
   // reset cache when user navigates to the commit detail page
   const queryClientV5 = useQueryClientV5()
-  queryClientV5.setQueryData(['IgnoredUploadIds'], [])
+  queryClientV5.setQueryData(IgnoredIdsQueryOptions().queryKey, [])
 
   const { data: commitPageData, isLoading } = useSuspenseQueryV5(
     CommitPageDataQueryOpts({
