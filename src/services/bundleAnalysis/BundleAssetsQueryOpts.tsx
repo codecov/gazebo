@@ -1,7 +1,4 @@
-import {
-  infiniteQueryOptions as infiniteQueryOptionsV5,
-  useInfiniteQuery as useInfiniteQueryV5,
-} from '@tanstack/react-queryV5'
+import { infiniteQueryOptions as infiniteQueryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { OrderingDirection } from 'types'
@@ -62,10 +59,15 @@ const BundleAssetPaginatedSchema = z.object({
   pageInfo: PageInfoSchema,
 })
 
+const BundleInfoSchema = z.object({
+  pluginName: z.string(),
+})
+
 const BundleAnalysisReportSchema = z.object({
   __typename: z.literal('BundleAnalysisReport'),
   bundle: z
     .object({
+      info: BundleInfoSchema.nullable(),
       bundleData: z.object({
         size: z.object({
           uncompress: z.number(),
@@ -137,6 +139,9 @@ query BundleAssets(
                 __typename
                 ... on BundleAnalysisReport {
                   bundle(name: $bundle, filters: $filters) {
+                    info {
+                      pluginName
+                    }
                     bundleData {
                       size {
                         uncompress
@@ -314,6 +319,7 @@ export const BundleAssetsQueryOpts = ({
         ) {
           return {
             assets: [],
+            bundleInfo: null,
             bundleData: null,
             pageInfo: null,
           }
@@ -323,15 +329,21 @@ export const BundleAssetsQueryOpts = ({
           data?.owner?.repository?.branch?.head?.bundleAnalysis
             ?.bundleAnalysisReport?.bundle?.assetsPaginated
         )
+        const bundleData =
+          data?.owner?.repository?.branch?.head?.bundleAnalysis
+            ?.bundleAnalysisReport?.bundle?.bundleData
+        const bundleInfo =
+          data?.owner?.repository?.branch?.head?.bundleAnalysis
+            ?.bundleAnalysisReport?.bundle?.info
+        const pageInfo =
+          data?.owner?.repository?.branch?.head?.bundleAnalysis
+            ?.bundleAnalysisReport?.bundle?.assetsPaginated?.pageInfo ?? null
 
         return {
           assets,
-          bundleData:
-            data?.owner?.repository?.branch?.head?.bundleAnalysis
-              ?.bundleAnalysisReport?.bundle?.bundleData,
-          pageInfo:
-            data?.owner?.repository?.branch?.head?.bundleAnalysis
-              ?.bundleAnalysisReport?.bundle?.assetsPaginated?.pageInfo ?? null,
+          bundleData,
+          bundleInfo,
+          pageInfo,
         }
       })
     },
@@ -342,55 +354,3 @@ export const BundleAssetsQueryOpts = ({
       return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : null
     },
   })
-
-interface UseBundleAssetsArgs {
-  provider: string
-  owner: string
-  repo: string
-  branch: string
-  bundle: string
-  interval?: 'INTERVAL_1_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_30_DAY'
-  dateBefore?: Date
-  dateAfter?: Date | null
-  filters?: {
-    reportGroups?: string[]
-    loadTypes?: string[]
-  }
-  orderingDirection?: OrderingDirection
-  ordering?: 'NAME' | 'SIZE' | 'TYPE'
-  opts?: {
-    enabled?: boolean
-  }
-}
-
-export const useBundleAssets = ({
-  provider,
-  owner,
-  repo,
-  branch,
-  bundle,
-  interval,
-  dateBefore,
-  dateAfter,
-  filters = {},
-  orderingDirection,
-  ordering,
-  opts,
-}: UseBundleAssetsArgs) => {
-  return useInfiniteQueryV5({
-    ...BundleAssetsQueryOpts({
-      provider,
-      owner,
-      repo,
-      branch,
-      bundle,
-      interval,
-      dateBefore,
-      dateAfter,
-      filters,
-      orderingDirection,
-      ordering,
-    }),
-    enabled: opts?.enabled,
-  })
-}
