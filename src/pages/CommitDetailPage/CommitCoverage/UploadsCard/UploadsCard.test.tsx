@@ -14,6 +14,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
+
 import UploadsCard from './UploadsCard'
 import { useUploads } from './useUploads'
 
@@ -47,13 +49,17 @@ beforeAll(() => {
   console.error = () => {}
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   queryClientV5.clear()
   server.resetHandlers()
   vi.clearAllMocks()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 interface MockCommitErrors {
   data: {
@@ -197,6 +203,7 @@ describe('UploadsCard', () => {
       const covReportHistory = screen.getByText(/Coverage reports history/)
       expect(covReportHistory).toBeInTheDocument()
     })
+
     it('renders different cis', () => {
       render(<UploadsCard />, { wrapper })
 
@@ -205,6 +212,7 @@ describe('UploadsCard', () => {
       const travis = screen.getByText(/travis/)
       expect(travis).toBeInTheDocument()
     })
+
     it('renders build ids', () => {
       render(<UploadsCard />, { wrapper })
 
@@ -219,6 +227,7 @@ describe('UploadsCard', () => {
       const id5 = screen.getByText(/837462/)
       expect(id5).toBeInTheDocument()
     })
+
     it('renders flags', () => {
       render(<UploadsCard />, { wrapper })
 
@@ -259,6 +268,7 @@ describe('UploadsCard', () => {
       expect(currentlyNoUploads).toBeInTheDocument()
     })
   })
+
   describe('renders empty Uploads', () => {
     // ??
     beforeEach(() => {
@@ -280,6 +290,7 @@ describe('UploadsCard', () => {
       expect(uploads).toBeInTheDocument()
     })
   })
+
   describe('The yaml viewer', () => {
     beforeEach(() => {
       setup({
@@ -819,6 +830,7 @@ describe('UploadsCard', () => {
       })
     })
   })
+
   describe('select all interactor', () => {
     beforeEach(() => {
       setup({
@@ -912,32 +924,47 @@ describe('UploadsCard', () => {
       })
     })
 
-    it('unselects all when clicked', async () => {
-      const user = userEvent.setup()
-      render(<UploadsCard />, { wrapper })
+    describe('unselects all when clicked', () => {
+      it('unselects all when clicked', async () => {
+        const user = userEvent.setup()
+        render(<UploadsCard />, { wrapper })
 
-      const checkboxes = screen.getAllByRole('checkbox')
-      const travisCheckbox = checkboxes[0]
-      const travisUploadCheckbox1 = checkboxes[1]
-      const travisUploadCheckbox2 = checkboxes[2]
+        const checkboxes = screen.getAllByRole('checkbox')
+        const travisCheckbox = checkboxes[0]
+        const travisUploadCheckbox1 = checkboxes[1]
+        const travisUploadCheckbox2 = checkboxes[2]
 
-      expect(travisCheckbox).toBeChecked()
-      expect(travisUploadCheckbox1).toBeChecked()
-      expect(travisUploadCheckbox2).toBeChecked()
+        expect(travisCheckbox).toBeChecked()
+        expect(travisUploadCheckbox1).toBeChecked()
+        expect(travisUploadCheckbox2).toBeChecked()
 
-      await user.click(travisCheckbox!)
+        await user.click(travisCheckbox!)
 
-      expect(travisCheckbox).not.toBeChecked()
-      expect(travisUploadCheckbox1).not.toBeChecked()
-      expect(travisUploadCheckbox2).not.toBeChecked()
+        expect(travisCheckbox).not.toBeChecked()
+        expect(travisUploadCheckbox1).not.toBeChecked()
+        expect(travisUploadCheckbox2).not.toBeChecked()
 
-      // 'circleci' uploads remain checked
-      const circleciCheckbox = checkboxes[3]
-      const circleciUploadCheckbox1 = checkboxes[4]
-      const circleciUploadCheckbox2 = checkboxes[5]
-      expect(circleciCheckbox).toBeChecked()
-      expect(circleciUploadCheckbox1).toBeChecked()
-      expect(circleciUploadCheckbox2).toBeChecked()
+        // 'circleci' uploads remain checked
+        const circleciCheckbox = checkboxes[3]
+        const circleciUploadCheckbox1 = checkboxes[4]
+        const circleciUploadCheckbox2 = checkboxes[5]
+        expect(circleciCheckbox).toBeChecked()
+        expect(circleciUploadCheckbox1).toBeChecked()
+        expect(circleciUploadCheckbox2).toBeChecked()
+      })
+
+      it('adds ids to ignored ids query', async () => {
+        const user = userEvent.setup()
+        render(<UploadsCard />, { wrapper })
+
+        const checkboxes = screen.getAllByRole('checkbox')
+        const travisCheckbox = checkboxes[0]
+        await user.click(travisCheckbox!)
+
+        expect(
+          queryClientV5.getQueryData(IgnoredIdsQueryOptions().queryKey)
+        ).toEqual([0, 1])
+      })
     })
 
     it('shows an intermediate state', async () => {
