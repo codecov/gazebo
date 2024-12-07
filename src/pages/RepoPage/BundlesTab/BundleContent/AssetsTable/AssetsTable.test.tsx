@@ -16,6 +16,7 @@ import { AssetsTable, ChangeOverTime } from './AssetsTable'
 const mockAssets = (hasNextPage = true) => {
   const asset1 = {
     name: 'asset-1',
+    routes: ['/'],
     extension: 'js',
     bundleData: {
       loadTime: { threeG: 2000, highSpeed: 2000 },
@@ -32,6 +33,7 @@ const mockAssets = (hasNextPage = true) => {
 
   const asset2 = {
     name: 'asset-2',
+    routes: ['/about'],
     extension: 'js',
     bundleData: {
       loadTime: { threeG: 2000, highSpeed: 2000 },
@@ -48,6 +50,7 @@ const mockAssets = (hasNextPage = true) => {
 
   const asset3 = {
     name: 'asset-3',
+    routes: ['/login'],
     extension: 'js',
     bundleData: {
       loadTime: { threeG: 2000, highSpeed: 2000 },

@@ -12,6 +12,7 @@ import { useBundleAssets } from './useBundleAssets'
 
 const node1 = {
   name: 'asset-1',
+  routes: ['/'],
   extension: 'js',
   bundleData: {
     loadTime: { threeG: 1, highSpeed: 2 },
@@ -25,6 +26,7 @@ const node1 = {
 
 const node2 = {
   name: 'asset-2',
+  routes: ['/login'],
   extension: 'js',
   bundleData: {
     loadTime: { threeG: 1, highSpeed: 2 },
@@ -38,6 +40,7 @@ const node2 = {
 
 const node3 = {
   name: 'asset-3',
+  routes: ['/about'],
   extension: 'js',
   bundleData: {
     loadTime: { threeG: 1, highSpeed: 2 },

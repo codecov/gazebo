@@ -52,6 +52,7 @@ const AssetMeasurementsSchema = z.object({
 
 const BundleAssetSchema = z.object({
   name: z.string(),
+  routes: z.array(z.string()).nullable(),
   extension: z.string(),
   bundleData: BundleDataSchema,
   measurements: AssetMeasurementsSchema.nullable(),
@@ -151,6 +152,7 @@ query BundleAssets(
                       edges {
                         node {
                           name
+                          routes
                           extension
                           bundleData {
                             loadTime {

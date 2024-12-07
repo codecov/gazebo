@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import {
@@ -14,6 +14,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const CoverageObjSchema = z.object({
@@ -130,20 +131,20 @@ const query = `
   }
 `
 
-interface UseCommitHeaderDataTeamArgs {
+interface CommitHeaderDataTeamQueryArgs {
   provider: string
   owner: string
   repo: string
   commitId: string
 }
 
-export const useCommitHeaderDataTeam = ({
+export const CommitHeaderDataTeamQueryOpts = ({
   provider,
   owner,
   repo,
   commitId,
-}: UseCommitHeaderDataTeamArgs) =>
-  useQuery({
+}: CommitHeaderDataTeamQueryArgs) =>
+  queryOptionsV5({
     queryKey: [
       'CommitPageHeaderDataTeam',
       provider,
@@ -167,23 +168,26 @@ export const useCommitHeaderDataTeam = ({
         const parsedData = CommitHeaderDataTeamSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'CommitHeaderDataTeamQueryOpts - 404 Failed to parse schema',
+            error: parsedData.error,
           })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'CommitHeaderDataTeamQueryOpts - 404 Not Found',
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -195,6 +199,7 @@ export const useCommitHeaderDataTeam = ({
                 </p>
               ),
             },
+            dev: 'CommitHeaderDataTeamQueryOpts - 403 Owner Not Activated',
           })
         }
 

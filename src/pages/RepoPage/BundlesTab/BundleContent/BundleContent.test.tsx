@@ -109,6 +109,7 @@ const mockAssets = {
                     {
                       node: {
                         name: 'asset-1',
+                        routes: ['/'],
                         extension: 'js',
                         bundleData: {
                           loadTime: {

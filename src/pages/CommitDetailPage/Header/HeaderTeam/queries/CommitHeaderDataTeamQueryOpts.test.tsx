@@ -1,9 +1,13 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useCommitHeaderData } from './useCommitHeaderData'
+import { CommitHeaderDataTeamQueryOpts } from './CommitHeaderDataTeamQueryOpts'
 
 const mockRepository = {
   owner: {
@@ -19,6 +23,12 @@ const mockRepository = {
         createdAt: '2022-01-01T12:59:59',
         message: 'cool commit message',
         pullId: 1234,
+        compareWithParent: {
+          __typename: 'Comparison',
+          patchTotals: {
+            percentCovered: 100,
+          },
+        },
       },
     },
   },
@@ -48,13 +58,15 @@ const mockNullOwner = {
 
 const mockUnsuccessfulParseError = {}
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false, useErrorBoundary: false } },
-})
 const server = setupServer()
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -62,7 +74,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -77,7 +89,7 @@ interface SetupArgs {
   isNullOwner?: boolean
 }
 
-describe('useCommitHeaderData', () => {
+describe('CommitHeaderDataTeamQueryOpts', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
@@ -85,7 +97,7 @@ describe('useCommitHeaderData', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CommitPageHeaderData', (info) => {
+      graphql.query('CommitPageHeaderDataTeam', (info) => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -109,12 +121,14 @@ describe('useCommitHeaderData', () => {
 
           const { result } = renderHook(
             () =>
-              useCommitHeaderData({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'test-repo',
-                commitId: 'id-1',
-              }),
+              useQueryV5(
+                CommitHeaderDataTeamQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'test-repo',
+                  commitId: 'id-1',
+                })
+              ),
             { wrapper }
           )
 
@@ -132,6 +146,12 @@ describe('useCommitHeaderData', () => {
               createdAt: '2022-01-01T12:59:59',
               message: 'cool commit message',
               pullId: 1234,
+              compareWithParent: {
+                __typename: 'Comparison',
+                patchTotals: {
+                  percentCovered: 100,
+                },
+              },
             },
           }
 
@@ -146,12 +166,14 @@ describe('useCommitHeaderData', () => {
 
           const { result } = renderHook(
             () =>
-              useCommitHeaderData({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'test-repo',
-                commitId: 'id-1',
-              }),
+              useQueryV5(
+                CommitHeaderDataTeamQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'test-repo',
+                  commitId: 'id-1',
+                })
+              ),
             { wrapper }
           )
 
@@ -185,12 +207,14 @@ describe('useCommitHeaderData', () => {
 
         const { result } = renderHook(
           () =>
-            useCommitHeaderData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'test-repo',
-              commitId: 'id-1',
-            }),
+            useQueryV5(
+              CommitHeaderDataTeamQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'test-repo',
+                commitId: 'id-1',
+              })
+            ),
           { wrapper }
         )
 
@@ -221,12 +245,14 @@ describe('useCommitHeaderData', () => {
 
         const { result } = renderHook(
           () =>
-            useCommitHeaderData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'test-repo',
-              commitId: 'id-1',
-            }),
+            useQueryV5(
+              CommitHeaderDataTeamQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'test-repo',
+                commitId: 'id-1',
+              })
+            ),
           { wrapper }
         )
 
@@ -257,12 +283,14 @@ describe('useCommitHeaderData', () => {
 
         const { result } = renderHook(
           () =>
-            useCommitHeaderData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'test-repo',
-              commitId: 'id-1',
-            }),
+            useQueryV5(
+              CommitHeaderDataTeamQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'test-repo',
+                commitId: 'id-1',
+              })
+            ),
           { wrapper }
         )
 
