@@ -5,6 +5,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
+import { useEffect } from 'react'
+import { useInView } from 'react-intersection-observer'
 
 import { OrderingDirection } from 'services/repos'
 import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
@@ -15,6 +17,17 @@ import { useRepoBranchContentsTable } from '../hooks'
 import { Loader, RepoContentsResult } from '../shared'
 
 const columnHelper = createColumnHelper<Row>()
+
+function LoadMoreTrigger({ intersectionRef }: { intersectionRef: any }) {
+  return (
+    <span
+      ref={intersectionRef}
+      className="invisible relative top-[-65px] block leading-[0]"
+    >
+      Loading
+    </span>
+  )
+}
 
 function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
   const state = sorting[0]
@@ -91,6 +104,7 @@ const baseColumns = [
 function FileListTable() {
   const [sorting, setSorting] = useTableDefaultSort()
   const ordering = getOrderingDirection(sorting)
+  const { ref, inView } = useInView()
   const {
     data,
     isSearching,
@@ -99,7 +113,17 @@ function FileListTable() {
     hasFlagsSelected,
     hasComponentsSelected,
     pathContentsType,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   } = useRepoBranchContentsTable(ordering)
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage()
+    }
+  }, [fetchNextPage, inView, hasNextPage])
+
   const table = useReactTable({
     columns: baseColumns,
     getCoreRowModel: getCoreRowModel(),
@@ -110,6 +134,19 @@ function FileListTable() {
     onSortingChange: setSorting,
     manualSorting: true,
   })
+
+  if (data?.length === 0 && !isLoading) {
+    return (
+      <RepoContentsResult
+        isSearching={isSearching}
+        isMissingHeadReport={isMissingHeadReport}
+        hasFlagsSelected={hasFlagsSelected}
+        hasComponentsSelected={hasComponentsSelected}
+        isMissingCoverage={pathContentsType === 'MissingCoverage'}
+        isUnknownPath={pathContentsType === 'UnknownPath'}
+      />
+    )
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -188,17 +225,8 @@ function FileListTable() {
           </tbody>
         </table>
       </div>
-      <Loader isLoading={isLoading} />
-      {data?.length === 0 && !isLoading ? (
-        <RepoContentsResult
-          isSearching={isSearching}
-          isMissingHeadReport={isMissingHeadReport}
-          hasFlagsSelected={hasFlagsSelected}
-          hasComponentsSelected={hasComponentsSelected}
-          isMissingCoverage={pathContentsType === 'MissingCoverage'}
-          isUnknownPath={pathContentsType === 'UnknownPath'}
-        />
-      ) : null}
+      <Loader isLoading={isLoading || isFetchingNextPage} />
+      {hasNextPage ? <LoadMoreTrigger intersectionRef={ref} /> : null}
     </div>
   )
 }
