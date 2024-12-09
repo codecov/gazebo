@@ -1,4 +1,7 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import {
+  infiniteQueryOptions as infiniteQueryOptionsV5,
+  useInfiniteQuery as useInfiniteQueryV5,
+} from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { OrderingDirection } from 'types'
@@ -9,7 +12,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
@@ -49,6 +52,7 @@ const AssetMeasurementsSchema = z.object({
 
 const BundleAssetSchema = z.object({
   name: z.string(),
+  routes: z.array(z.string()).nullable(),
   extension: z.string(),
   bundleData: BundleDataSchema,
   measurements: AssetMeasurementsSchema.nullable(),
@@ -148,6 +152,7 @@ query BundleAssets(
                       edges {
                         node {
                           name
+                          routes
                           extension
                           bundleData {
                             loadTime {
@@ -202,7 +207,7 @@ query BundleAssets(
   }
 }`
 
-interface UseBundleAssetsArgs {
+interface BundleAssetQueryOptsArgs {
   provider: string
   owner: string
   repo: string
@@ -217,13 +222,9 @@ interface UseBundleAssetsArgs {
   }
   orderingDirection?: OrderingDirection
   ordering?: 'NAME' | 'SIZE' | 'TYPE'
-  opts?: {
-    enabled?: boolean
-    suspense?: boolean
-  }
 }
 
-export const useBundleAssets = ({
+export const BundleAssetsQueryOpts = ({
   provider,
   owner,
   repo,
@@ -235,9 +236,8 @@ export const useBundleAssets = ({
   filters = {},
   orderingDirection,
   ordering,
-  opts,
-}: UseBundleAssetsArgs) => {
-  return useInfiniteQuery({
+}: BundleAssetQueryOptsArgs) =>
+  infiniteQueryOptionsV5({
     queryKey: [
       'BundleAssets',
       provider,
@@ -252,8 +252,8 @@ export const useBundleAssets = ({
       ordering,
       orderingDirection,
     ],
-    queryFn: ({ signal, pageParam }) =>
-      Api.graphql({
+    queryFn: ({ signal, pageParam }) => {
+      return Api.graphql({
         query,
         provider,
         signal,
@@ -274,24 +274,26 @@ export const useBundleAssets = ({
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useBundleAssets - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+            dev: 'BundleAssetsQueryOpts - 404 schema parsing failed',
+            error: parsedData.error,
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'BundleAssetsQueryOpts - 404 Repository not found',
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -303,6 +305,7 @@ export const useBundleAssets = ({
                 </p>
               ),
             },
+            dev: 'BundleAssetsQueryOpts - 403 Owner not activated',
           })
         }
 
@@ -332,11 +335,64 @@ export const useBundleAssets = ({
             data?.owner?.repository?.branch?.head?.bundleAnalysis
               ?.bundleAnalysisReport?.bundle?.assetsPaginated?.pageInfo ?? null,
         }
-      }),
-    getNextPageParam: (data) => {
-      return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : undefined
+      })
     },
-    enabled: opts?.enabled !== undefined ? opts.enabled : true,
-    suspense: !!opts?.suspense,
+    // We have to set this as an empty string, because the type for pageParam
+    // matches the type for initialPageParam.
+    initialPageParam: '',
+    getNextPageParam: (data) => {
+      return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : null
+    },
+  })
+
+interface UseBundleAssetsArgs {
+  provider: string
+  owner: string
+  repo: string
+  branch: string
+  bundle: string
+  interval?: 'INTERVAL_1_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_30_DAY'
+  dateBefore?: Date
+  dateAfter?: Date | null
+  filters?: {
+    reportGroups?: string[]
+    loadTypes?: string[]
+  }
+  orderingDirection?: OrderingDirection
+  ordering?: 'NAME' | 'SIZE' | 'TYPE'
+  opts?: {
+    enabled?: boolean
+  }
+}
+
+export const useBundleAssets = ({
+  provider,
+  owner,
+  repo,
+  branch,
+  bundle,
+  interval,
+  dateBefore,
+  dateAfter,
+  filters = {},
+  orderingDirection,
+  ordering,
+  opts,
+}: UseBundleAssetsArgs) => {
+  return useInfiniteQueryV5({
+    ...BundleAssetsQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      interval,
+      dateBefore,
+      dateAfter,
+      filters,
+      orderingDirection,
+      ordering,
+    }),
+    enabled: opts?.enabled,
   })
 }

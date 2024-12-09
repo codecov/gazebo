@@ -33,10 +33,10 @@ export const OrderingParameter = {
   CHANGE_COVERAGE: 'CHANGE_COVERAGE',
 } as const
 
-const ImpactedFilesOrdering = z.object({
-  direction: z.nativeEnum(OrderingDirection).optional(),
-  parameter: z.nativeEnum(OrderingParameter).optional(),
-})
+interface ImpactedFilesOrdering {
+  direction?: (typeof OrderingDirection)[keyof typeof OrderingDirection]
+  parameter?: (typeof OrderingParameter)[keyof typeof OrderingParameter]
+}
 
 const percentCoveredSchema = z.object({
   percentCovered: z.number().nullable(),
@@ -290,7 +290,7 @@ interface UsePullArgs {
   pullId: string
   filters?: {
     hasUnintendedChanges?: boolean
-    ordering?: z.infer<typeof ImpactedFilesOrdering>
+    ordering?: ImpactedFilesOrdering
   }
   options?: {
     suspense?: boolean

@@ -1,5 +1,7 @@
 import mapKeys from 'lodash/mapKeys'
 
+export const DEFAULT_GH_APP = 'codecov'
+
 const defaultConfig = {
   API_URL: '',
   STRIPE_KEY: '',
@@ -8,7 +10,7 @@ const defaultConfig = {
   SENTRY_PROFILING_SAMPLE_RATE: 0.1,
   SENTRY_SESSION_SAMPLE_RATE: 0.1,
   SENTRY_ERROR_SAMPLE_RATE: 1.0,
-  GH_APP: 'codecov',
+  GH_APP: DEFAULT_GH_APP,
   GH_APP_AI: 'codecov-ai',
 }
 

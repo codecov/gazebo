@@ -15,12 +15,15 @@ export type SaveTermsAgreementInput = z.infer<
   typeof SaveTermsAgreementInputConfig
 >
 
-// TODO need to figure out where/how to share api resolver error type and to reflect the graphql schema. Maybe do resolver level schema validation in shared?
-// Lets discuss this as we migrate more of the api to typescript.
+// TODO this mutation is not handling all potential union types, there is also
+// unauthenticated error and validation error types that also need to be handled
+// With the migration to TS Query V5, we should also actually use the zod schema
+// to validate the response that is returned from the mutationFn.
+
 const ResolverError = z.object({
   message: z.string(),
 })
-const SaveTermsAgreementPayloadConfig = z.object({
+const _SaveTermsAgreementPayloadConfig = z.object({
   data: z.object({
     saveTermsAgreement: z.object({
       error: z.union([ResolverError, ResolverError]).nullish(),
@@ -28,7 +31,7 @@ const SaveTermsAgreementPayloadConfig = z.object({
   }),
 })
 export type SaveTermsAgreementPayload = z.infer<
-  typeof SaveTermsAgreementPayloadConfig
+  typeof _SaveTermsAgreementPayloadConfig
 >
 
 interface SaveTermsAgreementOptions {

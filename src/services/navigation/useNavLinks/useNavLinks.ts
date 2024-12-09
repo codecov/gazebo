@@ -788,19 +788,6 @@ export function useNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
-    circleCIEnvVars: {
-      text: 'environment variables',
-      path: (
-        { provider = p, owner = o, repo = r } = {
-          provider: p,
-          owner: o,
-          repo: r,
-        }
-      ) =>
-        `https://app.circleci.com/settings/project/${provider}/${owner}/${repo}/environment-variables`,
-      isExternalLink: true,
-      openNewTab: true,
-    },
     circleCIyaml: {
       text: 'config.yml',
       path: ({

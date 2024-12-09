@@ -41,7 +41,7 @@ function OtherCI() {
   }`
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       <Step1 tokenCopy={tokenCopy} uploadToken={uploadToken} />
       <Step2 />
       <Step3 uploadCommand={uploadCommand} />

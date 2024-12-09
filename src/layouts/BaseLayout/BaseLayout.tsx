@@ -1,5 +1,6 @@
+import { useQuery as useQueryV5 } from '@tanstack/react-queryV5'
 import { lazy, Suspense } from 'react'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useParams } from 'react-router-dom'
 
 import Footer from 'layouts/Footer'
 import Header from 'layouts/Header'
@@ -14,6 +15,7 @@ import GlobalBanners from 'shared/GlobalBanners'
 import GlobalTopBanners from 'shared/GlobalTopBanners'
 import LoadingLogo from 'ui/LoadingLogo'
 
+import { NavigatorDataQueryOpts } from './hooks/NavigatorDataQueryOpts'
 import { useUserAccessGate } from './hooks/useUserAccessGate'
 
 const DefaultOrgSelector = lazy(() => import('pages/DefaultOrgSelector'))
@@ -65,19 +67,42 @@ function OnboardingOrChildren({
   return <>{children}</>
 }
 
+interface URLParams {
+  provider?: string
+  owner?: string
+  repo?: string
+}
+
 function BaseLayout({ children }: React.PropsWithChildren) {
+  const { provider, owner, repo } = useParams<URLParams>()
+  useTracking()
+  const { isImpersonating } = useImpersonate()
   const {
     isFullExperience,
     showAgreeToTerms,
     showDefaultOrgSelector,
     redirectToSyncPage,
-    isLoading,
+    isLoading: isUserAccessGateLoading,
   } = useUserAccessGate()
-  useTracking()
-  const { isImpersonating } = useImpersonate()
+
+  // we have to fetch the data for the navigator up here as we can't
+  // conditionally call a suspense query, as well we need a way to have the
+  // loader be shown while we're loading
+  const { data, isLoading: isNavigatorDataLoading } = useQueryV5({
+    enabled: !!provider && !!owner && !!repo,
+    ...NavigatorDataQueryOpts({
+      // if these aren't provided, the query is disabled so we don't need to
+      // worry about the empty strings causing errors
+      provider: provider ?? '',
+      owner: owner ?? '',
+      repo: repo ?? '',
+    }),
+  })
 
   // Pause rendering of a page till we know if the user is logged in or not
-  if (isLoading) return <FullPageLoader />
+  if (isUserAccessGateLoading || isNavigatorDataLoading) {
+    return <FullPageLoader />
+  }
 
   return (
     <>
@@ -89,7 +114,7 @@ function BaseLayout({ children }: React.PropsWithChildren) {
               {isFullExperience || isImpersonating ? (
                 <>
                   <GlobalTopBanners />
-                  <Header />
+                  <Header hasRepoAccess={data?.hasRepoAccess} />
                 </>
               ) : (
                 <>

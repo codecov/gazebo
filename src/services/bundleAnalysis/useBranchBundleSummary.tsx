@@ -1,5 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
-import isString from 'lodash/isString'
+import {
+  queryOptions as queryOptionsV5,
+  useSuspenseQuery as useSuspenseQueryV5,
+} from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -9,6 +11,7 @@ import {
   useRepoOverview,
 } from 'services/repo'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BundleSchema = z.object({
@@ -127,28 +130,20 @@ const query = `query BranchBundleSummaryData(
   }
 }`
 
-export interface UseBranchBundleSummaryArgs {
+export interface BranchBundleSummaryQueryOptsArgs {
   provider: string
   owner: string
   repo: string
-  branch?: string
+  branch: string | null | undefined
 }
 
-export const useBranchBundleSummary = ({
+export const BranchBundleSummaryQueryOpts = ({
   provider,
   owner,
   repo,
-  branch: branchArg,
-}: UseBranchBundleSummaryArgs) => {
-  const { data: repoOverview, isSuccess } = useRepoOverview({
-    provider,
-    repo,
-    owner,
-  })
-
-  const branch = branchArg ?? repoOverview?.defaultBranch
-
-  return useQuery({
+  branch,
+}: BranchBundleSummaryQueryOptsArgs) =>
+  queryOptionsV5({
     queryKey: ['BranchBundleSummaryData', provider, owner, repo, branch],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -164,23 +159,26 @@ export const useBranchBundleSummary = ({
         const parsedData = BranchBundleSummaryDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'BranchBundleSummaryQueryOpts - 404 Failed to parse',
+            error: parsedData.error,
           })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: 'BranchBundleSummaryQueryOpts - 404 Repository not found',
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -192,6 +190,7 @@ export const useBranchBundleSummary = ({
                 </p>
               ),
             },
+            dev: 'BranchBundleSummaryQueryOpts - 403 Owner not activated',
           })
         }
 
@@ -199,6 +198,35 @@ export const useBranchBundleSummary = ({
 
         return { branch }
       }),
-    enabled: isSuccess && isString(branch),
   })
+
+export interface UseBranchBundleSummaryArgs {
+  provider: string
+  owner: string
+  repo: string
+  branch?: string
+}
+
+export const useBranchBundleSummary = ({
+  provider,
+  owner,
+  repo,
+  branch: branchArg,
+}: UseBranchBundleSummaryArgs) => {
+  const { data: repoOverview } = useRepoOverview({
+    provider,
+    repo,
+    owner,
+  })
+
+  const branch = branchArg ?? repoOverview?.defaultBranch
+
+  return useSuspenseQueryV5(
+    BranchBundleSummaryQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+    })
+  )
 }

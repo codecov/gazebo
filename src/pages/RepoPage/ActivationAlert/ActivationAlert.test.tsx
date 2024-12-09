@@ -4,6 +4,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { PlanName, Plans } from 'shared/utils/billing'
 
 import ActivationAlert from './ActivationAlert'
@@ -19,6 +21,9 @@ vi.mock('./ActivationRequiredAlert', () => ({
 }))
 vi.mock('./UnauthorizedRepoDisplay', () => ({
   default: () => 'UnauthorizedRepoDisplay',
+}))
+vi.mock('./ActivationRequiredSelfHosted', () => ({
+  default: () => 'ActivationRequiredSelfHostedBanner',
 }))
 
 const queryClient = new QueryClient()
@@ -64,8 +69,11 @@ describe('ActivationAlert', () => {
   function setup(
     privateRepos = true,
     value: PlanName = Plans.USERS_BASIC,
-    hasSeatsLeft = true
+    hasSeatsLeft = true,
+    isSelfHosted = false
   ) {
+    config.IS_SELF_HOSTED = isSelfHosted
+
     server.use(
       graphql.query('GetPlanData', (info) => {
         return HttpResponse.json({
@@ -130,5 +138,15 @@ describe('ActivationAlert', () => {
       /ActivationRequiredAlert/
     )
     expect(activationRequiredAlert).toBeInTheDocument()
+  })
+
+  it('renders ActivationRequiredSelfHosted when user is self hosted', async () => {
+    setup(false, Plans.USERS_BASIC, true, true)
+    render(<ActivationAlert />, { wrapper })
+
+    const activationRequiredSelfHostedBanner = await screen.findByText(
+      /ActivationRequiredSelfHostedBanner/
+    )
+    expect(activationRequiredSelfHostedBanner).toBeInTheDocument()
   })
 })

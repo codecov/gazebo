@@ -157,6 +157,18 @@ describe('useRepoCoverageTimeseries', () => {
 
       await waitFor(() => expect(result.current.data?.measurements).toEqual([]))
     })
+
+    it('returns 0 for coverage change', async () => {
+      setup({ noCoverageData: true })
+      const { result } = renderHook(
+        () => useRepoCoverageTimeseries({ branch: 'c3' }),
+        { wrapper: wrapper('') }
+      )
+
+      await waitFor(() =>
+        expect(result.current.data?.coverageChange).toEqual(0)
+      )
+    })
   })
 
   describe('there is coverage data', () => {
@@ -174,6 +186,18 @@ describe('useRepoCoverageTimeseries', () => {
           { coverage: 90, date: new Date('2023-01-03T00:00:00.000Z') },
           { coverage: 100, date: new Date('2023-01-04T00:00:00.000Z') },
         ])
+      )
+    })
+
+    it('returns the coverage change', async () => {
+      setup()
+      const { result } = renderHook(
+        () => useRepoCoverageTimeseries({ branch: 'c3' }),
+        { wrapper: wrapper('') }
+      )
+
+      await waitFor(() =>
+        expect(result.current.data?.coverageChange).toEqual(15)
       )
     })
   })

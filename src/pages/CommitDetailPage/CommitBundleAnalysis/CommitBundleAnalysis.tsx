@@ -1,3 +1,4 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -9,7 +10,10 @@ import BundleMessage from './BundleMessage'
 import EmptyTable from './EmptyTable'
 import FirstPullBanner from './FirstPullBanner'
 
-import { TBundleAnalysisComparisonResult, useCommitPageData } from '../hooks'
+import {
+  CommitPageDataQueryOpts,
+  TBundleAnalysisComparisonResult,
+} from '../queries/CommitPageDataQueryOpts'
 
 const CommitBundleAnalysisTable = lazy(
   () => import('./CommitBundleAnalysisTable')
@@ -63,12 +67,14 @@ const BundleContent: React.FC<BundleContentProps> = ({ bundleCompareType }) => {
 
 const CommitBundleAnalysis: React.FC = () => {
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
-  const { data: commitPageData } = useCommitPageData({
-    provider,
-    owner,
-    repo,
-    commitId: commitSha,
-  })
+  const { data: commitPageData } = useSuspenseQueryV5(
+    CommitPageDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      commitId: commitSha,
+    })
+  )
 
   const bundleCompareType =
     commitPageData?.commit?.bundleAnalysis?.bundleAnalysisCompareWithParent

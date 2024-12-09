@@ -1,3 +1,4 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import qs from 'qs'
 import { lazy, Suspense, useLayoutEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
@@ -13,10 +14,56 @@ import SummaryDropdown from 'ui/SummaryDropdown'
 import PullBundleDropdown from './Dropdowns/PullBundleDropdown'
 import PullCoverageDropdown from './Dropdowns/PullCoverageDropdown'
 import Header from './Header'
-import { usePullPageData } from './hooks'
+import { PullPageDataQueryOpts } from './queries/PullPageDataQueryOpts'
 
 const PullCoverage = lazy(() => import('./PullCoverage'))
 const PullBundleAnalysis = lazy(() => import('./PullBundleAnalysis'))
+
+interface usePRPageBreadCrumbsArgs {
+  owner: string
+  repo: string
+  pullId: string
+  isPrivate: boolean
+}
+
+const usePRPageBreadCrumbs = ({
+  owner,
+  repo,
+  pullId,
+  isPrivate,
+}: usePRPageBreadCrumbsArgs) => {
+  const { setBreadcrumbs, setBaseCrumbs } = useCrumbs()
+
+  useLayoutEffect(() => {
+    setBaseCrumbs([
+      { pageName: 'owner', text: owner },
+      {
+        pageName: 'repo',
+        children: (
+          <div
+            className="inline-flex items-center gap-1"
+            data-testid="breadcrumb-repo"
+          >
+            {isPrivate ? (
+              <Icon name="lockClosed" variant="solid" size="sm" />
+            ) : null}
+            {repo}
+          </div>
+        ),
+      },
+    ])
+    setBreadcrumbs([
+      { pageName: 'pulls', text: 'pulls' },
+      {
+        pageName: 'pullDetail',
+        options: { pullId },
+        readOnly: true,
+        text: pullId,
+      },
+    ])
+    return () => setBreadcrumbs([])
+  }, [isPrivate, owner, pullId, repo, setBaseCrumbs, setBreadcrumbs])
+}
 
 interface URLParams {
   provider: string
@@ -42,52 +89,29 @@ const Loader = () => (
 function PullRequestPage() {
   const location = useLocation()
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-
   const { data: tierData } = useTier({ provider, owner })
-  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
-  const { data, isLoading } = usePullPageData({
-    provider,
+  usePRPageBreadCrumbs({
     owner,
     repo,
     pullId,
-    isTeamPlan,
+    isPrivate: overview?.private ?? false,
   })
 
-  const { setBreadcrumbs, setBaseCrumbs } = useCrumbs()
-  useLayoutEffect(() => {
-    setBaseCrumbs([
-      { pageName: 'owner', text: owner },
-      {
-        pageName: 'repo',
-        children: (
-          <div
-            className="inline-flex items-center gap-1"
-            data-testid="breadcrumb-repo"
-          >
-            {overview?.private && (
-              <Icon name="lockClosed" variant="solid" size="sm" />
-            )}
-            {repo}
-          </div>
-        ),
-      },
-    ])
-    setBreadcrumbs([
-      { pageName: 'pulls', text: 'pulls' },
-      {
-        pageName: 'pullDetail',
-        options: { pullId },
-        readOnly: true,
-        text: pullId,
-      },
-    ])
-    return () => setBreadcrumbs([])
-  }, [setBreadcrumbs, pullId, setBaseCrumbs, owner, repo, overview])
+  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
-  if (!isLoading && !data?.pull) {
+  const { data, isPending } = useSuspenseQueryV5(
+    PullPageDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      pullId,
+      isTeamPlan,
+    })
+  )
+
+  if (!isPending && !data?.pull) {
     return <NotFound />
   }
 

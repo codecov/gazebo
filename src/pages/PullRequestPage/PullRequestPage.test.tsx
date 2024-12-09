@@ -1,7 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
@@ -140,31 +145,39 @@ const mockOverview = (privateRepo = false) => ({
   },
 })
 
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
-const server = setupServer()
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper =
   (
     initialEntries = '/gh/test-org/test-repo/pull/12'
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider/:owner/:repo/pull/:pullId">
-          <RepoBreadcrumbProvider>{children}</RepoBreadcrumbProvider>
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider/:owner/:repo/pull/:pullId">
+            <RepoBreadcrumbProvider>
+              <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+            </RepoBreadcrumbProvider>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
   server.listen()
 })
 beforeEach(() => {
-  server.resetHandlers()
   queryClient.clear()
+  queryClientV5.clear()
+  server.resetHandlers()
 })
 afterAll(() => {
   server.close()

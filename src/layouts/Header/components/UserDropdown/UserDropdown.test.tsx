@@ -110,6 +110,7 @@ describe('UserDropdown', () => {
       error: null,
     })
     config.IS_SELF_HOSTED = selfHosted
+    config.GH_APP = 'codecov'
     config.API_URL = ''
 
     server.use(

@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import envVarScreenshot from 'assets/onboarding/env_variable_screenshot.png'
 import {
   EVENT_METRICS,
   useStoreCodecovEventMetric,
@@ -12,12 +13,13 @@ import { providerToInternalProvider } from 'shared/utils/provider'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
+import { ExpandableSection } from 'ui/ExpandableSection'
 
 import ExampleBlurb from '../ExampleBlurb'
 import LearnMoreBlurb from '../LearnMoreBlurb'
 
 const orbsString = `orbs:
-  codecov: codecov/codecov@4.0.1
+  codecov: codecov/codecov@5
 workflows:
   upload-to-codecov:
     jobs:
@@ -48,7 +50,7 @@ function CircleCI() {
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       <Step1
         tokenCopy={tokenCopy}
         uploadToken={uploadToken}
@@ -77,7 +79,11 @@ function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 1: add {tokenCopy} token to{' '}
+          Step 1: add {tokenCopy} token to environment variables
+        </Card.Title>
+      </Card.Header>
+      <Card.Content className="flex flex-col gap-4">
+        <p>
           <A
             hook="circleCIEnvVarsLink"
             isExternal
@@ -86,13 +92,9 @@ function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {
               options: { provider: providerName },
             }}
           >
-            environment variables
-          </A>
-        </Card.Title>
-      </Card.Header>
-      <Card.Content className="flex flex-col gap-4">
-        <p>
-          Environment variables in CircleCI can be found in project settings.
+            Environment variables
+          </A>{' '}
+          in CircleCI can be found in project settings.
         </p>
         <div className="flex gap-4">
           <CodeSnippet className="basis-1/3" clipboard="CODECOV_TOKEN">
@@ -112,6 +114,20 @@ function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {
             {uploadToken}
           </CodeSnippet>
         </div>
+        <ExpandableSection className="-mt-px">
+          <ExpandableSection.Trigger>
+            <p className="font-normal">
+              Your environment variable in CircleCI should look like this:
+            </p>
+          </ExpandableSection.Trigger>
+          <ExpandableSection.Content>
+            <img
+              className="size-full object-cover"
+              alt="settings environment variable"
+              src={envVarScreenshot}
+            />
+          </ExpandableSection.Content>
+        </ExpandableSection>
       </Card.Content>
     </Card>
   )
@@ -197,6 +213,7 @@ function FeedbackCTA() {
           >
             this issue
           </A>
+          .
         </p>
       </Card.Content>
     </Card>
