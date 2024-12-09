@@ -1,8 +1,9 @@
+import { useInfiniteQuery as useInfiniteQueryV5 } from '@tanstack/react-queryV5'
 import { useMemo } from 'react'
 
 import { OrderingDirection } from 'types'
 
-import { useBundleAssets } from 'services/bundleAnalysis/useBundleAssets'
+import { BundleAssetsQueryOpts } from 'services/bundleAnalysis/BundleAssetsQueryOpts'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import { createTimeSeriesQueryVars, Trend } from 'shared/utils/timeseriesCharts'
@@ -54,21 +55,23 @@ export function useBundleAssetsTable({
     }
   }, [overview?.oldestCommitAt, today, trend])
 
-  return useBundleAssets({
-    provider,
-    owner,
-    repo,
-    branch,
-    bundle,
-    dateAfter: queryVars.after,
-    dateBefore: queryVars.before,
-    interval: queryVars.interval,
-    ordering,
-    orderingDirection,
-    filters: {
-      reportGroups: typeFilters,
-      loadTypes: loadTypes,
-    },
-    opts: { enabled: branch !== '' && bundle !== '' },
+  return useInfiniteQueryV5({
+    ...BundleAssetsQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      dateAfter: queryVars.after,
+      dateBefore: queryVars.before,
+      interval: queryVars.interval,
+      ordering,
+      orderingDirection,
+      filters: {
+        reportGroups: typeFilters,
+        loadTypes: loadTypes,
+      },
+    }),
+    enabled: branch !== '' && bundle !== '',
   })
 }
