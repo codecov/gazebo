@@ -7,10 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useRegenerateOrgUploadToken } from './useRegenerateOrgUploadToken'
 
 const data = {
-  data: {
-    regenerateOrgUploadToken: {
-      orgUploadToken: 'new token',
-    },
+  regenerateOrgUploadToken: {
+    orgUploadToken: 'new token',
   },
 }
 
