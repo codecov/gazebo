@@ -1,3 +1,4 @@
+import { useQuery as useQueryV5 } from '@tanstack/react-queryV5'
 import {
   createColumnHelper,
   flexRender,
@@ -8,14 +9,17 @@ import cs from 'classnames'
 import isArray from 'lodash/isArray'
 import qs, { type ParsedQs } from 'qs'
 import { useMemo } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import A from 'ui/A'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import ComponentsNotConfigured from './ComponentsNotConfigured'
-import { ComponentsComparison, useComponentComparison } from './hooks'
+import {
+  ComponentComparisonQueryOpts,
+  ComponentsComparison,
+} from './queries/ComponentComparisonQueryOpts'
 
 import ComponentsSelector from '../ComponentsSelector'
 
@@ -91,7 +95,15 @@ function getFilters({ components }: { components?: ParsedQs[] | string[] }) {
   }
 }
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+  pullId: string
+}
+
 export default function ComponentsTable() {
+  const { provider, owner, repo, pullId } = useParams<URLParams>()
   const location = useLocation()
   const queryParams = qs.parse(location.search, {
     ignoreQueryPrefix: true,
@@ -104,9 +116,15 @@ export default function ComponentsTable() {
   }
 
   const filters = getFilters({ components })
-  const { data, isLoading } = useComponentComparison({
-    filters,
-  })
+  const { data, isLoading } = useQueryV5(
+    ComponentComparisonQueryOpts({
+      provider,
+      owner,
+      repo,
+      pullId,
+      filters,
+    })
+  )
 
   const tableData = useMemo(() => {
     if (

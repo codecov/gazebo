@@ -96,9 +96,12 @@ export function useRepoCoverageTimeseries({
       }
     })
 
+    const coverageChange =
+      (coverage.at(-1)?.coverage ?? 0) - (coverage.at(0)?.coverage ?? 0)
+
     return {
       ...rest,
-      data: { measurements: coverage },
+      data: { measurements: coverage, coverageChange },
     }
   }, [data, rest])
 }

@@ -15,7 +15,8 @@ type FrameworkType = (typeof Frameworks)[keyof typeof Frameworks]
 const FrameworkCopy = {
   [Frameworks.PYTEST]:
     'pytest --cov --junitxml=junit.xml -o junit_family=legacy',
-  [Frameworks.VITEST]: 'vitest --reporter=junit',
+  [Frameworks.VITEST]:
+    'vitest --reporter=junit --outputFile=test-report.junit.xml',
   [Frameworks.JEST]: (
     <p data-testid="jest-framework-copy">
       npm i --save-dev jest-junit <br />

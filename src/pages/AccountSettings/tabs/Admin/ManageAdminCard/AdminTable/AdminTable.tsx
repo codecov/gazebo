@@ -124,7 +124,6 @@ export default function AdminTable() {
             email: user.email,
             revoke: (
               <>
-                {/* @ts-expect-error */}
                 <Button
                   hook="toggle admin status"
                   disabled={isUpdatingUser}

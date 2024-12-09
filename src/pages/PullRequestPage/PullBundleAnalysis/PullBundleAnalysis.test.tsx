@@ -1,5 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
+import {
   render,
   screen,
   waitForElementToBeRemoved,
@@ -11,7 +15,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullBundleAnalysis from './PullBundleAnalysis'
 
-import { TBundleAnalysisComparisonResult } from '../hooks'
+import { TBundleAnalysisComparisonResult } from '../queries/PullPageDataQueryOpts'
 
 vi.mock('./EmptyTable', () => ({
   default: () => <div>EmptyTable</div>,
@@ -106,24 +110,30 @@ const mockRepoOverview = ({
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/test-org/test-repo/pull/12']}>
-      <Route path="/:provider/:owner/:repo/pull/:pullId">
-        <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/test-org/test-repo/pull/12']}>
+        <Route path="/:provider/:owner/:repo/pull/:pullId">
+          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
   server.listen()
 })
 beforeEach(() => {
-  server.resetHandlers()
   queryClient.clear()
+  queryClientV5.clear()
+  server.resetHandlers()
 })
 afterAll(() => {
   server.close()

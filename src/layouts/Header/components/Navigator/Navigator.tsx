@@ -11,36 +11,61 @@ import MyContextSwitcher from './MyContextSwitcher'
 
 interface NavigatorProps {
   currentUser?: Me
+  hasRepoAccess?: boolean
 }
 
-function Navigator({ currentUser }: NavigatorProps) {
+function Navigator({ currentUser, hasRepoAccess }: NavigatorProps) {
   const { owner } = useParams<{ owner: string }>()
   const { data: ownerData } = useOwnerPageData({ enabled: !!owner })
   const { path } = useRouteMatch()
   const { breadcrumbs } = useCrumbs()
 
-  const isCurrentUserPartOfOrg = ownerData?.isCurrentUserPartOfOrg
+  const isCurrentUserPartOfOrg = Boolean(ownerData?.isCurrentUserPartOfOrg)
 
   // Repo page
+  // slightly annoyed that we have to have a nested if here but i couldn't
+  // think of a better way to do this and be this clear of what's happening
   if (path.startsWith('/:provider/:owner/:repo')) {
-    return (
-      <div className="flex items-center">
-        <span className="inline-block">
-          <Breadcrumb paths={breadcrumbs} largeFont />{' '}
-        </span>
-        {isCurrentUserPartOfOrg === false ? (
-          <Label variant="plain" className="ml-2 hidden sm:block">
-            Viewing as visitor
-          </Label>
-        ) : null}
-      </div>
-    )
+    if (hasRepoAccess) {
+      return (
+        <div className="flex items-center">
+          <span className="inline-block">
+            <Breadcrumb paths={breadcrumbs} largeFont />{' '}
+          </span>
+          {isCurrentUserPartOfOrg === false ? (
+            <Label variant="plain" className="ml-2 hidden sm:block">
+              Viewing as visitor
+            </Label>
+          ) : null}
+        </div>
+      )
+    }
+    // User exists and org exists, this provides the user an escape hatch to
+    // navigate away from the repo page, we still need to check to see if the
+    // user belongs to the org because of okta enforcement on private repos
+    else if (currentUser && ownerData) {
+      return (
+        <div className="flex items-center">
+          <MyContextSwitcher pageName={'owner'} />
+          {isCurrentUserPartOfOrg === false ? (
+            <Label variant="plain" className="ml-2 hidden sm:block">
+              Viewing as visitor
+            </Label>
+          ) : null}
+        </div>
+      )
+    }
+
+    // This means the user is a guest, and the guest header will be present as
+    // their escape hatch
+    return null
   }
 
   // Self-hosted admin settings
   if (path.startsWith('/admin/:provider')) {
     const defaultOrg =
       currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
+
     return (
       <Breadcrumb
         paths={[
@@ -57,7 +82,8 @@ function Navigator({ currentUser }: NavigatorProps) {
   }
 
   // Fallback instead of MyContextSwitcher if not logged in
-  if (!currentUser) {
+  // If the owner doesn't exist, don't show anything
+  if (!currentUser && ownerData) {
     return (
       <div className="flex items-center">
         <Avatar user={ownerData} />

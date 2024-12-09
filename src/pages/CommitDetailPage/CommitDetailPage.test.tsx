@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -21,7 +25,7 @@ const mockNotFoundCommit = {
     isCurrentUserPartOfOrg: false,
     repository: {
       __typename: 'Repository',
-      private: null,
+      private: false,
       bundleAnalysisEnabled: null,
       coverageEnabled: null,
       commit: null,
@@ -100,7 +104,10 @@ const mockBundleDropdownSummary = {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { suspense: true } },
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper =
@@ -108,15 +115,17 @@ const wrapper =
     initialEntries = '/gh/test-org/test-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed'
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider/:owner/:repo/commit/:commit">
-          <RepoBreadcrumbProvider>
-            <Suspense fallback={null}>{children}</Suspense>
-          </RepoBreadcrumbProvider>
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider/:owner/:repo/commit/:commit">
+            <RepoBreadcrumbProvider>
+              <Suspense fallback={null}>{children}</Suspense>
+            </RepoBreadcrumbProvider>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -125,6 +134,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 

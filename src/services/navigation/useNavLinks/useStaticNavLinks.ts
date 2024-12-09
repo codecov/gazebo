@@ -194,13 +194,14 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     codecovGithubApp: {
-      path: () => 'https://github.com/apps/codecov',
+      path: () => `https://github.com/apps/${config.GH_APP}`,
       isExternalLink: true,
       text: 'Codecov Github App',
       openNewTab: true,
     },
     codecovGithubAppSelectTarget: {
-      path: () => 'https://github.com/apps/codecov/installations/select_target',
+      path: () =>
+        `https://github.com/apps/${config.GH_APP}/installations/select_target`,
       isExternalLink: true,
       text: 'Codecov Github App',
       openNewTab: true,
@@ -406,16 +407,17 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
-    codecovExampleWorkflow: {
-      text: 'Github Codecov Example workflow',
+    codecovExampleJSCircleCIWorkflow: {
+      text: 'Github Codecov Example CircleCI JS workflow',
       path: () =>
-        'https://github.com/codecov/example-python/blob/main/.github/workflows/ci.yml',
+        'https://github.com/codecov/example-javascript/blob/main/.circleci/config.yml',
       isExternalLink: true,
       openNewTab: true,
     },
-    codecovActionRepo: {
-      text: 'Github Codecov Action Repo',
-      path: () => 'https://github.com/codecov/codecov-action',
+    codecovExampleJSCircleCIWorkflowSteps: {
+      text: 'Github Codecov Example CircleCI JS workflow',
+      path: () =>
+        'https://app.circleci.com/pipelines/github/codecov/example-javascript/148/workflows/180ae354-0d8c-4205-8815-f4c516a042a4/jobs/130/steps',
       isExternalLink: true,
       openNewTab: true,
     },
@@ -530,6 +532,13 @@ export function useStaticNavLinks() {
       text: 'YAML validator',
       path: () =>
         'https://docs.codecov.com/docs/codecov-yaml#validate-your-repository-yaml',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    circleCIEnvVars: {
+      text: 'environment variables',
+      path: () =>
+        'https://circleci.com/docs/set-environment-variable/#set-an-environment-variable-in-a-project',
       isExternalLink: true,
       openNewTab: true,
     },

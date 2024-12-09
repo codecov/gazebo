@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -127,23 +131,26 @@ const mockRepoOverview = ({
 })
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { retry: false, suspense: true },
-  },
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={[
-        '/gh/test-org/test-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
-      ]}
-    >
-      <Route path="/:provider/:owner/:repo/commit/:commit">
-        <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter
+        initialEntries={[
+          '/gh/test-org/test-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
+        ]}
+      >
+        <Route path="/:provider/:owner/:repo/commit/:commit">
+          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
@@ -153,6 +160,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
