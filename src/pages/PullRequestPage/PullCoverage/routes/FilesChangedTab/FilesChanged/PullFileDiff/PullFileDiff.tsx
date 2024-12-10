@@ -21,30 +21,32 @@ function transformSegmentsToLineData(
     return []
   }
 
-  return segments.map((segment) => {
-    // we need to create a string of the diff content for the virtual diff renderer text area
-    let newDiffContent = ''
-    const lineData: LineData[] = []
+  return segments
+    .filter((segment) => !segment.hasUnintendedChanges)
+    .map((segment) => {
+      // we need to create a string of the diff content for the virtual diff renderer text area
+      let newDiffContent = ''
+      const lineData: LineData[] = []
 
-    segment.lines.forEach((line, lineIndex) => {
-      newDiffContent += line.content
+      segment.lines.forEach((line, lineIndex) => {
+        newDiffContent += line.content
 
-      // only add a newline if it's not the last line
-      if (lineIndex !== segment.lines.length - 1) {
-        newDiffContent += '\n'
-      }
+        // only add a newline if it's not the last line
+        if (lineIndex !== segment.lines.length - 1) {
+          newDiffContent += '\n'
+        }
 
-      lineData.push({
-        headNumber: line?.headNumber,
-        baseNumber: line?.baseNumber,
-        headCoverage: line?.headCoverage as CoverageValue,
-        baseCoverage: line?.baseCoverage as CoverageValue,
-        hitCount: undefined,
+        lineData.push({
+          headNumber: line?.headNumber,
+          baseNumber: line?.baseNumber,
+          headCoverage: line?.headCoverage as CoverageValue,
+          baseCoverage: line?.baseCoverage as CoverageValue,
+          hitCount: undefined,
+        })
       })
-    })
 
-    return { ...segment, lineData, newDiffContent }
-  })
+      return { ...segment, lineData, newDiffContent }
+    })
 }
 
 interface URLParams {
