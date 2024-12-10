@@ -11,14 +11,14 @@ export const parameters = {
 
 const queryClient = new QueryClient()
 
-const localStorageResetDecorator = (Story) => {
+const localStorageResetDecorator = (Story: React.FC) => {
   window.localStorage.clear()
   return <Story />
 }
 
 export const decorators = [
   localStorageResetDecorator,
-  (Story) => (
+  (Story: React.FC) => (
     <QueryClientProvider client={queryClient}>
       <Layout>
         <Story />
