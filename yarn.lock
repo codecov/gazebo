@@ -6661,10 +6661,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prismjs@npm:^1.26.4":
-  version: 1.26.4
-  resolution: "@types/prismjs@npm:1.26.4"
-  checksum: 10c0/996be7d119779c4cbe66e58342115a12d35a02226dae3aaa4a744c9652d5a3939c93c26182e18156965ac4f93575ebb309c3469c36f52e60ee5c0f8f27e874df
+"@types/prismjs@npm:^1.26.5":
+  version: 1.26.5
+  resolution: "@types/prismjs@npm:1.26.5"
+  checksum: 10c0/5619cb449e0d8df098c8759d6f47bf8fdd510abf5dbdfa999e55c6a2545efbd1e209cc85a33d8d9f4ff2898089a1a6d9a70737c9baffaae635c46852c40d384a
   languageName: node
   linkType: hard
 
@@ -10371,7 +10371,7 @@ __metadata:
     "@types/js-cookie": "npm:3.0.6"
     "@types/lodash": "npm:4.17.6"
     "@types/node": "npm:^22.9.0"
-    "@types/prismjs": "npm:^1.26.4"
+    "@types/prismjs": "npm:^1.26.5"
     "@types/prop-types": "npm:15.7.12"
     "@types/qs": "npm:6.9.15"
     "@types/react": "npm:^18.3.1"
