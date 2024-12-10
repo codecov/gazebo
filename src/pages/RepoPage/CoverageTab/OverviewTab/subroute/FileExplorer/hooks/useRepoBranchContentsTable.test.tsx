@@ -10,6 +10,7 @@ import { useRepoBranchContentsTable } from './useRepoBranchContentsTable'
 
 const mockBranchContentData = {
   owner: {
+    username: 'cool-user',
     repository: {
       __typename: 'Repository',
       repositoryConfig: {
@@ -20,31 +21,39 @@ const mockBranchContentData = {
       },
       branch: {
         head: {
-          pathContents: {
-            __typename: 'PathContents',
-            results: [
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [
               {
-                hits: 9,
-                misses: 0,
-                partials: 0,
-                lines: 10,
-                name: 'src',
-                path: 'src',
-                percentCovered: 100.0,
-                __typename: 'PathContentDir',
+                node: {
+                  hits: 9,
+                  misses: 0,
+                  partials: 0,
+                  lines: 10,
+                  name: 'src',
+                  path: 'src',
+                  percentCovered: 100.0,
+                  __typename: 'PathContentDir',
+                },
               },
               {
-                hits: 9,
-                misses: 0,
-                partials: 0,
-                lines: 10,
-                name: 'file.ts',
-                path: 'src/file.ts',
-                percentCovered: 100.0,
-                isCriticalFile: false,
-                __typename: 'PathContentFile',
+                node: {
+                  hits: 9,
+                  misses: 0,
+                  partials: 0,
+                  lines: 10,
+                  name: 'file.ts',
+                  path: 'src/file.ts',
+                  percentCovered: 100.0,
+                  isCriticalFile: false,
+                  __typename: 'PathContentFile',
+                },
               },
             ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
+            },
           },
         },
       },
@@ -54,6 +63,7 @@ const mockBranchContentData = {
 
 const mockCommitNoContentData = {
   owner: {
+    username: 'cool-user',
     repository: {
       __typename: 'Repository',
       repositoryConfig: {
@@ -64,9 +74,13 @@ const mockCommitNoContentData = {
       },
       branch: {
         head: {
-          pathContents: {
-            __typename: 'PathContents',
-            results: [],
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
+            },
           },
         },
       },
