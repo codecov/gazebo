@@ -227,21 +227,16 @@ export const AssetsTable: React.FC = () => {
     orderingDirection = 'ASC'
   }
 
-  const {
-    data,
-    fetchNextPage,
-    isInitialLoading,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useBundleAssetsTable({
-    provider,
-    owner,
-    repo,
-    branch,
-    bundle,
-    ordering,
-    orderingDirection,
-  })
+  const { data, fetchNextPage, isLoading, isFetchingNextPage, hasNextPage } =
+    useBundleAssetsTable({
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      ordering,
+      orderingDirection,
+    })
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -249,22 +244,28 @@ export const AssetsTable: React.FC = () => {
     }
   }, [fetchNextPage, hasNextPage, inView])
 
-  const tableData: Array<Column> = useMemo(() => {
+  const tableData = useMemo(() => {
     if (data) {
-      return data?.pages
-        .map((page) => page.assets)
-        .flat()
-        .filter(Boolean)
-        .map((asset) => ({
-          name: asset!.name,
-          extension: asset!.extension,
-          size: asset!.bundleData.size.uncompress,
-          loadTime: asset!.bundleData.loadTime.threeG,
-          changeOverTime: asset!.measurements ?? undefined,
-        }))
+      return {
+        bundleInfo: data?.pages[0]?.bundleInfo,
+        assets: data?.pages
+          .map((page) => page.assets)
+          .flat()
+          .filter(Boolean)
+          .map((asset) => ({
+            name: asset!.name,
+            extension: asset!.extension,
+            size: asset!.bundleData.size.uncompress,
+            loadTime: asset!.bundleData.loadTime.threeG,
+            changeOverTime: asset!.measurements ?? undefined,
+          })),
+      }
     }
 
-    return []
+    return {
+      assets: [],
+      bundleInfo: null,
+    }
   }, [data])
 
   const bundleSize = useMemo(
@@ -276,7 +277,7 @@ export const AssetsTable: React.FC = () => {
 
   const table = useReactTable({
     columns,
-    data: tableData,
+    data: tableData.assets,
     state: {
       sorting,
       expanded,
@@ -288,7 +289,7 @@ export const AssetsTable: React.FC = () => {
     getExpandedRowModel: getExpandedRowModel(),
   })
 
-  if (tableData.length === 0 && !isInitialLoading) {
+  if (tableData.assets.length === 0 && !isLoading) {
     return <EmptyTable />
   }
 
@@ -343,7 +344,7 @@ export const AssetsTable: React.FC = () => {
               })}
             </div>
           ))}
-          {isInitialLoading ? (
+          {isLoading ? (
             <Loader />
           ) : (
             <div>

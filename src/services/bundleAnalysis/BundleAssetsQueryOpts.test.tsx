@@ -1,6 +1,7 @@
 import {
   QueryClientProvider as QueryClientProviderV5,
   QueryClient as QueryClientV5,
+  useInfiniteQuery as useInfiniteQueryV5,
 } from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
@@ -8,7 +9,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { type MockInstance } from 'vitest'
 
-import { useBundleAssets } from './useBundleAssets'
+import { BundleAssetsQueryOpts } from './BundleAssetsQueryOpts'
 
 const node1 = {
   name: 'asset-1',
@@ -166,11 +167,8 @@ describe('useBundleAssets', () => {
                       bundleAnalysisReport: {
                         __typename: 'BundleAnalysisReport',
                         bundle: {
-                          bundleData: {
-                            size: {
-                              uncompress: 12,
-                            },
-                          },
+                          info: { pluginName: '@codecov/vite-plugin' },
+                          bundleData: { size: { uncompress: 12 } },
                           assetsPaginated: {
                             edges: info.variables.assetsAfter
                               ? [{ node: node3 }]
@@ -204,12 +202,14 @@ describe('useBundleAssets', () => {
       setup({})
       const { result } = renderHook(
         () =>
-          useBundleAssets({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
+          useInfiniteQueryV5({
+            ...BundleAssetsQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+            }),
           }),
         {
           wrapper,
@@ -223,6 +223,7 @@ describe('useBundleAssets', () => {
             {
               assets: [node1, node2],
               bundleData: { size: { uncompress: 12 } },
+              bundleInfo: { pluginName: '@codecov/vite-plugin' },
               pageInfo: {
                 hasNextPage: true,
                 endCursor: 'cursor-2',
@@ -238,12 +239,14 @@ describe('useBundleAssets', () => {
         setup({})
         const { result } = renderHook(
           () =>
-            useBundleAssets({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'codecov',
-              branch: 'main',
-              bundle: 'test-bundle',
+            useInfiniteQueryV5({
+              ...BundleAssetsQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                branch: 'main',
+                bundle: 'test-bundle',
+              }),
             }),
           {
             wrapper,
@@ -256,6 +259,7 @@ describe('useBundleAssets', () => {
             pages: [
               {
                 assets: [node1, node2],
+                bundleInfo: { pluginName: '@codecov/vite-plugin' },
                 bundleData: { size: { uncompress: 12 } },
                 pageInfo: {
                   hasNextPage: true,
@@ -277,6 +281,7 @@ describe('useBundleAssets', () => {
             pages: [
               {
                 assets: [node1, node2],
+                bundleInfo: { pluginName: '@codecov/vite-plugin' },
                 bundleData: { size: { uncompress: 12 } },
                 pageInfo: {
                   endCursor: 'cursor-2',
@@ -286,6 +291,7 @@ describe('useBundleAssets', () => {
               {
                 assets: [node3],
                 bundleData: { size: { uncompress: 12 } },
+                bundleInfo: { pluginName: '@codecov/vite-plugin' },
                 pageInfo: {
                   endCursor: 'cursor-1',
                   hasNextPage: false,
@@ -302,12 +308,14 @@ describe('useBundleAssets', () => {
         setup({ missingHeadReport: true })
         const { result } = renderHook(
           () =>
-            useBundleAssets({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'codecov',
-              branch: 'main',
-              bundle: 'test-bundle',
+            useInfiniteQueryV5({
+              ...BundleAssetsQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                branch: 'main',
+                bundle: 'test-bundle',
+              }),
             }),
           {
             wrapper,
@@ -324,6 +332,7 @@ describe('useBundleAssets', () => {
               {
                 assets: [],
                 bundleData: null,
+                bundleInfo: null,
                 pageInfo: null,
               },
             ],
@@ -338,12 +347,14 @@ describe('useBundleAssets', () => {
       setup({ isNullOwner: true })
       const { result } = renderHook(
         () =>
-          useBundleAssets({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
+          useInfiniteQueryV5({
+            ...BundleAssetsQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+            }),
           }),
         {
           wrapper,
@@ -356,7 +367,9 @@ describe('useBundleAssets', () => {
       await waitFor(() => {
         expect(result.current.data).toEqual({
           pageParams: [''],
-          pages: [{ assets: [], bundleData: null, pageInfo: null }],
+          pages: [
+            { assets: [], bundleData: null, bundleInfo: null, pageInfo: null },
+          ],
         })
       })
     })
@@ -377,12 +390,14 @@ describe('useBundleAssets', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useBundleAssets({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
+          useInfiniteQueryV5({
+            ...BundleAssetsQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+            }),
           }),
         {
           wrapper,
@@ -415,12 +430,14 @@ describe('useBundleAssets', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useBundleAssets({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
+          useInfiniteQueryV5({
+            ...BundleAssetsQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+            }),
           }),
         {
           wrapper,
@@ -453,12 +470,14 @@ describe('useBundleAssets', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useBundleAssets({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'test-bundle',
+          useInfiniteQueryV5({
+            ...BundleAssetsQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'test-bundle',
+            }),
           }),
         {
           wrapper,
