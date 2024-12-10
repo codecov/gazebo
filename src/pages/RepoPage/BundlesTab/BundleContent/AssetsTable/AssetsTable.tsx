@@ -17,6 +17,7 @@ import { OrderingDirection } from 'types'
 import {
   formatSizeToString,
   formatTimeToString,
+  SUPPORTED_FILE_PATH_PLUGINS,
 } from 'shared/utils/bundleAnalysis'
 import Icon from 'ui/Icon'
 import Sparkline from 'ui/Sparkline'
@@ -57,6 +58,7 @@ export function ChangeOverTime({
 
 interface Column {
   name: string
+  filePath: string[] | undefined
   extension: string
   size: number
   loadTime: number
@@ -80,8 +82,11 @@ interface Column {
 
 const columnHelper = createColumnHelper<Column>()
 
-const createColumns = (totalBundleSize: number | null) => [
-  columnHelper.accessor('name', {
+const createColumns = (
+  totalBundleSize: number | null,
+  includeFilePath: boolean
+) => {
+  const nameColumn = columnHelper.accessor('name', {
     header: 'Asset',
     cell: ({ getValue, row }) => {
       return (
@@ -107,22 +112,31 @@ const createColumns = (totalBundleSize: number | null) => [
         </p>
       )
     },
-  }),
-  columnHelper.accessor('extension', {
+  })
+
+  const filePathColumn = columnHelper.accessor('filePath', {
+    header: 'File path',
+    cell: (info) => info.renderValue()?.at(-1) ?? '',
+  })
+
+  const extensionColumn = columnHelper.accessor('extension', {
     header: 'Type',
     cell: (info) => info.renderValue(),
-  }),
-  columnHelper.accessor('loadTime', {
+  })
+
+  const loadTimeColumn = columnHelper.accessor('loadTime', {
     header: 'Estimated load time (3G)',
     cell: ({ getValue }) => formatTimeToString(getValue()),
-  }),
-  columnHelper.accessor('size', {
+  })
+
+  const sizeColumn = columnHelper.accessor('size', {
     header: 'Size',
     cell: ({ getValue }) => {
       return genSizeColumn({ size: getValue(), totalBundleSize })
     },
-  }),
-  columnHelper.accessor('changeOverTime', {
+  })
+
+  const changeOverTimeColumn = columnHelper.accessor('changeOverTime', {
     header: 'Change over time',
     enableSorting: false,
     cell: ({ getValue, row }) => {
@@ -169,8 +183,17 @@ const createColumns = (totalBundleSize: number | null) => [
 
       return undefined
     },
-  }),
-]
+  })
+
+  return [
+    nameColumn,
+    ...(includeFilePath ? [filePathColumn] : []),
+    extensionColumn,
+    loadTimeColumn,
+    sizeColumn,
+    changeOverTimeColumn,
+  ]
+}
 
 interface URLParams {
   provider: string
@@ -254,6 +277,7 @@ export const AssetsTable: React.FC = () => {
           .filter(Boolean)
           .map((asset) => ({
             name: asset!.name,
+            filePath: asset!.routes ?? undefined,
             extension: asset!.extension,
             size: asset!.bundleData.size.uncompress,
             loadTime: asset!.bundleData.loadTime.threeG,
@@ -273,7 +297,14 @@ export const AssetsTable: React.FC = () => {
     [data?.pages]
   )
 
-  const columns = useMemo(() => createColumns(bundleSize), [bundleSize])
+  const includeFilePath = SUPPORTED_FILE_PATH_PLUGINS.includes(
+    tableData.bundleInfo?.pluginName ?? ''
+  )
+
+  const columns = useMemo(
+    () => createColumns(bundleSize, includeFilePath),
+    [bundleSize, includeFilePath]
+  )
 
   const table = useReactTable({
     columns,
