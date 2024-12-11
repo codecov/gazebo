@@ -9,7 +9,7 @@ const ExampleBlurb = () => {
         isExternal
         hook="codecov-workflow-intro"
       >
-        javascript config.yml example
+        JavaScript config.yml example
       </A>{' '}
       and see{' '}
       <A
