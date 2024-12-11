@@ -222,9 +222,9 @@ jobs:
       <WorkflowYMLStep
         framework={framework}
         frameworkInstructions={frameworkInstructions}
-        stepNum={showTokenExtraStep ? 3 : 4}
+        stepNum={showTokenExtraStep ? 4 : 3}
       />
-      <MergeStep stepNum={showTokenExtraStep ? 4 : 5} />
+      <MergeStep stepNum={showTokenExtraStep ? 5 : 4} />
       <FeedbackCTA />
       <LearnMoreBlurb />
     </div>
