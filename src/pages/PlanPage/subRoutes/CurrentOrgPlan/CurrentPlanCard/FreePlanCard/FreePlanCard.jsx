@@ -1,8 +1,9 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import isNumber from 'lodash/isNumber'
 import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { usePlanPageData } from 'pages/PlanPage/hooks'
+import { PlanPageDataQueryOpts } from 'pages/PlanPage/queries/PlanPageDataQueryOpts'
 import {
   planPropType,
   TrialStatuses,
@@ -25,7 +26,9 @@ import PlanPricing from '../shared/PlanPricing'
 
 function FreePlanCard({ plan, scheduledPhase }) {
   const { provider, owner } = useParams()
-  const { data: ownerData } = usePlanPageData({ owner, provider })
+  const { data: ownerData } = useSuspenseQueryV5(
+    PlanPageDataQueryOpts({ owner, provider })
+  )
   const { data: planData } = usePlanData({
     provider,
     owner,
