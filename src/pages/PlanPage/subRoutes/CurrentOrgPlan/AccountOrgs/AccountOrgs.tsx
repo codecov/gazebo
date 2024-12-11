@@ -16,7 +16,7 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import { Tooltip } from 'ui/Tooltip'
 
-import { Account } from '../hooks/useEnterpriseAccountDetails'
+import { Account } from '../queries/EnterpriseAccountDetailsQueryOpts'
 import { InfiniteAccountOrganizationsQueryOpts } from '../queries/InfiniteAccountOrganizationsQueryOpts'
 
 interface AccountOrgsArgs {

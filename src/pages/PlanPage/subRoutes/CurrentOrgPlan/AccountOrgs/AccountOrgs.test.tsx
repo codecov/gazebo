@@ -11,7 +11,7 @@ import { MemoryRouter, Route, useLocation } from 'react-router'
 
 import AccountOrgs from './AccountOrgs'
 
-import { Account } from '../hooks/useEnterpriseAccountDetails'
+import { Account } from '../queries/EnterpriseAccountDetailsQueryOpts'
 
 const mockAccount: Account = {
   name: 'my-account',
