@@ -1,4 +1,7 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { delay, graphql, HttpResponse } from 'msw'
@@ -102,16 +105,11 @@ const mockReversedOrgs = {
 
 let testLocation: ReturnType<typeof useLocation>
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      suspense: true,
-    },
-  },
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
+  <QueryClientProviderV5 client={queryClientV5}>
     <MemoryRouter initialEntries={['/plan/gh/codecov']}>
       <Route path="/plan/:provider/:owner">{children}</Route>
       <Route
@@ -122,17 +120,22 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
         }}
       />
     </MemoryRouter>
-  </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('AccountOrgs', () => {
   function setup() {
