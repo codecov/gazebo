@@ -1,8 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
 import { formatTimeToNow } from 'shared/utils/dates'
 import { Upload } from 'shared/utils/extractUploads'
 
@@ -26,21 +31,25 @@ const mockUpload: Upload = {
 }
 
 const queryClient = new QueryClient()
+const queryClientV5 = new QueryClientV5()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={[
-        '/gh/codecov/codecov-api/commit/a758cb364d190e9677ae2a3dd3b2af7690971624',
-      ]}
-    >
-      <Route path="/gh/:owner/:repo/commit/:commit">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter
+        initialEntries={[
+          '/gh/codecov/codecov-api/commit/a758cb364d190e9677ae2a3dd3b2af7690971624',
+        ]}
+      >
+        <Route path="/gh/:owner/:repo/commit/:commit">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
 })
 
 describe('UploadsCard', () => {
@@ -497,9 +506,9 @@ describe('UploadsCard', () => {
       await user.click(checkbox)
 
       await waitFor(() =>
-        expect(queryClient.getQueryData(['IgnoredUploadIds'])).toStrictEqual([
-          0,
-        ])
+        expect(
+          queryClientV5.getQueryData(IgnoredIdsQueryOptions().queryKey)
+        ).toStrictEqual([0])
       )
     })
 
@@ -511,11 +520,15 @@ describe('UploadsCard', () => {
       const checkbox = screen.getByRole('checkbox')
       await user.click(checkbox)
 
-      expect(queryClient.getQueryData(['IgnoredUploadIds'])).toStrictEqual([0])
+      expect(
+        queryClientV5.getQueryData(IgnoredIdsQueryOptions().queryKey)
+      ).toStrictEqual([0])
 
       await user.click(checkbox)
 
-      expect(queryClient.getQueryData(['IgnoredUploadIds'])).toStrictEqual([])
+      expect(
+        queryClientV5.getQueryData(IgnoredIdsQueryOptions().queryKey)
+      ).toStrictEqual([])
     })
 
     it('handles null id gracefully', async () => {

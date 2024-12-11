@@ -1,7 +1,7 @@
 import React from 'react'
 import '../src/globals.css'
 
-const Layout = ({ children }) => {
+const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return <div className="text-sm text-ds-primary-base">{children}</div>
 }
 
