@@ -1,10 +1,10 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { infiniteQueryOptions as infiniteQueryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { OrderingDirection } from 'types'
 
 import Api from 'shared/api/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 import { mapEdges } from 'shared/utils/graphql'
 
 const RequestSchema = z.object({
@@ -65,25 +65,25 @@ const query = `query InfiniteAccountOrganizations(
   }
 }`
 
-interface UseInfiniteAccountOrganizationsArgs {
+interface InfiniteAccountOrganizationsQueryArgs {
   provider: string
   owner: string
   first?: number
   orderingDirection?: OrderingDirection
 }
 
-export function useInfiniteAccountOrganizations({
+export function InfiniteAccountOrganizationsQueryOpts({
   provider,
   owner,
   first = 20,
   orderingDirection = 'DESC',
-}: UseInfiniteAccountOrganizationsArgs) {
+}: InfiniteAccountOrganizationsQueryArgs) {
   const variables = {
     first,
     direction: orderingDirection,
   }
 
-  return useInfiniteQuery({
+  return infiniteQueryOptionsV5({
     queryKey: ['InfiniteAccountOrganizations', provider, owner, variables],
     queryFn: ({ pageParam, signal }) =>
       Api.graphql({
@@ -99,21 +99,22 @@ export function useInfiniteAccountOrganizations({
         const parsedRes = RequestSchema.safeParse(res.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useInfiniteAccountOrganizations - 404 Failed to parse data',
-          } satisfies NetworkErrorObject)
+            error: parsedRes.error,
+          })
         }
 
         const account = parsedRes?.data?.owner?.account
 
         if (!account) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useInfiniteAccountOrganizations - 404 Cannot find Account for Owner',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         return {
@@ -121,7 +122,9 @@ export function useInfiniteAccountOrganizations({
           pageInfo: account.organizations.pageInfo,
         }
       }),
-    suspense: false,
-    getNextPageParam: (data) => data.pageInfo.endCursor,
+    initialPageParam: '',
+    getNextPageParam: (data) => {
+      return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : null
+    },
   })
 }
