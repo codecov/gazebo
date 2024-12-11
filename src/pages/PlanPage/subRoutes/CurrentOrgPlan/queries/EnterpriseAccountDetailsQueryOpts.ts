@@ -15,7 +15,7 @@ const AccountSchema = z.object({
 
 export type Account = z.infer<typeof AccountSchema>
 
-export const RequestSchema = z.object({
+export const EnterpriseAccountDetailsRequestSchema = z.object({
   owner: z
     .object({
       account: AccountSchema.nullable(),
@@ -56,7 +56,9 @@ export function EnterpriseAccountDetailsQueryOpts({
           owner,
         },
       }).then((res) => {
-        const parsedRes = RequestSchema.safeParse(res?.data)
+        const parsedRes = EnterpriseAccountDetailsRequestSchema.safeParse(
+          res?.data
+        )
 
         if (!parsedRes.success) {
           return rejectNetworkError({

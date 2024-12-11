@@ -17,7 +17,7 @@ import { Plans } from 'shared/utils/billing'
 import { AlertOptions, type AlertOptionsType } from 'ui/Alert'
 
 import CurrentOrgPlan from './CurrentOrgPlan'
-import { RequestSchema as EnterpriseAccountDetailsQueryOptsSchema } from './queries/EnterpriseAccountDetailsQueryOpts'
+import { EnterpriseAccountDetailsRequestSchema } from './queries/EnterpriseAccountDetailsQueryOpts'
 
 vi.mock('./BillingDetails', () => ({ default: () => 'BillingDetails' }))
 vi.mock('./CurrentPlanCard', () => ({ default: () => 'CurrentPlanCard' }))
@@ -138,7 +138,7 @@ afterAll(() => {
 interface SetupArgs {
   accountDetails?: z.infer<typeof AccountDetailsSchema>
   enterpriseAccountDetails?: z.infer<
-    typeof EnterpriseAccountDetailsQueryOptsSchema
+    typeof EnterpriseAccountDetailsRequestSchema
   >
 }
 
