@@ -10,7 +10,7 @@ interface LineNumberProps {
   index: number
   virtualizer: Virtualizer<Window, Element>
   lineNumber: string | null | undefined
-  item: VirtualItem
+  item: VirtualItem<Element>
   isHighlighted: boolean
   coverageValue: CoverageValue
   onClick: () => void
