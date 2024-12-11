@@ -54,7 +54,7 @@ const UploadSchema = z.object({
   provider: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
-  flags: z.array(z.string()).nullable(),
+  flags: z.array(z.string()).nullish(),
   jobCode: z.string().nullable(),
   downloadUrl: z.string(),
   ciUrl: z.string().nullable(),
