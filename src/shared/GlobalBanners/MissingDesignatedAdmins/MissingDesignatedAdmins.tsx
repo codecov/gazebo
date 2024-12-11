@@ -57,7 +57,7 @@ const MissingDesignatedAdmins = () => {
       <p>
         Your organization does not have designated admins to manage the install.
         To resolve this, please add the admins in the install.yml.{' '}
-        {/* To be typed in UI part 4 */}
+        {/* @ts-expect-error - A hasn't been typed yet */}
         <A
           isExternal
           href="https://docs.codecov.com/v5.0/docs/configuration#instance-wide-admins"

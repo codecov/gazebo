@@ -1,10 +1,11 @@
 import { useParams } from 'react-router-dom'
 
 import { useMyContexts, useOwner } from 'services/user'
+import { Provider } from 'shared/api/helpers'
 import ContextSwitcher from 'ui/ContextSwitcher'
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 
