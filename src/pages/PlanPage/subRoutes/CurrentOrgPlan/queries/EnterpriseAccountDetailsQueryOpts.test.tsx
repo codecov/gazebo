@@ -1,9 +1,13 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useEnterpriseAccountDetails } from './useEnterpriseAccountDetails'
+import { EnterpriseAccountDetailsQueryOpts } from './EnterpriseAccountDetailsQueryOpts'
 
 const mockEnterpriseAccountDetails = {
   owner: {
@@ -11,28 +15,34 @@ const mockEnterpriseAccountDetails = {
       name: 'account-name',
       totalSeatCount: 10,
       activatedUserCount: 7,
-      organizations: {
-        totalCount: 3,
-      },
+      organizations: { totalCount: 3 },
     },
   },
 }
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 interface SetupArgs {
   badResponse?: boolean
@@ -54,7 +64,13 @@ describe('useEnterpriseAccountDetails', () => {
     setup({ badResponse: true })
     console.error = () => {}
     const { result } = renderHook(
-      () => useEnterpriseAccountDetails({ provider: 'gh', owner: 'codecov' }),
+      () =>
+        useQueryV5(
+          EnterpriseAccountDetailsQueryOpts({
+            provider: 'gh',
+            owner: 'codecov',
+          })
+        ),
       { wrapper }
     )
 
@@ -73,10 +89,12 @@ describe('useEnterpriseAccountDetails', () => {
     setup({})
     const { result } = renderHook(
       () =>
-        useEnterpriseAccountDetails({
-          provider: 'gh',
-          owner: 'codecov',
-        }),
+        useQueryV5(
+          EnterpriseAccountDetailsQueryOpts({
+            provider: 'gh',
+            owner: 'codecov',
+          })
+        ),
       { wrapper }
     )
 

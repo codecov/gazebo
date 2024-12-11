@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 
 const AccountSchema = z.object({
   name: z.string(),
@@ -15,7 +15,7 @@ const AccountSchema = z.object({
 
 export type Account = z.infer<typeof AccountSchema>
 
-const RequestSchema = z.object({
+export const RequestSchema = z.object({
   owner: z
     .object({
       account: AccountSchema.nullable(),
@@ -36,16 +36,16 @@ const query = `query EnterpriseAccountDetails($owner: String!) {
   }
 }`
 
-interface UseEnterpriseAccountDetailsArgs {
+interface EnterpriseAccountDetailsQueryArgs {
   provider: string
   owner: string
 }
 
-export function useEnterpriseAccountDetails({
+export function EnterpriseAccountDetailsQueryOpts({
   provider,
   owner,
-}: UseEnterpriseAccountDetailsArgs) {
-  return useQuery({
+}: EnterpriseAccountDetailsQueryArgs) {
+  return queryOptionsV5({
     queryKey: ['EnterpriseAccountDetails', provider, owner],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -59,11 +59,12 @@ export function useEnterpriseAccountDetails({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useEnterpriseAccountDetails - 404 Failed to parse data',
-          } satisfies NetworkErrorObject)
+            error: parsedRes.error,
+          })
         }
 
         return parsedRes.data
