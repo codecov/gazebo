@@ -178,7 +178,7 @@ describe('ProPlanDetails', () => {
     }
   ) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -198,7 +198,7 @@ describe('ProPlanDetails', () => {
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         if (isSentryPlan) {
           return HttpResponse.json({
             data: {
@@ -217,7 +217,7 @@ describe('ProPlanDetails', () => {
           })
         }
       }),
-      http.get('/internal/gh/codecov/account-details', (info) => {
+      http.get('/internal/gh/codecov/account-details', () => {
         if (isSentryPlan) {
           return HttpResponse.json({
             plan: sentryPlanYear,

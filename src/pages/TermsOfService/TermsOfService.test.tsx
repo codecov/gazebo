@@ -105,7 +105,7 @@ describe('TermsOfService', () => {
     })
 
     server.use(
-      http.get('/internal/user', (info) => {
+      http.get('/internal/user', () => {
         return HttpResponse.json({ ...mockedUserData, ...internalUserData })
       }),
       graphql.mutation('SigningTermsAgreement', (info) => {

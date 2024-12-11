@@ -59,14 +59,14 @@ describe('EnterpriseLandingPage', () => {
     { sendProviders = true }: SetupArgs = { sendProviders: true }
   ) {
     server.use(
-      graphql.query('GetLoginProviders', (info) => {
+      graphql.query('GetLoginProviders', () => {
         if (sendProviders) {
           return HttpResponse.json({ data: mockServiceProviders })
         }
 
         return HttpResponse.json({ data: { config: { loginProviders: [] } } })
       }),
-      graphql.query('EnterpriseLandingPageUser', (info) => {
+      graphql.query('EnterpriseLandingPageUser', () => {
         return HttpResponse.json({ data: { me: undefined } })
       })
     )

@@ -80,7 +80,7 @@ describe('useRepoRateLimitStatus', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoRateLimitStatus', (info) => {
+      graphql.query('GetRepoRateLimitStatus', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

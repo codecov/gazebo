@@ -49,10 +49,10 @@ describe('useTracking', () => {
     }
 
     server.use(
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: user })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: { owner: 'codecov' } })
       })
     )

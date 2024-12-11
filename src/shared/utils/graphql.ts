@@ -10,7 +10,7 @@ type Connection<TNode> =
   | null
 
 export function mapEdges<TNode>(connection: Connection<TNode>) {
-  let edges = []
+  const edges = []
   if (
     !isUndefined(connection) &&
     !isNull(connection) &&

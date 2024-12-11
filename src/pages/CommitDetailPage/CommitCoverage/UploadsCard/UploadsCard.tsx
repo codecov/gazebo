@@ -156,7 +156,7 @@ function UploadsCard() {
         <Card.Header className="p-4">
           <div className="flex justify-between">
             <Card.Title size="base">Coverage reports history</Card.Title>
-            {/* @ts-expect-error */}
+            {/* @ts-expect-error - A hasn't been typed yet */}
             <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
               {invalidYamlError ? (
                 <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">

@@ -84,15 +84,12 @@ describe('useUpgradePlan', () => {
   describe('when called', () => {
     beforeEach(() => {
       server.use(
-        http.patch(
-          `/internal/${provider}/${owner}/account-details/`,
-          (info) => {
-            return HttpResponse.json({
-              ...accountDetails,
-              checkoutSessionId: '1234',
-            })
-          }
-        )
+        http.patch(`/internal/${provider}/${owner}/account-details/`, () => {
+          return HttpResponse.json({
+            ...accountDetails,
+            checkoutSessionId: '1234',
+          })
+        })
       )
     })
 
@@ -129,15 +126,12 @@ describe('useUpgradePlan', () => {
     describe('when calling the mutation, which does not return a checkoutSessionId', () => {
       beforeEach(() => {
         server.use(
-          http.patch(
-            `/internal/${provider}/${owner}/account-details/`,
-            (info) => {
-              return HttpResponse.json({
-                ...accountDetails,
-                checkoutSessionId: null,
-              })
-            }
-          )
+          http.patch(`/internal/${provider}/${owner}/account-details/`, () => {
+            return HttpResponse.json({
+              ...accountDetails,
+              checkoutSessionId: null,
+            })
+          })
         )
       })
 

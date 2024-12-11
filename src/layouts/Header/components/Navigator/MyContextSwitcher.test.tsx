@@ -82,7 +82,7 @@ describe('MyContextSwitcher', () => {
           return HttpResponse.json({ data: { me: null } })
         }
 
-        const orgList = !!info.variables?.after ? org2 : org1
+        const orgList = info.variables?.after ? org2 : org1
         const hasNextPage = info.variables?.after ? false : true
         const endCursor = info.variables?.after ? 'second' : 'first'
 
@@ -105,7 +105,7 @@ describe('MyContextSwitcher', () => {
 
         return HttpResponse.json({ data: queryData })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         if (noData) {
           return HttpResponse.json({ data: { me: null } })
         }

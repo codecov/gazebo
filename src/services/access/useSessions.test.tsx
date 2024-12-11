@@ -109,7 +109,7 @@ describe('useSessions', () => {
     dataReturned = { me: null },
   }: SetupArgs) {
     server.use(
-      graphql.query('MySessions', (info) => {
+      graphql.query('MySessions', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: {} })
         }

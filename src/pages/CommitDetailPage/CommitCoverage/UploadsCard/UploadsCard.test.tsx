@@ -79,7 +79,7 @@ describe('UploadsCard', () => {
     mocks.useCommitErrors.mockReturnValue(mockCommitErrors)
 
     server.use(
-      graphql.query('CommitYaml', (info) => {
+      graphql.query('CommitYaml', () => {
         return HttpResponse.json({
           data: {
             owner: {

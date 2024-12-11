@@ -45,7 +45,7 @@ interface SetupArgs {
 describe('useSelfHostedSeatsAndLicense', () => {
   function setup({ isUnsuccessfulParseError = false }: SetupArgs) {
     server.use(
-      graphql.query('SelfHostedSeatsAndLicense', (info) => {
+      graphql.query('SelfHostedSeatsAndLicense', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else {

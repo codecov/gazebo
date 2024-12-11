@@ -61,7 +61,7 @@ function EmailAddress() {
       <div className="flex justify-between">
         <h4 className="font-semibold">Email address</h4>{' '}
         {!isFormOpen && (
-          /* @ts-expect-error */
+          /* @ts-expect-error - A hasn't been typed yet */
           <A
             variant="semibold"
             onClick={() => setIsFormOpen(true)}

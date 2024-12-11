@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { type Mock } from 'vitest'
 
 import { TierNames, TTierNames } from 'services/tier'
 
@@ -296,7 +295,6 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
-  let resizeObserverMock: Mock
   /**
    * ResizeObserver is not available, so we have to create a mock to avoid error coming
    * from `react-resize-detector`.
@@ -305,7 +303,7 @@ beforeEach(() => {
    * This mock also allow us to use {@link notifyResizeObserverChange} to fire changes
    * from inside our test.
    */
-  resizeObserverMock = vi.fn().mockImplementation((callback) => {
+  const resizeObserverMock = vi.fn().mockImplementation(() => {
     return {
       observe: vi.fn(),
       unobserve: vi.fn(),
@@ -313,7 +311,7 @@ beforeEach(() => {
     }
   })
 
-  // @ts-ignore
+  // @ts-expect-error - deleting so we can override with the mock
   delete window.ResizeObserver
 
   window.ResizeObserver = resizeObserverMock
@@ -343,63 +341,63 @@ describe('Coverage overview tab', () => {
     fileCount = 10,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({
           data: mockRepo(isPrivate, isFirstPullRequest),
         })
       }),
-      graphql.query('GetBranches', (info) => {
+      graphql.query('GetBranches', () => {
         return HttpResponse.json({ data: branchesMock })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({
           data: {
             owner: { repository: { ...branchMock } },
           },
         })
       }),
-      graphql.query('BranchContents', (info) => {
+      graphql.query('BranchContents', () => {
         return HttpResponse.json({ data: branchesContentsMock })
       }),
-      graphql.query('RepoConfig', (info) => {
+      graphql.query('RepoConfig', () => {
         return HttpResponse.json({ data: repoConfigMock })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: overviewMock })
       }),
-      graphql.query('GetRepoCoverage', (info) => {
+      graphql.query('GetRepoCoverage', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('GetBranchCoverageMeasurements', (info) => {
+      graphql.query('GetBranchCoverageMeasurements', () => {
         return HttpResponse.json({ data: mockBranchMeasurements })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillFlag })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({
           data: { owner: { plan: { tierName: tierValue } } },
         })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
       }),
-      graphql.query('CoverageTabData', (info) => {
+      graphql.query('CoverageTabData', () => {
         return HttpResponse.json({ data: mockCoverageTabData(fileCount) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       }),
-      graphql.query('GetBranchComponents', (info) => {
+      graphql.query('GetBranchComponents', () => {
         return HttpResponse.json({ data: mockBranchComponents })
       }),
-      graphql.query('FlagsSelect', (info) => {
+      graphql.query('FlagsSelect', () => {
         return HttpResponse.json({ data: mockFlagSelect })
       }),
-      http.get('/internal/:provider/:owner/:repo/coverage/tree', (info) => {
+      http.get('/internal/:provider/:owner/:repo/coverage/tree', () => {
         return HttpResponse.json({ data: treeMock })
       }),
-      http.post('/internal/charts/:provider/:owner/coverage/:repo', (info) => {
+      http.post('/internal/charts/:provider/:owner/coverage/:repo', () => {
         return HttpResponse.json({ data: {} })
       })
     )

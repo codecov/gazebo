@@ -39,7 +39,7 @@ afterAll(() => {
 describe('BackfillBanner', () => {
   function setup(data = {}) {
     server.use(
-      graphql.query('BackfillComponentMemberships', (info) => {
+      graphql.query('BackfillComponentMemberships', () => {
         return HttpResponse.json({ data })
       })
     )

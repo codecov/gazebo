@@ -126,12 +126,9 @@ describe('MembersTable', () => {
     const user = userEvent.setup()
     mocks.useImage.mockReturnValue({ src: 'mocked-avatar-url' })
     server.use(
-      http.get(
-        '/internal/:provider/codecov/account-details',
-        (req, res, ctx) => {
-          return HttpResponse.json(accountDetails)
-        }
-      ),
+      http.get('/internal/:provider/codecov/account-details', () => {
+        return HttpResponse.json(accountDetails)
+      }),
       http.get('/internal/:provider/codecov/users', (info) => {
         requestSearchParams = new URL(info.request.url).searchParams
 

@@ -54,7 +54,7 @@ afterAll(() => {
 describe('SeatDetails', () => {
   function setup({ data = mockData }: { data?: any }) {
     server.use(
-      graphql.query('Seats', (info) => {
+      graphql.query('Seats', () => {
         return HttpResponse.json({ data })
       })
     )

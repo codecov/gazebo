@@ -66,7 +66,7 @@ describe('useSunburstChart', () => {
     coverageTreeStatus = 200,
   }) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: repoOverviewData })
       }),
       http.get('/internal/:provider/:owner/:repo/coverage/tree', (info) => {

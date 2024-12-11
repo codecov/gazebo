@@ -16,7 +16,7 @@ type LineContent = { types: Array<string>; content: string }
 export interface DiffLineProps {
   baseCoverage: LineType | null
   baseNumber?: string
-  getTokenProps: ({ token, key }: { token: LineContent; key: number }) => {}
+  getTokenProps: ({ token, key }: { token: LineContent; key: number }) => object
   headCoverage: LineType | null
   headNumber?: string
   hitCount: number | null

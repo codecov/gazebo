@@ -182,7 +182,7 @@ describe('usePrefetchSingleFileComp', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('ImpactedFileComparison', (info) => {
+      graphql.query('ImpactedFileComparison', () => {
         if (isRenamed) {
           return HttpResponse.json({ data: mockRenamedFile })
         } else if (isDeleted) {

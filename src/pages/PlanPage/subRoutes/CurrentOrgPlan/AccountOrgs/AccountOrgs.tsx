@@ -88,7 +88,7 @@ const columns = [
     cell: (info) =>
       info.row.original.isCurrentUserPartOfOrg ? (
         <div className="flex w-full justify-end">
-          {/* @ts-ignore-error */}
+          {/* @ts-expect-error - A hasn't been typed yet */}
           <A
             to={{
               pageName: 'membersTab',
@@ -168,7 +168,8 @@ export default function AccountOrgs({ account }: AccountOrgsArgs) {
       <Card.Header>
         <Card.Title size="sm">Account details</Card.Title>
         <Card.Description className="text-sm text-ds-gray-quinary">
-          To modify your orgs and seats, please {/* @ts-ignore-error */}
+          To modify your orgs and seats, please{' '}
+          {/* @ts-expect-error - A hasn't been typed yet */}
           <A to={{ pageName: 'enterpriseSupport' }}>contact support</A>.
         </Card.Description>
       </Card.Header>

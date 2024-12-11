@@ -212,15 +212,15 @@ describe('FlagMultiSelect', () => {
 
         return HttpResponse.json({ data: mockFirstResponse })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: backfillData })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({
           data: { owner: { plan: { tierName: tierValue } } },
         })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
       })
     )

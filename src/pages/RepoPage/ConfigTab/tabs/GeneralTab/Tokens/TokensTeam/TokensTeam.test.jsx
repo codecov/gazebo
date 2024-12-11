@@ -32,7 +32,7 @@ afterAll(() => server.close())
 describe('TokensTeam', () => {
   function setup() {
     server.use(
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({
           data: {
             owner: {

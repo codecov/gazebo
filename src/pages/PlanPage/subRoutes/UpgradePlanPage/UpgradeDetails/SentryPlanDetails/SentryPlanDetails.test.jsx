@@ -172,7 +172,7 @@ describe('SentryPlanDetails', () => {
     }
   ) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -192,12 +192,12 @@ describe('SentryPlanDetails', () => {
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: { owner: { availablePlans: allPlans } },
         })
       }),
-      http.get('/internal/gh/codecov/account-details', (info) => {
+      http.get('/internal/gh/codecov/account-details', () => {
         return HttpResponse.json({
           plan: sentryPlanYear,
           subscriptionDetail: {

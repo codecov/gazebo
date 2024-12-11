@@ -66,7 +66,7 @@ describe('RepoComponentsYamlSelector', () => {
     isNotFoundError = false,
   } = {}) {
     server.use(
-      graphql.query('RepoComponentsSelector', (info) => {
+      graphql.query('RepoComponentsSelector', () => {
         if (isSchemaInvalid) {
           return HttpResponse.json({})
         }

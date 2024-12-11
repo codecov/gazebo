@@ -32,7 +32,7 @@ const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
 describe('useUpdateDefaultOrganization', () => {
   function setup(data = {}, triggerError = false) {
     server.use(
-      graphql.mutation('updateDefaultOrganization', (info) => {
+      graphql.mutation('updateDefaultOrganization', () => {
         if (triggerError) {
           return HttpResponse.json({ data })
         } else {

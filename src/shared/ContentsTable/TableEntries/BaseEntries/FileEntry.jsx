@@ -44,11 +44,7 @@ function FileEntry({
           options: {
             ref: linkRef,
             commit: commitSha,
-            tree: displayAsList
-              ? path
-              : !!urlPath
-                ? `${urlPath}/${name}`
-                : name,
+            tree: displayAsList ? path : urlPath ? `${urlPath}/${name}` : name,
             queryParams,
           },
         }}

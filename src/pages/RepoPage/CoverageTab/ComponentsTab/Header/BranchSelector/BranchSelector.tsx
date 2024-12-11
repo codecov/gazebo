@@ -16,7 +16,7 @@ interface URLParams {
 }
 
 const getDecodedBranch = (branch?: string) =>
-  !!branch ? decodeURIComponent(branch) : undefined
+  branch ? decodeURIComponent(branch) : undefined
 
 interface BranchSelectorProps {
   isDisabled: boolean | undefined

@@ -67,7 +67,7 @@ describe('YamlModal', () => {
   const showModal = vi.fn()
   function setup({ hasYamlErrors } = { hasYamlErrors: false }) {
     server.use(
-      graphql.query('CommitErrors', (info) => {
+      graphql.query('CommitErrors', () => {
         if (hasYamlErrors) {
           return HttpResponse.json({ data: mockCommitYamlErrors })
         }

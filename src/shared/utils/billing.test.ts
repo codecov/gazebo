@@ -289,8 +289,7 @@ describe('formatNumberToUSD', () => {
 
 describe('formatTimestampToCalendarDate', () => {
   it('formats into calendar date', () => {
-    // @ts-expect-error
-    const value = formatTimestampToCalendarDate('1660000000')
+    const value = formatTimestampToCalendarDate(1660000000)
 
     expect(value).toBe('August 8, 2022')
   })
@@ -310,7 +309,7 @@ describe('lastTwoDigits', () => {
   })
 
   it('return null when null', () => {
-    // @ts-expect-error
+    // @ts-expect-error - testing with a null
     const value = lastTwoDigits(null)
 
     expect(value).toBe(null)
@@ -322,7 +321,7 @@ describe('getNextBillingDate', () => {
     it('returns formatted timestamp', () => {
       const value = getNextBillingDate({
         subscriptionDetail: {
-          // @ts-expect-error
+          // @ts-expect-error - we're just testing this property we can ignore the other properties
           latestInvoice: {
             periodEnd: 1660000000,
           },
@@ -335,7 +334,7 @@ describe('getNextBillingDate', () => {
 
   describe('there is no timestamp', () => {
     it('returns null', () => {
-      // @ts-expect-error
+      // @ts-expect-error - testing when there are no properties
       const value = getNextBillingDate({})
 
       expect(value).toBeNull()

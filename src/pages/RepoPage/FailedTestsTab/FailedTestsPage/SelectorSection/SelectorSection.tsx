@@ -36,7 +36,7 @@ export const defaultQueryParams = {
 }
 
 const getDecodedBranch = (branch?: string) =>
-  !!branch ? decodeURIComponent(branch) : undefined
+  branch ? decodeURIComponent(branch) : undefined
 
 function SelectorSection() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)

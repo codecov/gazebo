@@ -121,7 +121,7 @@ describe('Header', () => {
   function setup({ user = mockUser }: SetupArgs) {
     mockedUseImpersonate.mockReturnValue({ isImpersonating: false })
     server.use(
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: user })
       })
     )

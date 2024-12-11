@@ -11,7 +11,7 @@ vi.mock('./BranchSelector', () => ({ default: () => 'BranchSelector' }))
 
 const server = setupServer()
 const queryClient = new QueryClient()
-let testLocation = {
+const testLocation = {
   pathname: '',
 }
 
@@ -92,7 +92,7 @@ describe('Header', () => {
     const mockApiVars = vi.fn()
 
     server.use(
-      graphql.query('BackfillComponentMemberships', (info) => {
+      graphql.query('BackfillComponentMemberships', () => {
         return HttpResponse.json({ data: backfillData })
       }),
       graphql.query('RepoComponentsSelector', (info) => {

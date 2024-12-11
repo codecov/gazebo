@@ -72,9 +72,9 @@ const getColumns = ({
     cell: (info) => {
       const repo = info.row.original
       let pageName = 'new'
-      if (!!repo?.coverageEnabled) {
+      if (repo?.coverageEnabled) {
         pageName = 'repo'
-      } else if (!!repo?.bundleAnalysisEnabled) {
+      } else if (repo?.bundleAnalysisEnabled) {
         pageName = 'bundles'
       }
 

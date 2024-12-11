@@ -151,7 +151,7 @@ describe('usePrefetchBranchDirEntry', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('BranchContents', (info) => {
+      graphql.query('BranchContents', () => {
         if (isMissingCoverage) {
           return HttpResponse.json({ data: mockDataMissingCoverage })
         } else if (isUnknownPath) {
@@ -280,7 +280,7 @@ describe('usePrefetchBranchDirEntry', () => {
   })
 
   describe('rejecting request', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null

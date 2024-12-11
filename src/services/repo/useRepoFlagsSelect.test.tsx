@@ -141,7 +141,7 @@ describe('FlagsSelect', () => {
         }
         return HttpResponse.json({ data: dataReturned })
       }),
-      graphql.query('PullFlagsSelect', (info) => {
+      graphql.query('PullFlagsSelect', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: invalidData })
         } else if (isOwnerNotActivatedError) {

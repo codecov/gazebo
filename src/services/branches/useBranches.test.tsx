@@ -97,7 +97,7 @@ describe('GetBranches', () => {
           return HttpResponse.json({ data: mockNullOwnerData })
         }
 
-        const branchData = !!info.variables?.after ? branch2 : branch1
+        const branchData = info.variables?.after ? branch2 : branch1
         const hasNextPage = info.variables?.after ? false : true
         const endCursor = info.variables?.after ? 'second' : 'first'
 

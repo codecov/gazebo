@@ -22,7 +22,7 @@ const baseBorder = 'relative border-ds-gray-tertiary border-r'
 const afterBorder = 'after:absolute after:inset-y-0 after:right-0'
 const targetedLineClass = 'bg-ds-blue-medium bg-opacity-25'
 
-export const classNamePerLineState = (targeted: Boolean = false) => ({
+export const classNamePerLineState = (targeted: boolean = false) => ({
   [LINE_STATE.COVERED]: cs(baseBorder, {
     'bg-ds-coverage-covered font-normal': !targeted,
     [targetedLineClass]: targeted,
@@ -50,7 +50,7 @@ export const classNamePerLineState = (targeted: Boolean = false) => ({
   ),
 })
 
-export const classNamePerLineContent = (targeted: Boolean = false) => ({
+export const classNamePerLineContent = (targeted: boolean = false) => ({
   [LINE_STATE.COVERED]: cs('bg-opacity-25', {
     'bg-ds-coverage-covered': !targeted,
     [targetedLineClass]: targeted,

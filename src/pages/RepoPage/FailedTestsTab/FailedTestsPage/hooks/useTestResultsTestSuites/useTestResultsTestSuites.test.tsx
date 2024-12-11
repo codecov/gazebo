@@ -68,7 +68,7 @@ describe('useTestResultsTestSuites', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query('GetTestResultsTestSuites', (info) => {
+      graphql.query('GetTestResultsTestSuites', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {

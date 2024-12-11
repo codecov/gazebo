@@ -112,7 +112,7 @@ describe('usePullBundleHeadList', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullBundleHeadList', (info) => {
+      graphql.query('PullBundleHeadList', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockRepoNotFound })
         } else if (isOwnerNotActivatedError) {
@@ -125,7 +125,7 @@ describe('usePullBundleHeadList', () => {
 
         return HttpResponse.json({ data: mockPullBundleList })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )

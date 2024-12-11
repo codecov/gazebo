@@ -95,7 +95,7 @@ describe('PaidPlanCard', () => {
     plan = mockProPlan,
   }: SetupArgs) {
     server.use(
-      http.get('/internal/:provider/:owner/account-details/', (info) => {
+      http.get('/internal/:provider/:owner/account-details/', () => {
         if (hasScheduledDetails) {
           return HttpResponse.json({
             scheduleDetail: mockScheduleDetail,
@@ -103,14 +103,14 @@ describe('PaidPlanCard', () => {
         }
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: { hasPrivateRepos: true, plan },
           },
         })
       }),
-      graphql.query('PlanPageData', (info) => {
+      graphql.query('PlanPageData', () => {
         return HttpResponse.json({
           data: {
             owner: {
