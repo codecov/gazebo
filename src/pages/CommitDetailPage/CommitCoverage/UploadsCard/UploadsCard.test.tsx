@@ -1004,4 +1004,115 @@ describe('UploadsCard', () => {
       expect(travisUploadCheckboxTwo).not.toBeChecked()
     })
   })
+
+  describe('Download functionality', () => {
+    beforeEach(() => {
+      setup({
+        uploadsProviderList: ['travis'],
+        uploadsOverview: 'uploads overview',
+        groupedUploads: {
+          travis: [
+            {
+              id: 1,
+              name: 'travis-upload-1',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-25T16:36:19.559474+00:00',
+              updatedAt: '2020-08-25T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis1',
+              ciUrl: 'https://travis-ci.com/job/1',
+              uploadType: 'UPLOADED',
+              jobCode: 'job1',
+              buildCode: 'build1',
+              errors: [],
+            },
+            {
+              id: 2,
+              name: 'travis-upload-2',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-26T16:36:19.559474+00:00',
+              updatedAt: '2020-08-26T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis2',
+              ciUrl: 'https://travis-ci.com/job/2',
+              uploadType: 'UPLOADED',
+              jobCode: 'job2',
+              buildCode: 'build2',
+              errors: [],
+            },
+          ],
+        },
+        erroredUploads: {},
+        flagErrorUploads: {},
+        searchResults: [],
+        hasNoUploads: false,
+      })
+
+      global.fetch = vi.fn()
+      global.URL.createObjectURL = vi.fn()
+      global.URL.revokeObjectURL = vi.fn()
+    })
+
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    it('renders the Download button', async () => {
+      render(<UploadsCard />, { wrapper })
+      const downloadButton = screen.getByText('Download')
+      expect(downloadButton).toBeInTheDocument()
+    })
+
+    it('initiates download for all uploads when Download button is clicked', async () => {
+      const user = userEvent.setup()
+      const mockBlob = new Blob(['mock content'], { type: 'text/plain' })
+      global.fetch.mockResolvedValue({ blob: () => Promise.resolve(mockBlob) })
+      global.URL.createObjectURL.mockReturnValue('mock-blob-url')
+
+      render(<UploadsCard />, { wrapper })
+      const downloadButton = screen.getByText('Download')
+      await user.click(downloadButton)
+
+      expect(global.fetch).toHaveBeenCalledTimes(2)
+      expect(global.fetch).toHaveBeenCalledWith('/download/travis1', {
+        headers: { 'Content-Type': 'text/plain' },
+      })
+      expect(global.fetch).toHaveBeenCalledWith('/download/travis2', {
+        headers: { 'Content-Type': 'text/plain' },
+      })
+
+      expect(global.URL.createObjectURL).toHaveBeenCalledTimes(2)
+      expect(global.URL.createObjectURL).toHaveBeenCalledWith(mockBlob)
+
+      expect(global.URL.revokeObjectURL).toHaveBeenCalledTimes(2)
+      expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('mock-blob-url')
+    })
+
+    it('handles download errors gracefully', async () => {
+      const user = userEvent.setup()
+      global.fetch.mockRejectedValue(new Error('Download failed'))
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      render(<UploadsCard />, { wrapper })
+      const downloadButton = screen.getByText('Download')
+      await user.click(downloadButton)
+
+      expect(global.fetch).toHaveBeenCalledTimes(2)
+      expect(consoleSpy).toHaveBeenCalledTimes(2)
+      expect(consoleSpy).toHaveBeenCalledWith('Download failed:', expect.any(Error))
+
+      consoleSpy.mockRestore()
+    })
+
+    it('does not attempt to download when there are no uploads', async () => {
+      setup({ ...mocks.useUploads.mockReturnValue, groupedUploads: { travis: [] } })
+      const user = userEvent.setup()
+      render(<UploadsCard />, { wrapper })
+      const downloadButton = screen.getByText('Download')
+      await user.click(downloadButton)
+      expect(global.fetch).not.toHaveBeenCalled()
+    })
+  })
 })
