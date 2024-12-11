@@ -5,7 +5,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import cs from 'classnames'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -14,6 +13,7 @@ import {
   formatSizeToString,
   formatTimeToString,
 } from 'shared/utils/bundleAnalysis'
+import { cn } from 'shared/utils/cn'
 
 interface URLParams {
   provider: string
@@ -28,6 +28,7 @@ const isNumericValue = (value: string) =>
 
 interface Column {
   name: string
+  filePath: undefined
   extension: string
   size: number
   loadTime: number
@@ -43,12 +44,16 @@ const columns = [
       return <p className="max-w-xl truncate">{getValue()}</p>
     },
   }),
+  columnHelper.accessor('filePath', {
+    header: 'File path',
+    cell: ({ getValue }) => getValue(),
+  }),
   columnHelper.accessor('extension', {
     header: 'Type',
     cell: ({ renderValue }) => renderValue(),
   }),
   columnHelper.accessor('loadTime', {
-    header: 'Estimated load time (3G)',
+    header: 'Est. load time (3G)',
     cell: ({ getValue }) => formatTimeToString(getValue()),
   }),
   columnHelper.accessor('size', {
@@ -84,6 +89,7 @@ const ModulesTable: React.FC<ModulesTableProps> = ({ asset }) => {
     if (data?.modules.length) {
       return data.modules.map((module) => ({
         name: module.name,
+        filePath: undefined,
         extension: module.extension,
         size: module.bundleData.size.uncompress,
         loadTime: module.bundleData.loadTime.threeG,
@@ -122,17 +128,18 @@ const ModulesTable: React.FC<ModulesTableProps> = ({ asset }) => {
               <div
                 key={cell.id}
                 {...(isNumericValue(cell.column.id)
-                  ? {
-                      'data-type': 'numeric',
-                    }
+                  ? { 'data-type': 'numeric' }
                   : {})}
-                className={cs({
-                  'w-full @4xl/filelist:w-5/12': cell.column.id === 'name',
-                  'w-2/12 hidden @4xl/filelist:block text-right':
+                className={cn({
+                  'w-full @4xl/filelist:w-7/24 overflow-hidden':
+                    cell.column.id === 'name',
+                  'w-4/24 hidden @4xl/filelist:block text-right':
                     cell.column.id === 'loadTime' || cell.column.id === 'size',
-                  'w-1/12 hidden @4xl/filelist:flex grow justify-end gap-2':
+                  'w-4/24 hidden @4xl/filelist:flex justify-end':
                     cell.column.id === 'changeOverTime',
-                  'w-1/12 hidden @4xl/filelist:block text-right':
+                  'w-3/24 hidden @4xl/filelist:block text-right':
+                    cell.column.id === 'filePath',
+                  'w-2/24 hidden @4xl/filelist:block text-right':
                     cell.column.id === 'extension',
                 })}
               >
