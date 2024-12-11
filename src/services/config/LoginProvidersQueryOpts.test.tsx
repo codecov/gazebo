@@ -1,4 +1,8 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -6,29 +10,29 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
   EnterpriseLoginProviders,
-  useLoginProviders,
-} from './useLoginProviders'
+  LoginProvidersQueryOpts,
+} from './LoginProvidersQueryOpts'
 
 const server = setupServer()
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
+  <QueryClientProviderV5 client={queryClientV5}>
     <MemoryRouter initialEntries={['/']}>
       <Route path="/">{children}</Route>
     </MemoryRouter>
-  </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
   server.listen()
 })
 
-beforeEach(() => {
+afterEach(() => {
   server.resetHandlers()
-  queryClient.clear()
+  queryClientV5.clear()
 })
 
 afterAll(() => {
@@ -60,7 +64,10 @@ describe('useLoginProviders', () => {
       setup({
         loginProviders: ['GITHUB', 'GITLAB', 'BITBUCKET', 'OKTA'],
       })
-      const { result } = renderHook(() => useLoginProviders(), { wrapper })
+      const { result } = renderHook(
+        () => useQueryV5(LoginProvidersQueryOpts()),
+        { wrapper }
+      )
 
       await waitFor(() => result.current.isSuccess)
 
@@ -85,7 +92,10 @@ describe('useLoginProviders', () => {
           'BITBUCKET_SERVER',
         ],
       })
-      const { result } = renderHook(() => useLoginProviders(), { wrapper })
+      const { result } = renderHook(
+        () => useQueryV5(LoginProvidersQueryOpts()),
+        { wrapper }
+      )
 
       await waitFor(() => result.current.isSuccess)
 
@@ -119,7 +129,10 @@ describe('useLoginProviders', () => {
         hasParsingError: true,
       })
 
-      const { result } = renderHook(() => useLoginProviders(), { wrapper })
+      const { result } = renderHook(
+        () => useQueryV5(LoginProvidersQueryOpts()),
+        { wrapper }
+      )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
 

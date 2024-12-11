@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -30,8 +30,8 @@ query GetLoginProviders {
   }
 }`
 
-export const useLoginProviders = () => {
-  return useQuery({
+export const LoginProvidersQueryOpts = () => {
+  return queryOptionsV5({
     queryKey: ['GetLoginProviders'],
     queryFn: ({ signal }) =>
       Api.graphql({
