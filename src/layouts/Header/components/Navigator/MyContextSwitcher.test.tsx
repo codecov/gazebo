@@ -126,12 +126,9 @@ describe('MyContextSwitcher', () => {
   describe('when there are no contexts (user not logged in)', () => {
     it('renders nothing', async () => {
       setup(true)
-      const { container } = render(
-        <MyContextSwitcher pageName="accountPage" />,
-        {
-          wrapper: wrapper(),
-        }
-      )
+      const { container } = render(<MyContextSwitcher pageName="account" />, {
+        wrapper: wrapper(),
+      })
 
       await waitFor(() => expect(container).toBeEmptyDOMElement())
     })

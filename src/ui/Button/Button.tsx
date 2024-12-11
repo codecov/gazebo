@@ -1,6 +1,6 @@
 import cs from 'classnames'
 
-import AppLink from 'shared/AppLink'
+import AppLink, { AppLinkProps } from 'shared/AppLink'
 import Spinner from 'ui/Spinner'
 
 /*  
@@ -101,18 +101,6 @@ function pickVariant(
   return loading
     ? loadingVariantClasses[variant as keyof typeof loadingVariantClasses]
     : variantClasses[variant as keyof typeof variantClasses]
-}
-
-// using this type until AppLink is converted to TypeScript
-export interface AppLinkProps {
-  pageName: string
-  text?: string
-  options?: object
-  activeClassName?: string
-  showExternalIcon?: boolean
-  type?: 'submit' | 'button' | 'reset'
-  children?: React.ReactNode
-  exact?: boolean
 }
 
 interface WithTo {

@@ -25,7 +25,7 @@ export const withFeatureFlagProvider = (Component: React.ComponentType) => {
   In the future we might want to have a larger config to control
   features by licensing / configuration. This is fine for now though.
 */
-export function useFlags(fallback?: Record<string, unknown> | null) {
+export function useFlags(fallback?: Record<string, boolean | string> | null) {
   const useFlags = useLDFlags()
   if (config.LAUNCHDARKLY) {
     return useFlags
@@ -36,7 +36,7 @@ export function useFlags(fallback?: Record<string, unknown> | null) {
         'Warning! Self hosted build is missing a default feature flag value.'
       )
     }
-    return fallback
+    return fallback ?? {}
   }
 }
 
