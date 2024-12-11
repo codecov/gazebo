@@ -9,7 +9,7 @@ import { useEffect } from 'react'
 import config from 'config'
 
 // This is an older pattern that launch darkly still uses.
-export const withFeatureFlagProvider = (Component) => {
+export const withFeatureFlagProvider = (Component: React.ComponentType) => {
   if (config.LAUNCHDARKLY) {
     return withLDProvider({
       clientSideID: config.LAUNCHDARKLY,
@@ -25,7 +25,7 @@ export const withFeatureFlagProvider = (Component) => {
   In the future we might want to have a larger config to control
   features by licensing / configuration. This is fine for now though.
 */
-export function useFlags(fallback) {
+export function useFlags(fallback?: Record<string, boolean | string> | null) {
   const useFlags = useLDFlags()
   if (config.LAUNCHDARKLY) {
     return useFlags
@@ -36,12 +36,12 @@ export function useFlags(fallback) {
         'Warning! Self hosted build is missing a default feature flag value.'
       )
     }
-    return fallback
+    return fallback ?? {}
   }
 }
 
 // https://launchdarkly.github.io/js-client-sdk/interfaces/_launchdarkly_js_client_sdk_.lduser.html
-export function useIdentifyUser(user) {
+export function useIdentifyUser(user: Record<string, unknown>) {
   const ldClient = useLDClient()
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
+import { Provider } from 'shared/api/helpers'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 
 const TABS = {
@@ -11,7 +12,7 @@ const TABS = {
 type TabsValue = (typeof TABS)[keyof typeof TABS]
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
   repo: string
   branch?: string

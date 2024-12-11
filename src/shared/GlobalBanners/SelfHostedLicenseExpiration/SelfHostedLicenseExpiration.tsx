@@ -1,22 +1,29 @@
 import { differenceInCalendarDays } from 'date-fns'
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
 import { useSelfHostedSeatsAndLicense } from 'services/selfHosted/useSelfHostedSeatsAndLicense'
+import { Provider } from 'shared/api/helpers'
 import Banner from 'ui/Banner'
 import Button from 'ui/Button'
 
 import LicenseExpirationModal from './LicenseExpirationModal'
+
+interface BannerTextProps {
+  dateDiff: number
+  isLicenseExpired: boolean
+  isSeatsLimitReached: boolean
+  isLicenseExpiringWithin30Days: boolean
+}
 
 const BannerText = ({
   dateDiff,
   isLicenseExpired,
   isSeatsLimitReached,
   isLicenseExpiringWithin30Days,
-}) => {
+}: BannerTextProps) => {
   return (
     <p className="flex flex-row gap-2 font-semibold">
       {isLicenseExpired && isSeatsLimitReached ? (
@@ -42,15 +49,12 @@ const BannerText = ({
   )
 }
 
-BannerText.propTypes = {
-  dateDiff: PropTypes.number.isRequired,
-  isLicenseExpired: PropTypes.bool.isRequired,
-  isSeatsLimitReached: PropTypes.bool.isRequired,
-  isLicenseExpiringWithin30Days: PropTypes.bool.isRequired,
+interface URLParams {
+  provider: Provider
 }
 
 const SelfHostedLicenseExpiration = () => {
-  const { provider } = useParams()
+  const { provider } = useParams<URLParams>()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const isSelfHosted = !!config.IS_SELF_HOSTED
   const isDedicatedNamespace = !!config.IS_DEDICATED_NAMESPACE
