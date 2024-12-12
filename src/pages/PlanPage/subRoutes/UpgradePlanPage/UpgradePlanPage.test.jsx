@@ -133,7 +133,6 @@ const teamPlanYear = {
 }
 
 const mockPlanData = {
-  isEnterprisePlan: false,
   baseUnitPrice: 10,
   benefits: [],
   billingRate: 'monthly',
@@ -210,6 +209,8 @@ describe('UpgradePlanPage', () => {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
+                isEnterprisePlan:
+                  planValue === Plans.USERS_ENTERPRISEM ? true : false,
               },
             },
           },

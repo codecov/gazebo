@@ -27,7 +27,6 @@ const mockPlanData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
-  isEnterprisePlan: false,
 }
 
 const mockCurrentUser = (username) => ({
@@ -150,6 +149,8 @@ describe('AccountSettingsSideMenu', () => {
               plan: {
                 ...mockPlanData,
                 value: planValue,
+                isEnterprisePlan:
+                  planValue === Plans.USERS_ENTERPRISEM ? true : false,
               },
             },
           },

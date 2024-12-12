@@ -152,6 +152,8 @@ describe('CancelPlanPage', () => {
                 ...mockPlanData,
                 trialStatus,
                 value: planValue,
+                isEnterprisePlan:
+                  planValue === Plans.USERS_ENTERPRISEM ? true : false,
               },
             },
           },
