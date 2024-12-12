@@ -234,9 +234,9 @@ jobs:
       <WorkflowYMLStep
         framework={framework}
         frameworkInstructions={frameworkInstructions}
-        stepNum={showTokenSelector ? 4 : 3}
+        stepNum={showTokenSelector && showAddTokenStep ? 4 : 3}
       />
-      <MergeStep stepNum={showTokenSelector ? 5 : 4} />
+      <MergeStep stepNum={showTokenSelector && showAddTokenStep ? 5 : 4} />
       <FeedbackCTA />
       <LearnMoreBlurb />
     </div>
