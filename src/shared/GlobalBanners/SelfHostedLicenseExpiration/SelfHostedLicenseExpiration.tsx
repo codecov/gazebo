@@ -1,22 +1,29 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { differenceInCalendarDays } from 'date-fns'
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useSelfHostedSeatsAndLicense } from 'services/selfHosted/useSelfHostedSeatsAndLicense'
+import { SelfHostedSeatsAndLicenseQueryOpts } from 'services/selfHosted/SelfHostedSeatsAndLicenseQueryOpts'
 import Banner from 'ui/Banner'
 import Button from 'ui/Button'
 
 import LicenseExpirationModal from './LicenseExpirationModal'
+
+interface BannerTextProps {
+  dateDiff: number
+  isLicenseExpired: boolean
+  isSeatsLimitReached: boolean
+  isLicenseExpiringWithin30Days: boolean
+}
 
 const BannerText = ({
   dateDiff,
   isLicenseExpired,
   isSeatsLimitReached,
   isLicenseExpiringWithin30Days,
-}) => {
+}: BannerTextProps) => {
   return (
     <p className="flex flex-row gap-2 font-semibold">
       {isLicenseExpired && isSeatsLimitReached ? (
@@ -42,34 +49,24 @@ const BannerText = ({
   )
 }
 
-BannerText.propTypes = {
-  dateDiff: PropTypes.number.isRequired,
-  isLicenseExpired: PropTypes.bool.isRequired,
-  isSeatsLimitReached: PropTypes.bool.isRequired,
-  isLicenseExpiringWithin30Days: PropTypes.bool.isRequired,
+interface URLParams {
+  provider: string
 }
 
 const SelfHostedLicenseExpiration = () => {
-  const { provider } = useParams()
+  const { provider } = useParams<URLParams>()
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const isSelfHosted = !!config.IS_SELF_HOSTED
-  const isDedicatedNamespace = !!config.IS_DEDICATED_NAMESPACE
-  const { data } = useSelfHostedSeatsAndLicense({
-    provider,
-    opts: { enabled: !!provider && isSelfHosted && isDedicatedNamespace },
-  })
+  const { data } = useSuspenseQueryV5(
+    SelfHostedSeatsAndLicenseQueryOpts({
+      provider,
+    })
+  )
 
   const licenseExpirationDate = data?.selfHostedLicense?.expirationDate
   const seatsUsed = data?.seatsUsed
   const seatsLimit = data?.seatsLimit
 
-  if (
-    !isSelfHosted ||
-    !isDedicatedNamespace ||
-    !licenseExpirationDate ||
-    !seatsUsed ||
-    !seatsLimit
-  ) {
+  if (!licenseExpirationDate || !seatsUsed || !seatsLimit) {
     return null
   }
 
@@ -77,6 +74,7 @@ const SelfHostedLicenseExpiration = () => {
     new Date(licenseExpirationDate),
     new Date()
   )
+
   const isSeatsLimitReached = seatsUsed === seatsLimit
   const isLicenseExpired = dateDiff < 0
   const isLicenseExpiringWithin30Days = dateDiff < 31 && dateDiff >= 0
@@ -118,4 +116,15 @@ const SelfHostedLicenseExpiration = () => {
   )
 }
 
-export default SelfHostedLicenseExpiration
+function SelfHostedLicenseExpirationWrapper() {
+  const isSelfHosted = !!config.IS_SELF_HOSTED
+  const isDedicatedNamespace = !!config.IS_DEDICATED_NAMESPACE
+
+  if (!isSelfHosted || !isDedicatedNamespace) {
+    return null
+  }
+
+  return <SelfHostedLicenseExpiration />
+}
+
+export default SelfHostedLicenseExpirationWrapper
