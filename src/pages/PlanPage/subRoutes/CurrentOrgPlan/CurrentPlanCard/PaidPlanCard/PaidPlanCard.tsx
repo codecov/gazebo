@@ -59,7 +59,11 @@ function PaidPlanCard() {
           <p className="mb-2 text-xs font-semibold">Pricing</p>
           <div className="mb-4">
             {value && baseUnitPrice ? (
-              <PlanPricing value={value} baseUnitPrice={baseUnitPrice} />
+              <PlanPricing
+                plan={plan}
+                value={value}
+                baseUnitPrice={baseUnitPrice}
+              />
             ) : null}
             {seats ? (
               <p className="text-xs text-ds-gray-senary">

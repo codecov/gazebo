@@ -149,6 +149,7 @@ describe('AccountSettingsSideMenu', () => {
               plan: {
                 ...mockPlanData,
                 value: planValue,
+                isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
               },
             },
           },

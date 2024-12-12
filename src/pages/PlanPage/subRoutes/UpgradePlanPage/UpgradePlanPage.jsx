@@ -1,14 +1,17 @@
 import { useLayoutEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
-import { useAccountDetails, useAvailablePlans } from 'services/account'
+import {
+  useAccountDetails,
+  useAvailablePlans,
+  usePlanData,
+} from 'services/account'
 import { TierNames } from 'services/tier'
 import {
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
   findTeamPlans,
-  isEnterprisePlan,
   isFreePlan,
   isTeamPlan,
   shouldDisplayTeamCard,
@@ -25,6 +28,7 @@ function UpgradePlanPage() {
   const setCrumbs = useSetCrumbs()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
+  const { data: planData } = usePlanData({ provider, owner })
   const planParam = usePlanParams()
 
   const { proPlanYear } = findProPlans({ plans })
@@ -34,7 +38,10 @@ function UpgradePlanPage() {
 
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
 
-  const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
+  const isSentryUpgrade = canApplySentryUpgrade({
+    isEnterprisePlan: planData?.plan?.isEnterprisePlan,
+    plans,
+  })
 
   let defaultPaidYearlyPlan = null
   if (
@@ -60,7 +67,7 @@ function UpgradePlanPage() {
   }, [setCrumbs, plan?.value])
 
   // redirect right away if the user is on an enterprise plan
-  if (isEnterprisePlan(plan?.value)) {
+  if (planData?.plan?.isEnterprisePlan) {
     return <Redirect to={`/plan/${provider}/${owner}`} />
   }
 

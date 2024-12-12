@@ -1,12 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, http, HttpResponse } from 'msw'
+import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
 import { PlanName, Plans } from 'shared/utils/billing'
 
 import PlanTypeOptions from './PlanTypeOptions'
@@ -145,42 +146,6 @@ afterAll(() => {
   server.close()
 })
 
-const mockAccountDetailsBasic = {
-  plan: basicPlan,
-  activatedUserCount: 1,
-  inactiveUserCount: 0,
-}
-
-const mockAccountDetailsProYearly = {
-  plan: proPlanYear,
-  activatedUserCount: 11,
-  inactiveUserCount: 0,
-}
-
-const mockAccountDetailsTeamYearly = {
-  plan: teamPlanYear,
-  activatedUserCount: 11,
-  inactiveUserCount: 0,
-}
-
-const mockAccountDetailsTeamMonthly = {
-  plan: teamPlanYear,
-  activatedUserCount: 11,
-  inactiveUserCount: 0,
-}
-
-const mockAccountDetailsSentryYearly = {
-  plan: sentryPlanYear,
-  activatedUserCount: 11,
-  inactiveUserCount: 0,
-}
-
-const mockAccountDetailsTrial = {
-  plan: trialPlan,
-  activatedUserCount: 28,
-  inactiveUserCount: 0,
-}
-
 type SetupArgs = {
   planValue: PlanName
   hasSentryPlans: boolean
@@ -200,21 +165,6 @@ describe('PlanTypeOptions', () => {
     }
   ) {
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, () => {
-        if (planValue === Plans.USERS_BASIC) {
-          return HttpResponse.json(mockAccountDetailsBasic)
-        } else if (planValue === Plans.USERS_PR_INAPPY) {
-          return HttpResponse.json(mockAccountDetailsProYearly)
-        } else if (planValue === Plans.USERS_TRIAL) {
-          return HttpResponse.json(mockAccountDetailsTrial)
-        } else if (planValue === Plans.USERS_TEAMY) {
-          return HttpResponse.json(mockAccountDetailsTeamYearly)
-        } else if (planValue === Plans.USERS_TEAMM) {
-          return HttpResponse.json(mockAccountDetailsTeamMonthly)
-        } else if (planValue === Plans.USERS_SENTRYY) {
-          return HttpResponse.json(mockAccountDetailsSentryYearly)
-        }
-      }),
       graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: {
@@ -228,6 +178,42 @@ describe('PlanTypeOptions', () => {
             },
           },
         })
+      }),
+      graphql.query('GetPlanData', () => {
+        const planChunk = {
+          trialStatus: TrialStatuses.NOT_STARTED,
+          trialStartDate: '',
+          trialEndDate: '',
+          trialTotalDays: 0,
+          pretrialUsersCount: 0,
+          planUserCount: 1,
+          isEnterprisePlan: false,
+        }
+        if (planValue === Plans.USERS_BASIC) {
+          return HttpResponse.json({
+            data: { plan: { ...basicPlan, ...planChunk } },
+          })
+        } else if (planValue === Plans.USERS_PR_INAPPY) {
+          return HttpResponse.json({
+            data: { plan: { ...proPlanYear, ...planChunk } },
+          })
+        } else if (planValue === Plans.USERS_TRIAL) {
+          return HttpResponse.json({
+            data: { plan: { ...trialPlan, ...planChunk } },
+          })
+        } else if (planValue === Plans.USERS_TEAMY) {
+          return HttpResponse.json({
+            data: { plan: { ...teamPlanYear, ...planChunk } },
+          })
+        } else if (planValue === Plans.USERS_TEAMM) {
+          return HttpResponse.json({
+            data: { plan: { ...teamPlanMonth, ...planChunk } },
+          })
+        } else if (planValue === Plans.USERS_SENTRYY) {
+          return HttpResponse.json({
+            data: { plan: { ...sentryPlanYear, ...planChunk } },
+          })
+        }
       })
     )
 

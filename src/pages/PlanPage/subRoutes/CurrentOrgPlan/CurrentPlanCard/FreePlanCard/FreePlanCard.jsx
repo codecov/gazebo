@@ -93,7 +93,10 @@ function FreePlanCard({ plan, scheduledPhase }) {
       </div>
       {shouldDisplayTeamCard({ plans }) && <PlanUpgradeTeam />}
       <PlanUpgradePro
-        isSentryUpgrade={canApplySentryUpgrade({ plan, plans })}
+        isSentryUpgrade={canApplySentryUpgrade({
+          isEnterprisePlan: planData?.plan?.isEnterprisePlan,
+          plans,
+        })}
         plans={plans}
       />
       <div className="text-xs">
