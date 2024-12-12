@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
+import { useRepo } from 'services/repo'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import { Provider } from 'shared/api/helpers'
 import { useFlags } from 'shared/featureFlags'
@@ -32,15 +33,25 @@ function GitHubActions() {
     enabled: showOrgToken,
   })
 
+  const [isUsingGlobalToken, setIsUsingGlobalToken] = useState<boolean>(true)
+  const { data: repoData } = useRepo({ provider, owner, repo })
+  const repoUploadToken = repoData?.repository?.uploadToken ?? ''
   const previouslyGeneratedOrgToken = useRef<string | null | undefined>()
   const { data: uploadTokenRequiredData } = useUploadTokenRequired({
     provider,
     owner,
   })
-  const showTokenExtraStep =
-    uploadTokenRequiredData?.uploadTokenRequired &&
-    (previouslyGeneratedOrgToken ||
-      (!previouslyGeneratedOrgToken && orgUploadToken))
+  const hasPreviouslyGeneratedOrgToken = !!previouslyGeneratedOrgToken.current
+  const isUploadTokenRequired = uploadTokenRequiredData?.uploadTokenRequired
+  const showTokenSelector =
+    !isUploadTokenRequired || !previouslyGeneratedOrgToken.current
+  // token step is shown if upload token is required and org token has been previously generated
+  // or if global token is selected and org token has been generated when not previously generated
+  // or if repo token picker is selected and exists
+  const showAddTokenStep =
+    (isUploadTokenRequired && hasPreviouslyGeneratedOrgToken) ||
+    (isUsingGlobalToken && !!orgUploadToken) ||
+    (!isUsingGlobalToken && !!repoUploadToken)
 
   useEffect(() => {
     // Only set this on initial render
@@ -215,16 +226,17 @@ jobs:
         setFramework={setFramework}
       />
       <TokenStep
-        previouslyGeneratedOrgToken={
-          previouslyGeneratedOrgToken.current !== undefined
-        }
+        isUsingGlobalToken={isUsingGlobalToken}
+        setIsUsingGlobalToken={setIsUsingGlobalToken}
+        showAddTokenStep={showAddTokenStep}
+        showTokenSelector={showTokenSelector}
       />
       <WorkflowYMLStep
         framework={framework}
         frameworkInstructions={frameworkInstructions}
-        stepNum={showTokenExtraStep ? 4 : 3}
+        stepNum={showTokenSelector ? 4 : 3}
       />
-      <MergeStep stepNum={showTokenExtraStep ? 5 : 4} />
+      <MergeStep stepNum={showTokenSelector ? 5 : 4} />
       <FeedbackCTA />
       <LearnMoreBlurb />
     </div>

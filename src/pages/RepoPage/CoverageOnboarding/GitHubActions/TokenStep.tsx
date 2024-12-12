@@ -1,5 +1,4 @@
 import { UseMutateFunction } from '@tanstack/react-query'
-import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import orgSecretDark from 'assets/onboarding/org_secret_dark.png'
@@ -144,7 +143,7 @@ function OrgOrRepoTokenSelector({
           </RadioTileGroup.Description>
         </RadioTileGroup.Item>
       </RadioTileGroup>
-      {!hasOrgUploadToken && (
+      {isUsingGlobalToken && !hasOrgUploadToken && (
         <>
           <div className="flex items-center justify-between pb-3.5 pt-7">
             <p className="font-semibold">Generate a global upload token</p>
@@ -228,16 +227,22 @@ const AddTokenStep = ({
 }
 
 interface TokenStepSectionProps {
-  previouslyGeneratedOrgToken: boolean
+  isUsingGlobalToken: boolean
+  setIsUsingGlobalToken: (value: boolean) => void
+  showAddTokenStep: boolean
+  showTokenSelector: boolean
 }
 
 function TokenStepSection({
-  previouslyGeneratedOrgToken,
+  isUsingGlobalToken,
+  setIsUsingGlobalToken,
+  showAddTokenStep,
+  showTokenSelector,
 }: TokenStepSectionProps) {
   const { newRepoFlag: showOrgToken } = useFlags({
     newRepoFlag: false,
   })
-  const { provider, owner, repo } = useParams<URLParams>()
+  const { provider, owner } = useParams<URLParams>()
   const { data: uploadTokenRequiredData } = useUploadTokenRequired({
     provider,
     owner,
@@ -248,45 +253,39 @@ function TokenStepSection({
     owner,
     enabled: showOrgToken,
   })
-  const { data } = useRepo({ provider, owner, repo })
-  const repoUploadToken = data?.repository?.uploadToken ?? ''
 
-  const [isUsingGlobalToken, setIsUsingGlobalToken] = useState<boolean>(true)
   const handleValueChange = (value: string) => {
     setIsUsingGlobalToken(value === TOKEN_OPTIONS.GLOBAL)
   }
+
   return (
     <>
-      {isUploadTokenRequired && previouslyGeneratedOrgToken ? (
-        <AddTokenStep stepNum={2} isUsingGlobalToken={isUsingGlobalToken} />
-      ) : (
-        <>
-          <Card>
-            <Card.Header>
-              <Card.Title size="base">
-                Step 2: Select an upload token to add as a secret on GitHub
-                {!isUploadTokenRequired && (
-                  <span className="ml-3.5 text-sm font-normal italic">
-                    -optional
-                  </span>
-                )}
-              </Card.Title>
-            </Card.Header>
-            <Card.Content className="flex flex-col gap-4">
-              {(!previouslyGeneratedOrgToken || !isUploadTokenRequired) && (
-                <OrgOrRepoTokenSelector
-                  isUsingGlobalToken={isUsingGlobalToken}
-                  handleValueChange={handleValueChange}
-                  hasOrgUploadToken={!!orgUploadToken}
-                />
+      {showTokenSelector && (
+        <Card>
+          <Card.Header>
+            <Card.Title size="base">
+              Step 2: Select an upload token to add as a secret on GitHub
+              {!isUploadTokenRequired && (
+                <span className="ml-3.5 text-sm font-normal italic">
+                  -optional
+                </span>
               )}
-            </Card.Content>
-          </Card>
-          {((isUsingGlobalToken && orgUploadToken) ||
-            (!isUsingGlobalToken && repoUploadToken)) && (
-            <AddTokenStep stepNum={3} isUsingGlobalToken={isUsingGlobalToken} />
-          )}
-        </>
+            </Card.Title>
+          </Card.Header>
+          <Card.Content className="flex flex-col gap-4">
+            <OrgOrRepoTokenSelector
+              isUsingGlobalToken={isUsingGlobalToken}
+              handleValueChange={handleValueChange}
+              hasOrgUploadToken={!!orgUploadToken}
+            />
+          </Card.Content>
+        </Card>
+      )}
+      {showAddTokenStep && (
+        <AddTokenStep
+          stepNum={showTokenSelector ? 3 : 2}
+          isUsingGlobalToken={isUsingGlobalToken}
+        />
       )}
     </>
   )

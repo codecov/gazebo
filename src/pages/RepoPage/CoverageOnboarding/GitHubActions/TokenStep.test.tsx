@@ -103,32 +103,91 @@ describe('TokenStepSection', () => {
       </MemoryRouter>
     )
 
-  it('renders token selection when previouslyGeneratedOrgToken is false', () => {
+  it('renders token selection when showTokenSelector is true', () => {
     setup({})
-    render(<TokenStepSection previouslyGeneratedOrgToken={false} />, {
-      wrapper: wrapper(),
-    })
+    render(
+      <TokenStepSection
+        showAddTokenStep={false}
+        showTokenSelector={true}
+        isUsingGlobalToken={false}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
 
     expect(screen.getByText(/Select an upload token/)).toBeInTheDocument()
     expect(screen.getByText(/Global upload token/)).toBeInTheDocument()
     expect(screen.getByText(/Repository token/)).toBeInTheDocument()
   })
 
-  it('shows only the add token step when previouslyGeneratedOrgToken is true', () => {
+  it('does not render token selection when showTokenSelector is false', () => {
     setup({})
-    render(<TokenStepSection previouslyGeneratedOrgToken={true} />, {
-      wrapper: wrapper(),
-    })
+    render(
+      <TokenStepSection
+        showAddTokenStep={true}
+        showTokenSelector={false}
+        isUsingGlobalToken={true}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
 
-    expect(screen.getByText(/Step 2: add token/)).toBeInTheDocument()
     expect(screen.queryByText(/Select an upload token/)).not.toBeInTheDocument()
+    expect(screen.getByText(/Step 2: add token as/)).toBeInTheDocument()
+  })
+
+  it('shows the add token step as step 2 when showAddTokenStep is true and showTokenSelector is false', () => {
+    setup({})
+    render(
+      <TokenStepSection
+        showAddTokenStep={true}
+        showTokenSelector={false}
+        isUsingGlobalToken={false}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
+
+    expect(screen.getByText(/Step 2: add token as/)).toBeInTheDocument()
+    expect(screen.queryByText(/Select an upload token/)).not.toBeInTheDocument()
+  })
+
+  it('shows the add token step as step 3 when showAddTokenStep is true and showTokenSelector is true', () => {
+    setup({})
+    render(
+      <TokenStepSection
+        showAddTokenStep={true}
+        showTokenSelector={true}
+        isUsingGlobalToken={false}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
+
+    expect(screen.getByText(/Step 3: add token as/)).toBeInTheDocument()
   })
 
   it('displays org token when global token is selected', async () => {
     setup({ uploadTokenRequired: false })
-    render(<TokenStepSection previouslyGeneratedOrgToken={true} />, {
-      wrapper: wrapper(),
-    })
+    render(
+      <TokenStepSection
+        showAddTokenStep={true}
+        showTokenSelector={true}
+        isUsingGlobalToken={true}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
 
     const globalTokenRadio = screen.getByTestId('global-token-radio')
     await userEvent.click(globalTokenRadio)
@@ -138,9 +197,17 @@ describe('TokenStepSection', () => {
 
   it('displays repo token when repository token is selected', async () => {
     setup({})
-    render(<TokenStepSection previouslyGeneratedOrgToken={false} />, {
-      wrapper: wrapper(),
-    })
+    render(
+      <TokenStepSection
+        showAddTokenStep={true}
+        showTokenSelector={true}
+        isUsingGlobalToken={false}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
 
     const repoTokenRadio = await screen.findByTestId('repo-token-radio')
     await userEvent.click(repoTokenRadio)
@@ -148,11 +215,23 @@ describe('TokenStepSection', () => {
     expect(screen.getByText('repo-upload-token')).toBeInTheDocument()
   })
 
-  it('shows generate button for non-admin users in disabled state', () => {
+  it('shows generate button for non-admin users in disabled state if global token has not been generated', () => {
     setup({})
-    render(<TokenStepSection previouslyGeneratedOrgToken={false} />, {
-      wrapper: wrapper(),
+    mocks.useOrgUploadToken.mockReturnValue({
+      data: null,
+      isLoading: false,
     })
+    render(
+      <TokenStepSection
+        showAddTokenStep={false}
+        showTokenSelector={true}
+        isUsingGlobalToken={true}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
 
     const generateButton = screen.getByRole('button', { name: /Generate/i })
     expect(generateButton).toBeDisabled()
@@ -160,9 +239,17 @@ describe('TokenStepSection', () => {
 
   it('shows optional text when upload token is not required', () => {
     setup({ uploadTokenRequired: false })
-    render(<TokenStepSection previouslyGeneratedOrgToken={false} />, {
-      wrapper: wrapper(),
-    })
+    render(
+      <TokenStepSection
+        showAddTokenStep={false}
+        showTokenSelector={true}
+        isUsingGlobalToken={true}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
 
     expect(screen.getByText(/-optional/)).toBeInTheDocument()
   })
@@ -174,9 +261,17 @@ describe('TokenStepSection', () => {
       isLoading: false,
     }))
 
-    render(<TokenStepSection previouslyGeneratedOrgToken={false} />, {
-      wrapper: wrapper(),
-    })
+    render(
+      <TokenStepSection
+        showAddTokenStep={false}
+        showTokenSelector={true}
+        isUsingGlobalToken={true}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
     expect(
       screen.getByText(/Step 2: Select an upload token/)
     ).toBeInTheDocument()
@@ -184,29 +279,38 @@ describe('TokenStepSection', () => {
     expect(screen.queryByText('org-upload-token')).not.toBeInTheDocument()
   })
 
-  it('shows step 3 add token step when org token is generated', async () => {
-    setup({})
-    render(<TokenStepSection previouslyGeneratedOrgToken={false} />, {
-      wrapper: wrapper(),
-    })
-
-    const generateButton = await screen.findByRole('button', {
-      name: /Generate/i,
-    })
-    await userEvent.click(generateButton)
-
+  it('shows step 3 add token step if org token has been generated and global token is optional', async () => {
+    setup({ uploadTokenRequired: false })
+    render(
+      <TokenStepSection
+        showAddTokenStep={true}
+        showTokenSelector={true}
+        isUsingGlobalToken={true}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
     const step3 = await screen.findByText(/Step 3: add token as/)
     const orgToken = await screen.findByText('org-upload-token')
     expect(step3).toBeInTheDocument()
     expect(orgToken).toBeInTheDocument()
   })
 
-  it('renders correct link text based on token selection', async () => {
+  it('renders correct link text if global token is selected', async () => {
     setup({ uploadTokenRequired: false })
-    const user = userEvent.setup()
-    render(<TokenStepSection previouslyGeneratedOrgToken={true} />, {
-      wrapper: wrapper(),
-    })
+    render(
+      <TokenStepSection
+        showAddTokenStep={true}
+        showTokenSelector={true}
+        isUsingGlobalToken={true}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
 
     const orgLink = await screen.findByText('organization secret')
     expect(orgLink).toBeInTheDocument()
@@ -214,9 +318,21 @@ describe('TokenStepSection', () => {
       'href',
       'https://github.com/organizations/codecov/settings/secrets/actions/new'
     )
+  })
+  it('renders correct link text based on token selection', async () => {
+    setup({ uploadTokenRequired: false })
+    render(
+      <TokenStepSection
+        showAddTokenStep={true}
+        showTokenSelector={true}
+        isUsingGlobalToken={false}
+        setIsUsingGlobalToken={vi.fn()}
+      />,
+      {
+        wrapper: wrapper(),
+      }
+    )
 
-    const repoTokenRadio = await screen.findByTestId('repo-token-radio')
-    await user.click(repoTokenRadio)
     const repoLink = await screen.findByText('repository secret')
     expect(repoLink).toBeInTheDocument()
     expect(repoLink).toHaveAttribute(
