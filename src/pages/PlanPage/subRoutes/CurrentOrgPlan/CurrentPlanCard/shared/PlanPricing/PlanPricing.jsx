@@ -26,7 +26,7 @@ function PlanPricing({ plan, value, baseUnitPrice }) {
 }
 
 PlanPricing.propTypes = {
-  plan: PropTypes.object().isRequired,
+  plan: PropTypes.object.isRequired,
   value: PropTypes.string.isRequired,
   baseUnitPrice: PropTypes.number.isRequired,
 }

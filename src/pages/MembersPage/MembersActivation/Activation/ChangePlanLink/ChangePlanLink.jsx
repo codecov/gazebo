@@ -27,7 +27,7 @@ ChangePlanLink.propTypes = {
   accountDetails: PropType.shape({
     subscriptionDetail: PropType.shape({ collectionMethod: PropType.string }),
   }).isRequired,
-  plan: PropType.object(),
+  plan: PropType.object,
 }
 
 export default ChangePlanLink

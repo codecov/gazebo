@@ -109,8 +109,6 @@ export const usePlanData = ({ provider, owner, opts }: UsePlanDataArgs) =>
       }).then((res) => {
         const parsedRes = PlanDataSchema.safeParse(res?.data)
 
-        console.log('parsedRes', parsedRes.error)
-
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
