@@ -117,6 +117,9 @@ const SelfHostedLicenseExpiration = () => {
   )
 }
 
+// This wrapper is just so we don't make a request to the API if we're not on a
+// self-hosted instance, this is because we're useSuspenseQuery is not
+// toggal'ble through a `enabled` field like useQuery
 function SelfHostedLicenseExpirationWrapper() {
   const isSelfHosted = !!config.IS_SELF_HOSTED
   const isDedicatedNamespace = !!config.IS_DEDICATED_NAMESPACE
