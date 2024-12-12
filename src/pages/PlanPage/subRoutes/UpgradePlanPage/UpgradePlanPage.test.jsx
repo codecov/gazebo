@@ -209,8 +209,7 @@ describe('UpgradePlanPage', () => {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
-                isEnterprisePlan:
-                  planValue === Plans.USERS_ENTERPRISEM ? true : false,
+                isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
               },
             },
           },
