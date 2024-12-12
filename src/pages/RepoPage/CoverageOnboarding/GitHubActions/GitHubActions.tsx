@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
@@ -53,13 +53,11 @@ function GitHubActions() {
     (isUsingGlobalToken && !!orgUploadToken) ||
     (!isUsingGlobalToken && !!repoUploadToken)
 
-  useEffect(() => {
-    // Only set this on initial render
-    if (previouslyGeneratedOrgToken.current === undefined) {
-      previouslyGeneratedOrgToken.current = orgUploadToken
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  // If orgUploadToken does not exist on initial render, set it to null and we
+  // do not touch it again on rerenders
+  if (previouslyGeneratedOrgToken.current === undefined) {
+    previouslyGeneratedOrgToken.current = orgUploadToken ?? null
+  }
 
   const [framework, setFramework] = useState<Framework>('Jest')
 
