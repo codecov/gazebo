@@ -1,5 +1,7 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
+
 import rocketImg from 'assets/enterprise-rocket.png'
-import { useLoginProviders } from 'services/config/useLoginProviders'
+import { LoginProvidersQueryOpts } from 'services/config/LoginProvidersQueryOpts'
 import { LoginProvidersEnum } from 'shared/utils/loginProviders'
 
 import ProviderCard from './ProviderCard/ProviderCard'
@@ -8,7 +10,7 @@ import { useEnterpriseRedirect } from './useEnterpriseRedirect'
 function EnterpriseLandingPage() {
   useEnterpriseRedirect()
 
-  const { data } = useLoginProviders()
+  const { data } = useSuspenseQueryV5(LoginProvidersQueryOpts())
 
   return (
     <div className="flex flex-col gap-5">
