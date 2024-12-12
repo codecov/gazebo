@@ -41,7 +41,7 @@ const columns = [
   columnHelper.accessor('name', {
     header: 'Asset',
     cell: ({ getValue }) => {
-      return <p className="max-w-xl truncate">{getValue()}</p>
+      return <p className="truncate">{getValue()}</p>
     },
   }),
   columnHelper.accessor('filePath', {
