@@ -17,7 +17,7 @@ const mocks = vi.hoisted(() => ({
   useFlags: vi.fn().mockReturnValue({ renderBundleFilePathColumn: true }),
 }))
 
-vi.mock('shared/featureFlags', async (importOriginal) => {
+vi.mock('shared/featureFlags', async () => {
   const original = await vi.importActual('shared/featureFlags')
   return {
     ...original,
