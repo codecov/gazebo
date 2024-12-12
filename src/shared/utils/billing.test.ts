@@ -2,7 +2,6 @@ import { renderHook } from '@testing-library/react'
 
 import {
   canApplySentryUpgrade,
-  EnterprisePlans,
   findProPlans,
   findSentryPlans,
   findTeamPlans,
@@ -12,7 +11,6 @@ import {
   isAnnualPlan,
   isBasicPlan,
   isCodecovProPlan,
-  isEnterprisePlan,
   isFreePlan,
   isMonthlyPlan,
   isPaidPlan,
@@ -220,23 +218,6 @@ describe('shouldDisplayTeamCard', () => {
   })
 })
 
-describe('isEnterprisePlans', () => {
-  it('supports enterprise monthly plan', () => {
-    expect(isEnterprisePlan('users-enterprisem')).toBe(true)
-    expect(isEnterprisePlan(EnterprisePlans.USERS_ENTERPRISEM)).toBe(true)
-  })
-
-  it('supports enterprise yearly plan', () => {
-    expect(isEnterprisePlan('users-enterprisey')).toBe(true)
-    expect(isEnterprisePlan(EnterprisePlans.USERS_ENTERPRISEY)).toBe(true)
-  })
-
-  it('defaults to false otherwise', () => {
-    expect(isEnterprisePlan('users-inappy')).toBe(false)
-    expect(isEnterprisePlan(undefined)).toBe(false)
-  })
-})
-
 describe('useProPlans', () => {
   function setup(flagValue: boolean) {
     mocks.useFlags.mockReturnValue({
@@ -345,7 +326,7 @@ describe('getNextBillingDate', () => {
 describe('isAnnualPlan', () => {
   it('supports enterprise annual plan', () => {
     expect(isAnnualPlan('users-enterprisey')).toBe(true)
-    expect(isAnnualPlan(EnterprisePlans.USERS_ENTERPRISEY)).toBe(true)
+    expect(isAnnualPlan(Plans.USERS_ENTERPRISEY)).toBe(true)
   })
 
   it('supports basic annual plan', () => {
@@ -372,7 +353,7 @@ describe('isAnnualPlan', () => {
 describe('isMonthlyPlan', () => {
   it('supports enterprise monthly plan', () => {
     expect(isMonthlyPlan('users-enterprisem')).toBe(true)
-    expect(isMonthlyPlan(EnterprisePlans.USERS_ENTERPRISEM)).toBe(true)
+    expect(isMonthlyPlan(Plans.USERS_ENTERPRISEM)).toBe(true)
   })
 
   it('supports basic monthly plan', () => {
@@ -573,7 +554,7 @@ describe('findTeamPlans', () => {
 describe('canApplySentryUpgrade', () => {
   it('returns true when list contains monthly plan', () => {
     const result = canApplySentryUpgrade({
-      plan: Plans.USERS_PR_INAPPM,
+      isEnterprisePlan: false,
       plans: [{ value: Plans.USERS_SENTRYM }] as Plan[],
     })
 
@@ -582,7 +563,7 @@ describe('canApplySentryUpgrade', () => {
 
   it('returns true when list contains annual plan', () => {
     const result = canApplySentryUpgrade({
-      plan: Plans.USERS_PR_INAPPM,
+      isEnterprisePlan: false,
       plans: [{ value: Plans.USERS_SENTRYY }] as Plan[],
     })
 
@@ -591,7 +572,6 @@ describe('canApplySentryUpgrade', () => {
 
   it('returns false when plans are not in list', () => {
     const result = canApplySentryUpgrade({
-      plan: Plans.USERS_PR_INAPPM,
       plans: [{ value: Plans.USERS_FREE }] as Plan[],
     })
 
@@ -600,7 +580,7 @@ describe('canApplySentryUpgrade', () => {
 
   it('returns false when user has enterprise plan', () => {
     const result = canApplySentryUpgrade({
-      plan: Plans.USERS_ENTERPRISEM,
+      isEnterprisePlan: true,
       plans: [{ value: Plans.USERS_SENTRYY }] as Plan[],
     })
 

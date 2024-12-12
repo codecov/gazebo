@@ -133,6 +133,7 @@ const teamPlanYear = {
 }
 
 const mockPlanData = {
+  isEnterprisePlan: false,
   baseUnitPrice: 10,
   benefits: [],
   billingRate: 'monthly',

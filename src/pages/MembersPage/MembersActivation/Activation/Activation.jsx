@@ -74,7 +74,12 @@ function Activation() {
         activated members of{' '}
         <span className="text-lg font-semibold">{planQuantity}</span> available
         seats{' '}
-        {accountDetails && <ChangePlanLink accountDetails={accountDetails} />}
+        {accountDetails && (
+          <ChangePlanLink
+            accountDetails={accountDetails}
+            plan={planData?.plan}
+          />
+        )}
       </p>
       {/* TODO: new feature https://www.figma.com/file/iNTJAiBYGem3A4LmI4gvKX/Plan-and-members?node-id=103%3A1696 */}
     </div>

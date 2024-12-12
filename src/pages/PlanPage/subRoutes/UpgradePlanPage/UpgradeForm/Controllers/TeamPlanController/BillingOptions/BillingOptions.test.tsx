@@ -49,6 +49,7 @@ const mockPlanDataResponse = {
   marketingName: 'Team',
   monthlyUploadLimit: 250,
   value: Plans.USERS_TEAMM,
+  isEnterprisePlan: false,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',

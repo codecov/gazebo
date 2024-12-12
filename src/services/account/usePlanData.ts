@@ -27,6 +27,7 @@ const PlanSchema = z.object({
   trialTotalDays: z.number().nullable(),
   planUserCount: z.number().nullable(),
   hasSeatsLeft: z.boolean(),
+  isEnterprisePlan: z.boolean(),
 })
 
 export type Plan = z.infer<typeof PlanSchema>
@@ -80,6 +81,7 @@ export const query = `
         trialTotalDays
         planUserCount
         hasSeatsLeft
+        isEnterprisePlan
       }
       pretrialPlan {
         baseUnitPrice
@@ -106,6 +108,8 @@ export const usePlanData = ({ provider, owner, opts }: UsePlanDataArgs) =>
         },
       }).then((res) => {
         const parsedRes = PlanDataSchema.safeParse(res?.data)
+
+        console.log('parsedRes', parsedRes.error)
 
         if (!parsedRes.success) {
           return Promise.reject({

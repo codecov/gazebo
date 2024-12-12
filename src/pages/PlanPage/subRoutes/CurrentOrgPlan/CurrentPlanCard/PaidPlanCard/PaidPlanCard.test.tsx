@@ -28,6 +28,7 @@ vi.mock('shared/plan/ScheduledPlanDetails', () => ({
 }))
 
 const mockProPlan = {
+  isEnterprisePlan: false,
   marketingName: 'Pro',
   value: Plans.USERS_PR_INAPPM,
   billingRate: 'monthly',
@@ -44,6 +45,7 @@ const mockProPlan = {
 }
 
 const mockTeamPlan = {
+  isEnterprisePlan: false,
   marketingName: 'Team',
   value: Plans.USERS_TEAMM,
   billingRate: 'monthly',

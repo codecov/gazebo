@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { http, HttpResponse } from 'msw'
+import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
 import { PlanName, Plans } from 'shared/utils/billing'
 
 import CurrentPlanCard from './CurrentPlanCard'
@@ -23,6 +24,7 @@ const proPlanDetails = {
     quantity: 5,
     value: Plans.USERS_PR_INAPPM,
     billingRate: null,
+    isEnterprisePlan: false,
   },
 }
 
@@ -37,6 +39,7 @@ const freePlanDetails = {
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    isEnterprisePlan: false,
   },
 }
 
@@ -51,6 +54,7 @@ const enterprisePlan = {
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    isEnterprisePlan: true,
   },
 }
 
@@ -65,6 +69,7 @@ const usesInvoiceTeamPlan = {
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    isEnterprisePlan: false,
   },
   usesInvoice: true,
 }
@@ -77,6 +82,7 @@ const trialPlanDetails = {
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
     value: Plans.USERS_TRIAL,
+    isEnterprisePlan: false,
   },
 }
 
@@ -116,6 +122,27 @@ describe('CurrentPlanCard', () => {
     server.use(
       http.get('/internal/bb/critical-role/account-details/', () => {
         return HttpResponse.json(planDetails)
+      }),
+      graphql.query('GetPlanData', () => {
+        const planChunk = {
+          trialStatus: TrialStatuses.NOT_STARTED,
+          trialStartDate: '',
+          trialEndDate: '',
+          trialTotalDays: 0,
+          pretrialUsersCount: 0,
+          planUserCount: 1,
+          hasSeatsLeft: true,
+          monthlyUploadLimit: 100,
+        }
+
+        return HttpResponse.json({
+          data: {
+            owner: {
+              hasPrivateRepos: true,
+              plan: { ...planDetails.plan, ...planChunk },
+            },
+          },
+        })
       })
     )
   }

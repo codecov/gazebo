@@ -212,6 +212,7 @@ describe('DefaultOrgSelector', () => {
               hasPrivateRepos: privateRepos,
               plan: {
                 ...mockTrialData,
+                isEnterprisePlan: false,
                 trialStatus,
                 value,
               },

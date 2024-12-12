@@ -23,6 +23,7 @@ const mockTrialData = {
     pretrialUsersCount: 0,
     planUserCount: 1,
     hasSeatsLeft: true,
+    isEnterprisePlan: false,
   },
   pretrialPlan: {
     baseUnitPrice: 10,
