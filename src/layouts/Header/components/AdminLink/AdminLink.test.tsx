@@ -43,7 +43,7 @@ afterAll(() => {
 describe('AdminLink', () => {
   function setup(data = {}) {
     server.use(
-      http.get('/internal/users/current', (info) => {
+      http.get('/internal/users/current', () => {
         return HttpResponse.json(data)
       })
     )

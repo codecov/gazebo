@@ -34,7 +34,7 @@ afterAll(() => server.close())
 describe('BadgesAndGraphsTab', () => {
   function setup({ graphToken }: { graphToken: string | null }) {
     server.use(
-      graphql.query('GetBranches', (info) => {
+      graphql.query('GetBranches', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -47,7 +47,7 @@ describe('BadgesAndGraphsTab', () => {
           },
         })
       }),
-      graphql.query('GetRepoSettings', (info) => {
+      graphql.query('GetRepoSettings', () => {
         return HttpResponse.json({
           data: {
             owner: {

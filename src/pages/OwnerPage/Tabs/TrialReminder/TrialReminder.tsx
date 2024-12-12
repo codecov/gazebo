@@ -73,7 +73,7 @@ const TrialReminder: React.FC = () => {
     return (
       <div className="flex items-center font-semibold">
         {/* this is required because the A component has this random `[x: string]: any` record type on it */}
-        {/* @ts-expect-error */}
+        {/* @ts-expect-error - A hasn't been typed yet */}
         <A to={{ pageName: 'planTab' }}>&#128640; Try Codecov Pro</A>
       </div>
     )
@@ -86,7 +86,7 @@ const TrialReminder: React.FC = () => {
           Trial active for {dateDiff} days.{' '}
           <span className="font-semibold">
             {/* this is required because the A component has this random `[x: string]: any` record type on it */}
-            {/* @ts-expect-error */}
+            {/* @ts-expect-error - A hasn't been typed yet */}
             <A to={{ pageName: 'upgradeOrgPlan' }}>Upgrade now</A>
           </span>
         </p>
@@ -98,7 +98,7 @@ const TrialReminder: React.FC = () => {
     return (
       <div className="flex items-center font-semibold">
         {/* this is required because the A component has this random `[x: string]: any` record type on it */}
-        {/* @ts-expect-error*/}
+        {/* @ts-expect-error - A hasn't been typed yet */}
         <A to={{ pageName: 'upgradeOrgPlan' }}>&#128640; Upgrade plan</A>
       </div>
     )

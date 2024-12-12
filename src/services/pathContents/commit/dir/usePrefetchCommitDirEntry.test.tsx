@@ -141,7 +141,7 @@ describe('usePrefetchCommitDirEntry', () => {
     isUnsuccessfulParse = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CommitPathContents', (info) => {
+      graphql.query('CommitPathContents', () => {
         if (isMissingCoverage) {
           return HttpResponse.json({ data: mockDataMissingCoverage })
         } else if (isUnknownPath) {

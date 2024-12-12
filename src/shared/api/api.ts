@@ -11,9 +11,9 @@ interface _FetchArgs {
   path: string
   query: Record<string, unknown>
   method?: string
-  body: {}
+  body: object
   provider?: string
-  extraHeaders?: {}
+  extraHeaders?: object
   signal?: AbortSignal
 }
 

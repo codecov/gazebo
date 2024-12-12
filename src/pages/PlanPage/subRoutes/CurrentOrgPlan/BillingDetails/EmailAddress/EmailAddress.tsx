@@ -61,7 +61,7 @@ function EmailAddress() {
       <div className="flex justify-between">
         <h4 className="font-semibold">Email address</h4>{' '}
         {!isFormOpen && (
-          /* @ts-expect-error */
+          /* @ts-expect-error - A hasn't been typed yet */
           <A
             variant="semibold"
             onClick={() => setIsFormOpen(true)}
@@ -86,7 +86,6 @@ function EmailAddress() {
             </p>
           )}
           <div className="flex gap-1">
-            {/* @ts-expect-error */}
             <Button
               hook="update-email"
               type="submit"
@@ -95,7 +94,6 @@ function EmailAddress() {
             >
               Update
             </Button>
-            {/* @ts-expect-error */}
             <Button
               type="button"
               hook="cancel-email"

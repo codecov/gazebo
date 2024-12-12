@@ -16,6 +16,7 @@ import { AssetsTable, ChangeOverTime } from './AssetsTable'
 const mockAssets = (hasNextPage = true) => {
   const asset1 = {
     name: 'asset-1',
+    routes: ['/'],
     extension: 'js',
     bundleData: {
       loadTime: { threeG: 2000, highSpeed: 2000 },
@@ -32,6 +33,7 @@ const mockAssets = (hasNextPage = true) => {
 
   const asset2 = {
     name: 'asset-2',
+    routes: ['/about'],
     extension: 'js',
     bundleData: {
       loadTime: { threeG: 2000, highSpeed: 2000 },
@@ -48,6 +50,7 @@ const mockAssets = (hasNextPage = true) => {
 
   const asset3 = {
     name: 'asset-3',
+    routes: ['/login'],
     extension: 'js',
     bundleData: {
       loadTime: { threeG: 2000, highSpeed: 2000 },
@@ -66,6 +69,7 @@ const mockAssets = (hasNextPage = true) => {
               bundleAnalysisReport: {
                 __typename: 'BundleAnalysisReport',
                 bundle: {
+                  info: { pluginName: '@codecov/vite-plugin' },
                   bundleData: { size: { uncompress: 6000 } },
                   assetsPaginated: {
                     edges: [
@@ -246,10 +250,10 @@ describe('AssetsTable', () => {
 
         return HttpResponse.json({ data: mockAssets(multipleAssets) })
       }),
-      graphql.query('BundleAssetModules', (info) => {
+      graphql.query('BundleAssetModules', () => {
         return HttpResponse.json({ data: mockBundleAssetModules })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )

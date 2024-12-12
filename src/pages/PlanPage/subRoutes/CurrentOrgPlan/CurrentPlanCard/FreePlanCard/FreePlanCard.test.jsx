@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -143,6 +147,7 @@ const mockPlanData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
 }
 
 const mockPreTrialPlanInfo = {
@@ -159,12 +164,17 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
 
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
 beforeAll(() => {
   server.listen()
 })
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
   vi.resetAllMocks()
 })
@@ -174,13 +184,15 @@ afterAll(() => {
 })
 
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
-      <Route path="/plan/:provider/:owner">
-        <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
+        <Route path="/plan/:provider/:owner">
+          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 describe('FreePlanCard', () => {
@@ -208,10 +220,10 @@ describe('FreePlanCard', () => {
     }
   ) {
     server.use(
-      graphql.query('PlanPageData', (info) => {
+      graphql.query('PlanPageData', () => {
         return HttpResponse.json({ data: { owner } })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -227,12 +239,12 @@ describe('FreePlanCard', () => {
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: { owner: { availablePlans: plans } },
         })
       }),
-      http.get('/internal/bb/critical-role/account-details/', (info) => {
+      http.get('/internal/bb/critical-role/account-details/', () => {
         return HttpResponse.json({ numberOfUploads: 250 })
       })
     )

@@ -54,7 +54,7 @@ const UploadSchema = z.object({
   provider: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
-  flags: z.array(z.string()).nullable(),
+  flags: z.array(z.string()).nullish(),
   jobCode: z.string().nullable(),
   downloadUrl: z.string(),
   ciUrl: z.string().nullable(),
@@ -381,7 +381,7 @@ export function useCommit({
               detail: (
                 <p>
                   Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
+                  {/* @ts-expect-error - A hasn't been typed yet */}
                   <A to={{ pageName: 'membersTab' }}>click here </A> to activate
                   your account.
                 </p>

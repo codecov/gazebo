@@ -45,7 +45,7 @@ afterAll(() => {
 describe('ActivationCount', () => {
   function setup() {
     server.use(
-      graphql.query('SelfHostedSettings', (info) => {
+      graphql.query('SelfHostedSettings', () => {
         return HttpResponse.json({ data: mockResponse })
       })
     )

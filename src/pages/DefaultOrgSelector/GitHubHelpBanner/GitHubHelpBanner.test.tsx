@@ -5,6 +5,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import config from 'config'
+
 import GitHubHelpBanner from './GitHubHelpBanner'
 
 const queryClient = new QueryClient({
@@ -45,7 +47,7 @@ describe('GitHubHelpBanner', () => {
     const mutation = vi.fn()
 
     server.use(
-      graphql.query('IsSyncing', (info) => {
+      graphql.query('IsSyncing', () => {
         return HttpResponse.json({ data: { me: { isSyncing: false } } })
       }),
       graphql.mutation('SyncData', (info) => {
@@ -86,7 +88,7 @@ describe('GitHubHelpBanner', () => {
       })
       expect(link).toHaveAttribute(
         'href',
-        'https://github.com/apps/codecov/installations/select_target'
+        `https://github.com/apps/${config.GH_APP}/installations/select_target`
       )
     })
   })

@@ -37,7 +37,7 @@ function Avatar({ user, border = 'none', ariaLabel, className = '' }) {
 
 Avatar.propTypes = {
   user: PropTypes.shape({
-    username: PropTypes.string.isRequired,
+    username: PropTypes.string,
     avatarUrl: PropTypes.string,
   }),
   border: PropTypes.oneOf(['light', 'dark', 'none']),

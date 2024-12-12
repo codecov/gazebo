@@ -23,6 +23,7 @@ const mockResponse = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
 }
 
 const server = setupServer()
@@ -64,7 +65,7 @@ describe('ProPlanSubheading', () => {
     hasPrivateRepos = true,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {

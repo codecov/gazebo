@@ -40,7 +40,7 @@ afterAll(() => {
 describe('useEraseRepoContent', () => {
   function setup() {
     server.use(
-      graphql.mutation('EraseRepository', (info) => {
+      graphql.mutation('EraseRepository', () => {
         return HttpResponse.json({
           data: { eraseRepository: { data: null } },
         })

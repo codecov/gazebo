@@ -1,15 +1,20 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import {
   render,
   screen,
   waitFor,
   waitForElementToBeRemoved,
-} from 'custom-testing-library'
-
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
 
 import UploadsCard from './UploadsCard'
 import { useUploads } from './useUploads'
@@ -22,34 +27,39 @@ const mocks = vi.hoisted(() => ({
 vi.mock('./useUploads', async () => mocks)
 vi.mock('services/commitErrors', async () => mocks)
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-    },
-  },
-})
 const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { suspense: true, retry: false } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/gazebo/1234']}>
-      <Route path="/:provider/:owner/:repo/:commit">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov/gazebo/1234']}>
+        <Route path="/:provider/:owner/:repo/:commit">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
   console.error = () => {}
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
   vi.clearAllMocks()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 interface MockCommitErrors {
   data: {
@@ -69,7 +79,7 @@ describe('UploadsCard', () => {
     mocks.useCommitErrors.mockReturnValue(mockCommitErrors)
 
     server.use(
-      graphql.query('CommitYaml', (info) => {
+      graphql.query('CommitYaml', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -193,6 +203,7 @@ describe('UploadsCard', () => {
       const covReportHistory = screen.getByText(/Coverage reports history/)
       expect(covReportHistory).toBeInTheDocument()
     })
+
     it('renders different cis', () => {
       render(<UploadsCard />, { wrapper })
 
@@ -201,6 +212,7 @@ describe('UploadsCard', () => {
       const travis = screen.getByText(/travis/)
       expect(travis).toBeInTheDocument()
     })
+
     it('renders build ids', () => {
       render(<UploadsCard />, { wrapper })
 
@@ -215,6 +227,7 @@ describe('UploadsCard', () => {
       const id5 = screen.getByText(/837462/)
       expect(id5).toBeInTheDocument()
     })
+
     it('renders flags', () => {
       render(<UploadsCard />, { wrapper })
 
@@ -255,6 +268,7 @@ describe('UploadsCard', () => {
       expect(currentlyNoUploads).toBeInTheDocument()
     })
   })
+
   describe('renders empty Uploads', () => {
     // ??
     beforeEach(() => {
@@ -276,6 +290,7 @@ describe('UploadsCard', () => {
       expect(uploads).toBeInTheDocument()
     })
   })
+
   describe('The yaml viewer', () => {
     beforeEach(() => {
       setup({
@@ -815,6 +830,7 @@ describe('UploadsCard', () => {
       })
     })
   })
+
   describe('select all interactor', () => {
     beforeEach(() => {
       setup({
@@ -908,32 +924,47 @@ describe('UploadsCard', () => {
       })
     })
 
-    it('unselects all when clicked', async () => {
-      const user = userEvent.setup()
-      render(<UploadsCard />, { wrapper })
+    describe('unselects all when clicked', () => {
+      it('unselects all when clicked', async () => {
+        const user = userEvent.setup()
+        render(<UploadsCard />, { wrapper })
 
-      const checkboxes = screen.getAllByRole('checkbox')
-      const travisCheckbox = checkboxes[0]
-      const travisUploadCheckbox1 = checkboxes[1]
-      const travisUploadCheckbox2 = checkboxes[2]
+        const checkboxes = screen.getAllByRole('checkbox')
+        const travisCheckbox = checkboxes[0]
+        const travisUploadCheckbox1 = checkboxes[1]
+        const travisUploadCheckbox2 = checkboxes[2]
 
-      expect(travisCheckbox).toBeChecked()
-      expect(travisUploadCheckbox1).toBeChecked()
-      expect(travisUploadCheckbox2).toBeChecked()
+        expect(travisCheckbox).toBeChecked()
+        expect(travisUploadCheckbox1).toBeChecked()
+        expect(travisUploadCheckbox2).toBeChecked()
 
-      await user.click(travisCheckbox!)
+        await user.click(travisCheckbox!)
 
-      expect(travisCheckbox).not.toBeChecked()
-      expect(travisUploadCheckbox1).not.toBeChecked()
-      expect(travisUploadCheckbox2).not.toBeChecked()
+        expect(travisCheckbox).not.toBeChecked()
+        expect(travisUploadCheckbox1).not.toBeChecked()
+        expect(travisUploadCheckbox2).not.toBeChecked()
 
-      // 'circleci' uploads remain checked
-      const circleciCheckbox = checkboxes[3]
-      const circleciUploadCheckbox1 = checkboxes[4]
-      const circleciUploadCheckbox2 = checkboxes[5]
-      expect(circleciCheckbox).toBeChecked()
-      expect(circleciUploadCheckbox1).toBeChecked()
-      expect(circleciUploadCheckbox2).toBeChecked()
+        // 'circleci' uploads remain checked
+        const circleciCheckbox = checkboxes[3]
+        const circleciUploadCheckbox1 = checkboxes[4]
+        const circleciUploadCheckbox2 = checkboxes[5]
+        expect(circleciCheckbox).toBeChecked()
+        expect(circleciUploadCheckbox1).toBeChecked()
+        expect(circleciUploadCheckbox2).toBeChecked()
+      })
+
+      it('adds ids to ignored ids query', async () => {
+        const user = userEvent.setup()
+        render(<UploadsCard />, { wrapper })
+
+        const checkboxes = screen.getAllByRole('checkbox')
+        const travisCheckbox = checkboxes[0]
+        await user.click(travisCheckbox!)
+
+        expect(
+          queryClientV5.getQueryData(IgnoredIdsQueryOptions().queryKey)
+        ).toEqual([0, 1])
+      })
     })
 
     it('shows an intermediate state', async () => {

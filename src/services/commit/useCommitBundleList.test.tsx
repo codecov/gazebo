@@ -128,7 +128,7 @@ describe('useCommitBundleList', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('CommitBundleList', (info) => {
+      graphql.query('CommitBundleList', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

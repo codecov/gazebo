@@ -56,7 +56,7 @@ describe('StaticAnalysisToken', () => {
     mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({
           data: { me: { id: 1, trackingMetadata: { ownerid: 1 } } },
         })

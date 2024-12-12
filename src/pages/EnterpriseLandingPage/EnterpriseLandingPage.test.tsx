@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -11,16 +15,23 @@ import EnterpriseLandingPage from './EnterpriseLandingPage'
 vi.mock('config')
 
 const server = setupServer()
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeContextProvider>
-      <MemoryRouter initialEntries={['/']}>
-        <Route path="/">{children}</Route>
-      </MemoryRouter>
-    </ThemeContextProvider>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <ThemeContextProvider>
+        <MemoryRouter initialEntries={['/']}>
+          <Route path="/">{children}</Route>
+        </MemoryRouter>
+      </ThemeContextProvider>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 const mockServiceProviders = {
@@ -43,6 +54,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -59,14 +71,14 @@ describe('EnterpriseLandingPage', () => {
     { sendProviders = true }: SetupArgs = { sendProviders: true }
   ) {
     server.use(
-      graphql.query('GetLoginProviders', (info) => {
+      graphql.query('GetLoginProviders', () => {
         if (sendProviders) {
           return HttpResponse.json({ data: mockServiceProviders })
         }
 
         return HttpResponse.json({ data: { config: { loginProviders: [] } } })
       }),
-      graphql.query('EnterpriseLandingPageUser', (info) => {
+      graphql.query('EnterpriseLandingPageUser', () => {
         return HttpResponse.json({ data: { me: undefined } })
       })
     )

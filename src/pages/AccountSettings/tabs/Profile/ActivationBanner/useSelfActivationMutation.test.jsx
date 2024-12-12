@@ -60,7 +60,7 @@ describe('useSelfActivationMutation', () => {
         }
 
         server.use(
-          http.get('/internal/users/current', (info) => {
+          http.get('/internal/users/current', () => {
             return HttpResponse.json(mockUser)
           }),
           http.patch('/internal/users/current', async (info) => {
@@ -115,7 +115,7 @@ describe('useSelfActivationMutation', () => {
         }
 
         server.use(
-          http.get('/internal/users/current', (info) => {
+          http.get('/internal/users/current', () => {
             return HttpResponse.json(mockUser)
           }),
           http.patch('/internal/users/current', async (info) => {
@@ -169,7 +169,7 @@ describe('useSelfActivationMutation', () => {
         }
 
         server.use(
-          http.get('/internal/users/current', (info) => {
+          http.get('/internal/users/current', () => {
             return HttpResponse.json(mockUser)
           }),
           http.patch('/internal/users/current', async (info) => {
@@ -225,10 +225,10 @@ describe('useSelfActivationMutation', () => {
       }
 
       server.use(
-        http.get('/internal/users/current', (req, res, ctx) => {
+        http.get('/internal/users/current', () => {
           return HttpResponse.json(mockUser)
         }),
-        http.patch('/internal/users/current', (req, res, ctx) => {
+        http.patch('/internal/users/current', () => {
           return HttpResponse.json({}, { status: 400 })
         })
       )

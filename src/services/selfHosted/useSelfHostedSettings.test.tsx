@@ -44,7 +44,7 @@ afterAll(() => {
 describe('useSelfHostedSettings', () => {
   function setup({ invalidResponse = false }) {
     server.use(
-      graphql.query('SelfHostedSettings', (info) => {
+      graphql.query('SelfHostedSettings', () => {
         if (invalidResponse) {
           return HttpResponse.json({})
         }

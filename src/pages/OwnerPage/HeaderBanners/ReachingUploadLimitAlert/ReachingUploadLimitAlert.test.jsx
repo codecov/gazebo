@@ -30,6 +30,7 @@ const mockPlanDataResponse = {
   marketingName: 'Pro Team',
   monthlyUploadLimit: 341,
   value: Plans.USERS_PR_INAPPM,
+  isEnterprisePlan: false,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -55,7 +56,7 @@ afterAll(() => {
 describe('ReachingUploadLimitAlert', () => {
   function setup() {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {

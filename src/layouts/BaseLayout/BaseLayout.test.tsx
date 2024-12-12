@@ -241,29 +241,29 @@ describe('BaseLayout', () => {
     mockedUseImpersonate.mockReturnValue({ isImpersonating })
 
     server.use(
-      http.get('/internal/user', (info) => {
+      http.get('/internal/user', () => {
         return HttpResponse.json(internalUser)
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: currentUser })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: mockOwner })
       }),
-      http.get('/internal/:provider/:owner/account-details', (info) => {
+      http.get('/internal/:provider/:owner/account-details', () => {
         return HttpResponse.json({})
       }),
       // Self hosted only
-      graphql.query('HasAdmins', (info) => {
+      graphql.query('HasAdmins', () => {
         return HttpResponse.json({ data: { config: null } })
       }),
-      graphql.query('Seats', (info) => {
+      graphql.query('Seats', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('TermsOfService', (info) => {
+      graphql.query('TermsOfService', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('UseMyOrganizations', (info) => {
+      graphql.query('UseMyOrganizations', () => {
         return HttpResponse.json({
           data: {
             myOrganizationsData: {
@@ -277,13 +277,13 @@ describe('BaseLayout', () => {
           },
         })
       }),
-      graphql.mutation('updateDefaultOrganization', (info) => {
+      graphql.mutation('updateDefaultOrganization', () => {
         return HttpResponse.json({ data: {} })
       }),
       graphql.query('NavigatorData', () => {
         return HttpResponse.json({ data: mockNavigatorData })
       }),
-      http.get('/internal/users/current', (info) => {
+      http.get('/internal/users/current', () => {
         return HttpResponse.json({})
       })
     )

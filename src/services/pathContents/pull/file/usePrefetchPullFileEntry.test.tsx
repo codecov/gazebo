@@ -103,7 +103,7 @@ describe('usePrefetchPullFileEntry', () => {
     nullOwner = false,
   }) {
     server.use(
-      graphql.query('CoverageForFile', (info) => {
+      graphql.query('CoverageForFile', () => {
         if (invalidSchema) {
           return HttpResponse.json({})
         } else if (repositoryNotFound) {

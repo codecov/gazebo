@@ -23,6 +23,7 @@ const mockTrialData = {
     pretrialUsersCount: 0,
     planUserCount: 1,
     hasSeatsLeft: true,
+    isEnterprisePlan: false,
   },
   pretrialPlan: {
     baseUnitPrice: 10,
@@ -59,7 +60,7 @@ afterAll(() => {
 describe('usePlanData', () => {
   function setup({ trialData }: { trialData: any }) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({ data: { owner: { ...trialData } } })
       })
     )
@@ -83,6 +84,7 @@ describe('usePlanData', () => {
           expect(result.current.data).toStrictEqual({
             hasPrivateRepos: true,
             plan: {
+              isEnterprisePlan: false,
               baseUnitPrice: 10,
               benefits: [],
               billingRate: 'monthly',

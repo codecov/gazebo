@@ -189,28 +189,30 @@ describe('DefaultOrgSelector', () => {
     window.open = mockWindow
     const fetchNextPage = vi.fn()
     config.SENTRY_DSN = undefined
+    config.GH_APP = 'codecov'
     const user = userEvent.setup()
 
     server.use(
       graphql.query('UseMyOrganizations', (info) => {
-        if (!!info.variables.after) {
+        if (info.variables.after) {
           fetchNextPage(info.variables.after)
         }
         return HttpResponse.json({ data: myOrganizationsData })
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         if (!isValidUser) {
           return HttpResponse.json({ data: { me: null } })
         }
         return HttpResponse.json({ data: useUserData })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
               hasPrivateRepos: privateRepos,
               plan: {
                 ...mockTrialData,
+                isEnterprisePlan: false,
                 trialStatus,
                 value,
               },

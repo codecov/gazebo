@@ -73,7 +73,7 @@ describe('ThemeToggle', () => {
 
   it('assumes light mode when there is no theme in local storage', () => {
     setup({ isMediaPrefersDark: false })
-    mockGetItem.mockImplementation((key) => null)
+    mockGetItem.mockImplementation(() => null)
     render(
       <ThemeContextProvider>
         <ThemeToggle />

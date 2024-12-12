@@ -95,7 +95,7 @@ export default function Badges({ graphToken }: BadgesProps) {
         <>
           A live icon that you can embed in code, such as in a README.md, to
           provide quick insight into your project&apos;s code coverage
-          percentage. {/* @ts-expect-error */}
+          percentage. {/* @ts-expect-error - A hasn't been typed yet */}
           <A to={{ pageName: 'statusBadges' }}>Learn more</A>
         </>
       }

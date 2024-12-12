@@ -37,7 +37,7 @@ afterAll(() => {
 describe('useIsCurrentUserAnAdmin', () => {
   function setup() {
     server.use(
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
           data: {
             owner: {

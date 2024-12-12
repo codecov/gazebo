@@ -35,7 +35,7 @@ RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM
 
 COPY            docker/index.html /tmp/uploader
 
-FROM node:20-alpine3.17 as build
+FROM node:22-alpine3.20 as build
 ARG REACT_APP_ENV_ARG
 ARG REACT_APP_CODECOV_VERSION
 ENV REACT_APP_ENV=$REACT_APP_ENV_ARG

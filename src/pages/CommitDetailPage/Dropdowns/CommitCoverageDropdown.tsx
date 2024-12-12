@@ -28,7 +28,7 @@ const CoverageMessage: React.FC = () => {
     return <>data unavailable due to invalid yaml &#x26A0;&#xFE0F;</>
   }
 
-  if (!!uploadErrorCount) {
+  if (uploadErrorCount) {
     if (uploadErrorCount === 1) {
       return (
         <>{uploadErrorCount} upload has failed to process &#x26A0;&#xFE0F;</>

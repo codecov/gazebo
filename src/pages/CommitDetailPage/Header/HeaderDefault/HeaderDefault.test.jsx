@@ -1,7 +1,11 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTruncation } from 'ui/TruncatedMessage/hooks'
@@ -29,22 +33,24 @@ const mockData = (pullId = null) => ({
   },
 })
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
+  <QueryClientProviderV5 client={queryClientV5}>
     <MemoryRouter initialEntries={['/gh/codecov/test-repo/commit/id-1']}>
-      <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
+      <Route path="/:provider/:owner/:repo/commit/:commit">
+        <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+      </Route>
     </MemoryRouter>
-  </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => server.listen())
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 afterAll(() => server.close())
@@ -57,7 +63,7 @@ describe('HeaderDefault', () => {
     }))
 
     server.use(
-      graphql.query('CommitPageHeaderData', (info) => {
+      graphql.query('CommitPageHeaderData', () => {
         return HttpResponse.json({ data: mockData(pullId) })
       })
     )
@@ -117,8 +123,8 @@ describe('HeaderDefault', () => {
     it('does not render the pull label', async () => {
       render(<HeaderDefault />, { wrapper })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      await waitFor(() => queryClientV5.isFetching)
+      await waitFor(() => !queryClientV5.isFetching)
 
       const pullIcon = screen.queryByText(/pull-request-open.svg/)
       expect(pullIcon).not.toBeInTheDocument()

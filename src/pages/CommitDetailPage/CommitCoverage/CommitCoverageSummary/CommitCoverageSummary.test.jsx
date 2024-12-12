@@ -115,7 +115,7 @@ afterAll(() => {
 describe('CommitCoverageSummary', () => {
   function setup(hasErrored = false) {
     server.use(
-      graphql.query('Commit', (info) => {
+      graphql.query('Commit', () => {
         if (hasErrored) {
           return HttpResponse.json({
             data: {

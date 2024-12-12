@@ -88,7 +88,7 @@ function getColumns({ pullId }: { pullId: string }) {
                 variant="solid"
               />
             </span>
-            {/* @ts-expect-error */}
+            {/* @ts-expect-error - A hasn't been typed yet */}
             <A
               to={{
                 pageName: 'pullFileView',

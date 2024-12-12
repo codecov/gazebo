@@ -104,7 +104,7 @@ describe('Badges', () => {
     config.BASE_URL = 'https://stage-web.codecov.dev'
     server.use(
       graphql.query('GetBranches', (info) => {
-        if (!!info.variables?.after) {
+        if (info.variables?.after) {
           fetchNextPage(info.variables?.after)
         }
 

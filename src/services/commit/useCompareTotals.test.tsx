@@ -88,7 +88,7 @@ describe('useCompareTotals', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CompareTotals', (info) => {
+      graphql.query('CompareTotals', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

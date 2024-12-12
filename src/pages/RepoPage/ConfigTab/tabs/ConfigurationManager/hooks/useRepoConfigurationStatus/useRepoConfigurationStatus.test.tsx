@@ -84,7 +84,7 @@ describe('useRepoConfigurationStatus', () => {
     nullOwner: nullResponse = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoConfigurationStatus', (info) => {
+      graphql.query('GetRepoConfigurationStatus', () => {
         if (badResponse) {
           return HttpResponse.json({})
         } else if (repoNotFound) {

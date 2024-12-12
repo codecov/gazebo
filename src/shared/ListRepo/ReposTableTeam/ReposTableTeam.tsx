@@ -72,9 +72,9 @@ const getColumns = ({
     cell: (info) => {
       const repo = info.row.original
       let pageName = 'new'
-      if (!!repo?.coverageEnabled) {
+      if (repo?.coverageEnabled) {
         pageName = 'repo'
-      } else if (!!repo?.bundleAnalysisEnabled) {
+      } else if (repo?.bundleAnalysisEnabled) {
         pageName = 'bundles'
       }
 
@@ -266,7 +266,7 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
           <Button
             hook="load-more"
             isLoading={isFetchingNextPage}
-            onClick={fetchNextPage}
+            onClick={() => fetchNextPage()}
             to={undefined}
             disabled={false}
           >

@@ -119,7 +119,7 @@ describe('useBranchComponents', () => {
     isFiltered = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBranchComponents', (info) => {
+      graphql.query('GetBranchComponents', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

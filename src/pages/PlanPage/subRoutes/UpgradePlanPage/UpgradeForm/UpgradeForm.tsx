@@ -51,7 +51,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const { data: planData } = usePlanData({ owner, provider })
   const { upgradePlan } = useUpgradeControls()
   const isSentryUpgrade = canApplySentryUpgrade({
-    plan: currentPlan?.value,
+    isEnterprisePlan: planData?.plan?.isEnterprisePlan,
     plans,
   })
   const minSeats =
@@ -73,6 +73,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
       plans,
       trialStatus,
       selectedPlan,
+      isEnterprisePlan: planData?.plan?.isEnterprisePlan,
     }),
     resolver: zodResolver(
       getSchema({

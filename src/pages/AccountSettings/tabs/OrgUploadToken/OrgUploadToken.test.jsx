@@ -68,7 +68,7 @@ describe('OrgUploadToken', () => {
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -78,7 +78,7 @@ describe('OrgUploadToken', () => {
           },
         })
       }),
-      graphql.query('GetOrgUploadToken', (info) => {
+      graphql.query('GetOrgUploadToken', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -87,7 +87,7 @@ describe('OrgUploadToken', () => {
           },
         })
       }),
-      graphql.mutation('regenerateOrgUploadToken', (info) => {
+      graphql.mutation('regenerateOrgUploadToken', () => {
         mutate('regenerateOrgUploadToken')
         return HttpResponse.json({
           data: {

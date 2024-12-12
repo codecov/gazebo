@@ -35,19 +35,6 @@ export interface Plan {
   quantity?: number
 }
 
-export const EnterprisePlans = Object.freeze({
-  USERS_ENTERPRISEM: 'users-enterprisem',
-  USERS_ENTERPRISEY: 'users-enterprisey',
-})
-
-export function isEnterprisePlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return (Object.values(EnterprisePlans) as string[]).includes(plan)
-  }
-
-  return false
-}
-
 export function isFreePlan(plan?: PlanName | null) {
   if (isString(plan)) {
     if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true
@@ -189,13 +176,13 @@ export const findTeamPlans = ({ plans }: { plans?: Plan[] | null }) => {
 }
 
 export const canApplySentryUpgrade = ({
-  plan,
+  isEnterprisePlan,
   plans,
 }: {
-  plan?: PlanName
+  isEnterprisePlan?: boolean
   plans?: Plan[] | null
 }) => {
-  if (isEnterprisePlan(plan) || !isArray(plans)) {
+  if (isEnterprisePlan || !isArray(plans)) {
     return false
   }
 

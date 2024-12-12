@@ -162,7 +162,7 @@ describe('BranchSelector', () => {
     })
 
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         if (nullOverview) {
           return HttpResponse.json({ data: { owner: null } })
         }

@@ -93,7 +93,7 @@ describe('useCommitYaml', () => {
     ownerNotActivatedError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query(`CommitYaml`, (info) => {
+      graphql.query(`CommitYaml`, () => {
         if (badSchema) {
           return HttpResponse.json({ data: mockCommitYamlBadSchema })
         } else if (notFoundError) {

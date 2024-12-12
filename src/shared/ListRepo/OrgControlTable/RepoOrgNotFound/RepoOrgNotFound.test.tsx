@@ -41,13 +41,13 @@ describe('RepoOrgNotFound', () => {
     const triggerResync = vi.fn()
 
     server.use(
-      graphql.query('IsSyncing', (info) => {
+      graphql.query('IsSyncing', () => {
         return HttpResponse.json({
           data: { me: { isSyncing: false } },
         })
       }),
 
-      graphql.query('GetOwnerRateLimitStatus', (info) => {
+      graphql.query('GetOwnerRateLimitStatus', () => {
         return HttpResponse.json({
           data: { me: { owner: { isGithubRateLimited } } },
         })

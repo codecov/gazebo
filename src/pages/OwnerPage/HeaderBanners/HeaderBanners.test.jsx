@@ -40,6 +40,7 @@ const mockPlanDataResponse = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
 }
 
 const mockPlanDataResponseNoUploadLimit = {
@@ -67,7 +68,7 @@ describe('HeaderBanners', () => {
   }) {
     config.IS_SELF_HOSTED = isSelfHosted
     server.use(
-      graphql.query('OwnerPageData', (info) => {
+      graphql.query('OwnerPageData', () => {
         if (hasReachedLimit) {
           return HttpResponse.json({
             data: { owner: { numberOfUploads: 252 } },
@@ -84,7 +85,7 @@ describe('HeaderBanners', () => {
           data: { owner: { numberOfUploads: 230 } },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -94,7 +95,7 @@ describe('HeaderBanners', () => {
           },
         })
       }),
-      http.get('/internal/gh/codecov/account-details/', (info) => {
+      http.get('/internal/gh/codecov/account-details/', () => {
         return HttpResponse.json({ integrationId })
       })
     )
@@ -194,16 +195,13 @@ describe('HeaderBanners', () => {
         hasReachedLimit: true,
       })
       server.use(
-        graphql.query('GetPlanData', (req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.data({
-              owner: {
-                hasPrivateRepos: true,
-                plan: mockPlanDataResponseNoUploadLimit,
-              },
-            })
-          )
+        graphql.query('GetPlanData', () => {
+          return HttpResponse.json({
+            owner: {
+              hasPrivateRepos: true,
+              plan: mockPlanDataResponseNoUploadLimit,
+            },
+          })
         })
       )
     })
@@ -267,7 +265,7 @@ describe('HeaderBanners', () => {
 
   describe('error in api response', () => {
     server.use(
-      http.get('/internal/gh/codecov/account-details/', (info) => {
+      http.get('/internal/gh/codecov/account-details/', () => {
         return HttpResponse.error(404)
       })
     )

@@ -1,5 +1,6 @@
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { lazy, Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
@@ -7,11 +8,11 @@ import config from 'config'
 
 import { SentryRoute } from 'sentry'
 
-import { usePlanPageData } from 'pages/PlanPage/hooks'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { PlanProvider } from './context'
 import PlanBreadcrumb from './PlanBreadcrumb'
+import { PlanPageDataQueryOpts } from './queries/PlanPageDataQueryOpts'
 import Tabs from './Tabs'
 
 const CancelPlanPage = lazy(() => import('./subRoutes/CancelPlanPage'))
@@ -33,7 +34,9 @@ const Loader = () => (
 
 function PlanPage() {
   const { owner, provider } = useParams()
-  const { data: ownerData } = usePlanPageData({ owner, provider })
+  const { data: ownerData } = useSuspenseQueryV5(
+    PlanPageDataQueryOpts({ owner, provider })
+  )
 
   if (config.IS_SELF_HOSTED || !ownerData?.isCurrentUserPartOfOrg) {
     return <Redirect to={`/${provider}/${owner}`} />

@@ -85,9 +85,9 @@ afterAll(() => {
 })
 
 describe('useUser', () => {
-  function setup(userData: User | {}) {
+  function setup(userData: User | object) {
     server.use(
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: userData })
       })
     )

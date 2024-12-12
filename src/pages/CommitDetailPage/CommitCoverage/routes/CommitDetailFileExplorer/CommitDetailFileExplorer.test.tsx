@@ -90,7 +90,7 @@ afterAll(() => {
 describe('CommitDetailFileExplorer', () => {
   function setup() {
     server.use(
-      graphql.query('CommitPathContents', (info) => {
+      graphql.query('CommitPathContents', () => {
         return HttpResponse.json({ data: mockTreeData })
       })
     )

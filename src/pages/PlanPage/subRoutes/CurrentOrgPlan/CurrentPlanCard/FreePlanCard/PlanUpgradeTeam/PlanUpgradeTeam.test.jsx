@@ -13,6 +13,7 @@ import PlanUpgradeTeam from './PlanUpgradeTeam'
 vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
 
 const mockPlanBasic = {
+  isEnterprisePlan: false,
   baseUnitPrice: 0,
   benefits: ['Up to # user', 'Unlimited public repositories'],
   billingRate: 'monthly',
@@ -29,6 +30,7 @@ const mockPlanBasic = {
 }
 
 const mockPlanPro = {
+  isEnterprisePlan: false,
   baseUnitPrice: 10,
   benefits: ['Up to # user', 'Unlimited public repositories'],
   billingRate: 'monthly',
@@ -45,6 +47,7 @@ const mockPlanPro = {
 }
 
 const mockPlanTrialing = {
+  isEnterprisePlan: false,
   baseUnitPrice: 10,
   benefits: ['Up to # user', 'Unlimited public repositories'],
   billingRate: 'monthly',
@@ -184,7 +187,7 @@ const wrapper = ({ children }) => (
 describe('PlanUpgradeTeam', () => {
   function setup({ plan = mockPlanBasic } = { plan: mockPlanBasic }) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -195,7 +198,7 @@ describe('PlanUpgradeTeam', () => {
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: { owner: { availablePlans: mockAvailablePlans } },
         })
