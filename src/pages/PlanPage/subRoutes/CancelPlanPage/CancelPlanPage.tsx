@@ -10,7 +10,6 @@ import {
   usePlanData,
 } from 'services/account'
 import {
-  isEnterprisePlan,
   isMonthlyPlan,
   isProPlan,
   isTrialPlan,
@@ -46,7 +45,7 @@ function CancelPlanPage() {
     planData?.plan?.trialStatus === TrialStatuses.ONGOING
 
   // redirect right away if the user is on an enterprise plan
-  if (isEnterprisePlan(accountDetailsData?.plan?.value) || isOnTrial) {
+  if (planData?.plan?.isEnterprisePlan || isOnTrial) {
     return <Redirect to={`/plan/${provider}/${owner}`} />
   }
 

@@ -1,7 +1,7 @@
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails, useAvailablePlans } from 'services/account'
+import { useAvailablePlans, usePlanData } from 'services/account'
 import { useLocationParams } from 'services/navigation'
 import { TierNames } from 'services/tier'
 import {
@@ -35,7 +35,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: planData } = usePlanData({ provider, owner })
   const { proPlanYear, proPlanMonth } = findProPlans({ plans })
   const planParam = usePlanParams()
 
@@ -45,9 +45,10 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   })
 
   const hasTeamPlans = shouldDisplayTeamCard({ plans })
-  const plan =
-    accountDetails?.rootOrganization?.plan?.value ?? accountDetails?.plan?.value
-  const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
+  const isSentryUpgrade = canApplySentryUpgrade({
+    isEnterprisePlan: planData?.plan?.isEnterprisePlan,
+    plans,
+  })
 
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
   const monthlyProPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth

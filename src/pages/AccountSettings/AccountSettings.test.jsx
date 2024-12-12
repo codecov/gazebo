@@ -161,6 +161,7 @@ describe('AccountSettings', () => {
               plan: {
                 ...mockPlanData,
                 value: planValue,
+                isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
               },
             },
           },

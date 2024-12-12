@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 
 const RequestSchema = z.object({
   owner: z
@@ -24,17 +24,20 @@ const query = `
   }
 `
 
-type UsePlanPageDataParams = {
+type PlanPageDataQueryArgs = {
   owner: string
   provider: string
 }
 
-export function usePlanPageData({ owner, provider }: UsePlanPageDataParams) {
+export function PlanPageDataQueryOpts({
+  owner,
+  provider,
+}: PlanPageDataQueryArgs) {
   const variables = {
     username: owner,
   }
 
-  return useQuery({
+  return queryOptionsV5({
     queryKey: ['PlanPageData', variables, provider],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -46,11 +49,12 @@ export function usePlanPageData({ owner, provider }: UsePlanPageDataParams) {
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'usePlanPageData - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+            error: parsedRes.error,
+          })
         }
 
         return parsedRes.data?.owner ?? null

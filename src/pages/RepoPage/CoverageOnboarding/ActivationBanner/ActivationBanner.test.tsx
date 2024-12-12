@@ -63,6 +63,7 @@ const mockTrialData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
 }
 
 describe('ActivationBanner', () => {

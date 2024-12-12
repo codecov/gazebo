@@ -53,7 +53,12 @@ function PlansActionsBilling({ plan }) {
     )
   }
 
-  if (canApplySentryUpgrade({ plan, plans })) {
+  if (
+    canApplySentryUpgrade({
+      isEnterprisePlan: planData?.plan?.isEnterprisePlan,
+      plans,
+    })
+  ) {
     return (
       <div className="flex self-start">
         <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">

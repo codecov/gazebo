@@ -69,6 +69,7 @@ const mockAssets = (hasNextPage = true) => {
               bundleAnalysisReport: {
                 __typename: 'BundleAnalysisReport',
                 bundle: {
+                  info: { pluginName: '@codecov/vite-plugin' },
                   bundleData: { size: { uncompress: 6000 } },
                   assetsPaginated: {
                     edges: [

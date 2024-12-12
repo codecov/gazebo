@@ -1,7 +1,7 @@
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails, useAvailablePlans } from 'services/account'
+import { useAvailablePlans, usePlanData } from 'services/account'
 import {
   canApplySentryUpgrade,
   findProPlans,
@@ -31,12 +31,13 @@ export default function ErrorBanner({
 }: ErrorBannerProps) {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: planData } = usePlanData({ provider, owner })
   const { proPlanYear } = findProPlans({ plans })
   const { sentryPlanYear } = findSentryPlans({ plans })
-  const plan =
-    accountDetails?.rootOrganization?.plan?.value ?? accountDetails?.plan?.value
-  const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
+  const isSentryUpgrade = canApplySentryUpgrade({
+    isEnterprisePlan: planData?.plan?.isEnterprisePlan,
+    plans,
+  })
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
 
   if (errors?.seats?.message === UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE) {

@@ -1,7 +1,8 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import isNumber from 'lodash/isNumber'
 import { useParams } from 'react-router-dom'
 
-import { usePlanPageData } from 'pages/PlanPage/hooks'
+import { PlanPageDataQueryOpts } from 'pages/PlanPage/queries/PlanPageDataQueryOpts'
 import { useAccountDetails, usePlanData } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
@@ -22,7 +23,9 @@ function PaidPlanCard() {
     provider,
     owner,
   })
-  const { data: ownerData } = usePlanPageData({ owner, provider })
+  const { data: ownerData } = useSuspenseQueryV5(
+    PlanPageDataQueryOpts({ owner, provider })
+  )
 
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   const plan = planData?.plan
@@ -56,7 +59,11 @@ function PaidPlanCard() {
           <p className="mb-2 text-xs font-semibold">Pricing</p>
           <div className="mb-4">
             {value && baseUnitPrice ? (
-              <PlanPricing value={value} baseUnitPrice={baseUnitPrice} />
+              <PlanPricing
+                plan={plan}
+                value={value}
+                baseUnitPrice={baseUnitPrice}
+              />
             ) : null}
             {seats ? (
               <p className="text-xs text-ds-gray-senary">

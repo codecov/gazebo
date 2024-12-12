@@ -1,10 +1,14 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useInfiniteQuery as useInfiniteQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router'
 
-import { useInfiniteAccountOrganizations } from './useInfiniteAccountOrganizations'
+import { InfiniteAccountOrganizationsQueryOpts } from './InfiniteAccountOrganizationsQueryOpts'
 
 const org1 = {
   username: 'org1',
@@ -63,29 +67,30 @@ const mockPageTwo = {
   },
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
+  <QueryClientProviderV5 client={queryClientV5}>
     <MemoryRouter initialEntries={['/plan/gh/codecov']}>
       <Route path="/plan/:provider/:owner">{children}</Route>
     </MemoryRouter>
-  </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 interface SetupArgs {
   invalidResponse?: boolean
@@ -124,7 +129,10 @@ describe('useInfiniteAccountOrganizations', () => {
   it('returns 404 when bad response from api', async () => {
     setup({ invalidResponse: true })
     const { result } = renderHook(
-      () => useInfiniteAccountOrganizations({ provider, owner }),
+      () =>
+        useInfiniteQueryV5(
+          InfiniteAccountOrganizationsQueryOpts({ provider, owner })
+        ),
       { wrapper }
     )
 
@@ -144,7 +152,10 @@ describe('useInfiniteAccountOrganizations', () => {
   it('returns 404 when no account for owner', async () => {
     setup({ noAccount: true })
     const { result } = renderHook(
-      () => useInfiniteAccountOrganizations({ provider, owner }),
+      () =>
+        useInfiniteQueryV5(
+          InfiniteAccountOrganizationsQueryOpts({ provider, owner })
+        ),
       { wrapper }
     )
 
@@ -164,7 +175,10 @@ describe('useInfiniteAccountOrganizations', () => {
   it('returns organizations for account', async () => {
     setup({})
     const { result } = renderHook(
-      () => useInfiniteAccountOrganizations({ provider, owner }),
+      () =>
+        useInfiniteQueryV5(
+          InfiniteAccountOrganizationsQueryOpts({ provider, owner })
+        ),
       { wrapper }
     )
 
@@ -184,7 +198,10 @@ describe('useInfiniteAccountOrganizations', () => {
   it('returns second page of orgs for account', async () => {
     setup({})
     const { result } = renderHook(
-      () => useInfiniteAccountOrganizations({ provider, owner }),
+      () =>
+        useInfiniteQueryV5(
+          InfiniteAccountOrganizationsQueryOpts({ provider, owner })
+        ),
       { wrapper }
     )
 

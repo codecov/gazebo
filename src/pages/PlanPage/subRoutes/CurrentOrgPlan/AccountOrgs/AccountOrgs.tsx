@@ -1,3 +1,4 @@
+import { useInfiniteQuery as useInfiniteQueryV5 } from '@tanstack/react-queryV5'
 import {
   createColumnHelper,
   flexRender,
@@ -15,8 +16,8 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import { Tooltip } from 'ui/Tooltip'
 
-import { Account } from '../hooks/useEnterpriseAccountDetails'
-import { useInfiniteAccountOrganizations } from '../hooks/useInfiniteAccountOrganizations'
+import { Account } from '../queries/EnterpriseAccountDetailsQueryOpts'
+import { InfiniteAccountOrganizationsQueryOpts } from '../queries/InfiniteAccountOrganizationsQueryOpts'
 
 interface AccountOrgsArgs {
   account: Account
@@ -122,12 +123,14 @@ export default function AccountOrgs({ account }: AccountOrgsArgs) {
   ])
 
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useInfiniteAccountOrganizations({
-      provider,
-      owner,
-      first: 20,
-      orderingDirection: sorting[0]?.desc ? 'DESC' : 'ASC',
-    })
+    useInfiniteQueryV5(
+      InfiniteAccountOrganizationsQueryOpts({
+        provider,
+        owner,
+        first: 20,
+        orderingDirection: sorting[0]?.desc ? 'DESC' : 'ASC',
+      })
+    )
 
   const accountOrgs: AccountOrgRow[] = useMemo(() => {
     if (!data) return []

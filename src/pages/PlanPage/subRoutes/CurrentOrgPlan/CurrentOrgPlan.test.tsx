@@ -1,8 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { z } from 'zod'
 
@@ -12,20 +17,12 @@ import { Plans } from 'shared/utils/billing'
 import { AlertOptions, type AlertOptionsType } from 'ui/Alert'
 
 import CurrentOrgPlan from './CurrentOrgPlan'
-import { useEnterpriseAccountDetails } from './hooks/useEnterpriseAccountDetails'
+import { EnterpriseAccountDetailsRequestSchema } from './queries/EnterpriseAccountDetailsQueryOpts'
 
 vi.mock('./BillingDetails', () => ({ default: () => 'BillingDetails' }))
 vi.mock('./CurrentPlanCard', () => ({ default: () => 'CurrentPlanCard' }))
 vi.mock('./LatestInvoiceCard', () => ({ default: () => 'LatestInvoiceCard' }))
 vi.mock('./AccountOrgs', () => ({ default: () => 'AccountOrgs' }))
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-})
 
 const mockedAccountDetails = {
   planProvider: 'github',
@@ -81,6 +78,14 @@ const mockEnterpriseAccountDetailsHundredPercent = {
   },
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
 const alertOptionWrapperCreator = (
   alertOptionString: AlertOptionsType | '',
   isCancellation?: boolean
@@ -88,19 +93,23 @@ const alertOptionWrapperCreator = (
   const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
     <MemoryRouter initialEntries={['/billing/gh/codecov']}>
       <Route path="/billing/:provider/:owner">
-        <QueryClientProvider client={queryClient}>
-          <PlanUpdatedPlanNotificationContext.Provider
-            value={{
-              updatedNotification: {
-                alertOption: alertOptionString,
-                isCancellation,
-              },
-              setUpdatedNotification: noop,
-            }}
-          >
-            {children}
-          </PlanUpdatedPlanNotificationContext.Provider>
-        </QueryClientProvider>
+        <QueryClientProviderV5 client={queryClientV5}>
+          <QueryClientProvider client={queryClient}>
+            <Suspense fallback={<div>Loading</div>}>
+              <PlanUpdatedPlanNotificationContext.Provider
+                value={{
+                  updatedNotification: {
+                    alertOption: alertOptionString,
+                    isCancellation,
+                  },
+                  setUpdatedNotification: noop,
+                }}
+              >
+                {children}
+              </PlanUpdatedPlanNotificationContext.Provider>
+            </Suspense>
+          </QueryClientProvider>
+        </QueryClientProviderV5>
       </Route>
     </MemoryRouter>
   )
@@ -112,18 +121,25 @@ const wrapper = alertOptionWrapperCreator(AlertOptions.SUCCESS)
 const noUpdatedPlanWrapper = alertOptionWrapperCreator('')
 const cancellationPlanWrapper = alertOptionWrapperCreator('', true)
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 interface SetupArgs {
   accountDetails?: z.infer<typeof AccountDetailsSchema>
-  enterpriseAccountDetails?: ReturnType<
-    typeof useEnterpriseAccountDetails
-  >['data']
+  enterpriseAccountDetails?: z.infer<
+    typeof EnterpriseAccountDetailsRequestSchema
+  >
 }
 
 describe('CurrentOrgPlan', () => {
@@ -132,12 +148,12 @@ describe('CurrentOrgPlan', () => {
     enterpriseAccountDetails = mockNoEnterpriseAccount,
   }: SetupArgs) {
     server.use(
-      graphql.query('EnterpriseAccountDetails', () =>
-        HttpResponse.json({ data: enterpriseAccountDetails })
-      ),
-      http.get('/internal/:provider/:owner/account-details', () =>
-        HttpResponse.json(accountDetails)
-      )
+      graphql.query('EnterpriseAccountDetails', () => {
+        return HttpResponse.json({ data: enterpriseAccountDetails })
+      }),
+      http.get('/internal/:provider/:owner/account-details', () => {
+        return HttpResponse.json(accountDetails)
+      })
     )
   }
 
@@ -402,8 +418,8 @@ describe('CurrentOrgPlan', () => {
         setup({
           enterpriseAccountDetails: mockEnterpriseAccountDetailsHundredPercent,
         })
-
         render(<CurrentOrgPlan />, { wrapper })
+
         const banner = await screen.findByText(
           /Your account is using 100% of its seats/
         )
