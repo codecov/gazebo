@@ -2,8 +2,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router'
 
-import { useSelfHostedCurrentUser } from 'services/selfHosted'
 import { SelfHostedSeatsConfigQueryOpts } from 'services/selfHosted/SelfHostedSeatsConfigQueryOpts'
+import { SelfHostedCurrentUserQueryOpts } from 'services/selfHosted/SelfHostedCurrentUserQueryOpts'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
@@ -41,9 +41,12 @@ function canChangeActivation({ seatConfig, currentUser }) {
 function ActivationBanner() {
   const { provider } = useParams()
   const queryClient = useQueryClient()
-  const { data: currentUser } = useSelfHostedCurrentUser()
+
   const { data: seatConfig } = useSuspenseQueryV5(
     SelfHostedSeatsConfigQueryOpts({ provider })
+  )
+  const { data: currentUser } = useSuspenseQueryV5(
+    SelfHostedCurrentUserQueryOpts({ provider })
   )
 
   const { canChange, displaySeatMsg } = canChangeActivation({
