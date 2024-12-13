@@ -1,1 +1,1 @@
-export { default, type AppLinkProps } from './Button'
+export { default } from './Button'

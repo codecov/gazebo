@@ -219,7 +219,7 @@ describe('CircleCI', () => {
       expect(CircleCIJSWorkflowLink).toBeInTheDocument()
 
       const CircleCIJSExampleLink = await screen.findByRole('link', {
-        name: /javascript config.yml/,
+        name: /JavaScript config.yml/,
       })
       expect(CircleCIJSExampleLink).toBeInTheDocument()
       expect(CircleCIJSExampleLink).toHaveAttribute(
