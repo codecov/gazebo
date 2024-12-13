@@ -1,7 +1,17 @@
-import { useSelfHostedSeatsConfig } from 'services/selfHosted'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
+import { useParams } from 'react-router'
+
+import { SelfHostedSeatsConfigQueryOpts } from 'services/selfHosted/SelfHostedSeatsConfigQueryOpts'
+
+interface URLParams {
+  provider: string
+}
 
 function SeatDetails() {
-  const { data: selfHostedSeats } = useSelfHostedSeatsConfig()
+  const { provider } = useParams<URLParams>()
+  const { data: selfHostedSeats } = useSuspenseQueryV5(
+    SelfHostedSeatsConfigQueryOpts({ provider })
+  )
 
   if (!selfHostedSeats?.seatsUsed || !selfHostedSeats?.seatsLimit) {
     return <p>Unable to get seat usage information</p>
