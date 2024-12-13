@@ -97,7 +97,11 @@ function GitHubOrgSecretExample({
         <ExpandableSection.Content>
           <img
             className="size-full object-cover"
-            alt="org settings secret"
+            alt={
+              isUsingGlobalToken
+                ? 'org settings secret example'
+                : 'repo settings secret example'
+            }
             src={isUsingGlobalToken ? orgSecretImg : repoSecretImg}
           />
         </ExpandableSection.Content>

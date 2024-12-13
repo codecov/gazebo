@@ -340,4 +340,47 @@ describe('TokenStepSection', () => {
       'https://github.com/codecov/test-repo/settings/secrets/actions/new'
     )
   })
+
+  describe('GitHubOrgSecretExample', () => {
+    it('renders the correct image if is on org token selected state', async () => {
+      render(
+        <TokenStepSection
+          showAddTokenStep={true}
+          showTokenSelector={true}
+          isUsingGlobalToken={true}
+          setIsUsingGlobalToken={vi.fn()}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
+      const button = screen.getByRole('button', {
+        name: /Your organization secret in GitHub should look like this/,
+      })
+      await userEvent.click(button)
+      expect(
+        screen.getByAltText('org settings secret example')
+      ).toBeInTheDocument()
+    })
+    it('renders the correct image if is on repo token selected state', async () => {
+      render(
+        <TokenStepSection
+          showAddTokenStep={true}
+          showTokenSelector={true}
+          isUsingGlobalToken={false}
+          setIsUsingGlobalToken={vi.fn()}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
+      const button = screen.getByRole('button', {
+        name: /Your organization secret in GitHub should look like this/,
+      })
+      await userEvent.click(button)
+      expect(
+        screen.getByAltText('repo settings secret example')
+      ).toBeInTheDocument()
+    })
+  })
 })
