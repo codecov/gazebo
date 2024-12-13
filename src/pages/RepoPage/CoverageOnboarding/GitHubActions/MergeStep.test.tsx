@@ -5,14 +5,10 @@ import MergeStep from './MergeStep'
 vi.mock('config')
 
 describe('MergeStep', () => {
-  describe('MergeStep', () => {
-    it('renders body', async () => {
-      render(<MergeStep stepNum={4} />)
+  it('renders body', async () => {
+    render(<MergeStep stepNum={4} />)
 
-      const body = await screen.findByText(
-        /Once merged to your default branch,/
-      )
-      expect(body).toBeInTheDocument()
-    })
+    const body = await screen.findByText(/Once merged to your default branch,/)
+    expect(body).toBeInTheDocument()
   })
 })
