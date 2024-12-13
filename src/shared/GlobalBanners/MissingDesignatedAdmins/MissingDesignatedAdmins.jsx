@@ -1,8 +1,9 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useSelfHostedHasAdmins } from 'services/selfHosted'
+import { SelfHostedHasAdminsQueryOpts } from 'services/selfHosted/SelfHostedHasAdminsQueryOpts'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 
@@ -16,9 +17,8 @@ const useHideBanner = ({ provider, hasAdmins, isFetching, isSelfHosted }) => {
 
 const MissingDesignatedAdmins = () => {
   const { provider } = useParams()
-  const { data: hasAdmins, isFetching } = useSelfHostedHasAdmins(
-    { provider },
-    { enabled: !!provider && !!config.IS_SELF_HOSTED }
+  const { data: hasAdmins, isFetching } = useSuspenseQueryV5(
+    SelfHostedHasAdminsQueryOpts({ provider })
   )
   // This hook is purely side stepping the complexity rule here.
   const hideBanner = useHideBanner({
