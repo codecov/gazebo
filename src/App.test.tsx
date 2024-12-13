@@ -224,7 +224,7 @@ describe('App', () => {
         return HttpResponse.json({ data: {} })
       }),
       graphql.query('HasAdmins', () => {
-        return HttpResponse.json({ data: {} })
+        return HttpResponse.json({ data: { config: null } })
       }),
       graphql.query('owner', () => {
         return HttpResponse.json({ data: { owner: { isAdmin: true } } })
