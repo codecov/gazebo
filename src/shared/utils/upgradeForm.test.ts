@@ -112,6 +112,11 @@ describe('getDefaultValuesUpgradeForm', () => {
         accountDetails,
         selectedPlan: proPlanYear,
         plans: [proPlanYear],
+        plan: {
+          billingRate: 'yearly',
+          value: Plans.USERS_PR_INAPPY,
+          planUserCount: 1,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
@@ -129,6 +134,11 @@ describe('getDefaultValuesUpgradeForm', () => {
         accountDetails,
         selectedPlan: proPlanYear,
         plans: [proPlanYear, sentryPlanYear],
+        plan: {
+          billingRate: 'yearly',
+          value: Plans.USERS_PR_INAPPY,
+          planUserCount: 1,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
@@ -148,6 +158,11 @@ describe('getDefaultValuesUpgradeForm', () => {
         accountDetails,
         selectedPlan: proPlanYear,
         plans: [teamPlanMonth],
+        plan: {
+          billingRate: 'monthly',
+          value: Plans.USERS_TEAMM,
+          planUserCount: 1,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
@@ -165,6 +180,11 @@ describe('getDefaultValuesUpgradeForm', () => {
         accountDetails,
         selectedPlan: proPlanYear,
         plans: [proPlanYear, sentryPlanYear],
+        plan: {
+          billingRate: 'monthly',
+          value: Plans.USERS_SENTRYY,
+          planUserCount: 1,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
@@ -183,6 +203,11 @@ describe('getDefaultValuesUpgradeForm', () => {
       accountDetails,
       selectedPlan: proPlanYear,
       plans: [proPlanYear],
+      plan: {
+        billingRate: 'monthly',
+        value: Plans.USERS_PR_INAPPM,
+        planUserCount: 2,
+      } as Plan,
     })
 
     expect(data).toStrictEqual({
@@ -522,7 +547,7 @@ describe('shouldRenderCancelLink', () => {
     // eslint-disable-next-line testing-library/render-result-naming-convention
     const value = shouldRenderCancelLink({
       cancelAtPeriodEnd: false,
-      plan: { value: Plans.USERS_PR_INAPPY } as Plan,
+      plan: Plans.USERS_PR_INAPPY,
       trialStatus: TrialStatuses.NOT_STARTED,
       isFreePlan: false,
     })
@@ -535,7 +560,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: { value: Plans.USERS_BASIC } as Plan,
+        plan: Plans.USERS_BASIC,
         trialStatus: TrialStatuses.NOT_STARTED,
         isFreePlan: true,
       })
@@ -549,7 +574,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: { value: Plans.USERS_TRIAL } as Plan,
+        plan: Plans.USERS_TRIAL,
         trialStatus: TrialStatuses.ONGOING,
         isFreePlan: false,
       })
@@ -563,7 +588,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: true,
-        plan: { value: Plans.USERS_PR_INAPPY } as Plan,
+        plan: Plans.USERS_PR_INAPPY,
         trialStatus: TrialStatuses.NOT_STARTED,
         isFreePlan: false,
       })
@@ -586,6 +611,11 @@ describe('shouldRenderCancelLink', () => {
         accountDetails,
         plans,
         selectedPlan: { value: Plans.USERS_TEAMY } as Plan,
+        plan: {
+          billingRate: 'yearly',
+          value: Plans.USERS_TEAMY,
+          planUserCount: 1,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({

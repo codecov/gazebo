@@ -5,6 +5,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import DowngradePlan from './DowngradePlan'
@@ -21,6 +22,28 @@ const mockAccountDetails = {
   inactiveUserCount: 1,
   subscriptionDetail: {
     currentPeriodEnd: 1638614662,
+  },
+}
+
+const mockPlanData = {
+  owner: {
+    hasPrivateRepos: true,
+    plan: {
+      isEnterprisePlan: false,
+      baseUnitPrice: 10,
+      benefits: [],
+      billingRate: 'monthly',
+      marketingName: 'Users Basic',
+      monthlyUploadLimit: 250,
+      value: Plans.USERS_BASIC,
+      trialStatus: TrialStatuses.NOT_STARTED,
+      trialStartDate: '',
+      trialEndDate: '',
+      trialTotalDays: 0,
+      pretrialUsersCount: 0,
+      planUserCount: 5,
+      hasSeatsLeft: false,
+    },
   },
 }
 
@@ -59,9 +82,7 @@ describe('DowngradePlan', () => {
         return HttpResponse.json(mockAccountDetails)
       }),
       graphql.query('GetPlanData', () => {
-        return HttpResponse.json({
-          data: { plan: { isFreePlan: true } },
-        })
+        return HttpResponse.json(mockPlanData)
       })
     )
   }

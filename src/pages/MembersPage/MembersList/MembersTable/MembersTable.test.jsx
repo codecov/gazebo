@@ -106,7 +106,7 @@ const mockPlanData = {
 const server = setupServer()
 
 beforeAll(() => server.listen())
-beforeEach(() => {})
+beforeEach(() => { })
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
@@ -118,13 +118,13 @@ describe('MembersTable', () => {
 
   const wrapper =
     (initialEntries = ['/gh/codecov']) =>
-    ({ children }) => (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+      ({ children }) => (
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={initialEntries}>
+            <Route path="/:provider/:owner">{children}</Route>
+          </MemoryRouter>
+        </QueryClientProvider>
+      )
 
   function setup({
     mockUserRequest = mockBaseUserRequest(false),

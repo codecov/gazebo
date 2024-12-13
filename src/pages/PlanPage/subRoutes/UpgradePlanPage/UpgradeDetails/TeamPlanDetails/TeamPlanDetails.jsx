@@ -19,7 +19,6 @@ function TeamPlanDetails() {
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
 
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
 
   const cancelAtPeriodEnd =
@@ -55,19 +54,19 @@ function TeamPlanDetails() {
         )}
         {shouldRenderCancelLink({
           cancelAtPeriodEnd,
-          plan,
+          plan: planData?.plan,
           trialStatus,
           isFreePlan: planData?.plan?.isFreePlan,
         }) && (
-          <A
-            to={{ pageName: 'cancelOrgPlan' }}
-            variant="black"
-            hook="cancel-plan"
-          >
-            Cancel
-            <Icon name="chevronRight" size="sm" variant="solid" />
-          </A>
-        )}
+            <A
+              to={{ pageName: 'cancelOrgPlan' }}
+              variant="black"
+              hook="cancel-plan"
+            >
+              Cancel
+              <Icon name="chevronRight" size="sm" variant="solid" />
+            </A>
+          )}
       </div>
     </div>
   )

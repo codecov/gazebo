@@ -18,11 +18,9 @@ function SentryPlanDetails() {
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { sentryPlanYear } = findSentryPlans({ plans })
 
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const cancelAtPeriodEnd =
     accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
   const trialStatus = planData?.plan?.trialStatus
-
   return (
     <div className="h-fit border md:w-[280px]">
       <h3 className="p-4 font-semibold">
@@ -52,19 +50,19 @@ function SentryPlanDetails() {
         is a bug imo and needs to be here in a future ticket */}
         {shouldRenderCancelLink({
           cancelAtPeriodEnd,
-          plan,
+          plan: planData?.plan,
           trialStatus,
           isFreePlan: planData?.plan?.isFreePlan,
         }) && (
-          <A
-            to={{ pageName: 'cancelOrgPlan' }}
-            variant="black"
-            hook="cancel-plan"
-          >
-            Cancel
-            <Icon name="chevronRight" size="sm" variant="solid" />
-          </A>
-        )}
+            <A
+              to={{ pageName: 'cancelOrgPlan' }}
+              variant="black"
+              hook="cancel-plan"
+            >
+              Cancel
+              <Icon name="chevronRight" size="sm" variant="solid" />
+            </A>
+          )}
       </div>
     </div>
   )

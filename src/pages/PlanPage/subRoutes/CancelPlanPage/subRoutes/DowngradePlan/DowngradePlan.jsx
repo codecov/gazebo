@@ -70,6 +70,7 @@ function DowngradePlan() {
           <CancelButton
             customerId={accountDetails?.subscriptionDetail?.customer?.id}
             isFreePlan={planData?.plan?.isFreePlan}
+            planCost={planData?.plan?.value}
             upComingCancellation={
               accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
             }

@@ -77,12 +77,14 @@ const mockPlanTeamMonthly = {
 
 interface SetupArgs {
   planValue: string
+  planUserCount: number
 }
 
 describe('UpdateButton', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC }: SetupArgs = {
+    { planValue = Plans.USERS_BASIC, planUserCount = 1 }: SetupArgs = {
       planValue: Plans.USERS_BASIC,
+      planUserCount: 1,
     }
   ) {
     server.use(
@@ -138,7 +140,7 @@ describe('UpdateButton', () => {
   describe('when rendered', () => {
     describe('when there is a valid basic plan', () => {
       it('renders a valid Proceed to checkout button', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
+        setup({ planValue: Plans.USERS_BASIC, planUserCount: 1 })
 
         const props = {
           isValid: true,
@@ -158,7 +160,7 @@ describe('UpdateButton', () => {
 
     describe('when there is a valid pro plan', () => {
       it('renders a valid Update button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: Plans.USERS_PR_INAPPY, planUserCount: 4 })
 
         const props = {
           isValid: true,
@@ -178,7 +180,7 @@ describe('UpdateButton', () => {
 
     describe('when the button is invalid', () => {
       it('renders a disabled valid Update button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: Plans.USERS_PR_INAPPY, planUserCount: 4 })
 
         const props = {
           isValid: false,
@@ -198,7 +200,7 @@ describe('UpdateButton', () => {
 
     describe('when there are no changes in plan or seats', () => {
       it('renders a disabled valid Update button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: Plans.USERS_PR_INAPPM, planUserCount: 4 })
 
         const props = {
           isValid: true,
