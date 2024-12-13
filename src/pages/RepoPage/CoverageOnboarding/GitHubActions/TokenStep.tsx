@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'
 
 import orgSecretDark from 'assets/onboarding/org_secret_dark.png'
 import orgSecretLight from 'assets/onboarding/org_secret_light.png'
+import repoSecretDark from 'assets/onboarding/repo_secret_dark.png'
+import repoSecretLight from 'assets/onboarding/repo_secret_light.png'
 import useGenerateOrgUploadToken from 'pages/AccountSettings/tabs/OrgUploadToken/useGenerateOrgUploadToken'
 import {
   EVENT_METRICS,
@@ -35,6 +37,8 @@ interface URLParams {
 }
 
 interface SecretGHExampleProps {
+  isUsingGlobalToken: boolean
+  owner: string
   storeEventMetric: UseMutateFunction<
     any,
     unknown,
@@ -42,10 +46,10 @@ interface SecretGHExampleProps {
     unknown
   >
   uploadToken: string
-  owner: string
 }
 
 function GitHubOrgSecretExample({
+  isUsingGlobalToken,
   storeEventMetric,
   uploadToken,
   owner,
@@ -53,6 +57,7 @@ function GitHubOrgSecretExample({
   const { theme } = useThemeContext()
   const isDarkMode = theme === Theme.DARK
   const orgSecretImg = isDarkMode ? orgSecretDark : orgSecretLight
+  const repoSecretImg = isDarkMode ? repoSecretDark : repoSecretLight
 
   return (
     <>
@@ -93,7 +98,7 @@ function GitHubOrgSecretExample({
           <img
             className="size-full object-cover"
             alt="org settings secret"
-            src={orgSecretImg}
+            src={isUsingGlobalToken ? orgSecretImg : repoSecretImg}
           />
         </ExpandableSection.Content>
       </ExpandableSection>
@@ -215,11 +220,12 @@ const AddTokenStep = ({
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <GitHubOrgSecretExample
+          isUsingGlobalToken={isUsingGlobalToken}
+          owner={owner}
           storeEventMetric={storeEventMetric}
           uploadToken={
             isUsingGlobalToken ? (orgUploadToken ?? '') : repoUploadToken
           }
-          owner={owner}
         />
       </Card.Content>
     </Card>
