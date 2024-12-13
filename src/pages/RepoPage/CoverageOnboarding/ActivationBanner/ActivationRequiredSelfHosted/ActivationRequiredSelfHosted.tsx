@@ -1,7 +1,8 @@
-import {
-  useSelfHostedCurrentUser,
-  useSelfHostedSeatsConfig,
-} from 'services/selfHosted'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
+import { useParams } from 'react-router'
+
+import { useSelfHostedCurrentUser } from 'services/selfHosted'
+import { SelfHostedSeatsConfigQueryOpts } from 'services/selfHosted/SelfHostedSeatsConfigQueryOpts'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
@@ -60,9 +61,16 @@ function SeatsAvailable({ isAdmin }: { isAdmin: boolean }) {
   )
 }
 
+interface URLParams {
+  provider: string
+}
+
 function ActivationRequiredSelfHosted() {
+  const { provider } = useParams<URLParams>()
   const { data } = useSelfHostedCurrentUser()
-  const { data: selfHostedSeats } = useSelfHostedSeatsConfig()
+  const { data: selfHostedSeats } = useSuspenseQueryV5(
+    SelfHostedSeatsConfigQueryOpts({ provider })
+  )
 
   const hasSelfHostedSeats =
     selfHostedSeats?.seatsUsed &&
