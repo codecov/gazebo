@@ -360,7 +360,11 @@ describe('UpgradeForm', () => {
           data: {
             owner: {
               hasPrivateRepos: true,
-              plan: { ...planResponse, trialStatus },
+              plan: {
+                ...planResponse,
+                trialStatus,
+                isFreePlan: planValue === Plans.USERS_BASIC,
+              },
             },
           },
         })

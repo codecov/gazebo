@@ -160,6 +160,7 @@ describe('FailedTestsTable', () => {
               owner: {
                 plan: {
                   value: planValue,
+                  isFreePlan: planValue === Plans.USERS_BASIC,
                 },
                 repository: {
                   __typename: 'Repository',
@@ -186,6 +187,7 @@ describe('FailedTestsTable', () => {
           owner: {
             plan: {
               value: planValue,
+              isFreePlan: planValue === Plans.USERS_BASIC,
             },
             repository: {
               __typename: 'Repository',
@@ -238,7 +240,7 @@ describe('FailedTestsTable', () => {
       describe('when plan is free', () => {
         it('does not render flake rate column', async () => {
           const { queryClient } = setup({
-            planValue: Plans.USERS_FREE,
+            planValue: Plans.USERS_BASIC,
             isPrivate: true,
           })
           render(<FailedTestsTable />, {

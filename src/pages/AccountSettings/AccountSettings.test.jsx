@@ -162,6 +162,7 @@ describe('AccountSettings', () => {
                 ...mockPlanData,
                 value: planValue,
                 isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
+                isFreePlan: planValue === Plans.USERS_BASIC,
               },
             },
           },

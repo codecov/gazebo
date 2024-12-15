@@ -87,6 +87,7 @@ describe('ActivationBanner', () => {
                 trialStatus,
                 value,
                 hasSeatsLeft,
+                isFreePlan: value === Plans.USERS_BASIC,
               },
               pretrialPlan: {
                 baseUnitPrice: 10,

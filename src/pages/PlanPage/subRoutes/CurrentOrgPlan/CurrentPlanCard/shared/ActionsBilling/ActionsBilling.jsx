@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom'
 
 import githubLogo from 'assets/githublogo.png'
 import {
-  planPropType,
   TrialStatuses,
   useAccountDetails,
   useAvailablePlans,
@@ -11,14 +10,13 @@ import {
 import { useStartTrial } from 'services/trial'
 import {
   canApplySentryUpgrade,
-  isFreePlan,
   isSentryPlan,
   isTrialPlan,
 } from 'shared/utils/billing'
 import A from 'ui/A/A'
 import Button from 'ui/Button'
 
-function PlansActionsBilling({ plan }) {
+function PlansActionsBilling() {
   const { provider, owner } = useParams()
   const { data: plans } = useAvailablePlans({ provider, owner })
 
@@ -31,7 +29,7 @@ function PlansActionsBilling({ plan }) {
 
   const canStartTrial =
     planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
-    isFreePlan(planData?.plan?.value) &&
+    planData?.plan?.isFreePlan &&
     planData?.hasPrivateRepos
 
   if (canStartTrial) {
@@ -62,7 +60,7 @@ function PlansActionsBilling({ plan }) {
     return (
       <div className="flex self-start">
         <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-          {isSentryPlan(plan?.value) ? 'Manage plan' : 'Upgrade'}
+          {isSentryPlan(planData?.plan?.value) ? 'Manage plan' : 'Upgrade'}
         </Button>
       </div>
     )
@@ -71,7 +69,7 @@ function PlansActionsBilling({ plan }) {
   return (
     <div className="flex self-start">
       <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-        {isFreePlan(plan?.value) || isTrialPlan(plan?.value)
+        {planData?.plan?.isFreePlan || isTrialPlan(planData?.plan?.value)
           ? 'Upgrade'
           : 'Manage plan'}
       </Button>
@@ -79,14 +77,9 @@ function PlansActionsBilling({ plan }) {
   )
 }
 
-PlansActionsBilling.propTypes = {
-  plan: planPropType,
-}
-
 function ActionsBilling() {
   const { owner, provider } = useParams()
   const { data: accountDetails } = useAccountDetails({ owner, provider })
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const username = accountDetails?.rootOrganization?.username
 
   if (accountDetails?.planProvider === 'github') {
@@ -130,7 +123,7 @@ function ActionsBilling() {
     )
   }
 
-  return <PlansActionsBilling plan={plan} />
+  return <PlansActionsBilling />
 }
 
 export default ActionsBilling

@@ -2,9 +2,22 @@ import { render, screen } from '@testing-library/react'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import UpdateBlurb from './UpdateBlurb'
+
+const planChunk = {
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 2,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  hasSeatsLeft: true,
+}
 
 const proPlanYear = {
   marketingName: 'Pro',
@@ -18,7 +31,6 @@ const proPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
-  quantity: 10,
 }
 
 const teamPlanYear = {
@@ -28,7 +40,6 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
-  quantity: 10,
 }
 
 const teamPlanMonth = {
@@ -38,7 +49,6 @@ const teamPlanMonth = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
-  quantity: 10,
 }
 
 const freePlan = {
@@ -48,7 +58,6 @@ const freePlan = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_BASIC,
-  quantity: 2,
 }
 
 type WrapperClosure = (
@@ -69,8 +78,8 @@ describe('UpdateBlurb', () => {
     it('does not render anything', async () => {
       render(
         <UpdateBlurb
-          currentPlan={teamPlanMonth}
-          selectedPlan={teamPlanMonth}
+          currentPlan={{ ...teamPlanMonth, ...planChunk, planUserCount: 10 }}
+          selectedPlan={{ ...teamPlanMonth, quantity: 10 }}
           newPlanName={teamPlanMonth.value}
           nextBillingDate={'July 12th, 2024'}
           seats={10}
@@ -89,8 +98,8 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={freePlan}
-            selectedPlan={teamPlanYear}
+            currentPlan={{ ...freePlan, ...planChunk, isFreePlan: true }}
+            selectedPlan={{ ...teamPlanYear, quantity: 10 }}
             newPlanName={teamPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
@@ -123,8 +132,8 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={teamPlanMonth}
-            selectedPlan={teamPlanYear}
+            currentPlan={{ ...teamPlanMonth, ...planChunk, planUserCount: 10 }}
+            selectedPlan={{ ...teamPlanYear, quantity: 10 }}
             newPlanName={teamPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
@@ -149,8 +158,8 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={proPlanYear}
-            selectedPlan={proPlanYear}
+            currentPlan={{ ...proPlanYear, ...planChunk, planUserCount: 10 }}
+            selectedPlan={{ ...proPlanYear, quantity: 10 }}
             newPlanName={proPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
             seats={11}
@@ -175,8 +184,8 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={teamPlanYear}
-            selectedPlan={proPlanYear}
+            currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            selectedPlan={{ ...proPlanYear, quantity: 10 }}
             newPlanName={proPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
@@ -202,8 +211,8 @@ describe('UpdateBlurb', () => {
       it('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={teamPlanYear}
-            selectedPlan={teamPlanMonth}
+            currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            selectedPlan={{ ...teamPlanMonth, quantity: 10 }}
             newPlanName={teamPlanMonth.value}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
@@ -228,8 +237,8 @@ describe('UpdateBlurb', () => {
       it('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={teamPlanYear}
-            selectedPlan={teamPlanYear}
+            currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            selectedPlan={{ ...teamPlanYear, quantity: 9 }}
             newPlanName={teamPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
             seats={9}
@@ -254,8 +263,8 @@ describe('UpdateBlurb', () => {
       it('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={proPlanYear}
-            selectedPlan={teamPlanYear}
+            currentPlan={{ ...proPlanYear, ...planChunk, planUserCount: 10 }}
+            selectedPlan={{ ...teamPlanYear, quantity: 10 }}
             newPlanName={teamPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
             seats={10}

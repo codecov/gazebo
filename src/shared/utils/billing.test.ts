@@ -11,7 +11,6 @@ import {
   isAnnualPlan,
   isBasicPlan,
   isCodecovProPlan,
-  isFreePlan,
   isMonthlyPlan,
   isPaidPlan,
   isProPlan,
@@ -161,23 +160,6 @@ function getPlans() {
     },
   ]
 }
-
-describe('isFreePlan', () => {
-  it('supports old free plan', () => {
-    expect(isFreePlan('users-free')).toBe(true)
-    expect(isFreePlan(Plans.USERS_FREE)).toBe(true)
-  })
-
-  it('supports new basic plan', () => {
-    expect(isFreePlan('users-basic')).toBe(true)
-    expect(isFreePlan(Plans.USERS_BASIC)).toBe(true)
-  })
-
-  it('Defaults to false otherwise', () => {
-    expect(isFreePlan('users-inappy')).toBe(false)
-    expect(isFreePlan(undefined)).toBe(false)
-  })
-})
 
 describe('shouldDisplayTeamCard', () => {
   it('returns true if the availablePlans list includes team plans', () => {

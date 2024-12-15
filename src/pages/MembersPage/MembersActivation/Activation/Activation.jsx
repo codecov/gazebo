@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { TrialStatuses, useAccountDetails, usePlanData } from 'services/account'
-import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
+import { isTrialPlan } from 'shared/utils/billing'
 import A from 'ui/A/A'
 
 import ChangePlanLink from './ChangePlanLink'
@@ -42,7 +42,7 @@ function Activation() {
   }
 
   if (
-    isFreePlan(planData?.plan?.value) &&
+    planData?.plan?.isFreePlan &&
     planData?.plan?.trialStatus === TrialStatuses.EXPIRED
   ) {
     return (

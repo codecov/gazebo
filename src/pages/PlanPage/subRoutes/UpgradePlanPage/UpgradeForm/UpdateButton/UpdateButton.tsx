@@ -1,8 +1,8 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
-import { isFreePlan, PlanName } from 'shared/utils/billing'
+import { usePlanData } from 'services/account'
+import { PlanName } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
 interface BillingControlsProps {
@@ -17,10 +17,10 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
   seats,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: planData } = usePlanData({ provider, owner })
 
-  const currentPlanValue = accountDetails?.plan?.value
-  const currentPlanQuantity = accountDetails?.plan?.quantity || 0
+  const currentPlanValue = planData?.plan?.value
+  const currentPlanQuantity = planData?.plan?.planUserCount || 0
 
   const isSamePlan = newPlan === currentPlanValue
   const noChangeInSeats = seats === currentPlanQuantity
@@ -36,7 +36,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
         hook="submit-upgrade"
         to={undefined}
       >
-        {isFreePlan(currentPlanValue) ? 'Proceed to checkout' : 'Update'}
+        {planData?.plan?.isFreePlan ? 'Proceed to checkout' : 'Update'}
       </Button>
     </div>
   )

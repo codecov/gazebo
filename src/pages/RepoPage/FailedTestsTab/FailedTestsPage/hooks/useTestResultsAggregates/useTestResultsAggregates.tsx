@@ -14,6 +14,7 @@ const TestResultsAggregatesSchema = z.object({
       plan: z
         .object({
           value: z.nativeEnum(Plans),
+          isFreePlan: z.boolean(),
         })
         .nullable(),
       repository: z.discriminatedUnion('__typename', [
@@ -55,6 +56,7 @@ const query = `
     owner(username: $owner) {
       plan {
         value
+        isFreePlan
       }
       repository: repository(name: $repo) {
         __typename
@@ -113,6 +115,8 @@ export const useTestResultsAggregates = ({
       }).then((res) => {
         const parsedData = TestResultsAggregatesSchema.safeParse(res?.data)
 
+        console.log('parsedData', parsedData.error)
+
         if (!parsedData.success) {
           return rejectNetworkError({
             status: 404,
@@ -135,7 +139,8 @@ export const useTestResultsAggregates = ({
         return {
           testResultsAggregates:
             data?.owner?.repository?.testAnalytics?.testResultsAggregates,
-          plan: data?.owner?.plan?.value,
+          planName: data?.owner?.plan?.value,
+          isFreePlan: data?.owner?.plan?.isFreePlan,
           private: data?.owner?.repository?.private,
           defaultBranch: data?.owner?.repository?.defaultBranch,
         }
