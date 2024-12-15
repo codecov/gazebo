@@ -115,8 +115,6 @@ export const useTestResultsAggregates = ({
       }).then((res) => {
         const parsedData = TestResultsAggregatesSchema.safeParse(res?.data)
 
-        console.log('parsedData', parsedData.error)
-
         if (!parsedData.success) {
           return rejectNetworkError({
             status: 404,
