@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -6,6 +10,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
+import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
 import { ImpactedFileType } from 'services/commit'
 
 import CommitFileDiff from './CommitFileDiff'
@@ -44,7 +49,7 @@ window.scrollTo = scrollToMock
 window.scrollY = 100
 
 class ResizeObserverMock {
-  callback = (x: any) => null
+  callback = (_x: any) => null
 
   constructor(callback: any) {
     this.callback = callback
@@ -176,19 +181,24 @@ const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={[
-        '/gh/codecov/gazebo/commit/123sha/folder/subfolder/file.js',
-      ]}
-    >
-      <Route path="/:provider/:owner/:repo/commit/:commit">
-        <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter
+        initialEntries={[
+          '/gh/codecov/gazebo/commit/123sha/folder/subfolder/file.js',
+        ]}
+      >
+        <Route path="/:provider/:owner/:repo/commit/:commit">
+          <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -197,6 +207,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -226,10 +237,10 @@ describe('CommitFileDiff', () => {
     }))
 
     server.use(
-      graphql.query('ImpactedFileComparedWithParent', (info) => {
+      graphql.query('ImpactedFileComparedWithParent', () => {
         return HttpResponse.json({ data: baseMock(impactedFile) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(bundleAnalysisEnabled) })
       })
     )
@@ -421,7 +432,8 @@ describe('CommitFileDiff', () => {
 
       describe('there are ignored ids', () => {
         beforeEach(() => {
-          queryClient.setQueryData(['IgnoredUploadIds'], [0])
+          queryClient.setQueryData(IgnoredIdsQueryOptions().queryKey, [0])
+          queryClientV5.setQueryData(IgnoredIdsQueryOptions().queryKey, [0])
         })
 
         it('renders hit count icon', async () => {

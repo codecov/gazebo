@@ -63,13 +63,13 @@ function setup() {
       const data = await info.request.json()
       return HttpResponse.json(data)
     }),
-    http.delete('/internal/test', (info) => {
+    http.delete('/internal/test', () => {
       return HttpResponse.json(null)
     }),
-    graphql.query('MyInfo', (info) => {
+    graphql.query('MyInfo', () => {
       return HttpResponse.json({ data: { me: 'Codecov' } })
     }),
-    graphql.query('ErrorQuery', (info) => {
+    graphql.query('ErrorQuery', () => {
       return HttpResponse.json({ data: { me: 'Codecov' } }, { status: 400 })
     }),
     graphql.query('CoverageForFile', (info) => {
@@ -87,7 +87,7 @@ function setup() {
         },
       })
     }),
-    graphql.mutation('CreateTokenUnauthorized', (info) => {
+    graphql.mutation('CreateTokenUnauthorized', () => {
       return HttpResponse.json({
         data: {
           createApiToken: {
@@ -98,7 +98,7 @@ function setup() {
         },
       })
     }),
-    graphql.mutation('CreateToken', (info) => {
+    graphql.mutation('CreateToken', () => {
       return HttpResponse.json({
         data: {
           createApiToken: {
@@ -108,7 +108,7 @@ function setup() {
         },
       })
     }),
-    graphql.query('UnauthorizationError', (info) => {
+    graphql.query('UnauthorizationError', () => {
       return HttpResponse.json(
         {
           errors: [
@@ -268,7 +268,7 @@ describe('when using a graphql request', () => {
 
     it('does not have the provider in the url for non-provider', async () => {
       setup()
-      const fetchMock = vi.fn((url, options) => {
+      const fetchMock = vi.fn((url) => {
         expect(url).toBe(`${config.API_URL}/graphql/`)
         return Promise.resolve({
           ok: true,
@@ -291,7 +291,7 @@ describe('when using a graphql request', () => {
       'has the provider in the url for %s',
       async (provider) => {
         setup()
-        const fetchMock = vi.fn((url, options) => {
+        const fetchMock = vi.fn(() => {
           return Promise.resolve({
             ok: true,
             json: async () => ({ data: { example: 'dummy data' } }),

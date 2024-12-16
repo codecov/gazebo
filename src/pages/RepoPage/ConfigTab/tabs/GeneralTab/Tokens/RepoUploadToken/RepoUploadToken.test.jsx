@@ -50,12 +50,7 @@ afterAll(() => {
 
 describe('RepoUploadToken', () => {
   function setup(
-    {
-      uploadToken = undefined,
-      triggerError = false,
-      uploadTokenRequired = false,
-    } = {
-      uploadToken: undefined,
+    { triggerError = false, uploadTokenRequired = false } = {
       triggerError: false,
       uploadTokenRequired: false,
     }
@@ -145,7 +140,7 @@ describe('RepoUploadToken', () => {
     })
 
     it('renders upload token required message when uploadTokenRequired is false', async () => {
-      setup({ uploadTokenRequired: false, uploadToken: 'some-random-token' })
+      setup({ uploadTokenRequired: false })
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
 
       const message = await screen.findByText(
@@ -155,7 +150,7 @@ describe('RepoUploadToken', () => {
     })
 
     it('does not render upload token required message when uploadTokenRequired is true', async () => {
-      setup({ uploadTokenRequired: true, uploadToken: 'some-random-token' })
+      setup({ uploadTokenRequired: true })
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
 
       await waitFor(() => expect(queryClient.isFetching()).toBe(0))

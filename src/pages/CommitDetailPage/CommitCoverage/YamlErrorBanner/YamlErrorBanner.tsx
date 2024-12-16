@@ -18,7 +18,7 @@ function YamlErrorBanner({
           <div className="font-semibold">
             {shouldLinkToModal ? (
               <span>
-                {/* @ts-ignore ignore until we convert A to ts */}
+                {/* @ts-expect-error - A hasn't been typed yet */}
                 <A
                   onClick={() => setShowYamlModal(true)}
                   hook="open yaml modal"
@@ -36,7 +36,7 @@ function YamlErrorBanner({
         <Alert.Description>
           Coverage data is unable to be displayed, as the yaml appears to be
           invalid. The&nbsp;
-          {/* @ts-ignore ignore until we convert A to ts */}
+          {/* @ts-expect-error - A hasn't been typed yet */}
           <A to={{ pageName: 'yamlValidatorDocs' }}>yaml validator</A> can help
           determine its validation.
         </Alert.Description>

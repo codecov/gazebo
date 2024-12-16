@@ -1,3 +1,4 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
 import { usePlanUpdatedNotification } from 'pages/PlanPage/context'
@@ -9,10 +10,10 @@ import { Alert } from 'ui/Alert'
 import AccountOrgs from './AccountOrgs'
 import BillingDetails from './BillingDetails'
 import CurrentPlanCard from './CurrentPlanCard'
-import { useEnterpriseAccountDetails } from './hooks/useEnterpriseAccountDetails'
 import InfoAlertCancellation from './InfoAlertCancellation'
 import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 import LatestInvoiceCard from './LatestInvoiceCard'
+import { EnterpriseAccountDetailsQueryOpts } from './queries/EnterpriseAccountDetailsQueryOpts'
 
 interface URLParams {
   provider: string
@@ -25,10 +26,12 @@ function CurrentOrgPlan() {
     provider,
     owner,
   })
-  const { data: enterpriseDetails } = useEnterpriseAccountDetails({
-    provider,
-    owner,
-  })
+  const { data: enterpriseDetails } = useSuspenseQueryV5(
+    EnterpriseAccountDetailsQueryOpts({
+      provider,
+      owner,
+    })
+  )
 
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   const isDelinquent = accountDetails?.delinquent
@@ -108,7 +111,7 @@ const AccountUsageAlert = ({
         <Alert.Title>Your account is using 100% of its seats</Alert.Title>
         <Alert.Description>
           You might want to add more seats for your team to ensure availability.{' '}
-          {/* @ts-expect-error */}
+          {/* @ts-expect-error - A hasn't been typed yet */}
           <A to={{ pageName: 'enterpriseSupport' }}>Contact support</A> to
           update your plan.
         </Alert.Description>
@@ -120,7 +123,7 @@ const AccountUsageAlert = ({
         <Alert.Title>Your account is using 90% of its seats</Alert.Title>
         <Alert.Description>
           You might want to add more seats for your team to ensure availability.{' '}
-          {/* @ts-expect-error */}
+          {/* @ts-expect-error - A hasn't been typed yet */}
           <A to={{ pageName: 'enterpriseSupport' }}>Contact support</A> to
           update your plan.
         </Alert.Description>

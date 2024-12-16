@@ -219,11 +219,11 @@ describe('CommitsTab', () => {
 
     server.use(
       graphql.query('GetBranches', (info) => {
-        if (!!info?.variables?.after) {
+        if (info?.variables?.after) {
           fetchNextPage(info?.variables?.after)
         }
 
-        if (!!info?.variables?.filters?.searchValue) {
+        if (info?.variables?.filters?.searchValue) {
           branchSearch(info?.variables?.filters?.searchValue)
         }
 
@@ -236,33 +236,33 @@ describe('CommitsTab', () => {
         return HttpResponse.json({ data: mockBranches(hasNextPage) })
       }),
       graphql.query('GetCommits', (info) => {
-        if (!!info?.variables?.filters?.branchName) {
+        if (info?.variables?.filters?.branchName) {
           branchName(info?.variables?.filters?.branchName)
         }
 
-        if (!!info?.variables?.filters?.search) {
+        if (info?.variables?.filters?.search) {
           commitSearch(info?.variables?.filters?.search)
         }
 
         return HttpResponse.json({ data: mockCommits })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         if (returnBranch) {
           return HttpResponse.json({ data: mockBranch(returnBranch) })
         }
 
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
       }),
-      graphql.query('GetBranchCommits', (info) => {
+      graphql.query('GetBranchCommits', () => {
         if (branchHasCommits) {
           return HttpResponse.json({ data: mockBranchHasCommits })
         }

@@ -17,9 +17,9 @@ describe('camelizeKeys', () => {
 
   it('else passes through', () => {
     expect(camelizeKeys([1, 2, 3])).toStrictEqual([1, 2, 3])
-    // @ts-expect-error
+    // @ts-expect-error - testing with a number
     expect(camelizeKeys(1)).toStrictEqual(1)
-    // @ts-expect-error
+    // @ts-expect-error - testing with a string
     expect(camelizeKeys('test')).toStrictEqual('test')
     expect(camelizeKeys()).toStrictEqual({})
   })

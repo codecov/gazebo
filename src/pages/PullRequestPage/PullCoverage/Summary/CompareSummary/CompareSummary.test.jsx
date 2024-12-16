@@ -201,7 +201,7 @@ afterAll(() => {
 describe('CompareSummary', () => {
   function setup({ pullData }) {
     server.use(
-      graphql.query('Pull', (info) => {
+      graphql.query('Pull', () => {
         return HttpResponse.json({ data: pullData })
       })
     )

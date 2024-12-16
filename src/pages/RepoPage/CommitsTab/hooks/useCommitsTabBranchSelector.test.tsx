@@ -111,7 +111,7 @@ describe('useCommitsTabBranchSelector', () => {
     hasNoBranches = false
   ) {
     server.use(
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         if (returnBranch) {
           return HttpResponse.json({ data: mockBranch(branchName) })
         }

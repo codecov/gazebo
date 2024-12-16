@@ -9,3 +9,6 @@ e75fbde94a6ef3d80c5696255b742e9264ec52cf
 # Add tailwind and tanstack query lints + lint fixes
 
 ab88e32678c4a1a054a8c525a9f346d5a984e1c9
+
+# Fixing lint errors - https://github.com/codecov/gazebo/pull/3524
+0899f21d7fe6eae4248cce5fdd65c7043f4e247f

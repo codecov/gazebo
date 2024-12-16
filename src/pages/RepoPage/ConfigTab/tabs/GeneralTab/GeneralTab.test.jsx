@@ -56,7 +56,7 @@ describe('GeneralTab', () => {
     }
   ) {
     server.use(
-      graphql.query('RepoDataTokensTeam', (info) => {
+      graphql.query('RepoDataTokensTeam', () => {
         if (hasDefaultBranch) {
           return HttpResponse.json({
             data: {
@@ -82,7 +82,7 @@ describe('GeneralTab', () => {
           },
         })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         if (tierValue === TierNames.TEAM) {
           return HttpResponse.json({
             data: { owner: { plan: { tierName: TierNames.TEAM } } },

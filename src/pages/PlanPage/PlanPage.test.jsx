@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -28,32 +32,32 @@ vi.mock('./subRoutes/UpgradePlanPage', () => ({
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      suspense: true,
-    },
-  },
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 let testLocation
 const wrapper =
   (initialEntries = '') =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/plan/:provider/:owner">
-          <Suspense fallback={null}>{children}</Suspense>
-        </Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <Suspense fallback={null}>
+          <MemoryRouter initialEntries={[initialEntries]}>
+            <Route path="/plan/:provider/:owner">{children}</Route>
+            <Route
+              path="*"
+              render={({ location }) => {
+                testLocation = location
+                return null
+              }}
+            />
+          </MemoryRouter>
+        </Suspense>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -61,6 +65,7 @@ beforeAll(() => {
 })
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
   vi.resetAllMocks()
 })
@@ -81,7 +86,7 @@ describe('PlanPage', () => {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('PlanPageData', (info) => {
+      graphql.query('PlanPageData', () => {
         return HttpResponse.json({ data: { owner } })
       })
     )

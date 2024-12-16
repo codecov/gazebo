@@ -89,16 +89,13 @@ const DismissButton: React.FC<React.PropsWithChildren> = ({ children }) => {
   }
 
   return (
-    <>
-      {/* @ts-ignore */}
-      <Button
-        variant="plain"
-        hook={`dismiss-${localStorageKey}`}
-        onClick={handleClick}
-      >
-        {children}
-      </Button>
-    </>
+    <Button
+      variant="plain"
+      hook={`dismiss-${localStorageKey}`}
+      onClick={handleClick}
+    >
+      {children}
+    </Button>
   )
 }
 

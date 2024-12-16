@@ -27,7 +27,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-let testLocation: { pathname: string } = {
+const testLocation: { pathname: string } = {
   pathname: '',
 }
 
@@ -77,10 +77,10 @@ describe('SyncProviderPage', () => {
     }
   ) {
     server.use(
-      http.get('/internal/user', (info) => {
+      http.get('/internal/user', () => {
         return HttpResponse.json(user)
       }),
-      graphql.query('GetSyncProviders', (info) => {
+      graphql.query('GetSyncProviders', () => {
         if (noSyncProviders) {
           return HttpResponse.json({
             data: {

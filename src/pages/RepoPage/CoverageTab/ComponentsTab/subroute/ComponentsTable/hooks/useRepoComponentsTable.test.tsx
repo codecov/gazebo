@@ -171,7 +171,7 @@ describe('useRepoComponentsTable', () => {
         }
         return HttpResponse.json({ data: mockedComponentMeasurements })
       }),
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: repoData({}) })
       })
     )

@@ -39,6 +39,7 @@ const mockResponse = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
 }
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -90,7 +91,7 @@ describe('TrialReminder', () => {
     mockedConfig.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -106,7 +107,7 @@ describe('TrialReminder', () => {
           },
         })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
           data: { owner: { isCurrentUserPartOfOrg: userPartOfOrg } },
         })

@@ -174,10 +174,10 @@ interface SetupArgs {
 describe('Header Navigator', () => {
   function setup({ isMyOrg = true, orgDoesNotExist = false }: SetupArgs) {
     server.use(
-      graphql.query('MyContexts', (info) => {
+      graphql.query('MyContexts', () => {
         return HttpResponse.json({ data: mockMyContexts })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         if (orgDoesNotExist) {
           return HttpResponse.json({ data: { owner: null } })
         }
@@ -188,7 +188,7 @@ describe('Header Navigator', () => {
 
         return HttpResponse.json({ data: mockDetailOwner })
       }),
-      graphql.query('OwnerPageData', (info) => {
+      graphql.query('OwnerPageData', () => {
         if (isMyOrg) {
           return HttpResponse.json({ data: mockOwnerPageData })
         }

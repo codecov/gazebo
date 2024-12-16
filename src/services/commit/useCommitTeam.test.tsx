@@ -186,7 +186,7 @@ describe('useCommitTeam', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetCommitTeam', (info) => {
+      graphql.query('GetCommitTeam', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -199,7 +199,7 @@ describe('useCommitTeam', () => {
           return HttpResponse.json({ data: mockCommitData })
         }
       }),
-      graphql.query('GetCompareTotalsTeam', (info) => {
+      graphql.query('GetCompareTotalsTeam', () => {
         return HttpResponse.json({ data: mockCompareData })
       })
     )
@@ -441,10 +441,10 @@ describe('useCommitTeam polling', () => {
   function setup() {
     let nbCallCompare = 0
     server.use(
-      graphql.query(`GetCommitTeam`, (info) => {
+      graphql.query(`GetCommitTeam`, () => {
         return HttpResponse.json({ data: mockCommitData })
       }),
-      graphql.query(`GetCompareTotalsTeam`, (info) => {
+      graphql.query(`GetCompareTotalsTeam`, () => {
         nbCallCompare++
 
         if (nbCallCompare < 9) {

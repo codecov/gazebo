@@ -44,7 +44,7 @@ afterAll(() => {
 describe('useSelfHostedCurrentUser', () => {
   function setup() {
     server.use(
-      http.get('/internal/users/current', (info) => {
+      http.get('/internal/users/current', () => {
         return HttpResponse.json(user)
       })
     )

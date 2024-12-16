@@ -217,19 +217,19 @@ describe('IndirectChangedFiles', () => {
         mockVars(info.variables)
         return HttpResponse.json({ data: mockPull(overrideComparison) })
       }),
-      graphql.query('ImpactedFileComparison', (info) =>
+      graphql.query('ImpactedFileComparison', () =>
         HttpResponse.json({ data: mockSingularImpactedFilesData })
       ),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       }),
-      graphql.query('PullComponentsSelector', (info) => {
+      graphql.query('PullComponentsSelector', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({ data: { owner: null } })
       })
     )

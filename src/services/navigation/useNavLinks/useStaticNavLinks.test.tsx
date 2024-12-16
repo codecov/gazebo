@@ -59,8 +59,8 @@ describe('useStaticNavLinks', () => {
       ${links.uploader}                      | ${'https://docs.codecov.com/docs/codecov-uploader'}
       ${links.uploaderCLI}                   | ${'https://docs.codecov.com/docs/codecov-uploader#using-the-cli-to-upload-reports-with-codecovio-cloud'}
       ${links.integrityCheck}                | ${'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader'}
-      ${links.codecovGithubApp}              | ${'https://github.com/apps/codecov'}
-      ${links.codecovGithubAppSelectTarget}  | ${'https://github.com/apps/codecov/installations/select_target'}
+      ${links.codecovGithubApp}              | ${`https://github.com/apps/${config.GH_APP}`}
+      ${links.codecovGithubAppSelectTarget}  | ${`https://github.com/apps/${config.GH_APP}/installations/select_target`}
       ${links.teamBot}                       | ${'https://docs.codecov.com/docs/team-bot'}
       ${links.runtimeInsights}               | ${'https://docs.codecov.com/docs/runtime-insights'}
       ${links.graphAuthorization}            | ${'https://docs.codecov.com/reference/authorization#about-graphs'}

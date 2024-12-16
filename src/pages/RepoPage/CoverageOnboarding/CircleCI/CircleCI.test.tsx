@@ -93,10 +93,10 @@ describe('CircleCI', () => {
     mockGetItem.mockReturnValue(null)
 
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockGetRepo })
       }),
-      graphql.query('GetOrgUploadToken', (info) => {
+      graphql.query('GetOrgUploadToken', () => {
         return HttpResponse.json({ data: mockGetOrgUploadToken })
       }),
       graphql.mutation('storeEventMetric', (info) => {
@@ -219,7 +219,7 @@ describe('CircleCI', () => {
       expect(CircleCIJSWorkflowLink).toBeInTheDocument()
 
       const CircleCIJSExampleLink = await screen.findByRole('link', {
-        name: /javascript config.yml/,
+        name: /JavaScript config.yml/,
       })
       expect(CircleCIJSExampleLink).toBeInTheDocument()
       expect(CircleCIJSExampleLink).toHaveAttribute(

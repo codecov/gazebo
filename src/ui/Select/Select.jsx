@@ -206,7 +206,7 @@ const Select = forwardRef(
               {
                 'border overflow-y-auto': isOpen,
               },
-              !!onSearch ? 'top-16' : 'top-8 rounded'
+              onSearch ? 'top-16' : 'top-8 rounded'
             )}
             {...getMenuProps()}
           >

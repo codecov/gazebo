@@ -68,7 +68,7 @@ afterAll(() => {
 describe('useBranchSelector', () => {
   function setup(branchName: string, returnBranches: boolean = true) {
     server.use(
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         if (returnBranches) {
           return HttpResponse.json({ data: mockBranches(branchName) })
         }

@@ -68,7 +68,7 @@ export default function ComponentsMultiSelect() {
   return (
     <div className="w-full sm:w-60">
       <MultiSelect
-        // @ts-expect-error
+        // @ts-expect-error - type issues with MultiSelect
         disabled={false}
         dataMarketing="coverage-tab-component-multi-select"
         hook="coverage-tab-component-multi-select"
@@ -77,12 +77,12 @@ export default function ComponentsMultiSelect() {
         resourceName="component"
         isLoading={isLoading}
         selectedItemsOverride={selectedComponents}
-        onChange={(components: String[]) => {
+        onChange={(components: string[]) => {
           setSelectedComponents(components)
           updateParams({ components })
         }}
         onSearch={(term: string) => setComponentSearch(term)}
-        renderSelected={(selectedItems: String[]) => (
+        renderSelected={(selectedItems: string[]) => (
           <span className="flex items-center gap-2">
             <Icon variant="solid" name="database" />
             {selectedItems.length === 0 ? (

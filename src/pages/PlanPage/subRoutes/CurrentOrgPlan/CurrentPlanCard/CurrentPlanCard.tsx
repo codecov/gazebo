@@ -1,9 +1,8 @@
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails, usePlanData } from 'services/account'
 import {
   CollectionMethods,
-  isEnterprisePlan,
   isFreePlan,
   isTrialPlan,
 } from 'shared/utils/billing'
@@ -20,20 +19,22 @@ interface URLParams {
 function CurrentPlanCard() {
   const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  const { data: planData } = usePlanData({ provider, owner })
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   const collectionMethod = accountDetails?.subscriptionDetail?.collectionMethod
 
-  if (isFreePlan(plan?.value) || isTrialPlan(plan?.value)) {
-    return <FreePlanCard plan={plan} scheduledPhase={scheduledPhase} />
+  if (isFreePlan(planData?.plan?.value) || isTrialPlan(planData?.plan?.value)) {
+    return (
+      <FreePlanCard plan={planData?.plan} scheduledPhase={scheduledPhase} />
+    )
   }
 
   if (
-    isEnterprisePlan(plan?.value) ||
+    planData?.plan?.isEnterprisePlan ||
     collectionMethod === CollectionMethods.INVOICED_CUSTOMER_METHOD ||
     accountDetails?.usesInvoice
   ) {
-    return <EnterprisePlanCard plan={plan} />
+    return <EnterprisePlanCard plan={planData?.plan} />
   }
 
   return <PaidPlanCard />

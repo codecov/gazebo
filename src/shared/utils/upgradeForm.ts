@@ -213,11 +213,13 @@ export const getDefaultValuesUpgradeForm = ({
   plans,
   trialStatus,
   selectedPlan,
+  isEnterprisePlan,
 }: {
   accountDetails?: z.infer<typeof AccountDetailsSchema> | null
   plans?: Plan[] | null
   trialStatus?: TrialStatus
   selectedPlan?: Plan | null
+  isEnterprisePlan?: boolean
 }) => {
   const currentPlan = accountDetails?.plan
   const currentPlanValue = currentPlan?.value
@@ -230,7 +232,7 @@ export const getDefaultValuesUpgradeForm = ({
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
 
   const isSentryUpgrade = canApplySentryUpgrade({
-    plan: currentPlanValue,
+    isEnterprisePlan,
     plans,
   })
 

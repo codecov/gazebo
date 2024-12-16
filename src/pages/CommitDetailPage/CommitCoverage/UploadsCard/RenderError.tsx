@@ -123,7 +123,7 @@ const FlagError = () => (
 interface RenderErrorProps {
   errors: (UploadErrorObject | null)[]
   state: (typeof UploadStateEnum)[keyof typeof UploadStateEnum]
-  flags: string[] | null
+  flags: string[] | null | undefined
 }
 
 const RenderError = ({ errors, state, flags }: RenderErrorProps) => {

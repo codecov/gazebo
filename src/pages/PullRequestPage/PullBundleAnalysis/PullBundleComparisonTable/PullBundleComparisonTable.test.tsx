@@ -137,7 +137,7 @@ describe('PullBundleComparisonTable', () => {
   ) {
     const user = userEvent.setup()
     server.use(
-      graphql.query('PullBundleComparisonList', (info) => {
+      graphql.query('PullBundleComparisonList', () => {
         if (isEmptyList) {
           return HttpResponse.json({ data: mockEmptyPullBundleListData })
         } else if (nonComparisonType) {
@@ -246,13 +246,12 @@ describe('PullBundleComparisonTable', () => {
 
 describe('useTableData', () => {
   function setup(
-    { isEmptyList = false, nonComparisonType = false }: SetupArgs = {
-      isEmptyList: false,
+    { nonComparisonType = false }: SetupArgs = {
       nonComparisonType: false,
     }
   ) {
     server.use(
-      graphql.query('PullBundleComparisonList', (info) => {
+      graphql.query('PullBundleComparisonList', () => {
         if (nonComparisonType) {
           return HttpResponse.json({ data: mockNonComparisonTypeData })
         } else {

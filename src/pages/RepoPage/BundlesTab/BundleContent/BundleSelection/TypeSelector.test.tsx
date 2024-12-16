@@ -125,7 +125,7 @@ describe('TypeSelector', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -135,7 +135,7 @@ describe('TypeSelector', () => {
           },
         })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -144,12 +144,12 @@ describe('TypeSelector', () => {
           },
         })
       }),
-      graphql.query('GetBranches', (info) => {
+      graphql.query('GetBranches', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockBranches } },
         })
       }),
-      graphql.query('BranchBundlesNames', (info) => {
+      graphql.query('BranchBundlesNames', () => {
         return HttpResponse.json({ data: mockBranchBundles(noBundles) })
       })
     )

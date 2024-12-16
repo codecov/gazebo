@@ -73,7 +73,11 @@ describe('PlanPricing', () => {
     describe('enterprise plan is monthly', () => {
       it('renders custom pricing', () => {
         render(
-          <PlanPricing value={Plans.USERS_ENTERPRISEM} baseUnitPrice={10} />
+          <PlanPricing
+            plan={{ isEnterprisePlan: true }}
+            value={Plans.USERS_ENTERPRISEM}
+            baseUnitPrice={10}
+          />
         )
 
         const price = screen.getByText('Custom pricing')
@@ -84,7 +88,11 @@ describe('PlanPricing', () => {
     describe('enterprise plan is yearly', () => {
       it('renders custom pricing', () => {
         render(
-          <PlanPricing value={Plans.USERS_ENTERPRISEY} baseUnitPrice={10} />
+          <PlanPricing
+            plan={{ isEnterprisePlan: true }}
+            value={Plans.USERS_ENTERPRISEY}
+            baseUnitPrice={10}
+          />
         )
 
         const price = screen.getByText('Custom pricing')

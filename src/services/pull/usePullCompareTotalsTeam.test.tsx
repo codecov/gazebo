@@ -101,7 +101,7 @@ describe('usePullCompareTotalsTeam', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetPullCompareTotalsTeam', (info) => {
+      graphql.query('GetPullCompareTotalsTeam', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

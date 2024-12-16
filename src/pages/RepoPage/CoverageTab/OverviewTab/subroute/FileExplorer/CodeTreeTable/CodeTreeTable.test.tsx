@@ -342,7 +342,7 @@ describe('CodeTreeTable', () => {
           return HttpResponse.json({ data: mockTreeData })
         }
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       })
     )

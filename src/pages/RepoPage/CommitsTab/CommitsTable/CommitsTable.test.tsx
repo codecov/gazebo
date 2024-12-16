@@ -138,7 +138,7 @@ describe('CommitsTable', () => {
     const queryClient = new QueryClient()
 
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview(bundleAnalysisEnabled),
         })

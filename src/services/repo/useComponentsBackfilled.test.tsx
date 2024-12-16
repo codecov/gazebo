@@ -56,7 +56,7 @@ const dataReturned = {
 describe('useComponentsBackfilled', () => {
   function setup({ isSchemaValid = true } = {}) {
     server.use(
-      graphql.query('BackfillComponentMemberships', (info) => {
+      graphql.query('BackfillComponentMemberships', () => {
         if (!isSchemaValid) {
           return HttpResponse.json({})
         }
@@ -122,7 +122,7 @@ describe('useComponentsBackfilled', () => {
 
     beforeEach(() => {
       server.use(
-        graphql.query('BackfillComponentMemberships', (info) => {
+        graphql.query('BackfillComponentMemberships', () => {
           return HttpResponse.json({
             data: {
               owner: {
@@ -164,7 +164,7 @@ describe('useComponentsBackfilled', () => {
 
     beforeEach(() => {
       server.use(
-        graphql.query('BackfillComponentMemberships', (info) => {
+        graphql.query('BackfillComponentMemberships', () => {
           return HttpResponse.json({
             data: {
               owner: {

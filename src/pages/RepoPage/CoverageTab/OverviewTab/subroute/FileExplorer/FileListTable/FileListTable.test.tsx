@@ -255,7 +255,7 @@ describe('FileListTable', () => {
 
         return HttpResponse.json({ data: mockListData(info.variables.after) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       })
     )

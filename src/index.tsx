@@ -22,6 +22,7 @@ if (
   process.env.NODE_ENV === 'development' &&
   process.env.REACT_APP_MSW_BROWSER
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { worker } = require('./mocks/browser')
   worker.start()
 }

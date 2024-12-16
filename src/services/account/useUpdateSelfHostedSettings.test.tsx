@@ -55,7 +55,7 @@ describe('updateSelfHostedSettings', () => {
     mocks.useAddNotification.mockReturnValue(mockAddToast)
 
     server.use(
-      graphql.mutation('UpdateSelfHostedSettings', (info) => {
+      graphql.mutation('UpdateSelfHostedSettings', () => {
         if (isValidationError) {
           return HttpResponse.json({
             data: {

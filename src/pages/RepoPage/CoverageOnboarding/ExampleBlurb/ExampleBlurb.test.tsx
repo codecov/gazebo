@@ -14,7 +14,7 @@ describe('ExampleBlurb', () => {
     render(<ExampleBlurb />, { wrapper })
 
     const docsLink = await screen.findByRole('link', {
-      name: /javascript config.yml example/,
+      name: /JavaScript config.yml example/,
     })
     expect(docsLink).toBeInTheDocument()
     expect(docsLink).toHaveAttribute(

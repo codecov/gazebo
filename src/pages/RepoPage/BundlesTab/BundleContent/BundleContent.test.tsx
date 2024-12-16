@@ -103,12 +103,14 @@ const mockAssets = {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
               bundle: {
+                info: { pluginName: '@codecov/vite-plugin' },
                 bundleData: { size: { uncompress: 12 } },
                 assetsPaginated: {
                   edges: [
                     {
                       node: {
                         name: 'asset-1',
+                        routes: ['/'],
                         extension: 'js',
                         bundleData: {
                           loadTime: {
@@ -288,7 +290,7 @@ describe('BundleContent', () => {
     isEmptyBundleSelection = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('BranchBundleSummaryData', (info) => {
+      graphql.query('BranchBundleSummaryData', () => {
         if (isBundleError) {
           return HttpResponse.json({ data: mockBranchBundlesError })
         } else if (isEmptyBundleSelection) {
@@ -296,20 +298,20 @@ describe('BundleContent', () => {
         }
         return HttpResponse.json({ data: mockBranchBundles })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       }),
-      graphql.query('BundleAssets', (info) => {
+      graphql.query('BundleAssets', () => {
         if (isBundleError) {
           return HttpResponse.json({ data: mockMissingHeadReportAssets })
         }
 
         return HttpResponse.json({ data: mockAssets })
       }),
-      graphql.query('GetBundleTrend', (info) => {
+      graphql.query('GetBundleTrend', () => {
         return HttpResponse.json({ data: mockBundleTrendData })
       }),
-      graphql.query('BundleSummary', (info) => {
+      graphql.query('BundleSummary', () => {
         return HttpResponse.json({ data: mockBundleSummary })
       })
     )
@@ -409,8 +411,8 @@ describe('BundleContent', () => {
           expect(banner).toBeInTheDocument()
 
           const dashes = await screen.findAllByText('-')
-          // has length 8 because bundle details being moved to this component
-          expect(dashes).toHaveLength(8)
+          // has length 9 because bundle details being moved to this component
+          expect(dashes).toHaveLength(9)
         })
       })
 
@@ -425,8 +427,8 @@ describe('BundleContent', () => {
           expect(banner).toBeInTheDocument()
 
           const dashes = await screen.findAllByText('-')
-          // has length 8 because bundle details being moved to this component
-          expect(dashes).toHaveLength(8)
+          // has length 9 because bundle details being moved to this component
+          expect(dashes).toHaveLength(9)
         })
       })
     })
@@ -454,7 +456,7 @@ describe('BundleContent', () => {
         })
 
         const dashes = await screen.findAllByText('-')
-        expect(dashes).toHaveLength(4)
+        expect(dashes).toHaveLength(5)
       })
     })
 
@@ -482,8 +484,8 @@ describe('BundleContent', () => {
           })
 
           const dashes = await screen.findAllByText('-')
-          // has length 8 because bundle details being moved to this component
-          expect(dashes).toHaveLength(8)
+          // has length 9 because bundle details being moved to this component
+          expect(dashes).toHaveLength(9)
         })
       })
 
@@ -510,8 +512,8 @@ describe('BundleContent', () => {
           })
 
           const dashes = await screen.findAllByText('-')
-          // has length 8 because bundle details being moved to this component
-          expect(dashes).toHaveLength(8)
+          // has length 9 because bundle details being moved to this component
+          expect(dashes).toHaveLength(9)
         })
       })
     })

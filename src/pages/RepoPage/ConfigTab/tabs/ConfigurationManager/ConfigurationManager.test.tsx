@@ -85,7 +85,7 @@ interface SetupArgs {
 describe('Configuration Manager', () => {
   function setup({ repoConfig = mockRepoConfig({}) }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoConfigurationStatus', (info) => {
+      graphql.query('GetRepoConfigurationStatus', () => {
         return HttpResponse.json({ data: { owner: repoConfig } })
       })
     )

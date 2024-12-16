@@ -54,7 +54,7 @@ function ComponentsSelector() {
   return (
     <div className="w-full sm:w-52">
       <MultiSelect
-        // @ts-expect-error
+        // @ts-expect-error - MultiSelect hasn't been typed yet
         disabled={false}
         dataMarketing="coverage-tab-component-multi-select"
         hook="coverage-tab-component-multi-select"
@@ -63,12 +63,12 @@ function ComponentsSelector() {
         resourceName="component"
         isLoading={isLoading}
         selectedItemsOverride={selectedComponents}
-        onChange={(components: String[]) => {
+        onChange={(components: string[]) => {
           setSelectedComponents(components)
           updateParams({ components })
         }}
         onSearch={(term: string) => setComponentSearch(term)}
-        renderSelected={(selectedItems: String[]) => (
+        renderSelected={(selectedItems: string[]) => (
           <span className="flex items-center gap-2">
             <Icon variant="solid" name="database" />
             {selectedItems.length === 0 ? (

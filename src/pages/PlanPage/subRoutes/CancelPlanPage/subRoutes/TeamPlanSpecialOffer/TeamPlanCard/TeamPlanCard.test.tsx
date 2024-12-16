@@ -121,7 +121,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 describe('TeamPlanCard', () => {
   function setup() {
     server.use(
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: { owner: { availablePlans: mockAvailablePlans } },
         })

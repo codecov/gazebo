@@ -325,7 +325,7 @@ describe('useRepoBranchContents', () => {
     })
 
     describe('request rejects', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null

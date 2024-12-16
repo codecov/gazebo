@@ -49,6 +49,7 @@ const mockPlanDataResponse = {
   marketingName: 'Team',
   monthlyUploadLimit: 250,
   value: Plans.USERS_TEAMM,
+  isEnterprisePlan: false,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -87,12 +88,12 @@ afterAll(() => {
 describe('BillingOptions', () => {
   function setup() {
     server.use(
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: { owner: { availablePlans } },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: { hasPrivateRepos: true, plan: mockPlanDataResponse },

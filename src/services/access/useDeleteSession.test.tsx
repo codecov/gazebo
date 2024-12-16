@@ -37,7 +37,7 @@ afterAll(() => {
 describe('useDeleteSession', () => {
   function setup() {
     server.use(
-      graphql.mutation('DeleteSession', (info) => {
+      graphql.mutation('DeleteSession', () => {
         return HttpResponse.json({ data: { deleteSession: { error: null } } })
       })
     )

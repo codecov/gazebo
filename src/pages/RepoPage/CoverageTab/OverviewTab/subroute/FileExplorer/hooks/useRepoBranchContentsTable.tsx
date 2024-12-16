@@ -67,7 +67,7 @@ export function useRepoBranchContentsTable(sortItem?: {
 
   const urlPath = pathParam || ''
   // useLocationParams needs to be updated to have full types
-  // @ts-expect-error
+  // @ts-expect-error - type issues with useLocationParams
   const isSearching = !!params?.search
   const selectedDisplayType = determineDisplayType(
     queryParams?.displayType,

@@ -53,7 +53,7 @@ window.scrollTo = scrollToMock
 window.scrollX = 100
 
 class ResizeObserverMock {
-  callback = (x: any) => null
+  callback = (_x: any) => null
 
   constructor(callback: any) {
     this.callback = callback
@@ -118,8 +118,8 @@ afterAll(() => {
 
 interface SetupArgs {
   content?: string | null
-  owner?: {} | null
-  coverage?: {} | null
+  owner?: object | null
+  coverage?: object | null
   isCriticalFile?: boolean
 }
 
@@ -132,10 +132,10 @@ describe('RawFileViewer', () => {
     }))
 
     server.use(
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: { owner } })
       }),
-      graphql.query('CoverageForFile', (info) => {
+      graphql.query('CoverageForFile', () => {
         return HttpResponse.json({
           data: {
             owner: {

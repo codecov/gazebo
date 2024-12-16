@@ -195,56 +195,56 @@ describe('App', () => {
     hasSession?: boolean
   }) {
     server.use(
-      http.get('/internal/user', (info) => {
+      http.get('/internal/user', () => {
         if (hasSession) {
           return HttpResponse.json(internalUser)
         } else {
           return HttpResponse.json({})
         }
       }),
-      http.get('/internal/users/current', (info) => {
+      http.get('/internal/users/current', () => {
         return HttpResponse.json({})
       }),
-      graphql.query('DetailOwner', (info) =>
+      graphql.query('DetailOwner', () =>
         HttpResponse.json({ data: { owner: 'codecov' } })
       ),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         if (hasLoggedInUser) {
           return HttpResponse.json({ data: user })
         }
         HttpResponse.json({ data: {} })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('OwnerTier', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('Seats', (info) => {
+      graphql.query('Seats', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('HasAdmins', (info) => {
+      graphql.query('HasAdmins', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('owner', (info) => {
+      graphql.query('owner', () => {
         return HttpResponse.json({ data: { owner: { isAdmin: true } } })
       }),
-      graphql.query('MyContexts', (info) => {
+      graphql.query('MyContexts', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('GetOktaConfig', (info) => {
+      graphql.query('GetOktaConfig', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('OwnerPageData', (info) => {
+      graphql.query('OwnerPageData', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.mutation('updateDefaultOrganization', (info) => {
+      graphql.mutation('updateDefaultOrganization', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       }),
-      graphql.query('GetUploadTokenRequired', (info) => {
+      graphql.query('GetUploadTokenRequired', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
       graphql.query('NavigatorData', () => {

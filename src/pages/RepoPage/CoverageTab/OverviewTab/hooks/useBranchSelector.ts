@@ -3,9 +3,9 @@ import { useParams } from 'react-router-dom'
 import { Branch, useBranch } from 'services/branches'
 
 const getDecodedBranch = (branch?: string) =>
-  !!branch ? decodeURIComponent(branch) : branch
+  branch ? decodeURIComponent(branch) : branch
 
-const getDecodedRef = (ref?: string) => (!!ref ? decodeURIComponent(ref) : ref)
+const getDecodedRef = (ref?: string) => (ref ? decodeURIComponent(ref) : ref)
 
 interface URLParams {
   provider: string

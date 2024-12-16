@@ -35,7 +35,7 @@ export function useRegenerateOrgUploadToken(
     useErrorBoundary: true,
     onSuccess: ({ data }) => {
       onSuccess(data)
-      queryClient.invalidateQueries('DetailOwner')
+      queryClient.invalidateQueries('DetailOwner', 'GetOrgUploadToken')
     },
   })
 }

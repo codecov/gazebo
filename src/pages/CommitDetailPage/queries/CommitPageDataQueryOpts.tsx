@@ -33,7 +33,7 @@ export type TBundleAnalysisComparisonResult = z.infer<
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  private: z.boolean().nullable(),
+  private: z.boolean(),
   bundleAnalysisEnabled: z.boolean().nullable(),
   coverageEnabled: z.boolean().nullable(),
   commit: z
@@ -54,9 +54,11 @@ const RepositorySchema = z.object({
         .nullable(),
       bundleAnalysis: z
         .object({
-          bundleAnalysisCompareWithParent: z.object({
-            __typename: BundleAnalysisComparisonResult,
-          }),
+          bundleAnalysisCompareWithParent: z
+            .object({
+              __typename: BundleAnalysisComparisonResult,
+            })
+            .nullable(),
         })
         .nullable(),
     })
@@ -167,7 +169,7 @@ export const CommitPageDataQueryOpts = ({
               detail: (
                 <p>
                   Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
+                  {/* @ts-expect-error - A hasn't been typed yet */}
                   <A to={{ pageName: 'membersTab' }}>click here </A> to activate
                   your account.
                 </p>

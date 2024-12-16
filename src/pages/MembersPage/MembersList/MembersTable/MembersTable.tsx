@@ -69,7 +69,7 @@ function ActivationStatus({
       accountDetails?.activatedUserCount >= accountDetails?.plan?.quantity &&
       !isFreePlan(accountDetails?.plan?.value)
   }
-  if (!!student) {
+  if (student) {
     disabled = false
   }
   return (

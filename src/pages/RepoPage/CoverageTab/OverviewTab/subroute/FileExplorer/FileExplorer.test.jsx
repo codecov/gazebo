@@ -189,7 +189,7 @@ describe('FileExplorer', () => {
 
         return HttpResponse.json({ data: { owner: mockTreeData } })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       })
     )

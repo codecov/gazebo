@@ -122,7 +122,7 @@ describe('useSingularImpactedFileComparison', () => {
     isMissingBaseCommit = false,
   }) {
     server.use(
-      graphql.query('ImpactedFileComparison', (info) => {
+      graphql.query('ImpactedFileComparison', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

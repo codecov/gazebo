@@ -44,7 +44,7 @@ afterAll(() => {
 describe('BotErrorBanner', () => {
   function setup({ integrationId } = { integrationId: null }) {
     server.use(
-      http.get('/internal/:provider/codecov/account-details/', (info) => {
+      http.get('/internal/:provider/codecov/account-details/', () => {
         return HttpResponse.json({ integrationId })
       })
     )

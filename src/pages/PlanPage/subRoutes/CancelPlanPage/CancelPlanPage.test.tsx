@@ -78,6 +78,7 @@ const mockPlanData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -136,13 +137,13 @@ describe('CancelPlanPage', () => {
     hasTeamPlans = false,
   }: SetupProps = {}) {
     server.use(
-      http.get('internal/gh/codecov/account-details/', (info) => {
+      http.get('internal/gh/codecov/account-details/', () => {
         return HttpResponse.json({
           plan: { value: planValue },
           subscriptionDetail: { customer: { discount: hasDiscount } },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -151,12 +152,13 @@ describe('CancelPlanPage', () => {
                 ...mockPlanData,
                 trialStatus,
                 value: planValue,
+                isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
               },
             },
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: {
             owner: {

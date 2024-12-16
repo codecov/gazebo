@@ -41,7 +41,7 @@ afterAll(() => {
 describe('DeleteFlagModal', () => {
   function setup() {
     server.use(
-      graphql.mutation('deleteFlag', (info) => {
+      graphql.mutation('deleteFlag', () => {
         return HttpResponse.json({ data: { deleteFlag: null } })
       })
     )

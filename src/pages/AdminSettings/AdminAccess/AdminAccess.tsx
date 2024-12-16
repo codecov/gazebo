@@ -23,7 +23,8 @@ function AdminAccess() {
       </div>
       <hr />
       <p className="py-4 text-xs">
-        Admins can be edited in the {/* @ts-expect-error */}
+        Admins can be edited in the{' '}
+        {/* @ts-expect-error - A hasn't been typed yet */}
         <A
           hook="docs"
           href="https://docs.codecov.com/v5.0/docs/configuration"
@@ -31,7 +32,7 @@ function AdminAccess() {
         >
           install.yml
         </A>{' '}
-        {/* @ts-expect-error */}
+        {/* @ts-expect-error - A hasn't been typed yet */}
         <A
           hook="docs"
           href="https://docs.codecov.com/v5.0/docs/configuration#install-wide-admins"

@@ -91,6 +91,7 @@ const mockPlanData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
 }
 
 const server = setupServer()
@@ -136,7 +137,7 @@ describe('TeamPlanDetails', () => {
     }
   ) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -149,7 +150,7 @@ describe('TeamPlanDetails', () => {
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -158,7 +159,7 @@ describe('TeamPlanDetails', () => {
           },
         })
       }),
-      http.get('/internal/gh/codecov/account-details', (info) => {
+      http.get('/internal/gh/codecov/account-details', () => {
         return HttpResponse.json({
           plan: teamPlanYear,
           subscriptionDetail: {

@@ -75,7 +75,7 @@ describe('useRepoConfig', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('RepoConfig', (info) => {
+      graphql.query('RepoConfig', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {

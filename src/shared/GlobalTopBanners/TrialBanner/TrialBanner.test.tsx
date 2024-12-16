@@ -30,6 +30,7 @@ const proPlanMonth = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  isEnterprisePlan: false,
 }
 
 const trialPlan = {
@@ -47,9 +48,11 @@ const trialPlan = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  isEnterprisePlan: false,
 }
 
 const basicPlan = {
+  isEnterprisePlan: false,
   marketingName: 'Basic',
   value: Plans.USERS_BASIC,
   billingRate: null,
@@ -122,7 +125,7 @@ describe('TrialBanner', () => {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         let plan: any = basicPlan
 
         if (isTrialPlan) {
@@ -149,12 +152,13 @@ describe('TrialBanner', () => {
                 pretrialUsersCount: plan.pretrialUsersCount,
                 planUserCount: plan.planUserCount,
                 hasSeatsLeft: true,
+                isEnterprisePlan: plan.isEnterprisePlan,
               },
             },
           },
         })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
           data: { owner: { isCurrentUserPartOfOrg } },
         })

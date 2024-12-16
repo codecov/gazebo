@@ -189,7 +189,7 @@ describe('Summary', () => {
 
     mocks.useCoverageRedirect.mockReturnValue(coverageRedirectData)
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -199,7 +199,7 @@ describe('Summary', () => {
           },
         })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({
           data: {
             owner: { repository: { __typename: 'Repository', ...mockBranch } },
@@ -225,12 +225,12 @@ describe('Summary', () => {
           data: { owner: { repository: mockBranches(hasNextPage) } },
         })
       }),
-      graphql.query('GetRepoCoverage', (info) => {
+      graphql.query('GetRepoCoverage', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockRepoCoverage } },
         })
       }),
-      graphql.query('RepoConfig', (info) => {
+      graphql.query('RepoConfig', () => {
         return HttpResponse.json({ data: mockRepoConfig })
       })
     )

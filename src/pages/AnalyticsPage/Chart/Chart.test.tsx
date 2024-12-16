@@ -68,7 +68,7 @@ beforeEach(() => {
    * This mock also allow us to use {@link notifyResizeObserverChange} to fire changes
    * from inside our test.
    */
-  resizeObserverMock = vi.fn().mockImplementation((callback) => {
+  resizeObserverMock = vi.fn().mockImplementation((_callback) => {
     return {
       observe: vi.fn(),
       unobserve: vi.fn(),
@@ -76,7 +76,7 @@ beforeEach(() => {
     }
   })
 
-  // @ts-ignore
+  // @ts-expect-error - deleting so we can override with the mock
   delete window.ResizeObserver
 
   window.ResizeObserver = resizeObserverMock
@@ -104,7 +104,7 @@ describe('Analytics coverage chart', () => {
     hasError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetReposCoverageMeasurements', (info) => {
+      graphql.query('GetReposCoverageMeasurements', () => {
         if (hasNoData) {
           return HttpResponse.json({ data: { owner: { measurements: [] } } })
         } else if (hasSingleData) {
@@ -115,7 +115,7 @@ describe('Analytics coverage chart', () => {
 
         return HttpResponse.json({ data: mockDataPoints })
       }),
-      graphql.query('OwnerTier', (info) =>
+      graphql.query('OwnerTier', () =>
         HttpResponse.json({ data: { owner: { plan: { tierName: 'pro' } } } })
       )
     )

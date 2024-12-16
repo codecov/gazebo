@@ -126,7 +126,7 @@ describe('usePullBundleComparisonList', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('PullBundleComparisonList', (info) => {
+      graphql.query('PullBundleComparisonList', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
