@@ -9,11 +9,9 @@ import {
   formatNumberToUSD,
   formatTimestampToCalendarDate,
   getNextBillingDate,
-  isAnnualPlan,
   isBasicPlan,
   isCodecovProPlan,
   isFreePlan,
-  isMonthlyPlan,
   isProPlan,
   isSentryPlan,
   isTeamPlan,
@@ -320,55 +318,6 @@ describe('getNextBillingDate', () => {
 
       expect(value).toBeNull()
     })
-  })
-})
-
-describe('isAnnualPlan', () => {
-  it('supports enterprise annual plan', () => {
-    expect(isAnnualPlan('users-enterprisey')).toBe(true)
-    expect(isAnnualPlan(Plans.USERS_ENTERPRISEY)).toBe(true)
-  })
-
-  it('supports basic annual plan', () => {
-    expect(isAnnualPlan('users-inappy')).toBe(true)
-    expect(isAnnualPlan(Plans.USERS_INAPPY)).toBe(true)
-  })
-
-  it('supports annual pr plan', () => {
-    expect(isAnnualPlan('users-pr-inappy')).toBe(true)
-    expect(isAnnualPlan(Plans.USERS_PR_INAPPY)).toBe(true)
-  })
-
-  it('supports annual team plan', () => {
-    expect(isAnnualPlan('users-teamy')).toBe(true)
-    expect(isAnnualPlan(Plans.USERS_PR_INAPPY)).toBe(true)
-  })
-
-  it('defaults to false otherwise', () => {
-    expect(isAnnualPlan('users-inappm')).toBe(false)
-    expect(isAnnualPlan(undefined)).toBe(false)
-  })
-})
-
-describe('isMonthlyPlan', () => {
-  it('supports enterprise monthly plan', () => {
-    expect(isMonthlyPlan('users-enterprisem')).toBe(true)
-    expect(isMonthlyPlan(Plans.USERS_ENTERPRISEM)).toBe(true)
-  })
-
-  it('supports basic monthly plan', () => {
-    expect(isMonthlyPlan('users-inappm')).toBe(true)
-    expect(isMonthlyPlan(Plans.USERS_INAPP)).toBe(true)
-  })
-
-  it('supports monthly pr plan', () => {
-    expect(isMonthlyPlan('users-pr-inappm')).toBe(true)
-    expect(isMonthlyPlan(Plans.USERS_PR_INAPPM)).toBe(true)
-  })
-
-  it('defaults to false otherwise', () => {
-    expect(isMonthlyPlan('users-inappy')).toBe(false)
-    expect(isMonthlyPlan(undefined)).toBe(false)
   })
 })
 

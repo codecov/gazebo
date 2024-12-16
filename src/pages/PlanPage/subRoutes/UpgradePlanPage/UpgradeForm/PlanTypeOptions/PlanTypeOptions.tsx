@@ -5,14 +5,13 @@ import { useAvailablePlans, usePlanData } from 'services/account'
 import { useLocationParams } from 'services/navigation'
 import { TierNames } from 'services/tier'
 import {
+  BillingRate,
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
   findTeamPlans,
-  isMonthlyPlan,
   isTeamPlan,
   Plan,
-  PlanName,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
@@ -25,7 +24,7 @@ import { UpgradeFormFields } from '../UpgradeForm'
 interface PlanTypeOptionsProps {
   setFormValue: UseFormSetValue<UpgradeFormFields>
   setSelectedPlan: (x?: Plan) => void
-  newPlan?: PlanName
+  newPlan?: Plan
 }
 
 const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
@@ -53,8 +52,8 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
   const monthlyProPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
 
-  const currentFormValue = newPlan
-  const monthlyPlan = isMonthlyPlan(currentFormValue)
+  const currentFormValue = newPlan?.value
+  const monthlyPlan = newPlan?.billingRate === BillingRate.MONTHLY
 
   let planOption = null
   if (
@@ -80,19 +79,19 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
               if (text === TierName.PRO) {
                 if (monthlyPlan) {
                   setSelectedPlan(monthlyProPlan)
-                  setFormValue('newPlan', monthlyProPlan?.value)
+                  setFormValue('newPlan', monthlyProPlan)
                 } else {
                   setSelectedPlan(yearlyProPlan)
-                  setFormValue('newPlan', yearlyProPlan?.value)
+                  setFormValue('newPlan', yearlyProPlan)
                 }
                 updateParams({ plan: TierNames.PRO })
               } else {
                 if (monthlyPlan) {
                   setSelectedPlan(teamPlanMonth)
-                  setFormValue('newPlan', teamPlanMonth?.value)
+                  setFormValue('newPlan', teamPlanMonth)
                 } else {
                   setSelectedPlan(teamPlanYear)
-                  setFormValue('newPlan', teamPlanYear?.value)
+                  setFormValue('newPlan', teamPlanYear)
                 }
                 updateParams({ plan: TierNames.TEAM })
               }

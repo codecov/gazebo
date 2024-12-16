@@ -13,7 +13,6 @@ import {
   getNextBillingDate,
   isTeamPlan,
   Plan,
-  PlanName,
 } from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
@@ -39,7 +38,7 @@ type UpgradeFormProps = {
 }
 
 export type UpgradeFormFields = {
-  newPlan?: PlanName
+  newPlan?: Plan
   seats: number
 }
 
@@ -89,8 +88,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const newPlan = watch('newPlan')
   const seats = watch('seats')
 
-  console.log({ newPlan, seats, selectedPlan })
-
   useEffect(() => {
     // This is necessary because the validity of seats depends on the value of newPlan
     trigger('seats')
@@ -111,7 +108,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         newPlan={newPlan}
       />
       <Controller
-        selectedPlan={selectedPlan}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
         seats={seats}
@@ -121,8 +117,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
       />
       <UpdateBlurb
         currentPlan={currentPlan}
-        selectedPlan={selectedPlan}
-        newPlanName={newPlan}
+        newPlan={newPlan}
         seats={Number(seats)}
         nextBillingDate={getNextBillingDate(accountDetails)!}
       />

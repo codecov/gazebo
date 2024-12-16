@@ -218,11 +218,10 @@ export const getDefaultValuesUpgradeForm = ({
   accountDetails?: z.infer<typeof AccountDetailsSchema> | null
   plans?: Plan[] | null
   trialStatus?: TrialStatus
-  selectedPlan?: Plan | null
+  selectedPlan?: Plan
   isEnterprisePlan?: boolean
 }) => {
   const currentPlan = accountDetails?.plan
-  const currentPlanValue = currentPlan?.value
   const quantity = currentPlan?.quantity ?? 0
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
@@ -240,17 +239,20 @@ export const getDefaultValuesUpgradeForm = ({
     accountDetails?.plan?.billingRate === BillingRate.MONTHLY
   const isPaidPlan = !!accountDetails?.plan?.billingRate // If the plan has a billing rate, it's a paid plan
 
-  let newPlan = proPlanYear?.value
-  if (isSentryUpgrade && !isSentryPlan(currentPlanValue)) {
-    newPlan = isMonthlyPlan ? sentryPlanMonth?.value : sentryPlanYear?.value
-  } else if (isTeamPlan(currentPlanValue) || isTeamPlan(selectedPlan?.value)) {
-    newPlan = isMonthlyPlan ? teamPlanMonth?.value : teamPlanYear?.value
+  let newPlan: Plan | undefined = proPlanYear
+  if (isSentryUpgrade && !isSentryPlan(currentPlan?.value)) {
+    newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
+  } else if (
+    isTeamPlan(currentPlan?.value) ||
+    isTeamPlan(selectedPlan?.value)
+  ) {
+    newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
   } else if (isPaidPlan) {
-    newPlan = currentPlanValue
+    newPlan = currentPlan!
   }
 
   const seats = extractSeats({
-    value: currentPlanValue,
+    value: currentPlan?.value,
     quantity,
     activatedUserCount,
     inactiveUserCount,

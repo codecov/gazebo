@@ -36,8 +36,8 @@ export interface Plan {
   billingRate?: (typeof BillingRate)[keyof typeof BillingRate] | null
   marketingName: string
   value: PlanName
-  monthlyUploadLimit: number | null
-  quantity?: number
+  monthlyUploadLimit?: number | null
+  quantity?: number | null
 }
 
 export function isFreePlan(plan?: PlanName | null) {
@@ -56,32 +56,6 @@ export function isTeamPlan(plan?: PlanName | null) {
 export function isBasicPlan(plan?: PlanName) {
   if (isString(plan)) {
     return plan === Plans.USERS_BASIC
-  }
-  return false
-}
-
-export function isMonthlyPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return (
-      plan === Plans.USERS_INAPP ||
-      plan === Plans.USERS_PR_INAPPM ||
-      plan === Plans.USERS_SENTRYM ||
-      plan === Plans.USERS_TEAMM ||
-      plan === Plans.USERS_ENTERPRISEM
-    )
-  }
-  return false
-}
-
-export function isAnnualPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return (
-      plan === Plans.USERS_INAPPY ||
-      plan === Plans.USERS_PR_INAPPY ||
-      plan === Plans.USERS_TEAMY ||
-      plan === Plans.USERS_SENTRYY ||
-      plan === Plans.USERS_ENTERPRISEY
-    )
   }
   return false
 }

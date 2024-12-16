@@ -5,12 +5,11 @@ import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, useAvailablePlans } from 'services/account'
 import {
+  BillingRate,
   findTeamPlans,
   formatNumberToUSD,
   getNextBillingDate,
-  isAnnualPlan,
-  PlanName,
-  Plans,
+  Plan,
 } from 'shared/utils/billing'
 import {
   calculatePriceTeamPlan,
@@ -22,7 +21,7 @@ import Icon from 'ui/Icon'
 import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
-  newPlan?: PlanName
+  newPlan?: Plan
   seats: number
   setFormValue: UseFormSetValue<UpgradeFormFields>
 }
@@ -43,7 +42,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
     seats,
     baseUnitPrice: teamPlanYear?.baseUnitPrice,
   })
-  const isPerYear = isAnnualPlan(newPlan)
+  const isPerYear = newPlan?.billingRate === BillingRate.ANNUALLY
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
 
@@ -101,7 +100,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           )}{' '}
           <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-            onClick={() => setFormValue('newPlan', Plans.USERS_TEAMY)}
+            onClick={() => setFormValue('newPlan', teamPlanYear)}
           >
             switch to annual
           </button>

@@ -3,21 +3,14 @@ import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans, usePlanData } from 'services/account'
-import {
-  BillingRate,
-  findSentryPlans,
-  isAnnualPlan,
-  isMonthlyPlan,
-  PlanName,
-  Plans,
-} from 'shared/utils/billing'
+import { BillingRate, findSentryPlans, Plan } from 'shared/utils/billing'
 import OptionButton from 'ui/OptionButton'
 
 import { OptionPeriod, TimePeriods } from '../../../constants'
 import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface BillingControlsProps {
-  newPlan?: PlanName
+  newPlan?: Plan
   setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 
@@ -44,9 +37,15 @@ const BillingControls: React.FC<BillingControlsProps> = ({
   // used to update option selection if user selects
   // the switch to annual button in the total banner
   useEffect(() => {
-    if (isMonthlyPlan(newPlan) && option === TimePeriods.ANNUAL) {
+    if (
+      newPlan?.billingRate === BillingRate.MONTHLY &&
+      option === TimePeriods.ANNUAL
+    ) {
       setOption(TimePeriods.MONTHLY)
-    } else if (isAnnualPlan(newPlan) && option === TimePeriods.MONTHLY) {
+    } else if (
+      newPlan?.billingRate === BillingRate.ANNUALLY &&
+      option === TimePeriods.MONTHLY
+    ) {
       setOption(TimePeriods.ANNUAL)
     }
   }, [newPlan, option])
@@ -69,9 +68,9 @@ const BillingControls: React.FC<BillingControlsProps> = ({
           active={option}
           onChange={({ text }) => {
             if (text === TimePeriods.ANNUAL) {
-              setFormValue('newPlan', Plans.USERS_SENTRYY)
+              setFormValue('newPlan', sentryPlanYear)
             } else {
-              setFormValue('newPlan', Plans.USERS_SENTRYM)
+              setFormValue('newPlan', sentryPlanMonth)
             }
 
             setOption(text)
