@@ -2,7 +2,7 @@
 
 [![codecov](https://codecov.io/gh/codecov/gazebo/branch/main/graph/badge.svg?token=UAP786D58M)](https://codecov.io/gh/codecov/gazebo)
 
-> We believe that everyone should have access to quality software (like Sentry), that’s why we have always offered Codecov for free to open source maintainers.
+> We believe that everyone should have access to quality software (like Sentry), that’s why we have always offered Codecov for freea to open source maintainers.
 >
 > By making our code public, we’re not only joining the community that’s supported us from the start — but also want to make sure that every developer can contribute to and build on the Codecov experience.
 
