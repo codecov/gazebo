@@ -7,7 +7,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import BillingOptions from './BillingOptions'
 
@@ -29,7 +29,7 @@ const availablePlans = [
   {
     marketingName: 'Sentry Pro Team',
     value: Plans.USERS_SENTRYM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Includes 5 seats',
@@ -44,7 +44,7 @@ const availablePlans = [
   {
     marketingName: 'Sentry Pro Team',
     value: Plans.USERS_SENTRYY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Includes 5 seats',
@@ -61,7 +61,7 @@ const availablePlans = [
 const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'annual',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Sentry',
   monthlyUploadLimit: 250,
   value: Plans.USERS_SENTRYY,

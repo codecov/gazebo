@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import { usePlanData } from './usePlanData'
 
@@ -12,7 +12,7 @@ const mockTrialData = {
   plan: {
     baseUnitPrice: 10,
     benefits: [],
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
     value: Plans.USERS_BASIC,
@@ -28,7 +28,7 @@ const mockTrialData = {
   pretrialPlan: {
     baseUnitPrice: 10,
     benefits: [],
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
     value: Plans.USERS_BASIC,
@@ -87,7 +87,7 @@ describe('usePlanData', () => {
               isEnterprisePlan: false,
               baseUnitPrice: 10,
               benefits: [],
-              billingRate: 'monthly',
+              billingRate: BillingRate.MONTHLY,
               marketingName: 'Users Basic',
               monthlyUploadLimit: 250,
               value: Plans.USERS_BASIC,
@@ -102,7 +102,7 @@ describe('usePlanData', () => {
             pretrialPlan: {
               baseUnitPrice: 10,
               benefits: [],
-              billingRate: 'monthly',
+              billingRate: BillingRate.MONTHLY,
               marketingName: 'Users Basic',
               monthlyUploadLimit: 250,
               value: Plans.USERS_BASIC,

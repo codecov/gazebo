@@ -89,6 +89,8 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const newPlan = watch('newPlan')
   const seats = watch('seats')
 
+  console.log({ newPlan, seats, selectedPlan })
+
   useEffect(() => {
     // This is necessary because the validity of seats depends on the value of newPlan
     trigger('seats')
@@ -109,7 +111,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         newPlan={newPlan}
       />
       <Controller
-        selectedPlan={selectedPlan.value}
+        selectedPlan={selectedPlan}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
         seats={seats}

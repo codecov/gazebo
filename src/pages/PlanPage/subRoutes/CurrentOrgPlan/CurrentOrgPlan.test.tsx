@@ -13,7 +13,7 @@ import { z } from 'zod'
 
 import { PlanUpdatedPlanNotificationContext } from 'pages/PlanPage/context'
 import { AccountDetailsSchema } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 import { AlertOptions, type AlertOptionsType } from 'ui/Alert'
 
 import CurrentOrgPlan from './CurrentOrgPlan'
@@ -187,7 +187,7 @@ describe('CurrentOrgPlan', () => {
         accountDetails: {
           plan: {
             baseUnitPrice: 12,
-            billingRate: 'monthly',
+            billingRate: BillingRate.MONTHLY,
             marketingName: 'Pro',
             quantity: 39,
             value: Plans.USERS_PR_INAPPM,
@@ -205,7 +205,7 @@ describe('CurrentOrgPlan', () => {
         accountDetails: {
           plan: {
             baseUnitPrice: 12,
-            billingRate: 'monthly',
+            billingRate: BillingRate.MONTHLY,
             marketingName: 'Pro',
             quantity: 39,
             value: Plans.USERS_PR_INAPPM,
@@ -232,7 +232,7 @@ describe('CurrentOrgPlan', () => {
         accountDetails: {
           plan: {
             baseUnitPrice: 12,
-            billingRate: 'monthly',
+            billingRate: BillingRate.MONTHLY,
             marketingName: 'Pro',
             quantity: 39,
             value: Plans.USERS_PR_INAPPM,
@@ -255,7 +255,7 @@ describe('CurrentOrgPlan', () => {
         accountDetails: {
           plan: {
             baseUnitPrice: 12,
-            billingRate: 'monthly',
+            billingRate: BillingRate.MONTHLY,
             marketingName: 'Pro',
             quantity: 39,
             value: Plans.USERS_PR_INAPPM,
@@ -286,7 +286,7 @@ describe('CurrentOrgPlan', () => {
               value: Plans.USERS_FREE,
               baseUnitPrice: 12,
               benefits: ['a', 'b'],
-              billingRate: '1',
+              billingRate: null,
               marketingName: 'bob',
             },
             usesInvoice: false,
@@ -322,7 +322,7 @@ describe('CurrentOrgPlan', () => {
               value: Plans.USERS_FREE,
               baseUnitPrice: 12,
               benefits: ['a', 'b'],
-              billingRate: '1',
+              billingRate: null,
               marketingName: 'bob',
             },
             usesInvoice: true,

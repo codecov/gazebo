@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { AccountDetailsSchema, Plan, TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import {
   calculatePrice,
@@ -141,7 +141,11 @@ describe('getDefaultValuesUpgradeForm', () => {
   describe('when current plan is team monthly', () => {
     it('returns team monthly plan', () => {
       const accountDetails = {
-        plan: { value: Plans.USERS_TEAMM, quantity: 1, billingRate: 'monthly' },
+        plan: {
+          value: Plans.USERS_TEAMM,
+          quantity: 1,
+          billingRate: BillingRate.MONTHLY,
+        },
       } as z.infer<typeof AccountDetailsSchema>
 
       const data = getDefaultValuesUpgradeForm({
@@ -176,7 +180,11 @@ describe('getDefaultValuesUpgradeForm', () => {
 
   it('returns current plan if the user is on a paid plan', () => {
     const accountDetails = {
-      plan: { value: Plans.USERS_PR_INAPPM, quantity: 2 },
+      plan: {
+        value: Plans.USERS_PR_INAPPM,
+        billingRate: BillingRate.MONTHLY,
+        quantity: 2,
+      },
     } as z.infer<typeof AccountDetailsSchema>
 
     const data = getDefaultValuesUpgradeForm({

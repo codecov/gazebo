@@ -7,7 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import AccountSettings from './AccountSettings'
 
@@ -28,7 +28,7 @@ vi.mock('./tabs/OktaAccess', () => ({ default: () => 'OktaAccess' }))
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
   value: Plans.USERS_BASIC,

@@ -7,7 +7,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import BillingOptions from './BillingOptions'
 
@@ -27,7 +27,7 @@ const availablePlans = [
   {
     baseUnitPrice: 5,
     benefits: ['Up to 10 users'],
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     marketingName: 'Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMM,
@@ -35,7 +35,7 @@ const availablePlans = [
   {
     baseUnitPrice: 4,
     benefits: ['Up to 10 users'],
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     marketingName: 'Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMY,
@@ -45,7 +45,7 @@ const availablePlans = [
 const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Team',
   monthlyUploadLimit: 250,
   value: Plans.USERS_TEAMM,

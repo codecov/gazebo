@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans, usePlanData } from 'services/account'
 import {
+  BillingRate,
   findSentryPlans,
   isAnnualPlan,
   isMonthlyPlan,
@@ -35,7 +36,7 @@ const BillingControls: React.FC<BillingControlsProps> = ({
   const currentPlanBillingRate = planData?.plan?.billingRate
 
   const [option, setOption] = useState<OptionPeriod>(() =>
-    currentPlanBillingRate === 'monthly'
+    currentPlanBillingRate === BillingRate.MONTHLY
       ? TimePeriods.MONTHLY
       : TimePeriods.ANNUAL
   )

@@ -25,10 +25,15 @@ export const Plans = {
 
 export type PlanName = (typeof Plans)[keyof typeof Plans]
 
+export const BillingRate = {
+  MONTHLY: 'monthly',
+  ANNUALLY: 'annually',
+} as const
+
 export interface Plan {
   baseUnitPrice: number
   benefits: string[]
-  billingRate: string | null
+  billingRate?: (typeof BillingRate)[keyof typeof BillingRate] | null
   marketingName: string
   value: PlanName
   monthlyUploadLimit: number | null
@@ -51,13 +56,6 @@ export function isTeamPlan(plan?: PlanName | null) {
 export function isBasicPlan(plan?: PlanName) {
   if (isString(plan)) {
     return plan === Plans.USERS_BASIC
-  }
-  return false
-}
-
-export function isPaidPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return isAnnualPlan(plan) || isMonthlyPlan(plan)
   }
   return false
 }

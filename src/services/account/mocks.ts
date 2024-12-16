@@ -1,4 +1,4 @@
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 /* eslint-disable camelcase */
 export const invoiceObject = {
@@ -156,7 +156,7 @@ export const accountDetailsParsedObj = {
   plan: {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',

@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import PriceCallout from './PriceCallout'
 
@@ -26,7 +26,7 @@ const availablePlans = [
   {
     marketingName: 'Pro',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -39,7 +39,7 @@ const availablePlans = [
   {
     marketingName: 'Team',
     value: Plans.USERS_TEAMM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 5,
     benefits: ['Patch coverage analysis'],
     monthlyUploadLimit: null,
@@ -47,7 +47,7 @@ const availablePlans = [
   {
     marketingName: 'Team',
     value: Plans.USERS_TEAMY,
-    billingRate: 'yearly',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 4,
     benefits: ['Patch coverage analysis'],
     monthlyUploadLimit: null,

@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import PriceCallout from './PriceCallout'
 
@@ -26,7 +26,7 @@ const availablePlans = [
   {
     marketingName: 'Sentry Pro Team',
     value: Plans.USERS_SENTRYM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Includes 5 seats',
@@ -41,7 +41,7 @@ const availablePlans = [
   {
     marketingName: 'Sentry Pro Team',
     value: Plans.USERS_SENTRYY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Includes 5 seats',

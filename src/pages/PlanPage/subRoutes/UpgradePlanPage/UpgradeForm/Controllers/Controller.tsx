@@ -11,7 +11,7 @@ import { UpgradeFormFields } from '../UpgradeForm'
 interface BillingControlsProps {
   seats: number
   newPlan?: PlanName
-  selectedPlan: PlanName
+  selectedPlan: Plan
   register: UseFormRegister<UpgradeFormFields>
   setFormValue: UseFormSetValue<UpgradeFormFields>
   setSelectedPlan: (plan?: Plan) => void
@@ -31,7 +31,7 @@ const Controller: React.FC<BillingControlsProps> = ({
   setFormValue,
   setSelectedPlan,
 }) => {
-  if (isTeamPlan(selectedPlan)) {
+  if (isTeamPlan(selectedPlan.value)) {
     return (
       <TeamPlanController
         newPlan={newPlan}
@@ -42,7 +42,7 @@ const Controller: React.FC<BillingControlsProps> = ({
         errors={errors}
       />
     )
-  } else if (isSentryPlan(selectedPlan)) {
+  } else if (isSentryPlan(selectedPlan.value)) {
     return (
       <SentryPlanController
         newPlan={newPlan}

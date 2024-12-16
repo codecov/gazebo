@@ -7,12 +7,12 @@ import {
   TrialStatuses,
 } from 'services/account'
 import {
+  BillingRate,
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
   findTeamPlans,
   isFreePlan,
-  isPaidPlan,
   isSentryPlan,
   isTeamPlan,
   isTrialPlan,
@@ -236,14 +236,16 @@ export const getDefaultValuesUpgradeForm = ({
     plans,
   })
 
-  const isMonthlyPlan = accountDetails?.plan?.billingRate === 'monthly'
+  const isMonthlyPlan =
+    accountDetails?.plan?.billingRate === BillingRate.MONTHLY
+  const isPaidPlan = !!accountDetails?.plan?.billingRate // If the plan has a billing rate, it's a paid plan
 
   let newPlan = proPlanYear?.value
   if (isSentryUpgrade && !isSentryPlan(currentPlanValue)) {
     newPlan = isMonthlyPlan ? sentryPlanMonth?.value : sentryPlanYear?.value
   } else if (isTeamPlan(currentPlanValue) || isTeamPlan(selectedPlan?.value)) {
     newPlan = isMonthlyPlan ? teamPlanMonth?.value : teamPlanYear?.value
-  } else if (isPaidPlan(currentPlanValue)) {
+  } else if (isPaidPlan) {
     newPlan = currentPlanValue
   }
 
