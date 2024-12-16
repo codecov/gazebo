@@ -631,6 +631,7 @@ describe('Actions Billing', () => {
           accountDetails: sentryMockedAccountDetails,
           plans: sentryPlans,
           trialPlanData: {
+            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               value: Plans.USERS_SENTRYM,
