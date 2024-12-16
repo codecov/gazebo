@@ -522,7 +522,7 @@ describe('RepoPage', () => {
               }),
             })
 
-            const bundleOnboarding = await screen.findByText('BundleOnboarding')
+            const bundleOnboarding = await screen.findByText('hello')
             expect(bundleOnboarding).toBeInTheDocument()
           })
 
