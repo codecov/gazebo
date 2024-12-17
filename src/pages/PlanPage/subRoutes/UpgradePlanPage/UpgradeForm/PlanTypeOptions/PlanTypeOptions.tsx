@@ -10,7 +10,6 @@ import {
   findSentryPlans,
   findTeamPlans,
   isMonthlyPlan,
-  isTeamPlan,
   Plan,
   PlanName,
   shouldDisplayTeamCard,
@@ -59,7 +58,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   let planOption = null
   if (
     (hasTeamPlans && planParam === TierNames.TEAM) ||
-    isTeamPlan(currentFormValue)
+    planData?.plan?.isTeamPlan
   ) {
     planOption = TierName.TEAM
   } else {

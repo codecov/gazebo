@@ -65,6 +65,7 @@ const GetTestResultsSchema = z.object({
       plan: z
         .object({
           value: z.nativeEnum(Plans),
+          isTeamPlan: z.boolean(),
         })
         .nullable(),
       repository: z.discriminatedUnion('__typename', [
@@ -111,6 +112,7 @@ query GetTestResults(
   owner(username: $owner) {
     plan {
       value
+      isTeamPlan
     }
     repository: repository(name: $repo) {
       __typename
@@ -182,6 +184,7 @@ interface UseTestResultsArgs {
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
     private: boolean | null
     plan: PlanName | null
+    isTeamPlan: boolean | null
     defaultBranch: string | null
     totalCount: number | null
     isFirstPullRequest: boolean | null
@@ -282,6 +285,7 @@ export const useInfiniteTestResults = ({
             0,
           private: data?.owner?.repository?.private ?? null,
           plan: data?.owner?.plan?.value ?? null,
+          isTeamPlan: data?.owner?.plan?.isTeamPlan ?? null,
           defaultBranch: data?.owner?.repository?.defaultBranch ?? null,
           isFirstPullRequest:
             data?.owner?.repository?.isFirstPullRequest ?? null,
@@ -308,6 +312,7 @@ export const useInfiniteTestResults = ({
       plan: data?.pages?.[0]?.plan ?? null,
       defaultBranch: data?.pages?.[0]?.defaultBranch ?? null,
       isFirstPullRequest: data?.pages?.[0]?.isFirstPullRequest ?? null,
+      isTeamPlan: data?.pages?.[0]?.isTeamPlan ?? null,
     },
     ...rest,
   }

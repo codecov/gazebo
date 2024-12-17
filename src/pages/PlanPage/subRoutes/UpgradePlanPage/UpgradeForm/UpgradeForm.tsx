@@ -11,7 +11,6 @@ import {
 import {
   canApplySentryUpgrade,
   getNextBillingDate,
-  isTeamPlan,
   Plan,
   PlanName,
 } from 'shared/utils/billing'
@@ -36,6 +35,7 @@ type URLParams = {
 type UpgradeFormProps = {
   selectedPlan: NonNullable<Plan>
   setSelectedPlan: (plan?: Plan) => void
+  isTeamPlan: boolean
 }
 
 export type UpgradeFormFields = {
@@ -43,7 +43,11 @@ export type UpgradeFormFields = {
   seats: number
 }
 
-function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
+function UpgradeForm({
+  selectedPlan,
+  setSelectedPlan,
+  isTeamPlan,
+}: UpgradeFormProps) {
   const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const currentPlan = accountDetails?.plan
@@ -55,9 +59,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
     plans,
   })
   const minSeats =
-    isSentryUpgrade && !isTeamPlan(selectedPlan?.value)
-      ? MIN_SENTRY_SEATS
-      : MIN_NB_SEATS_PRO
+    isSentryUpgrade && !isTeamPlan ? MIN_SENTRY_SEATS : MIN_NB_SEATS_PRO
 
   const trialStatus = planData?.plan?.trialStatus
   const {
@@ -109,6 +111,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         newPlan={newPlan}
       />
       <Controller
+        isTeamPlan={isTeamPlan}
         selectedPlan={selectedPlan.value}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}

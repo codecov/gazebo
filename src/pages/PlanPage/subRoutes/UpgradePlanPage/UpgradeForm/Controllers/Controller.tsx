@@ -1,6 +1,6 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
-import { isSentryPlan, isTeamPlan, Plan, PlanName } from 'shared/utils/billing'
+import { isSentryPlan, Plan, PlanName } from 'shared/utils/billing'
 
 import ProPlanController from './ProPlanController'
 import SentryPlanController from './SentryPlanController'
@@ -9,6 +9,7 @@ import TeamPlanController from './TeamPlanController'
 import { UpgradeFormFields } from '../UpgradeForm'
 
 interface BillingControlsProps {
+  isTeamPlan: boolean
   seats: number
   newPlan?: PlanName
   selectedPlan: PlanName
@@ -30,8 +31,9 @@ const Controller: React.FC<BillingControlsProps> = ({
   selectedPlan,
   setFormValue,
   setSelectedPlan,
+  isTeamPlan,
 }) => {
-  if (isTeamPlan(selectedPlan)) {
+  if (isTeamPlan) {
     return (
       <TeamPlanController
         newPlan={newPlan}

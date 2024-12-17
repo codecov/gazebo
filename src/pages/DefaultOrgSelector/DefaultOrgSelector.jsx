@@ -161,6 +161,7 @@ function DefaultOrgSelector() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="my-4 flex flex-col gap-4 border-y border-ds-gray-tertiary py-6">
           <Controller
+            isTeamPlan={planData?.plan?.isTeamPlan}
             name="select"
             control={control}
             render={() => (

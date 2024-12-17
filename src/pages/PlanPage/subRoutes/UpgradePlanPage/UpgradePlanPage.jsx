@@ -13,7 +13,6 @@ import {
   findSentryPlans,
   findTeamPlans,
   isFreePlan,
-  isTeamPlan,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 
@@ -46,7 +45,7 @@ function UpgradePlanPage() {
   let defaultPaidYearlyPlan = null
   if (
     (hasTeamPlans && planParam === TierNames.TEAM) ||
-    isTeamPlan(plan?.value)
+    planData?.plan?.isTeamPlan
   ) {
     defaultPaidYearlyPlan = teamPlanYear
   } else if (isSentryUpgrade) {
@@ -73,10 +72,14 @@ function UpgradePlanPage() {
 
   return (
     <div className="flex flex-col gap-8 md:w-11/12 md:flex-row lg:w-10/12">
-      <UpgradeDetails selectedPlan={selectedPlan} />
+      <UpgradeDetails
+        selectedPlan={selectedPlan}
+        isTeamPlan={planData?.plan?.isTeamPlan}
+      />
       <UpgradeForm
         selectedPlan={selectedPlan}
         setSelectedPlan={setSelectedPlan}
+        isTeamPlan={planData?.plan?.isTeamPlan}
       />
     </div>
   )
