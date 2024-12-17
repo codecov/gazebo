@@ -256,22 +256,22 @@ const wrapper: (
   initialEntries?: string[]
 ) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/gh/codecov']) =>
-    ({ children }) => (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner">
-            <Suspense fallback={null}>{children}</Suspense>
-          </Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner">
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 type SetupArgs = {
   planValue?: (typeof Plans)[keyof typeof Plans]
