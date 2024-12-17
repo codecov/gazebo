@@ -10,61 +10,71 @@ import { BillingRate, Plans } from 'shared/utils/billing'
 
 import PriceCallout from './PriceCallout'
 
+const freePlan = {
+  marketingName: 'Basic',
+  value: Plans.USERS_BASIC,
+  billingRate: null,
+  baseUnitPrice: 0,
+  benefits: [
+    'Up to 1 user',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+  ],
+  monthlyUploadLimit: 250,
+}
+
+const proPlanMonthly = {
+  marketingName: 'Pro',
+  value: Plans.USERS_PR_INAPPM,
+  billingRate: BillingRate.MONTHLY,
+  baseUnitPrice: 12,
+  benefits: [
+    'Configurable # of users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+}
+
+const proPlanYearly = {
+  marketingName: 'Pro',
+  value: Plans.USERS_PR_INAPPY,
+  billingRate: BillingRate.ANNUALLY,
+  baseUnitPrice: 10,
+  benefits: [
+    'Configurable # of users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+}
+
+const teamPlanMonthly = {
+  marketingName: 'Team',
+  value: Plans.USERS_TEAMM,
+  billingRate: BillingRate.MONTHLY,
+  baseUnitPrice: 5,
+  benefits: ['Patch coverage analysis'],
+  monthlyUploadLimit: null,
+}
+
+const teamPlanYearly = {
+  marketingName: 'Team',
+  value: Plans.USERS_TEAMY,
+  billingRate: BillingRate.ANNUALLY,
+  baseUnitPrice: 4,
+  benefits: ['Patch coverage analysis'],
+  monthlyUploadLimit: null,
+}
+
 const availablePlans = [
-  {
-    marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
-    billingRate: null,
-    baseUnitPrice: 0,
-    benefits: [
-      'Up to 1 user',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-    ],
-    monthlyUploadLimit: 250,
-  },
-  {
-    marketingName: 'Pro',
-    value: Plans.USERS_PR_INAPPM,
-    billingRate: BillingRate.MONTHLY,
-    baseUnitPrice: 12,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Pro',
-    value: Plans.USERS_PR_INAPPY,
-    billingRate: BillingRate.ANNUALLY,
-    baseUnitPrice: 10,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Team',
-    value: Plans.USERS_TEAMM,
-    billingRate: BillingRate.MONTHLY,
-    baseUnitPrice: 5,
-    benefits: ['Patch coverage analysis'],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Team',
-    value: Plans.USERS_TEAMY,
-    billingRate: BillingRate.ANNUALLY,
-    baseUnitPrice: 4,
-    benefits: ['Patch coverage analysis'],
-    monthlyUploadLimit: null,
-  },
+  freePlan,
+  proPlanMonthly,
+  proPlanYearly,
+  teamPlanMonthly,
+  teamPlanYearly,
 ]
 
 const queryClient = new QueryClient({
@@ -126,7 +136,7 @@ describe('PriceCallout', () => {
   describe('when rendered', () => {
     describe('and seat count is below acceptable range', () => {
       const props = {
-        newPlan: Plans.USERS_PR_INAPPY,
+        newPlan: proPlanYearly,
         seats: 1,
       }
 
@@ -144,7 +154,7 @@ describe('PriceCallout', () => {
 
     describe('isPerYear is set to true', () => {
       const props = {
-        newPlan: Plans.USERS_PR_INAPPY,
+        newPlan: proPlanYearly,
         seats: 10,
       }
 
@@ -197,7 +207,7 @@ describe('PriceCallout', () => {
 
     describe('isPerYear is set to false', () => {
       const props = {
-        newPlan: Plans.USERS_PR_INAPPM,
+        newPlan: proPlanMonthly,
         seats: 10,
       }
 
@@ -248,7 +258,7 @@ describe('PriceCallout', () => {
 
           expect(mockSetFormValue).toHaveBeenCalledWith(
             'newPlan',
-            Plans.USERS_PR_INAPPY
+            proPlanYearly
           )
         })
       })
@@ -257,7 +267,7 @@ describe('PriceCallout', () => {
     describe('when no current end period date on subscription', () => {
       it('does not render next billing date info', async () => {
         const props = {
-          newPlan: Plans.USERS_PR_INAPPM,
+          newPlan: proPlanMonthly,
           seats: 10,
         }
 

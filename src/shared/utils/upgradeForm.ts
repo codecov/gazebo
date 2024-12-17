@@ -105,9 +105,8 @@ export const getSchema = ({
 
         return val
       }),
-    newPlan: z.string({
-      required_error: 'Plan type is required',
-      invalid_type_error: 'Plan type is required to be a string',
+    newPlan: z.object({
+      value: z.string(),
     }),
   })
 
@@ -239,7 +238,7 @@ export const getDefaultValuesUpgradeForm = ({
     accountDetails?.plan?.billingRate === BillingRate.MONTHLY
   const isPaidPlan = !!accountDetails?.plan?.billingRate // If the plan has a billing rate, it's a paid plan
 
-  let newPlan: Plan | undefined = proPlanYear
+  let newPlan = proPlanYear
   if (isSentryUpgrade && !isSentryPlan(currentPlan?.value)) {
     newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
   } else if (

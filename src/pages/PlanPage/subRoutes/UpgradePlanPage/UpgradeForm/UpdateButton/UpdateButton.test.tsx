@@ -6,9 +6,50 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plan, Plans } from 'shared/utils/billing'
 
 import UpdateButton from './UpdateButton'
+
+const freePlan = {
+  marketingName: 'Basic',
+  value: Plans.USERS_BASIC,
+  billingRate: null,
+  baseUnitPrice: 0,
+  benefits: [
+    'Up to 1 user',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+  ],
+  monthlyUploadLimit: 250,
+}
+
+const proPlanMonthly = {
+  marketingName: 'Pro',
+  value: Plans.USERS_PR_INAPPM,
+  billingRate: BillingRate.MONTHLY,
+  baseUnitPrice: 12,
+  benefits: [
+    'Configurable # of users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+}
+
+const proPlanYearly = {
+  marketingName: 'Pro',
+  value: Plans.USERS_PR_INAPPY,
+  billingRate: BillingRate.ANNUALLY,
+  baseUnitPrice: 10,
+  benefits: [
+    'Configurable # of users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+}
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -60,20 +101,20 @@ const mockAccountDetailsTeamMonthly = {
 }
 
 interface SetupArgs {
-  planValue: string
+  planValue: Plan
 }
 
 describe('UpdateButton', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC }: SetupArgs = {
-      planValue: Plans.USERS_BASIC,
+    { planValue = freePlan }: SetupArgs = {
+      planValue: freePlan,
     }
   ) {
     server.use(
       http.get(`/internal/gh/codecov/account-details/`, () => {
-        if (planValue === Plans.USERS_BASIC) {
+        if (planValue.value === Plans.USERS_BASIC) {
           return HttpResponse.json(mockAccountDetailsBasic)
-        } else if (planValue === Plans.USERS_TEAMM) {
+        } else if (planValue.value === Plans.USERS_TEAMM) {
           return HttpResponse.json(mockAccountDetailsTeamMonthly)
         } else {
           return HttpResponse.json(mockAccountDetailsProMonthly)
@@ -90,11 +131,11 @@ describe('UpdateButton', () => {
   describe('when rendered', () => {
     describe('when there is a valid basic plan', () => {
       it('renders a valid Proceed to checkout button', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
+        setup({ planValue: freePlan })
 
         const props = {
           isValid: true,
-          newPlan: Plans.USERS_PR_INAPPY,
+          newPlan: proPlanYearly,
           seats: 3,
         }
 
@@ -110,11 +151,11 @@ describe('UpdateButton', () => {
 
     describe('when there is a valid pro plan', () => {
       it('renders a valid Update button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: proPlanYearly })
 
         const props = {
           isValid: true,
-          newPlan: Plans.USERS_PR_INAPPY,
+          newPlan: proPlanYearly,
           seats: 27,
         }
 
@@ -130,11 +171,11 @@ describe('UpdateButton', () => {
 
     describe('when the button is invalid', () => {
       it('renders a disabled valid Update button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: proPlanYearly })
 
         const props = {
           isValid: false,
-          newPlan: Plans.USERS_PR_INAPPY,
+          newPlan: proPlanYearly,
           seats: 6,
         }
 
@@ -150,11 +191,11 @@ describe('UpdateButton', () => {
 
     describe('when there are no changes in plan or seats', () => {
       it('renders a disabled valid Update button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: proPlanMonthly })
 
         const props = {
           isValid: true,
-          newPlan: Plans.USERS_PR_INAPPM,
+          newPlan: proPlanMonthly,
           seats: 4,
         }
 

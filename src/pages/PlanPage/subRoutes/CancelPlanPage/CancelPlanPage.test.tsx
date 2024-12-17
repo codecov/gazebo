@@ -127,6 +127,7 @@ interface SetupProps {
   planValue?: string
   trialStatus?: string
   hasTeamPlans?: boolean
+  billingRate?: string
 }
 
 describe('CancelPlanPage', () => {
@@ -135,11 +136,12 @@ describe('CancelPlanPage', () => {
     planValue = Plans.USERS_PR_INAPPM,
     trialStatus = TrialStatuses.NOT_STARTED,
     hasTeamPlans = false,
+    billingRate = BillingRate.MONTHLY,
   }: SetupProps = {}) {
     server.use(
       http.get('internal/gh/codecov/account-details/', () => {
         return HttpResponse.json({
-          plan: { value: planValue },
+          plan: { value: planValue, billingRate },
           subscriptionDetail: { customer: { discount: hasDiscount } },
         })
       }),
@@ -282,7 +284,12 @@ describe('CancelPlanPage', () => {
   })
 
   describe('user is on a annual plan', () => {
-    beforeEach(() => setup({ planValue: Plans.USERS_INAPPY }))
+    beforeEach(() =>
+      setup({
+        planValue: Plans.USERS_INAPPY,
+        billingRate: BillingRate.ANNUALLY,
+      })
+    )
 
     it('directs them directly to downgrade page', async () => {
       render(<CancelPlanPage />, {

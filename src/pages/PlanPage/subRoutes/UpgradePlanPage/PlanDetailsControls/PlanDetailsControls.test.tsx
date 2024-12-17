@@ -213,10 +213,7 @@ describe('PlanDetailsControls', () => {
         await user.click(teamBtn)
 
         await waitFor(() =>
-          expect(mockSetValue).toHaveBeenCalledWith(
-            'newPlan',
-            Plans.USERS_TEAMY
-          )
+          expect(mockSetValue).toHaveBeenCalledWith('newPlan', teamPlanYear)
         )
         await waitFor(() =>
           expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
@@ -248,10 +245,7 @@ describe('PlanDetailsControls', () => {
         await user.click(proBtn)
 
         await waitFor(() =>
-          expect(mockSetValue).toHaveBeenCalledWith(
-            'newPlan',
-            Plans.USERS_SENTRYY
-          )
+          expect(mockSetValue).toHaveBeenCalledWith('newPlan', sentryPlanYear)
         )
         await waitFor(() =>
           expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
@@ -314,10 +308,7 @@ describe('PlanDetailsControls', () => {
         await user.click(teamBtn)
 
         await waitFor(() =>
-          expect(mockSetValue).toHaveBeenCalledWith(
-            'newPlan',
-            Plans.USERS_TEAMY
-          )
+          expect(mockSetValue).toHaveBeenCalledWith('newPlan', teamPlanYear)
         )
         await waitFor(() =>
           expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
@@ -349,10 +340,7 @@ describe('PlanDetailsControls', () => {
         await user.click(proBtn)
 
         await waitFor(() =>
-          expect(mockSetValue).toHaveBeenCalledWith(
-            'newPlan',
-            Plans.USERS_PR_INAPPY
-          )
+          expect(mockSetValue).toHaveBeenCalledWith('newPlan', proPlanYear)
         )
         await waitFor(() =>
           expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)

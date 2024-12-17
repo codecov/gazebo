@@ -217,7 +217,7 @@ describe('ErrorBanner', () => {
           )
           expect(props.setFormValue).toHaveBeenCalledWith(
             'newPlan',
-            Plans.USERS_PR_INAPPY,
+            { ...proPlanYear, hasSeatsLeft: undefined },
             { shouldValidate: true }
           )
         })

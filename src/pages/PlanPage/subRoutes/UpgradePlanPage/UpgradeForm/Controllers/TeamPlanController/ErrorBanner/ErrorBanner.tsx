@@ -51,7 +51,7 @@ export default function ErrorBanner({
           className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
           onClick={() => {
             setSelectedPlan(yearlyProPlan)
-            setFormValue('newPlan', yearlyProPlan?.value, {
+            setFormValue('newPlan', yearlyProPlan, {
               shouldValidate: true,
             })
           }}

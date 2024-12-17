@@ -2,6 +2,7 @@ import { useStripe } from '@stripe/react-stripe-js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
+import { Plan } from 'shared/utils/billing'
 
 interface useUpgradePlanParams {
   provider: string
@@ -24,12 +25,12 @@ export function useUpgradePlan({ provider, owner }: useUpgradePlanParams) {
   }
 
   return useMutation({
-    mutationFn: (formData: { seats: number; newPlan: string }) => {
+    mutationFn: (formData: { seats: number; newPlan: Plan }) => {
       const path = getPathAccountDetails({ provider, owner })
       const body = {
         plan: {
           quantity: formData?.seats,
-          value: formData?.newPlan,
+          value: formData?.newPlan.value,
         },
       }
       return Api.patch({ path, provider, body }).then((data) => {

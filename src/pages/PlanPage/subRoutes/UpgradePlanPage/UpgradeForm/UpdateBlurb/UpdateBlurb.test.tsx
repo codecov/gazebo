@@ -70,8 +70,7 @@ describe('UpdateBlurb', () => {
       render(
         <UpdateBlurb
           currentPlan={teamPlanMonth}
-          selectedPlan={teamPlanMonth}
-          newPlanName={teamPlanMonth.value}
+          newPlan={teamPlanMonth}
           nextBillingDate={'July 12th, 2024'}
           seats={10}
         />,
@@ -90,8 +89,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={freePlan}
-            selectedPlan={teamPlanYear}
-            newPlanName={teamPlanYear.value}
+            newPlan={teamPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,
@@ -124,8 +122,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={teamPlanMonth}
-            selectedPlan={teamPlanYear}
-            newPlanName={teamPlanYear.value}
+            newPlan={teamPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,
@@ -150,8 +147,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={proPlanYear}
-            selectedPlan={proPlanYear}
-            newPlanName={proPlanYear.value}
+            newPlan={proPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={11}
           />,
@@ -176,8 +172,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={teamPlanYear}
-            selectedPlan={proPlanYear}
-            newPlanName={proPlanYear.value}
+            newPlan={proPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,
@@ -203,8 +198,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={teamPlanYear}
-            selectedPlan={teamPlanMonth}
-            newPlanName={teamPlanMonth.value}
+            newPlan={teamPlanMonth}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,
@@ -229,8 +223,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={teamPlanYear}
-            selectedPlan={teamPlanYear}
-            newPlanName={teamPlanYear.value}
+            newPlan={teamPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={9}
           />,
@@ -255,8 +248,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={proPlanYear}
-            selectedPlan={teamPlanYear}
-            newPlanName={teamPlanYear.value}
+            newPlan={teamPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,

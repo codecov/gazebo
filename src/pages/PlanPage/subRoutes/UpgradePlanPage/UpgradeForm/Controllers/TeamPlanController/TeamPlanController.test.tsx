@@ -56,7 +56,6 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
-  quantity: 5,
 }
 
 const proPlanYear = {
@@ -66,7 +65,6 @@ const proPlanYear = {
   billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Pro',
   monthlyUploadLimit: null,
-  quantity: 5,
 }
 
 const mockAccountDetailsBasic = {
@@ -235,7 +233,7 @@ describe('TeamPlanController', () => {
         setFormValue: vi.fn(),
         setSelectedPlan: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_TEAMM,
+        newPlan: teamPlanMonth,
         seats: 10,
         errors: { seats: { message: '' } },
       }
@@ -296,7 +294,7 @@ describe('TeamPlanController', () => {
         setFormValue,
         setSelectedPlan,
         register: vi.fn(),
-        newPlan: Plans.USERS_TEAMM,
+        newPlan: teamPlanMonth,
         seats: 12,
         errors: {
           seats: {
@@ -340,11 +338,9 @@ describe('TeamPlanController', () => {
           expect(setSelectedPlan).toHaveBeenCalledWith(
             expect.objectContaining({ value: Plans.USERS_PR_INAPPY })
           )
-          expect(setFormValue).toHaveBeenCalledWith(
-            'newPlan',
-            Plans.USERS_PR_INAPPY,
-            { shouldValidate: true }
-          )
+          expect(setFormValue).toHaveBeenCalledWith('newPlan', proPlanYear, {
+            shouldValidate: true,
+          })
         })
       })
     })
@@ -354,7 +350,7 @@ describe('TeamPlanController', () => {
         setFormValue: vi.fn(),
         setSelectedPlan: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_TEAMY,
+        newPlan: teamPlanYear,
         seats: 5,
         errors: { seats: { message: '' } },
       }

@@ -374,9 +374,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a basic plan', () => {
       const props = {
         setSelectedPlan: vi.fn(),
-        selectedPlan: {
-          value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<Plan>,
+        selectedPlan: proPlanYear,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_BASIC })
@@ -553,7 +551,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: Plans.USERS_PR_INAPPY,
+                value: proPlanYear.value,
               },
             })
           )
@@ -682,9 +680,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a pro plan monthly', () => {
       const props = {
         setSelectedPlan: vi.fn(),
-        selectedPlan: {
-          value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<Plan>,
+        selectedPlan: proPlanYear,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
@@ -985,9 +981,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a pro plan yearly', () => {
       const props = {
         setSelectedPlan: vi.fn(),
-        selectedPlan: {
-          value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<Plan>,
+        selectedPlan: proPlanYear,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
@@ -1312,9 +1306,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a sentry plan yearly', () => {
       const props = {
         setSelectedPlan: vi.fn(),
-        selectedPlan: {
-          value: Plans.USERS_SENTRYY,
-        } as NonNullable<Plan>,
+        selectedPlan: sentryPlanYear,
       }
       it('renders the organization and owner titles', async () => {
         setup({
@@ -1632,9 +1624,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a team plan yearly', () => {
       const props = {
         setSelectedPlan: vi.fn(),
-        selectedPlan: {
-          value: Plans.USERS_TEAMY,
-        } as NonNullable<Plan>,
+        selectedPlan: teamPlanYear,
       }
       it('renders the organization and owner titles', async () => {
         setup({

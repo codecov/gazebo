@@ -13,7 +13,7 @@ import OptionButton from 'ui/OptionButton'
 
 interface PlanDetailsControlsProps {
   setSelectedPlan: (x?: Plan) => void
-  setValue: (x: string, y?: string) => void
+  setValue: (x: string, y?: Plan) => void
   isSentryUpgrade: boolean
 }
 
@@ -43,10 +43,10 @@ const PlanDetailsControls: React.FC<PlanDetailsControlsProps> = ({
           onChange={({ text }) => {
             if (text === 'Pro') {
               setSelectedPlan(yearlyProPlan)
-              setValue('newPlan', yearlyProPlan?.value)
+              setValue('newPlan', yearlyProPlan)
             } else {
               setSelectedPlan(teamPlanYear)
-              setValue('newPlan', teamPlanYear?.value)
+              setValue('newPlan', teamPlanYear)
             }
             setOption(text)
           }}

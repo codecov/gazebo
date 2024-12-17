@@ -115,7 +115,7 @@ describe('getDefaultValuesUpgradeForm', () => {
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_PR_INAPPY,
+        newPlan: { value: Plans.USERS_PR_INAPPY },
         seats: 2,
       })
     })
@@ -132,7 +132,7 @@ describe('getDefaultValuesUpgradeForm', () => {
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_SENTRYY,
+        newPlan: { value: Plans.USERS_SENTRYY },
         seats: 5,
       })
     })
@@ -155,7 +155,7 @@ describe('getDefaultValuesUpgradeForm', () => {
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_TEAMM,
+        newPlan: { value: Plans.USERS_TEAMM },
         seats: 2,
       })
     })
@@ -172,7 +172,7 @@ describe('getDefaultValuesUpgradeForm', () => {
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_SENTRYY,
+        newPlan: { value: Plans.USERS_SENTRYY },
         seats: 5,
       })
     })
@@ -194,7 +194,11 @@ describe('getDefaultValuesUpgradeForm', () => {
     })
 
     expect(data).toStrictEqual({
-      newPlan: Plans.USERS_PR_INAPPM,
+      newPlan: {
+        value: Plans.USERS_PR_INAPPM,
+        billingRate: BillingRate.MONTHLY,
+        quantity: 2,
+      },
       seats: 2,
     })
   })
@@ -209,7 +213,7 @@ describe('getSchema', () => {
 
     const response = schema.safeParse({
       seats: 10,
-      newPlan: Plans.USERS_PR_INAPPY,
+      newPlan: { value: Plans.USERS_PR_INAPPY },
     })
     expect(response.success).toEqual(true)
     expect(response.error).toBeUndefined()
@@ -221,13 +225,13 @@ describe('getSchema', () => {
     } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
-    const response = schema.safeParse({ seats: 5, newPlan: 5 })
+    const response = schema.safeParse({ seats: 5, newPlan: { value: 5 } })
     expect(response.success).toEqual(false)
 
     const [issue] = response.error!.issues
     expect(issue).toEqual(
       expect.objectContaining({
-        message: 'Plan type is required to be a string',
+        message: 'Expected string, received number',
       })
     )
   })
@@ -298,7 +302,7 @@ describe('getSchema', () => {
 
     const response = schema.safeParse({
       seats: 10,
-      newPlan: Plans.USERS_PR_INAPPY,
+      newPlan: { value: Plans.USERS_PR_INAPPY },
     })
     expect(response.success).toEqual(true)
     expect(response.error).toBeUndefined()
@@ -347,7 +351,7 @@ describe('getSchema', () => {
 
       const response = schema.safeParse({
         seats: 9,
-        newPlan: Plans.USERS_TEAMY,
+        newPlan: { value: Plans.USERS_TEAMY },
       })
 
       expect(response.success).toEqual(true)
@@ -370,7 +374,7 @@ describe('getSchema', () => {
 
     const response = schema.safeParse({
       seats: 9,
-      newPlan: Plans.USERS_TEAMM,
+      newPlan: { value: Plans.USERS_TEAMM },
     })
 
     expect(response.success).toEqual(true)
@@ -583,7 +587,7 @@ describe('shouldRenderCancelLink', () => {
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_TEAMY,
+        newPlan: { value: Plans.USERS_TEAMY },
         seats: 2,
       })
     })
