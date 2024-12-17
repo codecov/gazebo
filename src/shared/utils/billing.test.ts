@@ -339,7 +339,7 @@ describe('findSentryPlans', () => {
         'Unlimited private repositories',
         'Priority Support',
       ],
-      trialDays: 14,
+      trialTotalDays: 14,
     }
 
     expect(sentryPlanMonth).toStrictEqual(expectedResult)
@@ -361,7 +361,7 @@ describe('findSentryPlans', () => {
         'Unlimited private repositories',
         'Priority Support',
       ],
-      trialDays: 14,
+      trialTotalDays: 14,
     }
 
     expect(sentryPlanYear).toStrictEqual(expectedResult)
@@ -429,7 +429,7 @@ describe('findTeamPlans', () => {
         '2500 repositories',
         'Patch coverage analysis',
       ],
-      trialDays: null,
+      trialTotalDays: null,
     }
 
     expect(teamPlanMonth).toStrictEqual(expectedResult)
@@ -451,7 +451,7 @@ describe('findTeamPlans', () => {
         '2500 repositories',
         'Patch coverage analysis',
       ],
-      trialDays: null,
+      trialTotalDays: null,
     }
 
     expect(teamPlanYear).toStrictEqual(expectedResult)

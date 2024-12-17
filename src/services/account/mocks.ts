@@ -51,6 +51,7 @@ export const accountDetailsObject = {
       'Priority Support',
     ],
     quantity: 20,
+    monthlyUploadLimit: null,
   },
   subscription_detail: {
     latest_invoice: {
@@ -165,6 +166,7 @@ export const accountDetailsParsedObj = {
       'Priority Support',
     ],
     quantity: 20,
+    monthlyUploadLimit: null,
   },
   subscriptionDetail: {
     latestInvoice: {
