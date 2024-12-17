@@ -184,7 +184,7 @@ interface UseTestResultsArgs {
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
     private: boolean | null
     planName: PlanName | null
-    isFreePlan: boolean | null
+    isFreePlan: boolean
     defaultBranch: string | null
     totalCount: number | null
     isFirstPullRequest: boolean | null
@@ -285,7 +285,7 @@ export const useInfiniteTestResults = ({
             0,
           private: data?.owner?.repository?.private ?? null,
           planName: data?.owner?.plan?.value ?? null,
-          isFreePlan: data?.owner?.plan?.isFreePlan ?? null,
+          isFreePlan: data?.owner?.plan?.isFreePlan ?? false,
           defaultBranch: data?.owner?.repository?.defaultBranch ?? null,
           isFirstPullRequest:
             data?.owner?.repository?.isFirstPullRequest ?? null,
@@ -310,7 +310,7 @@ export const useInfiniteTestResults = ({
       totalCount: data?.pages?.[0]?.totalCount ?? 0,
       private: data?.pages?.[0]?.private ?? null,
       planName: data?.pages?.[0]?.planName ?? null,
-      isFreePlan: data?.pages?.[0]?.isFreePlan ?? null,
+      isFreePlan: data?.pages?.[0]?.isFreePlan ?? false,
       defaultBranch: data?.pages?.[0]?.defaultBranch ?? null,
       isFirstPullRequest: data?.pages?.[0]?.isFirstPullRequest ?? null,
     },
