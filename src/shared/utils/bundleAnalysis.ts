@@ -83,3 +83,12 @@ export const findBundleMultiplier = (bytes: number) => {
 
   return GIGABYTE
 }
+
+export const SUPPORTED_FILE_PATH_PLUGINS = [
+  '@codecov/astro-plugin',
+  '@codecov/nextjs-webpack-plugin',
+  '@codecov/nuxt-plugin',
+  '@codecov/remix-vite-plugin',
+  '@codecov/solidstart-plugin',
+  '@codecov/sveltekit-plugin',
+]
