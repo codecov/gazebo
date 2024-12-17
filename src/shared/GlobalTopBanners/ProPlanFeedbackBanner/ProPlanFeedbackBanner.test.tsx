@@ -24,6 +24,7 @@ const mockTrialData = {
   hasPrivateRepos: true,
   plan: {
     isEnterprisePlan: false,
+    isFreePlan: false,
     baseUnitPrice: 10,
     benefits: [],
     billingRate: 'monthly',

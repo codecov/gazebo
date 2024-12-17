@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 
-import { isFreePlan, isSentryPlan } from 'shared/utils/billing'
+import { isSentryPlan } from 'shared/utils/billing'
 
 const SENTRY_PRICE = 29
 
 function PlanPricing({ plan, value, baseUnitPrice }) {
-  if (isFreePlan(value)) {
+  if (plan?.isFreePlan) {
     return <h2 className="text-2xl font-semibold">Free</h2>
   }
 

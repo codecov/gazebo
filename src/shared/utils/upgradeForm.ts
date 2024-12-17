@@ -11,7 +11,6 @@ import {
   findProPlans,
   findSentryPlans,
   findTeamPlans,
-  isFreePlan,
   isPaidPlan,
   isSentryPlan,
   isTeamPlan,
@@ -35,6 +34,7 @@ export function extractSeats({
   inactiveUserCount = 0,
   isSentryUpgrade,
   trialStatus,
+  isFreePlan,
 }: {
   quantity: number
   value?: PlanName
@@ -42,6 +42,7 @@ export function extractSeats({
   inactiveUserCount?: number
   isSentryUpgrade: boolean
   trialStatus?: TrialStatus
+  isFreePlan?: boolean
 }) {
   const totalMembers = inactiveUserCount + activatedUserCount
   const minPlansSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS_PRO
@@ -54,7 +55,7 @@ export function extractSeats({
     return minPlansSeats
   }
 
-  return isFreePlan(value) ? freePlanSeats : paidPlansSeats
+  return isFreePlan ? freePlanSeats : paidPlansSeats
 }
 
 export const getSchema = ({
@@ -140,13 +141,15 @@ export function shouldRenderCancelLink({
   cancelAtPeriodEnd,
   plan,
   trialStatus,
+  isFreePlan,
 }: {
   cancelAtPeriodEnd: boolean
   plan: Plan
   trialStatus: TrialStatus
+  isFreePlan: boolean
 }) {
   // cant cancel a free plan
-  if (isFreePlan(plan?.value)) {
+  if (isFreePlan) {
     return false
   }
 
@@ -214,12 +217,14 @@ export const getDefaultValuesUpgradeForm = ({
   trialStatus,
   selectedPlan,
   isEnterprisePlan,
+  isFreePlan,
 }: {
   accountDetails?: z.infer<typeof AccountDetailsSchema> | null
   plans?: Plan[] | null
   trialStatus?: TrialStatus
   selectedPlan?: Plan | null
   isEnterprisePlan?: boolean
+  isFreePlan?: boolean
 }) => {
   const currentPlan = accountDetails?.plan
   const currentPlanValue = currentPlan?.value
@@ -254,6 +259,7 @@ export const getDefaultValuesUpgradeForm = ({
     inactiveUserCount,
     trialStatus,
     isSentryUpgrade,
+    isFreePlan,
   })
 
   return {

@@ -102,6 +102,7 @@ describe('TrialReminder', () => {
                 trialStartDate,
                 trialEndDate,
                 value: planValue,
+                isFreePlan: planValue === Plans.USERS_BASIC,
               },
             },
           },

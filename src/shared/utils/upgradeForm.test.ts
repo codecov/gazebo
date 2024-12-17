@@ -386,6 +386,7 @@ describe('extractSeats', () => {
         isSentryUpgrade: true,
         activatedUserCount: 0,
         inactiveUserCount: 0,
+        isFreePlan: true,
       })
       expect(seats).toEqual(5)
     })
@@ -397,6 +398,7 @@ describe('extractSeats', () => {
         isSentryUpgrade: true,
         activatedUserCount: 10,
         inactiveUserCount: 2,
+        isFreePlan: true,
       })
       expect(seats).toEqual(12)
     })
@@ -410,6 +412,7 @@ describe('extractSeats', () => {
         isSentryUpgrade: false,
         activatedUserCount: 0,
         inactiveUserCount: 0,
+        isFreePlan: true,
       })
       expect(seats).toEqual(2)
     })
@@ -421,6 +424,7 @@ describe('extractSeats', () => {
         activatedUserCount: 10,
         inactiveUserCount: 2,
         isSentryUpgrade: false,
+        isFreePlan: true,
       })
       expect(seats).toEqual(12)
     })
@@ -434,6 +438,7 @@ describe('extractSeats', () => {
         activatedUserCount: 12,
         inactiveUserCount: 0,
         isSentryUpgrade: false,
+        isFreePlan: false,
       })
       expect(seats).toEqual(8)
     })
@@ -447,6 +452,7 @@ describe('extractSeats', () => {
         activatedUserCount: 12,
         inactiveUserCount: 0,
         isSentryUpgrade: false,
+        isFreePlan: false,
       })
       expect(seats).toEqual(8)
     })
@@ -460,6 +466,7 @@ describe('extractSeats', () => {
         activatedUserCount: 12,
         inactiveUserCount: 0,
         isSentryUpgrade: true,
+        isFreePlan: false,
       })
       expect(seats).toEqual(8)
     })
@@ -469,6 +476,7 @@ describe('extractSeats', () => {
         value: Plans.USERS_PR_INAPPM,
         quantity: 2,
         isSentryUpgrade: true,
+        isFreePlan: false,
       })
       expect(seats).toEqual(5)
     })
@@ -484,6 +492,7 @@ describe('extractSeats', () => {
           inactiveUserCount: 0,
           isSentryUpgrade: true,
           trialStatus: TrialStatuses.ONGOING,
+          isFreePlan: false,
         })
 
         expect(seats).toEqual(5)
@@ -499,6 +508,7 @@ describe('extractSeats', () => {
           inactiveUserCount: 0,
           isSentryUpgrade: false,
           trialStatus: TrialStatuses.ONGOING,
+          isFreePlan: false,
         })
 
         expect(seats).toEqual(2)
@@ -514,6 +524,7 @@ describe('shouldRenderCancelLink', () => {
       cancelAtPeriodEnd: false,
       plan: { value: Plans.USERS_PR_INAPPY } as Plan,
       trialStatus: TrialStatuses.NOT_STARTED,
+      isFreePlan: false,
     })
 
     expect(value).toBeTruthy()
@@ -526,6 +537,7 @@ describe('shouldRenderCancelLink', () => {
         cancelAtPeriodEnd: false,
         plan: { value: Plans.USERS_BASIC } as Plan,
         trialStatus: TrialStatuses.NOT_STARTED,
+        isFreePlan: true,
       })
 
       expect(cancelLinkResult).toBeFalsy()
@@ -539,6 +551,7 @@ describe('shouldRenderCancelLink', () => {
         cancelAtPeriodEnd: false,
         plan: { value: Plans.USERS_TRIAL } as Plan,
         trialStatus: TrialStatuses.ONGOING,
+        isFreePlan: false,
       })
 
       expect(cancelLinkResult).toBeFalsy()
@@ -552,6 +565,7 @@ describe('shouldRenderCancelLink', () => {
         cancelAtPeriodEnd: true,
         plan: { value: Plans.USERS_PR_INAPPY } as Plan,
         trialStatus: TrialStatuses.NOT_STARTED,
+        isFreePlan: false,
       })
 
       expect(cancelLinkResult).toBeFalsy()

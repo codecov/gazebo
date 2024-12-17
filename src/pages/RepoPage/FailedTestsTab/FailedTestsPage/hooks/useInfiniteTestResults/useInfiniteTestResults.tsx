@@ -65,6 +65,7 @@ const GetTestResultsSchema = z.object({
       plan: z
         .object({
           value: z.nativeEnum(Plans),
+          isFreePlan: z.boolean(),
         })
         .nullable(),
       repository: z.discriminatedUnion('__typename', [
@@ -111,6 +112,7 @@ query GetTestResults(
   owner(username: $owner) {
     plan {
       value
+      isFreePlan
     }
     repository: repository(name: $repo) {
       __typename
@@ -181,7 +183,8 @@ interface UseTestResultsArgs {
     testResults: TestResult[]
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
     private: boolean | null
-    plan: PlanName | null
+    planName: PlanName | null
+    isFreePlan: boolean
     defaultBranch: string | null
     totalCount: number | null
     isFirstPullRequest: boolean | null
@@ -281,7 +284,8 @@ export const useInfiniteTestResults = ({
             data?.owner?.repository?.testAnalytics?.testResults?.totalCount ??
             0,
           private: data?.owner?.repository?.private ?? null,
-          plan: data?.owner?.plan?.value ?? null,
+          planName: data?.owner?.plan?.value ?? null,
+          isFreePlan: data?.owner?.plan?.isFreePlan ?? false,
           defaultBranch: data?.owner?.repository?.defaultBranch ?? null,
           isFirstPullRequest:
             data?.owner?.repository?.isFirstPullRequest ?? null,
@@ -305,7 +309,8 @@ export const useInfiniteTestResults = ({
       testResults: memoedData,
       totalCount: data?.pages?.[0]?.totalCount ?? 0,
       private: data?.pages?.[0]?.private ?? null,
-      plan: data?.pages?.[0]?.plan ?? null,
+      planName: data?.pages?.[0]?.planName ?? null,
+      isFreePlan: data?.pages?.[0]?.isFreePlan ?? false,
       defaultBranch: data?.pages?.[0]?.defaultBranch ?? null,
       isFirstPullRequest: data?.pages?.[0]?.isFirstPullRequest ?? null,
     },

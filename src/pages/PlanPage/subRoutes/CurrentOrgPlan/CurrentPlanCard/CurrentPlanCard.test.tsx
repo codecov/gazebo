@@ -25,6 +25,7 @@ const proPlanDetails = {
     value: Plans.USERS_PR_INAPPM,
     billingRate: null,
     isEnterprisePlan: false,
+    isFreePlan: false,
   },
 }
 
@@ -40,6 +41,7 @@ const freePlanDetails = {
       'Unlimited private repositories',
     ],
     isEnterprisePlan: false,
+    isFreePlan: true,
   },
 }
 
@@ -55,6 +57,7 @@ const enterprisePlan = {
       'Unlimited private repositories',
     ],
     isEnterprisePlan: true,
+    isFreePlan: false,
   },
 }
 
@@ -70,6 +73,7 @@ const usesInvoiceTeamPlan = {
       'Unlimited private repositories',
     ],
     isEnterprisePlan: false,
+    isFreePlan: false,
   },
   usesInvoice: true,
 }
@@ -83,6 +87,7 @@ const trialPlanDetails = {
     quantity: 5,
     value: Plans.USERS_TRIAL,
     isEnterprisePlan: false,
+    isFreePlan: false,
   },
 }
 

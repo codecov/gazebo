@@ -35,13 +35,6 @@ export interface Plan {
   quantity?: number
 }
 
-export function isFreePlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true
-  }
-  return false
-}
-
 export function isTeamPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     if (plan === Plans.USERS_TEAMM || plan === Plans.USERS_TEAMY) return true

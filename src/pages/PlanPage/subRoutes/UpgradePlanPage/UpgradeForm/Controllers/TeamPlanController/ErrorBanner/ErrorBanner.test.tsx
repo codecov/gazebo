@@ -133,6 +133,7 @@ describe('ErrorBanner', () => {
           pretrialUsersCount: 0,
           planUserCount: 1,
           isEnterprisePlan: false,
+          isFreePlan: false,
         }
         if (planValue === Plans.USERS_BASIC) {
           return HttpResponse.json({

@@ -1,11 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, usePlanData } from 'services/account'
-import {
-  CollectionMethods,
-  isFreePlan,
-  isTrialPlan,
-} from 'shared/utils/billing'
+import { CollectionMethods, isTrialPlan } from 'shared/utils/billing'
 
 import EnterprisePlanCard from './EnterprisePlanCard'
 import FreePlanCard from './FreePlanCard'
@@ -23,7 +19,7 @@ function CurrentPlanCard() {
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   const collectionMethod = accountDetails?.subscriptionDetail?.collectionMethod
 
-  if (isFreePlan(planData?.plan?.value) || isTrialPlan(planData?.plan?.value)) {
+  if (planData?.plan?.isFreePlan || isTrialPlan(planData?.plan?.value)) {
     return (
       <FreePlanCard plan={planData?.plan} scheduledPhase={scheduledPhase} />
     )

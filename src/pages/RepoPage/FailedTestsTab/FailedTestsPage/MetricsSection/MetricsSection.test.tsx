@@ -19,6 +19,7 @@ const mockAggResponse = (
   owner: {
     plan: {
       value: planValue,
+      isFreePlan: planValue === Plans.USERS_BASIC,
     },
     repository: {
       __typename: 'Repository',

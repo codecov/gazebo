@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 import config from 'config'
 
 import { usePlanData } from 'services/account'
-import { isFreePlan } from 'shared/utils/billing'
 
 import ActivationRequiredAlert from './ActivationRequiredAlert'
 import ActivationRequiredSelfHosted from './ActivationRequiredSelfHosted'
@@ -24,13 +23,13 @@ function ActivationAlert() {
   })
 
   const renderFreePlanSeatsTakenAlert =
-    isFreePlan(planData?.plan?.value) && !planData?.plan?.hasSeatsLeft
+    planData?.plan?.isFreePlan && !planData?.plan?.hasSeatsLeft
 
   const renderPaidPlanSeatsTakenAlert =
-    !isFreePlan(planData?.plan?.value) && !planData?.plan?.hasSeatsLeft
+    !planData?.plan?.isFreePlan && !planData?.plan?.hasSeatsLeft
 
   const renderActivationRequiredAlert =
-    !isFreePlan(planData?.plan?.value) && planData?.plan?.hasSeatsLeft
+    !planData?.plan?.isFreePlan && planData?.plan?.hasSeatsLeft
 
   if (config.IS_SELF_HOSTED) {
     return <ActivationRequiredSelfHosted />
