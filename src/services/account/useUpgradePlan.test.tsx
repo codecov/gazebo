@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import type { MockInstance } from 'vitest'
 
-import { Plans } from 'shared/utils/billing'
+import { Plan, Plans } from 'shared/utils/billing'
 
 import { useUpgradePlan } from './useUpgradePlan'
 
@@ -112,7 +112,7 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: Plans.USERS_PR_INAPPY,
+          newPlan: { value: Plans.USERS_PR_INAPPY } as Plan,
         })
 
         await waitFor(() => {
@@ -143,7 +143,7 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: Plans.USERS_PR_INAPPY,
+          newPlan: { value: Plans.USERS_PR_INAPPY } as Plan,
         })
 
         await waitFor(() => expect(redirectToCheckout).not.toHaveBeenCalled())

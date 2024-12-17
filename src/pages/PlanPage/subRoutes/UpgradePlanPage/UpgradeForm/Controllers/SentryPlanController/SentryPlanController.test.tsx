@@ -228,7 +228,7 @@ describe('SentryPlanController', () => {
       const props = {
         setFormValue: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_SENTRYM,
+        newPlan: sentryPlanMonth,
         seats: 10,
         errors: { seats: { message: '' } },
       }
@@ -286,7 +286,7 @@ describe('SentryPlanController', () => {
       const props = {
         setFormValue: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_SENTRYY,
+        newPlan: sentryPlanYear,
         seats: 5,
         errors: { seats: { message: '' } },
       }
