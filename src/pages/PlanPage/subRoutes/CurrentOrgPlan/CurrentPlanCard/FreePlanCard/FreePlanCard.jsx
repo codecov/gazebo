@@ -76,7 +76,11 @@ function FreePlanCard({ plan, scheduledPhase }) {
           <div className="flex flex-col border-t pt-2 sm:border-0 sm:p-0">
             <p className="mb-2 text-xs font-semibold">Pricing</p>
             <div className="mb-4">
-              <PlanPricing value={planValue} baseUnitPrice={baseUnitPrice} />
+              <PlanPricing
+                plan={planData?.plan}
+                value={planValue}
+                baseUnitPrice={baseUnitPrice}
+              />
             </div>
             <div>
               {isNumber(uploadsNumber) && (

@@ -11,6 +11,7 @@ const mockTestResults = {
   owner: {
     plan: {
       value: Plans.USERS_ENTERPRISEM,
+      isFreePlan: false,
     },
     repository: {
       __typename: 'Repository',
@@ -82,6 +83,7 @@ const mockNotFoundError = {
     },
     plan: {
       value: Plans.USERS_ENTERPRISEM,
+      isFreePlan: false,
     },
   },
 }
@@ -90,6 +92,7 @@ const mockOwnerNotActivatedError = {
   owner: {
     plan: {
       value: Plans.USERS_ENTERPRISEM,
+      isFreePlan: false,
     },
     repository: {
       __typename: 'OwnerNotActivatedError',

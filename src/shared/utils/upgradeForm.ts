@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 import {
   AccountDetailsSchema,
+  IndividualPlanSchema,
   TrialStatus,
   TrialStatuses,
 } from 'services/account'
@@ -12,7 +13,6 @@ import {
   findProPlans,
   findSentryPlans,
   findTeamPlans,
-  isFreePlan,
   isSentryPlan,
   isTeamPlan,
   isTrialPlan,
@@ -35,6 +35,7 @@ export function extractSeats({
   inactiveUserCount = 0,
   isSentryUpgrade,
   trialStatus,
+  isFreePlan,
 }: {
   quantity: number
   value?: PlanName
@@ -42,6 +43,7 @@ export function extractSeats({
   inactiveUserCount?: number
   isSentryUpgrade: boolean
   trialStatus?: TrialStatus
+  isFreePlan?: boolean
 }) {
   const totalMembers = inactiveUserCount + activatedUserCount
   const minPlansSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS_PRO
@@ -54,7 +56,7 @@ export function extractSeats({
     return minPlansSeats
   }
 
-  return isFreePlan(value) ? freePlanSeats : paidPlansSeats
+  return isFreePlan ? freePlanSeats : paidPlansSeats
 }
 
 export const getSchema = ({
@@ -139,13 +141,15 @@ export function shouldRenderCancelLink({
   cancelAtPeriodEnd,
   plan,
   trialStatus,
+  isFreePlan,
 }: {
   cancelAtPeriodEnd: boolean
   plan: Plan
   trialStatus: TrialStatus
+  isFreePlan: boolean
 }) {
   // cant cancel a free plan
-  if (isFreePlan(plan?.value)) {
+  if (isFreePlan) {
     return false
   }
 
@@ -213,12 +217,14 @@ export const getDefaultValuesUpgradeForm = ({
   trialStatus,
   selectedPlan,
   isEnterprisePlan,
+  isFreePlan,
 }: {
   accountDetails?: z.infer<typeof AccountDetailsSchema> | null
-  plans?: Plan[] | null
+  plans?: z.infer<typeof IndividualPlanSchema>[] | null
   trialStatus?: TrialStatus
   selectedPlan?: Plan
   isEnterprisePlan?: boolean
+  isFreePlan?: boolean
 }) => {
   const currentPlan = accountDetails?.plan
   const quantity = currentPlan?.quantity ?? 0
@@ -257,6 +263,7 @@ export const getDefaultValuesUpgradeForm = ({
     inactiveUserCount,
     trialStatus,
     isSentryUpgrade,
+    isFreePlan,
   })
 
   return {

@@ -12,7 +12,6 @@ import {
   findProPlans,
   findSentryPlans,
   findTeamPlans,
-  isFreePlan,
   isTeamPlan,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
@@ -61,10 +60,10 @@ function UpgradePlanPage() {
     setCrumbs([
       {
         pageName: 'upgradeOrgPlan',
-        text: isFreePlan(plan?.value) ? 'Upgrade plan' : 'Manage plan',
+        text: planData?.plan?.isFreePlan ? 'Upgrade plan' : 'Manage plan',
       },
     ])
-  }, [setCrumbs, plan?.value])
+  }, [setCrumbs, planData?.plan?.isFreePlan])
 
   // redirect right away if the user is on an enterprise plan
   if (planData?.plan?.isEnterprisePlan) {

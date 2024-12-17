@@ -4,7 +4,7 @@ import { z } from 'zod'
 import Api from 'shared/api'
 import { BillingRate, Plans } from 'shared/utils/billing'
 
-const IndividualPlanSchema = z.object({
+export const IndividualPlanSchema = z.object({
   baseUnitPrice: z.number(),
   benefits: z.array(z.string()),
   billingRate: z.nativeEnum(BillingRate).nullish(),

@@ -31,6 +31,7 @@ const mockPlanDataResponse = {
   monthlyUploadLimit: 341,
   value: Plans.USERS_PR_INAPPM,
   isEnterprisePlan: false,
+  isFreePlan: false,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',

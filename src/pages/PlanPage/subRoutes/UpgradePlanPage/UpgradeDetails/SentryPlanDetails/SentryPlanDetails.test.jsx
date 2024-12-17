@@ -167,7 +167,6 @@ describe('SentryPlanDetails', () => {
       isProPlan = false,
     } = {
       isOngoingTrial: false,
-      isSentryPlan: false,
       hasUserCanceledAtPeriodEnd: false,
       isProPlan: false,
     }
@@ -180,6 +179,7 @@ describe('SentryPlanDetails', () => {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
+                isFreePlan: !isProPlan,
                 trialStatus: isOngoingTrial
                   ? TrialStatuses.ONGOING
                   : TrialStatuses.CANNOT_TRIAL,

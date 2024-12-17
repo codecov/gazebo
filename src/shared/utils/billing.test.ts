@@ -1,4 +1,7 @@
 import { renderHook } from '@testing-library/react'
+import { z } from 'zod'
+
+import { IndividualPlanSchema } from 'services/account'
 
 import {
   BillingRate,
@@ -11,13 +14,11 @@ import {
   getNextBillingDate,
   isBasicPlan,
   isCodecovProPlan,
-  isFreePlan,
   isProPlan,
   isSentryPlan,
   isTeamPlan,
   isTrialPlan,
   lastTwoDigits,
-  Plan,
   Plans,
   shouldDisplayTeamCard,
   useProPlans,
@@ -113,7 +114,7 @@ function getPlans() {
         'Unlimited private repositories',
         'Priority Support',
       ],
-      trialDays: 14,
+      trialTotalDays: 14,
     },
     {
       marketingName: 'Sentry Pro Team',
@@ -127,7 +128,7 @@ function getPlans() {
         'Unlimited private repositories',
         'Priority Support',
       ],
-      trialDays: 14,
+      trialTotalDays: 14,
     },
     {
       marketingName: 'Team',
@@ -141,7 +142,7 @@ function getPlans() {
         '2500 repositories',
         'Patch coverage analysis',
       ],
-      trialDays: null,
+      trialTotalDays: null,
     },
     {
       marketingName: 'Team',
@@ -155,27 +156,10 @@ function getPlans() {
         '2500 repositories',
         'Patch coverage analysis',
       ],
-      trialDays: null,
+      trialTotalDays: null,
     },
   ]
 }
-
-describe('isFreePlan', () => {
-  it('supports old free plan', () => {
-    expect(isFreePlan('users-free')).toBe(true)
-    expect(isFreePlan(Plans.USERS_FREE)).toBe(true)
-  })
-
-  it('supports new basic plan', () => {
-    expect(isFreePlan('users-basic')).toBe(true)
-    expect(isFreePlan(Plans.USERS_BASIC)).toBe(true)
-  })
-
-  it('Defaults to false otherwise', () => {
-    expect(isFreePlan('users-inappy')).toBe(false)
-    expect(isFreePlan(undefined)).toBe(false)
-  })
-})
 
 describe('shouldDisplayTeamCard', () => {
   it('returns true if the availablePlans list includes team plans', () => {
@@ -478,7 +462,9 @@ describe('canApplySentryUpgrade', () => {
   it('returns true when list contains monthly plan', () => {
     const result = canApplySentryUpgrade({
       isEnterprisePlan: false,
-      plans: [{ value: Plans.USERS_SENTRYM }] as Plan[],
+      plans: [{ value: Plans.USERS_SENTRYM }] as z.infer<
+        typeof IndividualPlanSchema
+      >[],
     })
 
     expect(result).toBeTruthy()
@@ -487,7 +473,9 @@ describe('canApplySentryUpgrade', () => {
   it('returns true when list contains annual plan', () => {
     const result = canApplySentryUpgrade({
       isEnterprisePlan: false,
-      plans: [{ value: Plans.USERS_SENTRYY }] as Plan[],
+      plans: [{ value: Plans.USERS_SENTRYY }] as z.infer<
+        typeof IndividualPlanSchema
+      >[],
     })
 
     expect(result).toBeTruthy()
@@ -495,7 +483,9 @@ describe('canApplySentryUpgrade', () => {
 
   it('returns false when plans are not in list', () => {
     const result = canApplySentryUpgrade({
-      plans: [{ value: Plans.USERS_FREE }] as Plan[],
+      plans: [{ value: Plans.USERS_FREE }] as z.infer<
+        typeof IndividualPlanSchema
+      >[],
     })
 
     expect(result).toBeFalsy()
@@ -504,7 +494,9 @@ describe('canApplySentryUpgrade', () => {
   it('returns false when user has enterprise plan', () => {
     const result = canApplySentryUpgrade({
       isEnterprisePlan: true,
-      plans: [{ value: Plans.USERS_SENTRYY }] as Plan[],
+      plans: [{ value: Plans.USERS_SENTRYY }] as z.infer<
+        typeof IndividualPlanSchema
+      >[],
     })
 
     expect(result).toBeFalsy()

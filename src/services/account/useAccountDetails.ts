@@ -119,7 +119,7 @@ export const PlanSchema = z
     benefits: z.array(z.string()),
     billingRate: z.nativeEnum(BillingRate).nullish(),
     marketingName: z.string(),
-    monthlyUploadLimit: z.number().nullish(),
+    monthlyUploadLimit: z.number().nullable(),
     quantity: z.number().nullish(),
     value: z.nativeEnum(Plans),
     trialDays: z.number().nullish(),

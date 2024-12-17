@@ -3,7 +3,7 @@ import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import Card from 'old_ui/Card'
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails, usePlanData } from 'services/account'
 import Icon from 'ui/Icon'
 
 import CancelButton from './CancelButton'
@@ -13,6 +13,7 @@ import { useSetCrumbs } from '../../../../context'
 function DowngradePlan() {
   const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: planData } = usePlanData({ provider, owner })
   const setCrumbs = useSetCrumbs()
 
   useLayoutEffect(() => {
@@ -68,7 +69,7 @@ function DowngradePlan() {
           {/* This is a weird component that is both a button and a modal, hence why it's imported this way. Defs not a good practice but I feel the overhaul of this component will be for another time */}
           <CancelButton
             customerId={accountDetails?.subscriptionDetail?.customer?.id}
-            planCost={accountDetails?.plan?.value}
+            isFreePlan={planData?.plan?.isFreePlan}
             upComingCancellation={
               accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
             }

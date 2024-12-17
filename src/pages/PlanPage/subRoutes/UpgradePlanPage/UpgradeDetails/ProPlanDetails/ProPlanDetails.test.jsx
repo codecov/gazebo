@@ -186,6 +186,7 @@ describe('ProPlanDetails', () => {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
+                isFreePlan: !isProPlan && !isSentryPlan,
                 trialStatus: isOngoingTrial
                   ? TrialStatuses.ONGOING
                   : TrialStatuses.CANNOT_TRIAL,

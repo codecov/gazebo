@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { http, HttpResponse } from 'msw'
+import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -57,6 +57,11 @@ describe('DowngradePlan', () => {
     server.use(
       http.all('/internal/gh/codecov/account-details', () => {
         return HttpResponse.json(mockAccountDetails)
+      }),
+      graphql.query('GetPlanData', () => {
+        return HttpResponse.json({
+          data: { plan: { isFreePlan: true } },
+        })
       })
     )
   }

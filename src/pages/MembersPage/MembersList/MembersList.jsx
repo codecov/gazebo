@@ -1,10 +1,9 @@
 import { lazy, Suspense, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { usePlanData } from 'services/account'
 import { ApiFilterEnum, useLocationParams } from 'services/navigation'
 import { useUpdateUser } from 'services/users'
-import { isFreePlan } from 'shared/utils/billing'
 import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
@@ -40,11 +39,11 @@ function useActivateUser({ provider, owner }) {
   return { activate, ...rest }
 }
 
-const handleActivate = (accountDetails, activate, setIsOpen) => (user) => {
+const handleActivate = (planData, activate, setIsOpen) => (user) => {
   if (
-    accountDetails?.activatedUserCount >= accountDetails?.plan?.quantity &&
+    !planData?.plan?.hasSeatsLeft &&
     !user.activated &&
-    isFreePlan(accountDetails?.plan?.value)
+    planData?.plan?.isFreePlan
   ) {
     setIsOpen(true)
   } else {
@@ -63,7 +62,7 @@ function MembersList() {
   })
 
   const { activate } = useActivateUser({ owner, provider })
-  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const { data: planData } = usePlanData({ owner, provider })
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -115,7 +114,7 @@ function MembersList() {
         }
       >
         <MembersTable
-          handleActivate={handleActivate(accountDetails, activate, setIsOpen)}
+          handleActivate={handleActivate(planData, activate, setIsOpen)}
           params={params}
         />
       </Suspense>

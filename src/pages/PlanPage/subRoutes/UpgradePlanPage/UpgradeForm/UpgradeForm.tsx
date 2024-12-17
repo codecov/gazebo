@@ -45,7 +45,6 @@ export type UpgradeFormFields = {
 function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const currentPlan = accountDetails?.plan
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
   const { upgradePlan } = useUpgradeControls()
@@ -73,6 +72,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
       trialStatus,
       selectedPlan,
       isEnterprisePlan: planData?.plan?.isEnterprisePlan,
+      isFreePlan: planData?.plan?.isFreePlan,
     }),
     resolver: zodResolver(
       getSchema({
@@ -116,7 +116,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         errors={errors}
       />
       <UpdateBlurb
-        currentPlan={currentPlan}
+        currentPlan={planData?.plan}
         newPlan={newPlan}
         seats={Number(seats)}
         nextBillingDate={getNextBillingDate(accountDetails)!}

@@ -1,11 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { http, HttpResponse } from 'msw'
+import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
 import { BillingRate, Plan, Plans } from 'shared/utils/billing'
 
 import UpdateButton from './UpdateButton'
@@ -21,7 +22,7 @@ const freePlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
-}
+} as Plan
 
 const proPlanMonthly = {
   marketingName: 'Pro',
@@ -35,7 +36,7 @@ const proPlanMonthly = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
-}
+} as Plan
 
 const proPlanYearly = {
   marketingName: 'Pro',
@@ -49,7 +50,7 @@ const proPlanYearly = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
-}
+} as Plan
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -79,25 +80,40 @@ afterAll(() => {
   server.close()
 })
 
-const mockAccountDetailsBasic = {
-  plan: {
-    value: Plans.USERS_BASIC,
-    quantity: 1,
-  },
+const mockPlanBasic = {
+  value: Plans.USERS_BASIC,
+  baseUnitPrice: 4,
+  benefits: ['Up to 10 users'],
+  billingRate: 'annually',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  hasSeatsLeft: true,
+  planUserCount: 1,
+  isFreePlan: true,
 }
 
-const mockAccountDetailsProMonthly = {
-  plan: {
-    value: Plans.USERS_PR_INAPPM,
-    quantity: 4,
-  },
+const mockPlanProMonthly = {
+  value: Plans.USERS_PR_INAPPM,
+  baseUnitPrice: 4,
+  benefits: ['Up to 10 users'],
+  billingRate: 'annually',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  hasSeatsLeft: true,
+  planUserCount: 4,
+  isFreePlan: false,
 }
 
-const mockAccountDetailsTeamMonthly = {
-  plan: {
-    value: Plans.USERS_TEAMM,
-    quantity: 3,
-  },
+const mockPlanTeamMonthly = {
+  value: Plans.USERS_TEAMM,
+  baseUnitPrice: 4,
+  benefits: ['Up to 10 users'],
+  billingRate: 'annually',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  hasSeatsLeft: true,
+  planUserCount: 3,
+  isFreePlan: false,
 }
 
 interface SetupArgs {
@@ -111,13 +127,45 @@ describe('UpdateButton', () => {
     }
   ) {
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, () => {
+      graphql.query(`GetPlanData`, () => {
+        const planChunk = {
+          trialStatus: TrialStatuses.NOT_STARTED,
+          trialStartDate: '',
+          trialEndDate: '',
+          trialTotalDays: 0,
+          pretrialUsersCount: 0,
+          isEnterprisePlan: false,
+        }
         if (planValue.value === Plans.USERS_BASIC) {
-          return HttpResponse.json(mockAccountDetailsBasic)
+          return HttpResponse.json({
+            data: {
+              owner: {
+                hasPrivateRepos: false,
+                plan: { ...mockPlanBasic, ...planChunk },
+              },
+            },
+          })
         } else if (planValue.value === Plans.USERS_TEAMM) {
-          return HttpResponse.json(mockAccountDetailsTeamMonthly)
+          return HttpResponse.json({
+            data: {
+              owner: {
+                hasPrivateRepos: false,
+                plan: {
+                  ...mockPlanTeamMonthly,
+                  ...planChunk,
+                },
+              },
+            },
+          })
         } else {
-          return HttpResponse.json(mockAccountDetailsProMonthly)
+          return HttpResponse.json({
+            data: {
+              owner: {
+                hasPrivateRepos: false,
+                plan: { ...mockPlanProMonthly, ...planChunk },
+              },
+            },
+          })
         }
       })
     )

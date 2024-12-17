@@ -5,7 +5,6 @@ import config from 'config'
 
 import { TrialStatuses, usePlanData } from 'services/account'
 import { useOwner } from 'services/user'
-import { isFreePlan } from 'shared/utils/billing'
 import A from 'ui/A/A'
 
 const determineTrialStates = ({
@@ -50,8 +49,6 @@ const TrialReminder: React.FC = () => {
     },
   })
 
-  const planValue = planData?.plan?.value
-
   const { trialNotStarted, trialOngoing, trialExpired, cannotTrial } =
     determineTrialStates({
       trialStatus: planData?.plan?.trialStatus,
@@ -61,7 +58,7 @@ const TrialReminder: React.FC = () => {
     trialEndDate: planData?.plan?.trialEndDate,
   })
   if (
-    (!isFreePlan(planValue) && !trialOngoing) ||
+    (!planData?.plan?.isFreePlan && !trialOngoing) ||
     cannotTrial ||
     !ownerData?.isCurrentUserPartOfOrg ||
     config.IS_SELF_HOSTED
@@ -94,7 +91,7 @@ const TrialReminder: React.FC = () => {
     )
   }
 
-  if (trialExpired && isFreePlan(planValue)) {
+  if (trialExpired && planData?.plan?.isFreePlan) {
     return (
       <div className="flex items-center font-semibold">
         {/* this is required because the A component has this random `[x: string]: any` record type on it */}

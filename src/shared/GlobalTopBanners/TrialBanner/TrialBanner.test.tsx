@@ -31,6 +31,7 @@ const proPlanMonth = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   isEnterprisePlan: false,
+  isFreePlan: false,
 }
 
 const trialPlan = {
@@ -49,6 +50,7 @@ const trialPlan = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   isEnterprisePlan: false,
+  isFreePlan: false,
 }
 
 const basicPlan = {
@@ -66,6 +68,7 @@ const basicPlan = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  isFreePlan: true,
 }
 
 const queryClient = new QueryClient()
@@ -153,6 +156,7 @@ describe('TrialBanner', () => {
                 planUserCount: plan.planUserCount,
                 hasSeatsLeft: true,
                 isEnterprisePlan: plan.isEnterprisePlan,
+                isFreePlan: plan.isFreePlan,
               },
             },
           },

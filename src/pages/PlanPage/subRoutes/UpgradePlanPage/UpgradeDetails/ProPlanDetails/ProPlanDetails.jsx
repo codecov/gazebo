@@ -53,7 +53,12 @@ function ProPlanDetails() {
         {scheduledPhase && (
           <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
         )}
-        {shouldRenderCancelLink({ cancelAtPeriodEnd, plan, trialStatus }) && (
+        {shouldRenderCancelLink({
+          cancelAtPeriodEnd,
+          plan,
+          trialStatus,
+          isFreePlan: planData?.plan?.isFreePlan,
+        }) && (
           <A
             to={{ pageName: 'cancelOrgPlan' }}
             variant="black"

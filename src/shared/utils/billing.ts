@@ -4,7 +4,11 @@ import isString from 'lodash/isString'
 import isUndefined from 'lodash/isUndefined'
 import { z } from 'zod'
 
-import { AccountDetailsSchema } from 'services/account'
+import {
+  AccountDetailsSchema,
+  IndividualPlanSchema,
+  TrialStatus,
+} from 'services/account'
 
 export const Plans = {
   USERS: 'users',
@@ -38,13 +42,14 @@ export interface Plan {
   value: PlanName
   monthlyUploadLimit?: number | null
   quantity?: number | null
-}
-
-export function isFreePlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true
-  }
-  return false
+  trialEndDate: string | null
+  trialStatus: TrialStatus
+  trialStartDate: string | null
+  trialTotalDays: number | null
+  planUserCount: number | null
+  hasSeatsLeft: boolean
+  isEnterprisePlan: boolean
+  isFreePlan: boolean
 }
 
 export function isTeamPlan(plan?: PlanName | null) {
@@ -94,7 +99,11 @@ export const CollectionMethods = Object.freeze({
   AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
 })
 
-export function useProPlans({ plans }: { plans?: Plan[] | null }) {
+export function useProPlans({
+  plans,
+}: {
+  plans?: z.infer<typeof IndividualPlanSchema>[] | null
+}) {
   const proPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_PR_INAPPM
   )
@@ -109,7 +118,11 @@ export function useProPlans({ plans }: { plans?: Plan[] | null }) {
   }
 }
 
-export const findProPlans = ({ plans }: { plans?: Plan[] | null }) => {
+export const findProPlans = ({
+  plans,
+}: {
+  plans?: z.infer<typeof IndividualPlanSchema>[] | null
+}) => {
   const proPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_PR_INAPPM
   )
@@ -123,7 +136,11 @@ export const findProPlans = ({ plans }: { plans?: Plan[] | null }) => {
   }
 }
 
-export const findSentryPlans = ({ plans }: { plans?: Plan[] | null }) => {
+export const findSentryPlans = ({
+  plans,
+}: {
+  plans?: z.infer<typeof IndividualPlanSchema>[] | null
+}) => {
   const sentryPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_SENTRYM
   )
@@ -137,7 +154,11 @@ export const findSentryPlans = ({ plans }: { plans?: Plan[] | null }) => {
   }
 }
 
-export const findTeamPlans = ({ plans }: { plans?: Plan[] | null }) => {
+export const findTeamPlans = ({
+  plans,
+}: {
+  plans?: z.infer<typeof IndividualPlanSchema>[] | null
+}) => {
   const teamPlanMonth = plans?.find((plan) => plan.value === Plans.USERS_TEAMM)
   const teamPlanYear = plans?.find((plan) => plan.value === Plans.USERS_TEAMY)
 
@@ -152,7 +173,7 @@ export const canApplySentryUpgrade = ({
   plans,
 }: {
   isEnterprisePlan?: boolean
-  plans?: Plan[] | null
+  plans?: z.infer<typeof IndividualPlanSchema>[] | null
 }) => {
   if (isEnterprisePlan || !isArray(plans)) {
     return false
@@ -164,7 +185,11 @@ export const canApplySentryUpgrade = ({
   )
 }
 
-export const shouldDisplayTeamCard = ({ plans }: { plans?: Plan[] | null }) => {
+export const shouldDisplayTeamCard = ({
+  plans,
+}: {
+  plans?: z.infer<typeof IndividualPlanSchema>[] | null
+}) => {
   const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
 
   return !isUndefined(teamPlanMonth) && !isUndefined(teamPlanYear)

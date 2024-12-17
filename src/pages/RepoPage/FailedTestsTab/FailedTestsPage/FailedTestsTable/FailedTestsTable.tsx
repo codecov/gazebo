@@ -15,7 +15,7 @@ import { useInView } from 'react-intersection-observer'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
-import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
+import { isTeamPlan } from 'shared/utils/billing'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -230,7 +230,7 @@ const FailedTestsTable = () => {
 
   const isDefaultBranch = testData?.defaultBranch === branch
   const isTeamOrFreePlan =
-    isTeamPlan(testData?.plan) || isFreePlan(testData?.plan)
+    isTeamPlan(testData?.planName) || testData?.isFreePlan
   // Only show flake rate column when on default branch for pro / enterprise plans or public repos
   const hideFlakeRate =
     (isTeamOrFreePlan && testData?.private) || (!!branch && !isDefaultBranch)

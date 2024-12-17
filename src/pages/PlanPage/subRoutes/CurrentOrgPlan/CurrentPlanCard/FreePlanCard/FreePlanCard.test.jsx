@@ -125,6 +125,8 @@ const freePlan = {
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', '250 free uploads'],
   monthlyUploadLimit: null,
+  isFreePlan: true,
+  isEnterprisePlan: false,
 }
 
 const scheduledPhase = {
@@ -196,29 +198,17 @@ const wrapper = ({ children }) => (
 )
 
 describe('FreePlanCard', () => {
-  function setup(
-    {
-      owner = {
-        username: 'codecov',
-        isCurrentUserPartOfOrg: true,
-        numberOfUploads: 10,
-      },
-      plans = allPlans,
-      trialStatus = TrialStatuses.CANNOT_TRIAL,
-      planValue = Plans.USERS_BASIC,
-      planUserCount = 1,
-    } = {
-      owner: {
-        username: 'codecov',
-        isCurrentUserPartOfOrg: true,
-        numberOfUploads: 10,
-      },
-      trialStatus: TrialStatuses.CANNOT_TRIAL,
-      planValue: Plans.USERS_BASIC,
-      plans: allPlans,
-      planUserCount: 1,
-    }
-  ) {
+  function setup({
+    owner = {
+      username: 'codecov',
+      isCurrentUserPartOfOrg: true,
+      numberOfUploads: 10,
+    },
+    plans = allPlans,
+    trialStatus = TrialStatuses.CANNOT_TRIAL,
+    planValue = Plans.USERS_BASIC,
+    planUserCount = 1,
+  }) {
     server.use(
       graphql.query('PlanPageData', () => {
         return HttpResponse.json({ data: { owner } })
@@ -233,6 +223,7 @@ describe('FreePlanCard', () => {
                 trialStatus,
                 value: planValue,
                 planUserCount,
+                isFreePlan: planValue === Plans.USERS_BASIC,
               },
               pretrialPlan: mockPreTrialPlanInfo,
             },
@@ -252,7 +243,7 @@ describe('FreePlanCard', () => {
 
   describe('rendering component', () => {
     it('renders the plan marketing name', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} scheduledPhase={scheduledPhase} />, {
         wrapper,
@@ -263,7 +254,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the benefits', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -274,7 +265,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the scheduled phase', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} scheduledPhase={scheduledPhase} />, {
         wrapper,
@@ -285,20 +276,20 @@ describe('FreePlanCard', () => {
     })
 
     it('renders actions billing button', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
 
-      const link = await screen.findByRole('link', { name: /Manage plan/ })
+      const link = await screen.findByRole('link', { name: /Upgrade/ })
 
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
     })
 
     it('renders the help message', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -311,7 +302,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders number of uploads', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -324,7 +315,7 @@ describe('FreePlanCard', () => {
     })
 
     it('does not render team plan card if not trialing', () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -335,7 +326,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the expected price details for pro team billing', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
