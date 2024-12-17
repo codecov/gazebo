@@ -78,7 +78,7 @@ describe('UpdateBlurb', () => {
     it('does not render anything', async () => {
       render(
         <UpdateBlurb
-          newPlan={{ ...teamPlanMonth, ...planChunk, planUserCount: 10 }}
+          newPlan={teamPlanMonth}
           currentPlan={{ ...teamPlanMonth, ...planChunk, planUserCount: 10 }}
           nextBillingDate={'July 12th, 2024'}
           seats={10}
@@ -97,7 +97,7 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            newPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            newPlan={teamPlanYear}
             currentPlan={{ ...freePlan, ...planChunk, isFreePlan: true }}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
@@ -130,7 +130,7 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            newPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            newPlan={teamPlanYear}
             currentPlan={{ ...teamPlanMonth, ...planChunk, planUserCount: 10 }}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
@@ -156,7 +156,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={{ ...proPlanYear, ...planChunk, planUserCount: 10 }}
-            newPlan={{ ...proPlanYear, ...planChunk, planUserCount: 11 }}
+            newPlan={proPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={11}
           />,
@@ -181,7 +181,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
-            newPlan={{ ...proPlanYear, ...planChunk, planUserCount: 10 }}
+            newPlan={proPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,
@@ -207,7 +207,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
-            newPlan={{ ...teamPlanMonth, ...planChunk, planUserCount: 10 }}
+            newPlan={teamPlanMonth}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,
@@ -232,7 +232,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
-            newPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 9 }}
+            newPlan={teamPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={9}
           />,
@@ -257,7 +257,7 @@ describe('UpdateBlurb', () => {
         render(
           <UpdateBlurb
             currentPlan={{ ...proPlanYear, ...planChunk, planUserCount: 10 }}
-            newPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            newPlan={teamPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,

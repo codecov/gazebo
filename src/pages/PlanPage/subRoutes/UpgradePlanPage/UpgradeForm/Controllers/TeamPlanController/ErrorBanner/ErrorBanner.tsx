@@ -1,12 +1,16 @@
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
+import { z } from 'zod'
 
-import { useAvailablePlans, usePlanData } from 'services/account'
+import {
+  IndividualPlanSchema,
+  useAvailablePlans,
+  usePlanData,
+} from 'services/account'
 import {
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
-  Plan,
 } from 'shared/utils/billing'
 import { UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE } from 'shared/utils/upgradeForm'
 
@@ -21,7 +25,7 @@ interface Errors {
 interface ErrorBannerProps {
   errors: Errors
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (plan?: Plan) => void
+  setSelectedPlan: (plan?: z.infer<typeof IndividualPlanSchema>) => void
 }
 
 export default function ErrorBanner({

@@ -5,9 +5,10 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { z } from 'zod'
 
-import { TrialStatuses } from 'services/account'
-import { BillingRate, Plan, Plans } from 'shared/utils/billing'
+import { IndividualPlanSchema, TrialStatuses } from 'services/account'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import UpdateButton from './UpdateButton'
 
@@ -22,7 +23,7 @@ const freePlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
-} as Plan
+}
 
 const proPlanMonthly = {
   marketingName: 'Pro',
@@ -36,7 +37,7 @@ const proPlanMonthly = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
-} as Plan
+}
 
 const proPlanYearly = {
   marketingName: 'Pro',
@@ -50,7 +51,7 @@ const proPlanYearly = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
-} as Plan
+}
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -117,7 +118,7 @@ const mockPlanTeamMonthly = {
 }
 
 interface SetupArgs {
-  planValue: Plan
+  planValue: z.infer<typeof IndividualPlanSchema>
 }
 
 describe('UpdateButton', () => {

@@ -4,9 +4,11 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import type { MockInstance } from 'vitest'
+import { z } from 'zod'
 
-import { Plan, Plans } from 'shared/utils/billing'
+import { Plans } from 'shared/utils/billing'
 
+import { IndividualPlanSchema } from './useAvailablePlans'
 import { useUpgradePlan } from './useUpgradePlan'
 
 const mocks = vi.hoisted(() => ({
@@ -112,7 +114,9 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: { value: Plans.USERS_PR_INAPPY } as Plan,
+          newPlan: { value: Plans.USERS_PR_INAPPY } as z.infer<
+            typeof IndividualPlanSchema
+          >,
         })
 
         await waitFor(() => {
@@ -143,7 +147,9 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: { value: Plans.USERS_PR_INAPPY } as Plan,
+          newPlan: { value: Plans.USERS_PR_INAPPY } as z.infer<
+            typeof IndividualPlanSchema
+          >,
         })
 
         await waitFor(() => expect(redirectToCheckout).not.toHaveBeenCalled())

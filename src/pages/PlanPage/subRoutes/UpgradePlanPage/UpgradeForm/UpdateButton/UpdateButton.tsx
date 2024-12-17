@@ -1,14 +1,14 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
+import { z } from 'zod'
 
-import { usePlanData } from 'services/account'
-import { Plan } from 'shared/utils/billing'
+import { IndividualPlanSchema, usePlanData } from 'services/account'
 import Button from 'ui/Button'
 
 interface BillingControlsProps {
   seats: number
   isValid: boolean
-  newPlan?: Plan
+  newPlan?: z.infer<typeof IndividualPlanSchema>
 }
 
 const UpdateButton: React.FC<BillingControlsProps> = ({

@@ -68,7 +68,7 @@ export const getSchema = ({
   accountDetails?: z.infer<typeof AccountDetailsSchema>
   minSeats?: number
   trialStatus?: TrialStatus
-  selectedPlan?: Plan
+  selectedPlan?: z.infer<typeof IndividualPlanSchema>
 }) =>
   z.object({
     seats: z.coerce
@@ -222,7 +222,7 @@ export const getDefaultValuesUpgradeForm = ({
   accountDetails?: z.infer<typeof AccountDetailsSchema> | null
   plans?: z.infer<typeof IndividualPlanSchema>[] | null
   trialStatus?: TrialStatus
-  selectedPlan?: Plan
+  selectedPlan?: z.infer<typeof IndividualPlanSchema>
   isEnterprisePlan?: boolean
   isFreePlan?: boolean
 }) => {

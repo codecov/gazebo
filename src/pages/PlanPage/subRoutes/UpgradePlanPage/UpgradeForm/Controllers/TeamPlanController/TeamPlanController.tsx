@@ -1,6 +1,7 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
+import { z } from 'zod'
 
-import { Plan } from 'shared/utils/billing'
+import { IndividualPlanSchema } from 'services/account'
 import {
   MIN_NB_SEATS_PRO,
   TEAM_PLAN_MAX_ACTIVE_USERS,
@@ -22,10 +23,10 @@ interface Errors {
 
 interface PlanControllerProps {
   seats: number
-  newPlan?: Plan
+  newPlan?: z.infer<typeof IndividualPlanSchema>
   register: UseFormRegister<UpgradeFormFields>
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (plan?: Plan) => void
+  setSelectedPlan: (plan?: z.infer<typeof IndividualPlanSchema>) => void
   errors?: Errors
 }
 

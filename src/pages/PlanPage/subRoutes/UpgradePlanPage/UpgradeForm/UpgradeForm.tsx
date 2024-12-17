@@ -2,8 +2,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
+import { z } from 'zod'
 
 import {
+  IndividualPlanSchema,
   useAccountDetails,
   useAvailablePlans,
   usePlanData,
@@ -12,7 +14,6 @@ import {
   canApplySentryUpgrade,
   getNextBillingDate,
   isTeamPlan,
-  Plan,
 } from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
@@ -33,12 +34,12 @@ type URLParams = {
 }
 
 type UpgradeFormProps = {
-  selectedPlan: NonNullable<Plan>
-  setSelectedPlan: (plan?: Plan) => void
+  selectedPlan: NonNullable<z.infer<typeof IndividualPlanSchema>>
+  setSelectedPlan: (plan?: z.infer<typeof IndividualPlanSchema>) => void
 }
 
 export type UpgradeFormFields = {
-  newPlan?: Plan
+  newPlan?: z.infer<typeof IndividualPlanSchema>
   seats: number
 }
 

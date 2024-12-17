@@ -1,7 +1,12 @@
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
+import { z } from 'zod'
 
-import { useAvailablePlans, usePlanData } from 'services/account'
+import {
+  IndividualPlanSchema,
+  useAvailablePlans,
+  usePlanData,
+} from 'services/account'
 import { useLocationParams } from 'services/navigation'
 import { TierNames } from 'services/tier'
 import {
@@ -11,7 +16,6 @@ import {
   findSentryPlans,
   findTeamPlans,
   isTeamPlan,
-  Plan,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
@@ -23,8 +27,8 @@ import { UpgradeFormFields } from '../UpgradeForm'
 
 interface PlanTypeOptionsProps {
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (x?: Plan) => void
-  newPlan?: Plan
+  setSelectedPlan: (x?: z.infer<typeof IndividualPlanSchema>) => void
+  newPlan?: z.infer<typeof IndividualPlanSchema>
 }
 
 const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({

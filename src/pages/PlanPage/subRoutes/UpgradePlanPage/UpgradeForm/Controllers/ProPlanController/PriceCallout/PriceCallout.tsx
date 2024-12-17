@@ -1,14 +1,18 @@
 import { Fragment } from 'react'
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
+import { z } from 'zod'
 
-import { useAccountDetails, useAvailablePlans } from 'services/account'
+import {
+  IndividualPlanSchema,
+  useAccountDetails,
+  useAvailablePlans,
+} from 'services/account'
 import {
   BillingRate,
   findProPlans,
   formatNumberToUSD,
   getNextBillingDate,
-  Plan,
 } from 'shared/utils/billing'
 import {
   calculatePriceProPlan,
@@ -19,7 +23,7 @@ import Icon from 'ui/Icon'
 import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
-  newPlan?: Plan
+  newPlan?: z.infer<typeof IndividualPlanSchema>
   seats: number
   setFormValue: UseFormSetValue<UpgradeFormFields>
 }

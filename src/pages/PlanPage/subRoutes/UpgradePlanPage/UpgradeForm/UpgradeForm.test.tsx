@@ -5,10 +5,11 @@ import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
+import { z } from 'zod'
 
-import { TrialStatuses } from 'services/account'
+import { IndividualPlanSchema, TrialStatuses } from 'services/account'
 import { accountDetailsParsedObj } from 'services/account/mocks'
-import { BillingRate, Plan, Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import UpgradeForm from './UpgradeForm'
 
@@ -1975,7 +1976,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
-        } as NonNullable<Plan>,
+        } as z.infer<typeof IndividualPlanSchema>,
       }
       describe('user chooses less than the number of active users', () => {
         it('does not display an error', async () => {
