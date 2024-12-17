@@ -52,7 +52,6 @@ function SentryPlanDetails() {
           cancelAtPeriodEnd,
           plan: planData?.plan,
           trialStatus,
-          isFreePlan: planData?.plan?.isFreePlan,
         }) && (
           <A
             to={{ pageName: 'cancelOrgPlan' }}

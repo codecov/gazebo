@@ -5,7 +5,8 @@ import {
   AccountDetailsSchema,
   Plan as PlanData,
   TrialStatus,
- TrialStatuses } from 'services/account'
+  TrialStatuses,
+} from 'services/account'
 import {
   canApplySentryUpgrade,
   findProPlans,
@@ -143,15 +144,13 @@ export function shouldRenderCancelLink({
   cancelAtPeriodEnd,
   plan,
   trialStatus,
-  isFreePlan,
 }: {
   cancelAtPeriodEnd: boolean
   plan: PlanData | null
   trialStatus: TrialStatus
-  isFreePlan: boolean
 }) {
   // cant cancel a free plan
-  if (isFreePlan) {
+  if (plan?.isFreePlan) {
     return false
   }
 
