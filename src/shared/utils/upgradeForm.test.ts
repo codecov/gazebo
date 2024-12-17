@@ -1,6 +1,11 @@
 import { z } from 'zod'
 
-import { AccountDetailsSchema, Plan, Plan as PlanData , TrialStatuses } from 'services/account'
+import {
+  AccountDetailsSchema,
+  Plan,
+  Plan as PlanData,
+  TrialStatuses,
+} from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import {
@@ -13,7 +18,6 @@ import {
   getSchema,
   shouldRenderCancelLink,
 } from './upgradeForm'
-
 
 describe('calculatePrice', () => {
   describe('isSentryUpgrade is true and isSelectedPlanTeam is false', () => {
@@ -548,7 +552,7 @@ describe('shouldRenderCancelLink', () => {
     // eslint-disable-next-line testing-library/render-result-naming-convention
     const value = shouldRenderCancelLink({
       cancelAtPeriodEnd: false,
-      plan: Plans.USERS_PR_INAPPY,
+      plan: { value: Plans.USERS_PR_INAPPY } as PlanData,
       trialStatus: TrialStatuses.NOT_STARTED,
       isFreePlan: false,
     })
@@ -561,7 +565,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: Plans.USERS_BASIC,
+        plan: { value: Plans.USERS_BASIC } as PlanData,
         trialStatus: TrialStatuses.NOT_STARTED,
         isFreePlan: true,
       })
@@ -575,7 +579,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: Plans.USERS_TRIAL,
+        plan: { value: Plans.USERS_TRIAL } as PlanData,
         trialStatus: TrialStatuses.ONGOING,
         isFreePlan: false,
       })
@@ -589,7 +593,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: true,
-        plan: Plans.USERS_PR_INAPPY,
+        plan: { value: Plans.USERS_PR_INAPPY } as PlanData,
         trialStatus: TrialStatuses.NOT_STARTED,
         isFreePlan: false,
       })

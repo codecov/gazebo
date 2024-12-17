@@ -3,9 +3,9 @@ import { z } from 'zod'
 
 import {
   AccountDetailsSchema,
+  Plan as PlanData,
   TrialStatus,
-  TrialStatuses,
-} from 'services/account'
+ TrialStatuses } from 'services/account'
 import {
   canApplySentryUpgrade,
   findProPlans,
@@ -19,7 +19,6 @@ import {
   PlanName,
   Plans,
 } from 'shared/utils/billing'
-import { Plan as PlanData } from 'services/account'
 
 export const MIN_NB_SEATS_PRO = 2
 export const MIN_SENTRY_SEATS = 5
@@ -147,7 +146,7 @@ export function shouldRenderCancelLink({
   isFreePlan,
 }: {
   cancelAtPeriodEnd: boolean
-  plan: PlanName
+  plan: PlanData | null
   trialStatus: TrialStatus
   isFreePlan: boolean
 }) {
@@ -157,7 +156,7 @@ export function shouldRenderCancelLink({
   }
 
   // if user is on trial can't cancel plan
-  if (isTrialPlan(plan) && trialStatus === TrialStatuses.ONGOING) {
+  if (isTrialPlan(plan?.value) && trialStatus === TrialStatuses.ONGOING) {
     return false
   }
 
