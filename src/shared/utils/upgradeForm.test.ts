@@ -468,7 +468,6 @@ describe('extractSeats', () => {
         activatedUserCount: 12,
         inactiveUserCount: 0,
         isSentryUpgrade: false,
-        isFreePlan: false,
       })
       expect(seats).toEqual(8)
     })
@@ -552,9 +551,8 @@ describe('shouldRenderCancelLink', () => {
     // eslint-disable-next-line testing-library/render-result-naming-convention
     const value = shouldRenderCancelLink({
       cancelAtPeriodEnd: false,
-      plan: { value: Plans.USERS_PR_INAPPY } as PlanData,
+      plan: { value: Plans.USERS_PR_INAPPY, isFreePlan: false } as PlanData,
       trialStatus: TrialStatuses.NOT_STARTED,
-      isFreePlan: false,
     })
 
     expect(value).toBeTruthy()
@@ -565,9 +563,8 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: { value: Plans.USERS_BASIC } as PlanData,
+        plan: { value: Plans.USERS_BASIC, isFreePlan: true } as PlanData,
         trialStatus: TrialStatuses.NOT_STARTED,
-        isFreePlan: true,
       })
 
       expect(cancelLinkResult).toBeFalsy()
@@ -579,9 +576,8 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: { value: Plans.USERS_TRIAL } as PlanData,
+        plan: { value: Plans.USERS_TRIAL, isFreePlan: false } as PlanData,
         trialStatus: TrialStatuses.ONGOING,
-        isFreePlan: false,
       })
 
       expect(cancelLinkResult).toBeFalsy()
@@ -593,9 +589,8 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: true,
-        plan: { value: Plans.USERS_PR_INAPPY } as PlanData,
+        plan: { value: Plans.USERS_PR_INAPPY, isFreePlan: false } as PlanData,
         trialStatus: TrialStatuses.NOT_STARTED,
-        isFreePlan: false,
       })
 
       expect(cancelLinkResult).toBeFalsy()
