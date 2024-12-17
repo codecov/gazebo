@@ -254,7 +254,6 @@ describe('Actions Billing', () => {
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
-              value: Plans.USERS_BASIC,
             },
           },
           hasPrivateRepos: true,
@@ -276,7 +275,6 @@ describe('Actions Billing', () => {
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
-              value: Plans.USERS_BASIC,
             },
           },
           hasPrivateRepos: true,
@@ -336,7 +334,6 @@ describe('Actions Billing', () => {
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
-              value: Plans.USERS_BASIC,
             },
           },
           hasPrivateRepos: false,
@@ -358,7 +355,6 @@ describe('Actions Billing', () => {
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
-              value: Plans.USERS_BASIC,
             },
           },
           hasPrivateRepos: false,
@@ -386,7 +382,6 @@ describe('Actions Billing', () => {
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.ONGOING,
-              value: Plans.USERS_TRIAL,
             },
           },
           hasPrivateRepos: true,
@@ -409,12 +404,6 @@ describe('Actions Billing', () => {
       it('renders manage plan link', async () => {
         setup({
           accountDetails: mockedProAccountDetails,
-          trialPlanData: {
-            plan: {
-              ...mockTrialData.plan,
-              value: Plans.USERS_PR_INAPPM,
-            },
-          },
         })
 
         render(<ActionsBilling />, { wrapper })
@@ -606,7 +595,6 @@ describe('Actions Billing', () => {
               plan: {
                 ...mockTrialData.plan,
                 trialStatus: TrialStatuses.ONGOING,
-                value: Plans.USERS_TRIAL,
               },
             },
           })
@@ -630,13 +618,6 @@ describe('Actions Billing', () => {
         setup({
           accountDetails: sentryMockedAccountDetails,
           plans: sentryPlans,
-          trialPlanData: {
-            hasPrivateRepos: true,
-            plan: {
-              ...mockTrialData.plan,
-              value: Plans.USERS_SENTRYM,
-            },
-          },
         })
 
         render(<ActionsBilling />, { wrapper })
