@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { AccountDetailsSchema, Plan, TrialStatuses } from 'services/account'
+import { AccountDetailsSchema, Plan, Plan as PlanData , TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import {
@@ -13,6 +13,7 @@ import {
   getSchema,
   shouldRenderCancelLink,
 } from './upgradeForm'
+
 
 describe('calculatePrice', () => {
   describe('isSentryUpgrade is true and isSelectedPlanTeam is false', () => {
@@ -116,7 +117,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           billingRate: 'yearly',
           value: Plans.USERS_PR_INAPPY,
           planUserCount: 1,
-        } as Plan,
+        } as PlanData,
       })
 
       expect(data).toStrictEqual({
@@ -138,7 +139,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           billingRate: 'yearly',
           value: Plans.USERS_PR_INAPPY,
           planUserCount: 1,
-        } as Plan,
+        } as PlanData,
       })
 
       expect(data).toStrictEqual({
@@ -162,7 +163,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           billingRate: 'monthly',
           value: Plans.USERS_TEAMM,
           planUserCount: 1,
-        } as Plan,
+        } as PlanData,
       })
 
       expect(data).toStrictEqual({
@@ -184,7 +185,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           billingRate: 'monthly',
           value: Plans.USERS_SENTRYY,
           planUserCount: 1,
-        } as Plan,
+        } as PlanData,
       })
 
       expect(data).toStrictEqual({
@@ -207,7 +208,7 @@ describe('getDefaultValuesUpgradeForm', () => {
         billingRate: 'monthly',
         value: Plans.USERS_PR_INAPPM,
         planUserCount: 2,
-      } as Plan,
+      } as PlanData,
     })
 
     expect(data).toStrictEqual({
@@ -615,7 +616,7 @@ describe('shouldRenderCancelLink', () => {
           billingRate: 'yearly',
           value: Plans.USERS_TEAMY,
           planUserCount: 1,
-        } as Plan,
+        } as PlanData,
       })
 
       expect(data).toStrictEqual({
