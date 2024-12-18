@@ -72,8 +72,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
       plans,
       trialStatus,
       selectedPlan,
-      isEnterprisePlan: planData?.plan?.isEnterprisePlan,
-      isFreePlan: planData?.plan?.isFreePlan,
+      plan: planData?.plan,
     }),
     resolver: zodResolver(
       getSchema({
@@ -81,6 +80,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         minSeats,
         trialStatus,
         selectedPlan,
+        planName: planData?.plan?.value,
       })
     ),
     mode: 'onChange',

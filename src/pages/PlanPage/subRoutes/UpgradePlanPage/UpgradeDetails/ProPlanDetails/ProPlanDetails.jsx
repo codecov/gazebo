@@ -19,7 +19,6 @@ function ProPlanDetails() {
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { proPlanMonth, proPlanYear } = findProPlans({ plans })
 
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
 
   const cancelAtPeriodEnd =
@@ -55,9 +54,9 @@ function ProPlanDetails() {
         )}
         {shouldRenderCancelLink({
           cancelAtPeriodEnd,
-          plan,
           trialStatus,
           isFreePlan: planData?.plan?.isFreePlan,
+          plan: planData?.plan,
         }) && (
           <A
             to={{ pageName: 'cancelOrgPlan' }}

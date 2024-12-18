@@ -16,7 +16,7 @@ function Activation() {
   })
 
   const activatedUserCount = accountDetails?.activatedUserCount || 0
-  const planQuantity = accountDetails?.plan?.quantity || 0
+  const planQuantity = planData?.plan?.planUserCount || 0
 
   if (
     isTrialPlan(planData?.plan?.value) &&
