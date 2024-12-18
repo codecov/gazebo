@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { Plan, PlanSchema } from 'services/account'
-import { isAnnualPlan, isTeamPlan, PlanName } from 'shared/utils/billing'
+import { isAnnualPlan, PlanName, Plans } from 'shared/utils/billing'
 
 const UpdateBlurb = ({
   currentPlan,
@@ -17,8 +17,10 @@ const UpdateBlurb = ({
   nextBillingDate: string
 }) => {
   const currentIsFree = currentPlan?.isFreePlan
-  const currentIsTeam = isTeamPlan(currentPlan?.value)
-  const selectedIsTeam = isTeamPlan(selectedPlan?.value)
+  const currentIsTeam = currentPlan?.isTeamPlan
+  const selectedIsTeam =
+    selectedPlan?.value === Plans.USERS_TEAMM ||
+    selectedPlan?.value === Plans.USERS_TEAMY
   const diffPlanType = currentIsFree || currentIsTeam !== selectedIsTeam
 
   const currentIsAnnual = isAnnualPlan(currentPlan?.value)

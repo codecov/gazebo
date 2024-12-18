@@ -1,6 +1,6 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
-import { isSentryPlan, isTeamPlan, Plan, PlanName } from 'shared/utils/billing'
+import { isSentryPlan, Plan, PlanName, Plans } from 'shared/utils/billing'
 
 import ProPlanController from './ProPlanController'
 import SentryPlanController from './SentryPlanController'
@@ -31,7 +31,7 @@ const Controller: React.FC<BillingControlsProps> = ({
   setFormValue,
   setSelectedPlan,
 }) => {
-  if (isTeamPlan(selectedPlan)) {
+  if (selectedPlan === Plans.USERS_TEAMM || Plans.USERS_TEAMY) {
     return (
       <TeamPlanController
         newPlan={newPlan}

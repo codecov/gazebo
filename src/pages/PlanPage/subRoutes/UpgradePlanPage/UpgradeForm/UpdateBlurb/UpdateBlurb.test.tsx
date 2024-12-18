@@ -78,7 +78,12 @@ describe('UpdateBlurb', () => {
     it('does not render anything', async () => {
       render(
         <UpdateBlurb
-          currentPlan={{ ...teamPlanMonth, ...planChunk, planUserCount: 10 }}
+          currentPlan={{
+            ...teamPlanMonth,
+            ...planChunk,
+            planUserCount: 10,
+            isTeamPlan: true,
+          }}
           selectedPlan={{ ...teamPlanMonth, quantity: 10 }}
           newPlanName={teamPlanMonth.value}
           nextBillingDate={'July 12th, 2024'}
@@ -98,7 +103,12 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={{ ...freePlan, ...planChunk, isFreePlan: true }}
+            currentPlan={{
+              ...freePlan,
+              ...planChunk,
+              isFreePlan: true,
+              isTeamPlan: false,
+            }}
             selectedPlan={{ ...teamPlanYear, quantity: 10 }}
             newPlanName={teamPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
@@ -132,7 +142,12 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={{ ...teamPlanMonth, ...planChunk, planUserCount: 10 }}
+            currentPlan={{
+              ...teamPlanMonth,
+              ...planChunk,
+              planUserCount: 10,
+              isTeamPlan: true,
+            }}
             selectedPlan={{ ...teamPlanYear, quantity: 10 }}
             newPlanName={teamPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
@@ -158,7 +173,12 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={{ ...proPlanYear, ...planChunk, planUserCount: 10 }}
+            currentPlan={{
+              ...proPlanYear,
+              ...planChunk,
+              planUserCount: 10,
+              isTeamPlan: false,
+            }}
             selectedPlan={{ ...proPlanYear, quantity: 10 }}
             newPlanName={proPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
@@ -184,7 +204,12 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            currentPlan={{
+              ...teamPlanYear,
+              ...planChunk,
+              planUserCount: 10,
+              isTeamPlan: true,
+            }}
             selectedPlan={{ ...proPlanYear, quantity: 10 }}
             newPlanName={proPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
@@ -211,7 +236,12 @@ describe('UpdateBlurb', () => {
       it('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            currentPlan={{
+              ...teamPlanYear,
+              ...planChunk,
+              planUserCount: 10,
+              isTeamPlan: true,
+            }}
             selectedPlan={{ ...teamPlanMonth, quantity: 10 }}
             newPlanName={teamPlanMonth.value}
             nextBillingDate={'July 12th, 2024'}
@@ -237,7 +267,12 @@ describe('UpdateBlurb', () => {
       it('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            currentPlan={{
+              ...teamPlanYear,
+              ...planChunk,
+              planUserCount: 10,
+              isTeamPlan: true,
+            }}
             selectedPlan={{ ...teamPlanYear, quantity: 9 }}
             newPlanName={teamPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
@@ -263,7 +298,12 @@ describe('UpdateBlurb', () => {
       it('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={{ ...proPlanYear, ...planChunk, planUserCount: 10 }}
+            currentPlan={{
+              ...proPlanYear,
+              ...planChunk,
+              planUserCount: 10,
+              isTeamPlan: false,
+            }}
             selectedPlan={{ ...teamPlanYear, quantity: 10 }}
             newPlanName={teamPlanYear.value}
             nextBillingDate={'July 12th, 2024'}
