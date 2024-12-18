@@ -27,9 +27,6 @@ vi.mock('./AccountOrgs', () => ({ default: () => 'AccountOrgs' }))
 const mockedAccountDetails = {
   planProvider: 'github',
   rootOrganization: {},
-  plan: {
-    value: Plans.USERS_FREE,
-  },
   usesInvoice: false,
 } as z.infer<typeof AccountDetailsSchema>
 
@@ -209,15 +206,7 @@ describe('CurrentOrgPlan', () => {
   describe('when plan update success banner should be shown', () => {
     it('renders banner for plan successfully updated', async () => {
       setup({
-        accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: BillingRate.MONTHLY,
-            marketingName: 'Pro',
-            quantity: 39,
-            value: Plans.USERS_PR_INAPPM,
-          },
-        } as z.infer<typeof AccountDetailsSchema>,
+        accountDetails: {} as z.infer<typeof AccountDetailsSchema>,
       })
 
       render(<CurrentOrgPlan />, { wrapper })
@@ -228,13 +217,6 @@ describe('CurrentOrgPlan', () => {
     it('renders banner for plan successfully updated with scheduled details', async () => {
       setup({
         accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: BillingRate.MONTHLY,
-            marketingName: 'Pro',
-            quantity: 39,
-            value: Plans.USERS_PR_INAPPM,
-          },
           scheduleDetail: {
             scheduledPhase: {
               quantity: 34,
@@ -254,15 +236,7 @@ describe('CurrentOrgPlan', () => {
 
     it('does not render banner when no recent update made', async () => {
       setup({
-        accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: BillingRate.MONTHLY,
-            marketingName: 'Pro',
-            quantity: 39,
-            value: Plans.USERS_PR_INAPPM,
-          },
-        } as z.infer<typeof AccountDetailsSchema>,
+        accountDetails: {} as z.infer<typeof AccountDetailsSchema>,
       })
       render(<CurrentOrgPlan />, { wrapper: noUpdatedPlanWrapper })
       const currentPlanCard = await screen.findByText(/CurrentPlanCard/i)
@@ -278,13 +252,6 @@ describe('CurrentOrgPlan', () => {
     it('renders when subscription detail data is available', async () => {
       setup({
         accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: BillingRate.MONTHLY,
-            marketingName: 'Pro',
-            quantity: 39,
-            value: Plans.USERS_PR_INAPPM,
-          },
           subscriptionDetail: {
             cancelAtPeriodEnd: true,
             currentPeriodEnd: 1722631954,
@@ -307,13 +274,7 @@ describe('CurrentOrgPlan', () => {
           accountDetails: {
             planProvider: 'gitlab',
             rootOrganization: null,
-            plan: {
-              value: Plans.USERS_FREE,
-              baseUnitPrice: 12,
-              benefits: ['a', 'b'],
-              billingRate: null,
-              marketingName: 'bob',
-            },
+
             usesInvoice: false,
           } as z.infer<typeof AccountDetailsSchema>,
         })
@@ -343,13 +304,7 @@ describe('CurrentOrgPlan', () => {
           accountDetails: {
             planProvider: 'github',
             rootOrganization: {},
-            plan: {
-              value: Plans.USERS_FREE,
-              baseUnitPrice: 12,
-              benefits: ['a', 'b'],
-              billingRate: null,
-              marketingName: 'bob',
-            },
+
             usesInvoice: true,
           } as z.infer<typeof AccountDetailsSchema>,
         })
@@ -378,7 +333,7 @@ describe('CurrentOrgPlan', () => {
   describe('when plan value is not provided', () => {
     beforeEach(() => {
       setup({
-        accountDetails: { ...mockedAccountDetails, plan: null },
+        accountDetails: { ...mockedAccountDetails },
       })
     })
 
