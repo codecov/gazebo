@@ -205,7 +205,7 @@ const mockPlanDataResponseMonthly = {
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
-  planUserCount: 1,
+  planUserCount: 10,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
 }
@@ -222,7 +222,7 @@ const mockPlanDataResponseYearly = {
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
-  planUserCount: 1,
+  planUserCount: 10,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
 }
@@ -282,6 +282,7 @@ type SetupArgs = {
   hasTeamPlans?: boolean
   hasSentryPlans?: boolean
   monthlyPlan?: boolean
+  planUserCount?: number
 }
 
 describe('UpgradeForm', () => {
@@ -293,6 +294,7 @@ describe('UpgradeForm', () => {
     hasTeamPlans = false,
     hasSentryPlans = false,
     monthlyPlan = true,
+    planUserCount = 1,
   }: SetupArgs) {
     const addNotification = vi.fn()
     const user = userEvent.setup()
@@ -365,6 +367,8 @@ describe('UpgradeForm', () => {
                 ...planResponse,
                 trialStatus,
                 isFreePlan: planValue === Plans.USERS_BASIC,
+                value: planValue,
+                planUserCount,
               },
             },
           },
@@ -723,7 +727,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders the seat input with 10 seats (existing subscription)', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: Plans.USERS_PR_INAPPM, planUserCount: 10 })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const seatCount = await screen.findByRole('spinbutton')
@@ -731,7 +735,7 @@ describe('UpgradeForm', () => {
       })
 
       it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: Plans.USERS_PR_INAPPM, planUserCount: 10 })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$120/)
@@ -788,7 +792,10 @@ describe('UpgradeForm', () => {
 
       describe('when updating to a yearly plan', () => {
         it('has the price for the year', async () => {
-          const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
+          const { user } = setup({
+            planValue: Plans.USERS_PR_INAPPM,
+            planUserCount: 10,
+          })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
           const annualOption = await screen.findByRole('button', {
@@ -989,7 +996,7 @@ describe('UpgradeForm', () => {
         selectedPlan: proPlanYear,
       }
       it('renders the organization and owner titles', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const organizationTitle = await screen.findByText(/Organization/)
@@ -999,7 +1006,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders monthly option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
@@ -1007,7 +1014,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders annual option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -1024,7 +1031,11 @@ describe('UpgradeForm', () => {
       })
 
       it('renders the seat input with 13 seats (existing subscription)', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({
+          planValue: Plans.USERS_PR_INAPPY,
+          monthlyPlan: false,
+          planUserCount: 13,
+        })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const seatCount = await screen.findByRole('spinbutton')
@@ -1032,7 +1043,11 @@ describe('UpgradeForm', () => {
       })
 
       it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({
+          planValue: Plans.USERS_PR_INAPPY,
+          monthlyPlan: false,
+          planUserCount: 13,
+        })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$130/)
@@ -1040,7 +1055,10 @@ describe('UpgradeForm', () => {
       })
 
       it('renders validation error when the user selects less than 2 seats', async () => {
-        const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
+        const { user } = setup({
+          planValue: Plans.USERS_PR_INAPPY,
+          monthlyPlan: false,
+        })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
@@ -1059,7 +1077,10 @@ describe('UpgradeForm', () => {
       })
 
       it('renders validation error when the user selects less than number of active users', async () => {
-        const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
+        const { user } = setup({
+          planValue: Plans.USERS_PR_INAPPY,
+          monthlyPlan: false,
+        })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
@@ -1078,7 +1099,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders the update button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const update = await screen.findByRole('button', {
@@ -1089,7 +1110,11 @@ describe('UpgradeForm', () => {
 
       describe('when updating to a monthly plan', () => {
         it('has the price for the month', async () => {
-          const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
+          const { user } = setup({
+            planValue: Plans.USERS_PR_INAPPY,
+            monthlyPlan: false,
+            planUserCount: 13,
+          })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
           const monthlyOption = await screen.findByRole('button', {
@@ -1107,6 +1132,7 @@ describe('UpgradeForm', () => {
           setup({
             planValue: Plans.USERS_PR_INAPPY,
             hasTeamPlans: true,
+            monthlyPlan: false,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1119,6 +1145,7 @@ describe('UpgradeForm', () => {
           setup({
             planValue: Plans.USERS_PR_INAPPY,
             hasTeamPlans: true,
+            monthlyPlan: false,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1133,6 +1160,7 @@ describe('UpgradeForm', () => {
             const { user } = setup({
               planValue: Plans.USERS_PR_INAPPY,
               hasTeamPlans: true,
+              monthlyPlan: false,
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1166,6 +1194,7 @@ describe('UpgradeForm', () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPY,
+            monthlyPlan: false,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1192,6 +1221,7 @@ describe('UpgradeForm', () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPY,
+            monthlyPlan: false,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1223,6 +1253,7 @@ describe('UpgradeForm', () => {
           const { user } = setup({
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPY,
+            monthlyPlan: false,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1250,6 +1281,7 @@ describe('UpgradeForm', () => {
             successfulPatchRequest: false,
             errorDetails: 'Insufficient funds.',
             planValue: Plans.USERS_PR_INAPPY,
+            monthlyPlan: false,
           })
 
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -1280,6 +1312,7 @@ describe('UpgradeForm', () => {
           const { addNotification, user } = setup({
             successfulPatchRequest: false,
             planValue: Plans.USERS_PR_INAPPY,
+            monthlyPlan: false,
           })
 
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -1381,6 +1414,8 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
+          monthlyPlan: false,
+          planUserCount: 21,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1392,6 +1427,8 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
+          monthlyPlan: false,
+          planUserCount: 21,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1403,6 +1440,7 @@ describe('UpgradeForm', () => {
         const { user } = setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1425,6 +1463,7 @@ describe('UpgradeForm', () => {
         const { user } = setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1447,6 +1486,7 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1461,6 +1501,8 @@ describe('UpgradeForm', () => {
           const { user } = setup({
             planValue: Plans.USERS_SENTRYY,
             hasSentryPlans: true,
+            monthlyPlan: false,
+            planUserCount: 21,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1480,6 +1522,7 @@ describe('UpgradeForm', () => {
             successfulPatchRequest: true,
             hasSentryPlans: true,
             planValue: Plans.USERS_SENTRYY,
+            monthlyPlan: false,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1507,6 +1550,7 @@ describe('UpgradeForm', () => {
             successfulPatchRequest: true,
             hasSentryPlans: true,
             planValue: Plans.USERS_SENTRYY,
+            monthlyPlan: false,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1539,6 +1583,7 @@ describe('UpgradeForm', () => {
             successfulPatchRequest: true,
             hasSentryPlans: true,
             planValue: Plans.USERS_SENTRYY,
+            monthlyPlan: false,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1567,6 +1612,7 @@ describe('UpgradeForm', () => {
             hasSentryPlans: true,
             errorDetails: 'Insufficient funds.',
             planValue: Plans.USERS_SENTRYY,
+            monthlyPlan: false,
           })
 
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -1598,6 +1644,7 @@ describe('UpgradeForm', () => {
             successfulPatchRequest: false,
             hasSentryPlans: true,
             planValue: Plans.USERS_SENTRYY,
+            monthlyPlan: false,
           })
 
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -1635,6 +1682,7 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1648,6 +1696,7 @@ describe('UpgradeForm', () => {
         const { user } = setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1664,6 +1713,7 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1675,6 +1725,7 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1699,6 +1750,7 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1710,6 +1762,7 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1721,6 +1774,7 @@ describe('UpgradeForm', () => {
         const { user } = setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1820,6 +1874,7 @@ describe('UpgradeForm', () => {
             successfulPatchRequest: true,
             hasTeamPlans: true,
             planValue: Plans.USERS_TEAMY,
+            monthlyPlan: false,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1852,6 +1907,7 @@ describe('UpgradeForm', () => {
             successfulPatchRequest: true,
             hasTeamPlans: true,
             planValue: Plans.USERS_TEAMY,
+            monthlyPlan: false,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1884,6 +1940,7 @@ describe('UpgradeForm', () => {
             successfulPatchRequest: true,
             hasTeamPlans: true,
             planValue: Plans.USERS_TEAMY,
+            monthlyPlan: false,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1912,6 +1969,7 @@ describe('UpgradeForm', () => {
             hasTeamPlans: true,
             errorDetails: 'Insufficient funds.',
             planValue: Plans.USERS_TEAMY,
+            monthlyPlan: false,
           })
 
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -1943,6 +2001,7 @@ describe('UpgradeForm', () => {
             successfulPatchRequest: false,
             hasTeamPlans: true,
             planValue: Plans.USERS_TEAMY,
+            monthlyPlan: false,
           })
 
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })

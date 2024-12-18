@@ -93,7 +93,7 @@ export const getSchema = ({
 
         if (
           trialStatus === TrialStatuses.ONGOING &&
-          accountDetails?.plan?.value === Plans.USERS_TRIAL
+          selectedPlan?.value === Plans.USERS_TRIAL
         ) {
           return val
         }
@@ -141,15 +141,13 @@ export function shouldRenderCancelLink({
   cancelAtPeriodEnd,
   plan,
   trialStatus,
-  isFreePlan,
 }: {
   cancelAtPeriodEnd: boolean
-  plan: Plan
+  plan: Plan | null
   trialStatus: TrialStatus
-  isFreePlan: boolean
 }) {
   // cant cancel a free plan
-  if (isFreePlan) {
+  if (plan?.isFreePlan) {
     return false
   }
 
@@ -216,18 +214,14 @@ export const getDefaultValuesUpgradeForm = ({
   plans,
   trialStatus,
   selectedPlan,
-  isEnterprisePlan,
-  isFreePlan,
+  plan,
 }: {
   accountDetails?: z.infer<typeof AccountDetailsSchema> | null
   plans?: z.infer<typeof IndividualPlanSchema>[] | null
   trialStatus?: TrialStatus
-  selectedPlan?: z.infer<typeof IndividualPlanSchema>
-  isEnterprisePlan?: boolean
-  isFreePlan?: boolean
+  selectedPlan?: z.infer<typeof IndividualPlanSchema> | null
+  plan?: Plan | null
 }) => {
-  const currentPlan = accountDetails?.plan
-  const quantity = currentPlan?.quantity ?? 0
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
@@ -236,34 +230,31 @@ export const getDefaultValuesUpgradeForm = ({
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
 
   const isSentryUpgrade = canApplySentryUpgrade({
-    isEnterprisePlan,
+    isEnterprisePlan: plan?.isEnterprisePlan,
     plans,
   })
 
-  const isMonthlyPlan =
-    accountDetails?.plan?.billingRate === BillingRate.MONTHLY
-  const isPaidPlan = !!accountDetails?.plan?.billingRate // If the plan has a billing rate, it's a paid plan
+  const isMonthlyPlan = plan?.billingRate === BillingRate.MONTHLY
 
-  let newPlan = proPlanYear
-  if (isSentryUpgrade && !isSentryPlan(currentPlan?.value)) {
-    newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
-  } else if (
-    isTeamPlan(currentPlan?.value) ||
-    isTeamPlan(selectedPlan?.value)
-  ) {
-    newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
+  const isPaidPlan = !!plan?.billingRate // If the plan has a billing rate, it's a paid plan
+
+  let newPlan = proPlanYear?.value
+  if (isSentryUpgrade && !isSentryPlan(plan?.value)) {
+    newPlan = isMonthlyPlan ? sentryPlanMonth?.value : sentryPlanYear?.value
+  } else if (isTeamPlan(plan?.value) || isTeamPlan(selectedPlan?.value)) {
+    newPlan = isMonthlyPlan ? teamPlanMonth?.value : teamPlanYear?.value
   } else if (isPaidPlan) {
-    newPlan = currentPlan!
+    newPlan = plan?.value
   }
 
   const seats = extractSeats({
-    value: currentPlan?.value,
-    quantity,
+    value: plan?.value,
+    quantity: plan?.planUserCount ?? 0,
     activatedUserCount,
     inactiveUserCount,
     trialStatus,
     isSentryUpgrade,
-    isFreePlan,
+    isFreePlan: plan?.isFreePlan,
   })
 
   return {

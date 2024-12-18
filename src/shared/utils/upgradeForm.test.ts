@@ -112,6 +112,11 @@ describe('getDefaultValuesUpgradeForm', () => {
         accountDetails,
         selectedPlan: proPlanYear,
         plans: [proPlanYear],
+        plan: {
+          billingRate: BillingRate.ANNUALLY,
+          value: Plans.USERS_PR_INAPPY,
+          planUserCount: 1,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
@@ -129,6 +134,11 @@ describe('getDefaultValuesUpgradeForm', () => {
         accountDetails,
         selectedPlan: proPlanYear,
         plans: [proPlanYear, sentryPlanYear],
+        plan: {
+          billingRate: BillingRate.ANNUALLY,
+          value: Plans.USERS_PR_INAPPY,
+          planUserCount: 1,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
@@ -152,6 +162,11 @@ describe('getDefaultValuesUpgradeForm', () => {
         accountDetails,
         selectedPlan: proPlanYear,
         plans: [teamPlanMonth],
+        plan: {
+          billingRate: BillingRate.MONTHLY,
+          value: Plans.USERS_TEAMM,
+          planUserCount: 1,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
@@ -169,6 +184,11 @@ describe('getDefaultValuesUpgradeForm', () => {
         accountDetails,
         selectedPlan: proPlanYear,
         plans: [proPlanYear, sentryPlanYear],
+        plan: {
+          billingRate: BillingRate.MONTHLY,
+          value: Plans.USERS_SENTRYY,
+          planUserCount: 1,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
@@ -191,6 +211,11 @@ describe('getDefaultValuesUpgradeForm', () => {
       accountDetails,
       selectedPlan: proPlanYear,
       plans: [proPlanYear],
+      plan: {
+        billingRate: BillingRate.MONTHLY,
+        value: Plans.USERS_PR_INAPPM,
+        planUserCount: 2,
+      } as Plan,
     })
 
     expect(data).toStrictEqual({
@@ -450,7 +475,6 @@ describe('extractSeats', () => {
         activatedUserCount: 12,
         inactiveUserCount: 0,
         isSentryUpgrade: false,
-        isFreePlan: false,
       })
       expect(seats).toEqual(8)
     })
@@ -534,9 +558,8 @@ describe('shouldRenderCancelLink', () => {
     // eslint-disable-next-line testing-library/render-result-naming-convention
     const value = shouldRenderCancelLink({
       cancelAtPeriodEnd: false,
-      plan: { value: Plans.USERS_PR_INAPPY } as Plan,
+      plan: { value: Plans.USERS_PR_INAPPY, isFreePlan: false } as Plan,
       trialStatus: TrialStatuses.NOT_STARTED,
-      isFreePlan: false,
     })
 
     expect(value).toBeTruthy()
@@ -547,9 +570,8 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: { value: Plans.USERS_BASIC } as Plan,
+        plan: { value: Plans.USERS_BASIC, isFreePlan: true } as Plan,
         trialStatus: TrialStatuses.NOT_STARTED,
-        isFreePlan: true,
       })
 
       expect(cancelLinkResult).toBeFalsy()
@@ -561,9 +583,8 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: { value: Plans.USERS_TRIAL } as Plan,
+        plan: { value: Plans.USERS_TRIAL, isFreePlan: false } as Plan,
         trialStatus: TrialStatuses.ONGOING,
-        isFreePlan: false,
       })
 
       expect(cancelLinkResult).toBeFalsy()
@@ -575,9 +596,8 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: true,
-        plan: { value: Plans.USERS_PR_INAPPY } as Plan,
+        plan: { value: Plans.USERS_PR_INAPPY, isFreePlan: false } as Plan,
         trialStatus: TrialStatuses.NOT_STARTED,
-        isFreePlan: false,
       })
 
       expect(cancelLinkResult).toBeFalsy()
@@ -598,6 +618,11 @@ describe('shouldRenderCancelLink', () => {
         accountDetails,
         plans,
         selectedPlan: { value: Plans.USERS_TEAMY } as Plan,
+        plan: {
+          billingRate: BillingRate.ANNUALLY,
+          value: Plans.USERS_TEAMY,
+          planUserCount: 1,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({

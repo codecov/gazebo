@@ -1,11 +1,7 @@
 import { useLayoutEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
-import {
-  useAccountDetails,
-  useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+import { useAvailablePlans, usePlanData } from 'services/account'
 import { TierNames } from 'services/tier'
 import {
   canApplySentryUpgrade,
@@ -25,7 +21,6 @@ import { useSetCrumbs } from '../../context'
 function UpgradePlanPage() {
   const { provider, owner } = useParams()
   const setCrumbs = useSetCrumbs()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ provider, owner })
   const planParam = usePlanParams()
@@ -35,8 +30,6 @@ function UpgradePlanPage() {
   const { teamPlanYear } = findTeamPlans({ plans })
   const hasTeamPlans = shouldDisplayTeamCard({ plans })
 
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
-
   const isSentryUpgrade = canApplySentryUpgrade({
     isEnterprisePlan: planData?.plan?.isEnterprisePlan,
     plans,
@@ -45,7 +38,7 @@ function UpgradePlanPage() {
   let defaultPaidYearlyPlan = null
   if (
     (hasTeamPlans && planParam === TierNames.TEAM) ||
-    isTeamPlan(plan?.value)
+    isTeamPlan(planData?.plan?.value)
   ) {
     defaultPaidYearlyPlan = teamPlanYear
   } else if (isSentryUpgrade) {
