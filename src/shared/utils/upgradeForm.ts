@@ -255,7 +255,7 @@ export const getDefaultValuesUpgradeForm = ({
     inactiveUserCount,
     trialStatus,
     isSentryUpgrade,
-    isFreePlan: plan?.value === Plans.USERS_BASIC,
+    isFreePlan: plan?.isFreePlan,
   })
 
   return {
