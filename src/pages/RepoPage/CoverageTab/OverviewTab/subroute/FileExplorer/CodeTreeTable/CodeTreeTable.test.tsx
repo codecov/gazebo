@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import qs from 'qs'
+import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CodeTreeTable from './CodeTreeTable'
@@ -18,14 +19,26 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockNoFiles = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'PathContents',
+  owner: {
+    username: 'nicholas-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
+            },
+          },
         },
       },
     },
@@ -33,14 +46,22 @@ const mockNoFiles = {
 }
 
 const mockMissingCoverage = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'MissingCoverage',
+  owner: {
+    username: 'nicholas-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'MissingCoverage',
+            message: 'No coverage data available.',
+          },
         },
       },
     },
@@ -48,14 +69,23 @@ const mockMissingCoverage = {
 }
 
 const mockUnknownPath = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'UnknownPath',
+  owner: {
+    username: 'nicholas-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'UnknownPath',
+            message:
+              'Unknown filepath. Please ensure that files/directories exist and are not empty.',
+          },
         },
       },
     },
@@ -63,88 +93,142 @@ const mockUnknownPath = {
 }
 
 const mockTreeData = {
-  username: 'codecov-tree',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentDir',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
-              name: 'src',
-              path: 'src',
-              percentCovered: 100.0,
+  owner: {
+    username: 'codecov-tree',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [
+              {
+                node: {
+                  __typename: 'PathContentDir',
+                  hits: 9,
+                  misses: 0,
+                  partials: 0,
+                  lines: 10,
+                  name: 'src',
+                  path: 'src',
+                  percentCovered: 100.0,
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
             },
-          ],
-          __typename: 'PathContents',
+          },
         },
       },
     },
   },
 }
 
-const mockDataMultipleRows = {
-  username: 'codecov-tree',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentDir',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
-              name: 'src',
-              path: 'src',
-              percentCovered: 100.0,
+const node1 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 0,
+  partials: 0,
+  lines: 10,
+  name: 'dir1',
+  path: 'dir1',
+  percentCovered: 100.0,
+}
+
+const node2 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 2,
+  partials: 1,
+  lines: 999,
+  name: 'dir2',
+  path: 'dir2',
+  percentCovered: 100.0,
+}
+
+const node3 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 2,
+  partials: 1,
+  lines: 999,
+  name: 'dir3',
+  path: 'dir3',
+  percentCovered: 100.0,
+}
+
+const mockDataMultipleRows = (after: string) => ({
+  owner: {
+    username: 'codecov-tree',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: after
+              ? [{ node: node3 }]
+              : [{ node: node1 }, { node: node2 }],
+            pageInfo: {
+              hasNextPage: after ? true : false,
+              endCursor: after ? 'cursor3' : 'cursor2',
             },
-            {
-              __typename: 'PathContentDir',
-              hits: 9,
-              misses: 2,
-              partials: 1,
-              lines: 999,
-              name: 'tests',
-              path: 'tests',
-              percentCovered: 100.0,
-            },
-          ],
-          __typename: 'PathContents',
+          },
         },
       },
     },
   },
-}
+})
 
 const mockTreeDataNested = {
-  username: 'codecov-tree',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentFile',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
-              name: 'file.js',
-              path: 'a/b/c/file.js',
-              percentCovered: 100.0,
-              isCriticalFile: false,
+  owner: {
+    username: 'codecov-tree',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [
+              {
+                node: {
+                  __typename: 'PathContentFile',
+                  hits: 9,
+                  misses: 0,
+                  partials: 0,
+                  lines: 10,
+                  name: 'file.js',
+                  path: 'a/b/c/file.js',
+                  percentCovered: 100.0,
+                  isCriticalFile: false,
+                },
+              },
+            ],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
             },
-          ],
-          __typename: 'PathContents',
+          },
         },
       },
     },
@@ -152,13 +236,22 @@ const mockTreeDataNested = {
 }
 
 const mockNoHeadReport = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          __typename: 'MissingHeadReport',
+  owner: {
+    username: 'nicholas-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'MissingHeadReport',
+            message: 'No coverage report uploaded for this branch head commit',
+          },
         },
       },
     },
@@ -230,21 +323,23 @@ describe('CodeTreeTable', () => {
         }
 
         if (missingCoverage) {
-          return HttpResponse.json({ data: { owner: mockMissingCoverage } })
+          return HttpResponse.json({ data: mockMissingCoverage })
         } else if (unknownPath) {
-          return HttpResponse.json({ data: { owner: mockUnknownPath } })
+          return HttpResponse.json({ data: mockUnknownPath })
         } else if (noHeadReport) {
-          return HttpResponse.json({ data: { owner: mockNoHeadReport } })
+          return HttpResponse.json({ data: mockNoHeadReport })
         } else if (noFiles || info?.variables?.filters?.searchValue) {
-          return HttpResponse.json({ data: { owner: mockNoFiles } })
+          return HttpResponse.json({ data: mockNoFiles })
         } else if (noFlagCoverage) {
-          return HttpResponse.json({ data: { owner: mockNoFiles } })
+          return HttpResponse.json({ data: mockNoFiles })
         } else if (hasMultipleRows) {
-          return HttpResponse.json({ data: { owner: mockDataMultipleRows } })
+          return HttpResponse.json({
+            data: mockDataMultipleRows(info.variables.after),
+          })
         } else if (isNestedTreeData) {
-          return HttpResponse.json({ data: { owner: mockTreeDataNested } })
+          return HttpResponse.json({ data: mockTreeDataNested })
         } else {
-          return HttpResponse.json({ data: { owner: mockTreeData } })
+          return HttpResponse.json({ data: mockTreeData })
         }
       }),
       graphql.query('GetRepoOverview', () => {
@@ -673,6 +768,31 @@ describe('CodeTreeTable', () => {
           })
         })
       })
+    })
+  })
+  describe('testing pagination', () => {
+    it('displays the first page', async () => {
+      setup({ hasMultipleRows: true })
+      render(<CodeTreeTable />, { wrapper: wrapper() })
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, false)
+
+      const page1Dir1 = await screen.findByText('dir1')
+      expect(page1Dir1).toBeInTheDocument()
+
+      const page1Dir2 = await screen.findByText('dir2')
+      expect(page1Dir2).toBeInTheDocument()
+    })
+
+    it('displays the second page', async () => {
+      setup({ hasMultipleRows: true })
+      render(<CodeTreeTable />, { wrapper: wrapper() })
+
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, true)
+
+      const page2Dir1 = await screen.findByText('dir3')
+      expect(page2Dir1).toBeInTheDocument()
     })
   })
 })
