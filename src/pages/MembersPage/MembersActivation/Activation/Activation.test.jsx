@@ -237,7 +237,7 @@ describe('Activation', () => {
         render(<Activation />, { wrapper: wrapper() })
 
         const orgTrialedText = await screen.findByText(
-          /Your org trialed Pro Team plan/
+          /Your org trialed Pro plan/
         )
         expect(orgTrialedText).toBeInTheDocument()
       })
