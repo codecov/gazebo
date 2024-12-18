@@ -191,9 +191,9 @@ export function useRepoBranchContentsTable(sortItem?: {
     data: finalizedTableRows ?? [],
     indicationRange: branchData?.pages?.[0]?.indicationRange,
     // useLocationParams needs to be updated to have full types
-    // @ts-expect-error
+    // @ts-expect-error - params is not defined
     hasFlagsSelected: params?.flags?.length > 0,
-    // @ts-expect-error
+    // @ts-expect-error - params is not defined
     hasComponentsSelected: params?.components?.length > 0,
     isLoading,
     fetchNextPage,
