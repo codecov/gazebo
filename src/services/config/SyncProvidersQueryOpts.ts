@@ -1,7 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 
 const EnterpriseSyncProvidersUnionSchema = z.union([
   z.literal('GITHUB'),
@@ -29,12 +30,8 @@ query GetSyncProviders {
   }
 }`
 
-interface UseSyncProvidersArgs {
-  enabled?: boolean
-}
-
-export const useSyncProviders = ({ enabled = true }: UseSyncProvidersArgs) => {
-  return useQuery({
+export const SyncProvidersQueryOpts = () => {
+  return queryOptionsV5({
     queryKey: ['GetSyncProviders'],
     queryFn: ({ signal }) => {
       return Api.graphql({
@@ -45,8 +42,11 @@ export const useSyncProviders = ({ enabled = true }: UseSyncProvidersArgs) => {
         const parsedRes = GetSyncProvidersSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
+            data: {},
+            dev: `SyncProvidersQueryOpts - 404 Failed to parse`,
+            error: parsedRes.error,
           })
         }
 
@@ -81,6 +81,5 @@ export const useSyncProviders = ({ enabled = true }: UseSyncProvidersArgs) => {
         return syncProviders
       })
     },
-    enabled,
   })
 }

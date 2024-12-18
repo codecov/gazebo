@@ -1,22 +1,35 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { EnterpriseSyncProviders, useSyncProviders } from './useSyncProviders'
+import {
+  EnterpriseSyncProviders,
+  SyncProvidersQueryOpts,
+} from './SyncProvidersQueryOpts'
 
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/']}>
-      <Route path="/">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/']}>
+        <Route path="/">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -24,8 +37,9 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
-  server.resetHandlers()
   queryClient.clear()
+  queryClientV5.clear()
+  server.resetHandlers()
 })
 
 afterAll(() => {
@@ -54,13 +68,13 @@ describe('useSyncProviders', () => {
 
   describe('third party services are configured providers', () => {
     it('returns data', async () => {
-      setup({
-        syncProviders: ['GITHUB', 'GITLAB', 'BITBUCKET'],
-      })
-      const { result } = renderHook(() => useSyncProviders({}), { wrapper })
+      setup({ syncProviders: ['GITHUB', 'GITLAB', 'BITBUCKET'] })
+      const { result } = renderHook(
+        () => useQueryV5(SyncProvidersQueryOpts()),
+        { wrapper }
+      )
 
       await waitFor(() => result.current.isSuccess)
-
       await waitFor(() =>
         expect(result.current.data).toStrictEqual(['gh', 'gl', 'bb'])
       )
@@ -76,10 +90,12 @@ describe('useSyncProviders', () => {
           'BITBUCKET_SERVER',
         ],
       })
-      const { result } = renderHook(() => useSyncProviders({}), { wrapper })
+      const { result } = renderHook(
+        () => useQueryV5(SyncProvidersQueryOpts()),
+        { wrapper }
+      )
 
       await waitFor(() => result.current.isSuccess)
-
       await waitFor(() =>
         expect(result.current.data).toStrictEqual(['ghe', 'gle', 'bbs'])
       )
@@ -96,14 +112,13 @@ describe('useSyncProviders', () => {
     })
 
     it('throws an error', async () => {
-      setup({
-        hasParsingError: true,
-      })
-
-      const { result } = renderHook(() => useSyncProviders({}), { wrapper })
+      setup({ hasParsingError: true })
+      const { result } = renderHook(
+        () => useQueryV5(SyncProvidersQueryOpts()),
+        { wrapper }
+      )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
-
       expect(result.current.error).toEqual(
         expect.objectContaining({ status: 404 })
       )
