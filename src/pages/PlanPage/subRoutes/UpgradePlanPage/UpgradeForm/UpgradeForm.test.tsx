@@ -5,9 +5,8 @@ import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
-import { z } from 'zod'
 
-import { IndividualPlanSchema, TrialStatuses } from 'services/account'
+import { IndividualPlan, TrialStatuses } from 'services/account'
 import { accountDetailsParsedObj } from 'services/account/mocks'
 import { BillingRate, Plans } from 'shared/utils/billing'
 
@@ -193,30 +192,12 @@ const mockAccountDetailsSentryYearly = {
   inactiveUserCount: 0,
 }
 
-const mockPlanDataResponseMonthly = {
+const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
   value: Plans.USERS_PR_INAPPM,
-  trialStatus: TrialStatuses.NOT_STARTED,
-  trialStartDate: '',
-  trialEndDate: '',
-  trialTotalDays: 0,
-  pretrialUsersCount: 0,
-  planUserCount: 10,
-  hasSeatsLeft: true,
-  isEnterprisePlan: false,
-}
-
-const mockPlanDataResponseYearly = {
-  baseUnitPrice: 10,
-  benefits: [],
-  billingRate: BillingRate.ANNUALLY,
-  marketingName: 'Pro Team',
-  monthlyUploadLimit: 250,
-  value: Plans.USERS_PR_INAPPY,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -355,18 +336,21 @@ describe('UpgradeForm', () => {
         })
       }),
       graphql.query('GetPlanData', () => {
-        const planResponse = monthlyPlan
-          ? mockPlanDataResponseMonthly
-          : mockPlanDataResponseYearly
-
         return HttpResponse.json({
           data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
-                ...planResponse,
+                ...mockPlanDataResponse,
                 trialStatus,
+                billingRate:
+                  planValue === Plans.USERS_BASIC
+                    ? null
+                    : monthlyPlan
+                      ? BillingRate.MONTHLY
+                      : BillingRate.ANNUALLY,
                 isFreePlan: planValue === Plans.USERS_BASIC,
+                isEnterprisePlan: false,
                 value: planValue,
                 planUserCount,
               },
@@ -2035,7 +2019,7 @@ describe('UpgradeForm', () => {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
           value: Plans.USERS_PR_INAPPY,
-        } as z.infer<typeof IndividualPlanSchema>,
+        } as IndividualPlan,
       }
       describe('user chooses less than the number of active users', () => {
         it('does not display an error', async () => {

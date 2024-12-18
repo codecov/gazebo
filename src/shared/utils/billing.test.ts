@@ -1,7 +1,6 @@
 import { renderHook } from '@testing-library/react'
-import { z } from 'zod'
 
-import { IndividualPlanSchema } from 'services/account'
+import { IndividualPlan } from 'services/account'
 
 import {
   BillingRate,
@@ -462,9 +461,7 @@ describe('canApplySentryUpgrade', () => {
   it('returns true when list contains monthly plan', () => {
     const result = canApplySentryUpgrade({
       isEnterprisePlan: false,
-      plans: [{ value: Plans.USERS_SENTRYM }] as z.infer<
-        typeof IndividualPlanSchema
-      >[],
+      plans: [{ value: Plans.USERS_SENTRYM }] as IndividualPlan[],
     })
 
     expect(result).toBeTruthy()
@@ -473,9 +470,7 @@ describe('canApplySentryUpgrade', () => {
   it('returns true when list contains annual plan', () => {
     const result = canApplySentryUpgrade({
       isEnterprisePlan: false,
-      plans: [{ value: Plans.USERS_SENTRYY }] as z.infer<
-        typeof IndividualPlanSchema
-      >[],
+      plans: [{ value: Plans.USERS_SENTRYY }] as IndividualPlan[],
     })
 
     expect(result).toBeTruthy()
@@ -483,9 +478,7 @@ describe('canApplySentryUpgrade', () => {
 
   it('returns false when plans are not in list', () => {
     const result = canApplySentryUpgrade({
-      plans: [{ value: Plans.USERS_FREE }] as z.infer<
-        typeof IndividualPlanSchema
-      >[],
+      plans: [{ value: Plans.USERS_FREE }] as IndividualPlan[],
     })
 
     expect(result).toBeFalsy()
@@ -494,9 +487,7 @@ describe('canApplySentryUpgrade', () => {
   it('returns false when user has enterprise plan', () => {
     const result = canApplySentryUpgrade({
       isEnterprisePlan: true,
-      plans: [{ value: Plans.USERS_SENTRYY }] as z.infer<
-        typeof IndividualPlanSchema
-      >[],
+      plans: [{ value: Plans.USERS_SENTRYY }] as IndividualPlan[],
     })
 
     expect(result).toBeFalsy()

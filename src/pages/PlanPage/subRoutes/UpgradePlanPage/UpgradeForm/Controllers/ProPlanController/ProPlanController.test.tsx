@@ -5,9 +5,8 @@ import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { z } from 'zod'
 
-import { IndividualPlanSchema, TrialStatuses } from 'services/account'
+import { IndividualPlan, TrialStatuses } from 'services/account'
 import { BillingRate, Plans } from 'shared/utils/billing'
 
 import ProPlanController from './ProPlanController'
@@ -189,7 +188,7 @@ const wrapper: WrapperClosure =
   )
 
 interface SetupArgs {
-  planValue: z.infer<typeof IndividualPlanSchema>
+  planValue: IndividualPlan
   errorDetails?: string
   monthlyPlan?: boolean
 }
