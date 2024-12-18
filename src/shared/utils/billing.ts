@@ -40,7 +40,7 @@ export interface Plan {
   billingRate?: (typeof BillingRate)[keyof typeof BillingRate] | null
   marketingName: string
   value: PlanName
-  monthlyUploadLimit?: number | null
+  monthlyUploadLimit: number | null
   quantity?: number | null
   trialEndDate: string | null
   trialStatus: TrialStatus

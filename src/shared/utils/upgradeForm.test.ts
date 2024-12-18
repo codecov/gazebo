@@ -120,7 +120,11 @@ describe('getDefaultValuesUpgradeForm', () => {
       })
 
       expect(data).toStrictEqual({
-        newPlan: { value: Plans.USERS_PR_INAPPY },
+        newPlan: {
+          billingRate: BillingRate.ANNUALLY,
+          value: Plans.USERS_PR_INAPPY,
+          planUserCount: 1,
+        },
         seats: 2,
       })
     })
@@ -192,7 +196,11 @@ describe('getDefaultValuesUpgradeForm', () => {
       })
 
       expect(data).toStrictEqual({
-        newPlan: { value: Plans.USERS_SENTRYY },
+        newPlan: {
+          billingRate: BillingRate.MONTHLY,
+          value: Plans.USERS_SENTRYY,
+          planUserCount: 1,
+        },
         seats: 5,
       })
     })
@@ -222,7 +230,7 @@ describe('getDefaultValuesUpgradeForm', () => {
       newPlan: {
         value: Plans.USERS_PR_INAPPM,
         billingRate: BillingRate.MONTHLY,
-        quantity: 2,
+        planUserCount: 2,
       },
       seats: 2,
     })
