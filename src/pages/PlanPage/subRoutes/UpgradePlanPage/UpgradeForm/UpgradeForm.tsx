@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import {
+  IndividualPlan,
   useAccountDetails,
   useAvailablePlans,
   usePlanData,
@@ -12,8 +13,6 @@ import {
   canApplySentryUpgrade,
   getNextBillingDate,
   isTeamPlan,
-  Plan,
-  PlanName,
 } from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
@@ -34,12 +33,12 @@ type URLParams = {
 }
 
 type UpgradeFormProps = {
-  selectedPlan: NonNullable<Plan>
-  setSelectedPlan: (plan?: Plan) => void
+  selectedPlan: IndividualPlan
+  setSelectedPlan: (plan?: IndividualPlan) => void
 }
 
 export type UpgradeFormFields = {
-  newPlan?: PlanName
+  newPlan?: IndividualPlan
   seats: number
 }
 
@@ -109,7 +108,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         newPlan={newPlan}
       />
       <Controller
-        selectedPlan={selectedPlan.value}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
         seats={seats}
@@ -119,8 +117,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
       />
       <UpdateBlurb
         currentPlan={planData?.plan}
-        selectedPlan={selectedPlan}
-        newPlanName={newPlan}
+        newPlan={newPlan}
         seats={Number(seats)}
         nextBillingDate={getNextBillingDate(accountDetails)!}
       />

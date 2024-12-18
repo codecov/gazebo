@@ -6,54 +6,52 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import PriceCallout from './PriceCallout'
 
-const availablePlans = [
-  {
-    marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
-    billingRate: null,
-    baseUnitPrice: 0,
-    benefits: [
-      'Up to 1 user',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-    ],
-    monthlyUploadLimit: 250,
-  },
-  {
-    marketingName: 'Sentry Pro Team',
-    value: Plans.USERS_SENTRYM,
-    billingRate: 'monthly',
-    baseUnitPrice: 12,
-    benefits: [
-      'Includes 5 seats',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-    trialDays: 14,
-    quantity: 10,
-  },
-  {
-    marketingName: 'Sentry Pro Team',
-    value: Plans.USERS_SENTRYY,
-    billingRate: 'annually',
-    baseUnitPrice: 10,
-    benefits: [
-      'Includes 5 seats',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-    trialDays: 14,
-    quantity: 10,
-  },
-]
+const freePlan = {
+  marketingName: 'Basic',
+  value: Plans.USERS_BASIC,
+  billingRate: null,
+  baseUnitPrice: 0,
+  benefits: [
+    'Up to 1 user',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+  ],
+  monthlyUploadLimit: 250,
+}
+
+const sentryProTeamMonthly = {
+  marketingName: 'Sentry Pro Team',
+  value: Plans.USERS_SENTRYM,
+  billingRate: BillingRate.MONTHLY,
+  baseUnitPrice: 12,
+  benefits: [
+    'Includes 5 seats',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+}
+
+const sentryProTeamYearly = {
+  marketingName: 'Sentry Pro Team',
+  value: Plans.USERS_SENTRYY,
+  billingRate: BillingRate.ANNUALLY,
+  baseUnitPrice: 10,
+  benefits: [
+    'Includes 5 seats',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+}
+
+const availablePlans = [freePlan, sentryProTeamMonthly, sentryProTeamYearly]
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -115,7 +113,7 @@ describe('PriceCallout', () => {
   describe('when rendered', () => {
     describe('and seat count is below acceptable range', () => {
       const props = {
-        newPlan: Plans.USERS_PR_INAPPY,
+        newPlan: sentryProTeamMonthly,
         seats: 4,
       }
 
@@ -133,7 +131,7 @@ describe('PriceCallout', () => {
 
     describe('isPerYear is set to true', () => {
       const props = {
-        newPlan: Plans.USERS_SENTRYY,
+        newPlan: sentryProTeamYearly,
         seats: 10,
       }
 
@@ -191,7 +189,7 @@ describe('PriceCallout', () => {
 
     describe('isPerYear is set to false', () => {
       const props = {
-        newPlan: Plans.USERS_SENTRYM,
+        newPlan: sentryProTeamMonthly,
         seats: 10,
       }
 
@@ -252,7 +250,7 @@ describe('PriceCallout', () => {
 
           expect(mockSetFormValue).toHaveBeenCalledWith(
             'newPlan',
-            Plans.USERS_SENTRYY
+            sentryProTeamYearly
           )
         })
       })
@@ -260,7 +258,7 @@ describe('PriceCallout', () => {
       describe('when no current end period date on subscription', () => {
         it('does not render next billing date info', async () => {
           const props = {
-            newPlan: Plans.USERS_SENTRYM,
+            newPlan: sentryProTeamMonthly,
             seats: 10,
           }
 

@@ -1,12 +1,7 @@
 import { z } from 'zod'
 
-import {
-  AccountDetailsSchema,
-  Plan,
-  Plan as PlanData,
-  TrialStatuses,
-} from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { AccountDetailsSchema, Plan, TrialStatuses } from 'services/account'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import {
   calculatePrice,
@@ -118,14 +113,18 @@ describe('getDefaultValuesUpgradeForm', () => {
         selectedPlan: proPlanYear,
         plans: [proPlanYear],
         plan: {
-          billingRate: 'yearly',
+          billingRate: BillingRate.ANNUALLY,
           value: Plans.USERS_PR_INAPPY,
           planUserCount: 1,
-        } as PlanData,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_PR_INAPPY,
+        newPlan: {
+          billingRate: BillingRate.ANNUALLY,
+          value: Plans.USERS_PR_INAPPY,
+          planUserCount: 1,
+        },
         seats: 2,
       })
     })
@@ -140,14 +139,14 @@ describe('getDefaultValuesUpgradeForm', () => {
         selectedPlan: proPlanYear,
         plans: [proPlanYear, sentryPlanYear],
         plan: {
-          billingRate: 'yearly',
+          billingRate: BillingRate.ANNUALLY,
           value: Plans.USERS_PR_INAPPY,
           planUserCount: 1,
-        } as PlanData,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_SENTRYY,
+        newPlan: { value: Plans.USERS_SENTRYY },
         seats: 5,
       })
     })
@@ -156,7 +155,11 @@ describe('getDefaultValuesUpgradeForm', () => {
   describe('when current plan is team monthly', () => {
     it('returns team monthly plan', () => {
       const accountDetails = {
-        plan: { value: Plans.USERS_TEAMM, quantity: 1, billingRate: 'monthly' },
+        plan: {
+          value: Plans.USERS_TEAMM,
+          quantity: 1,
+          billingRate: BillingRate.MONTHLY,
+        },
       } as z.infer<typeof AccountDetailsSchema>
 
       const data = getDefaultValuesUpgradeForm({
@@ -164,14 +167,14 @@ describe('getDefaultValuesUpgradeForm', () => {
         selectedPlan: proPlanYear,
         plans: [teamPlanMonth],
         plan: {
-          billingRate: 'monthly',
+          billingRate: BillingRate.MONTHLY,
           value: Plans.USERS_TEAMM,
           planUserCount: 1,
-        } as PlanData,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_TEAMM,
+        newPlan: { value: Plans.USERS_TEAMM },
         seats: 2,
       })
     })
@@ -186,14 +189,18 @@ describe('getDefaultValuesUpgradeForm', () => {
         selectedPlan: proPlanYear,
         plans: [proPlanYear, sentryPlanYear],
         plan: {
-          billingRate: 'monthly',
+          billingRate: BillingRate.MONTHLY,
           value: Plans.USERS_SENTRYY,
           planUserCount: 1,
-        } as PlanData,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_SENTRYY,
+        newPlan: {
+          billingRate: BillingRate.MONTHLY,
+          value: Plans.USERS_SENTRYY,
+          planUserCount: 1,
+        },
         seats: 5,
       })
     })
@@ -201,7 +208,11 @@ describe('getDefaultValuesUpgradeForm', () => {
 
   it('returns current plan if the user is on a paid plan', () => {
     const accountDetails = {
-      plan: { value: Plans.USERS_PR_INAPPM, quantity: 2 },
+      plan: {
+        value: Plans.USERS_PR_INAPPM,
+        billingRate: BillingRate.MONTHLY,
+        quantity: 2,
+      },
     } as z.infer<typeof AccountDetailsSchema>
 
     const data = getDefaultValuesUpgradeForm({
@@ -209,14 +220,18 @@ describe('getDefaultValuesUpgradeForm', () => {
       selectedPlan: proPlanYear,
       plans: [proPlanYear],
       plan: {
-        billingRate: 'monthly',
+        billingRate: BillingRate.MONTHLY,
         value: Plans.USERS_PR_INAPPM,
         planUserCount: 2,
-      } as PlanData,
+      } as Plan,
     })
 
     expect(data).toStrictEqual({
-      newPlan: Plans.USERS_PR_INAPPM,
+      newPlan: {
+        value: Plans.USERS_PR_INAPPM,
+        billingRate: BillingRate.MONTHLY,
+        planUserCount: 2,
+      },
       seats: 2,
     })
   })
@@ -231,7 +246,7 @@ describe('getSchema', () => {
 
     const response = schema.safeParse({
       seats: 10,
-      newPlan: Plans.USERS_PR_INAPPY,
+      newPlan: { value: Plans.USERS_PR_INAPPY },
     })
     expect(response.success).toEqual(true)
     expect(response.error).toBeUndefined()
@@ -243,13 +258,13 @@ describe('getSchema', () => {
     } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
-    const response = schema.safeParse({ seats: 5, newPlan: 5 })
+    const response = schema.safeParse({ seats: 5, newPlan: { value: 5 } })
     expect(response.success).toEqual(false)
 
     const [issue] = response.error!.issues
     expect(issue).toEqual(
       expect.objectContaining({
-        message: 'Plan type is required to be a string',
+        message: 'Expected string, received number',
       })
     )
   })
@@ -320,7 +335,7 @@ describe('getSchema', () => {
 
     const response = schema.safeParse({
       seats: 10,
-      newPlan: Plans.USERS_PR_INAPPY,
+      newPlan: { value: Plans.USERS_PR_INAPPY },
     })
     expect(response.success).toEqual(true)
     expect(response.error).toBeUndefined()
@@ -369,7 +384,7 @@ describe('getSchema', () => {
 
       const response = schema.safeParse({
         seats: 9,
-        newPlan: Plans.USERS_TEAMY,
+        newPlan: { value: Plans.USERS_TEAMY },
       })
 
       expect(response.success).toEqual(true)
@@ -392,7 +407,7 @@ describe('getSchema', () => {
 
     const response = schema.safeParse({
       seats: 9,
-      newPlan: Plans.USERS_TEAMM,
+      newPlan: { value: Plans.USERS_TEAMM },
     })
 
     expect(response.success).toEqual(true)
@@ -551,7 +566,7 @@ describe('shouldRenderCancelLink', () => {
     // eslint-disable-next-line testing-library/render-result-naming-convention
     const value = shouldRenderCancelLink({
       cancelAtPeriodEnd: false,
-      plan: { value: Plans.USERS_PR_INAPPY, isFreePlan: false } as PlanData,
+      plan: { value: Plans.USERS_PR_INAPPY, isFreePlan: false } as Plan,
       trialStatus: TrialStatuses.NOT_STARTED,
     })
 
@@ -563,7 +578,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: { value: Plans.USERS_BASIC, isFreePlan: true } as PlanData,
+        plan: { value: Plans.USERS_BASIC, isFreePlan: true } as Plan,
         trialStatus: TrialStatuses.NOT_STARTED,
       })
 
@@ -576,7 +591,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: { value: Plans.USERS_TRIAL, isFreePlan: false } as PlanData,
+        plan: { value: Plans.USERS_TRIAL, isFreePlan: false } as Plan,
         trialStatus: TrialStatuses.ONGOING,
       })
 
@@ -589,7 +604,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: true,
-        plan: { value: Plans.USERS_PR_INAPPY, isFreePlan: false } as PlanData,
+        plan: { value: Plans.USERS_PR_INAPPY, isFreePlan: false } as Plan,
         trialStatus: TrialStatuses.NOT_STARTED,
       })
 
@@ -612,14 +627,14 @@ describe('shouldRenderCancelLink', () => {
         plans,
         selectedPlan: { value: Plans.USERS_TEAMY } as Plan,
         plan: {
-          billingRate: 'yearly',
+          billingRate: BillingRate.ANNUALLY,
           value: Plans.USERS_TEAMY,
           planUserCount: 1,
-        } as PlanData,
+        } as Plan,
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_TEAMY,
+        newPlan: { value: Plans.USERS_TEAMY },
         seats: 2,
       })
     })

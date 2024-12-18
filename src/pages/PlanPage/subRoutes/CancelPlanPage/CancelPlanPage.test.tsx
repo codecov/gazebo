@@ -6,7 +6,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import CancelPlanPage from './CancelPlanPage'
 
@@ -20,7 +20,7 @@ const teamPlans = [
   {
     baseUnitPrice: 6,
     benefits: ['Up to 10 users'],
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMM,
@@ -28,7 +28,7 @@ const teamPlans = [
   {
     baseUnitPrice: 5,
     benefits: ['Up to 10 users'],
-    billingRate: 'yearly',
+    billingRate: BillingRate.ANNUALLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMY,
@@ -51,7 +51,7 @@ const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -67,7 +67,7 @@ const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
   value: Plans.USERS_BASIC,
@@ -128,6 +128,7 @@ interface SetupProps {
   planValue?: string
   trialStatus?: string
   hasTeamPlans?: boolean
+  billingRate?: string
 }
 
 describe('CancelPlanPage', () => {
@@ -136,11 +137,12 @@ describe('CancelPlanPage', () => {
     planValue = Plans.USERS_PR_INAPPM,
     trialStatus = TrialStatuses.NOT_STARTED,
     hasTeamPlans = false,
+    billingRate = BillingRate.MONTHLY,
   }: SetupProps = {}) {
     server.use(
       http.get('internal/gh/codecov/account-details/', () => {
         return HttpResponse.json({
-          plan: { value: planValue },
+          plan: { value: planValue, billingRate },
           subscriptionDetail: { customer: { discount: hasDiscount } },
         })
       }),
@@ -284,7 +286,12 @@ describe('CancelPlanPage', () => {
   })
 
   describe('user is on a annual plan', () => {
-    beforeEach(() => setup({ planValue: Plans.USERS_INAPPY }))
+    beforeEach(() =>
+      setup({
+        planValue: Plans.USERS_INAPPY,
+        billingRate: BillingRate.ANNUALLY,
+      })
+    )
 
     it('directs them directly to downgrade page', async () => {
       render(<CancelPlanPage />, {

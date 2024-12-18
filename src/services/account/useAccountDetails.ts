@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 const InvoiceSchema = z
   .object({
@@ -117,7 +117,7 @@ export const PlanSchema = z
   .object({
     baseUnitPrice: z.number(),
     benefits: z.array(z.string()),
-    billingRate: z.string().nullable(),
+    billingRate: z.nativeEnum(BillingRate).nullish(),
     marketingName: z.string(),
     monthlyUploadLimit: z.number().nullish(),
     quantity: z.number().nullish(),

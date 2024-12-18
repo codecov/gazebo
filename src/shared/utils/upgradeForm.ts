@@ -3,16 +3,16 @@ import { z } from 'zod'
 
 import {
   AccountDetailsSchema,
-  Plan as PlanData,
+  IndividualPlan,
   TrialStatus,
   TrialStatuses,
 } from 'services/account'
 import {
+  BillingRate,
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
   findTeamPlans,
-  isPaidPlan,
   isSentryPlan,
   isTeamPlan,
   isTrialPlan,
@@ -69,7 +69,7 @@ export const getSchema = ({
   accountDetails?: z.infer<typeof AccountDetailsSchema>
   minSeats?: number
   trialStatus?: TrialStatus
-  selectedPlan?: Plan
+  selectedPlan?: IndividualPlan
   planName?: PlanName
 }) =>
   z.object({
@@ -109,9 +109,8 @@ export const getSchema = ({
 
         return val
       }),
-    newPlan: z.string({
-      required_error: 'Plan type is required',
-      invalid_type_error: 'Plan type is required to be a string',
+    newPlan: z.object({
+      value: z.string(),
     }),
   })
 
@@ -146,7 +145,7 @@ export function shouldRenderCancelLink({
   trialStatus,
 }: {
   cancelAtPeriodEnd: boolean
-  plan: PlanData | null
+  plan: Plan | null
   trialStatus: TrialStatus
 }) {
   // cant cancel a free plan
@@ -220,10 +219,10 @@ export const getDefaultValuesUpgradeForm = ({
   plan,
 }: {
   accountDetails?: z.infer<typeof AccountDetailsSchema> | null
-  plans?: Plan[] | null
+  plans?: IndividualPlan[] | null
   trialStatus?: TrialStatus
-  selectedPlan?: Plan | null
-  plan?: PlanData | null
+  selectedPlan?: IndividualPlan | null
+  plan?: Plan | null
 }) => {
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
@@ -237,15 +236,17 @@ export const getDefaultValuesUpgradeForm = ({
     plans,
   })
 
-  const isMonthlyPlan = plan?.billingRate === 'monthly'
+  const isMonthlyPlan = plan?.billingRate === BillingRate.MONTHLY
 
-  let newPlan = proPlanYear?.value
+  const isPaidPlan = !!plan?.billingRate // If the plan has a billing rate, it's a paid plan
+
+  let newPlan = proPlanYear
   if (isSentryUpgrade && !isSentryPlan(plan?.value)) {
-    newPlan = isMonthlyPlan ? sentryPlanMonth?.value : sentryPlanYear?.value
+    newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
   } else if (isTeamPlan(plan?.value) || isTeamPlan(selectedPlan?.value)) {
-    newPlan = isMonthlyPlan ? teamPlanMonth?.value : teamPlanYear?.value
-  } else if (isPaidPlan(plan?.value)) {
-    newPlan = plan?.value
+    newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
+  } else if (isPaidPlan) {
+    newPlan = plan
   }
 
   const seats = extractSeats({

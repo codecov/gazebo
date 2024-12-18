@@ -3,6 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
+import { IndividualPlan } from './useAvailablePlans'
+
 interface useUpgradePlanParams {
   provider: string
   owner: string
@@ -24,12 +26,12 @@ export function useUpgradePlan({ provider, owner }: useUpgradePlanParams) {
   }
 
   return useMutation({
-    mutationFn: (formData: { seats: number; newPlan: string }) => {
+    mutationFn: (formData: { seats: number; newPlan: IndividualPlan }) => {
       const path = getPathAccountDetails({ provider, owner })
       const body = {
         plan: {
           quantity: formData?.seats,
-          value: formData?.newPlan,
+          value: formData?.newPlan.value,
         },
       }
       return Api.patch({ path, provider, body }).then((data) => {

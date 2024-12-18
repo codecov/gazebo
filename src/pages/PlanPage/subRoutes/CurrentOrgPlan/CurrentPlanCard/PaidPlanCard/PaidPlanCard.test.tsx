@@ -10,7 +10,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plan, PretrialPlan, TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import PaidPlanCard from './PaidPlanCard'
 
@@ -32,7 +32,7 @@ const mockProPlan = {
   isFreePlan: false,
   marketingName: 'Pro',
   value: Plans.USERS_PR_INAPPM,
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 0,
   benefits: ['Unlimited public repositories', 'Unlimited private repositories'],
   planUserCount: 5,
@@ -50,7 +50,7 @@ const mockTeamPlan = {
   isFreePlan: false,
   marketingName: 'Team',
   value: Plans.USERS_TEAMM,
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 123,
   benefits: ['Team benefits', 'Unlimited private repositories'],
   planUserCount: 8,

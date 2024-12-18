@@ -1,28 +1,24 @@
-import { z } from 'zod'
-
-import { Plan, PlanSchema } from 'services/account'
-import { isAnnualPlan, isTeamPlan, PlanName } from 'shared/utils/billing'
+import { IndividualPlan } from 'services/account'
+import { BillingRate, isTeamPlan, Plan } from 'shared/utils/billing'
 
 const UpdateBlurb = ({
   currentPlan,
-  selectedPlan,
-  newPlanName,
+  newPlan,
   seats,
   nextBillingDate,
 }: {
   currentPlan?: Plan | null
-  selectedPlan?: z.infer<typeof PlanSchema>
-  newPlanName?: PlanName
+  newPlan?: IndividualPlan
   seats: number
   nextBillingDate: string
 }) => {
   const currentIsFree = currentPlan?.isFreePlan
   const currentIsTeam = isTeamPlan(currentPlan?.value)
-  const selectedIsTeam = isTeamPlan(selectedPlan?.value)
+  const selectedIsTeam = isTeamPlan(newPlan?.value)
   const diffPlanType = currentIsFree || currentIsTeam !== selectedIsTeam
 
-  const currentIsAnnual = isAnnualPlan(currentPlan?.value)
-  const selectedIsAnnual = isAnnualPlan(newPlanName)
+  const currentIsAnnual = currentPlan?.billingRate === BillingRate.ANNUALLY
+  const selectedIsAnnual = newPlan?.billingRate === BillingRate.ANNUALLY
   const diffBillingType = currentIsAnnual !== selectedIsAnnual
 
   const diffSeats = currentPlan?.planUserCount !== seats

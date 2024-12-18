@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import { useAvailablePlans } from './useAvailablePlans'
 
@@ -23,7 +23,7 @@ const mockAvailablePlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -36,7 +36,7 @@ const mockAvailablePlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -49,7 +49,7 @@ const mockAvailablePlans = [
   {
     marketingName: 'Sentry Pro Team',
     value: Plans.USERS_SENTRYY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -62,7 +62,7 @@ const mockAvailablePlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_ENTERPRISEM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -75,7 +75,7 @@ const mockAvailablePlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_ENTERPRISEY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -88,7 +88,7 @@ const mockAvailablePlans = [
   {
     marketingName: 'Team',
     value: Plans.USERS_TEAMM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 6,
     benefits: ['Patch coverage analysis'],
     monthlyUploadLimit: null,

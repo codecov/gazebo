@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import PlanUpgradePro from './PlanUpgradePro'
 
@@ -29,7 +29,7 @@ const plansWithoutSentryOptions = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 789,
     benefits: [
       'Configurable # of users',
@@ -42,7 +42,7 @@ const plansWithoutSentryOptions = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 456,
     benefits: [
       'Configurable # of users',
@@ -70,7 +70,7 @@ const plansWithSentryOptions = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -83,7 +83,7 @@ const plansWithSentryOptions = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',

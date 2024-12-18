@@ -2,21 +2,19 @@ import { useEffect, useState } from 'react'
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
-import { useAvailablePlans, usePlanData } from 'services/account'
 import {
-  findTeamPlans,
-  isAnnualPlan,
-  isMonthlyPlan,
-  PlanName,
-  Plans,
-} from 'shared/utils/billing'
+  IndividualPlan,
+  useAvailablePlans,
+  usePlanData,
+} from 'services/account'
+import { BillingRate, findTeamPlans } from 'shared/utils/billing'
 import OptionButton from 'ui/OptionButton'
 
 import { OptionPeriod, TimePeriods } from '../../../constants'
 import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface BillingControlsProps {
-  newPlan?: PlanName
+  newPlan?: IndividualPlan
   setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 
@@ -34,7 +32,7 @@ const BillingControls: React.FC<BillingControlsProps> = ({
 
   const currentPlanBillingRate = planData?.plan?.billingRate
   const [option, setOption] = useState<OptionPeriod>(() =>
-    currentPlanBillingRate === 'monthly'
+    currentPlanBillingRate === BillingRate.MONTHLY
       ? TimePeriods.MONTHLY
       : TimePeriods.ANNUAL
   )
@@ -42,9 +40,15 @@ const BillingControls: React.FC<BillingControlsProps> = ({
   // used to update option selection if user selects
   // the switch to annual button in the total banner
   useEffect(() => {
-    if (isMonthlyPlan(newPlan) && option === TimePeriods.ANNUAL) {
+    if (
+      newPlan?.billingRate === BillingRate.MONTHLY &&
+      option === TimePeriods.ANNUAL
+    ) {
       setOption(TimePeriods.MONTHLY)
-    } else if (isAnnualPlan(newPlan) && option === TimePeriods.MONTHLY) {
+    } else if (
+      newPlan?.billingRate === BillingRate.ANNUALLY &&
+      option === TimePeriods.MONTHLY
+    ) {
       setOption(TimePeriods.ANNUAL)
     }
   }, [newPlan, option])
@@ -67,9 +71,9 @@ const BillingControls: React.FC<BillingControlsProps> = ({
           active={option}
           onChange={({ text }) => {
             if (text === TimePeriods.ANNUAL) {
-              setFormValue('newPlan', Plans.USERS_TEAMY)
+              setFormValue('newPlan', teamPlanYear)
             } else {
-              setFormValue('newPlan', Plans.USERS_TEAMM)
+              setFormValue('newPlan', teamPlanMonth)
             }
 
             setOption(text)
