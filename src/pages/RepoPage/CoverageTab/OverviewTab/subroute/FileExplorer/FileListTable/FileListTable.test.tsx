@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import qs from 'qs'
+import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileListTable from './FileListTable'
@@ -18,14 +19,26 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockNoFiles = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'PathContents',
+  owner: {
+    username: 'cool-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
+            },
+          },
         },
       },
     },
@@ -33,14 +46,23 @@ const mockNoFiles = {
 }
 
 const mockUnknownPath = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'UnknownPath',
+  owner: {
+    username: 'cool-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'UnknownPath',
+            message:
+              'Unknown filepath. Please ensure that files/directories exist and are not empty.',
+          },
         },
       },
     },
@@ -48,56 +70,111 @@ const mockUnknownPath = {
 }
 
 const mockMissingCoverage = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [],
-          __typename: 'MissingCoverage',
+  owner: {
+    username: 'cool-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'MissingCoverage',
+            message: 'No coverage data available.',
+          },
         },
       },
     },
   },
+}
+const node1 = {
+  __typename: 'PathContentFile',
+  hits: 9,
+  misses: 0,
+  partials: 0,
+  lines: 10,
+  name: 'file1.js',
+  path: 'a/b/c/file.js',
+  percentCovered: 100.0,
+  isCriticalFile: false,
 }
 
-const mockListData = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentFile',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
-              name: 'file.js',
-              path: 'a/b/c/file.js',
-              percentCovered: 100.0,
-              isCriticalFile: false,
+const node2 = {
+  __typename: 'PathContentFile',
+  hits: 5,
+  misses: 2,
+  partials: 1,
+  lines: 8,
+  name: 'file2.js',
+  path: 'a/b/c/test.js',
+  percentCovered: 62.5,
+  isCriticalFile: false,
+}
+
+const node3 = {
+  __typename: 'PathContentFile',
+  hits: 15,
+  misses: 5,
+  partials: 0,
+  lines: 20,
+  name: 'file3.js',
+  path: 'a/b/c/index.js',
+  percentCovered: 75.0,
+  isCriticalFile: true,
+}
+
+const mockListData = (after = false) => ({
+  owner: {
+    username: 'cool-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: after
+              ? [{ node: node3 }]
+              : [{ node: node1 }, { node: node2 }],
+            pageInfo: {
+              hasNextPage: after ? false : true,
+              endCursor: after
+                ? 'aa'
+                : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
             },
-          ],
-          __typename: 'PathContents',
+          },
         },
       },
     },
   },
-}
+})
 
 const mockNoHeadReport = {
-  username: 'nicholas-codecov',
-  repository: {
-    __typename: 'Repository',
-    branch: {
-      head: {
-        pathContents: {
-          __typename: 'MissingHeadReport',
-          results: [],
+  owner: {
+    username: 'cool-codecov',
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          deprecatedPathContents: {
+            __typename: 'MissingHeadReport',
+            message: 'No coverage report uploaded for this branch head commit',
+          },
         },
       },
     },
@@ -165,18 +242,18 @@ describe('FileListTable', () => {
         }
 
         if (noHeadReport) {
-          return HttpResponse.json({ data: { owner: mockNoHeadReport } })
+          return HttpResponse.json({ data: mockNoHeadReport })
         } else if (noFiles || info?.variables?.filters?.searchValue) {
-          return HttpResponse.json({ data: { owner: mockNoFiles } })
+          return HttpResponse.json({ data: mockNoFiles })
         } else if (noFlagCoverage) {
-          return HttpResponse.json({ data: { owner: mockNoFiles } })
+          return HttpResponse.json({ data: mockNoFiles })
         } else if (missingCoverage) {
-          return HttpResponse.json({ data: { owner: mockMissingCoverage } })
+          return HttpResponse.json({ data: mockMissingCoverage })
         } else if (unknownPath) {
-          return HttpResponse.json({ data: { owner: mockUnknownPath } })
+          return HttpResponse.json({ data: mockUnknownPath })
         }
 
-        return HttpResponse.json({ data: { owner: mockListData } })
+        return HttpResponse.json({ data: mockListData(info.variables.after) })
       }),
       graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
@@ -562,6 +639,32 @@ describe('FileListTable', () => {
           })
         })
       })
+    })
+  })
+
+  describe('testing pagination', () => {
+    it('displays the first page', async () => {
+      setup({})
+      render(<FileListTable />, { wrapper: wrapper() })
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, false)
+
+      const page1File1 = await screen.findByText('file1.js')
+      expect(page1File1).toBeInTheDocument()
+
+      const page1File2 = await screen.findByText('file2.js')
+      expect(page1File2).toBeInTheDocument()
+    })
+
+    it('displays the second page', async () => {
+      setup({})
+      render(<FileListTable />, { wrapper: wrapper() })
+
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, true)
+
+      const page2File1 = await screen.findByText('file3.js')
+      expect(page2File1).toBeInTheDocument()
     })
   })
 })
