@@ -1,6 +1,4 @@
-import { z } from 'zod'
-
-import { IndividualPlanSchema } from 'services/account'
+import { IndividualPlan } from 'services/account'
 import { BillingRate, isTeamPlan, Plan } from 'shared/utils/billing'
 
 const UpdateBlurb = ({
@@ -10,7 +8,7 @@ const UpdateBlurb = ({
   nextBillingDate,
 }: {
   currentPlan?: Plan | null
-  newPlan?: z.infer<typeof IndividualPlanSchema>
+  newPlan?: IndividualPlan
   seats: number
   nextBillingDate: string
 }) => {

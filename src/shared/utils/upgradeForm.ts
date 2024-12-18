@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import {
   AccountDetailsSchema,
-  IndividualPlanSchema,
+  IndividualPlan,
   TrialStatus,
   TrialStatuses,
 } from 'services/account'
@@ -64,11 +64,13 @@ export const getSchema = ({
   minSeats = 1,
   trialStatus,
   selectedPlan,
+  planName,
 }: {
   accountDetails?: z.infer<typeof AccountDetailsSchema>
   minSeats?: number
   trialStatus?: TrialStatus
-  selectedPlan?: z.infer<typeof IndividualPlanSchema>
+  selectedPlan?: IndividualPlan
+  planName?: PlanName
 }) =>
   z.object({
     seats: z.coerce
@@ -93,7 +95,7 @@ export const getSchema = ({
 
         if (
           trialStatus === TrialStatuses.ONGOING &&
-          selectedPlan?.value === Plans.USERS_TRIAL
+          planName === Plans.USERS_TRIAL
         ) {
           return val
         }
@@ -217,9 +219,9 @@ export const getDefaultValuesUpgradeForm = ({
   plan,
 }: {
   accountDetails?: z.infer<typeof AccountDetailsSchema> | null
-  plans?: z.infer<typeof IndividualPlanSchema>[] | null
+  plans?: IndividualPlan[] | null
   trialStatus?: TrialStatus
-  selectedPlan?: z.infer<typeof IndividualPlanSchema> | null
+  selectedPlan?: IndividualPlan | null
   plan?: Plan | null
 }) => {
   const activatedUserCount = accountDetails?.activatedUserCount
@@ -238,13 +240,13 @@ export const getDefaultValuesUpgradeForm = ({
 
   const isPaidPlan = !!plan?.billingRate // If the plan has a billing rate, it's a paid plan
 
-  let newPlan = proPlanYear?.value
+  let newPlan = proPlanYear
   if (isSentryUpgrade && !isSentryPlan(plan?.value)) {
-    newPlan = isMonthlyPlan ? sentryPlanMonth?.value : sentryPlanYear?.value
+    newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
   } else if (isTeamPlan(plan?.value) || isTeamPlan(selectedPlan?.value)) {
-    newPlan = isMonthlyPlan ? teamPlanMonth?.value : teamPlanYear?.value
+    newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
   } else if (isPaidPlan) {
-    newPlan = plan?.value
+    newPlan = plan
   }
 
   const seats = extractSeats({

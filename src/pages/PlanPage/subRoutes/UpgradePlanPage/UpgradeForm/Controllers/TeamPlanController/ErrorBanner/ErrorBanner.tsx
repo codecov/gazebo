@@ -1,9 +1,8 @@
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
-import { z } from 'zod'
 
 import {
-  IndividualPlanSchema,
+  IndividualPlan,
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
@@ -25,7 +24,7 @@ interface Errors {
 interface ErrorBannerProps {
   errors: Errors
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (plan?: z.infer<typeof IndividualPlanSchema>) => void
+  setSelectedPlan: (plan?: IndividualPlan) => void
 }
 
 export default function ErrorBanner({

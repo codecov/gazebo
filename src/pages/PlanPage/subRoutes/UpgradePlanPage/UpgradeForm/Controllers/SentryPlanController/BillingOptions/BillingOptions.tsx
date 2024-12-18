@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
-import { z } from 'zod'
 
 import {
-  IndividualPlanSchema,
+  IndividualPlan,
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
@@ -15,7 +14,7 @@ import { OptionPeriod, TimePeriods } from '../../../constants'
 import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface BillingControlsProps {
-  newPlan?: z.infer<typeof IndividualPlanSchema>
+  newPlan?: IndividualPlan
   setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 

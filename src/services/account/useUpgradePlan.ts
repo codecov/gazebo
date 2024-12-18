@@ -1,10 +1,9 @@
 import { useStripe } from '@stripe/react-stripe-js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { z } from 'zod'
 
 import Api from 'shared/api'
 
-import { IndividualPlanSchema } from './useAvailablePlans'
+import { IndividualPlan } from './useAvailablePlans'
 
 interface useUpgradePlanParams {
   provider: string
@@ -27,10 +26,7 @@ export function useUpgradePlan({ provider, owner }: useUpgradePlanParams) {
   }
 
   return useMutation({
-    mutationFn: (formData: {
-      seats: number
-      newPlan: z.infer<typeof IndividualPlanSchema>
-    }) => {
+    mutationFn: (formData: { seats: number; newPlan: IndividualPlan }) => {
       const path = getPathAccountDetails({ provider, owner })
       const body = {
         plan: {

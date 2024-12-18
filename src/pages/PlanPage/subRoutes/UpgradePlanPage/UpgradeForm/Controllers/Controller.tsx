@@ -1,7 +1,6 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
-import { z } from 'zod'
 
-import { IndividualPlanSchema } from 'services/account'
+import { IndividualPlan } from 'services/account'
 import { isSentryPlan, isTeamPlan } from 'shared/utils/billing'
 
 import ProPlanController from './ProPlanController'
@@ -12,10 +11,10 @@ import { UpgradeFormFields } from '../UpgradeForm'
 
 interface BillingControlsProps {
   seats: number
-  newPlan?: z.infer<typeof IndividualPlanSchema>
+  newPlan?: IndividualPlan
   register: UseFormRegister<UpgradeFormFields>
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (plan?: z.infer<typeof IndividualPlanSchema>) => void
+  setSelectedPlan: (plan?: IndividualPlan) => void
   errors?: {
     seats?: {
       message?: string

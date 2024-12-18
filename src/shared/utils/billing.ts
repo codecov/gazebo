@@ -6,7 +6,7 @@ import { z } from 'zod'
 
 import {
   AccountDetailsSchema,
-  IndividualPlanSchema,
+  IndividualPlan,
   TrialStatus,
 } from 'services/account'
 
@@ -99,11 +99,7 @@ export const CollectionMethods = Object.freeze({
   AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
 })
 
-export function useProPlans({
-  plans,
-}: {
-  plans?: z.infer<typeof IndividualPlanSchema>[] | null
-}) {
+export function useProPlans({ plans }: { plans?: IndividualPlan[] | null }) {
   const proPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_PR_INAPPM
   )
@@ -121,7 +117,7 @@ export function useProPlans({
 export const findProPlans = ({
   plans,
 }: {
-  plans?: z.infer<typeof IndividualPlanSchema>[] | null
+  plans?: IndividualPlan[] | null
 }) => {
   const proPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_PR_INAPPM
@@ -139,7 +135,7 @@ export const findProPlans = ({
 export const findSentryPlans = ({
   plans,
 }: {
-  plans?: z.infer<typeof IndividualPlanSchema>[] | null
+  plans?: IndividualPlan[] | null
 }) => {
   const sentryPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_SENTRYM
@@ -157,7 +153,7 @@ export const findSentryPlans = ({
 export const findTeamPlans = ({
   plans,
 }: {
-  plans?: z.infer<typeof IndividualPlanSchema>[] | null
+  plans?: IndividualPlan[] | null
 }) => {
   const teamPlanMonth = plans?.find((plan) => plan.value === Plans.USERS_TEAMM)
   const teamPlanYear = plans?.find((plan) => plan.value === Plans.USERS_TEAMY)
@@ -173,7 +169,7 @@ export const canApplySentryUpgrade = ({
   plans,
 }: {
   isEnterprisePlan?: boolean
-  plans?: z.infer<typeof IndividualPlanSchema>[] | null
+  plans?: IndividualPlan[] | null
 }) => {
   if (isEnterprisePlan || !isArray(plans)) {
     return false
@@ -188,7 +184,7 @@ export const canApplySentryUpgrade = ({
 export const shouldDisplayTeamCard = ({
   plans,
 }: {
-  plans?: z.infer<typeof IndividualPlanSchema>[] | null
+  plans?: IndividualPlan[] | null
 }) => {
   const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
 

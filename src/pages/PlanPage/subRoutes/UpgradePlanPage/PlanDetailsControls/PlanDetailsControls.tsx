@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { z } from 'zod'
 
-import { IndividualPlanSchema, useAvailablePlans } from 'services/account'
+import { IndividualPlan, useAvailablePlans } from 'services/account'
 import {
   findProPlans,
   findSentryPlans,
@@ -12,8 +11,8 @@ import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
 
 interface PlanDetailsControlsProps {
-  setSelectedPlan: (x?: z.infer<typeof IndividualPlanSchema>) => void
-  setValue: (x: string, y?: z.infer<typeof IndividualPlanSchema>) => void
+  setSelectedPlan: (x?: IndividualPlan) => void
+  setValue: (x: string, y?: IndividualPlan) => void
   isSentryUpgrade: boolean
 }
 

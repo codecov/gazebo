@@ -1,10 +1,9 @@
 import { Fragment } from 'react'
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
-import { z } from 'zod'
 
 import {
-  IndividualPlanSchema,
+  IndividualPlan,
   useAccountDetails,
   useAvailablePlans,
 } from 'services/account'
@@ -24,7 +23,7 @@ import Icon from 'ui/Icon'
 import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
-  newPlan?: z.infer<typeof IndividualPlanSchema>
+  newPlan?: IndividualPlan
   seats: number
   setFormValue: UseFormSetValue<UpgradeFormFields>
 }

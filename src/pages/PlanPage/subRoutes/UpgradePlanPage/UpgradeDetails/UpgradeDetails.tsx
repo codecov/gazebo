@@ -1,17 +1,11 @@
-import { z } from 'zod'
-
-import { IndividualPlanSchema } from 'services/account'
+import { IndividualPlan } from 'services/account'
 import { isSentryPlan, isTeamPlan } from 'shared/utils/billing'
 
 import ProPlanDetails from './ProPlanDetails'
 import SentryPlanDetails from './SentryPlanDetails'
 import TeamPlanDetails from './TeamPlanDetails'
 
-function UpgradeDetails({
-  selectedPlan,
-}: {
-  selectedPlan: z.infer<typeof IndividualPlanSchema>
-}) {
+function UpgradeDetails({ selectedPlan }: { selectedPlan: IndividualPlan }) {
   if (isSentryPlan(selectedPlan.value)) {
     return <SentryPlanDetails />
   } else if (isTeamPlan(selectedPlan.value)) {

@@ -1,9 +1,8 @@
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
-import { z } from 'zod'
 
 import {
-  IndividualPlanSchema,
+  IndividualPlan,
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
@@ -27,8 +26,8 @@ import { UpgradeFormFields } from '../UpgradeForm'
 
 interface PlanTypeOptionsProps {
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (x?: z.infer<typeof IndividualPlanSchema>) => void
-  newPlan?: z.infer<typeof IndividualPlanSchema>
+  setSelectedPlan: (x?: IndividualPlan) => void
+  newPlan?: IndividualPlan
 }
 
 const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
