@@ -1,37 +1,47 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
+import { SelfHostedCurrentUserQueryOpts } from 'services/selfHosted/SelfHostedCurrentUserQueryOpts'
+
 import { useSelfActivationMutation } from './useSelfActivationMutation'
 
 const queryClient = new QueryClient({
-  logger: {
-    error: () => {},
-  },
-  defaultOptions: {
-    retry: false,
-  },
+  logger: { error: () => {} },
+  defaultOptions: { retry: false },
 })
-const server = setupServer()
+
+const queryClientV5 = new QueryClientV5({
+  logger: { error: () => {} },
+  defaultOptions: { retry: false },
+})
 
 const wrapper =
   (initialEntries = '/gh') =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider">{children}</Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
 beforeEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 afterAll(() => {
@@ -51,9 +61,10 @@ describe('useSelfActivationMutation', () => {
           },
         })
 
-        queryClient.setQueryData(['SelfHostedCurrentUser'], {
-          activated: false,
-        })
+        queryClientV5.setQueryData(
+          SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey,
+          { activated: false }
+        )
 
         const mockUser = {
           activated: false,
@@ -89,7 +100,9 @@ describe('useSelfActivationMutation', () => {
 
         await waitFor(() =>
           expect(
-            queryClient.getQueryData(['SelfHostedCurrentUser'])
+            queryClientV5.getQueryData(
+              SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey
+            )
           ).toStrictEqual({ activated: true })
         )
       })
@@ -106,9 +119,10 @@ describe('useSelfActivationMutation', () => {
           },
         })
 
-        queryClient.setQueryData(['SelfHostedCurrentUser'], {
-          activated: true,
-        })
+        queryClientV5.setQueryData(
+          SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey,
+          { activated: true }
+        )
 
         const mockUser = {
           activated: true,
@@ -143,7 +157,9 @@ describe('useSelfActivationMutation', () => {
 
         await waitFor(() =>
           expect(
-            queryClient.getQueryData(['SelfHostedCurrentUser'])
+            queryClientV5.getQueryData(
+              SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey
+            )
           ).toStrictEqual({ activated: false })
         )
       })
@@ -160,9 +176,10 @@ describe('useSelfActivationMutation', () => {
           },
         })
 
-        queryClient.setQueryData(['SelfHostedCurrentUser'], {
-          activated: false,
-        })
+        queryClientV5.setQueryData(
+          SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey,
+          { activated: false }
+        )
 
         const mockUser = {
           activated: false,
@@ -198,7 +215,9 @@ describe('useSelfActivationMutation', () => {
 
         await waitFor(() =>
           expect(
-            queryClient.getQueryData(['SelfHostedCurrentUser'])
+            queryClientV5.getQueryData(
+              SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey
+            )
           ).toStrictEqual({ activated: false })
         )
       })
@@ -216,9 +235,10 @@ describe('useSelfActivationMutation', () => {
         },
       })
 
-      queryClient.setQueryData(['SelfHostedCurrentUser'], {
-        activated: true,
-      })
+      queryClientV5.setQueryData(
+        SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey,
+        { activated: true }
+      )
 
       const mockUser = {
         activated: true,
@@ -251,7 +271,9 @@ describe('useSelfActivationMutation', () => {
       await waitFor(() => result.current.isError)
       await waitFor(() =>
         expect(
-          queryClient.getQueryData(['SelfHostedCurrentUser'])
+          queryClientV5.getQueryData(
+            SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey
+          )
         ).toStrictEqual({ activated: true })
       )
     })
