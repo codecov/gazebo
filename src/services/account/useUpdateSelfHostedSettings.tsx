@@ -1,9 +1,12 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
+import { useQueryClient as useQueryClientV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
 import A from 'ui/A'
+
+import { SelfHostedSettingsQueryOpts } from '../selfHosted/SelfHostedSettingsQueryOpts'
 
 const TOAST_DURATION = 10000
 
@@ -37,7 +40,7 @@ const UpdateSelfHostedSettingsMessage = () => (
 export const useUpdateSelfHostedSettings = () => {
   const { provider } = useParams<{ provider: string }>()
   const addToast = useAddNotification()
-  const queryClient = useQueryClient()
+  const queryClientV5 = useQueryClientV5()
   return useMutation({
     mutationFn: ({ shouldAutoActivate }: { shouldAutoActivate: boolean }) => {
       return Api.graphqlMutation({
@@ -69,7 +72,9 @@ export const useUpdateSelfHostedSettings = () => {
       })
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['SelfHostedSettings'])
+      queryClientV5.invalidateQueries({
+        queryKey: SelfHostedSettingsQueryOpts({ provider }).queryKey,
+      })
     },
     retry: false,
   })

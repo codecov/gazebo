@@ -1,5 +1,8 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
+import { useParams } from 'react-router'
+
 import { useUpdateSelfHostedSettings } from 'services/account/useUpdateSelfHostedSettings'
-import { useSelfHostedSettings } from 'services/selfHosted'
+import { SelfHostedSettingsQueryOpts } from 'services/selfHosted/SelfHostedSettingsQueryOpts'
 import Spinner from 'ui/Spinner'
 import Toggle from 'ui/Toggle'
 
@@ -9,10 +12,18 @@ const Loader = () => (
   </div>
 )
 
+interface URLParams {
+  provider: string
+}
+
 function AutoActivateMembers() {
-  const { data, isLoading } = useSelfHostedSettings()
+  const { provider } = useParams<URLParams>()
+  const { data, isLoading } = useSuspenseQueryV5(
+    SelfHostedSettingsQueryOpts({ provider })
+  )
 
   const { mutate, isLoading: isMutating } = useUpdateSelfHostedSettings()
+
   if (isLoading) {
     return <Loader />
   }
@@ -24,7 +35,7 @@ function AutoActivateMembers() {
         <Toggle
           dataMarketing="auto-acitvate-members"
           label={data?.planAutoActivate ? 'On' : 'Off'}
-          value={data?.planAutoActivate}
+          value={!!data?.planAutoActivate}
           disabled={isMutating}
           onClick={() =>
             mutate({ shouldAutoActivate: !data?.planAutoActivate })
