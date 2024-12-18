@@ -86,6 +86,8 @@ describe('ActivationAlert', () => {
                 value,
                 hasSeatsLeft,
                 isFreePlan: value === Plans.USERS_BASIC,
+                isTeamPlan:
+                  value === Plans.USERS_TEAMM || value === Plans.USERS_TEAMY,
               },
               pretrialPlan: {
                 baseUnitPrice: 10,

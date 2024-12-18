@@ -8,7 +8,6 @@ import {
   findProPlans,
   findSentryPlans,
   findTeamPlans,
-  isTeamPlan,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 
@@ -38,7 +37,7 @@ function UpgradePlanPage() {
   let defaultPaidYearlyPlan = null
   if (
     (hasTeamPlans && planParam === TierNames.TEAM) ||
-    isTeamPlan(planData?.plan?.value)
+    planData?.plan?.isTeamPlan
   ) {
     defaultPaidYearlyPlan = teamPlanYear
   } else if (isSentryUpgrade) {

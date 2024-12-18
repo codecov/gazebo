@@ -14,7 +14,6 @@ import {
   findSentryPlans,
   findTeamPlans,
   isSentryPlan,
-  isTeamPlan,
   isTrialPlan,
   Plan,
   PlanName,
@@ -64,13 +63,13 @@ export const getSchema = ({
   minSeats = 1,
   trialStatus,
   selectedPlan,
-  planName,
+  plan,
 }: {
   accountDetails?: z.infer<typeof AccountDetailsSchema>
   minSeats?: number
   trialStatus?: TrialStatus
   selectedPlan?: IndividualPlan
-  planName?: PlanName
+  plan?: Plan | null
 }) =>
   z.object({
     seats: z.coerce
@@ -84,8 +83,9 @@ export const getSchema = ({
       })
       .transform((val, ctx) => {
         if (
-          isTeamPlan(selectedPlan?.value) &&
-          val > TEAM_PLAN_MAX_ACTIVE_USERS
+          selectedPlan?.value === Plans.USERS_TEAMM ||
+          (selectedPlan?.value === Plans.USERS_TEAMY &&
+            val > TEAM_PLAN_MAX_ACTIVE_USERS)
         ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
@@ -95,7 +95,7 @@ export const getSchema = ({
 
         if (
           trialStatus === TrialStatuses.ONGOING &&
-          planName === Plans.USERS_TRIAL
+          plan?.value === Plans.USERS_TRIAL
         ) {
           return val
         }
@@ -243,7 +243,7 @@ export const getDefaultValuesUpgradeForm = ({
   let newPlan = proPlanYear
   if (isSentryUpgrade && !isSentryPlan(plan?.value)) {
     newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
-  } else if (isTeamPlan(plan?.value) || isTeamPlan(selectedPlan?.value)) {
+  } else if (plan?.isTeamPlan || selectedPlan?.value === Plans.USERS_TEAMM || selectedPlan?.value === Plans.USERS_TEAMY) {
     newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
   } else if (isPaidPlan) {
     newPlan = plan

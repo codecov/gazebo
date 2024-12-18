@@ -17,6 +17,7 @@ const planChunk = {
   isEnterprisePlan: false,
   isFreePlan: false,
   hasSeatsLeft: true,
+  isTeamPlan: false,
 }
 
 const proPlanYear = {
@@ -31,6 +32,7 @@ const proPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
 }
 
 const teamPlanYear = {
@@ -40,6 +42,7 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
 }
 
 const teamPlanMonth = {
@@ -49,6 +52,7 @@ const teamPlanMonth = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
 }
 
 const freePlan = {
@@ -58,6 +62,7 @@ const freePlan = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_BASIC,
+  isTeamPlan: false,
 }
 
 type WrapperClosure = (
@@ -65,13 +70,13 @@ type WrapperClosure = (
 ) => React.FC<React.PropsWithChildren>
 const wrapper: WrapperClosure =
   (initialEntries = ['/plan/gh/codecov/upgrade']) =>
-  ({ children }) => (
-    <MemoryRouter initialEntries={initialEntries}>
-      <Route path="/plan/:provider/:owner/upgrade">
-        <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  )
+    ({ children }) => (
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/plan/:provider/:owner/upgrade">
+          <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    )
 
 describe('UpdateBlurb', () => {
   describe('no diff', () => {

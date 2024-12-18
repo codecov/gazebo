@@ -1,11 +1,14 @@
+import { BillingRate, Plan } from 'shared/utils/billing'
+
 import { IndividualPlan } from 'services/account'
-import { BillingRate, isTeamPlan, Plan } from 'shared/utils/billing'
+import { Plans } from 'shared/utils/billing'
 
 const UpdateBlurb = ({
   currentPlan,
   newPlan,
   seats,
   nextBillingDate,
+
 }: {
   currentPlan?: Plan | null
   newPlan?: IndividualPlan
@@ -13,8 +16,10 @@ const UpdateBlurb = ({
   nextBillingDate: string
 }) => {
   const currentIsFree = currentPlan?.isFreePlan
-  const currentIsTeam = isTeamPlan(currentPlan?.value)
-  const selectedIsTeam = isTeamPlan(newPlan?.value)
+  const currentIsTeam = currentPlan?.isTeamPlan
+  const selectedIsTeam =
+    newPlan?.value === Plans.USERS_TEAMM ||
+    newPlan?.value === Plans.USERS_TEAMY
   const diffPlanType = currentIsFree || currentIsTeam !== selectedIsTeam
 
   const currentIsAnnual = currentPlan?.billingRate === BillingRate.ANNUALLY
@@ -41,17 +46,15 @@ const UpdateBlurb = ({
     <div>
       <h3 className="pb-2 font-semibold">Review your plan changes</h3>
       {diffPlanType && (
-        <li className="pl-2">{`You are changing from the ${
-          currentIsFree ? 'Developer' : currentIsTeam ? 'Team' : 'Pro'
-        } plan to the [${selectedIsTeam ? 'Team' : 'Pro'} plan]`}</li>
+        <li className="pl-2">{`You are changing from the ${currentIsFree ? 'Developer' : currentIsTeam ? 'Team' : 'Pro'
+          } plan to the [${selectedIsTeam ? 'Team' : 'Pro'} plan]`}</li>
       )}
       {diffSeats && (
         <li className="pl-2">{`You are changing seats from ${currentPlan?.planUserCount} to [${seats}]`}</li>
       )}
       {diffBillingType && (
-        <li className="pl-2">{`You are changing your billing cycle from ${
-          currentIsAnnual ? 'Annual' : 'Monthly'
-        } to [${currentIsAnnual ? 'Monthly' : 'Annual'}]`}</li>
+        <li className="pl-2">{`You are changing your billing cycle from ${currentIsAnnual ? 'Annual' : 'Monthly'
+          } to [${currentIsAnnual ? 'Monthly' : 'Annual'}]`}</li>
       )}
       <br />
 
