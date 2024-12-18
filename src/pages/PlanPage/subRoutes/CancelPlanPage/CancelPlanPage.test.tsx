@@ -153,6 +153,7 @@ describe('CancelPlanPage', () => {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
+                billingRate,
                 trialStatus,
                 value: planValue,
                 isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,

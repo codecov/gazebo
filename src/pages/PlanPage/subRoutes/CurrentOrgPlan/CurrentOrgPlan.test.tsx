@@ -12,7 +12,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { z } from 'zod'
 
 import { PlanUpdatedPlanNotificationContext } from 'pages/PlanPage/context'
-import { AccountDetailsSchema } from 'services/account'
+import { AccountDetailsSchema, TrialStatuses } from 'services/account'
 import { BillingRate, Plans } from 'shared/utils/billing'
 import { AlertOptions, type AlertOptionsType } from 'ui/Alert'
 
@@ -37,6 +37,24 @@ const mockNoEnterpriseAccount = {
   owner: {
     account: null,
   },
+}
+
+const mockPlanDataResponse = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'some-name',
+  monthlyUploadLimit: 123,
+  value: Plans.USERS_PR_INAPPM,
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 1,
+  hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
 }
 
 const mockEnterpriseAccountDetailsNinetyPercent = {
@@ -150,6 +168,13 @@ describe('CurrentOrgPlan', () => {
     server.use(
       graphql.query('EnterpriseAccountDetails', () => {
         return HttpResponse.json({ data: enterpriseAccountDetails })
+      }),
+      graphql.query('GetPlanData', () => {
+        return HttpResponse.json({
+          data: {
+            owner: { hasPrivateRepos: true, plan: { ...mockPlanDataResponse } },
+          },
+        })
       }),
       http.get('/internal/:provider/:owner/account-details', () => {
         return HttpResponse.json(accountDetails)
