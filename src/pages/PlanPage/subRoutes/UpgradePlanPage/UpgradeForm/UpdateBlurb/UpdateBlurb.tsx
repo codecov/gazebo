@@ -52,7 +52,7 @@ const UpdateBlurb = ({
       {diffSeats && (
         <li className="pl-2">{`You are changing seats from ${currentPlan?.planUserCount} to [${seats}]`}</li>
       )}
-      {diffBillingType && (
+      {diffBillingType && !currentIsFree && (
         <li className="pl-2">{`You are changing your billing cycle from ${
           currentIsAnnual ? 'Annual' : 'Monthly'
         } to [${currentIsAnnual ? 'Monthly' : 'Annual'}]`}</li>

@@ -115,7 +115,7 @@ describe('UpdateBlurb', () => {
         const seatsBlurb = await screen.findByText(
           'You are changing seats from 2 to [10]'
         )
-        const billingBlurb = await screen.findByText(
+        const billingBlurb = screen.queryByText(
           'You are changing your billing cycle from Monthly to [Annual]'
         )
         const immediateUpdate = await screen.findByText(
@@ -123,7 +123,7 @@ describe('UpdateBlurb', () => {
         )
         expect(planBlurb).toBeInTheDocument()
         expect(seatsBlurb).toBeInTheDocument()
-        expect(billingBlurb).toBeInTheDocument()
+        expect(billingBlurb).not.toBeInTheDocument()
         expect(immediateUpdate).toBeInTheDocument()
       })
     })
