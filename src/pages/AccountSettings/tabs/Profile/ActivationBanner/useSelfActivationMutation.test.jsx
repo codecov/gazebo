@@ -1,39 +1,51 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
+import { SelfHostedSeatsConfigQueryOpts } from 'services/selfHosted/SelfHostedSeatsConfigQueryOpts'
+
 import { useSelfActivationMutation } from './useSelfActivationMutation'
 
 const queryClient = new QueryClient({
-  logger: {
-    error: () => {},
-  },
-  defaultOptions: {
-    retry: false,
-  },
+  logger: { error: () => {} },
+  defaultOptions: { retry: false },
 })
-const server = setupServer()
+
+const queryClientV5 = new QueryClientV5({
+  logger: { error: () => {} },
+  defaultOptions: { retry: false },
+})
 
 const wrapper =
   (initialEntries = '/gh') =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider">{children}</Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
-beforeEach(() => {
+
+afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -42,14 +54,10 @@ describe('useSelfActivationMutation', () => {
   describe('on a successful call', () => {
     describe('user can activate themselves', () => {
       beforeEach(() => {
-        queryClient.setQueryData(['Seats'], {
-          data: {
-            config: {
-              seatsUsed: 0,
-              seatsLimit: 10,
-            },
-          },
-        })
+        queryClientV5.setQueryData(
+          SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey,
+          { data: { config: { seatsUsed: 0, seatsLimit: 10 } } }
+        )
 
         queryClient.setQueryData(['SelfHostedCurrentUser'], {
           activated: false,
@@ -82,7 +90,11 @@ describe('useSelfActivationMutation', () => {
         act(() => result.current.mutate(true))
 
         await waitFor(() =>
-          expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+          expect(
+            queryClientV5.getQueryData(
+              SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey
+            )
+          ).toStrictEqual({
             data: { config: { seatsUsed: 1, seatsLimit: 10 } },
           })
         )
@@ -97,14 +109,10 @@ describe('useSelfActivationMutation', () => {
 
     describe('user can deactivate themselves', () => {
       beforeEach(() => {
-        queryClient.setQueryData(['Seats'], {
-          data: {
-            config: {
-              seatsUsed: 1,
-              seatsLimit: 10,
-            },
-          },
-        })
+        queryClientV5.setQueryData(
+          SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey,
+          { data: { config: { seatsUsed: 1, seatsLimit: 10 } } }
+        )
 
         queryClient.setQueryData(['SelfHostedCurrentUser'], {
           activated: true,
@@ -136,7 +144,11 @@ describe('useSelfActivationMutation', () => {
         act(() => result.current.mutate(false))
 
         await waitFor(() =>
-          expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+          expect(
+            queryClientV5.getQueryData(
+              SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey
+            )
+          ).toStrictEqual({
             data: { config: { seatsUsed: 0, seatsLimit: 10 } },
           })
         )
@@ -151,14 +163,10 @@ describe('useSelfActivationMutation', () => {
 
     describe('user cannot change their status', () => {
       beforeEach(() => {
-        queryClient.setQueryData(['Seats'], {
-          data: {
-            config: {
-              seatsUsed: 10,
-              seatsLimit: 10,
-            },
-          },
-        })
+        queryClientV5.setQueryData(
+          SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey,
+          { data: { config: { seatsUsed: 10, seatsLimit: 10 } } }
+        )
 
         queryClient.setQueryData(['SelfHostedCurrentUser'], {
           activated: false,
@@ -191,7 +199,11 @@ describe('useSelfActivationMutation', () => {
         act(() => result.current.mutate(false))
 
         await waitFor(() =>
-          expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+          expect(
+            queryClientV5.getQueryData(
+              SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey
+            )
+          ).toStrictEqual({
             data: { config: { seatsUsed: 10, seatsLimit: 10 } },
           })
         )
@@ -207,14 +219,10 @@ describe('useSelfActivationMutation', () => {
 
   describe('on an unsuccessful call', () => {
     beforeEach(() => {
-      queryClient.setQueryData(['Seats'], {
-        data: {
-          config: {
-            seatsUsed: 1,
-            seatsLimit: 10,
-          },
-        },
-      })
+      queryClientV5.setQueryData(
+        SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey,
+        { data: { config: { seatsUsed: 1, seatsLimit: 10 } } }
+      )
 
       queryClient.setQueryData(['SelfHostedCurrentUser'], {
         activated: true,
@@ -243,7 +251,11 @@ describe('useSelfActivationMutation', () => {
       act(() => result.current.mutate(false))
 
       await waitFor(() =>
-        expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+        expect(
+          queryClientV5.getQueryData(
+            SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey
+          )
+        ).toStrictEqual({
           data: { config: { seatsUsed: 1, seatsLimit: 10 } },
         })
       )
