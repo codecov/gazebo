@@ -31,7 +31,10 @@ const Controller: React.FC<BillingControlsProps> = ({
   setFormValue,
   setSelectedPlan,
 }) => {
-  if (selectedPlan === Plans.USERS_TEAMM || Plans.USERS_TEAMY) {
+  if (
+    selectedPlan === Plans.USERS_TEAMM ||
+    selectedPlan === Plans.USERS_TEAMY
+  ) {
     return (
       <TeamPlanController
         newPlan={newPlan}

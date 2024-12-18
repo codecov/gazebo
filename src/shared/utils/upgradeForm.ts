@@ -83,9 +83,9 @@ export const getSchema = ({
       })
       .transform((val, ctx) => {
         if (
-          selectedPlan?.value === Plans.USERS_TEAMM ||
-          (selectedPlan?.value === Plans.USERS_TEAMY &&
-            val > TEAM_PLAN_MAX_ACTIVE_USERS)
+          (selectedPlan?.value === Plans.USERS_TEAMM ||
+            selectedPlan?.value === Plans.USERS_TEAMY) &&
+          val > TEAM_PLAN_MAX_ACTIVE_USERS
         ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,

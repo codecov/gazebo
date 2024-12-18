@@ -167,6 +167,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           billingRate: 'monthly',
           value: Plans.USERS_TEAMM,
           planUserCount: 1,
+          isTeamPlan: true,
         } as PlanData,
       })
 
@@ -189,6 +190,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           billingRate: 'monthly',
           value: Plans.USERS_SENTRYY,
           planUserCount: 1,
+          isTeamPlan: false,
         } as PlanData,
       })
 

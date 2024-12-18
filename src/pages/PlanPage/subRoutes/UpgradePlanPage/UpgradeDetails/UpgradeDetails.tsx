@@ -7,7 +7,10 @@ import TeamPlanDetails from './TeamPlanDetails'
 function UpgradeDetails({ selectedPlan }: { selectedPlan: Plan }) {
   if (isSentryPlan(selectedPlan?.value)) {
     return <SentryPlanDetails />
-  } else if (selectedPlan?.value === Plans.USERS_TEAMM || Plans.USERS_TEAMY) {
+  } else if (
+    selectedPlan?.value === Plans.USERS_TEAMM ||
+    selectedPlan?.value === Plans.USERS_TEAMY
+  ) {
     return <TeamPlanDetails />
   } else {
     return <ProPlanDetails />
