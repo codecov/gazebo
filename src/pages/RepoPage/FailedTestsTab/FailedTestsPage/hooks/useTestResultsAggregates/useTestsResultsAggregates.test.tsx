@@ -56,6 +56,7 @@ const mockIncorrectResponse = {
     plan: {
       value: Plans.USERS_BASIC,
       isFreePlan: true,
+      isTeamPlan: false,
     },
   },
 }
@@ -65,6 +66,7 @@ const mockResponse = {
     plan: {
       value: Plans.USERS_BASIC,
       isFreePlan: true,
+      isTeamPlan: false,
     },
     repository: {
       __typename: 'Repository',
@@ -132,6 +134,7 @@ describe('useTestResultsAggregates', () => {
             },
             planName: 'users-basic',
             isFreePlan: true,
+            isTeamPlan: false,
             private: true,
             defaultBranch: 'main',
           })
