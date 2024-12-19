@@ -98,16 +98,13 @@ describe('calculatePriceTeamPlan', () => {
 })
 
 describe('getDefaultValuesUpgradeForm', () => {
+  const accountDetails = {} as z.infer<typeof AccountDetailsSchema>
   const proPlanYear = { value: Plans.USERS_PR_INAPPY } as Plan
   const sentryPlanYear = { value: Plans.USERS_SENTRYY } as Plan
   const teamPlanMonth = { value: Plans.USERS_TEAMM } as Plan
 
   describe('when current plan is basic', () => {
     it('returns pro year plan', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_BASIC, quantity: 1 },
-      } as z.infer<typeof AccountDetailsSchema>
-
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
         selectedPlan: proPlanYear,
@@ -130,10 +127,6 @@ describe('getDefaultValuesUpgradeForm', () => {
     })
 
     it('returns sentry year plan if user is sentry upgrade', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_BASIC, quantity: 1 },
-      } as z.infer<typeof AccountDetailsSchema>
-
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
         selectedPlan: proPlanYear,
@@ -154,14 +147,6 @@ describe('getDefaultValuesUpgradeForm', () => {
 
   describe('when current plan is team monthly', () => {
     it('returns team monthly plan', () => {
-      const accountDetails = {
-        plan: {
-          value: Plans.USERS_TEAMM,
-          quantity: 1,
-          billingRate: BillingRate.MONTHLY,
-        },
-      } as z.infer<typeof AccountDetailsSchema>
-
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
         selectedPlan: proPlanYear,
@@ -180,10 +165,6 @@ describe('getDefaultValuesUpgradeForm', () => {
     })
 
     it('returns pro sentry plan if user is sentry upgrade', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
-      } as z.infer<typeof AccountDetailsSchema>
-
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
         selectedPlan: proPlanYear,
@@ -207,14 +188,6 @@ describe('getDefaultValuesUpgradeForm', () => {
   })
 
   it('returns current plan if the user is on a paid plan', () => {
-    const accountDetails = {
-      plan: {
-        value: Plans.USERS_PR_INAPPM,
-        billingRate: BillingRate.MONTHLY,
-        quantity: 2,
-      },
-    } as z.infer<typeof AccountDetailsSchema>
-
     const data = getDefaultValuesUpgradeForm({
       accountDetails,
       selectedPlan: proPlanYear,
@@ -238,10 +211,11 @@ describe('getDefaultValuesUpgradeForm', () => {
 })
 
 describe('getSchema', () => {
+  const accountDetails = {
+    activatedUserCount: 2,
+  } as z.infer<typeof AccountDetailsSchema>
+
   it('passes parsing when all conditions are met', () => {
-    const accountDetails = {
-      activatedUserCount: 2,
-    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
     const response = schema.safeParse({
@@ -253,9 +227,6 @@ describe('getSchema', () => {
   })
 
   it('fails to parse when newPlan is not a string', () => {
-    const accountDetails = {
-      activatedUserCount: 2,
-    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
     const response = schema.safeParse({ seats: 5, newPlan: { value: 5 } })
@@ -270,9 +241,6 @@ describe('getSchema', () => {
   })
 
   it('fails to parse when seats is not a number', () => {
-    const accountDetails = {
-      activatedUserCount: 2,
-    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
     const response = schema.safeParse({ seats: 'ahh' })
@@ -287,9 +255,6 @@ describe('getSchema', () => {
   })
 
   it('fails to parse when the seats are below the minimum', () => {
-    const accountDetails = {
-      activatedUserCount: 2,
-    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
     const response = schema.safeParse({ seats: 3 })
@@ -321,12 +286,6 @@ describe('getSchema', () => {
   })
 
   it('passes when seats are below activated seats and user is on trial', () => {
-    const accountDetails = {
-      activatedUserCount: 2,
-      plan: {
-        value: Plans.USERS_TRIAL,
-      },
-    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({
       accountDetails,
       minSeats: 5,
@@ -342,12 +301,9 @@ describe('getSchema', () => {
   })
 
   describe('when the user upgrades to team plan', () => {
+    const accountDetails = {} as z.infer<typeof AccountDetailsSchema>
+
     it('fails to parse when seats are above max seats', () => {
-      const accountDetails = {
-        plan: {
-          value: Plans.USERS_INAPPY,
-        },
-      } as z.infer<typeof AccountDetailsSchema>
       const schema = getSchema({
         accountDetails,
         selectedPlan: {
@@ -370,11 +326,6 @@ describe('getSchema', () => {
     })
 
     it('passes when seats are below max seats for team yearly plan', () => {
-      const accountDetails = {
-        plan: {
-          value: Plans.USERS_INAPPY,
-        },
-      } as z.infer<typeof AccountDetailsSchema>
       const schema = getSchema({
         accountDetails,
         selectedPlan: {
@@ -393,11 +344,6 @@ describe('getSchema', () => {
   })
 
   it('passes when seats are below max seats for team monthly plan', () => {
-    const accountDetails = {
-      plan: {
-        value: Plans.USERS_INAPPY,
-      },
-    } as z.infer<typeof AccountDetailsSchema>
     const schema = getSchema({
       accountDetails,
       selectedPlan: {
@@ -614,9 +560,7 @@ describe('shouldRenderCancelLink', () => {
 
   describe('user intended plan is Team', () => {
     it('sets new plan to team', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_BASIC, quantity: 1 },
-      } as z.infer<typeof AccountDetailsSchema>
+      const accountDetails = {} as z.infer<typeof AccountDetailsSchema>
       const plans = [
         { value: Plans.USERS_TEAMY } as Plan,
         { value: Plans.USERS_PR_INAPPY } as Plan,

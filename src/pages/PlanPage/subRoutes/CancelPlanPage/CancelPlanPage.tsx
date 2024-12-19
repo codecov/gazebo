@@ -49,15 +49,13 @@ function CancelPlanPage() {
     return <Redirect to={`/plan/${provider}/${owner}`} />
   }
 
-  const isMonthlyPlan =
-    accountDetailsData?.plan?.billingRate === BillingRate.MONTHLY
+  const isMonthlyPlan = planData?.plan?.billingRate === BillingRate.MONTHLY
 
   const discountNotApplied =
     !accountDetailsData?.subscriptionDetail?.customer?.discount
   const showSpecialOffer = discountNotApplied && isMonthlyPlan
   const showTeamSpecialOffer =
-    shouldDisplayTeamCard({ plans }) &&
-    isProPlan(accountDetailsData?.plan?.value)
+    shouldDisplayTeamCard({ plans }) && isProPlan(planData?.plan?.value)
   const showCancelPage = showSpecialOffer || showTeamSpecialOffer
 
   let redirectTo = `/plan/${provider}/${owner}/cancel/downgrade`
