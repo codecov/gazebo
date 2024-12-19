@@ -274,7 +274,6 @@ describe('CurrentOrgPlan', () => {
           accountDetails: {
             planProvider: 'gitlab',
             rootOrganization: null,
-
             usesInvoice: false,
           } as z.infer<typeof AccountDetailsSchema>,
         })
@@ -304,7 +303,6 @@ describe('CurrentOrgPlan', () => {
           accountDetails: {
             planProvider: 'github',
             rootOrganization: {},
-
             usesInvoice: true,
           } as z.infer<typeof AccountDetailsSchema>,
         })

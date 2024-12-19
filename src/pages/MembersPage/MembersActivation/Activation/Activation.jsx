@@ -56,7 +56,7 @@ function Activation() {
             available seats{' '}
           </p>
           <p className="text-xs">
-            Your org trialed Pro Team plan{' '}
+            Your org trialed Pro plan{' '}
             <span className="font-semibold">
               <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade</A>
             </span>
