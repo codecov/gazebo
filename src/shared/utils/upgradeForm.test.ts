@@ -202,6 +202,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           billingRate: BillingRate.MONTHLY,
           value: Plans.USERS_SENTRYY,
           planUserCount: 1,
+          isTeamPlan: false,
         },
         seats: 5,
       })

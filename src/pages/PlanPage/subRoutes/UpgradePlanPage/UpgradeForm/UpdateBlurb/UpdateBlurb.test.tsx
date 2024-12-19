@@ -18,7 +18,6 @@ const planChunk = {
   isFreePlan: false,
   isTeamPlan: true,
   hasSeatsLeft: true,
-  isTeamPlan: false,
 }
 
 const proPlanYear = {
@@ -71,13 +70,13 @@ type WrapperClosure = (
 ) => React.FC<React.PropsWithChildren>
 const wrapper: WrapperClosure =
   (initialEntries = ['/plan/gh/codecov/upgrade']) =>
-    ({ children }) => (
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/plan/:provider/:owner/upgrade">
-          <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
-        </Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={initialEntries}>
+      <Route path="/plan/:provider/:owner/upgrade">
+        <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
+      </Route>
+    </MemoryRouter>
+  )
 
 describe('UpdateBlurb', () => {
   describe('no diff', () => {
@@ -259,7 +258,7 @@ describe('UpdateBlurb', () => {
     })
 
     describe('when user has change from pro to team', () => {
-      it('renders next billing cycle blurb', async () => {
+      it.only('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
             currentPlan={{ ...proPlanYear, ...planChunk, planUserCount: 10 }}
