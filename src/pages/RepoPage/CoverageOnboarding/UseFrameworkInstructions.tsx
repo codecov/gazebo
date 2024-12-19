@@ -22,36 +22,36 @@ export function UseFrameworkInstructions({
         githubActionsWorkflow: `name: Run tests and upload coverage
 
 on: 
-push
+  push
 
 jobs:
-test:
-name: Run tests and collect coverage
-runs-on: ubuntu-latest
-steps:
-- name: Checkout
-uses: actions/checkout@v4
-with:
-fetch-depth: 0
+  test:
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-- name: Set up Node
-uses: actions/setup-node@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
 
-- name: Install dependencies
-run: npm install
+      - name: Install dependencies
+        run: npm install
 
-- name: Run tests
-run: npx jest --coverage
+      - name: Run tests
+        run: npx jest --coverage
 
-- name: Upload results to Codecov
-uses: codecov/codecov-action@v5
-with:
-token: \${{ secrets.CODECOV_TOKEN }}${
-          orgUploadToken
-            ? `
-slug: ${owner}/${repo}`
-            : ''
-        }
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: \${{ secrets.CODECOV_TOKEN }}${
+            orgUploadToken
+              ? `
+          slug: ${owner}/${repo}`
+              : ''
+          }
 `,
       },
       Vitest: {
@@ -60,36 +60,36 @@ slug: ${owner}/${repo}`
         githubActionsWorkflow: `name: Run tests and upload coverage
 
 on: 
-push
+  push
 
 jobs:
-test:
-name: Run tests and collect coverage
-runs-on: ubuntu-latest
-steps:
-- name: Checkout
-uses: actions/checkout@v4
-with:
-fetch-depth: 0
+  test:
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-- name: Set up Node
-uses: actions/setup-node@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
 
-- name: Install dependencies
-run: npm install
+      - name: Install dependencies
+        run: npm install
 
-- name: Run tests
-run: npx vitest run --coverage
+      - name: Run tests
+        run: npx vitest run --coverage
 
-- name: Upload results to Codecov
-uses: codecov/codecov-action@v5
-with:
-token: \${{ secrets.CODECOV_TOKEN }}${
-          orgUploadToken
-            ? `
-slug: ${owner}/${repo}`
-            : ''
-        }
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: \${{ secrets.CODECOV_TOKEN }}${
+            orgUploadToken
+              ? `
+          slug: ${owner}/${repo}`
+              : ''
+          }
 `,
       },
       Pytest: {
@@ -98,36 +98,36 @@ slug: ${owner}/${repo}`
         githubActionsWorkflow: `name: Run tests and upload coverage
 
 on: 
-push
+  push
 
 jobs:
-test:
-name: Run tests and collect coverage
-runs-on: ubuntu-latest
-steps:
-- name: Checkout
-uses: actions/checkout@v4
-with:
-fetch-depth: 0
+  test:
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-- name: Set up Python
-uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
 
-- name: Install dependencies
-run: pip install pytest pytest-cov
+      - name: Install dependencies
+        run: pip install pytest pytest-cov
 
-- name: Run tests
-run: pytest --cov-branch --cov-report=xml
+      - name: Run tests
+        run: pytest --cov-branch --cov-report=xml
 
-- name: Upload results to Codecov
-uses: codecov/codecov-action@v5
-with:
-token: \${{ secrets.CODECOV_TOKEN }}${
-          orgUploadToken
-            ? `
-slug: ${owner}/${repo}`
-            : ''
-        }
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: \${{ secrets.CODECOV_TOKEN }}${
+            orgUploadToken
+              ? `
+          slug: ${owner}/${repo}`
+              : ''
+          }
 `,
       },
       Go: {
@@ -136,36 +136,36 @@ slug: ${owner}/${repo}`
         githubActionsWorkflow: `name: Run tests and upload coverage
 
 on: 
-push
+  push
 
 jobs:
-test:
-name: Run tests and collect coverage
-runs-on: ubuntu-latest
-steps:
-- name: Checkout
-uses: actions/checkout@v4
-with:
-fetch-depth: 0
+  test:
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-- name: Set up Go
-uses: actions/setup-go@v5
+      - name: Set up Go
+        uses: actions/setup-go@v5
 
-- name: Install dependencies
-run: go mod download
+      - name: Install dependencies
+        run: go mod download
 
-- name: Run tests
-run: go test -coverprofile=coverage.txt
+      - name: Run tests
+        run: go test -coverprofile=coverage.txt
 
-- name: Upload results to Codecov
-uses: codecov/codecov-action@v5
-with:
-token: \${{ secrets.CODECOV_TOKEN }}${
-          orgUploadToken
-            ? `
-slug: ${owner}/${repo}`
-            : ''
-        }
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: \${{ secrets.CODECOV_TOKEN }}${
+            orgUploadToken
+              ? `
+          slug: ${owner}/${repo}`
+              : ''
+          }
 `,
       },
     }),
