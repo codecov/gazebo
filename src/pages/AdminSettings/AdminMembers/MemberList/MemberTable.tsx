@@ -4,6 +4,10 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import {
+  useInfiniteQuery as useInfiniteQueryV5,
+  useQueryClient as useQueryClientV5,
+} from '@tanstack/react-queryV5'
+import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -14,11 +18,11 @@ import { useEffect, useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import { useLocationParams } from 'services/navigation'
+import { useSelfHostedSettings } from 'services/selfHosted'
 import {
+  SelfHostedUserListQueryOpts,
   UserListOwner,
-  useSelfHostedSettings,
-  useSelfHostedUserList,
-} from 'services/selfHosted'
+} from 'services/selfHosted/SelfHostedUserListQueryOpts'
 import Api from 'shared/api'
 import Spinner from 'ui/Spinner'
 import Toggle from 'ui/Toggle'
@@ -57,11 +61,6 @@ const columns = [
   }),
 ]
 
-interface MutationArgs {
-  activated: boolean
-  ownerid: number
-}
-
 interface CreateTableArgs {
   tableData: UserListOwner[]
   seatData: SelfHostedSettings
@@ -94,6 +93,28 @@ const createTable = ({ tableData, seatData, mutate }: CreateTableArgs) => {
   )
 }
 
+interface Params {
+  activated?: boolean
+  search?: string
+  isAdmin?: boolean
+}
+
+const useQueryMembersList = (params: Params) => {
+  const { data: queryData, ...rest } = useInfiniteQueryV5(
+    SelfHostedUserListQueryOpts(params)
+  )
+
+  const flatUsersList = useMemo(
+    () => queryData?.pages?.flatMap((page) => page.results) ?? [],
+    [queryData?.pages]
+  )
+
+  return {
+    ...rest,
+    data: flatUsersList,
+  }
+}
+
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">
     <Spinner />
@@ -115,8 +136,14 @@ function LoadMoreTrigger({
   )
 }
 
+interface MutationArgs {
+  activated: boolean
+  ownerid: number
+}
+
 function MemberTable() {
   const queryClient = useQueryClient()
+  const queryClientV5 = useQueryClientV5()
   const { ref, inView } = useInView()
   const { data: seatData } = useSelfHostedSettings()
   const { params } = useLocationParams({
@@ -126,7 +153,7 @@ function MemberTable() {
   })
 
   const { data, isFetchingNextPage, hasNextPage, fetchNextPage, isLoading } =
-    useSelfHostedUserList(params)
+    useQueryMembersList(params)
 
   const { mutate } = useMutation({
     mutationFn: ({ activated, ownerid }: MutationArgs) =>
@@ -135,7 +162,9 @@ function MemberTable() {
     onSuccess: () => {
       queryClient.invalidateQueries(['SelfHostedSettings'])
       queryClient.invalidateQueries(['Seats'])
-      queryClient.invalidateQueries(['SelfHostedUserList'])
+      queryClientV5.invalidateQueries({
+        queryKey: SelfHostedUserListQueryOpts(params).queryKey,
+      })
     },
   })
 
