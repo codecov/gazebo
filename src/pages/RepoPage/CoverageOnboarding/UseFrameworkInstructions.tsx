@@ -94,7 +94,7 @@ slug: ${owner}/${repo}`
       },
       Pytest: {
         install: 'pip install pytest pytest-cov',
-        run: 'pytest --cov --cov-report=xml',
+        run: 'pytest --cov-branch --cov-report=xml',
         githubActionsWorkflow: `name: Run tests and upload coverage
 
 on: 
@@ -117,7 +117,7 @@ uses: actions/setup-python@v4
 run: pip install pytest pytest-cov
 
 - name: Run tests
-run: pytest --cov --cov-report=xml
+run: pytest --cov-branch --cov-report=xml
 
 - name: Upload results to Codecov
 uses: codecov/codecov-action@v5
