@@ -49,13 +49,27 @@ describe('InstructionBox', () => {
       expect(button).toBeInTheDocument()
     })
 
-    it('renders linux default instructions', () => {
+    it('renders Linux Arm64 button', () => {
       render(<InstructionBox />)
 
-      const instruction = screen.queryByText(
-        'curl -Os https://cli.codecov.io/latest/linux/codecov/'
+      const button = screen.getByRole('button', { name: 'Linux Arm64' })
+      expect(button).toBeInTheDocument()
+    })
+
+    it('renders Alpine Linux Arm64 button', () => {
+      render(<InstructionBox />)
+
+      const button = screen.getByRole('button', { name: 'Alpine Linux Arm64' })
+      expect(button).toBeInTheDocument()
+    })
+
+    it('renders linux default instructions', async () => {
+      render(<InstructionBox />)
+
+      const instruction = await screen.findByText(
+        /curl -Os https:\/\/cli.codecov.io\/latest\/linux\/codecov/
       )
-      expect(instruction).not.toBeInTheDocument()
+      expect(instruction).toBeInTheDocument()
     })
   })
 
@@ -97,6 +111,40 @@ describe('InstructionBox', () => {
 
       const instruction = screen.getByText(
         /curl -Os https:\/\/cli.codecov.io\/latest\/macos\/codecov/
+      )
+      expect(instruction).toBeInTheDocument()
+    })
+  })
+
+  describe('when click on Linux Arm64', () => {
+    it('renders the Linux Arm64 instruction', async () => {
+      const { user } = setup()
+      render(<InstructionBox />)
+
+      const linuxArm64Button = screen.getByRole('button', {
+        name: 'Linux Arm64',
+      })
+      await user.click(linuxArm64Button)
+
+      const instruction = screen.getByText(
+        /curl -Os https:\/\/cli.codecov.io\/latest\/linux-arm64\/codecov/
+      )
+      expect(instruction).toBeInTheDocument()
+    })
+  })
+
+  describe('when click on Alpine Linux Arm64', () => {
+    it('renders the Alpine Linux Arm64 instruction', async () => {
+      const { user } = setup()
+      render(<InstructionBox />)
+
+      const alpineLinuxArm64Button = screen.getByRole('button', {
+        name: 'Alpine Linux Arm64',
+      })
+      await user.click(alpineLinuxArm64Button)
+
+      const instruction = screen.getByText(
+        /curl -Os https:\/\/cli.codecov.io\/latest\/alpine-arm64\/codecov/
       )
       expect(instruction).toBeInTheDocument()
     })

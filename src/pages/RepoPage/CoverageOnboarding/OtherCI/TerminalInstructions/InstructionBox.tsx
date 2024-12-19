@@ -4,7 +4,9 @@ import { type MouseEvent, useState } from 'react'
 import { CopyClipboard } from 'ui/CopyClipboard'
 
 import {
+  alpineLinuxArm64Instructions,
   alpineLinuxSystemInstructions,
+  linuxArm64SystemInstructions,
   linuxSystemInstructions,
   macOSSystemInstructions,
   windowsSystemInstructions,
@@ -15,6 +17,8 @@ const systemsEnum = Object.freeze({
   ALPINE: 'Alpine Linux',
   MACOS: 'macOS',
   WINDOWS: 'Windows',
+  LINUXARM64: 'Linux Arm64',
+  ALPINELINUXARM64: 'Alpine Linux Arm64',
 })
 
 const systemsMapper = Object.freeze({
@@ -22,6 +26,8 @@ const systemsMapper = Object.freeze({
   'Alpine Linux': alpineLinuxSystemInstructions,
   macOS: macOSSystemInstructions,
   Windows: windowsSystemInstructions,
+  'Linux Arm64': linuxArm64SystemInstructions,
+  'Alpine Linux Arm64': alpineLinuxArm64Instructions,
 })
 
 const systems = [
@@ -29,6 +35,8 @@ const systems = [
   systemsEnum.ALPINE,
   systemsEnum.MACOS,
   systemsEnum.WINDOWS,
+  systemsEnum.LINUXARM64,
+  systemsEnum.ALPINELINUXARM64,
 ]
 
 export function InstructionBox() {
