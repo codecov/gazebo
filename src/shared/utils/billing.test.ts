@@ -12,8 +12,6 @@ import {
   formatTimestampToCalendarDate,
   getNextBillingDate,
   isBasicPlan,
-  isCodecovProPlan,
-  isProPlan,
   isSentryPlan,
   isTeamPlan,
   isTrialPlan,
@@ -533,34 +531,5 @@ describe('isTrialPlan', () => {
     expect(isTrialPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
     expect(isTrialPlan(Plans.USERS_SENTRYM)).toBeFalsy()
     expect(isTrialPlan(Plans.USERS_BASIC)).toBeFalsy()
-  })
-})
-
-describe('isProPlan', () => {
-  it('returns true when plan is pro', () => {
-    expect(isProPlan(Plans.USERS_PR_INAPPM)).toBeTruthy()
-  })
-
-  it('returns true when plan is sentry pro', () => {
-    expect(isProPlan(Plans.USERS_SENTRYM)).toBeTruthy()
-  })
-
-  it('returns false when plan is not pro', () => {
-    expect(isProPlan(Plans.USERS_FREE)).toBeFalsy()
-    expect(isProPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
-    expect(isProPlan(Plans.USERS_BASIC)).toBeFalsy()
-  })
-})
-
-describe('isCodecovProPlan', () => {
-  it('returns true when plan is codecov pro', () => {
-    expect(isCodecovProPlan(Plans.USERS_PR_INAPPM)).toBeTruthy()
-  })
-
-  it('returns false when plan is not codecov pro', () => {
-    expect(isCodecovProPlan(Plans.USERS_FREE)).toBeFalsy()
-    expect(isCodecovProPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
-    expect(isCodecovProPlan(Plans.USERS_SENTRYM)).toBeFalsy()
-    expect(isCodecovProPlan(Plans.USERS_BASIC)).toBeFalsy()
   })
 })

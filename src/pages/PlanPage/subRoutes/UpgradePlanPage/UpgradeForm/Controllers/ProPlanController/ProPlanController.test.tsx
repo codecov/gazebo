@@ -129,6 +129,7 @@ const mockPlanDataResponseMonthly = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isProPlan: true,
   isFreePlan: false,
 }
 
@@ -147,6 +148,7 @@ const mockPlanDataResponseYearly = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isProPlan: true,
   isFreePlan: false,
 }
 

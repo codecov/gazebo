@@ -39,6 +39,7 @@ const mockPlanDataResponse = {
   hasSeatsLeft: true,
   isEnterprisePlan: false,
   isFreePlan: false,
+  isProPlan: false,
 }
 
 beforeAll(() => {

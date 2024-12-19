@@ -4,11 +4,7 @@ import isString from 'lodash/isString'
 import isUndefined from 'lodash/isUndefined'
 import { z } from 'zod'
 
-import {
-  AccountDetailsSchema,
-  IndividualPlan,
-  TrialStatus,
-} from 'services/account'
+import { AccountDetailsSchema, IndividualPlan } from 'services/account'
 
 export const Plans = {
   USERS: 'users',
@@ -34,24 +30,6 @@ export const BillingRate = {
   ANNUALLY: 'annually',
 } as const
 
-export interface Plan {
-  baseUnitPrice: number
-  benefits: string[]
-  billingRate?: (typeof BillingRate)[keyof typeof BillingRate] | null
-  marketingName: string
-  value: PlanName
-  monthlyUploadLimit: number | null
-  quantity?: number | null
-  trialEndDate: string | null
-  trialStatus: TrialStatus
-  trialStartDate: string | null
-  trialTotalDays: number | null
-  planUserCount: number | null
-  hasSeatsLeft: boolean
-  isEnterprisePlan: boolean
-  isFreePlan: boolean
-}
-
 export function isTeamPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     if (plan === Plans.USERS_TEAMM || plan === Plans.USERS_TEAMY) return true
@@ -68,20 +46,6 @@ export function isBasicPlan(plan?: PlanName) {
 export function isSentryPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return plan === Plans.USERS_SENTRYM || plan === Plans.USERS_SENTRYY
-  }
-  return false
-}
-
-export function isCodecovProPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return plan === Plans.USERS_PR_INAPPM || plan === Plans.USERS_PR_INAPPY
-  }
-  return false
-}
-
-export function isProPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return isSentryPlan(plan) || isCodecovProPlan(plan)
   }
   return false
 }

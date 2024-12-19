@@ -1,5 +1,5 @@
-import { IndividualPlan } from 'services/account'
-import { BillingRate, isTeamPlan, Plan } from 'shared/utils/billing'
+import { IndividualPlan, Plan } from 'services/account'
+import { BillingRate, isTeamPlan } from 'shared/utils/billing'
 
 const UpdateBlurb = ({
   currentPlan,
