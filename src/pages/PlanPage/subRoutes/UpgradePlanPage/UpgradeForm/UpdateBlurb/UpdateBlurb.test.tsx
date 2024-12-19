@@ -118,7 +118,7 @@ describe('UpdateBlurb', () => {
         const seatsBlurb = await screen.findByText(
           'You are changing seats from 2 to [10]'
         )
-        const billingBlurb = await screen.findByText(
+        const billingBlurb = screen.queryByText(
           'You are changing your billing cycle from Monthly to [Annual]'
         )
         const immediateUpdate = await screen.findByText(
@@ -126,7 +126,7 @@ describe('UpdateBlurb', () => {
         )
         expect(planBlurb).toBeInTheDocument()
         expect(seatsBlurb).toBeInTheDocument()
-        expect(billingBlurb).toBeInTheDocument()
+        expect(billingBlurb).not.toBeInTheDocument()
         expect(immediateUpdate).toBeInTheDocument()
       })
     })
@@ -258,10 +258,15 @@ describe('UpdateBlurb', () => {
     })
 
     describe('when user has change from pro to team', () => {
-      it.only('renders next billing cycle blurb', async () => {
+      it('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={{ ...proPlanYear, ...planChunk, planUserCount: 10 }}
+            currentPlan={{
+              ...proPlanYear,
+              ...planChunk,
+              planUserCount: 10,
+              isTeamPlan: false,
+            }}
             newPlan={teamPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
