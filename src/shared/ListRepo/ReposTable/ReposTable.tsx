@@ -186,6 +186,7 @@ const ReposTable = ({
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     enableSortingRemoval: false,
+    manualSorting: true,
   })
 
   if (!isReposLoading && isEmpty(tableData)) {
