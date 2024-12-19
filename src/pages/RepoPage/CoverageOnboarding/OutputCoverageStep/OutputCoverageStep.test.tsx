@@ -12,6 +12,8 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import OutputCoverageStep from './OutputCoverageStep'
 
+import { Framework, FrameworkInstructions } from '../UseFrameworkInstructions'
+
 vi.mock('config')
 
 const server = setupServer()
@@ -69,27 +71,27 @@ describe('OutputCoverageStep', () => {
     }
   }
 
-  const framework = 'Jest'
-  const frameworkInstructions = {
+  const framework: Framework = 'Jest'
+  const frameworkInstructions: FrameworkInstructions = {
     Jest: {
       install: 'npm install --save-dev jest',
       run: 'npx jest --coverage',
-      workflow: undefined,
+      githubActionsWorkflow: '',
     },
     Vitest: {
       install: '',
       run: '',
-      workflow: undefined,
+      githubActionsWorkflow: '',
     },
     Pytest: {
       install: '',
       run: '',
-      workflow: undefined,
+      githubActionsWorkflow: '',
     },
     Go: {
       install: undefined,
       run: 'go test -coverprofile=coverage.txt',
-      workflow: undefined,
+      githubActionsWorkflow: '',
     },
   }
   const setFramework = vi.fn()
