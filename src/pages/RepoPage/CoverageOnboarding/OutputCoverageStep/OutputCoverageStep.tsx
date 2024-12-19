@@ -7,7 +7,7 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import Select from 'ui/Select'
 
-import { Framework, FrameworkInstructions } from './types'
+import { Framework, FrameworkInstructions } from '../UseFrameworkInstructions'
 
 interface OutputCoverageStepProps {
   framework: Framework

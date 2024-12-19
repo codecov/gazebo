@@ -102,12 +102,37 @@ describe('OtherCI', () => {
     return { user }
   }
 
-  describe('step one', () => {
+  describe('output coverage step', () => {
     it('renders header', async () => {
       setup({})
       render(<OtherCI />, { wrapper })
 
-      const header = await screen.findByText(/Step 1/)
+      const header = await screen.findByText(
+        /Step \d: Output a Coverage report file in your CI/
+      )
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders body', async () => {
+      setup({})
+      render(<OtherCI />, { wrapper })
+
+      const body = await screen.findByText(/Select your language below/)
+      expect(body).toBeInTheDocument()
+
+      const jest = await screen.findByText(/Jest/)
+      expect(jest).toBeInTheDocument()
+    })
+  })
+
+  describe('token step', () => {
+    it('renders header', async () => {
+      setup({})
+      render(<OtherCI />, { wrapper })
+
+      const header = await screen.findByText(
+        /Step \d: add repository token as a secret to your CI Provider/
+      )
       expect(header).toBeInTheDocument()
     })
 
@@ -151,12 +176,12 @@ describe('OtherCI', () => {
     })
   })
 
-  describe('step two', () => {
+  describe('install step', () => {
     beforeEach(() => setup({}))
     it('renders header', async () => {
       render(<OtherCI />, { wrapper })
 
-      const header = await screen.findByText(/Step 2/)
+      const header = await screen.findByText(/Step \d: add the/)
       expect(header).toBeInTheDocument()
 
       const headerLink = await screen.findByRole('link', {
@@ -177,12 +202,14 @@ describe('OtherCI', () => {
     })
   })
 
-  describe('step three', () => {
+  describe('upload step', () => {
     it('renders header', async () => {
       setup({})
       render(<OtherCI />, { wrapper })
 
-      const header = await screen.findByText(/Step 3/)
+      const header = await screen.findByText(
+        /Step \d: upload coverage to Codecov via the CLI after your tests have run/
+      )
       expect(header).toBeInTheDocument()
     })
 
@@ -231,8 +258,17 @@ describe('OtherCI', () => {
     })
   })
 
-  describe('step four', () => {
+  describe('merge step', () => {
     beforeEach(() => setup({}))
+    it('renders header', async () => {
+      render(<OtherCI />, { wrapper })
+
+      const header = await screen.findByText(
+        /Step \d: merge to main or your preferred feature branch/
+      )
+      expect(header).toBeInTheDocument()
+    })
+
     it('renders body', async () => {
       render(<OtherCI />, { wrapper })
 
