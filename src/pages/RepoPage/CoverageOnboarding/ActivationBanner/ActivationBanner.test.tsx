@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { PlanName, Plans } from 'shared/utils/billing'
+import { BillingRate, PlanName, Plans } from 'shared/utils/billing'
 
 import ActivationBanner from './ActivationBanner'
 
@@ -52,7 +52,7 @@ afterAll(() => {
 const mockTrialData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
   value: Plans.USERS_BASIC,
@@ -92,7 +92,7 @@ describe('ActivationBanner', () => {
               pretrialPlan: {
                 baseUnitPrice: 10,
                 benefits: [],
-                billingRate: 'monthly',
+                billingRate: BillingRate.MONTHLY,
                 marketingName: 'Users Basic',
                 monthlyUploadLimit: 250,
                 value: Plans.USERS_BASIC,

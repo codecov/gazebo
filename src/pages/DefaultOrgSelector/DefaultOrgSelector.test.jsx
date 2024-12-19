@@ -10,7 +10,7 @@ import config from 'config'
 
 import { SentryBugReporter } from 'sentry'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import DefaultOrgSelector from './DefaultOrgSelector'
 
@@ -37,7 +37,7 @@ const server = setupServer()
 const mockTrialData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
   value: Plans.USERS_BASIC,
@@ -220,7 +220,7 @@ describe('DefaultOrgSelector', () => {
               pretrialPlan: {
                 baseUnitPrice: 10,
                 benefits: [],
-                billingRate: 'monthly',
+                billingRate: BillingRate.MONTHLY,
                 marketingName: 'Users Basic',
                 monthlyUploadLimit: 250,
                 value: Plans.USERS_BASIC,
