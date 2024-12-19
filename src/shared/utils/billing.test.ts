@@ -1,5 +1,3 @@
-import { renderHook } from '@testing-library/react'
-
 import { IndividualPlan } from 'services/account'
 
 import {
@@ -18,7 +16,6 @@ import {
   lastTwoDigits,
   Plans,
   shouldDisplayTeamCard,
-  useProPlans,
 } from './billing'
 
 const mocks = vi.hoisted(() => ({
@@ -194,48 +191,6 @@ describe('shouldDisplayTeamCard', () => {
       },
     ]
     expect(shouldDisplayTeamCard({ plans })).toBe(false)
-  })
-})
-
-describe('useProPlans', () => {
-  function setup(flagValue: boolean) {
-    mocks.useFlags.mockReturnValue({
-      enterpriseCloudPlanSupport: flagValue,
-    })
-  }
-
-  it('does not contain enterprise plans', () => {
-    setup(false)
-    const { result } = renderHook(() => useProPlans({ plans: getPlans() }))
-
-    expect(result.current).toEqual({
-      proPlanMonth: {
-        marketingName: 'Pro Team',
-        value: Plans.USERS_PR_INAPPM,
-        billingRate: BillingRate.MONTHLY,
-        baseUnitPrice: 12,
-        monthlyUploadLimit: null,
-        benefits: [
-          'Configureable # of users',
-          'Unlimited public repositories',
-          'Unlimited private repositories',
-          'Priorty Support',
-        ],
-      },
-      proPlanYear: {
-        marketingName: 'Pro Team',
-        value: Plans.USERS_PR_INAPPY,
-        billingRate: BillingRate.ANNUALLY,
-        baseUnitPrice: 10,
-        monthlyUploadLimit: null,
-        benefits: [
-          'Configureable # of users',
-          'Unlimited public repositories',
-          'Unlimited private repositories',
-          'Priorty Support',
-        ],
-      },
-    })
   })
 })
 

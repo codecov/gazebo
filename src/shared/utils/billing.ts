@@ -30,6 +30,11 @@ export const BillingRate = {
   ANNUALLY: 'annually',
 } as const
 
+export const CollectionMethods = Object.freeze({
+  INVOICED_CUSTOMER_METHOD: 'send_invoice',
+  AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
+})
+
 export function isTeamPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     if (plan === Plans.USERS_TEAMM || plan === Plans.USERS_TEAMY) return true
@@ -56,26 +61,6 @@ export function isTrialPlan(plan?: PlanName | null) {
   }
 
   return false
-}
-
-export const CollectionMethods = Object.freeze({
-  INVOICED_CUSTOMER_METHOD: 'send_invoice',
-  AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
-})
-
-export function useProPlans({ plans }: { plans?: IndividualPlan[] | null }) {
-  const proPlanMonth = plans?.find(
-    (plan) => plan.value === Plans.USERS_PR_INAPPM
-  )
-
-  const proPlanYear = plans?.find(
-    (plan) => plan.value === Plans.USERS_PR_INAPPY
-  )
-
-  return {
-    proPlanMonth,
-    proPlanYear,
-  }
 }
 
 export const findProPlans = ({
