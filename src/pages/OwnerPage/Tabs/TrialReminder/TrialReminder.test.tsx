@@ -40,6 +40,7 @@ const mockResponse = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isProPlan: false,
 }
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => {

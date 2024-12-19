@@ -135,6 +135,7 @@ describe('UpdateButton', () => {
           trialTotalDays: 0,
           pretrialUsersCount: 0,
           isEnterprisePlan: false,
+          isProPlan: false,
         }
         if (planValue.value === Plans.USERS_BASIC) {
           return HttpResponse.json({

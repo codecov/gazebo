@@ -163,6 +163,7 @@ describe('AccountSettings', () => {
                 value: planValue,
                 isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
                 isFreePlan: planValue === Plans.USERS_BASIC,
+                isProPlan: false,
               },
             },
           },

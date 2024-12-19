@@ -164,6 +164,8 @@ const mockTrialData = {
     planUserCount: 1,
     hasSeatsLeft: true,
     isEnterprisePlan: false,
+    isProPlan: false,
+    isFreePlan: true,
   },
 }
 
