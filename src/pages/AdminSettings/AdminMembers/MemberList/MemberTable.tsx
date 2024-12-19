@@ -4,6 +4,10 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import {
+  useQueryClient as useQueryClientV5,
+  useSuspenseQuery as useSuspenseQueryV5,
+} from '@tanstack/react-queryV5'
+import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -12,13 +16,11 @@ import {
 import cs from 'classnames'
 import { useEffect, useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
+import { useParams } from 'react-router'
 
 import { useLocationParams } from 'services/navigation'
-import {
-  UserListOwner,
-  useSelfHostedSettings,
-  useSelfHostedUserList,
-} from 'services/selfHosted'
+import { UserListOwner, useSelfHostedUserList } from 'services/selfHosted'
+import { SelfHostedSettingsQueryOpts } from 'services/selfHosted/SelfHostedSettingsQueryOpts'
 import Api from 'shared/api'
 import Spinner from 'ui/Spinner'
 import Toggle from 'ui/Toggle'
@@ -115,10 +117,18 @@ function LoadMoreTrigger({
   )
 }
 
+interface URLParams {
+  provider: string
+}
+
 function MemberTable() {
+  const { provider } = useParams<URLParams>()
   const queryClient = useQueryClient()
+  const queryClientV5 = useQueryClientV5()
   const { ref, inView } = useInView()
-  const { data: seatData } = useSelfHostedSettings()
+  const { data: seatData } = useSuspenseQueryV5(
+    SelfHostedSettingsQueryOpts({ provider })
+  )
   const { params } = useLocationParams({
     activated: undefined,
     isAdmin: undefined,
@@ -133,7 +143,9 @@ function MemberTable() {
       Api.patch({ path: `/users/${ownerid}`, body: { activated } }),
     useErrorBoundary: true,
     onSuccess: () => {
-      queryClient.invalidateQueries(['SelfHostedSettings'])
+      queryClientV5.invalidateQueries({
+        queryKey: SelfHostedSettingsQueryOpts({ provider }).queryKey,
+      })
       queryClient.invalidateQueries(['Seats'])
       queryClient.invalidateQueries(['SelfHostedUserList'])
     },

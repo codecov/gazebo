@@ -2,8 +2,10 @@ import { render, screen } from '@testing-library/react'
 
 import ActivationInfo from './ActivationInfo'
 
-vi.mock('./ActivationCount', () => ({ default: () => 'ActivationCount' }))
-vi.mock('./AutoActivateMembers', () => ({
+vi.mock('./ActivationCount/ActivationCount', () => ({
+  default: () => 'ActivationCount',
+}))
+vi.mock('./AutoActivateMembers/AutoActivateMembers', () => ({
   default: () => 'AutoActivateMembers',
 }))
 

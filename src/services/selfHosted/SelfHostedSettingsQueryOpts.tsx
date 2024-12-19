@@ -1,9 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 
 const RequestSchema = z.object({
   config: z.object({
@@ -13,23 +12,22 @@ const RequestSchema = z.object({
   }),
 })
 
-const query = `
-  query SelfHostedSettings {
-    config {
-      planAutoActivate
-      seatsUsed
-      seatsLimit
-    }
+const query = `query SelfHostedSettings {
+  config {
+    planAutoActivate
+    seatsUsed
+    seatsLimit
   }
-`
+}`
 
-interface URLParams {
+interface SelfHostedSettingsQueryArgs {
   provider: string
 }
 
-export const useSelfHostedSettings = () => {
-  const { provider } = useParams<URLParams>()
-  return useQuery({
+export const SelfHostedSettingsQueryOpts = ({
+  provider,
+}: SelfHostedSettingsQueryArgs) => {
+  return queryOptionsV5({
     queryKey: ['SelfHostedSettings', provider, query],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -43,11 +41,12 @@ export const useSelfHostedSettings = () => {
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useSelfHostedSettings - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+            dev: 'SelfHostedSettingsQueryOpts - 404 schema parsing failed',
+            error: parsedData.error,
+          })
         }
 
         return parsedData.data.config

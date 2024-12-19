@@ -1,13 +1,16 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import { useSelfHostedSettings } from './useSelfHostedSettings'
+import { SelfHostedSettingsQueryOpts } from './SelfHostedSettingsQueryOpts'
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 
@@ -20,11 +23,9 @@ const mockResponse = {
 }
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
-      <Route path="/:provider/:owner/:repo">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
@@ -33,8 +34,8 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
+  queryClientV5.clear()
   server.resetHandlers()
-  queryClient.clear()
 })
 
 afterAll(() => {
@@ -56,7 +57,10 @@ describe('useSelfHostedSettings', () => {
   describe('when called', () => {
     it('returns data', async () => {
       setup({})
-      const { result } = renderHook(() => useSelfHostedSettings(), { wrapper })
+      const { result } = renderHook(
+        () => useQueryV5(SelfHostedSettingsQueryOpts({ provider: 'github' })),
+        { wrapper }
+      )
 
       await waitFor(() =>
         expect(result.current.data).toStrictEqual({
@@ -81,15 +85,16 @@ describe('useSelfHostedSettings', () => {
 
     it('rejects with 404', async () => {
       setup({ invalidResponse: true })
-      const { result } = renderHook(() => useSelfHostedSettings(), {
-        wrapper,
-      })
+      const { result } = renderHook(
+        () => useQueryV5(SelfHostedSettingsQueryOpts({ provider: 'github' })),
+        { wrapper }
+      )
 
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
-            dev: 'useSelfHostedSettings - 404 schema parsing failed',
+            dev: 'SelfHostedSettingsQueryOpts - 404 schema parsing failed',
           })
         )
       )
