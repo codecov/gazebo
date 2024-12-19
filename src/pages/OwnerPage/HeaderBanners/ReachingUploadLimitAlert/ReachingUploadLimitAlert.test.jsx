@@ -32,6 +32,7 @@ const mockPlanDataResponse = {
   value: Plans.USERS_PR_INAPPM,
   isEnterprisePlan: false,
   isFreePlan: false,
+  isTeamPlan: false,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',

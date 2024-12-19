@@ -16,6 +16,7 @@ const planChunk = {
   planUserCount: 2,
   isEnterprisePlan: false,
   isFreePlan: false,
+  isTeamPlan: true,
   hasSeatsLeft: true,
 }
 
@@ -31,6 +32,7 @@ const proPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
 }
 
 const teamPlanYear = {
@@ -40,6 +42,7 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
 }
 
 const teamPlanMonth = {
@@ -49,6 +52,7 @@ const teamPlanMonth = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
 }
 
 const freePlan = {
@@ -58,6 +62,7 @@ const freePlan = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_BASIC,
+  isTeamPlan: false,
 }
 
 type WrapperClosure = (
@@ -256,7 +261,12 @@ describe('UpdateBlurb', () => {
       it('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={{ ...proPlanYear, ...planChunk, planUserCount: 10 }}
+            currentPlan={{
+              ...proPlanYear,
+              ...planChunk,
+              planUserCount: 10,
+              isTeamPlan: false,
+            }}
             newPlan={teamPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={10}

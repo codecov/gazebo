@@ -20,6 +20,8 @@ const mockAggResponse = (
     plan: {
       value: planValue,
       isFreePlan: planValue === Plans.USERS_BASIC,
+      isTeamPlan:
+        planValue === Plans.USERS_TEAMM || planValue === Plans.USERS_TEAMY,
     },
     repository: {
       __typename: 'Repository',
