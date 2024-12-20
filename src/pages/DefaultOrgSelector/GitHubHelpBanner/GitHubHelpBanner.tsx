@@ -44,7 +44,7 @@ function ResyncButton() {
 function GitHubHelpBanner() {
   const [showModal, setShowModal] = useState(false)
   const { provider } = useParams<{ provider: Provider }>()
-  if (providerToName(provider) !== 'Github') return null
+  if (providerToName(provider) !== 'GitHub') return null
 
   return (
     <>

@@ -5,17 +5,17 @@ import { Provider } from 'shared/api/helpers'
 
 export function providerToName(provider: Provider) {
   return {
-    gh: 'Github',
+    gh: 'GitHub',
     bb: 'BitBucket',
-    gl: 'Gitlab',
-    ghe: 'Github Enterprise',
-    gle: 'Gitlab Enterprise',
+    gl: 'GitLab',
+    ghe: 'GitHub Enterprise',
+    gle: 'GitLab Enterprise',
     bbs: 'BitBucket Server',
-    github: 'Github',
+    github: 'GitHub',
     bitbucket: 'BitBucket',
-    gitlab: 'Gitlab',
-    github_enterprise: 'Github Enterprise',
-    gitlab_enterprise: 'Gitlab Enterprise',
+    gitlab: 'GitLab',
+    github_enterprise: 'GitHub Enterprise',
+    gitlab_enterprise: 'GitLab Enterprise',
     bitbucket_server: 'BitBucket Server',
   }[provider.toLowerCase()]
 }

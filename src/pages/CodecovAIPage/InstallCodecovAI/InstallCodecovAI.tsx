@@ -10,14 +10,14 @@ const COPY_APP_INSTALL_STRING =
 const InstallCodecovAI: React.FC = () => {
   const { theme } = useThemeContext()
   const isDarkMode = theme === Theme.DARK
-  const githubImage = loginProviderImage('Github', !isDarkMode)
+  const githubImage = loginProviderImage('GitHub', !isDarkMode)
 
   return (
     <div>
       <Card>
         <Card.Header>
           <Card.Title size="base">
-            Install the Codecov AI app on Github
+            Install the Codecov AI app on Gitub
           </Card.Title>
         </Card.Header>
         <Card.Content>

@@ -11,7 +11,7 @@ function GithubIntegrationCopy({ integrationId }) {
     return (
       <p>
         This account is configured via the GitHub App. You can manage the apps
-        repository integration on <A to={{ pageName: 'github' }}>Github.</A>
+        repository integration on <A to={{ pageName: 'github' }}>Gitub.</A>
       </p>
     )
   return (
