@@ -2,7 +2,7 @@ import PropType from 'prop-types'
 
 import { planPropType } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
-import { findSentryPlans, useProPlans } from 'shared/utils/billing'
+import { findProPlans, findSentryPlans } from 'shared/utils/billing'
 import { SENTRY_PRICE } from 'shared/utils/upgradeForm'
 
 import ActionsBilling from '../../shared/ActionsBilling/ActionsBilling'
@@ -49,7 +49,7 @@ PlanDetails.propTypes = {
 }
 
 function PlanUpgradePro({ isSentryUpgrade, plans }) {
-  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+  const { proPlanMonth, proPlanYear } = findProPlans({ plans })
   const { sentryPlanYear } = findSentryPlans({ plans })
 
   const upgradeToPlan = isSentryUpgrade ? sentryPlanYear : proPlanMonth

@@ -42,6 +42,7 @@ const mockPlanData = {
   hasSeatsLeft: true,
   isEnterprisePlan: false,
   isFreePlan: false,
+  isProPlan: false,
 }
 
 const server = setupServer()

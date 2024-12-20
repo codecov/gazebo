@@ -31,6 +31,7 @@ const proPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isProPlan: true,
 }
 
 const teamPlanYear = {
@@ -40,6 +41,7 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isProPlan: false,
 }
 
 const teamPlanMonth = {
@@ -49,6 +51,7 @@ const teamPlanMonth = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isProPlan: false,
 }
 
 const freePlan = {
@@ -58,6 +61,7 @@ const freePlan = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_BASIC,
+  isProPlan: false,
 }
 
 type WrapperClosure = (

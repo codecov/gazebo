@@ -80,6 +80,7 @@ const mockPlanData = {
   hasSeatsLeft: true,
   isEnterprisePlan: false,
   isFreePlan: false,
+  isProPlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -158,6 +159,7 @@ describe('CancelPlanPage', () => {
                 value: planValue,
                 isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
                 isFreePlan: planValue === Plans.USERS_BASIC,
+                isProPlan: planValue === Plans.USERS_PR_INAPPM,
               },
             },
           },
