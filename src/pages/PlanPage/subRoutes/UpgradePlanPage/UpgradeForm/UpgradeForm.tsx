@@ -54,8 +54,8 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   })
   const minSeats =
     isSentryUpgrade &&
-      selectedPlan?.value !== Plans.USERS_TEAMM &&
-      selectedPlan?.value !== Plans.USERS_TEAMY
+    selectedPlan?.value !== Plans.USERS_TEAMM &&
+    selectedPlan?.value !== Plans.USERS_TEAMY
       ? MIN_SENTRY_SEATS
       : MIN_NB_SEATS_PRO
 

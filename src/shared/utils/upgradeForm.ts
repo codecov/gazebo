@@ -243,7 +243,11 @@ export const getDefaultValuesUpgradeForm = ({
   let newPlan = proPlanYear
   if (isSentryUpgrade && !isSentryPlan(plan?.value)) {
     newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
-  } else if (plan?.isTeamPlan || selectedPlan?.value === Plans.USERS_TEAMM || selectedPlan?.value === Plans.USERS_TEAMY) {
+  } else if (
+    plan?.isTeamPlan ||
+    selectedPlan?.value === Plans.USERS_TEAMM ||
+    selectedPlan?.value === Plans.USERS_TEAMY
+  ) {
     newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
   } else if (isPaidPlan) {
     newPlan = plan
