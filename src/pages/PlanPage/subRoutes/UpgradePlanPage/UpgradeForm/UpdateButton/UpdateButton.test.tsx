@@ -1,14 +1,56 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { http, HttpResponse } from 'msw'
+import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Plans } from 'shared/utils/billing'
+import { IndividualPlan, TrialStatuses } from 'services/account'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import UpdateButton from './UpdateButton'
+
+const freePlan = {
+  marketingName: 'Basic',
+  value: Plans.USERS_BASIC,
+  billingRate: null,
+  baseUnitPrice: 0,
+  benefits: [
+    'Up to 1 user',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+  ],
+  monthlyUploadLimit: 250,
+}
+
+const proPlanMonthly = {
+  marketingName: 'Pro',
+  value: Plans.USERS_PR_INAPPM,
+  billingRate: BillingRate.MONTHLY,
+  baseUnitPrice: 12,
+  benefits: [
+    'Configurable # of users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+}
+
+const proPlanYearly = {
+  marketingName: 'Pro',
+  value: Plans.USERS_PR_INAPPY,
+  billingRate: BillingRate.ANNUALLY,
+  baseUnitPrice: 10,
+  benefits: [
+    'Configurable # of users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+}
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -38,45 +80,92 @@ afterAll(() => {
   server.close()
 })
 
-const mockAccountDetailsBasic = {
-  plan: {
-    value: Plans.USERS_BASIC,
-    quantity: 1,
-  },
+const mockPlanBasic = {
+  value: Plans.USERS_BASIC,
+  baseUnitPrice: 4,
+  benefits: ['Up to 10 users'],
+  billingRate: 'annually',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  hasSeatsLeft: true,
+  planUserCount: 1,
+  isFreePlan: true,
 }
 
-const mockAccountDetailsProMonthly = {
-  plan: {
-    value: Plans.USERS_PR_INAPPM,
-    quantity: 4,
-  },
+const mockPlanProMonthly = {
+  value: Plans.USERS_PR_INAPPM,
+  baseUnitPrice: 4,
+  benefits: ['Up to 10 users'],
+  billingRate: 'annually',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  hasSeatsLeft: true,
+  planUserCount: 4,
+  isFreePlan: false,
 }
 
-const mockAccountDetailsTeamMonthly = {
-  plan: {
-    value: Plans.USERS_TEAMM,
-    quantity: 3,
-  },
+const mockPlanTeamMonthly = {
+  value: Plans.USERS_TEAMM,
+  baseUnitPrice: 4,
+  benefits: ['Up to 10 users'],
+  billingRate: 'annually',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  hasSeatsLeft: true,
+  planUserCount: 3,
+  isFreePlan: false,
 }
 
 interface SetupArgs {
-  planValue: string
+  planValue: IndividualPlan
 }
 
 describe('UpdateButton', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC }: SetupArgs = {
-      planValue: Plans.USERS_BASIC,
+    { planValue = freePlan }: SetupArgs = {
+      planValue: freePlan,
     }
   ) {
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, () => {
-        if (planValue === Plans.USERS_BASIC) {
-          return HttpResponse.json(mockAccountDetailsBasic)
-        } else if (planValue === Plans.USERS_TEAMM) {
-          return HttpResponse.json(mockAccountDetailsTeamMonthly)
+      graphql.query(`GetPlanData`, () => {
+        const planChunk = {
+          trialStatus: TrialStatuses.NOT_STARTED,
+          trialStartDate: '',
+          trialEndDate: '',
+          trialTotalDays: 0,
+          pretrialUsersCount: 0,
+          isEnterprisePlan: false,
+        }
+        if (planValue.value === Plans.USERS_BASIC) {
+          return HttpResponse.json({
+            data: {
+              owner: {
+                hasPrivateRepos: false,
+                plan: { ...mockPlanBasic, ...planChunk },
+              },
+            },
+          })
+        } else if (planValue.value === Plans.USERS_TEAMM) {
+          return HttpResponse.json({
+            data: {
+              owner: {
+                hasPrivateRepos: false,
+                plan: {
+                  ...mockPlanTeamMonthly,
+                  ...planChunk,
+                },
+              },
+            },
+          })
         } else {
-          return HttpResponse.json(mockAccountDetailsProMonthly)
+          return HttpResponse.json({
+            data: {
+              owner: {
+                hasPrivateRepos: false,
+                plan: { ...mockPlanProMonthly, ...planChunk },
+              },
+            },
+          })
         }
       })
     )
@@ -90,11 +179,11 @@ describe('UpdateButton', () => {
   describe('when rendered', () => {
     describe('when there is a valid basic plan', () => {
       it('renders a valid Proceed to checkout button', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
+        setup({ planValue: freePlan })
 
         const props = {
           isValid: true,
-          newPlan: Plans.USERS_PR_INAPPY,
+          newPlan: proPlanYearly,
           seats: 3,
         }
 
@@ -110,11 +199,11 @@ describe('UpdateButton', () => {
 
     describe('when there is a valid pro plan', () => {
       it('renders a valid Update button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: proPlanYearly })
 
         const props = {
           isValid: true,
-          newPlan: Plans.USERS_PR_INAPPY,
+          newPlan: proPlanYearly,
           seats: 27,
         }
 
@@ -130,11 +219,11 @@ describe('UpdateButton', () => {
 
     describe('when the button is invalid', () => {
       it('renders a disabled valid Update button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: proPlanYearly })
 
         const props = {
           isValid: false,
-          newPlan: Plans.USERS_PR_INAPPY,
+          newPlan: proPlanYearly,
           seats: 6,
         }
 
@@ -150,11 +239,11 @@ describe('UpdateButton', () => {
 
     describe('when there are no changes in plan or seats', () => {
       it('renders a disabled valid Update button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: proPlanMonthly })
 
         const props = {
           isValid: true,
-          newPlan: Plans.USERS_PR_INAPPM,
+          newPlan: proPlanMonthly,
           seats: 4,
         }
 

@@ -19,7 +19,6 @@ function TeamPlanDetails() {
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
 
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
 
   const cancelAtPeriodEnd =
@@ -53,7 +52,11 @@ function TeamPlanDetails() {
         {scheduledPhase && (
           <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
         )}
-        {shouldRenderCancelLink({ cancelAtPeriodEnd, plan, trialStatus }) && (
+        {shouldRenderCancelLink({
+          cancelAtPeriodEnd,
+          plan: planData?.plan,
+          trialStatus,
+        }) && (
           <A
             to={{ pageName: 'cancelOrgPlan' }}
             variant="black"

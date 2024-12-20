@@ -6,8 +6,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { IndividualPlan, TrialStatuses } from 'services/account'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import ProPlanController from './ProPlanController'
 
@@ -40,7 +40,7 @@ const basicPlan = {
 const proPlanMonth = {
   marketingName: 'Pro',
   value: Plans.USERS_PR_INAPPM,
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 12,
   benefits: [
     'Configurable # of users',
@@ -55,7 +55,7 @@ const proPlanMonth = {
 const proPlanYear = {
   marketingName: 'Pro',
   value: Plans.USERS_PR_INAPPY,
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   baseUnitPrice: 10,
   benefits: [
     'Configurable # of users',
@@ -117,7 +117,7 @@ const mockAccountDetailsTrial = {
 const mockPlanDataResponseMonthly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
   value: Plans.USERS_PR_INAPPM,
@@ -129,12 +129,13 @@ const mockPlanDataResponseMonthly = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isFreePlan: false,
 }
 
 const mockPlanDataResponseYearly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'yearly',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
   value: Plans.USERS_PR_INAPPY,
@@ -146,6 +147,7 @@ const mockPlanDataResponseYearly = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isFreePlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -186,15 +188,15 @@ const wrapper: WrapperClosure =
   )
 
 interface SetupArgs {
-  planValue: string
+  planValue: IndividualPlan
   errorDetails?: string
   monthlyPlan?: boolean
 }
 
 describe('ProPlanController', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC, monthlyPlan = true }: SetupArgs = {
-      planValue: Plans.USERS_BASIC,
+    { planValue = basicPlan, monthlyPlan = true }: SetupArgs = {
+      planValue: basicPlan,
       monthlyPlan: true,
     }
   ) {
@@ -205,13 +207,13 @@ describe('ProPlanController', () => {
 
     server.use(
       http.get(`/internal/gh/codecov/account-details/`, () => {
-        if (planValue === Plans.USERS_BASIC) {
+        if (planValue.value === Plans.USERS_BASIC) {
           return HttpResponse.json(mockAccountDetailsBasic)
-        } else if (planValue === Plans.USERS_PR_INAPPM) {
+        } else if (planValue.value === Plans.USERS_PR_INAPPM) {
           return HttpResponse.json(mockAccountDetailsProMonthly)
-        } else if (planValue === Plans.USERS_PR_INAPPY) {
+        } else if (planValue.value === Plans.USERS_PR_INAPPY) {
           return HttpResponse.json(mockAccountDetailsProYearly)
-        } else if (planValue === Plans.USERS_TRIAL) {
+        } else if (planValue.value === Plans.USERS_TRIAL) {
           return HttpResponse.json(mockAccountDetailsTrial)
         }
       }),
@@ -251,12 +253,12 @@ describe('ProPlanController', () => {
       const props = {
         setFormValue: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_PR_INAPPM,
+        newPlan: proPlanMonth,
         seats: 10,
         errors: { seats: { message: '' } },
       }
       it('renders monthly option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
@@ -264,7 +266,7 @@ describe('ProPlanController', () => {
       })
 
       it('renders annual option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -272,7 +274,7 @@ describe('ProPlanController', () => {
       })
 
       it('renders monthly option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
@@ -281,7 +283,7 @@ describe('ProPlanController', () => {
       })
 
       it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$120/)
@@ -293,13 +295,13 @@ describe('ProPlanController', () => {
       const props = {
         setFormValue: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_PR_INAPPY,
+        newPlan: proPlanYear,
         seats: 13,
         errors: { seats: { message: '' } },
       }
 
       it('renders monthly option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
+        setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
@@ -307,7 +309,7 @@ describe('ProPlanController', () => {
       })
 
       it('renders annual option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
+        setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -315,7 +317,7 @@ describe('ProPlanController', () => {
       })
 
       it('renders annual option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
+        setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -324,7 +326,7 @@ describe('ProPlanController', () => {
       })
 
       it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
+        setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$130/)

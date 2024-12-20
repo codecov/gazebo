@@ -1,7 +1,6 @@
 import PropType from 'prop-types'
 import { useState } from 'react'
 
-import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
@@ -12,7 +11,7 @@ const FALLBACK_PERIOD_TEXT = 'the end of the period'
 
 function CancelButton({
   customerId,
-  planCost,
+  isFreePlan,
   upComingCancellation,
   currentPeriodEnd,
 }) {
@@ -22,11 +21,10 @@ function CancelButton({
     isModalOpen,
   })
 
-  const isAlreadyFreeUser = isFreePlan(planCost)
   const isDisabled = [
     // disable button if
     queryIsLoading, // request in fly
-    isAlreadyFreeUser, // user is a free user
+    isFreePlan, // user is a free user
     upComingCancellation, // the subscription is already getting cancelled
   ].some(Boolean)
   const periodEnd = getEndPeriod(currentPeriodEnd)
@@ -50,7 +48,7 @@ function CancelButton({
         onClick={() => setIsModalOpen(true)}
         disabled={isDisabled}
       >
-        {isAlreadyFreeUser ? 'Already free user' : 'Cancel your plan'}
+        {isFreePlan ? 'Already free user' : 'Cancel your plan'}
       </Button>
       <Modal
         customHeaderClassname="text-base"
@@ -104,7 +102,7 @@ function CancelButton({
 
 CancelButton.propTypes = {
   customerId: PropType.string,
-  planCost: PropType.string.isRequired,
+  isFreePlan: PropType.bool,
   upComingCancellation: PropType.bool,
   currentPeriodEnd: PropType.number,
 }

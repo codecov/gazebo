@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
 import { TierNames } from 'services/tier'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import ProPlanFeedbackBanner from './ProPlanFeedbackBanner'
 
@@ -24,9 +24,10 @@ const mockTrialData = {
   hasPrivateRepos: true,
   plan: {
     isEnterprisePlan: false,
+    isFreePlan: false,
     baseUnitPrice: 10,
     benefits: [],
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
     value: Plans.USERS_BASIC,
@@ -41,7 +42,7 @@ const mockTrialData = {
   pretrialPlan: {
     baseUnitPrice: 10,
     benefits: [],
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
     value: Plans.USERS_BASIC,

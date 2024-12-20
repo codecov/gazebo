@@ -10,12 +10,16 @@ import A from 'ui/A'
 import { Card } from 'ui/Card'
 
 import MergeStep from './MergeStep'
-import OutputCoverageStep from './OutputCoverageStep'
 import TokenStep from './TokenStep'
-import { Framework } from './types'
 import WorkflowYMLStep from './WorkflowYMLStep'
 
 import LearnMoreBlurb from '../LearnMoreBlurb'
+import OutputCoverageStep from '../OutputCoverageStep/OutputCoverageStep'
+import {
+  Framework,
+  UseFrameworkInstructions,
+} from '../UseFrameworkInstructions'
+
 interface URLParams {
   provider: Provider
   owner: string
@@ -60,161 +64,12 @@ function GitHubActions() {
   }
 
   const [framework, setFramework] = useState<Framework>('Jest')
+  const frameworkInstructions = UseFrameworkInstructions({
+    orgUploadToken,
+    owner,
+    repo,
+  })
 
-  const frameworkInstructions = {
-    Jest: {
-      install: 'npm install --save-dev jest',
-      run: 'npx jest --coverage',
-      workflow: `name: Run tests and upload coverage
-
-on: 
-  push
-
-jobs:
-  test:
-    name: Run tests and collect coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npx jest --coverage
-
-      - name: Upload results to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: \${{ secrets.CODECOV_TOKEN }}${
-            orgUploadToken
-              ? `
-          slug: ${owner}/${repo}`
-              : ''
-          }
-`,
-    },
-    Vitest: {
-      install: 'npm install --save-dev vitest @vitest/coverage-v8',
-      run: 'npx vitest run --coverage',
-      workflow: `name: Run tests and upload coverage
-
-on: 
-  push
-
-jobs:
-  test:
-    name: Run tests and collect coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npx vitest run --coverage
-
-      - name: Upload results to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: \${{ secrets.CODECOV_TOKEN }}${
-            orgUploadToken
-              ? `
-          slug: ${owner}/${repo}`
-              : ''
-          }
-`,
-    },
-    Pytest: {
-      install: 'pip install pytest pytest-cov',
-      run: 'pytest --cov --cov-report=xml',
-      workflow: `name: Run tests and upload coverage
-
-on: 
-  push
-
-jobs:
-  test:
-    name: Run tests and collect coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-
-      - name: Install dependencies
-        run: pip install pytest pytest-cov
-
-      - name: Run tests
-        run: pytest --cov --cov-report=xml
-
-      - name: Upload results to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: \${{ secrets.CODECOV_TOKEN }}${
-            orgUploadToken
-              ? `
-          slug: ${owner}/${repo}`
-              : ''
-          }
-`,
-    },
-    Go: {
-      install: undefined,
-      run: 'go test -coverprofile=coverage.txt',
-      workflow: `name: Run tests and upload coverage
-
-on: 
-  push
-
-jobs:
-  test:
-    name: Run tests and collect coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-
-      - name: Install dependencies
-        run: go mod download
-
-      - name: Run tests
-        run: go test -coverprofile=coverage.txt
-
-      - name: Upload results to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: \${{ secrets.CODECOV_TOKEN }}${
-            orgUploadToken
-              ? `
-          slug: ${owner}/${repo}`
-              : ''
-          }
-`,
-    },
-  }
   return (
     <div className="flex flex-col gap-5">
       <OutputCoverageStep

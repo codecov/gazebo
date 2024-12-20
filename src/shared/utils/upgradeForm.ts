@@ -3,16 +3,16 @@ import { z } from 'zod'
 
 import {
   AccountDetailsSchema,
+  IndividualPlan,
   TrialStatus,
   TrialStatuses,
 } from 'services/account'
 import {
+  BillingRate,
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
   findTeamPlans,
-  isFreePlan,
-  isPaidPlan,
   isSentryPlan,
   isTeamPlan,
   isTrialPlan,
@@ -35,6 +35,7 @@ export function extractSeats({
   inactiveUserCount = 0,
   isSentryUpgrade,
   trialStatus,
+  isFreePlan,
 }: {
   quantity: number
   value?: PlanName
@@ -42,6 +43,7 @@ export function extractSeats({
   inactiveUserCount?: number
   isSentryUpgrade: boolean
   trialStatus?: TrialStatus
+  isFreePlan?: boolean
 }) {
   const totalMembers = inactiveUserCount + activatedUserCount
   const minPlansSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS_PRO
@@ -54,7 +56,7 @@ export function extractSeats({
     return minPlansSeats
   }
 
-  return isFreePlan(value) ? freePlanSeats : paidPlansSeats
+  return isFreePlan ? freePlanSeats : paidPlansSeats
 }
 
 export const getSchema = ({
@@ -62,11 +64,13 @@ export const getSchema = ({
   minSeats = 1,
   trialStatus,
   selectedPlan,
+  planName,
 }: {
   accountDetails?: z.infer<typeof AccountDetailsSchema>
   minSeats?: number
   trialStatus?: TrialStatus
-  selectedPlan?: Plan
+  selectedPlan?: IndividualPlan
+  planName?: PlanName
 }) =>
   z.object({
     seats: z.coerce
@@ -91,7 +95,7 @@ export const getSchema = ({
 
         if (
           trialStatus === TrialStatuses.ONGOING &&
-          accountDetails?.plan?.value === Plans.USERS_TRIAL
+          planName === Plans.USERS_TRIAL
         ) {
           return val
         }
@@ -105,9 +109,8 @@ export const getSchema = ({
 
         return val
       }),
-    newPlan: z.string({
-      required_error: 'Plan type is required',
-      invalid_type_error: 'Plan type is required to be a string',
+    newPlan: z.object({
+      value: z.string(),
     }),
   })
 
@@ -142,11 +145,11 @@ export function shouldRenderCancelLink({
   trialStatus,
 }: {
   cancelAtPeriodEnd: boolean
-  plan: Plan
+  plan: Plan | null
   trialStatus: TrialStatus
 }) {
   // cant cancel a free plan
-  if (isFreePlan(plan?.value)) {
+  if (plan?.isFreePlan) {
     return false
   }
 
@@ -213,17 +216,14 @@ export const getDefaultValuesUpgradeForm = ({
   plans,
   trialStatus,
   selectedPlan,
-  isEnterprisePlan,
+  plan,
 }: {
   accountDetails?: z.infer<typeof AccountDetailsSchema> | null
-  plans?: Plan[] | null
+  plans?: IndividualPlan[] | null
   trialStatus?: TrialStatus
-  selectedPlan?: Plan | null
-  isEnterprisePlan?: boolean
+  selectedPlan?: IndividualPlan | null
+  plan?: Plan | null
 }) => {
-  const currentPlan = accountDetails?.plan
-  const currentPlanValue = currentPlan?.value
-  const quantity = currentPlan?.quantity ?? 0
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
@@ -232,28 +232,31 @@ export const getDefaultValuesUpgradeForm = ({
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
 
   const isSentryUpgrade = canApplySentryUpgrade({
-    isEnterprisePlan,
+    isEnterprisePlan: plan?.isEnterprisePlan,
     plans,
   })
 
-  const isMonthlyPlan = accountDetails?.plan?.billingRate === 'monthly'
+  const isMonthlyPlan = plan?.billingRate === BillingRate.MONTHLY
 
-  let newPlan = proPlanYear?.value
-  if (isSentryUpgrade && !isSentryPlan(currentPlanValue)) {
-    newPlan = isMonthlyPlan ? sentryPlanMonth?.value : sentryPlanYear?.value
-  } else if (isTeamPlan(currentPlanValue) || isTeamPlan(selectedPlan?.value)) {
-    newPlan = isMonthlyPlan ? teamPlanMonth?.value : teamPlanYear?.value
-  } else if (isPaidPlan(currentPlanValue)) {
-    newPlan = currentPlanValue
+  const isPaidPlan = !!plan?.billingRate // If the plan has a billing rate, it's a paid plan
+
+  let newPlan = proPlanYear
+  if (isSentryUpgrade && !isSentryPlan(plan?.value)) {
+    newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
+  } else if (isTeamPlan(plan?.value) || isTeamPlan(selectedPlan?.value)) {
+    newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
+  } else if (isPaidPlan) {
+    newPlan = plan
   }
 
   const seats = extractSeats({
-    value: currentPlanValue,
-    quantity,
+    value: plan?.value,
+    quantity: plan?.planUserCount ?? 0,
     activatedUserCount,
     inactiveUserCount,
     trialStatus,
     isSentryUpgrade,
+    isFreePlan: plan?.isFreePlan,
   })
 
   return {

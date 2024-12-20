@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import {
+  IndividualPlan,
   useAccountDetails,
   useAvailablePlans,
   usePlanData,
@@ -12,8 +13,6 @@ import {
   canApplySentryUpgrade,
   getNextBillingDate,
   isTeamPlan,
-  Plan,
-  PlanName,
 } from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
@@ -34,19 +33,18 @@ type URLParams = {
 }
 
 type UpgradeFormProps = {
-  selectedPlan: NonNullable<Plan>
-  setSelectedPlan: (plan?: Plan) => void
+  selectedPlan: IndividualPlan
+  setSelectedPlan: (plan?: IndividualPlan) => void
 }
 
 export type UpgradeFormFields = {
-  newPlan?: PlanName
+  newPlan?: IndividualPlan
   seats: number
 }
 
 function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const currentPlan = accountDetails?.plan
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
   const { upgradePlan } = useUpgradeControls()
@@ -73,7 +71,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
       plans,
       trialStatus,
       selectedPlan,
-      isEnterprisePlan: planData?.plan?.isEnterprisePlan,
+      plan: planData?.plan,
     }),
     resolver: zodResolver(
       getSchema({
@@ -81,6 +79,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         minSeats,
         trialStatus,
         selectedPlan,
+        planName: planData?.plan?.value,
       })
     ),
     mode: 'onChange',
@@ -109,7 +108,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         newPlan={newPlan}
       />
       <Controller
-        selectedPlan={selectedPlan.value}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
         seats={seats}
@@ -118,9 +116,8 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         errors={errors}
       />
       <UpdateBlurb
-        currentPlan={currentPlan}
-        selectedPlan={selectedPlan}
-        newPlanName={newPlan}
+        currentPlan={planData?.plan}
+        newPlan={newPlan}
         seats={Number(seats)}
         nextBillingDate={getNextBillingDate(accountDetails)!}
       />

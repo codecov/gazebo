@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import ActionsBilling from './ActionsBilling'
 
@@ -38,7 +38,7 @@ const allPlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -51,7 +51,7 @@ const allPlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -64,7 +64,7 @@ const allPlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_ENTERPRISEM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -77,7 +77,7 @@ const allPlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_ENTERPRISEY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -96,7 +96,7 @@ const sentryPlans = [
     benefits: ['Configurable # of users', 'Unlimited repos'],
     monthlyUploadLimit: null,
     value: Plans.USERS_SENTRYM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
   },
 ]
 
@@ -118,7 +118,7 @@ const mockedProAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_PR_INAPPM,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
@@ -152,7 +152,7 @@ const mockTrialData = {
   plan: {
     baseUnitPrice: 10,
     benefits: [],
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
     value: Plans.USERS_BASIC,
@@ -199,10 +199,12 @@ describe('Actions Billing', () => {
       accountDetails = mockedFreeAccountDetails,
       plans = allPlans,
       trialPlanData = mockTrialData,
+      hasPrivateRepos = true,
     } = {
       accountDetails: mockedFreeAccountDetails,
       plans: allPlans,
       trialPlanData: mockTrialData,
+      hasPrivateRepos: true,
     }
   ) {
     const user = userEvent.setup()
@@ -220,7 +222,18 @@ describe('Actions Billing', () => {
         return HttpResponse.json({ data: { owner: { availablePlans: plans } } })
       }),
       graphql.query('GetPlanData', () => {
-        return HttpResponse.json({ data: { owner: trialPlanData } })
+        return HttpResponse.json({
+          data: {
+            owner: {
+              plan: {
+                ...trialPlanData.plan,
+                value: accountDetails.plan.value,
+                isFreePlan: accountDetails.plan.value === Plans.USERS_BASIC,
+              },
+              hasPrivateRepos,
+            },
+          },
+        })
       }),
       graphql.mutation('startTrial', (info) => {
         mockMutationVars(info.variables)
@@ -238,12 +251,12 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
-            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
             },
           },
+          hasPrivateRepos: true,
         })
 
         render(<ActionsBilling />, { wrapper })
@@ -259,12 +272,12 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
-            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
             },
           },
+          hasPrivateRepos: true,
         })
 
         render(<ActionsBilling />, { wrapper })
@@ -285,12 +298,12 @@ describe('Actions Billing', () => {
             accountDetails: mockedFreeAccountDetails,
             plans: allPlans,
             trialPlanData: {
-              hasPrivateRepos: true,
               plan: {
                 ...mockTrialData.plan,
                 trialStatus: TrialStatuses.NOT_STARTED,
               },
             },
+            hasPrivateRepos: true,
           })
 
           render(<ActionsBilling />, { wrapper })
@@ -318,12 +331,12 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
-            hasPrivateRepos: false,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
             },
           },
+          hasPrivateRepos: false,
         })
 
         render(<ActionsBilling />, { wrapper })
@@ -339,12 +352,12 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
-            hasPrivateRepos: false,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
             },
           },
+          hasPrivateRepos: false,
         })
 
         render(<ActionsBilling />, { wrapper })
@@ -366,12 +379,12 @@ describe('Actions Billing', () => {
           accountDetails: mockTrialAccountDetails,
           plans: allPlans,
           trialPlanData: {
-            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.ONGOING,
             },
           },
+          hasPrivateRepos: true,
         })
 
         render(<ActionsBilling />, { wrapper })

@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import config from 'config'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import TrialReminder from './TrialReminder'
 
@@ -28,7 +28,7 @@ const queryClient = new QueryClient({
 const mockResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
   value: Plans.USERS_BASIC,
@@ -102,6 +102,7 @@ describe('TrialReminder', () => {
                 trialStartDate,
                 trialEndDate,
                 value: planValue,
+                isFreePlan: planValue === Plans.USERS_BASIC,
               },
             },
           },

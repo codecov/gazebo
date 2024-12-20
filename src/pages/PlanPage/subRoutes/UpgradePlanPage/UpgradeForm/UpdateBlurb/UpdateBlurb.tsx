@@ -1,43 +1,34 @@
-import { z } from 'zod'
-
-import { PlanSchema } from 'services/account'
-import {
-  isAnnualPlan,
-  isFreePlan,
-  isTeamPlan,
-  PlanName,
-} from 'shared/utils/billing'
+import { IndividualPlan } from 'services/account'
+import { BillingRate, isTeamPlan, Plan } from 'shared/utils/billing'
 
 const UpdateBlurb = ({
   currentPlan,
-  selectedPlan,
-  newPlanName,
+  newPlan,
   seats,
   nextBillingDate,
 }: {
-  currentPlan?: z.infer<typeof PlanSchema>
-  selectedPlan?: z.infer<typeof PlanSchema>
-  newPlanName?: PlanName
+  currentPlan?: Plan | null
+  newPlan?: IndividualPlan
   seats: number
   nextBillingDate: string
 }) => {
-  const currentIsFree = isFreePlan(currentPlan?.value)
+  const currentIsFree = currentPlan?.isFreePlan
   const currentIsTeam = isTeamPlan(currentPlan?.value)
-  const selectedIsTeam = isTeamPlan(selectedPlan?.value)
+  const selectedIsTeam = isTeamPlan(newPlan?.value)
   const diffPlanType = currentIsFree || currentIsTeam !== selectedIsTeam
 
-  const currentIsAnnual = isAnnualPlan(currentPlan?.value)
-  const selectedIsAnnual = isAnnualPlan(newPlanName)
+  const currentIsAnnual = currentPlan?.billingRate === BillingRate.ANNUALLY
+  const selectedIsAnnual = newPlan?.billingRate === BillingRate.ANNUALLY
   const diffBillingType = currentIsAnnual !== selectedIsAnnual
 
-  const diffSeats = currentPlan?.quantity !== seats
+  const diffSeats = currentPlan?.planUserCount !== seats
 
   const hasDiff = diffPlanType || diffBillingType || diffSeats
 
   // A plan is considered an upgrade if we increase the number of seats,
   // go from team -> pro, from monthly -> annual billing, or the current plan is a free plan
   const isUpgrade =
-    seats > Number(currentPlan?.quantity) ||
+    seats > Number(currentPlan?.planUserCount) ||
     (currentIsTeam && !selectedIsTeam) ||
     (!currentIsAnnual && selectedIsAnnual) ||
     currentIsFree
@@ -55,9 +46,9 @@ const UpdateBlurb = ({
         } plan to the [${selectedIsTeam ? 'Team' : 'Pro'} plan]`}</li>
       )}
       {diffSeats && (
-        <li className="pl-2">{`You are changing seats from ${currentPlan?.quantity} to [${seats}]`}</li>
+        <li className="pl-2">{`You are changing seats from ${currentPlan?.planUserCount} to [${seats}]`}</li>
       )}
-      {diffBillingType && (
+      {diffBillingType && !currentIsFree && (
         <li className="pl-2">{`You are changing your billing cycle from ${
           currentIsAnnual ? 'Annual' : 'Monthly'
         } to [${currentIsAnnual ? 'Monthly' : 'Annual'}]`}</li>
