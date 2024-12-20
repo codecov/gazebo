@@ -1,9 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 
 const SelfHostedCurrentUserSchema = z
   .object({
@@ -16,14 +15,14 @@ const SelfHostedCurrentUserSchema = z
   })
   .nullable()
 
-interface URLParams {
+interface SelfHostedCurrentUserQueryArgs {
   provider: string
 }
 
-export const useSelfHostedCurrentUser = (options = {}) => {
-  const { provider } = useParams<URLParams>()
-
-  return useQuery({
+export const SelfHostedCurrentUserQueryOpts = ({
+  provider,
+}: SelfHostedCurrentUserQueryArgs) => {
+  return queryOptionsV5({
     queryKey: ['SelfHostedCurrentUser', provider],
     queryFn: ({ signal }) =>
       Api.get({ provider, path: '/users/current', signal }).then((res) => {
@@ -33,11 +32,11 @@ export const useSelfHostedCurrentUser = (options = {}) => {
           return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useSelfHostedCurrentUser - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+            dev: 'SelfHostedCurrentUserQueryOpts - 404 schema parsing failed',
+            error: parsedData.error,
+          })
         }
         return parsedData.data
       }),
-    ...options,
   })
 }
