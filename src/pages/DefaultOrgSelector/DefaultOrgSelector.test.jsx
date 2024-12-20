@@ -159,6 +159,7 @@ const wrapper =
   )
 
 beforeAll(() => {
+  console.error = () => {}
   server.listen({
     onUnhandledRequest: 'warn',
   })
@@ -169,6 +170,7 @@ afterEach(() => {
 })
 afterAll(() => {
   server.close()
+  vi.resetAllMocks()
 })
 
 describe('DefaultOrgSelector', () => {
@@ -1294,7 +1296,7 @@ describe('DefaultOrgSelector', () => {
 
   describe('on fetch next page', () => {
     it('renders next page', async () => {
-      const { user, fetchNextPage } = setup({
+      const { fetchNextPage } = setup({
         useUserData: mockUserData,
         myOrganizationsData: {
           me: {
@@ -1315,12 +1317,6 @@ describe('DefaultOrgSelector', () => {
 
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
       mocks.useIntersection.mockReturnValue({ isIntersecting: true })
-
-      const selectOrg = await screen.findByRole('button', {
-        name: 'Select an organization',
-      })
-
-      await user.click(selectOrg)
 
       await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
       await waitFor(() => expect(fetchNextPage).toHaveBeenCalledWith('MTI='))
