@@ -32,7 +32,7 @@ const RequestInstallBanner = () => {
   // @ts-expect-errors useLocationParams needs to be updated to support generic types
   const setupAction = params?.setup_action
 
-  const isGitHubProvider = provider && providerToName(provider) === 'Github'
+  const isGitHubProvider = provider && providerToName(provider) === 'GitHub'
 
   const closeModalAndSaveToLocalStorage = () => {
     saveToLocalStorage(APP_INSTALL_BANNER_KEY)
