@@ -1,7 +1,11 @@
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
-import { IndividualPlan, useAvailablePlans, usePlanData } from 'services/account'
+import {
+  IndividualPlan,
+  useAvailablePlans,
+  usePlanData,
+} from 'services/account'
 import { useLocationParams } from 'services/navigation'
 import { TierNames } from 'services/tier'
 import {
@@ -9,8 +13,8 @@ import {
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
-  Plans,
   findTeamPlans,
+  Plans,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
