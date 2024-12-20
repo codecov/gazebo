@@ -8,13 +8,10 @@ import { useOwner } from './useOwner'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
-  logger: {
-    error: () => {},
-  },
 })
 
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
@@ -37,30 +34,30 @@ afterAll(() => {
   server.close()
 })
 
+const mockCodecovOrg = {
+  username: 'codecov',
+  avatarUrl: 'http://127.0.0.1/avatar-url',
+  isCurrentUserPartOfOrg: true,
+  isAdmin: false,
+}
+
 describe('useOwner', () => {
-  function setup(dataReturned = undefined) {
+  function setup() {
     server.use(
       graphql.query('DetailOwner', () => {
-        return HttpResponse.json({ data: { owner: dataReturned } })
+        return HttpResponse.json({ data: { owner: mockCodecovOrg } })
       })
     )
   }
 
   describe('when called and user is authenticated', () => {
-    const codecovOrg = {
-      username: 'codecov',
-      avatarUrl: 'http://127.0.0.1/avatar-url',
-      isCurrentUserPartOfOrg: true,
-      isAdmin: false,
-    }
-
     it('returns the org', async () => {
-      setup(codecovOrg)
+      setup()
       const { result } = renderHook(() => useOwner({ username: 'codecov' }), {
         wrapper: wrapper(),
       })
 
-      await waitFor(() => expect(result.current.data).toEqual(codecovOrg))
+      await waitFor(() => expect(result.current.data).toEqual(mockCodecovOrg))
     })
   })
 })
