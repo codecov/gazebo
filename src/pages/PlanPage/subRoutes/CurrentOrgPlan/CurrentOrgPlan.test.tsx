@@ -52,6 +52,7 @@ const mockPlanDataResponse = {
   hasSeatsLeft: true,
   isEnterprisePlan: false,
   isFreePlan: false,
+  isTeamPlan: false,
 }
 
 const mockEnterpriseAccountDetailsNinetyPercent = {
