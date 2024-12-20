@@ -58,12 +58,6 @@ export function isTeamPlan(plan?: PlanName | null) {
   }
   return false
 }
-export function isBasicPlan(plan?: PlanName) {
-  if (isString(plan)) {
-    return plan === Plans.USERS_BASIC
-  }
-  return false
-}
 
 export function isSentryPlan(plan?: PlanName | null) {
   if (isString(plan)) {
