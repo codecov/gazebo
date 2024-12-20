@@ -17,7 +17,7 @@ const InstallCodecovAI: React.FC = () => {
       <Card>
         <Card.Header>
           <Card.Title size="base">
-            Install the Codecov AI app on Gitub
+            Install the Codecov AI app on GitHub
           </Card.Title>
         </Card.Header>
         <Card.Content>
