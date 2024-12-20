@@ -595,14 +595,14 @@ describe('BaseLayout', () => {
   })
 
   describe('When Header has a network call error', async () => {
-    it.only('renders the EmptyErrorComponent when header throws an error', async () => {
-      vi.doMock('./Header', () => ({
+    it('renders the EmptyErrorComponent when header throws an error', async () => {
+      vi.mock('layouts/Header', () => ({
         default: () => {
-          throw new Error('Header Error')
+          throw new Error('Simulated Header Error')
         },
       }))
-      const { default: BaseLayout } = await import('./BaseLayout')
-      setup({ currentUser: loggedInUser })
+
+      setup({ currentUser: userHasDefaultOrg })
       render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
 
       const header = screen.queryByText(/Header/)
