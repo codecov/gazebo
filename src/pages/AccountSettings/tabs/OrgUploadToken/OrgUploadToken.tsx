@@ -11,8 +11,13 @@ import RegenerateOrgUploadToken from './RegenerateOrgUploadToken'
 
 const TokenlessSection = lazy(() => import('./TokenlessSection'))
 
+interface URLParams {
+  provider: string
+  owner: string
+}
+
 function OrgUploadToken() {
-  const { provider, owner } = useParams()
+  const { provider, owner } = useParams<URLParams>()
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
   const { tokenlessSection: tokenlessSectionFlag } = useFlags({
     tokenlessSection: false,
@@ -23,6 +28,7 @@ function OrgUploadToken() {
       <div className="flex gap-1">
         <h1 className="text-lg font-semibold">Global upload token</h1>
         <div className="mt-2 text-xs">
+          {/* @ts-expect-error error until we can convert A component to ts */}
           <A to={{ pageName: 'orgUploadTokenDoc' }}>learn more</A>
         </div>
       </div>

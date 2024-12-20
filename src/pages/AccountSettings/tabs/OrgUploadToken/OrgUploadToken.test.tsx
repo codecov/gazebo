@@ -29,7 +29,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/account/gh/codecov/orgUploadToken']}>
     <QueryClientProvider client={queryClient}>
       <Route path="/account/:provider/:owner/orgUploadToken">
@@ -52,20 +52,24 @@ afterAll(() => {
   server.close()
 })
 
+type SetupOptions = {
+  orgUploadToken?: string | null
+  error?: string | null
+  isAdmin?: boolean
+}
+
 describe('OrgUploadToken', () => {
-  function setup(
-    { orgUploadToken = null, error = null, isAdmin = true } = {
-      orgUploadToken: null,
-      error: null,
-      isAdmin: true,
-    }
-  ) {
+  function setup({
+    orgUploadToken = null,
+    error = null,
+    isAdmin = true,
+  }: SetupOptions = {}) {
     const user = userEvent.setup()
     const mutate = vi.fn()
     const addNotification = vi.fn()
-    useFlags.mockReturnValue({ tokenlessSection: true })
+    vi.mocked(useFlags).mockReturnValue({ tokenlessSection: true })
 
-    useAddNotification.mockReturnValue(addNotification)
+    vi.mocked(useAddNotification).mockReturnValue(addNotification)
 
     server.use(
       graphql.query('DetailOwner', () => {
@@ -203,7 +207,7 @@ describe('OrgUploadToken', () => {
 
         await user.click(genBtn)
 
-        rerender()
+        rerender(<OrgUploadToken />)
 
         await waitFor(() =>
           expect(addNotification).toHaveBeenCalledWith({
@@ -299,7 +303,7 @@ describe('OrgUploadToken', () => {
 
       const show = await screen.findAllByText('Show')
       expect(show[1]).toBeInTheDocument()
-      await user.click(show[1])
+      await user.click(show[1]!)
 
       const token1 = await screen.findByText('CODECOV_TOKEN=token')
       expect(token1).toBeInTheDocument()
