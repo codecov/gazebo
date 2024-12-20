@@ -153,18 +153,34 @@ const ReposTable = ({
   })
 
   const isMyOwnerPage = currentUser?.user?.username === owner
-  const includeDemo = mayIncludeDemo && !config.IS_SELF_HOSTED && isMyOwnerPage
 
   const tableData = useMemo(() => {
     const repos =
       reposData?.pages.flatMap((page) => page?.repos).filter(isNotNull) ?? []
+
+    const configuredRepos = repos.reduce(
+      (acc, repo) => (repo.coverageEnabled ? acc + 1 : acc),
+      0
+    )
+
+    const includeDemo =
+      mayIncludeDemo &&
+      !config.IS_SELF_HOSTED &&
+      isMyOwnerPage &&
+      configuredRepos < 2
 
     const demoRepos = includeDemo
       ? formatDemoRepos(demoReposData, searchValue)
       : []
 
     return [...demoRepos, ...repos]
-  }, [reposData?.pages, demoReposData, includeDemo, searchValue])
+  }, [
+    reposData?.pages,
+    demoReposData,
+    searchValue,
+    isMyOwnerPage,
+    mayIncludeDemo,
+  ])
 
   useEffect(() => {
     if (inView && hasNextPage) {
