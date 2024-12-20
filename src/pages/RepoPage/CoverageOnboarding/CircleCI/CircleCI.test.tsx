@@ -108,12 +108,37 @@ describe('CircleCI', () => {
     return { mockMetricMutationVariables, user }
   }
 
-  describe('step one', () => {
+  describe('output coverage step', () => {
     it('renders header', async () => {
       setup({})
       render(<CircleCI />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 1/ })
+      const header = await screen.findByText(
+        /Step \d: Output a Coverage report file in your CI/
+      )
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders body', async () => {
+      setup({})
+      render(<CircleCI />, { wrapper })
+
+      const body = await screen.findByText(/Select your language below/)
+      expect(body).toBeInTheDocument()
+
+      const jest = await screen.findByText(/Jest/)
+      expect(jest).toBeInTheDocument()
+    })
+  })
+
+  describe('token step', () => {
+    it('renders header', async () => {
+      setup({})
+      render(<CircleCI />, { wrapper })
+
+      const header = await screen.findByRole('heading', {
+        name: /Step \d: add repository token to environment variables/,
+      })
       expect(header).toBeInTheDocument()
     })
 
@@ -204,13 +229,15 @@ describe('CircleCI', () => {
     })
   })
 
-  describe('step two', () => {
+  describe('orb yaml step', () => {
     beforeEach(() => setup({}))
 
     it('renders header', async () => {
       render(<CircleCI />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 2/ })
+      const header = await screen.findByRole('heading', {
+        name: /Step \d: add Codecov orb to CircleCI/,
+      })
       expect(header).toBeInTheDocument()
 
       const CircleCIJSWorkflowLink = await screen.findByRole('link', {
@@ -252,8 +279,18 @@ describe('CircleCI', () => {
     })
   })
 
-  describe('step three', () => {
+  describe('merge step', () => {
     beforeEach(() => setup({}))
+
+    it('renders header', async () => {
+      render(<CircleCI />, { wrapper })
+
+      const header = await screen.findByText(
+        /Step \d: merge to main or your preferred feature branch/
+      )
+      expect(header).toBeInTheDocument()
+    })
+
     it('renders body', async () => {
       render(<CircleCI />, { wrapper })
 
@@ -299,6 +336,7 @@ describe('CircleCI', () => {
 
   describe('user copies text', () => {
     it('stores codecov metric', async () => {
+      // will be removing this stuff soon, backend for this doesn't exist anymore
       const { mockMetricMutationVariables } = setup({})
       const user = userEvent.setup()
       render(<CircleCI />, { wrapper })
@@ -306,13 +344,13 @@ describe('CircleCI', () => {
       const copyCommands = await screen.findAllByTestId(
         'clipboard-code-snippet'
       )
-      expect(copyCommands.length).toEqual(3)
+      expect(copyCommands.length).toEqual(5)
 
       await user.click(copyCommands[1] as HTMLElement)
 
       await user.click(copyCommands[2] as HTMLElement)
       await waitFor(() =>
-        expect(mockMetricMutationVariables).toHaveBeenCalledTimes(2)
+        expect(mockMetricMutationVariables).toHaveBeenCalledTimes(1)
       )
     })
   })

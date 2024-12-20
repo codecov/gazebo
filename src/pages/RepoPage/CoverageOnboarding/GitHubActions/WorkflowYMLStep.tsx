@@ -12,7 +12,7 @@ import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import { ExpandableSection } from 'ui/ExpandableSection'
 
-import { Framework, FrameworkInstructions } from './types'
+import { Framework, FrameworkInstructions } from '../UseFrameworkInstructions'
 
 interface WorkflowYMLStepProps {
   framework: Framework
@@ -89,7 +89,7 @@ function WorkflowYMLStep({
         </ExpandableSection.Trigger>
         <ExpandableSection.Content>
           <CodeSnippet
-            clipboard={frameworkInstructions[framework].workflow}
+            clipboard={frameworkInstructions[framework].githubActionsWorkflow}
             clipboardOnClick={() =>
               storeEventMetric({
                 owner,
@@ -98,7 +98,7 @@ function WorkflowYMLStep({
               })
             }
           >
-            {frameworkInstructions[framework].workflow}
+            {frameworkInstructions[framework].githubActionsWorkflow}
           </CodeSnippet>
           <p className="pt-4">
             <A
