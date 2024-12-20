@@ -210,6 +210,9 @@ describe('UpgradePlanPage', () => {
               plan: {
                 ...mockPlanData,
                 isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
                 isFreePlan: planValue === Plans.USERS_BASIC,
                 value: planValue,
               },

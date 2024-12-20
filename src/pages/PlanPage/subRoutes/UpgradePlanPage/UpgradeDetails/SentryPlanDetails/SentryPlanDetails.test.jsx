@@ -180,6 +180,7 @@ describe('SentryPlanDetails', () => {
               plan: {
                 ...mockPlanData,
                 isFreePlan: !isProPlan,
+                isTeamPlan: false,
                 trialStatus: isOngoingTrial
                   ? TrialStatuses.ONGOING
                   : TrialStatuses.CANNOT_TRIAL,
