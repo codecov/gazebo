@@ -595,12 +595,13 @@ describe('BaseLayout', () => {
   })
 
   describe('When Header has a network call error', async () => {
-    it('renders the EmptyErrorComponent when header throws an error', async () => {
-      vi.mock('layouts/Header', () => ({
-        default: () => {
-          throw new Error('Simulated Header Error')
-        },
-      }))
+    it('renders nothing for the errored header', async () => {
+      vi.spyOn(
+        await import('layouts/Header'),
+        'default'
+      ).mockImplementationOnce(() => {
+        throw new Error('Simulated Header Error')
+      })
 
       setup({ currentUser: userHasDefaultOrg })
       render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
