@@ -12,13 +12,13 @@ vi.mock('config')
 describe('providerToName', () => {
   describe('when called with gh', () => {
     it('returns Github', () => {
-      expect(providerToName('gh')).toBe('Github')
+      expect(providerToName('gh')).toBe('GitHub')
     })
   })
 
   describe('when called with gl', () => {
     it('returns Gitlab', () => {
-      expect(providerToName('gl')).toBe('Gitlab')
+      expect(providerToName('gl')).toBe('GitLab')
     })
   })
 
@@ -30,13 +30,13 @@ describe('providerToName', () => {
 
   describe('when called with ghe', () => {
     it('returns Github Enterprise', () => {
-      expect(providerToName('ghe')).toBe('Github Enterprise')
+      expect(providerToName('ghe')).toBe('GitHub Enterprise')
     })
   })
 
   describe('when called with gle', () => {
     it('returns Gitlab Enterprise', () => {
-      expect(providerToName('gle')).toBe('Gitlab Enterprise')
+      expect(providerToName('gle')).toBe('GitLab Enterprise')
     })
   })
 
@@ -48,13 +48,13 @@ describe('providerToName', () => {
 
   describe('when called with Github', () => {
     it('returns Github', () => {
-      expect(providerToName('github')).toBe('Github')
+      expect(providerToName('github')).toBe('GitHub')
     })
   })
 
   describe('when called with Gitlab', () => {
     it('returns Gitlab', () => {
-      expect(providerToName('gitlab')).toBe('Gitlab')
+      expect(providerToName('gitlab')).toBe('GitLab')
     })
   })
 
@@ -66,13 +66,13 @@ describe('providerToName', () => {
 
   describe('when called with github_enterprise', () => {
     it('returns Github Enterprise', () => {
-      expect(providerToName('github_enterprise')).toBe('Github Enterprise')
+      expect(providerToName('github_enterprise')).toBe('GitHub Enterprise')
     })
   })
 
   describe('when called with gitlab-enterprise', () => {
     it('returns Gitlab Enterprise', () => {
-      expect(providerToName('gitlab_enterprise')).toBe('Gitlab Enterprise')
+      expect(providerToName('gitlab_enterprise')).toBe('GitLab Enterprise')
     })
   })
 

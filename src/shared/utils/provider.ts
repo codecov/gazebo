@@ -5,17 +5,17 @@ import { Provider } from 'shared/api/helpers'
 
 export function providerToName(provider: Provider) {
   return {
-    gh: 'Github',
+    gh: 'GitHub',
     bb: 'BitBucket',
-    gl: 'Gitlab',
-    ghe: 'Github Enterprise',
-    gle: 'Gitlab Enterprise',
+    gl: 'GitLab',
+    ghe: 'GitHub Enterprise',
+    gle: 'GitLab Enterprise',
     bbs: 'BitBucket Server',
-    github: 'Github',
+    github: 'GitHub',
     bitbucket: 'BitBucket',
-    gitlab: 'Gitlab',
-    github_enterprise: 'Github Enterprise',
-    gitlab_enterprise: 'Gitlab Enterprise',
+    gitlab: 'GitLab',
+    github_enterprise: 'GitHub Enterprise',
+    gitlab_enterprise: 'GitLab Enterprise',
     bitbucket_server: 'BitBucket Server',
   }[provider.toLowerCase()]
 }
@@ -71,11 +71,11 @@ export function getProviderPullURL({
   pullId: number
 }) {
   return {
-    Github: `https://github.com/${owner}/${repo}/pull/${pullId}`,
+    GitHub: `https://github.com/${owner}/${repo}/pull/${pullId}`,
     BitBucket: `https://bitbucket.org/${owner}/${repo}/pull-requests/${pullId}`,
-    Gitlab: `https://gitlab.com/${owner}/${repo}/-/merge_requests/${pullId}`,
-    'Github Enterprise': `${config.GHE_URL}/${owner}/${repo}/pull/${pullId}`,
-    'Gitlab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/merge_requests/${pullId}`,
+    GitLab: `https://gitlab.com/${owner}/${repo}/-/merge_requests/${pullId}`,
+    'GitHub Enterprise': `${config.GHE_URL}/${owner}/${repo}/pull/${pullId}`,
+    'GitLab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/merge_requests/${pullId}`,
     'BitBucket Server': `${config.BBS_URL}/${owner}/${repo}/pull-requests/${pullId}`,
     // @ts-expect-error - provider could be undefined but it should be fine
   }[providerToName(provider)]

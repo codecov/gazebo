@@ -8,7 +8,7 @@ import BannerHeading from 'ui/Banner/BannerHeading'
 
 const GithubConfigBanner = () => {
   const { provider } = useParams()
-  const isGh = providerToName(provider) === 'Github'
+  const isGh = providerToName(provider) === 'GitHub'
 
   if (!isGh) return null
 
