@@ -1,20 +1,17 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import gt from 'lodash/gt'
 import isEmpty from 'lodash/isEmpty'
 import { Redirect } from 'react-router-dom'
 
-import { useSyncProviders } from 'services/config'
+import { SyncProvidersQueryOpts } from 'services/config/SyncProvidersQueryOpts'
 import { useInternalUser } from 'services/user/useInternalUser'
 import { loginProviderToShortName } from 'shared/utils/loginProviders'
 import A from 'ui/A'
 
 import SyncButton from './SyncButton'
 
-interface SyncButtonProps {
-  hasSynced: boolean
-}
-
-const SyncButtons: React.FC<SyncButtonProps> = ({ hasSynced }) => {
-  const { data: syncProviders } = useSyncProviders({ enabled: !hasSynced })
+const SyncButtons: React.FC = () => {
+  const { data: syncProviders } = useSuspenseQueryV5(SyncProvidersQueryOpts())
 
   if (isEmpty(syncProviders)) {
     return (
@@ -80,7 +77,7 @@ const SyncProviderPage: React.FC = () => {
         </p>
       </div>
       <div className="mx-auto mt-2 w-96 space-y-4 border-t border-ds-gray-secondary pt-4">
-        <SyncButtons hasSynced={hasSynced} />
+        <SyncButtons />
       </div>
     </div>
   )

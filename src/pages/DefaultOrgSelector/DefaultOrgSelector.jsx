@@ -17,7 +17,6 @@ import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useStaticNavLinks } from 'services/navigation'
 import { useStartTrial } from 'services/trial'
 import { CustomerIntent, useUser } from 'services/user'
-import { isBasicPlan } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A/A'
@@ -133,7 +132,7 @@ function DefaultOrgSelector() {
       jsonPayload: { action: 'Selected Default Org' },
     })
     if (
-      isBasicPlan(planData?.plan?.value) &&
+      planData?.plan?.isFreePlan &&
       selectedOrg !== currentUser?.user?.username &&
       isNewTrial &&
       planData?.hasPrivateRepos
