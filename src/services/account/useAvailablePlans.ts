@@ -34,11 +34,11 @@ const query = `
         baseUnitPrice
         benefits
         billingRate
+        isSentryPlan
+        isTeamPlan
         marketingName
         monthlyUploadLimit
         value
-        isTeamPlan
-        isSentryPlan
       }
     }
   }
