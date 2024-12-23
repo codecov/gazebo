@@ -17,6 +17,7 @@ const mockTrialData = {
     isEnterprisePlan: false,
     isFreePlan: false,
     isProPlan: true,
+    isTeamPlan: false,
     baseUnitPrice: 10,
     benefits: [],
     billingRate: BillingRate.MONTHLY,
