@@ -50,13 +50,7 @@ export interface Plan {
   hasSeatsLeft: boolean
   isEnterprisePlan: boolean
   isFreePlan: boolean
-}
-
-export function isTeamPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    if (plan === Plans.USERS_TEAMM || plan === Plans.USERS_TEAMY) return true
-  }
-  return false
+  isTeamPlan: boolean
 }
 
 export function isSentryPlan(plan?: PlanName | null) {

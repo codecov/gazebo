@@ -12,7 +12,7 @@ import {
 import {
   canApplySentryUpgrade,
   getNextBillingDate,
-  isTeamPlan,
+  Plans,
 } from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
@@ -53,7 +53,9 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
     plans,
   })
   const minSeats =
-    isSentryUpgrade && !isTeamPlan(selectedPlan?.value)
+    isSentryUpgrade &&
+    selectedPlan?.value !== Plans.USERS_TEAMM &&
+    selectedPlan?.value !== Plans.USERS_TEAMY
       ? MIN_SENTRY_SEATS
       : MIN_NB_SEATS_PRO
 
@@ -79,7 +81,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         minSeats,
         trialStatus,
         selectedPlan,
-        planName: planData?.plan?.value,
+        plan: planData?.plan,
       })
     ),
     mode: 'onChange',

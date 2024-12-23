@@ -6,7 +6,6 @@ import { PlanPageDataQueryOpts } from 'pages/PlanPage/queries/PlanPageDataQueryO
 import { useAccountDetails, usePlanData } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
-import { isTeamPlan } from 'shared/utils/billing'
 
 import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
 import PlanPricing from '../shared/PlanPricing'
@@ -75,7 +74,7 @@ function PaidPlanCard() {
             <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
           ) : null}
         </div>
-        {isNumber(numberOfUploads) && isTeamPlan(plan?.value) ? (
+        {isNumber(numberOfUploads) && plan?.isTeamPlan ? (
           <div>
             <p className="mb-2 text-xs font-semibold">Private repo uploads</p>
             <p className="text-xs text-ds-gray-senary">

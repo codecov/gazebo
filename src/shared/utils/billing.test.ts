@@ -14,7 +14,6 @@ import {
   isCodecovProPlan,
   isProPlan,
   isSentryPlan,
-  isTeamPlan,
   isTrialPlan,
   lastTwoDigits,
   Plans,
@@ -490,21 +489,6 @@ describe('canApplySentryUpgrade', () => {
     })
 
     expect(result).toBeFalsy()
-  })
-})
-
-describe('isTeamPlan', () => {
-  it('returns true when plan is team monthly or yearly', () => {
-    expect(isTeamPlan(Plans.USERS_TEAMM)).toBeTruthy()
-    expect(isTeamPlan(Plans.USERS_TEAMY)).toBeTruthy()
-  })
-
-  it('returns false when plan is not team monthly or yearly', () => {
-    expect(isTeamPlan(Plans.USERS_FREE)).toBeFalsy()
-    expect(isTeamPlan(Plans.USERS_BASIC)).toBeFalsy()
-    expect(isTeamPlan(Plans.USERS_INAPP)).toBeFalsy()
-    expect(isTeamPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
-    expect(isTeamPlan(Plans.USERS_SENTRYM)).toBeFalsy()
   })
 })
 

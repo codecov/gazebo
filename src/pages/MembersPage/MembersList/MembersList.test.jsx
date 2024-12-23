@@ -130,6 +130,9 @@ describe('MembersList', () => {
                 ...mockPlanData,
                 value: planName,
                 isFreePlan: planName === Plans.USERS_BASIC,
+                isTeamPlan:
+                  planName === Plans.USERS_TEAMM ||
+                  planName === Plans.USERS_TEAMY,
                 planUserCount,
                 hasSeatsLeft,
               },
