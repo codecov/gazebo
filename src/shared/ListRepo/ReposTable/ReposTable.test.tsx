@@ -913,53 +913,13 @@ describe('ReposTable', () => {
                 name: 'Repo name 1',
                 latestCommitAt: subDays(new Date(), 3).toISOString(),
                 coverageAnalytics: {
-                  percentCovered: 0,
+                  percentCovered: 10,
                   lines: 123,
                 },
                 active: true,
                 updatedAt: '2020-08-25T16:36:19.67986800:00',
                 repositoryConfig: null,
-                coverageEnabled: false,
-                bundleAnalysisEnabled: false,
-              },
-            },
-            {
-              node: {
-                private: true,
-                activated: true,
-                author: {
-                  username: 'owner1',
-                },
-                name: 'Repo name 2',
-                latestCommitAt: subDays(new Date(), 2).toISOString(),
-                coverageAnalytics: {
-                  percentCovered: 100,
-                  lines: 123,
-                },
-                active: true,
-                updatedAt: '2020-08-25T16:36:19.67986800:00',
-                repositoryConfig: null,
-                coverageEnabled: false,
-                bundleAnalysisEnabled: false,
-              },
-            },
-            {
-              node: {
-                private: true,
-                activated: false,
-                author: {
-                  username: 'owner1',
-                },
-                name: 'Repo name 3',
-                latestCommitAt: subDays(new Date(), 5).toISOString(),
-                coverageAnalytics: {
-                  percentCovered: null,
-                  lines: 123,
-                },
-                active: false,
-                updatedAt: '2020-08-25T16:36:19.67986800:00',
-                repositoryConfig: null,
-                coverageEnabled: false,
+                coverageEnabled: true,
                 bundleAnalysisEnabled: false,
               },
             },
@@ -996,10 +956,10 @@ describe('ReposTable', () => {
       render(<ReposTable searchValue="" owner="owner1" mayIncludeDemo />, {
         wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
       })
-      const links = await screen.findAllByText(/Repo name/)
-      expect(links.length).toBe(3)
       const demoLink = await screen.findAllByText(/Codecov demo/)
       expect(demoLink.length).toBe(1)
+      const links = await screen.findAllByText(/Repo name/)
+      expect(links.length).toBe(1)
     })
 
     it('shows demo repo when search term includes it', async () => {
@@ -1010,6 +970,109 @@ describe('ReposTable', () => {
       expect(repo).not.toBeInTheDocument()
       const demoLink = await screen.findAllByText(/Codecov demo/)
       expect(demoLink.length).toBe(1)
+    })
+
+    it('hides demo repo when user has 2 or more repos configured', async () => {
+      server.use(
+        graphql.query('ReposForOwner', async (info) => {
+          const demoRepo = [
+            {
+              node: {
+                private: false,
+                activated: true,
+                author: {
+                  username: 'codecov',
+                },
+                name: 'gazebo',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: 0,
+                  lines: 123,
+                },
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+              },
+            },
+          ]
+
+          const myRepos = [
+            {
+              node: {
+                private: false,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 1',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: 10,
+                  lines: 123,
+                },
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: false,
+              },
+            },
+            {
+              node: {
+                private: false,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 1',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: 0,
+                  lines: 123,
+                },
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: false,
+              },
+            },
+          ]
+
+          let reposToReturn = myRepos.filter(
+            (repo) =>
+              !info.variables.filters.term ||
+              repo.node.name.includes(info.variables.filters.term)
+          )
+
+          if (info.variables.owner === 'codecov') {
+            reposToReturn = demoRepo
+          }
+
+          return HttpResponse.json({
+            data: {
+              owner: {
+                repositories: {
+                  edges: reposToReturn,
+                  pageInfo: {
+                    hasNextPage: false,
+                    endCursor: '3',
+                  },
+                },
+              },
+            },
+          })
+        })
+      )
+      render(<ReposTable searchValue="" owner="owner1" mayIncludeDemo />, {
+        wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
+      })
+      const links = await screen.findAllByText(/Repo name/)
+      expect(links.length).toBe(2)
+      const demoLink = screen.queryAllByText(/Codecov demo/)
+      expect(demoLink.length).toBe(0)
     })
   })
 })

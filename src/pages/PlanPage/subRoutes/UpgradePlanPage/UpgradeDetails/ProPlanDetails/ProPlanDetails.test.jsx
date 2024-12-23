@@ -188,6 +188,7 @@ describe('ProPlanDetails', () => {
               plan: {
                 ...mockPlanData,
                 isFreePlan: !isProPlan && !isSentryPlan,
+                isTeamPlan: false,
                 trialStatus: isOngoingTrial
                   ? TrialStatuses.ONGOING
                   : TrialStatuses.CANNOT_TRIAL,

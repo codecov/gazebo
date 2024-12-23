@@ -33,6 +33,7 @@ const mockPlanDataResponse = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: false,
+  isTeamPlan: false,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',

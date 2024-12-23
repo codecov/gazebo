@@ -333,16 +333,6 @@ describe('CommitsTab', () => {
     })
 
     describe('when select onLoadMore is triggered', () => {
-      beforeEach(() => {
-        mocks.useIntersection.mockReturnValue({
-          isIntersecting: true,
-        })
-      })
-
-      afterEach(() => {
-        vi.clearAllMocks()
-      })
-
       describe('when there is not a next page', () => {
         it('does not call fetchNextPage', async () => {
           const { user, fetchNextPage } = setup({ hasNextPage: false })
@@ -359,11 +349,11 @@ describe('CommitsTab', () => {
 
       describe('when there is a next page', () => {
         it('calls fetchNextPage', async () => {
-          const { fetchNextPage, user } = setup({ hasNextPage: true })
+          const { fetchNextPage } = setup({ hasNextPage: true })
+          mocks.useIntersection.mockReturnValue({
+            isIntersecting: true,
+          })
           render(<CommitsTab />, { wrapper })
-
-          const select = await screen.findByText('Select branch')
-          await user.click(select)
 
           await waitFor(() =>
             expect(fetchNextPage).toHaveBeenCalledWith('some cursor')

@@ -94,6 +94,7 @@ const mockPlanData = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: false,
+  isTeamPlan: false,
 }
 
 const server = setupServer()

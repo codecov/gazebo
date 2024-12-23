@@ -190,6 +190,7 @@ describe('PlanTypeOptions', () => {
           isEnterprisePlan: false,
           isFreePlan: false,
           isProPlan: false,
+          isTeamPlan: false,
         }
         if (planValue === Plans.USERS_BASIC) {
           return HttpResponse.json({

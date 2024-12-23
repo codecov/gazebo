@@ -26,6 +26,7 @@ const mockResponse = {
   isEnterprisePlan: false,
   isProPlan: false,
   isFreePlan: true,
+  isTeamPlan: false,
 }
 
 const server = setupServer()

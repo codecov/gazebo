@@ -43,6 +43,7 @@ const mockPlanDataResponse = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: false,
+  isTeamPlan: false,
 }
 
 const mockPlanDataResponseNoUploadLimit = {

@@ -35,19 +35,6 @@ export const CollectionMethods = Object.freeze({
   AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
 })
 
-export function isTeamPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    if (plan === Plans.USERS_TEAMM || plan === Plans.USERS_TEAMY) return true
-  }
-  return false
-}
-export function isBasicPlan(plan?: PlanName) {
-  if (isString(plan)) {
-    return plan === Plans.USERS_BASIC
-  }
-  return false
-}
-
 export function isSentryPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return plan === Plans.USERS_SENTRYM || plan === Plans.USERS_SENTRYY

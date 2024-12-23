@@ -128,6 +128,7 @@ const freePlan = {
   isFreePlan: true,
   isEnterprisePlan: false,
   isProPlan: false,
+  isTeamPlan: false,
 }
 
 const scheduledPhase = {
@@ -226,6 +227,9 @@ describe('FreePlanCard', () => {
                 value: planValue,
                 planUserCount,
                 isFreePlan: planValue === Plans.USERS_BASIC,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
               },
               pretrialPlan: mockPreTrialPlanInfo,
             },

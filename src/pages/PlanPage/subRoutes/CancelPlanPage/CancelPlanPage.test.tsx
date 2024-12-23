@@ -81,6 +81,7 @@ const mockPlanData = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: false,
+  isTeamPlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -160,6 +161,9 @@ describe('CancelPlanPage', () => {
                 isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
                 isFreePlan: planValue === Plans.USERS_BASIC,
                 isProPlan: planValue === Plans.USERS_PR_INAPPM,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
               },
             },
           },

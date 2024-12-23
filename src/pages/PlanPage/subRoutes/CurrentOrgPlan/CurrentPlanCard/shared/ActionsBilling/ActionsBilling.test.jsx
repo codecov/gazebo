@@ -231,6 +231,9 @@ describe('Actions Billing', () => {
                 ...trialPlanData.plan,
                 value: accountDetails.plan.value,
                 isFreePlan: accountDetails.plan.value === Plans.USERS_BASIC,
+                isTeamPlan:
+                  accountDetails.plan.value === Plans.USERS_TEAMM ||
+                  accountDetails.plan.value === Plans.USERS_TEAMY,
               },
               hasPrivateRepos,
             },

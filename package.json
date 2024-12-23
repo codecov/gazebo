@@ -151,7 +151,7 @@
     "eslint-plugin-testing-library": "^6.4.0",
     "http-proxy-middleware": "^2.0.7",
     "husky": "^9.1.4",
-    "jsdom": "^25.0.0",
+    "jsdom": "^25.0.1",
     "lint-staged": "^15.2.8",
     "msw": "^2.4.11",
     "postcss": "^8.4.31",

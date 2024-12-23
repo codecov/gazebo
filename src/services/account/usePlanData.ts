@@ -30,6 +30,7 @@ const PlanSchema = z.object({
   isEnterprisePlan: z.boolean(),
   isFreePlan: z.boolean(),
   isProPlan: z.boolean(),
+  isTeamPlan: z.boolean(),
 })
 
 export type Plan = z.infer<typeof PlanSchema>
@@ -86,6 +87,7 @@ export const query = `
         isEnterprisePlan
         isFreePlan
         isProPlan
+        isTeamPlan
       }
       pretrialPlan {
         baseUnitPrice
