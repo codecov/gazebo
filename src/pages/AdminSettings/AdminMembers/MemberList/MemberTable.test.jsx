@@ -66,7 +66,6 @@ const mockOpenSeatsTaken = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, cacheTime: Infinity } },
 })
-
 const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false, cacheTime: Infinity } },
 })
@@ -88,7 +87,7 @@ beforeAll(() => {
   server.listen()
 })
 
-beforeEach(() => {
+afterEach(() => {
   queryClient.clear()
   queryClientV5.clear()
   server.resetHandlers()
