@@ -8,11 +8,7 @@ import {
   usePlanData,
 } from 'services/account'
 import { useStartTrial } from 'services/trial'
-import {
-  canApplySentryUpgrade,
-  isSentryPlan,
-  isTrialPlan,
-} from 'shared/utils/billing'
+import { canApplySentryUpgrade, isSentryPlan } from 'shared/utils/billing'
 import A from 'ui/A/A'
 import Button from 'ui/Button'
 
@@ -69,7 +65,7 @@ function PlansActionsBilling() {
   return (
     <div className="flex self-start">
       <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-        {planData?.plan?.isFreePlan || isTrialPlan(planData?.plan?.value)
+        {planData?.plan?.isFreePlan || planData?.plan?.isTrialPlan
           ? 'Upgrade'
           : 'Manage plan'}
       </Button>

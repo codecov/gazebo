@@ -42,14 +42,6 @@ export function isSentryPlan(plan?: PlanName | null) {
   return false
 }
 
-export function isTrialPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return plan === Plans.USERS_TRIAL
-  }
-
-  return false
-}
-
 export const findProPlans = ({
   plans,
 }: {

@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
 import { TrialStatuses, useAccountDetails, usePlanData } from 'services/account'
-import { isTrialPlan } from 'shared/utils/billing'
 import A from 'ui/A/A'
 
 import ChangePlanLink from './ChangePlanLink'
@@ -19,7 +18,7 @@ function Activation() {
   const planQuantity = planData?.plan?.planUserCount || 0
 
   if (
-    isTrialPlan(planData?.plan?.value) &&
+    planData?.plan?.isTrialPlan &&
     planData?.plan?.trialStatus === TrialStatuses.ONGOING
   ) {
     return (

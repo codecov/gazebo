@@ -14,7 +14,6 @@ import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import {
   canApplySentryUpgrade,
-  isTrialPlan,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 import A from 'ui/A'
@@ -37,8 +36,8 @@ function FreePlanCard({ plan, scheduledPhase }) {
 
   const uploadsNumber = ownerData?.numberOfUploads
   const trialOngoing =
-    isTrialPlan(planData?.plan?.value) &&
-    planData?.plan.trialStatus === TrialStatuses.ONGOING
+    planData?.plan?.isTrialPlan &&
+    planData?.plan?.trialStatus === TrialStatuses.ONGOING
 
   let benefits = plan?.benefits
   let planValue = plan?.value

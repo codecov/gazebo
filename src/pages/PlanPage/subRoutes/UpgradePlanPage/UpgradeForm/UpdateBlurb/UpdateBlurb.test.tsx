@@ -17,6 +17,7 @@ const planChunk = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isTeamPlan: true,
+  isTrialPlan: false,
   hasSeatsLeft: true,
 }
 
