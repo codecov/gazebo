@@ -1,10 +1,13 @@
 import { useMutation } from '@tanstack/react-query'
+import { useQueryClient as useQueryClientV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
+import { SelfHostedCurrentUserQueryOpts } from 'services/selfHosted/SelfHostedCurrentUserQueryOpts'
 import Api from 'shared/api'
 
 export const useSelfActivationMutation = ({ queryClient, canChange }) => {
   const { provider } = useParams()
+  const queryClientV5 = useQueryClientV5()
 
   return useMutation({
     mutationFn: (activated) => {
@@ -17,17 +20,24 @@ export const useSelfActivationMutation = ({ queryClient, canChange }) => {
       }
     },
     onMutate: async (activated) => {
-      await queryClient.cancelQueries(['SelfHostedCurrentUser'])
+      await queryClientV5.cancelQueries({
+        queryKey: SelfHostedCurrentUserQueryOpts({ provider }).queryKey,
+      })
       await queryClient.cancelQueries(['Seats'])
 
-      const prevUser = queryClient.getQueryData(['SelfHostedCurrentUser'])
+      const prevUser = queryClientV5.getQueryData(
+        SelfHostedCurrentUserQueryOpts({ provider }).queryKey
+      )
       const prevSeat = queryClient.getQueryData(['Seats'])
 
       if (canChange) {
-        queryClient.setQueryData(['SelfHostedCurrentUser'], (user) => ({
-          ...user,
-          activated,
-        }))
+        queryClientV5.setQueryData(
+          SelfHostedCurrentUserQueryOpts({ provider }).queryKey,
+          (user) => ({
+            ...user,
+            activated,
+          })
+        )
 
         queryClient.setQueryData(['Seats'], (seats) => {
           const seatsUsed = seats?.data?.config?.seatsUsed
@@ -49,11 +59,16 @@ export const useSelfActivationMutation = ({ queryClient, canChange }) => {
       }
     },
     onError: (_err, _activated, context) => {
-      queryClient.setQueryData(['SelfHostedCurrentUser'], context.prevUser)
+      queryClientV5.setQueryData(
+        SelfHostedCurrentUserQueryOpts({ provider }).queryKey,
+        context.prevUser
+      )
       queryClient.setQueryData(['Seats'], context.prevSeat)
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['SelfHostedCurrentUser'])
+      queryClientV5.invalidateQueries({
+        queryKey: SelfHostedCurrentUserQueryOpts({ provider }).queryKey,
+      })
       queryClient.invalidateQueries(['Seats'])
     },
   })
