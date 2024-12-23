@@ -4,7 +4,11 @@ import isString from 'lodash/isString'
 import isUndefined from 'lodash/isUndefined'
 import { z } from 'zod'
 
-import { AccountDetailsSchema } from 'services/account'
+import {
+  AccountDetailsSchema,
+  IndividualPlan,
+  TrialStatus,
+} from 'services/account'
 
 export const Plans = {
   USERS: 'users',
@@ -25,78 +29,33 @@ export const Plans = {
 
 export type PlanName = (typeof Plans)[keyof typeof Plans]
 
+export const BillingRate = {
+  MONTHLY: 'monthly',
+  ANNUALLY: 'annually',
+} as const
+
 export interface Plan {
   baseUnitPrice: number
   benefits: string[]
-  billingRate: string | null
+  billingRate?: (typeof BillingRate)[keyof typeof BillingRate] | null
   marketingName: string
   value: PlanName
   monthlyUploadLimit: number | null
-  quantity?: number
+  quantity?: number | null
+  trialEndDate: string | null
+  trialStatus: TrialStatus
+  trialStartDate: string | null
+  trialTotalDays: number | null
+  planUserCount: number | null
+  hasSeatsLeft: boolean
+  isEnterprisePlan: boolean
+  isFreePlan: boolean
+  isTeamPlan: boolean
 }
 
-export const EnterprisePlans = Object.freeze({
-  USERS_ENTERPRISEM: 'users-enterprisem',
-  USERS_ENTERPRISEY: 'users-enterprisey',
-})
-
-export function isEnterprisePlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return (Object.values(EnterprisePlans) as string[]).includes(plan)
-  }
-
-  return false
-}
-
-export function isFreePlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true
-  }
-  return false
-}
-
-export function isTeamPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    if (plan === Plans.USERS_TEAMM || plan === Plans.USERS_TEAMY) return true
-  }
-  return false
-}
 export function isBasicPlan(plan?: PlanName) {
   if (isString(plan)) {
     return plan === Plans.USERS_BASIC
-  }
-  return false
-}
-
-export function isPaidPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return isAnnualPlan(plan) || isMonthlyPlan(plan)
-  }
-  return false
-}
-
-export function isMonthlyPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return (
-      plan === Plans.USERS_INAPP ||
-      plan === Plans.USERS_PR_INAPPM ||
-      plan === Plans.USERS_SENTRYM ||
-      plan === Plans.USERS_TEAMM ||
-      plan === Plans.USERS_ENTERPRISEM
-    )
-  }
-  return false
-}
-
-export function isAnnualPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return (
-      plan === Plans.USERS_INAPPY ||
-      plan === Plans.USERS_PR_INAPPY ||
-      plan === Plans.USERS_TEAMY ||
-      plan === Plans.USERS_SENTRYY ||
-      plan === Plans.USERS_ENTERPRISEY
-    )
   }
   return false
 }
@@ -135,7 +94,7 @@ export const CollectionMethods = Object.freeze({
   AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
 })
 
-export function useProPlans({ plans }: { plans?: Plan[] | null }) {
+export function useProPlans({ plans }: { plans?: IndividualPlan[] | null }) {
   const proPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_PR_INAPPM
   )
@@ -150,7 +109,11 @@ export function useProPlans({ plans }: { plans?: Plan[] | null }) {
   }
 }
 
-export const findProPlans = ({ plans }: { plans?: Plan[] | null }) => {
+export const findProPlans = ({
+  plans,
+}: {
+  plans?: IndividualPlan[] | null
+}) => {
   const proPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_PR_INAPPM
   )
@@ -164,7 +127,11 @@ export const findProPlans = ({ plans }: { plans?: Plan[] | null }) => {
   }
 }
 
-export const findSentryPlans = ({ plans }: { plans?: Plan[] | null }) => {
+export const findSentryPlans = ({
+  plans,
+}: {
+  plans?: IndividualPlan[] | null
+}) => {
   const sentryPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_SENTRYM
   )
@@ -178,7 +145,11 @@ export const findSentryPlans = ({ plans }: { plans?: Plan[] | null }) => {
   }
 }
 
-export const findTeamPlans = ({ plans }: { plans?: Plan[] | null }) => {
+export const findTeamPlans = ({
+  plans,
+}: {
+  plans?: IndividualPlan[] | null
+}) => {
   const teamPlanMonth = plans?.find((plan) => plan.value === Plans.USERS_TEAMM)
   const teamPlanYear = plans?.find((plan) => plan.value === Plans.USERS_TEAMY)
 
@@ -189,13 +160,13 @@ export const findTeamPlans = ({ plans }: { plans?: Plan[] | null }) => {
 }
 
 export const canApplySentryUpgrade = ({
-  plan,
+  isEnterprisePlan,
   plans,
 }: {
-  plan?: PlanName
-  plans?: Plan[] | null
+  isEnterprisePlan?: boolean
+  plans?: IndividualPlan[] | null
 }) => {
-  if (isEnterprisePlan(plan) || !isArray(plans)) {
+  if (isEnterprisePlan || !isArray(plans)) {
     return false
   }
 
@@ -205,7 +176,11 @@ export const canApplySentryUpgrade = ({
   )
 }
 
-export const shouldDisplayTeamCard = ({ plans }: { plans?: Plan[] | null }) => {
+export const shouldDisplayTeamCard = ({
+  plans,
+}: {
+  plans?: IndividualPlan[] | null
+}) => {
   const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
 
   return !isUndefined(teamPlanMonth) && !isUndefined(teamPlanYear)

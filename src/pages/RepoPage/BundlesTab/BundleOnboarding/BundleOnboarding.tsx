@@ -10,6 +10,7 @@ import {
 } from 'services/codecovEventMetrics'
 import { useNavLinks } from 'services/navigation'
 import { useRepo } from 'services/repo'
+import { Provider } from 'shared/api/helpers'
 import { useRedirect } from 'shared/useRedirect'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
@@ -24,7 +25,7 @@ import ViteOnboarding from './ViteOnboarding'
 import WebpackOnboarding from './WebpackOnboarding'
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
   repo: string
 }
@@ -68,7 +69,7 @@ const getInitialBundler = (path: string, urls: BundlerOptionUrls) => {
 }
 
 interface BundlerSelectorProps {
-  provider: string
+  provider: Provider
   owner: string
   repo: string
 }

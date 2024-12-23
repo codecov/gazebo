@@ -1,19 +1,15 @@
 import PropTypes from 'prop-types'
 
-import {
-  isEnterprisePlan,
-  isFreePlan,
-  isSentryPlan,
-} from 'shared/utils/billing'
+import { isSentryPlan } from 'shared/utils/billing'
 
 const SENTRY_PRICE = 29
 
-function PlanPricing({ value, baseUnitPrice }) {
-  if (isFreePlan(value)) {
+function PlanPricing({ plan, value, baseUnitPrice }) {
+  if (plan?.isFreePlan) {
     return <h2 className="text-2xl font-semibold">Free</h2>
   }
 
-  if (isEnterprisePlan(value)) {
+  if (plan?.isEnterprisePlan) {
     return <h2 className="text-2xl font-semibold">Custom pricing</h2>
   }
 
@@ -30,6 +26,7 @@ function PlanPricing({ value, baseUnitPrice }) {
 }
 
 PlanPricing.propTypes = {
+  plan: PropTypes.object.isRequired,
   value: PropTypes.string.isRequired,
   baseUnitPrice: PropTypes.number.isRequired,
 }

@@ -7,7 +7,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 import { UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE } from 'shared/utils/upgradeForm'
 
 import ErrorBanner from './ErrorBanner'
@@ -23,98 +23,36 @@ const basicPlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
+  hasSeatsLeft: true,
 }
 
 const teamPlanMonth = {
   baseUnitPrice: 5,
   benefits: ['Up to 10 users'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
-  quantity: 10,
+  hasSeatsLeft: true,
 }
 
 const teamPlanYear = {
   baseUnitPrice: 4,
   benefits: ['Up to 10 users'],
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
-  quantity: 5,
+  hasSeatsLeft: true,
 }
 
 const proPlanYear = {
   value: Plans.USERS_PR_INAPPY,
   baseUnitPrice: 10,
   benefits: ['asdf'],
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Pro',
   monthlyUploadLimit: null,
-  quantity: 5,
-}
-
-const mockAccountDetailsBasic = {
-  plan: basicPlan,
-  activatedUserCount: 1,
-  inactiveUserCount: 0,
-}
-
-const mockAccountDetailsTeamMonthly = {
-  plan: teamPlanMonth,
-  activatedUserCount: 7,
-  inactiveUserCount: 0,
-  subscriptionDetail: {
-    latestInvoice: {
-      periodStart: 1595270468,
-      periodEnd: 1597948868,
-      dueDate: '1600544863',
-      amountPaid: 9600.0,
-      amountDue: 9600.0,
-      amountRemaining: 0.0,
-      total: 9600.0,
-      subtotal: 9600.0,
-      invoicePdf:
-        'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
-    },
-  },
-}
-
-const mockAccountDetailsTeamYearly = {
-  plan: teamPlanYear,
-  activatedUserCount: 11,
-  inactiveUserCount: 0,
-}
-
-const mockPlanDataResponseMonthly = {
-  baseUnitPrice: 10,
-  benefits: [],
-  billingRate: 'monthly',
-  marketingName: 'Pro Team',
-  monthlyUploadLimit: 2500,
-  value: Plans.USERS_TEAMM,
-  trialStatus: TrialStatuses.NOT_STARTED,
-  trialStartDate: '',
-  trialEndDate: '',
-  trialTotalDays: 0,
-  pretrialUsersCount: 0,
-  planUserCount: 1,
-}
-
-const mockPlanDataResponseYearly = {
-  baseUnitPrice: 10,
-  benefits: [],
-  billingRate: 'yearly',
-  marketingName: 'Pro Team',
-  monthlyUploadLimit: 2500,
-  value: Plans.USERS_TEAMM,
-  trialStatus: TrialStatuses.NOT_STARTED,
-  trialStartDate: '',
-  trialEndDate: '',
-  trialTotalDays: 0,
-  pretrialUsersCount: 0,
-  planUserCount: 1,
   hasSeatsLeft: true,
 }
 
@@ -162,23 +100,13 @@ interface SetupArgs {
 
 describe('ErrorBanner', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC, monthlyPlan = true }: SetupArgs = {
+    { planValue = Plans.USERS_BASIC }: SetupArgs = {
       planValue: Plans.USERS_BASIC,
-      monthlyPlan: true,
     }
   ) {
     const user = userEvent.setup()
 
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, () => {
-        if (planValue === Plans.USERS_BASIC) {
-          return HttpResponse.json(mockAccountDetailsBasic)
-        } else if (planValue === Plans.USERS_TEAMM) {
-          return HttpResponse.json(mockAccountDetailsTeamMonthly)
-        } else if (planValue === Plans.USERS_TEAMY) {
-          return HttpResponse.json(mockAccountDetailsTeamYearly)
-        }
-      }),
       http.patch('/internal/gh/codecov/account-details/', async () => {
         return HttpResponse.json({ success: false })
       }),
@@ -197,18 +125,45 @@ describe('ErrorBanner', () => {
         })
       }),
       graphql.query('GetPlanData', () => {
-        const planResponse = monthlyPlan
-          ? mockPlanDataResponseMonthly
-          : mockPlanDataResponseYearly
-
-        return HttpResponse.json({
-          data: {
-            owner: {
-              hasPrivateRepos: true,
-              plan: planResponse,
+        const planChunk = {
+          trialStatus: TrialStatuses.NOT_STARTED,
+          trialStartDate: '',
+          trialEndDate: '',
+          trialTotalDays: 0,
+          pretrialUsersCount: 0,
+          planUserCount: 1,
+          isEnterprisePlan: false,
+          isFreePlan: false,
+          isTeamPlan: false,
+        }
+        if (planValue === Plans.USERS_BASIC) {
+          return HttpResponse.json({
+            data: {
+              owner: {
+                hasPrivateRepos: true,
+                plan: { ...basicPlan, ...planChunk },
+              },
             },
-          },
-        })
+          })
+        } else if (planValue === Plans.USERS_TEAMM) {
+          return HttpResponse.json({
+            data: {
+              owner: {
+                hasPrivateRepos: true,
+                plan: { ...teamPlanMonth, ...planChunk },
+              },
+            },
+          })
+        } else if (planValue === Plans.USERS_TEAMY) {
+          return HttpResponse.json({
+            data: {
+              owner: {
+                hasPrivateRepos: true,
+                plan: { ...teamPlanYear, ...planChunk },
+              },
+            },
+          })
+        }
       })
     )
 
@@ -264,7 +219,7 @@ describe('ErrorBanner', () => {
           )
           expect(props.setFormValue).toHaveBeenCalledWith(
             'newPlan',
-            Plans.USERS_PR_INAPPY,
+            { ...proPlanYear, hasSeatsLeft: undefined },
             { shouldValidate: true }
           )
         })

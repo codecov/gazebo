@@ -7,7 +7,13 @@ import PlanPricing from './PlanPricing'
 describe('PlanPricing', () => {
   describe('user is on a free plan', () => {
     it('renders price is free', () => {
-      render(<PlanPricing value={Plans.USERS_FREE} baseUnitPrice={12} />)
+      render(
+        <PlanPricing
+          plan={{ isFreePlan: true }}
+          value={Plans.USERS_FREE}
+          baseUnitPrice={12}
+        />
+      )
 
       const price = screen.getByText('Free')
       expect(price).toBeInTheDocument()
@@ -16,7 +22,13 @@ describe('PlanPricing', () => {
 
   describe('user is on a basic plan', () => {
     it('renders price is free', () => {
-      render(<PlanPricing value={Plans.USERS_BASIC} baseUnitPrice={12} />)
+      render(
+        <PlanPricing
+          plan={{ isFreePlan: true }}
+          value={Plans.USERS_BASIC}
+          baseUnitPrice={12}
+        />
+      )
 
       const price = screen.getByText('Free')
       expect(price).toBeInTheDocument()
@@ -73,7 +85,11 @@ describe('PlanPricing', () => {
     describe('enterprise plan is monthly', () => {
       it('renders custom pricing', () => {
         render(
-          <PlanPricing value={Plans.USERS_ENTERPRISEM} baseUnitPrice={10} />
+          <PlanPricing
+            plan={{ isEnterprisePlan: true }}
+            value={Plans.USERS_ENTERPRISEM}
+            baseUnitPrice={10}
+          />
         )
 
         const price = screen.getByText('Custom pricing')
@@ -84,7 +100,11 @@ describe('PlanPricing', () => {
     describe('enterprise plan is yearly', () => {
       it('renders custom pricing', () => {
         render(
-          <PlanPricing value={Plans.USERS_ENTERPRISEY} baseUnitPrice={10} />
+          <PlanPricing
+            plan={{ isEnterprisePlan: true }}
+            value={Plans.USERS_ENTERPRISEY}
+            baseUnitPrice={10}
+          />
         )
 
         const price = screen.getByText('Custom pricing')

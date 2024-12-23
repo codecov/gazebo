@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import envVarScreenshot from 'assets/onboarding/env_variable_screenshot.png'
@@ -17,6 +18,11 @@ import { ExpandableSection } from 'ui/ExpandableSection'
 
 import ExampleBlurb from '../ExampleBlurb'
 import LearnMoreBlurb from '../LearnMoreBlurb'
+import OutputCoverageStep from '../OutputCoverageStep/OutputCoverageStep'
+import {
+  Framework,
+  UseFrameworkInstructions,
+} from '../UseFrameworkInstructions'
 
 const orbsString = `orbs:
   codecov: codecov/codecov@5
@@ -49,15 +55,28 @@ function CircleCI() {
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken ?? ''
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
+  const [framework, setFramework] = useState<Framework>('Jest')
+  const frameworkInstructions = UseFrameworkInstructions({
+    orgUploadToken,
+    owner,
+    repo,
+  })
+
   return (
     <div className="flex flex-col gap-5">
-      <Step1
+      <OutputCoverageStep
+        framework={framework}
+        frameworkInstructions={frameworkInstructions}
+        owner={owner}
+        setFramework={setFramework}
+      />
+      <TokenStep
         tokenCopy={tokenCopy}
         uploadToken={uploadToken}
         providerName={providerName!}
       />
-      <Step2 defaultBranch={data?.repository?.defaultBranch ?? ''} />
-      <Step3 />
+      <OrbYAMLStep defaultBranch={data?.repository?.defaultBranch ?? ''} />
+      <MergeStep />
       <FeedbackCTA />
       <LearnMoreBlurb />
     </div>
@@ -66,20 +85,20 @@ function CircleCI() {
 
 export default CircleCI
 
-interface Step1Props {
+interface TokenStepProps {
   tokenCopy: string
   uploadToken: string
   providerName: string
 }
 
-function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {
+function TokenStep({ tokenCopy, uploadToken, providerName }: TokenStepProps) {
   const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
   const { owner } = useParams<URLParams>()
   return (
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 1: add {tokenCopy} token to environment variables
+          Step 2: add {tokenCopy} token to environment variables
         </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
@@ -133,18 +152,18 @@ function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {
   )
 }
 
-interface Step2Props {
+interface OrbYAMLStepProps {
   defaultBranch: string
 }
 
-function Step2({ defaultBranch }: Step2Props) {
+function OrbYAMLStep({ defaultBranch }: OrbYAMLStepProps) {
   const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
   const { owner } = useParams<URLParams>()
   return (
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 2: add Codecov orb to CircleCI{' '}
+          Step 3: add Codecov orb to CircleCI{' '}
           <A
             hook="circleCIyamlLink"
             isExternal
@@ -180,12 +199,12 @@ function Step2({ defaultBranch }: Step2Props) {
   )
 }
 
-function Step3() {
+function MergeStep() {
   return (
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 3: merge to main or your preferred feature branch
+          Step 4: merge to main or your preferred feature branch
         </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">

@@ -7,55 +7,57 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import BillingOptions from './BillingOptions'
 
-const allPlans = [
-  {
-    marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
-    billingRate: null,
-    baseUnitPrice: 0,
-    benefits: [
-      'Up to 5 users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-    ],
-    monthlyUploadLimit: 250,
-  },
-  {
-    marketingName: 'Pro Team',
-    value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
-    baseUnitPrice: 12,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Pro Team',
-    value: Plans.USERS_PR_INAPPY,
-    billingRate: 'annually',
-    baseUnitPrice: 10,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-]
+const freePlan = {
+  marketingName: 'Basic',
+  value: Plans.USERS_BASIC,
+  billingRate: null,
+  baseUnitPrice: 0,
+  benefits: [
+    'Up to 1 user',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+  ],
+  monthlyUploadLimit: 250,
+}
+
+const proPlanMonthly = {
+  marketingName: 'Pro',
+  value: Plans.USERS_PR_INAPPM,
+  billingRate: BillingRate.MONTHLY,
+  baseUnitPrice: 12,
+  benefits: [
+    'Configurable # of users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+}
+
+const proPlanYearly = {
+  marketingName: 'Pro',
+  value: Plans.USERS_PR_INAPPY,
+  billingRate: BillingRate.ANNUALLY,
+  baseUnitPrice: 10,
+  benefits: [
+    'Configurable # of users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+}
+
+const allPlans = [freePlan, proPlanMonthly, proPlanYearly]
 
 const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
   value: Plans.USERS_PR_INAPPM,
@@ -66,6 +68,9 @@ const mockPlanDataResponse = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isTeamPlan: true,
 }
 
 const server = setupServer()
@@ -131,7 +136,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_PR_INAPPY}
+            newPlan={proPlanYearly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -155,7 +160,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_PR_INAPPY}
+            newPlan={proPlanYearly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -178,7 +183,7 @@ describe('BillingOptions', () => {
 
           render(
             <BillingOptions
-              newPlan={Plans.USERS_PR_INAPPY}
+              newPlan={proPlanYearly}
               setFormValue={mockSetFormValue}
             />,
             {
@@ -195,7 +200,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              Plans.USERS_PR_INAPPM
+              proPlanMonthly
             )
           )
         })
@@ -208,7 +213,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_PR_INAPPM}
+            newPlan={proPlanMonthly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -232,7 +237,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_PR_INAPPM}
+            newPlan={proPlanMonthly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -255,7 +260,7 @@ describe('BillingOptions', () => {
 
           render(
             <BillingOptions
-              newPlan={Plans.USERS_PR_INAPPM}
+              newPlan={proPlanMonthly}
               setFormValue={mockSetFormValue}
             />,
             {
@@ -272,7 +277,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              Plans.USERS_PR_INAPPY
+              proPlanYearly
             )
           )
         })

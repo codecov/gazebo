@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import Activation from './Activation'
 
@@ -26,9 +26,12 @@ const mockedAccountDetails = {
 }
 
 const mockPlanData = {
+  isEnterprisePlan: false,
+  isFreePlan: true,
+  isTeamPlan: false,
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
   value: Plans.USERS_BASIC,
@@ -37,7 +40,7 @@ const mockPlanData = {
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
-  planUserCount: 1,
+  planUserCount: 9,
   hasSeatsLeft: true,
 }
 
@@ -235,7 +238,7 @@ describe('Activation', () => {
         render(<Activation />, { wrapper: wrapper() })
 
         const orgTrialedText = await screen.findByText(
-          /Your org trialed Pro Team plan/
+          /Your org trialed Pro plan/
         )
         expect(orgTrialedText).toBeInTheDocument()
       })

@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
@@ -10,6 +10,7 @@ import {
 import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
+import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
 import { query } from './constants'
@@ -38,9 +39,17 @@ const PathContentsResultSchema = z.discriminatedUnion('__typename', [
   PathContentDirSchema,
 ])
 
-export const PathContentsSchema = z.object({
-  __typename: z.literal('PathContents'),
-  results: z.array(PathContentsResultSchema),
+const PathContentEdgeSchema = z.object({
+  node: PathContentsResultSchema,
+})
+
+export const PathContentConnectionSchema = z.object({
+  __typename: z.literal('PathContentConnection'),
+  edges: z.array(PathContentEdgeSchema),
+  pageInfo: z.object({
+    hasNextPage: z.boolean(),
+    endCursor: z.string().nullable(),
+  }),
 })
 
 export type PathContentsSchemaType = z.infer<typeof PathContentsResultSchema>
@@ -61,7 +70,7 @@ const MissingHeadReportSchema = z.object({
 })
 
 const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
-  PathContentsSchema,
+  PathContentConnectionSchema,
   UnknownPathSchema,
   MissingCoverageSchema,
   MissingHeadReportSchema,
@@ -76,7 +85,7 @@ const RepositorySchema = z.object({
   branch: z.object({
     head: z
       .object({
-        pathContents: PathContentsUnionSchema.nullish(),
+        deprecatedPathContents: PathContentsUnionSchema.nullish(),
       })
       .nullable(),
   }),
@@ -85,6 +94,7 @@ const RepositorySchema = z.object({
 const BranchContentsSchema = z.object({
   owner: z
     .object({
+      username: z.string(),
       repository: z.discriminatedUnion('__typename', [
         RepositorySchema,
         RepoNotFoundErrorSchema,
@@ -116,9 +126,9 @@ export function useRepoBranchContents({
   filters,
   options,
 }: RepoBranchContentsArgs) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ['BranchContents', provider, owner, repo, branch, path, filters],
-    queryFn: ({ signal }) => {
+    queryFn: ({ signal, pageParam }) => {
       return Sentry.startSpan({ name: 'fetch branch contents' }, () => {
         return Api.graphql({
           provider,
@@ -130,6 +140,7 @@ export function useRepoBranchContents({
             branch,
             path,
             filters,
+            after: pageParam,
           },
         }).then((res) => {
           const parsedRes = BranchContentsSchema.safeParse(res?.data)
@@ -171,24 +182,37 @@ export function useRepoBranchContents({
             } satisfies NetworkErrorObject)
           }
 
-          let results
-          const pathContentsType =
-            data?.owner?.repository?.branch?.head?.pathContents?.__typename
-          if (pathContentsType === 'PathContents') {
-            results =
-              data?.owner?.repository?.branch?.head?.pathContents?.results
+          let results = null
+          const pathContents =
+            data?.owner?.repository?.branch?.head?.deprecatedPathContents
+          if (
+            pathContents &&
+            pathContents?.__typename === 'PathContentConnection'
+          ) {
+            results = mapEdges({
+              edges: pathContents?.edges,
+            })
+
+            return {
+              results,
+              pathContentsType: pathContents.__typename,
+              indicationRange:
+                data?.owner?.repository?.repositoryConfig?.indicationRange,
+              pageInfo: pathContents?.pageInfo,
+            }
           }
 
           return {
-            results: results ?? null,
-            pathContentsType,
+            results,
+            pathContentsType: pathContents?.__typename,
             indicationRange:
               data?.owner?.repository?.repositoryConfig?.indicationRange,
-            __typename: res?.data?.owner?.repository?.branch?.head?.__typename,
+            pageInfo: null,
           }
         })
       })
     },
+    getNextPageParam: (lastPage) => lastPage.pageInfo?.endCursor ?? undefined,
     ...options,
   })
 }

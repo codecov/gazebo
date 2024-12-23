@@ -7,7 +7,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import SentryPlanController from './SentryPlanController'
 
@@ -40,7 +40,7 @@ const basicPlan = {
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro',
   value: Plans.USERS_SENTRYM,
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 12,
   benefits: [
     'Includes 5 seats',
@@ -56,7 +56,7 @@ const sentryPlanMonth = {
 const sentryPlanYear = {
   marketingName: 'Sentry Pro',
   value: Plans.USERS_SENTRYY,
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   baseUnitPrice: 10,
   benefits: [
     'Includes 5 seats',
@@ -103,7 +103,7 @@ const mockAccountDetailsSentryYearly = {
 const mockPlanDataResponseMonthly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_SENTRYM,
@@ -114,12 +114,15 @@ const mockPlanDataResponseMonthly = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isTeamPlan: false,
 }
 
 const mockPlanDataResponseYearly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'yearly',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Pro',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_SENTRYY,
@@ -130,6 +133,9 @@ const mockPlanDataResponseYearly = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isTeamPlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -226,7 +232,7 @@ describe('SentryPlanController', () => {
       const props = {
         setFormValue: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_SENTRYM,
+        newPlan: sentryPlanMonth,
         seats: 10,
         errors: { seats: { message: '' } },
       }
@@ -284,7 +290,7 @@ describe('SentryPlanController', () => {
       const props = {
         setFormValue: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_SENTRYY,
+        newPlan: sentryPlanYear,
         seats: 5,
         errors: { seats: { message: '' } },
       }

@@ -10,7 +10,7 @@ import config from 'config'
 
 import { SentryBugReporter } from 'sentry'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import DefaultOrgSelector from './DefaultOrgSelector'
 
@@ -37,7 +37,7 @@ const server = setupServer()
 const mockTrialData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
   value: Plans.USERS_BASIC,
@@ -159,6 +159,7 @@ const wrapper =
   )
 
 beforeAll(() => {
+  console.error = () => {}
   server.listen({
     onUnhandledRequest: 'warn',
   })
@@ -169,6 +170,7 @@ afterEach(() => {
 })
 afterAll(() => {
   server.close()
+  vi.resetAllMocks()
 })
 
 describe('DefaultOrgSelector', () => {
@@ -212,13 +214,17 @@ describe('DefaultOrgSelector', () => {
               hasPrivateRepos: privateRepos,
               plan: {
                 ...mockTrialData,
+                isEnterprisePlan: false,
+                isFreePlan: false,
+                isTeamPlan:
+                  value === Plans.USERS_TEAMM || value === Plans.USERS_TEAMY,
                 trialStatus,
                 value,
               },
               pretrialPlan: {
                 baseUnitPrice: 10,
                 benefits: [],
-                billingRate: 'monthly',
+                billingRate: BillingRate.MONTHLY,
                 marketingName: 'Users Basic',
                 monthlyUploadLimit: 250,
                 value: Plans.USERS_BASIC,
@@ -1292,7 +1298,7 @@ describe('DefaultOrgSelector', () => {
 
   describe('on fetch next page', () => {
     it('renders next page', async () => {
-      const { user, fetchNextPage } = setup({
+      const { fetchNextPage } = setup({
         useUserData: mockUserData,
         myOrganizationsData: {
           me: {
@@ -1313,12 +1319,6 @@ describe('DefaultOrgSelector', () => {
 
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
       mocks.useIntersection.mockReturnValue({ isIntersecting: true })
-
-      const selectOrg = await screen.findByRole('button', {
-        name: 'Select an organization',
-      })
-
-      await user.click(selectOrg)
 
       await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
       await waitFor(() => expect(fetchNextPage).toHaveBeenCalledWith('MTI='))

@@ -1,11 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { http, HttpResponse } from 'msw'
+import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+
 import 'react-intersection-observer/test-utils'
 
+import { TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import MembersList from './MembersList'
@@ -48,6 +50,20 @@ const mockActiveUserRequest = {
   total_pages: 1,
 }
 
+const mockPlanData = {
+  isEnterprisePlan: false,
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Users Basic',
+  monthlyUploadLimit: 250,
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -82,16 +98,17 @@ describe('MembersList', () => {
     </QueryClientProvider>
   )
 
-  function setup({ accountDetails = {} } = { accountDetails: {} }) {
+  function setup({
+    planName = Plans.USERS_BASIC,
+    planUserCount = 0,
+    hasSeatsLeft = true,
+  }) {
     const user = userEvent.setup()
     const mockActivateUser = vi.fn()
 
     let sendActivatedUser = false
 
     server.use(
-      http.get('/internal/:provider/codecov/account-details', () => {
-        return HttpResponse.json(accountDetails)
-      }),
       http.get('/internal/:provider/codecov/users', () => {
         if (sendActivatedUser) {
           sendActivatedUser = false
@@ -103,6 +120,25 @@ describe('MembersList', () => {
         sendActivatedUser = true
         mockActivateUser()
         return HttpResponse.json({})
+      }),
+      graphql.query('GetPlanData', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              hasPrivateRepos: false,
+              plan: {
+                ...mockPlanData,
+                value: planName,
+                isFreePlan: planName === Plans.USERS_BASIC,
+                isTeamPlan:
+                  planName === Plans.USERS_TEAMM ||
+                  planName === Plans.USERS_TEAMY,
+                planUserCount,
+                hasSeatsLeft,
+              },
+            },
+          },
+        })
       })
     )
 
@@ -110,7 +146,7 @@ describe('MembersList', () => {
   }
 
   describe('rendering MembersList', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup({}))
 
     it('does not render UpgradeModal', () => {
       render(<MembersList />, { wrapper })
@@ -158,7 +194,7 @@ describe('MembersList', () => {
   describe('interacting with the status selector', () => {
     describe('selecting Active Users', () => {
       it('updates select text', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -174,7 +210,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -191,7 +227,7 @@ describe('MembersList', () => {
 
     describe('selecting Inactive Users', () => {
       it('updates select text', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -207,7 +243,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -228,7 +264,7 @@ describe('MembersList', () => {
   describe('interacting with the search field', () => {
     describe('user types into search field', () => {
       it('updates url params', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(<MembersList />, { wrapper })
 
         const searchField = await screen.findByTestId('search-input-members')
@@ -242,7 +278,7 @@ describe('MembersList', () => {
   describe('interacting with the role selector', () => {
     describe('selecting Admins Users', () => {
       it('updates select text', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('Everyone')
@@ -258,7 +294,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(<MembersList />, { wrapper })
 
         const select = screen.getByText('Everyone')
@@ -273,7 +309,7 @@ describe('MembersList', () => {
 
     describe('selecting Developers', () => {
       it('updates select text', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('Everyone')
@@ -287,7 +323,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(<MembersList />, { wrapper })
 
         const select = screen.getByText('Everyone')
@@ -306,10 +342,9 @@ describe('MembersList', () => {
       describe('activated seats is greater then or equal to plan quantity', () => {
         it('opens up upgrade modal', async () => {
           const { user } = setup({
-            accountDetails: {
-              activatedUserCount: 100,
-              plan: { value: Plans.USERS_BASIC, quantity: 1 },
-            },
+            hasSeatsLeft: false,
+            planUserCount: 1,
+            planName: Plans.USERS_BASIC,
           })
 
           render(<MembersList />, { wrapper })
@@ -333,10 +368,9 @@ describe('MembersList', () => {
       describe('activated seats is less then or equal to plan quantity', () => {
         it('does not open upgrade modal', async () => {
           const { user } = setup({
-            accountDetails: {
-              activatedUserCount: 0,
-              plan: { value: Plans.USERS_BASIC, quantity: 1 },
-            },
+            hasSeatsLeft: true,
+            planUserCount: 1,
+            planName: Plans.USERS_BASIC,
           })
           render(<MembersList />, { wrapper })
 
@@ -367,10 +401,9 @@ describe('MembersList', () => {
       describe('activated seats is greater then or equal to plan quantity', () => {
         it('renders disabled toggle', async () => {
           setup({
-            accountDetails: {
-              activatedUserCount: 100,
-              plan: { value: Plans.USERS_PR_INAPPY, quantity: 1 },
-            },
+            hasSeatsLeft: false,
+            planUserCount: 1,
+            planName: Plans.USERS_PR_INAPPY,
           })
 
           render(<MembersList />, { wrapper })
@@ -391,10 +424,9 @@ describe('MembersList', () => {
       describe('activated seats is less then or equal to plan quantity', () => {
         it('calls activate user', async () => {
           const { user, mockActivateUser } = setup({
-            accountDetails: {
-              activatedUserCount: 0,
-              plan: { value: Plans.USERS_PR_INAPPY, quantity: 1 },
-            },
+            hasSeatsLeft: true,
+            planUserCount: 1,
+            planName: Plans.USERS_PR_INAPPY,
           })
           render(<MembersList />, { wrapper })
 

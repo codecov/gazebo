@@ -3,7 +3,6 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
-import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
 import { cn } from 'shared/utils/cn'
 import { formatTimeFromSeconds } from 'shared/utils/dates'
 import Badge from 'ui/Badge'
@@ -369,8 +368,7 @@ function MetricsSection() {
     interval: queryParams?.historicalTrend as MeasurementInterval,
   })
   const disabledFlakeAggregates =
-    (isTeamPlan(testResults?.plan) || isFreePlan(testResults?.plan)) &&
-    testResults?.private
+    (testResults?.isTeamPlan || testResults?.isFreePlan) && testResults?.private
   const { data: flakeAggregates } = useFlakeAggregates({
     interval: queryParams?.historicalTrend as MeasurementInterval,
     opts: {

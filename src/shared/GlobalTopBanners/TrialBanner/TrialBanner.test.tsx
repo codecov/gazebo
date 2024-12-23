@@ -9,7 +9,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import config from 'config'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import TrialBanner from './TrialBanner'
 
@@ -18,7 +18,7 @@ vi.mock('config')
 const proPlanMonth = {
   marketingName: 'Pro Team',
   value: Plans.USERS_PR_INAPPM,
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 12,
   benefits: [
     'Configurable # of users',
@@ -30,12 +30,15 @@ const proPlanMonth = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isTeamPlan: false,
 }
 
 const trialPlan = {
   marketingName: 'Trial Team',
   value: Plans.USERS_TRIAL,
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 12,
   benefits: [
     'Configurable # of users',
@@ -47,9 +50,13 @@ const trialPlan = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isTeamPlan: false,
 }
 
 const basicPlan = {
+  isEnterprisePlan: false,
   marketingName: 'Basic',
   value: Plans.USERS_BASIC,
   billingRate: null,
@@ -63,6 +70,8 @@ const basicPlan = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  isFreePlan: true,
+  isTeamPlan: false,
 }
 
 const queryClient = new QueryClient()
@@ -149,6 +158,9 @@ describe('TrialBanner', () => {
                 pretrialUsersCount: plan.pretrialUsersCount,
                 planUserCount: plan.planUserCount,
                 hasSeatsLeft: true,
+                isEnterprisePlan: plan.isEnterprisePlan,
+                isFreePlan: plan.isFreePlan,
+                isTeamPlan: false,
               },
             },
           },

@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { TrialStatuses, usePlanData } from 'services/account'
-import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
+import { isTrialPlan } from 'shared/utils/billing'
 import A from 'ui/A'
 
 interface Params {
@@ -22,7 +22,7 @@ function ProPlanSubheading() {
   // - trial status is not started
   // - org has private repos
   if (
-    isFreePlan(planData?.plan?.value) &&
+    planData?.plan?.isFreePlan &&
     planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
     planData?.hasPrivateRepos
   ) {
@@ -53,7 +53,7 @@ function ProPlanSubheading() {
   // - user is currently on a free plan
   // - trial status is expired
   if (
-    isFreePlan(planData?.plan?.value) &&
+    planData?.plan?.isFreePlan &&
     planData?.plan?.trialStatus === TrialStatuses.EXPIRED
   ) {
     return <p className="text-ds-gray-quinary">Your org trialed this plan</p>

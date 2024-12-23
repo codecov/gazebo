@@ -1,5 +1,4 @@
-import AppLink from 'shared/AppLink'
-import { type AppLinkProps } from 'ui/Button'
+import AppLink, { AppLinkProps } from 'shared/AppLink'
 
 interface SidemenuProps {
   links: AppLinkProps[]
@@ -15,7 +14,6 @@ function Sidemenu({ links }: SidemenuProps) {
           <div key={tab.pageName}>
             <AppLink
               {...tab}
-              // @ts-expect-error: AppLink is not typed yet
               className="block p-3 hover:bg-ds-gray-quaternary/5"
               activeClassName="border-l-4 pl-2 border-ds-gray-octonary text-ds-gray-octonary font-semibold bg-ds-gray-quaternary bg-opacity-5"
             />

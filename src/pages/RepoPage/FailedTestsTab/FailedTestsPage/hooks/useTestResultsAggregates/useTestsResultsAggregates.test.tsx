@@ -55,6 +55,8 @@ const mockIncorrectResponse = {
     },
     plan: {
       value: Plans.USERS_BASIC,
+      isFreePlan: true,
+      isTeamPlan: false,
     },
   },
 }
@@ -63,6 +65,8 @@ const mockResponse = {
   owner: {
     plan: {
       value: Plans.USERS_BASIC,
+      isFreePlan: true,
+      isTeamPlan: false,
     },
     repository: {
       __typename: 'Repository',
@@ -128,7 +132,9 @@ describe('useTestResultsAggregates', () => {
               totalSkips: 20,
               totalSkipsPercentChange: 0,
             },
-            plan: 'users-basic',
+            planName: 'users-basic',
+            isFreePlan: true,
+            isTeamPlan: false,
             private: true,
             defaultBranch: 'main',
           })

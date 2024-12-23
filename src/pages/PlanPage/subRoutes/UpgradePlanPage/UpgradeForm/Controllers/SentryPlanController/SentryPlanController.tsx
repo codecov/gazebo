@@ -1,6 +1,6 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
-import { PlanName } from 'shared/utils/billing'
+import { IndividualPlan } from 'services/account'
 import { MIN_SENTRY_SEATS } from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
@@ -12,7 +12,7 @@ import { UpgradeFormFields } from '../../UpgradeForm'
 
 interface SentryPlanControllerProps {
   seats: number
-  newPlan?: PlanName
+  newPlan?: IndividualPlan
   register: UseFormRegister<UpgradeFormFields>
   setFormValue: UseFormSetValue<UpgradeFormFields>
   errors?: {

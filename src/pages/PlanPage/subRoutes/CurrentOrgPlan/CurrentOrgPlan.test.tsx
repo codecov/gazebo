@@ -12,8 +12,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { z } from 'zod'
 
 import { PlanUpdatedPlanNotificationContext } from 'pages/PlanPage/context'
-import { AccountDetailsSchema } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { AccountDetailsSchema, TrialStatuses } from 'services/account'
+import { BillingRate, Plans } from 'shared/utils/billing'
 import { AlertOptions, type AlertOptionsType } from 'ui/Alert'
 
 import CurrentOrgPlan from './CurrentOrgPlan'
@@ -27,9 +27,6 @@ vi.mock('./AccountOrgs', () => ({ default: () => 'AccountOrgs' }))
 const mockedAccountDetails = {
   planProvider: 'github',
   rootOrganization: {},
-  plan: {
-    value: Plans.USERS_FREE,
-  },
   usesInvoice: false,
 } as z.infer<typeof AccountDetailsSchema>
 
@@ -37,6 +34,25 @@ const mockNoEnterpriseAccount = {
   owner: {
     account: null,
   },
+}
+
+const mockPlanDataResponse = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'some-name',
+  monthlyUploadLimit: 123,
+  value: Plans.USERS_PR_INAPPM,
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 1,
+  hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isTeamPlan: false,
 }
 
 const mockEnterpriseAccountDetailsNinetyPercent = {
@@ -151,6 +167,13 @@ describe('CurrentOrgPlan', () => {
       graphql.query('EnterpriseAccountDetails', () => {
         return HttpResponse.json({ data: enterpriseAccountDetails })
       }),
+      graphql.query('GetPlanData', () => {
+        return HttpResponse.json({
+          data: {
+            owner: { hasPrivateRepos: true, plan: { ...mockPlanDataResponse } },
+          },
+        })
+      }),
       http.get('/internal/:provider/:owner/account-details', () => {
         return HttpResponse.json(accountDetails)
       })
@@ -184,15 +207,7 @@ describe('CurrentOrgPlan', () => {
   describe('when plan update success banner should be shown', () => {
     it('renders banner for plan successfully updated', async () => {
       setup({
-        accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: 'monthly',
-            marketingName: 'Pro',
-            quantity: 39,
-            value: Plans.USERS_PR_INAPPM,
-          },
-        } as z.infer<typeof AccountDetailsSchema>,
+        accountDetails: {} as z.infer<typeof AccountDetailsSchema>,
       })
 
       render(<CurrentOrgPlan />, { wrapper })
@@ -203,13 +218,6 @@ describe('CurrentOrgPlan', () => {
     it('renders banner for plan successfully updated with scheduled details', async () => {
       setup({
         accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: 'monthly',
-            marketingName: 'Pro',
-            quantity: 39,
-            value: Plans.USERS_PR_INAPPM,
-          },
           scheduleDetail: {
             scheduledPhase: {
               quantity: 34,
@@ -229,15 +237,7 @@ describe('CurrentOrgPlan', () => {
 
     it('does not render banner when no recent update made', async () => {
       setup({
-        accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: 'monthly',
-            marketingName: 'Pro',
-            quantity: 39,
-            value: Plans.USERS_PR_INAPPM,
-          },
-        } as z.infer<typeof AccountDetailsSchema>,
+        accountDetails: {} as z.infer<typeof AccountDetailsSchema>,
       })
       render(<CurrentOrgPlan />, { wrapper: noUpdatedPlanWrapper })
       const currentPlanCard = await screen.findByText(/CurrentPlanCard/i)
@@ -253,13 +253,6 @@ describe('CurrentOrgPlan', () => {
     it('renders when subscription detail data is available', async () => {
       setup({
         accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: 'monthly',
-            marketingName: 'Pro',
-            quantity: 39,
-            value: Plans.USERS_PR_INAPPM,
-          },
           subscriptionDetail: {
             cancelAtPeriodEnd: true,
             currentPeriodEnd: 1722631954,
@@ -282,13 +275,6 @@ describe('CurrentOrgPlan', () => {
           accountDetails: {
             planProvider: 'gitlab',
             rootOrganization: null,
-            plan: {
-              value: Plans.USERS_FREE,
-              baseUnitPrice: 12,
-              benefits: ['a', 'b'],
-              billingRate: '1',
-              marketingName: 'bob',
-            },
             usesInvoice: false,
           } as z.infer<typeof AccountDetailsSchema>,
         })
@@ -318,13 +304,6 @@ describe('CurrentOrgPlan', () => {
           accountDetails: {
             planProvider: 'github',
             rootOrganization: {},
-            plan: {
-              value: Plans.USERS_FREE,
-              baseUnitPrice: 12,
-              benefits: ['a', 'b'],
-              billingRate: '1',
-              marketingName: 'bob',
-            },
             usesInvoice: true,
           } as z.infer<typeof AccountDetailsSchema>,
         })
@@ -353,7 +332,7 @@ describe('CurrentOrgPlan', () => {
   describe('when plan value is not provided', () => {
     beforeEach(() => {
       setup({
-        accountDetails: { ...mockedAccountDetails, plan: null },
+        accountDetails: { ...mockedAccountDetails },
       })
     })
 
