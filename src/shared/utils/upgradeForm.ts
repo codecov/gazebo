@@ -14,7 +14,6 @@ import {
   findProPlans,
   findSentryPlans,
   findTeamPlans,
-  isSentryPlan,
 } from 'shared/utils/billing'
 
 export const MIN_NB_SEATS_PRO = 2
@@ -231,7 +230,7 @@ export const getDefaultValuesUpgradeForm = ({
   const isPaidPlan = !!plan?.billingRate // If the plan has a billing rate, it's a paid plan
 
   let newPlan = proPlanYear
-  if (isSentryUpgrade && !isSentryPlan(plan?.value)) {
+  if (isSentryUpgrade && !plan?.isSentryPlan) {
     newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
   } else if (plan?.isTeamPlan || selectedPlan?.isTeamPlan) {
     newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear

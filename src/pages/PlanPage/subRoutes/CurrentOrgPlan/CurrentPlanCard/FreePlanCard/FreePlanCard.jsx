@@ -40,13 +40,11 @@ function FreePlanCard({ plan, scheduledPhase }) {
     planData?.plan?.trialStatus === TrialStatuses.ONGOING
 
   let benefits = plan?.benefits
-  let planValue = plan?.value
   let baseUnitPrice = plan?.baseUnitPrice
   let marketingName = plan?.marketingName
 
   if (trialOngoing) {
     benefits = planData?.pretrialPlan?.benefits
-    planValue = planData?.pretrialPlan?.value
     baseUnitPrice = planData?.pretrialPlan?.baseUnitPrice
     marketingName = planData?.pretrialPlan?.marketingName
   }
@@ -77,7 +75,6 @@ function FreePlanCard({ plan, scheduledPhase }) {
             <div className="mb-4">
               <PlanPricing
                 plan={planData?.plan}
-                value={planValue}
                 baseUnitPrice={baseUnitPrice}
               />
             </div>
