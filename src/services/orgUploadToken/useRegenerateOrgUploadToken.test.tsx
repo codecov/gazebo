@@ -6,11 +6,22 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRegenerateOrgUploadToken } from './useRegenerateOrgUploadToken'
 
-const data = {
-  data: {
-    regenerateOrgUploadToken: {
-      orgUploadToken: 'new token',
-    },
+const mocks = vi.hoisted(() => ({
+  useRedirect: vi.fn(),
+  renderToast: vi.fn(),
+}))
+
+vi.mock('services/toast', async () => {
+  const actual = await vi.importActual('services/toast')
+  return {
+    ...actual,
+    renderToast: mocks.renderToast,
+  }
+})
+
+const mockData = {
+  regenerateOrgUploadToken: {
+    orgUploadToken: 'new token',
   },
 }
 
@@ -23,7 +34,7 @@ afterAll(() => server.close())
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
     <Route path="/:provider/:owner/:repo">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -32,7 +43,14 @@ const wrapper = ({ children }) => (
 )
 
 describe('useRegenerateOrgUploadToken', () => {
-  function setup() {
+  type SetupArgs = {
+    regenerateOrgUploadToken: {
+      orgUploadToken?: string | null
+      error?: { __typename: string }
+    }
+  }
+
+  function setup({ data = mockData }: { data?: SetupArgs } = {}) {
     server.use(
       graphql.mutation('regenerateOrgUploadToken', () => {
         return HttpResponse.json({ data })
@@ -57,6 +75,37 @@ describe('useRegenerateOrgUploadToken', () => {
           await waitFor(() => !result.current.isLoading)
 
           await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+        })
+
+        it('displays error toast when there is an error', async () => {
+          setup({
+            data: {
+              regenerateOrgUploadToken: {
+                error: { __typename: 'ValidationError' },
+                orgUploadToken: null,
+              },
+            },
+          })
+
+          const { result } = renderHook(() => useRegenerateOrgUploadToken(), {
+            wrapper,
+          })
+
+          result.current.mutate()
+          await waitFor(() => result.current.isLoading)
+          await waitFor(() => !result.current.isLoading)
+
+          await waitFor(() =>
+            expect(mocks.renderToast).toHaveBeenCalledWith({
+              type: 'error',
+              title: 'Error generating upload token',
+              content:
+                'Please try again. If the error persists please contact support',
+              options: {
+                duration: 10000,
+              },
+            })
+          )
         })
       })
     })
