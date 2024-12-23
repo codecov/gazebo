@@ -351,6 +351,14 @@ describe('UpgradeForm', () => {
                       : BillingRate.ANNUALLY,
                 isFreePlan: planValue === Plans.USERS_BASIC,
                 isEnterprisePlan: false,
+                isProPlan:
+                  planValue === Plans.USERS_PR_INAPPM ||
+                  planValue === Plans.USERS_PR_INAPPY ||
+                  planValue === Plans.USERS_SENTRYM ||
+                  planValue === Plans.USERS_SENTRYY,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
                 value: planValue,
                 planUserCount,
               },

@@ -7,6 +7,7 @@ import Header from 'layouts/Header'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import { EmptyErrorComponent } from 'layouts/shared/ErrorBoundary/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
+import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import ToastNotifications from 'layouts/ToastNotifications'
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
 import { useImpersonate } from 'services/impersonate'
@@ -110,7 +111,7 @@ function BaseLayout({ children }: React.PropsWithChildren) {
         {/* Header */}
         <Suspense>
           <ErrorBoundary errorComponent={<EmptyErrorComponent />}>
-            <NetworkErrorBoundary>
+            <SilentNetworkErrorWrapper>
               {isFullExperience || isImpersonating ? (
                 <>
                   <GlobalTopBanners />
@@ -121,7 +122,7 @@ function BaseLayout({ children }: React.PropsWithChildren) {
                   {showDefaultOrgSelector ? <InstallationHelpBanner /> : null}
                 </>
               )}
-            </NetworkErrorBoundary>
+            </SilentNetworkErrorWrapper>
           </ErrorBoundary>
         </Suspense>
 

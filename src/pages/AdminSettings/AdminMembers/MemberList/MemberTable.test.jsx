@@ -1,8 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -61,12 +66,20 @@ const mockOpenSeatsTaken = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, cacheTime: Infinity } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false, cacheTime: Infinity } },
+})
+
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/admin/gh/members']}>
-      <Route path="/admin/:provider/members">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/admin/gh/members']}>
+        <Route path="/admin/:provider/members">
+          <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
@@ -74,9 +87,10 @@ beforeAll(() => {
   server.listen()
 })
 
-beforeEach(() => {
-  server.resetHandlers()
+afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
+  server.resetHandlers()
 })
 
 afterAll(() => {
