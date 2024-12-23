@@ -3,6 +3,7 @@ import { useParams } from 'react-router'
 
 import { useUpdateSelfHostedSettings } from 'services/account/useUpdateSelfHostedSettings'
 import { SelfHostedSettingsQueryOpts } from 'services/selfHosted/SelfHostedSettingsQueryOpts'
+import { Provider } from 'shared/api/helpers'
 import Spinner from 'ui/Spinner'
 import Toggle from 'ui/Toggle'
 
@@ -13,7 +14,7 @@ const Loader = () => (
 )
 
 interface URLParams {
-  provider: string
+  provider: Provider
 }
 
 function AutoActivateMembers() {
