@@ -37,6 +37,8 @@ const query = `
         marketingName
         monthlyUploadLimit
         value
+        isTeamPlan
+        isSentryPlan
       }
     }
   }
