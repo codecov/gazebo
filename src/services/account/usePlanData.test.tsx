@@ -27,6 +27,7 @@ const mockTrialData = {
     isFreePlan: true,
     isProPlan: false,
     isTeamPlan: false,
+    isTrialPlan: false,
   },
   pretrialPlan: {
     baseUnitPrice: 10,
@@ -95,6 +96,7 @@ describe('usePlanData', () => {
               isFreePlan: true,
               isProPlan: false,
               isTeamPlan: false,
+              isTrialPlan: false,
               marketingName: 'Users Basic',
               monthlyUploadLimit: 250,
               planUserCount: 1,

@@ -10,7 +10,6 @@ import {
   formatTimestampToCalendarDate,
   getNextBillingDate,
   isSentryPlan,
-  isTrialPlan,
   lastTwoDigits,
   Plans,
   shouldDisplayTeamCard,
@@ -442,19 +441,5 @@ describe('canApplySentryUpgrade', () => {
     })
 
     expect(result).toBeFalsy()
-  })
-})
-
-describe('isTrialPlan', () => {
-  it('returns true when plan is trial', () => {
-    expect(isTrialPlan(Plans.USERS_TRIAL)).toBeTruthy()
-  })
-
-  it('returns false when plan is not trial', () => {
-    expect(isTrialPlan(Plans.USERS_FREE)).toBeFalsy()
-    expect(isTrialPlan(Plans.USERS_INAPP)).toBeFalsy()
-    expect(isTrialPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
-    expect(isTrialPlan(Plans.USERS_SENTRYM)).toBeFalsy()
-    expect(isTrialPlan(Plans.USERS_BASIC)).toBeFalsy()
   })
 })

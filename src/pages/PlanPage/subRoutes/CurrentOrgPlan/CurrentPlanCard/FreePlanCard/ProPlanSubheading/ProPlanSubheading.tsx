@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
 import { TrialStatuses, usePlanData } from 'services/account'
-import { isTrialPlan } from 'shared/utils/billing'
 import A from 'ui/A'
 
 interface Params {
@@ -38,7 +37,7 @@ function ProPlanSubheading() {
   // - user is on a trial plan
   // - trial status is currently ongoing
   if (
-    isTrialPlan(planData?.plan?.value) &&
+    planData?.plan?.isTrialPlan &&
     planData?.plan?.trialStatus === TrialStatuses.ONGOING
   ) {
     return (

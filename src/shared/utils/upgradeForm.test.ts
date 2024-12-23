@@ -540,7 +540,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: { value: Plans.USERS_TRIAL, isFreePlan: false } as Plan,
+        plan: { isFreePlan: false, isTrialPlan: true } as Plan,
         trialStatus: TrialStatuses.ONGOING,
       })
 

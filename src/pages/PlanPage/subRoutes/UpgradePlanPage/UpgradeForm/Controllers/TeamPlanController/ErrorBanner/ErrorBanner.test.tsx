@@ -136,6 +136,7 @@ describe('ErrorBanner', () => {
           isFreePlan: false,
           isProPlan: false,
           isTeamPlan: false,
+          isTrialPlan: false,
         }
         if (planValue === Plans.USERS_BASIC) {
           return HttpResponse.json({

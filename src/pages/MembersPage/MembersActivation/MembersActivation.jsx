@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { TrialStatuses, useAccountDetails, usePlanData } from 'services/account'
-import { isTrialPlan } from 'shared/utils/billing'
 
 import Activation from './Activation'
 import AutoActivate from './AutoActivate'
@@ -21,7 +20,7 @@ function MemberActivation() {
 
   const showAutoActivate =
     !isUndefined(planAutoActivate) &&
-    !isTrialPlan(planData?.plan?.value) &&
+    !planData?.plan?.isTrialPlan &&
     planData?.plan?.trialStatus !== TrialStatuses.ONGOING
 
   return (

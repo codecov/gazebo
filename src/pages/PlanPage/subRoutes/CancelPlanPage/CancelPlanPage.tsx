@@ -9,11 +9,7 @@ import {
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
-import {
-  BillingRate,
-  isTrialPlan,
-  shouldDisplayTeamCard,
-} from 'shared/utils/billing'
+import { BillingRate, shouldDisplayTeamCard } from 'shared/utils/billing'
 import Spinner from 'ui/Spinner'
 
 import SpecialOffer from './subRoutes/SpecialOffer'
@@ -40,7 +36,7 @@ function CancelPlanPage() {
   })
 
   const isOnTrial =
-    isTrialPlan(planData?.plan?.value) &&
+    planData?.plan?.isTrialPlan &&
     planData?.plan?.trialStatus === TrialStatuses.ONGOING
 
   // redirect right away if the user is on an enterprise plan
