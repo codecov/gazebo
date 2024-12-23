@@ -15,8 +15,6 @@ import {
   findSentryPlans,
   findTeamPlans,
   isSentryPlan,
-  PlanName,
-  Plans,
 } from 'shared/utils/billing'
 
 export const MIN_NB_SEATS_PRO = 2
@@ -28,20 +26,20 @@ export const UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE = `Team plan is only available 
 
 export function extractSeats({
   quantity,
-  value,
   activatedUserCount = 0,
   inactiveUserCount = 0,
   isSentryUpgrade,
   trialStatus,
   isFreePlan,
+  isTrialPlan,
 }: {
   quantity: number
-  value?: PlanName
   activatedUserCount?: number
   inactiveUserCount?: number
   isSentryUpgrade: boolean
   trialStatus?: TrialStatus
   isFreePlan?: boolean
+  isTrialPlan?: boolean
 }) {
   const totalMembers = inactiveUserCount + activatedUserCount
   const minPlansSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS_PRO
@@ -50,7 +48,7 @@ export function extractSeats({
 
   // if their on trial their seat count is around 1000 so this resets the
   // value to the minium value they would be going on if sentry or pro
-  if (trialStatus === TrialStatuses.ONGOING && value === Plans.USERS_TRIAL) {
+  if (trialStatus === TrialStatuses.ONGOING && isTrialPlan) {
     return minPlansSeats
   }
 
@@ -81,21 +79,14 @@ export const getSchema = ({
         message: `You cannot purchase a per user plan for less than ${minSeats} users`,
       })
       .transform((val, ctx) => {
-        if (
-          (selectedPlan?.value === Plans.USERS_TEAMM ||
-            selectedPlan?.value === Plans.USERS_TEAMY) &&
-          val > TEAM_PLAN_MAX_ACTIVE_USERS
-        ) {
+        if (selectedPlan?.isTeamPlan && val > TEAM_PLAN_MAX_ACTIVE_USERS) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE,
           })
         }
 
-        if (
-          trialStatus === TrialStatuses.ONGOING &&
-          plan?.value === Plans.USERS_TRIAL
-        ) {
+        if (trialStatus === TrialStatuses.ONGOING && plan?.isTrialPlan) {
           return val
         }
 
@@ -242,24 +233,20 @@ export const getDefaultValuesUpgradeForm = ({
   let newPlan = proPlanYear
   if (isSentryUpgrade && !isSentryPlan(plan?.value)) {
     newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
-  } else if (
-    plan?.isTeamPlan ||
-    selectedPlan?.value === Plans.USERS_TEAMM ||
-    selectedPlan?.value === Plans.USERS_TEAMY
-  ) {
+  } else if (plan?.isTeamPlan || selectedPlan?.isTeamPlan) {
     newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
   } else if (isPaidPlan) {
     newPlan = plan
   }
 
   const seats = extractSeats({
-    value: plan?.value,
     quantity: plan?.planUserCount ?? 0,
     activatedUserCount,
     inactiveUserCount,
     trialStatus,
     isSentryUpgrade,
     isFreePlan: plan?.isFreePlan,
+    isTrialPlan: plan?.isTrialPlan,
   })
 
   return {

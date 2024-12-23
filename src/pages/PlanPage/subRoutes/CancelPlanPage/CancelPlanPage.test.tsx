@@ -24,6 +24,8 @@ const teamPlans = [
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMM,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
   {
     baseUnitPrice: 5,
@@ -32,6 +34,8 @@ const teamPlans = [
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMY,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
 ]
 
@@ -47,6 +51,8 @@ const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -60,6 +66,8 @@ const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   ...(hasTeamPlans ? teamPlans : []),
 ]

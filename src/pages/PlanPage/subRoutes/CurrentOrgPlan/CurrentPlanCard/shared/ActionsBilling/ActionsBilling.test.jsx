@@ -34,6 +34,8 @@ const allPlans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -47,6 +49,8 @@ const allPlans = [
       'Priorty Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -60,6 +64,8 @@ const allPlans = [
       'Priorty Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -73,6 +79,8 @@ const allPlans = [
       'Priorty Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -86,6 +94,8 @@ const allPlans = [
       'Priorty Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
 ]
 
@@ -97,6 +107,8 @@ const sentryPlans = [
     monthlyUploadLimit: null,
     value: Plans.USERS_SENTRYM,
     billingRate: BillingRate.MONTHLY,
+    isTeamPlan: false,
+    isSentryPlan: true,
   },
 ]
 

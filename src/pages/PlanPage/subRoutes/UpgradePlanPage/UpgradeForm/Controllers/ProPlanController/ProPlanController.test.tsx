@@ -35,6 +35,8 @@ const basicPlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanMonth = {
@@ -50,6 +52,8 @@ const proPlanMonth = {
   ],
   quantity: 10,
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanYear = {
@@ -65,6 +69,8 @@ const proPlanYear = {
   ],
   monthlyUploadLimit: null,
   quantity: 13,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const trialPlan = {
@@ -74,6 +80,8 @@ const trialPlan = {
   baseUnitPrice: 12,
   benefits: ['Configurable # of users', 'Unlimited repos'],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const mockAccountDetailsBasic = {

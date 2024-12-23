@@ -28,6 +28,8 @@ const allPlans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -41,6 +43,8 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -54,6 +58,8 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -67,6 +73,8 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -80,6 +88,8 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     baseUnitPrice: 6,
@@ -88,6 +98,8 @@ const allPlans = [
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMM,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
   {
     baseUnitPrice: 5,
@@ -96,6 +108,8 @@ const allPlans = [
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMY,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
 ]
 
@@ -107,6 +121,8 @@ const sentryPlans = [
     baseUnitPrice: 0,
     benefits: ['Includes 5 seats', 'Unlimited public repositories'],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: true,
   },
   {
     marketingName: 'Sentry',
@@ -115,6 +131,8 @@ const sentryPlans = [
     baseUnitPrice: 10,
     benefits: ['Includes 5 seats', 'Unlimited private repositories'],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: true,
   },
 ]
 
