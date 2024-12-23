@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { Provider, rejectNetworkError } from 'shared/api/helpers'
 
 const OwnerSchema = z.object({
   ownerid: z.number().nullish(),
@@ -20,7 +20,7 @@ const RequestSchema = z.object({
 })
 
 interface URLParams {
-  provider: string
+  provider: Provider
 }
 
 interface UseOwnerArgs {
@@ -31,12 +31,7 @@ interface UseOwnerArgs {
   }
 }
 
-export function useOwner({
-  username,
-  opts = { enabled: username !== undefined },
-}: UseOwnerArgs) {
-  const { provider } = useParams<URLParams>()
-  const query = `
+const query = `
     query DetailOwner($username: String!) {
       owner(username: $username) {
         ownerid
@@ -48,6 +43,12 @@ export function useOwner({
     }
   `
 
+export function useOwner({
+  username,
+  opts = { enabled: username !== undefined },
+}: UseOwnerArgs) {
+  const { provider } = useParams<URLParams>()
+
   const variables = {
     username,
   }
@@ -55,7 +56,12 @@ export function useOwner({
   return useQuery({
     queryKey: ['owner', variables, provider, query],
     queryFn: ({ signal }) =>
-      Api.graphql({ provider, query, variables, signal }).then((res) => {
+      Api.graphql({
+        provider,
+        query,
+        variables,
+        signal,
+      }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
