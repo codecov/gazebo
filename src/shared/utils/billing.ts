@@ -53,13 +53,6 @@ export interface Plan {
   isTeamPlan: boolean
 }
 
-export function isBasicPlan(plan?: PlanName) {
-  if (isString(plan)) {
-    return plan === Plans.USERS_BASIC
-  }
-  return false
-}
-
 export function isSentryPlan(plan?: PlanName | null) {
   if (isString(plan)) {
     return plan === Plans.USERS_SENTRYM || plan === Plans.USERS_SENTRYY
