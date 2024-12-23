@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
@@ -15,14 +19,33 @@ vi.mock('config')
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
-const server = setupServer()
 
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const wrapper =
+  (initialEntries = ['/gh/test-org']): React.FC<React.PropsWithChildren> =>
+  ({ children }) => (
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Suspense fallback={<p>Loading</p>}>
+            <Route path="/:provider/:owner">{children}</Route>
+          </Suspense>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
+  )
+
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -30,17 +53,12 @@ afterAll(() => {
   server.close()
 })
 
-const wrapper =
-  (initialEntries = ['/gh/test-org']) =>
-  ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Suspense fallback={<p>Loading</p>}>
-          <Route path="/:provider/:owner">{children}</Route>
-        </Suspense>
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
+interface SetupArgs {
+  isUndefined?: boolean
+  seatsLimit?: number | null
+  seatsUsed?: number | null
+  expirationDate?: string | null
+}
 
 describe('SelfHostedLicenseExpiration', () => {
   function setup({
@@ -48,12 +66,7 @@ describe('SelfHostedLicenseExpiration', () => {
     seatsLimit = 50,
     seatsUsed = 10,
     expirationDate = '2020-05-09T00:00:00',
-  }: {
-    isUndefined?: boolean
-    seatsLimit?: number | null
-    seatsUsed?: number | null
-    expirationDate?: string | null
-  }) {
+  }: SetupArgs) {
     const user = userEvent.setup({ delay: null })
 
     server.use(
