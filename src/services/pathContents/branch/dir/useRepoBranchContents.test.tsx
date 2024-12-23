@@ -6,7 +6,40 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepoBranchContents } from './useRepoBranchContents'
 
-const mockData = {
+const node1 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 0,
+  partials: 0,
+  lines: 10,
+  name: 'src1',
+  path: 'src1',
+  percentCovered: 100.0,
+}
+
+const node2 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 0,
+  partials: 0,
+  lines: 10,
+  name: 'src2',
+  path: 'src2',
+  percentCovered: 100.0,
+}
+
+const node3 = {
+  __typename: 'PathContentDir',
+  hits: 9,
+  misses: 0,
+  partials: 0,
+  lines: 10,
+  name: 'src3',
+  path: 'src3',
+  percentCovered: 100.0,
+}
+
+const mockData = (after: boolean) => ({
   owner: {
     username: 'cool-user',
     repository: {
@@ -19,26 +52,21 @@ const mockData = {
       },
       branch: {
         head: {
-          pathContents: {
-            results: [
-              {
-                __typename: 'PathContentDir',
-                hits: 9,
-                misses: 0,
-                partials: 0,
-                lines: 10,
-                name: 'src',
-                path: 'src',
-                percentCovered: 100.0,
-              },
-            ],
-            __typename: 'PathContents',
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: after
+              ? [{ node: node3 }]
+              : [{ node: node1 }, { node: node2 }],
+            pageInfo: {
+              hasNextPage: after ? false : true,
+              endCursor: after ? 'cursor1' : 'cursor0',
+            },
           },
         },
       },
     },
   },
-}
+})
 
 const mockDataUnknownPath = {
   owner: {
@@ -53,9 +81,9 @@ const mockDataUnknownPath = {
       },
       branch: {
         head: {
-          pathContents: {
-            __typename: 'UnknownPath',
+          deprecatedPathContents: {
             message: 'path cannot be found',
+            __typename: 'UnknownPath',
           },
         },
       },
@@ -76,7 +104,7 @@ const mockDataMissingCoverage = {
       },
       branch: {
         head: {
-          pathContents: {
+          deprecatedPathContents: {
             message: 'files missing coverage',
             __typename: 'MissingCoverage',
           },
@@ -88,6 +116,7 @@ const mockDataMissingCoverage = {
 
 const mockDataRepositoryNotFound = {
   owner: {
+    username: 'cool-user',
     repository: {
       __typename: 'NotFoundError',
       message: 'repository not found',
@@ -97,6 +126,7 @@ const mockDataRepositoryNotFound = {
 
 const mockDataOwnerNotActivated = {
   owner: {
+    username: 'cool-user',
     repository: {
       __typename: 'OwnerNotActivatedError',
       message: 'owner not activated',
@@ -150,7 +180,7 @@ describe('useRepoBranchContents', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('BranchContents', () => {
+      graphql.query('BranchContents', ({ variables }) => {
         if (isMissingCoverage) {
           return HttpResponse.json({ data: mockDataMissingCoverage })
         } else if (isUnknownPath) {
@@ -163,14 +193,16 @@ describe('useRepoBranchContents', () => {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }
 
-        return HttpResponse.json({ data: mockData })
+        return HttpResponse.json({
+          data: mockData(variables.after === 'cursor0'),
+        })
       })
     )
   }
 
   describe('when called', () => {
     describe('when data is loaded', () => {
-      it('returns the data', async () => {
+      it('returns the data and handles pagination', async () => {
         setup({})
         const { result } = renderHook(
           () =>
@@ -187,27 +219,46 @@ describe('useRepoBranchContents', () => {
         )
 
         await waitFor(() =>
-          expect(result.current.data).toEqual(
-            expect.objectContaining({
-              results: [
-                {
-                  __typename: 'PathContentDir',
-                  hits: 9,
-                  misses: 0,
-                  partials: 0,
-                  lines: 10,
-                  name: 'src',
-                  path: 'src',
-                  percentCovered: 100.0,
-                },
-              ],
-              indicationRange: {
-                upperRange: 80,
-                lowerRange: 60,
-              },
-            })
-          )
+          expect(result.current.data?.pages[0]).toEqual({
+            results: [node1, node2],
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            pathContentsType: 'PathContentConnection',
+            pageInfo: {
+              hasNextPage: true,
+              endCursor: 'cursor0',
+            },
+          })
         )
+
+        expect(result.current.hasNextPage).toBe(true)
+
+        await result.current.fetchNextPage()
+
+        await waitFor(() => {
+          expect(result.current.data?.pages).toHaveLength(1)
+        })
+
+        await waitFor(() => {
+          expect(result.current.data?.pages[1]).toEqual({
+            results: [node3],
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            pathContentsType: 'PathContentConnection',
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: 'cursor1',
+            },
+          })
+        })
+
+        await waitFor(() => {
+          expect(result.current.data?.pages).toHaveLength(2)
+        })
       })
     })
 
@@ -229,16 +280,15 @@ describe('useRepoBranchContents', () => {
         )
 
         await waitFor(() =>
-          expect(result.current.data).toEqual(
-            expect.objectContaining({
-              indicationRange: {
-                upperRange: 80,
-                lowerRange: 60,
-              },
-              results: null,
-              pathContentsType: 'MissingCoverage',
-            })
-          )
+          expect(result.current.data?.pages[0]).toEqual({
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            results: null,
+            pathContentsType: 'MissingCoverage',
+            pageInfo: null,
+          })
         )
       })
     })
@@ -261,16 +311,15 @@ describe('useRepoBranchContents', () => {
         )
 
         await waitFor(() =>
-          expect(result.current.data).toEqual(
-            expect.objectContaining({
-              indicationRange: {
-                upperRange: 80,
-                lowerRange: 60,
-              },
-              results: null,
-              pathContentsType: 'UnknownPath',
-            })
-          )
+          expect(result.current.data?.pages[0]).toEqual({
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            results: null,
+            pathContentsType: 'UnknownPath',
+            pageInfo: null,
+          })
         )
       })
     })

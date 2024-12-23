@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import ExceededUploadsAlert from './ExceededUploadsAlert'
 
@@ -26,7 +26,7 @@ const wrapper = ({ children }) => (
 const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'some-name',
   monthlyUploadLimit: 123,
   value: Plans.USERS_PR_INAPPM,
@@ -37,6 +37,9 @@ const mockPlanDataResponse = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isTeamPlan: false,
 }
 
 beforeAll(() => {

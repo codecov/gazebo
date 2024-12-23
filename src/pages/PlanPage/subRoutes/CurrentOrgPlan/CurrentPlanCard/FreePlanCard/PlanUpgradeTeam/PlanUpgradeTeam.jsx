@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useAvailablePlans, usePlanData } from 'services/account'
 import { TierNames } from 'services/tier'
 import BenefitList from 'shared/plan/BenefitList'
-import { findTeamPlans, isFreePlan, isTrialPlan } from 'shared/utils/billing'
+import { findTeamPlans, isTrialPlan } from 'shared/utils/billing'
 import A from 'ui/A'
 import Button from 'ui/Button'
 
@@ -25,7 +25,7 @@ function PlanUpgradeTeam() {
   const yearlyUnitPrice = teamPlanYear?.baseUnitPrice
 
   let buttonText = 'Manage plan'
-  if (isFreePlan(currentPlan?.value) || isTrialPlan(currentPlan?.value)) {
+  if (currentPlan?.isFreePlan || isTrialPlan(currentPlan?.value)) {
     buttonText = 'Upgrade'
   }
 

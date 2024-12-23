@@ -2,7 +2,7 @@ import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
 import { usePlanUpdatedNotification } from 'pages/PlanPage/context'
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails, usePlanData } from 'services/account'
 import { getScheduleStart } from 'shared/plan/ScheduledPlanDetails/ScheduledPlanDetails'
 import A from 'ui/A'
 import { Alert } from 'ui/Alert'
@@ -26,6 +26,12 @@ function CurrentOrgPlan() {
     provider,
     owner,
   })
+
+  const { data: planData } = usePlanData({
+    provider,
+    owner,
+  })
+
   const { data: enterpriseDetails } = useSuspenseQueryV5(
     EnterpriseAccountDetailsQueryOpts({
       provider,
@@ -57,7 +63,7 @@ function CurrentOrgPlan() {
       ) : null}
       <InfoMessageStripeCallback />
       {isDelinquent ? <DelinquentAlert /> : null}
-      {accountDetails?.plan ? (
+      {planData?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
           {planUpdatedNotification.alertOption &&
           !planUpdatedNotification.isCancellation ? (

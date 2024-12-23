@@ -6,7 +6,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import TeamPlanDetails from './TeamPlanDetails'
 
@@ -18,7 +18,7 @@ vi.mock('shared/plan/ScheduledPlanDetails', () => ({
 const teamPlanMonth = {
   baseUnitPrice: 6,
   benefits: ['Up to 10 users'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
@@ -27,7 +27,7 @@ const teamPlanMonth = {
 const teamPlanYear = {
   baseUnitPrice: 5,
   benefits: ['Up to 10 users'],
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
@@ -49,7 +49,7 @@ const allPlans = [
   {
     marketingName: 'Pro',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -62,7 +62,7 @@ const allPlans = [
   {
     marketingName: 'Pro',
     value: Plans.USERS_PR_INAPPY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -80,7 +80,7 @@ const allPlans = [
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: ['team benefits'],
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
@@ -91,6 +91,9 @@ const mockPlanData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isTeamPlan: false,
 }
 
 const server = setupServer()

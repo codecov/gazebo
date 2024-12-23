@@ -2,14 +2,28 @@ import { render, screen } from '@testing-library/react'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import UpdateBlurb from './UpdateBlurb'
+
+const planChunk = {
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 2,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isTeamPlan: true,
+  hasSeatsLeft: true,
+}
 
 const proPlanYear = {
   marketingName: 'Pro',
   value: Plans.USERS_PR_INAPPY,
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   baseUnitPrice: 10,
   benefits: [
     'Configurable # of users',
@@ -18,37 +32,37 @@ const proPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
-  quantity: 10,
+  isTeamPlan: false,
 }
 
 const teamPlanYear = {
   baseUnitPrice: 5,
   benefits: ['Up to 10 users'],
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
-  quantity: 10,
+  isTeamPlan: true,
 }
 
 const teamPlanMonth = {
   baseUnitPrice: 5,
   benefits: ['Up to 10 users'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
-  quantity: 10,
+  isTeamPlan: true,
 }
 
 const freePlan = {
   baseUnitPrice: 5,
   benefits: ['Up to 10 users'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_BASIC,
-  quantity: 2,
+  isTeamPlan: false,
 }
 
 type WrapperClosure = (
@@ -69,9 +83,8 @@ describe('UpdateBlurb', () => {
     it('does not render anything', async () => {
       render(
         <UpdateBlurb
-          currentPlan={teamPlanMonth}
-          selectedPlan={teamPlanMonth}
-          newPlanName={teamPlanMonth.value}
+          newPlan={teamPlanMonth}
+          currentPlan={{ ...teamPlanMonth, ...planChunk, planUserCount: 10 }}
           nextBillingDate={'July 12th, 2024'}
           seats={10}
         />,
@@ -89,9 +102,8 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={freePlan}
-            selectedPlan={teamPlanYear}
-            newPlanName={teamPlanYear.value}
+            newPlan={teamPlanYear}
+            currentPlan={{ ...freePlan, ...planChunk, isFreePlan: true }}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,
@@ -106,7 +118,7 @@ describe('UpdateBlurb', () => {
         const seatsBlurb = await screen.findByText(
           'You are changing seats from 2 to [10]'
         )
-        const billingBlurb = await screen.findByText(
+        const billingBlurb = screen.queryByText(
           'You are changing your billing cycle from Monthly to [Annual]'
         )
         const immediateUpdate = await screen.findByText(
@@ -114,7 +126,7 @@ describe('UpdateBlurb', () => {
         )
         expect(planBlurb).toBeInTheDocument()
         expect(seatsBlurb).toBeInTheDocument()
-        expect(billingBlurb).toBeInTheDocument()
+        expect(billingBlurb).not.toBeInTheDocument()
         expect(immediateUpdate).toBeInTheDocument()
       })
     })
@@ -123,9 +135,8 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={teamPlanMonth}
-            selectedPlan={teamPlanYear}
-            newPlanName={teamPlanYear.value}
+            newPlan={teamPlanYear}
+            currentPlan={{ ...teamPlanMonth, ...planChunk, planUserCount: 10 }}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,
@@ -149,9 +160,8 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={proPlanYear}
-            selectedPlan={proPlanYear}
-            newPlanName={proPlanYear.value}
+            currentPlan={{ ...proPlanYear, ...planChunk, planUserCount: 10 }}
+            newPlan={proPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={11}
           />,
@@ -175,9 +185,8 @@ describe('UpdateBlurb', () => {
       it('renders immediate update blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={teamPlanYear}
-            selectedPlan={proPlanYear}
-            newPlanName={proPlanYear.value}
+            currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            newPlan={proPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,
@@ -202,9 +211,8 @@ describe('UpdateBlurb', () => {
       it('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={teamPlanYear}
-            selectedPlan={teamPlanMonth}
-            newPlanName={teamPlanMonth.value}
+            currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            newPlan={teamPlanMonth}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,
@@ -228,9 +236,8 @@ describe('UpdateBlurb', () => {
       it('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={teamPlanYear}
-            selectedPlan={teamPlanYear}
-            newPlanName={teamPlanYear.value}
+            currentPlan={{ ...teamPlanYear, ...planChunk, planUserCount: 10 }}
+            newPlan={teamPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={9}
           />,
@@ -254,9 +261,13 @@ describe('UpdateBlurb', () => {
       it('renders next billing cycle blurb', async () => {
         render(
           <UpdateBlurb
-            currentPlan={proPlanYear}
-            selectedPlan={teamPlanYear}
-            newPlanName={teamPlanYear.value}
+            currentPlan={{
+              ...proPlanYear,
+              ...planChunk,
+              planUserCount: 10,
+              isTeamPlan: false,
+            }}
+            newPlan={teamPlanYear}
             nextBillingDate={'July 12th, 2024'}
             seats={10}
           />,

@@ -10,7 +10,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import FreePlanCard from './FreePlanCard'
 
@@ -32,7 +32,7 @@ const allPlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -45,7 +45,7 @@ const allPlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -58,7 +58,7 @@ const allPlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_ENTERPRISEM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -71,7 +71,7 @@ const allPlans = [
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_ENTERPRISEY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -84,7 +84,7 @@ const allPlans = [
   {
     baseUnitPrice: 6,
     benefits: ['Up to 10 users'],
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMM,
@@ -92,7 +92,7 @@ const allPlans = [
   {
     baseUnitPrice: 5,
     benefits: ['Up to 10 users'],
-    billingRate: 'yearly',
+    billingRate: BillingRate.ANNUALLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMY,
@@ -125,6 +125,9 @@ const freePlan = {
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', '250 free uploads'],
   monthlyUploadLimit: null,
+  isFreePlan: true,
+  isEnterprisePlan: false,
+  isTeamPlan: false,
 }
 
 const scheduledPhase = {
@@ -136,7 +139,7 @@ const scheduledPhase = {
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: ['Up to # user', 'Unlimited public repositories'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
   value: Plans.USERS_BASIC,
@@ -147,12 +150,13 @@ const mockPlanData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
 }
 
 const mockPreTrialPlanInfo = {
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', 'Pre Trial benefits'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
   value: Plans.USERS_BASIC,
@@ -195,29 +199,17 @@ const wrapper = ({ children }) => (
 )
 
 describe('FreePlanCard', () => {
-  function setup(
-    {
-      owner = {
-        username: 'codecov',
-        isCurrentUserPartOfOrg: true,
-        numberOfUploads: 10,
-      },
-      plans = allPlans,
-      trialStatus = TrialStatuses.CANNOT_TRIAL,
-      planValue = Plans.USERS_BASIC,
-      planUserCount = 1,
-    } = {
-      owner: {
-        username: 'codecov',
-        isCurrentUserPartOfOrg: true,
-        numberOfUploads: 10,
-      },
-      trialStatus: TrialStatuses.CANNOT_TRIAL,
-      planValue: Plans.USERS_BASIC,
-      plans: allPlans,
-      planUserCount: 1,
-    }
-  ) {
+  function setup({
+    owner = {
+      username: 'codecov',
+      isCurrentUserPartOfOrg: true,
+      numberOfUploads: 10,
+    },
+    plans = allPlans,
+    trialStatus = TrialStatuses.CANNOT_TRIAL,
+    planValue = Plans.USERS_BASIC,
+    planUserCount = 1,
+  }) {
     server.use(
       graphql.query('PlanPageData', () => {
         return HttpResponse.json({ data: { owner } })
@@ -232,6 +224,10 @@ describe('FreePlanCard', () => {
                 trialStatus,
                 value: planValue,
                 planUserCount,
+                isFreePlan: planValue === Plans.USERS_BASIC,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
               },
               pretrialPlan: mockPreTrialPlanInfo,
             },
@@ -251,7 +247,7 @@ describe('FreePlanCard', () => {
 
   describe('rendering component', () => {
     it('renders the plan marketing name', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} scheduledPhase={scheduledPhase} />, {
         wrapper,
@@ -262,7 +258,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the benefits', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -273,7 +269,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the scheduled phase', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} scheduledPhase={scheduledPhase} />, {
         wrapper,
@@ -284,20 +280,20 @@ describe('FreePlanCard', () => {
     })
 
     it('renders actions billing button', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
 
-      const link = await screen.findByRole('link', { name: /Manage plan/ })
+      const link = await screen.findByRole('link', { name: /Upgrade/ })
 
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
     })
 
     it('renders the help message', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -310,7 +306,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders number of uploads', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -323,7 +319,7 @@ describe('FreePlanCard', () => {
     })
 
     it('does not render team plan card if not trialing', () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -334,7 +330,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the expected price details for pro team billing', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,

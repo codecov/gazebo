@@ -10,9 +10,8 @@ import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { usePlanData } from 'services/account'
 import { Member, useInfiniteUsers } from 'services/users'
-import { isFreePlan } from 'shared/utils/billing'
 import { getOwnerImg } from 'shared/utils/ownerHelpers'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 import Icon from 'ui/Icon'
@@ -61,14 +60,14 @@ function ActivationStatus({
   handleActivate,
 }: ActivationStatusProps) {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
-  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const { data: planData } = usePlanData({ owner, provider })
 
   let disabled = false
-  if (accountDetails?.activatedUserCount && accountDetails?.plan?.quantity) {
-    disabled =
-      accountDetails?.activatedUserCount >= accountDetails?.plan?.quantity &&
-      !isFreePlan(accountDetails?.plan?.value)
+
+  if (planData?.plan) {
+    disabled = !planData?.plan?.hasSeatsLeft && !planData?.plan?.isFreePlan
   }
+
   if (student) {
     disabled = false
   }

@@ -6,7 +6,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import SentryPlanDetails from './SentryPlanDetails'
 
@@ -15,7 +15,7 @@ vi.mock('shared/plan/BenefitList', () => ({ default: () => 'Benefits List' }))
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro',
   value: Plans.USERS_SENTRYM,
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 12,
   benefits: [
     'Includes 5 seats',
@@ -30,7 +30,7 @@ const sentryPlanMonth = {
 const sentryPlanYear = {
   marketingName: 'Sentry Pro',
   value: Plans.USERS_SENTRYY,
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   baseUnitPrice: 10,
   benefits: [
     'Includes 5 seats',
@@ -58,7 +58,7 @@ const allPlans = [
   {
     marketingName: 'Pro',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -71,7 +71,7 @@ const allPlans = [
   {
     marketingName: 'Pro',
     value: Plans.USERS_PR_INAPPY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -85,7 +85,7 @@ const allPlans = [
   {
     marketingName: 'Pro',
     value: Plans.USERS_ENTERPRISEM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -98,7 +98,7 @@ const allPlans = [
   {
     marketingName: 'Pro',
     value: Plans.USERS_ENTERPRISEY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -115,7 +115,7 @@ const allPlans = [
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
   value: Plans.USERS_BASIC,
@@ -126,6 +126,7 @@ const mockPlanData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
 }
 
 const server = setupServer()
@@ -166,7 +167,6 @@ describe('SentryPlanDetails', () => {
       isProPlan = false,
     } = {
       isOngoingTrial: false,
-      isSentryPlan: false,
       hasUserCanceledAtPeriodEnd: false,
       isProPlan: false,
     }
@@ -179,6 +179,8 @@ describe('SentryPlanDetails', () => {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
+                isFreePlan: !isProPlan,
+                isTeamPlan: false,
                 trialStatus: isOngoingTrial
                   ? TrialStatuses.ONGOING
                   : TrialStatuses.CANNOT_TRIAL,

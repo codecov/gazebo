@@ -29,9 +29,9 @@ describe('withFeatureFlagProvider', () => {
     config.LAUNCHDARKLY = undefined
   })
 
-  function setup(ldkey) {
+  function setup(ldkey?: string) {
     config.LAUNCHDARKLY = ldkey
-    mocks.withLDProvider.mockImplementation(() => (C) => C)
+    mocks.withLDProvider.mockImplementation(() => (C: any) => C)
 
     const Component = withFeatureFlagProvider(Dummy)
     render(<Component />)
@@ -71,7 +71,7 @@ describe('useFlags', () => {
     config.LAUNCHDARKLY = undefined
   })
 
-  function setup(ldkey) {
+  function setup(ldkey?: string) {
     config.LAUNCHDARKLY = ldkey
     mocks.useFlags.mockImplementation(() => ({ foo: 'fiz' }))
   }
@@ -104,7 +104,7 @@ describe('useFlags', () => {
     })
 
     it('Throws an error if no fallback is provided', async () => {
-      const spy = vi.spyOn(console, 'error').mockImplementation()
+      const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
       setup(undefined)
 
       renderHook(() => useFlags())
@@ -119,7 +119,7 @@ describe('useFlags', () => {
 })
 
 describe('useIdentifyUser', () => {
-  function setup(ldkey) {
+  function setup(ldkey?: string) {
     const mockIdentify = vi.fn()
     config.LAUNCHDARKLY = ldkey
 

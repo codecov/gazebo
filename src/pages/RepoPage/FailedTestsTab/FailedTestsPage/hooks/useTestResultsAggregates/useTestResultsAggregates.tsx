@@ -14,6 +14,8 @@ const TestResultsAggregatesSchema = z.object({
       plan: z
         .object({
           value: z.nativeEnum(Plans),
+          isFreePlan: z.boolean(),
+          isTeamPlan: z.boolean(),
         })
         .nullable(),
       repository: z.discriminatedUnion('__typename', [
@@ -55,6 +57,8 @@ const query = `
     owner(username: $owner) {
       plan {
         value
+        isFreePlan
+        isTeamPlan
       }
       repository: repository(name: $repo) {
         __typename
@@ -135,7 +139,9 @@ export const useTestResultsAggregates = ({
         return {
           testResultsAggregates:
             data?.owner?.repository?.testAnalytics?.testResultsAggregates,
-          plan: data?.owner?.plan?.value,
+          planName: data?.owner?.plan?.value,
+          isFreePlan: data?.owner?.plan?.isFreePlan,
+          isTeamPlan: data?.owner?.plan?.isTeamPlan,
           private: data?.owner?.repository?.private,
           defaultBranch: data?.owner?.repository?.defaultBranch,
         }

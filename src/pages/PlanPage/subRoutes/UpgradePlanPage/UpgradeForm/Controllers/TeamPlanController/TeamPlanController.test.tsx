@@ -7,7 +7,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 import { UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE } from 'shared/utils/upgradeForm'
 
 import TeamPlanController from './TeamPlanController'
@@ -42,7 +42,7 @@ const basicPlan = {
 const teamPlanMonth = {
   baseUnitPrice: 5,
   benefits: ['Up to 10 users'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
@@ -52,21 +52,19 @@ const teamPlanMonth = {
 const teamPlanYear = {
   baseUnitPrice: 4,
   benefits: ['Up to 10 users'],
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
-  quantity: 5,
 }
 
 const proPlanYear = {
   value: Plans.USERS_PR_INAPPY,
   baseUnitPrice: 10,
   benefits: ['asdf'],
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Pro',
   monthlyUploadLimit: null,
-  quantity: 5,
 }
 
 const mockAccountDetailsBasic = {
@@ -104,7 +102,7 @@ const mockAccountDetailsTeamYearly = {
 const mockPlanDataResponseMonthly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_PR_INAPPM,
@@ -115,12 +113,15 @@ const mockPlanDataResponseMonthly = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isTeamPlan: false,
 }
 
 const mockPlanDataResponseYearly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'yearly',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_PR_INAPPY,
@@ -131,6 +132,9 @@ const mockPlanDataResponseYearly = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isTeamPlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -233,7 +237,7 @@ describe('TeamPlanController', () => {
         setFormValue: vi.fn(),
         setSelectedPlan: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_TEAMM,
+        newPlan: teamPlanMonth,
         seats: 10,
         errors: { seats: { message: '' } },
       }
@@ -294,7 +298,7 @@ describe('TeamPlanController', () => {
         setFormValue,
         setSelectedPlan,
         register: vi.fn(),
-        newPlan: Plans.USERS_TEAMM,
+        newPlan: teamPlanMonth,
         seats: 12,
         errors: {
           seats: {
@@ -338,11 +342,9 @@ describe('TeamPlanController', () => {
           expect(setSelectedPlan).toHaveBeenCalledWith(
             expect.objectContaining({ value: Plans.USERS_PR_INAPPY })
           )
-          expect(setFormValue).toHaveBeenCalledWith(
-            'newPlan',
-            Plans.USERS_PR_INAPPY,
-            { shouldValidate: true }
-          )
+          expect(setFormValue).toHaveBeenCalledWith('newPlan', proPlanYear, {
+            shouldValidate: true,
+          })
         })
       })
     })
@@ -352,7 +354,7 @@ describe('TeamPlanController', () => {
         setFormValue: vi.fn(),
         setSelectedPlan: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_TEAMY,
+        newPlan: teamPlanYear,
         seats: 5,
         errors: { seats: { message: '' } },
       }

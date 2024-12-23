@@ -103,6 +103,7 @@ const mockAssets = {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
               bundle: {
+                info: { pluginName: '@codecov/vite-plugin' },
                 bundleData: { size: { uncompress: 12 } },
                 assetsPaginated: {
                   edges: [
@@ -410,8 +411,8 @@ describe('BundleContent', () => {
           expect(banner).toBeInTheDocument()
 
           const dashes = await screen.findAllByText('-')
-          // has length 8 because bundle details being moved to this component
-          expect(dashes).toHaveLength(8)
+          // has length 9 because bundle details being moved to this component
+          expect(dashes).toHaveLength(9)
         })
       })
 
@@ -426,8 +427,8 @@ describe('BundleContent', () => {
           expect(banner).toBeInTheDocument()
 
           const dashes = await screen.findAllByText('-')
-          // has length 8 because bundle details being moved to this component
-          expect(dashes).toHaveLength(8)
+          // has length 9 because bundle details being moved to this component
+          expect(dashes).toHaveLength(9)
         })
       })
     })
@@ -455,7 +456,7 @@ describe('BundleContent', () => {
         })
 
         const dashes = await screen.findAllByText('-')
-        expect(dashes).toHaveLength(4)
+        expect(dashes).toHaveLength(5)
       })
     })
 
@@ -483,8 +484,8 @@ describe('BundleContent', () => {
           })
 
           const dashes = await screen.findAllByText('-')
-          // has length 8 because bundle details being moved to this component
-          expect(dashes).toHaveLength(8)
+          // has length 9 because bundle details being moved to this component
+          expect(dashes).toHaveLength(9)
         })
       })
 
@@ -511,8 +512,8 @@ describe('BundleContent', () => {
           })
 
           const dashes = await screen.findAllByText('-')
-          // has length 8 because bundle details being moved to this component
-          expect(dashes).toHaveLength(8)
+          // has length 9 because bundle details being moved to this component
+          expect(dashes).toHaveLength(9)
         })
       })
     })

@@ -3,11 +3,13 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
+import { Provider } from 'shared/api/helpers'
+
 // Note to Terry, when we have more time automate all paths to pass through query search params.
 
 interface URLParams {
   branch?: string
-  provider?: string
+  provider?: Provider
   owner?: string
   repo?: string
   id?: string
@@ -43,7 +45,7 @@ export function useNavLinks() {
         provider = p,
         to,
       }: {
-        provider?: string
+        provider?: Provider
         to?: string
       } = {}): string => {
         const query = qs.stringify({ to }, { addQueryPrefix: true })
@@ -116,7 +118,7 @@ export function useNavLinks() {
         owner = o,
         params = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         params?: Record<string, unknown>
       } = {}) => {
@@ -212,7 +214,7 @@ export function useNavLinks() {
         commit = c,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         commit?: string | number
@@ -236,7 +238,7 @@ export function useNavLinks() {
         commit,
         path,
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         commit: string
@@ -254,7 +256,7 @@ export function useNavLinks() {
         ref,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         tree?: string
@@ -291,7 +293,7 @@ export function useNavLinks() {
         tree,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         ref: string
@@ -320,7 +322,7 @@ export function useNavLinks() {
         commit,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         tree?: string
@@ -349,7 +351,7 @@ export function useNavLinks() {
         commit,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         tree: string
@@ -416,7 +418,7 @@ export function useNavLinks() {
         queryParams = {},
         branch = b,
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         queryParams?: Record<string, unknown>
@@ -494,7 +496,7 @@ export function useNavLinks() {
         pullId = pi,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         pullId?: string | number
@@ -555,7 +557,7 @@ export function useNavLinks() {
       path: ({
         provider = p,
         ref,
-      }: { provider?: string; ref?: string } = {}) => {
+      }: { provider?: Provider; ref?: string } = {}) => {
         if (ref) {
           return decodeURIComponent(ref)
         }
@@ -598,7 +600,7 @@ export function useNavLinks() {
         pullId = pi,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         pullId?: string | number
@@ -621,7 +623,7 @@ export function useNavLinks() {
         commit,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         commit: string | number
@@ -645,7 +647,7 @@ export function useNavLinks() {
         pullId = pi,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         pullId?: string | number
@@ -668,7 +670,7 @@ export function useNavLinks() {
         pullId = pi,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         pullId?: string | number
@@ -691,7 +693,7 @@ export function useNavLinks() {
         pullId = pi,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         pullId?: string | number
@@ -716,7 +718,7 @@ export function useNavLinks() {
         tree,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         pullId?: string | number
@@ -745,7 +747,7 @@ export function useNavLinks() {
         pullId = pi,
         queryParams = {},
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         tree?: string
@@ -811,7 +813,7 @@ export function useNavLinks() {
         branch = b,
         bundle = undefined,
       }: {
-        provider?: string
+        provider?: Provider
         owner?: string
         repo?: string
         branch?: string
@@ -953,6 +955,17 @@ export function useNavLinks() {
       },
       text: 'Okta access',
       isExternalLink: false,
+    },
+    githubOrgSecrets: {
+      text: 'GitHub Org',
+      path: (
+        { owner = o } = {
+          owner: o,
+        }
+      ) =>
+        `https://github.com/organizations/${owner}/settings/secrets/actions/new`,
+      isExternalLink: true,
+      openNewTab: true,
     },
   }
 }

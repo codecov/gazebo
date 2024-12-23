@@ -6,7 +6,7 @@ import config from 'config'
 
 import { TrialStatuses, usePlanData } from 'services/account'
 import { useOwner } from 'services/user'
-import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
+import { isTrialPlan } from 'shared/utils/billing'
 
 import ExpiredBanner from './ExpiredBanner'
 import OngoingBanner from './OngoingBanner'
@@ -84,7 +84,7 @@ const TrialBanner: React.FC = () => {
   }
 
   // user has a free plan again, and the trial status is expired
-  if (isFreePlan(planValue) && trialStatus === TrialStatuses.EXPIRED) {
+  if (planData?.plan?.isFreePlan && trialStatus === TrialStatuses.EXPIRED) {
     return <ExpiredBanner />
   }
 

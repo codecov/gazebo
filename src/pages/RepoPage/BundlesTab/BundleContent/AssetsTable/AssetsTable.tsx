@@ -7,23 +7,25 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import cs from 'classnames'
 import { Fragment, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
 import { OrderingDirection } from 'types'
 
+import { useFlags } from 'shared/featureFlags'
 import {
   formatSizeToString,
   formatTimeToString,
+  SUPPORTED_FILE_PATH_PLUGINS,
 } from 'shared/utils/bundleAnalysis'
+import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 import Sparkline from 'ui/Sparkline'
 import Spinner from 'ui/Spinner'
 
 import { genSizeColumn } from './assetTableHelpers'
-import { EmptyTable } from './EmptyTable'
+import { EmptyTable, EmptyTableWithFilePath } from './EmptyTable'
 import ModulesTable from './ModulesTable'
 import { useBundleAssetsTable } from './useBundleAssetsTable'
 
@@ -57,6 +59,7 @@ export function ChangeOverTime({
 
 interface Column {
   name: string
+  filePath: string[] | undefined
   extension: string
   size: number
   loadTime: number
@@ -80,8 +83,11 @@ interface Column {
 
 const columnHelper = createColumnHelper<Column>()
 
-const createColumns = (totalBundleSize: number | null) => [
-  columnHelper.accessor('name', {
+const createColumns = (
+  totalBundleSize: number | null,
+  includeFilePath: boolean
+) => {
+  const nameColumn = columnHelper.accessor('name', {
     header: 'Asset',
     cell: ({ getValue, row }) => {
       return (
@@ -89,11 +95,9 @@ const createColumns = (totalBundleSize: number | null) => [
           <span
             data-action="clickable"
             data-testid="modules-expand"
-            className={cs(
+            className={cn(
               'inline-flex items-center justify-items-center gap-1 font-sans hover:underline focus:ring-2',
-              {
-                'text-ds-blue-default': row.getIsExpanded(),
-              }
+              { 'text-ds-blue-default': row.getIsExpanded() }
             )}
             onClick={() => row.toggleExpanded()}
           >
@@ -107,22 +111,31 @@ const createColumns = (totalBundleSize: number | null) => [
         </p>
       )
     },
-  }),
-  columnHelper.accessor('extension', {
+  })
+
+  const filePathColumn = columnHelper.accessor('filePath', {
+    header: includeFilePath ? 'File path' : undefined,
+    cell: (info) => info.renderValue()?.at(-1) ?? '',
+  })
+
+  const extensionColumn = columnHelper.accessor('extension', {
     header: 'Type',
     cell: (info) => info.renderValue(),
-  }),
-  columnHelper.accessor('loadTime', {
-    header: 'Estimated load time (3G)',
+  })
+
+  const loadTimeColumn = columnHelper.accessor('loadTime', {
+    header: 'Est. load time (3G)',
     cell: ({ getValue }) => formatTimeToString(getValue()),
-  }),
-  columnHelper.accessor('size', {
+  })
+
+  const sizeColumn = columnHelper.accessor('size', {
     header: 'Size',
     cell: ({ getValue }) => {
       return genSizeColumn({ size: getValue(), totalBundleSize })
     },
-  }),
-  columnHelper.accessor('changeOverTime', {
+  })
+
+  const changeOverTimeColumn = columnHelper.accessor('changeOverTime', {
     header: 'Change over time',
     enableSorting: false,
     cell: ({ getValue, row }) => {
@@ -169,8 +182,17 @@ const createColumns = (totalBundleSize: number | null) => [
 
       return undefined
     },
-  }),
-]
+  })
+
+  return [
+    nameColumn,
+    filePathColumn,
+    extensionColumn,
+    loadTimeColumn,
+    sizeColumn,
+    changeOverTimeColumn,
+  ]
+}
 
 interface URLParams {
   provider: string
@@ -185,7 +207,7 @@ interface LoaderProps {
 }
 
 const Loader = ({ className }: LoaderProps) => (
-  <div className={cs('flex justify-center py-4', className)}>
+  <div className={cn('flex justify-center py-4', className)}>
     <Spinner />
   </div>
 )
@@ -207,6 +229,9 @@ export const AssetsTable: React.FC = () => {
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [sorting, setSorting] = useState([{ id: 'size', desc: true }])
   const { provider, owner, repo, branch, bundle } = useParams<URLParams>()
+  const { renderBundleFilePathColumn } = useFlags({
+    renderBundleFilePathColumn: false,
+  })
 
   let ordering: 'NAME' | 'SIZE' | 'TYPE' | undefined
   const sortColumn = sorting?.[0]?.id
@@ -227,21 +252,16 @@ export const AssetsTable: React.FC = () => {
     orderingDirection = 'ASC'
   }
 
-  const {
-    data,
-    fetchNextPage,
-    isInitialLoading,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useBundleAssetsTable({
-    provider,
-    owner,
-    repo,
-    branch,
-    bundle,
-    ordering,
-    orderingDirection,
-  })
+  const { data, fetchNextPage, isLoading, isFetchingNextPage, hasNextPage } =
+    useBundleAssetsTable({
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      ordering,
+      orderingDirection,
+    })
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -249,22 +269,29 @@ export const AssetsTable: React.FC = () => {
     }
   }, [fetchNextPage, hasNextPage, inView])
 
-  const tableData: Array<Column> = useMemo(() => {
+  const tableData = useMemo(() => {
     if (data) {
-      return data?.pages
-        .map((page) => page.assets)
-        .flat()
-        .filter(Boolean)
-        .map((asset) => ({
-          name: asset!.name,
-          extension: asset!.extension,
-          size: asset!.bundleData.size.uncompress,
-          loadTime: asset!.bundleData.loadTime.threeG,
-          changeOverTime: asset!.measurements ?? undefined,
-        }))
+      return {
+        bundleInfo: data?.pages[0]?.bundleInfo,
+        assets: data?.pages
+          .map((page) => page.assets)
+          .flat()
+          .filter(Boolean)
+          .map((asset) => ({
+            name: asset!.name,
+            filePath: asset!.routes ?? undefined,
+            extension: asset!.extension,
+            size: asset!.bundleData.size.uncompress,
+            loadTime: asset!.bundleData.loadTime.threeG,
+            changeOverTime: asset!.measurements ?? undefined,
+          })),
+      }
     }
 
-    return []
+    return {
+      assets: [],
+      bundleInfo: null,
+    }
   }, [data])
 
   const bundleSize = useMemo(
@@ -272,11 +299,18 @@ export const AssetsTable: React.FC = () => {
     [data?.pages]
   )
 
-  const columns = useMemo(() => createColumns(bundleSize), [bundleSize])
+  const includeFilePath =
+    renderBundleFilePathColumn &&
+    SUPPORTED_FILE_PATH_PLUGINS.includes(tableData.bundleInfo?.pluginName ?? '')
+
+  const columns = useMemo(
+    () => createColumns(bundleSize, includeFilePath),
+    [bundleSize, includeFilePath]
+  )
 
   const table = useReactTable({
     columns,
-    data: tableData,
+    data: tableData.assets,
     state: {
       sorting,
       expanded,
@@ -288,8 +322,8 @@ export const AssetsTable: React.FC = () => {
     getExpandedRowModel: getExpandedRowModel(),
   })
 
-  if (tableData.length === 0 && !isInitialLoading) {
-    return <EmptyTable />
+  if (tableData.assets.length === 0 && !isLoading) {
+    return includeFilePath ? <EmptyTableWithFilePath /> : <EmptyTable />
   }
 
   return (
@@ -304,25 +338,25 @@ export const AssetsTable: React.FC = () => {
                     key={header.id}
                     data-sortable="true"
                     onClick={header.column.getToggleSortingHandler()}
-                    className={cs({
-                      'w-full @4xl/filelist:w-5/12':
+                    className={cn({
+                      'w-full @4xl/filelist:w-7/24':
                         header.column.id === 'name',
-                      'w-2/12 hidden @4xl/filelist:block text-right':
+                      'w-4/24 hidden @4xl/filelist:block text-right':
                         header.column.id === 'loadTime' ||
                         header.column.id === 'size',
-                      'w-1/12 hidden @4xl/filelist:flex grow justify-end':
+                      'w-4/24 hidden @4xl/filelist:flex justify-end':
                         header.column.id === 'changeOverTime',
-                      'w-1/12 hidden @4xl/filelist:block text-right':
+                      'w-3/24 hidden @4xl/filelist:block text-right':
+                        header.column.id === 'filePath',
+                      'w-2/24 hidden @4xl/filelist:block text-right':
                         header.column.id === 'extension',
                     })}
                     {...(isNumericValue(header.id)
-                      ? {
-                          'data-type': 'numeric',
-                        }
+                      ? { 'data-type': 'numeric' }
                       : {})}
                   >
                     <div
-                      className={cs('flex gap-1 items-center', {
+                      className={cn('flex items-center gap-1', {
                         'flex-row-reverse justify-end': header.id === 'name',
                         'flex-row justify-end': header.id !== 'name',
                       })}
@@ -343,16 +377,16 @@ export const AssetsTable: React.FC = () => {
               })}
             </div>
           ))}
-          {isInitialLoading ? (
+          {isLoading ? (
             <Loader />
           ) : (
             <div>
               {table.getRowModel().rows.map((row, i) => {
                 const isExpanded = row.getIsExpanded()
                 return (
-                  <Fragment key={row.getValue('name')}>
+                  <Fragment key={row.id}>
                     <div
-                      className={cs('filelistui-row', {
+                      className={cn('filelistui-row', {
                         'bg-ds-gray-primary sticky': isExpanded,
                       })}
                     >
@@ -372,26 +406,30 @@ export const AssetsTable: React.FC = () => {
                           <div
                             key={cell.id}
                             {...(isNumericValue(cell.column.id)
-                              ? {
-                                  'data-type': 'numeric',
-                                }
+                              ? { 'data-type': 'numeric' }
                               : {})}
-                            className={cs({
-                              'w-full @4xl/filelist:w-5/12':
+                            className={cn({
+                              'w-full @4xl/filelist:w-7/24 grow':
                                 cell.column.id === 'name',
-                              'w-2/12 hidden @4xl/filelist:block text-right':
+                              'w-4/24 hidden @4xl/filelist:block text-right':
                                 cell.column.id === 'loadTime' ||
                                 cell.column.id === 'size',
-                              'w-1/12 hidden @4xl/filelist:flex grow justify-end gap-2':
+                              'w-4/24 hidden @4xl/filelist:flex justify-end gap-2':
                                 cell.column.id === 'changeOverTime',
-                              'w-1/12 hidden @4xl/filelist:block text-right':
+                              'w-3/24 hidden @4xl/filelist:block text-right':
+                                cell.column.id === 'filePath',
+                              'w-2/24 hidden @4xl/filelist:block text-right':
                                 cell.column.id === 'extension',
                             })}
                           >
-                            <div className="mb-6 flex justify-between gap-8 @md/filelist:justify-start @4xl/filelist:hidden">
+                            <div className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] justify-between justify-items-stretch gap-x-8 gap-y-2 @md/filelist:justify-start @4xl/filelist:hidden">
+                              <div>
+                                File path:{' '}
+                                {row.original.filePath?.at(-1) ?? '-'}
+                              </div>
                               <div>Type: {row.original.extension}</div>
                               <div>
-                                Estimated load time (3G):{' '}
+                                Est. load time (3G):{' '}
                                 <span className="font-mono">
                                   {formatTimeToString(row.original.loadTime)}
                                 </span>
@@ -418,8 +456,8 @@ export const AssetsTable: React.FC = () => {
                     <div data-expanded={row.getIsExpanded()}>
                       {row.getIsExpanded() ? (
                         <Suspense
-                          fallback={<Loader className="bg-ds-gray-secondary" />}
                           key={i}
+                          fallback={<Loader className="bg-ds-gray-secondary" />}
                         >
                           <ModulesTable asset={row.getValue('name')} />
                         </Suspense>

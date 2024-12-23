@@ -7,6 +7,7 @@ import type { MockInstance } from 'vitest'
 
 import { Plans } from 'shared/utils/billing'
 
+import { IndividualPlan } from './useAvailablePlans'
 import { useUpgradePlan } from './useUpgradePlan'
 
 const mocks = vi.hoisted(() => ({
@@ -112,7 +113,7 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: Plans.USERS_PR_INAPPY,
+          newPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
         })
 
         await waitFor(() => {
@@ -143,7 +144,7 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: Plans.USERS_PR_INAPPY,
+          newPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
         })
 
         await waitFor(() => expect(redirectToCheckout).not.toHaveBeenCalled())

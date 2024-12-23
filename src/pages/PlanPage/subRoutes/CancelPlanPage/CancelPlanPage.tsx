@@ -10,8 +10,7 @@ import {
   usePlanData,
 } from 'services/account'
 import {
-  isEnterprisePlan,
-  isMonthlyPlan,
+  BillingRate,
   isProPlan,
   isTrialPlan,
   shouldDisplayTeamCard,
@@ -46,17 +45,17 @@ function CancelPlanPage() {
     planData?.plan?.trialStatus === TrialStatuses.ONGOING
 
   // redirect right away if the user is on an enterprise plan
-  if (isEnterprisePlan(accountDetailsData?.plan?.value) || isOnTrial) {
+  if (planData?.plan?.isEnterprisePlan || isOnTrial) {
     return <Redirect to={`/plan/${provider}/${owner}`} />
   }
 
+  const isMonthlyPlan = planData?.plan?.billingRate === BillingRate.MONTHLY
+
   const discountNotApplied =
     !accountDetailsData?.subscriptionDetail?.customer?.discount
-  const showSpecialOffer =
-    discountNotApplied && isMonthlyPlan(accountDetailsData?.plan?.value)
+  const showSpecialOffer = discountNotApplied && isMonthlyPlan
   const showTeamSpecialOffer =
-    shouldDisplayTeamCard({ plans }) &&
-    isProPlan(accountDetailsData?.plan?.value)
+    shouldDisplayTeamCard({ plans }) && isProPlan(planData?.plan?.value)
   const showCancelPage = showSpecialOffer || showTeamSpecialOffer
 
   let redirectTo = `/plan/${provider}/${owner}/cancel/downgrade`

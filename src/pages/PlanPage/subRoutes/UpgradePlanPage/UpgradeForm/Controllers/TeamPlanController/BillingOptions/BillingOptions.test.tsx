@@ -7,48 +7,51 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import BillingOptions from './BillingOptions'
 
-const availablePlans = [
-  {
-    marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
-    billingRate: null,
-    baseUnitPrice: 0,
-    benefits: [
-      'Up to 5 users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-    ],
-    monthlyUploadLimit: 250,
-  },
-  {
-    baseUnitPrice: 5,
-    benefits: ['Up to 10 users'],
-    billingRate: 'monthly',
-    marketingName: 'Team',
-    monthlyUploadLimit: 2500,
-    value: Plans.USERS_TEAMM,
-  },
-  {
-    baseUnitPrice: 4,
-    benefits: ['Up to 10 users'],
-    billingRate: 'annually',
-    marketingName: 'Team',
-    monthlyUploadLimit: 2500,
-    value: Plans.USERS_TEAMY,
-  },
-]
+const freePlan = {
+  marketingName: 'Basic',
+  value: Plans.USERS_BASIC,
+  billingRate: null,
+  baseUnitPrice: 0,
+  benefits: [
+    'Up to 5 users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+  ],
+  monthlyUploadLimit: 250,
+}
+
+const teamPlanMonthly = {
+  baseUnitPrice: 5,
+  benefits: ['Up to 10 users'],
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Team',
+  monthlyUploadLimit: 2500,
+  value: Plans.USERS_TEAMM,
+}
+
+const teamPlanYearly = {
+  baseUnitPrice: 4,
+  benefits: ['Up to 10 users'],
+  billingRate: BillingRate.ANNUALLY,
+  marketingName: 'Team',
+  monthlyUploadLimit: 2500,
+  value: Plans.USERS_TEAMY,
+}
+
+const availablePlans = [freePlan, teamPlanMonthly, teamPlanYearly]
 
 const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Team',
   monthlyUploadLimit: 250,
   value: Plans.USERS_TEAMM,
+  isEnterprisePlan: false,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -56,6 +59,8 @@ const mockPlanDataResponse = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isFreePlan: false,
+  isTeamPlan: true,
 }
 
 const server = setupServer()
@@ -114,7 +119,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_TEAMY}
+            newPlan={teamPlanYearly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -138,7 +143,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_TEAMY}
+            newPlan={teamPlanYearly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -161,7 +166,7 @@ describe('BillingOptions', () => {
 
           render(
             <BillingOptions
-              newPlan={Plans.USERS_TEAMY}
+              newPlan={teamPlanYearly}
               setFormValue={mockSetFormValue}
             />,
             {
@@ -178,7 +183,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              Plans.USERS_TEAMM
+              teamPlanMonthly
             )
           )
         })
@@ -191,7 +196,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_TEAMM}
+            newPlan={teamPlanMonthly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -215,7 +220,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_TEAMM}
+            newPlan={teamPlanMonthly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -238,7 +243,7 @@ describe('BillingOptions', () => {
 
           render(
             <BillingOptions
-              newPlan={Plans.USERS_TEAMM}
+              newPlan={teamPlanMonthly}
               setFormValue={mockSetFormValue}
             />,
             {
@@ -255,7 +260,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              Plans.USERS_TEAMY
+              teamPlanYearly
             )
           )
         })
