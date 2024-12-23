@@ -4,6 +4,7 @@ import { z } from 'zod'
 import {
   AccountDetailsSchema,
   IndividualPlan,
+  Plan,
   TrialStatus,
   TrialStatuses,
 } from 'services/account'
@@ -15,7 +16,6 @@ import {
   findTeamPlans,
   isSentryPlan,
   isTrialPlan,
-  Plan,
   PlanName,
   Plans,
 } from 'shared/utils/billing'

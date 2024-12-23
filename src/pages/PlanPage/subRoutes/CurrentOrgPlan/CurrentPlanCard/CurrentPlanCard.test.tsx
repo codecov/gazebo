@@ -26,6 +26,7 @@ const proPlanDetails = {
     billingRate: null,
     isEnterprisePlan: false,
     isFreePlan: false,
+    isProPlan: true,
     isTeamPlan: true,
   },
 }
@@ -43,6 +44,7 @@ const freePlanDetails = {
     ],
     isEnterprisePlan: false,
     isFreePlan: true,
+    isProPlan: false,
     isTeamPlan: false,
   },
 }
@@ -60,6 +62,7 @@ const enterprisePlan = {
     ],
     isEnterprisePlan: true,
     isFreePlan: false,
+    isProPlan: false,
     isTeamPlan: false,
   },
 }
@@ -77,6 +80,7 @@ const usesInvoiceTeamPlan = {
     ],
     isEnterprisePlan: false,
     isFreePlan: false,
+    isProPlan: false,
     isTeamPlan: true,
   },
   usesInvoice: true,
@@ -92,6 +96,7 @@ const trialPlanDetails = {
     value: Plans.USERS_TRIAL,
     isEnterprisePlan: false,
     isFreePlan: false,
+    isProPlan: false,
     isTeamPlan: true,
   },
 }

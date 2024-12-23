@@ -29,6 +29,7 @@ const PlanSchema = z.object({
   hasSeatsLeft: z.boolean(),
   isEnterprisePlan: z.boolean(),
   isFreePlan: z.boolean(),
+  isProPlan: z.boolean(),
   isTeamPlan: z.boolean(),
 })
 
@@ -85,6 +86,7 @@ export const query = `
         hasSeatsLeft
         isEnterprisePlan
         isFreePlan
+        isProPlan
         isTeamPlan
       }
       pretrialPlan {

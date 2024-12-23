@@ -32,6 +32,7 @@ const proPlanMonth = {
   planUserCount: 1,
   isEnterprisePlan: false,
   isFreePlan: false,
+  isProPlan: true,
   isTeamPlan: false,
 }
 
@@ -52,6 +53,7 @@ const trialPlan = {
   planUserCount: 1,
   isEnterprisePlan: false,
   isFreePlan: false,
+  isProPlan: false,
   isTeamPlan: false,
 }
 
@@ -71,6 +73,7 @@ const basicPlan = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   isFreePlan: true,
+  isProPlan: false,
   isTeamPlan: false,
 }
 
@@ -160,7 +163,8 @@ describe('TrialBanner', () => {
                 hasSeatsLeft: true,
                 isEnterprisePlan: plan.isEnterprisePlan,
                 isFreePlan: plan.isFreePlan,
-                isTeamPlan: false,
+                isProPlan: plan.isProPlan,
+                isTeamPlan: plan.isTeamPlan,
               },
             },
           },

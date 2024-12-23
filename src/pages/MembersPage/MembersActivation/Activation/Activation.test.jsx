@@ -28,6 +28,7 @@ const mockedAccountDetails = {
 const mockPlanData = {
   isEnterprisePlan: false,
   isFreePlan: true,
+  isProPlan: false,
   isTeamPlan: false,
   baseUnitPrice: 10,
   benefits: [],

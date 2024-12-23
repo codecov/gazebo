@@ -32,6 +32,7 @@ const proPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isProPlan: true,
   isTeamPlan: false,
 }
 
@@ -42,6 +43,7 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isProPlan: false,
   isTeamPlan: true,
 }
 
@@ -52,6 +54,7 @@ const teamPlanMonth = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isProPlan: false,
   isTeamPlan: true,
 }
 
@@ -62,6 +65,7 @@ const freePlan = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_BASIC,
+  isProPlan: false,
   isTeamPlan: false,
 }
 

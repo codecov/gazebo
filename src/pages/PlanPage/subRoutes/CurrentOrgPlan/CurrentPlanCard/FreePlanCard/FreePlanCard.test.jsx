@@ -127,6 +127,7 @@ const freePlan = {
   monthlyUploadLimit: null,
   isFreePlan: true,
   isEnterprisePlan: false,
+  isProPlan: false,
   isTeamPlan: false,
 }
 
@@ -151,6 +152,7 @@ const mockPlanData = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isProPlan: false,
 }
 
 const mockPreTrialPlanInfo = {

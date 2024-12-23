@@ -189,6 +189,7 @@ describe('PlanTypeOptions', () => {
           planUserCount: 1,
           isEnterprisePlan: false,
           isFreePlan: false,
+          isProPlan: false,
           isTeamPlan: false,
         }
         if (planValue === Plans.USERS_BASIC) {
@@ -197,7 +198,7 @@ describe('PlanTypeOptions', () => {
           })
         } else if (planValue === Plans.USERS_PR_INAPPY) {
           return HttpResponse.json({
-            data: { plan: { ...proPlanYear, ...planChunk } },
+            data: { plan: { ...proPlanYear, ...planChunk, isProPlan: true } },
           })
         } else if (planValue === Plans.USERS_TRIAL) {
           return HttpResponse.json({
@@ -213,7 +214,9 @@ describe('PlanTypeOptions', () => {
           })
         } else if (planValue === Plans.USERS_SENTRYY) {
           return HttpResponse.json({
-            data: { plan: { ...sentryPlanYear, ...planChunk } },
+            data: {
+              plan: { ...sentryPlanYear, ...planChunk, isProPlan: true },
+            },
           })
         }
       })

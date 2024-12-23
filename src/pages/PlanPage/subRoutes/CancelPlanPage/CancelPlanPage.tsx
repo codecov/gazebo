@@ -11,7 +11,6 @@ import {
 } from 'services/account'
 import {
   BillingRate,
-  isProPlan,
   isTrialPlan,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
@@ -55,7 +54,7 @@ function CancelPlanPage() {
     !accountDetailsData?.subscriptionDetail?.customer?.discount
   const showSpecialOffer = discountNotApplied && isMonthlyPlan
   const showTeamSpecialOffer =
-    shouldDisplayTeamCard({ plans }) && isProPlan(planData?.plan?.value)
+    shouldDisplayTeamCard({ plans }) && planData?.plan?.isProPlan
   const showCancelPage = showSpecialOffer || showTeamSpecialOffer
 
   let redirectTo = `/plan/${provider}/${owner}/cancel/downgrade`

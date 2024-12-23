@@ -190,12 +190,12 @@ afterAll(() => {
 describe('UpgradePlanPage', () => {
   function setup(
     {
-      planValue = Plans.USERS_INAPPY,
+      planValue = Plans.USERS_PR_INAPPY,
       periodEnd = undefined,
       includeSentryPlans = false,
       includeTeamPlans = false,
     } = {
-      planValue: Plans.USERS_INAPPY,
+      planValue: Plans.UUSERS_PR_INAPPY,
       periodEnd: undefined,
       includeSentryPlans: false,
       includeTeamPlans: false,
@@ -214,6 +214,7 @@ describe('UpgradePlanPage', () => {
                   planValue === Plans.USERS_TEAMM ||
                   planValue === Plans.USERS_TEAMY,
                 isFreePlan: planValue === Plans.USERS_BASIC,
+                isProPlan: planValue === Plans.USERS_PR_INAPPY,
                 value: planValue,
               },
             },
