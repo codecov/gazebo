@@ -22,6 +22,8 @@ const proPlanMonth = {
     'Priority Support',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanYear = {
@@ -36,6 +38,8 @@ const proPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const sentryPlanMonth = {
@@ -50,6 +54,8 @@ const sentryPlanMonth = {
     'Priority Support',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const sentryPlanYear = {
@@ -64,6 +70,8 @@ const sentryPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const teamPlanMonth = {
@@ -73,6 +81,8 @@ const teamPlanMonth = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanYear = {
@@ -82,6 +92,8 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const server = setupServer()

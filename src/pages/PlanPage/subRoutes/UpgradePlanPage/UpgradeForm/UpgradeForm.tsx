@@ -9,11 +9,7 @@ import {
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
-import {
-  canApplySentryUpgrade,
-  getNextBillingDate,
-  Plans,
-} from 'shared/utils/billing'
+import { canApplySentryUpgrade, getNextBillingDate } from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
   getSchema,
@@ -53,9 +49,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
     plans,
   })
   const minSeats =
-    isSentryUpgrade &&
-    selectedPlan?.value !== Plans.USERS_TEAMM &&
-    selectedPlan?.value !== Plans.USERS_TEAMY
+    isSentryUpgrade && !selectedPlan?.isTeamPlan
       ? MIN_SENTRY_SEATS
       : MIN_NB_SEATS_PRO
 

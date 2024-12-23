@@ -22,6 +22,8 @@ const freePlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const teamPlanMonthly = {
@@ -31,6 +33,8 @@ const teamPlanMonthly = {
   marketingName: 'Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanYearly = {
@@ -40,6 +44,8 @@ const teamPlanYearly = {
   marketingName: 'Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const availablePlans = [freePlan, teamPlanMonthly, teamPlanYearly]
@@ -61,6 +67,7 @@ const mockPlanDataResponse = {
   hasSeatsLeft: true,
   isFreePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: true,
   isTrialPlan: false,
 }

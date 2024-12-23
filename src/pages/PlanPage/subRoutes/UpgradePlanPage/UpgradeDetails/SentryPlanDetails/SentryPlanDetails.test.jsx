@@ -25,6 +25,8 @@ const sentryPlanMonth = {
   ],
   trialDays: 14,
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const sentryPlanYear = {
@@ -40,6 +42,8 @@ const sentryPlanYear = {
   ],
   monthlyUploadLimit: null,
   trialDays: 14,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const allPlans = [
@@ -54,6 +58,8 @@ const allPlans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro',
@@ -67,6 +73,8 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro',
@@ -81,6 +89,8 @@ const allPlans = [
     ],
     quantity: 10,
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro',
@@ -94,6 +104,8 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro',
@@ -107,6 +119,8 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   sentryPlanMonth,
   sentryPlanYear,
@@ -128,6 +142,7 @@ const mockPlanData = {
   hasSeatsLeft: true,
   isEnterprisePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTrialPlan: false,
 }
 

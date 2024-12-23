@@ -29,6 +29,7 @@ const mockPlanData = {
   isEnterprisePlan: false,
   isFreePlan: true,
   isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: false,
   isTrialPlan: false,
   baseUnitPrice: 10,

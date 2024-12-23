@@ -22,6 +22,8 @@ const freePlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const sentryProTeamMonthly = {
@@ -36,6 +38,8 @@ const sentryProTeamMonthly = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const sentryProTeamYearly = {
@@ -50,6 +54,8 @@ const sentryProTeamYearly = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const availablePlans = [freePlan, sentryProTeamMonthly, sentryProTeamYearly]
@@ -71,6 +77,7 @@ const mockPlanDataResponse = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: true,
+  isSentryPlan: true,
   isTeamPlan: false,
   isTrialPlan: false,
 }

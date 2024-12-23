@@ -16,6 +16,7 @@ const planChunk = {
   planUserCount: 2,
   isEnterprisePlan: false,
   isFreePlan: false,
+  isSentryPlan: false,
   isTeamPlan: true,
   isTrialPlan: false,
   hasSeatsLeft: true,
@@ -35,6 +36,7 @@ const proPlanYear = {
   monthlyUploadLimit: null,
   isProPlan: true,
   isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const teamPlanYear = {
@@ -46,6 +48,7 @@ const teamPlanYear = {
   value: Plans.USERS_TEAMY,
   isProPlan: false,
   isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanMonth = {
@@ -57,6 +60,7 @@ const teamPlanMonth = {
   value: Plans.USERS_TEAMM,
   isProPlan: false,
   isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const freePlan = {
@@ -68,6 +72,7 @@ const freePlan = {
   value: Plans.USERS_BASIC,
   isProPlan: false,
   isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 type WrapperClosure = (

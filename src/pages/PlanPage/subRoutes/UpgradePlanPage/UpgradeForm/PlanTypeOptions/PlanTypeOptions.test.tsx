@@ -23,6 +23,8 @@ const basicPlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanMonth = {
@@ -37,6 +39,8 @@ const proPlanMonth = {
     'Priority Support',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanYear = {
@@ -51,6 +55,8 @@ const proPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const sentryPlanMonth = {
@@ -65,6 +71,8 @@ const sentryPlanMonth = {
     'Priority Support',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const sentryPlanYear = {
@@ -79,6 +87,8 @@ const sentryPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const teamPlanMonth = {
@@ -88,6 +98,8 @@ const teamPlanMonth = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanYear = {
@@ -97,6 +109,8 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const trialPlan = {
@@ -106,6 +120,8 @@ const trialPlan = {
   baseUnitPrice: 12,
   benefits: ['Configurable # of users', 'Unlimited repos'],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const server = setupServer()
@@ -190,6 +206,7 @@ describe('PlanTypeOptions', () => {
           isEnterprisePlan: false,
           isFreePlan: false,
           isProPlan: false,
+          isSentryPlan: false,
           isTeamPlan: false,
           isTrialPlan: false,
         }
