@@ -1,11 +1,17 @@
-import PropTypes from 'prop-types'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
+import { useParams } from 'react-router'
 
-import { useSelfHostedSettings } from 'services/selfHosted'
+import { SelfHostedSettingsQueryOpts } from 'services/selfHosted/SelfHostedSettingsQueryOpts'
 
 import ActivationLimit from './ActivationLimit'
 
+interface URLParams {
+  provider: string
+}
+
 function ActivationCount() {
-  const { data } = useSelfHostedSettings()
+  const { provider } = useParams<URLParams>()
+  const { data } = useSuspenseQueryV5(SelfHostedSettingsQueryOpts({ provider }))
 
   return (
     <div className="mt-4 flex flex-col gap-2 border-2 border-ds-gray-primary p-4">
@@ -19,11 +25,6 @@ function ActivationCount() {
       {data?.seatsUsed === data?.seatsLimit && <ActivationLimit />}
     </div>
   )
-}
-
-ActivationCount.propTypes = {
-  seatsUsed: PropTypes.number,
-  seatsLimit: PropTypes.number,
 }
 
 export default ActivationCount

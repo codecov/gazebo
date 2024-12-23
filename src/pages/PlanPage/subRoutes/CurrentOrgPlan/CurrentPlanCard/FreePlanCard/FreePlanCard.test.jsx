@@ -127,6 +127,8 @@ const freePlan = {
   monthlyUploadLimit: null,
   isFreePlan: true,
   isEnterprisePlan: false,
+  isProPlan: false,
+  isTeamPlan: false,
 }
 
 const scheduledPhase = {
@@ -150,6 +152,7 @@ const mockPlanData = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isProPlan: false,
 }
 
 const mockPreTrialPlanInfo = {
@@ -224,6 +227,9 @@ describe('FreePlanCard', () => {
                 value: planValue,
                 planUserCount,
                 isFreePlan: planValue === Plans.USERS_BASIC,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
               },
               pretrialPlan: mockPreTrialPlanInfo,
             },

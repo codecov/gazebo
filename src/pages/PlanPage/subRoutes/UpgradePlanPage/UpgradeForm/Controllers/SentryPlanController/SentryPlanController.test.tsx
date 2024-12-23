@@ -116,6 +116,8 @@ const mockPlanDataResponseMonthly = {
   hasSeatsLeft: true,
   isEnterprisePlan: false,
   isFreePlan: false,
+  isProPlan: true,
+  isTeamPlan: false,
 }
 
 const mockPlanDataResponseYearly = {
@@ -134,6 +136,8 @@ const mockPlanDataResponseYearly = {
   hasSeatsLeft: true,
   isEnterprisePlan: false,
   isFreePlan: false,
+  isProPlan: true,
+  isTeamPlan: false,
 }
 
 const queryClient = new QueryClient({

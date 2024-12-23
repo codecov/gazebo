@@ -15,6 +15,8 @@ vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
 const mockPlanBasic = {
   isEnterprisePlan: false,
   isFreePlan: true,
+  isProPlan: false,
+  isTeamPlan: false,
   baseUnitPrice: 0,
   benefits: ['Up to # user', 'Unlimited public repositories'],
   billingRate: BillingRate.MONTHLY,
@@ -32,7 +34,9 @@ const mockPlanBasic = {
 
 const mockPlanPro = {
   isEnterprisePlan: false,
+  isProPlan: true,
   isFreePlan: false,
+  isTeamPlan: false,
   baseUnitPrice: 10,
   benefits: ['Up to # user', 'Unlimited public repositories'],
   billingRate: BillingRate.MONTHLY,
@@ -51,6 +55,8 @@ const mockPlanPro = {
 const mockPlanTrialing = {
   isEnterprisePlan: false,
   isFreePlan: false,
+  isProPlan: false,
+  isTeamPlan: false,
   baseUnitPrice: 10,
   benefits: ['Up to # user', 'Unlimited public repositories'],
   billingRate: BillingRate.MONTHLY,

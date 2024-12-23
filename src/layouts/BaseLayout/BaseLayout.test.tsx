@@ -208,6 +208,11 @@ beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
 
+beforeEach(() => {
+  vi.resetModules()
+  vi.restoreAllMocks()
+})
+
 afterEach(() => {
   queryClient.clear()
   queryClientV5.clear()
@@ -586,6 +591,29 @@ describe('BaseLayout', () => {
         /Please try refreshing your browser/
       )
       expect(errorMainAppUI).toBeInTheDocument()
+    })
+  })
+
+  describe('When Header has a network call error', async () => {
+    it('renders nothing for the errored header', async () => {
+      vi.spyOn(
+        await import('layouts/Header'),
+        'default'
+      ).mockImplementationOnce(() => {
+        throw new Error('Simulated Header Error')
+      })
+
+      setup({ currentUser: userHasDefaultOrg })
+      render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
+
+      const header = screen.queryByText(/Header/)
+      expect(header).not.toBeInTheDocument()
+
+      const mainAppContent = await screen.findByText('hello')
+      expect(mainAppContent).toBeInTheDocument()
+
+      const footerContent = await screen.findByText(/Footer/)
+      expect(footerContent).toBeInTheDocument()
     })
   })
 })
