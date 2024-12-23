@@ -103,9 +103,13 @@ interface Params {
 }
 
 const useQueryMembersList = (params: Params) => {
-  const { data: queryData, ...rest } = useInfiniteQueryV5(
-    SelfHostedUserListQueryOpts(params)
-  )
+  const {
+    data: queryData,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
+  } = useInfiniteQueryV5(SelfHostedUserListQueryOpts(params))
 
   const flatUsersList = useMemo(
     () => queryData?.pages?.flatMap((page) => page.results) ?? [],
@@ -113,8 +117,11 @@ const useQueryMembersList = (params: Params) => {
   )
 
   return {
-    ...rest,
     data: flatUsersList,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
   }
 }
 
