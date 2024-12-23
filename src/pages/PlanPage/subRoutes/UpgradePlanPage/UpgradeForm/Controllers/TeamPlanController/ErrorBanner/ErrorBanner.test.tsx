@@ -143,6 +143,7 @@ describe('ErrorBanner', () => {
           isEnterprisePlan: false,
           isFreePlan: false,
           isProPlan: false,
+          isSentryPlan: false,
           isTeamPlan: false,
           isTrialPlan: false,
         }

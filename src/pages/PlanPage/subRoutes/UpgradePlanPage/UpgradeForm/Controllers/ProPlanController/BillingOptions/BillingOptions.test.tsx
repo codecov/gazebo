@@ -77,6 +77,7 @@ const mockPlanDataResponse = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: true,
+  isSentryPlan: false,
   isTeamPlan: true,
   isTrialPlan: false,
 }

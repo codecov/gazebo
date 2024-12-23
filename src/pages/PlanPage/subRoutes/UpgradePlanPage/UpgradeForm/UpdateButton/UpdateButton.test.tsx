@@ -145,6 +145,7 @@ describe('UpdateButton', () => {
           pretrialUsersCount: 0,
           isEnterprisePlan: false,
           isProPlan: false,
+          isSentryPlan: false,
           isTrialPlan: false,
         }
         if (planValue.value === Plans.USERS_BASIC) {

@@ -178,6 +178,7 @@ const mockTrialData = {
     isEnterprisePlan: false,
     isFreePlan: true,
     isProPlan: false,
+    isSentryPlan: false,
     isTeamPlan: false,
     isTrialPlan: false,
   },
@@ -249,6 +250,7 @@ describe('Actions Billing', () => {
                   accountDetails.plan.value === Plans.USERS_TEAMM ||
                   accountDetails.plan.value === Plans.USERS_TEAMY,
                 isTrialPlan: accountDetails.plan.value === Plans.USERS_TRIAL,
+                isSentryPlan: accountDetails.plan.value === Plans.USERS_SENTRYM,
               },
               hasPrivateRepos,
             },

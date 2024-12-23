@@ -65,6 +65,7 @@ const mockTrialData = {
   hasSeatsLeft: true,
   isEnterprisePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTrialPlan: false,
 }
 

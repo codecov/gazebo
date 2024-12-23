@@ -146,6 +146,7 @@ const freePlan = {
   isFreePlan: true,
   isEnterprisePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: false,
   isTrialPlan: false,
 }
@@ -172,6 +173,7 @@ const mockPlanData = {
   hasSeatsLeft: true,
   isEnterprisePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTrialPlan: false,
 }
 

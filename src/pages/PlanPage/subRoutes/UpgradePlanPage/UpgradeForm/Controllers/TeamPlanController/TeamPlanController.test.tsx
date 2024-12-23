@@ -124,6 +124,7 @@ const mockPlanDataResponseMonthly = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: false,
   isTrialPlan: false,
 }
@@ -145,6 +146,7 @@ const mockPlanDataResponseYearly = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: false,
   isTrialPlan: false,
 }

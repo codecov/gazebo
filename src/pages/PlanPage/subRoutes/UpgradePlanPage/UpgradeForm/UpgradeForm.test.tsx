@@ -222,6 +222,7 @@ const mockPlanDataResponse = {
   planUserCount: 10,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isSentryPlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -372,6 +373,7 @@ describe('UpgradeForm', () => {
                   planValue === Plans.USERS_PR_INAPPY ||
                   planValue === Plans.USERS_SENTRYM ||
                   planValue === Plans.USERS_SENTRYY,
+                isSentryPlan: false,
                 isTeamPlan:
                   planValue === Plans.USERS_TEAMM ||
                   planValue === Plans.USERS_TEAMY,

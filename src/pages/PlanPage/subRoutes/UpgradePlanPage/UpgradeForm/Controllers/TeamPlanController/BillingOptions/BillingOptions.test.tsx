@@ -67,6 +67,7 @@ const mockPlanDataResponse = {
   hasSeatsLeft: true,
   isFreePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: true,
   isTrialPlan: false,
 }

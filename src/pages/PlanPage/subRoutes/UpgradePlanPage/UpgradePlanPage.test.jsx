@@ -234,6 +234,9 @@ describe('UpgradePlanPage', () => {
                 isFreePlan: planValue === Plans.USERS_BASIC,
                 isProPlan: planValue === Plans.USERS_PR_INAPPY,
                 isTrialPlan: planValue === Plans.USERS_TRIAL,
+                isSentryPlan:
+                  planValue === Plans.USERS_SENTRYY ||
+                  planValue === Plans.USERS_SENTRYM,
                 value: planValue,
               },
             },
