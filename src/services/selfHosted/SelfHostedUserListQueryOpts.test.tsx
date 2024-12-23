@@ -128,7 +128,7 @@ describe('useSelfHostedUserList', () => {
   })
 
   describe('hook can fetch the next dataset', () => {
-    describe('not other options set', () => {
+    describe('no other options set', () => {
       it('returns the data', async () => {
         setup({})
         const { result } = renderHook(
