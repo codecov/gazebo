@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
-import { renderToast } from 'services/toast'
 import Api from 'shared/api'
 import { Provider, rejectNetworkError } from 'shared/api/helpers'
 
@@ -34,6 +33,7 @@ const ResponseSchema = z.object({
             __typename: z.literal('UnauthenticatedError'),
           }),
         ])
+        .optional()
         .nullish(),
       orgUploadToken: z.string().nullish(),
     })
@@ -57,17 +57,6 @@ export function useRegenerateOrgUploadToken({
   const { provider, owner } = useParams<URLParams>()
   const queryClient = useQueryClient()
 
-  const renderErrorToast = () => {
-    renderToast({
-      type: 'error',
-      title: 'Error generating upload token',
-      content: 'Please try again. If the error persists please contact support',
-      options: {
-        duration: 10000,
-      },
-    })
-  }
-
   return useMutation({
     mutationFn: () => {
       return Api.graphqlMutation({
@@ -89,13 +78,9 @@ export function useRegenerateOrgUploadToken({
         })
       }
 
-      if (data?.regenerateOrgUploadToken?.error) {
-        renderErrorToast()
-      } else {
-        onSuccess(data)
-      }
+      console.log("MY DEBUG 3", parsedRes.data)
+      onSuccess(parsedRes.data)
     },
-    onError: renderErrorToast,
     onSettled: () => {
       queryClient.invalidateQueries(['DetailOwner'])
     },

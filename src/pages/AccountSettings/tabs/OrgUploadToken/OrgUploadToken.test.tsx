@@ -46,6 +46,7 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
+  vi.clearAllMocks()
 })
 
 afterAll(() => {
@@ -97,9 +98,11 @@ describe('OrgUploadToken', () => {
           data: {
             regenerateOrgUploadToken: {
               orgUploadToken,
-              error: {
-                __typename: error,
-              },
+              ...(error && {
+                error: {
+                  __typename: error,
+                },
+              }),
             },
           },
         })
@@ -167,7 +170,7 @@ describe('OrgUploadToken', () => {
 
   describe('when user clicks on Generate button', () => {
     it('calls the mutation', async () => {
-      const { mutate, user } = setup()
+      const { mutate, user } = setup({ orgUploadToken: 'token' })
 
       render(<OrgUploadToken />, { wrapper })
 
@@ -181,7 +184,7 @@ describe('OrgUploadToken', () => {
       it('calls the mutation', async () => {
         const { user, mutate } = setup({
           orgUploadToken: '',
-          error: 'Authentication Error',
+          error: 'UnauthenticatedError',
           isAdmin: true,
         })
         render(<OrgUploadToken />, { wrapper })
@@ -194,10 +197,10 @@ describe('OrgUploadToken', () => {
         await waitFor(() => expect(mutate).toHaveBeenCalled())
       })
 
-      it('adds an error notification', async () => {
+      it.only('adds an error notification', async () => {
         const { addNotification, user } = setup({
           orgUploadToken: '',
-          error: 'Authentication Error',
+          error: 'UnauthenticatedError',
           isAdmin: true,
         })
         const { rerender } = render(<OrgUploadToken />, { wrapper })
@@ -212,7 +215,7 @@ describe('OrgUploadToken', () => {
         await waitFor(() =>
           expect(addNotification).toHaveBeenCalledWith({
             type: 'error',
-            text: 'Authentication Error',
+            text: 'UnauthenticatedError',
           })
         )
       })

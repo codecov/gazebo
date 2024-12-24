@@ -1,23 +1,27 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRegenerateOrgUploadToken } from './useRegenerateOrgUploadToken'
+import { rejectNetworkError } from 'shared/api/helpers'
 
-const mocks = vi.hoisted(() => ({
-  useRedirect: vi.fn(),
-  renderToast: vi.fn(),
+vi.mock('shared/api/helpers', () => ({
+  rejectNetworkError: vi.fn(),
 }))
 
-vi.mock('services/toast', async () => {
-  const actual = await vi.importActual('services/toast')
+vi.mock(import('shared/api/helpers'), async (importOriginal) => {
+  const actual = await importOriginal()
   return {
     ...actual,
-    renderToast: mocks.renderToast,
+    rejectNetworkError: vi.fn(),
   }
 })
+
+const mocks = {
+  rejectNetworkError: vi.mocked(rejectNetworkError),
+}
 
 const mockData = {
   regenerateOrgUploadToken: {
@@ -28,7 +32,10 @@ const mockData = {
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  server.resetHandlers()
+  vi.resetAllMocks()
+})
 afterAll(() => server.close())
 
 const queryClient = new QueryClient({
@@ -76,17 +83,19 @@ describe('useRegenerateOrgUploadToken', () => {
 
           await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
         })
+      })
 
-        it('displays error toast when there is an error', async () => {
+      describe('when schema parse fails', () => {
+        beforeEach(() => {
           setup({
             data: {
               regenerateOrgUploadToken: {
-                error: { __typename: 'ValidationError' },
-                orgUploadToken: null,
+                error: { __typename: 'UnexpectedError' },
               },
             },
           })
-
+        })
+        it('throws a network error', async () => {
           const { result } = renderHook(() => useRegenerateOrgUploadToken(), {
             wrapper,
           })
@@ -95,15 +104,11 @@ describe('useRegenerateOrgUploadToken', () => {
           await waitFor(() => result.current.isLoading)
           await waitFor(() => !result.current.isLoading)
 
-          await waitFor(() =>
-            expect(mocks.renderToast).toHaveBeenCalledWith({
-              type: 'error',
-              title: 'Error generating upload token',
-              content:
-                'Please try again. If the error persists please contact support',
-              options: {
-                duration: 10000,
-              },
+          expect(mocks.rejectNetworkError).toHaveBeenCalledWith(
+            expect.objectContaining({
+              status: 404,
+              dev: 'useRegenerateOrgUploadToken - 404 schema parsing failed',
+              data: {},
             })
           )
         })

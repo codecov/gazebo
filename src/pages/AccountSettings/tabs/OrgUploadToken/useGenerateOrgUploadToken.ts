@@ -9,7 +9,8 @@ export default function useGenerateOrgUploadToken() {
     ...rest
   } = useRegenerateOrgUploadToken({
     onSuccess: () => {
-      const errString = res?.data?.regenerateOrgUploadToken?.error?.__typename
+      console.log("MY DEBUG 2", res)
+      const errString = res?.error?.__typename
 
       if (errString) {
         addToast({
