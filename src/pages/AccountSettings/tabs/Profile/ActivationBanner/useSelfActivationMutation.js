@@ -1,10 +1,13 @@
 import { useMutation } from '@tanstack/react-query'
+import { useQueryClient as useQueryClientV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
+import { SelfHostedSeatsConfigQueryOpts } from 'services/selfHosted/SelfHostedSeatsConfigQueryOpts'
 import Api from 'shared/api'
 
 export const useSelfActivationMutation = ({ queryClient, canChange }) => {
   const { provider } = useParams()
+  const queryClientV5 = useQueryClientV5()
 
   return useMutation({
     mutationFn: (activated) => {
@@ -18,10 +21,14 @@ export const useSelfActivationMutation = ({ queryClient, canChange }) => {
     },
     onMutate: async (activated) => {
       await queryClient.cancelQueries(['SelfHostedCurrentUser'])
-      await queryClient.cancelQueries(['Seats'])
+      await queryClientV5.cancelQueries({
+        queryKey: SelfHostedSeatsConfigQueryOpts({ provider }).queryKey,
+      })
 
       const prevUser = queryClient.getQueryData(['SelfHostedCurrentUser'])
-      const prevSeat = queryClient.getQueryData(['Seats'])
+      const prevSeat = queryClientV5.getQueryData(
+        SelfHostedSeatsConfigQueryOpts({ provider }).queryKey
+      )
 
       if (canChange) {
         queryClient.setQueryData(['SelfHostedCurrentUser'], (user) => ({
@@ -29,32 +36,36 @@ export const useSelfActivationMutation = ({ queryClient, canChange }) => {
           activated,
         }))
 
-        queryClient.setQueryData(['Seats'], (seats) => {
-          const seatsUsed = seats?.data?.config?.seatsUsed
-
-          return {
-            data: {
-              config: {
-                ...seats?.data?.config,
-                seatsUsed: activated ? seatsUsed + 1 : seatsUsed - 1,
+        queryClientV5.setQueryData(
+          SelfHostedSeatsConfigQueryOpts({ provider }).queryKey,
+          (seats) => {
+            const seatsUsed = seats?.data?.config?.seatsUsed
+            return {
+              data: {
+                config: {
+                  ...seats?.data?.config,
+                  seatsUsed: activated ? seatsUsed + 1 : seatsUsed - 1,
+                },
               },
-            },
+            }
           }
-        })
+        )
       }
 
-      return {
-        prevUser,
-        prevSeat,
-      }
+      return { prevUser, prevSeat }
     },
     onError: (_err, _activated, context) => {
       queryClient.setQueryData(['SelfHostedCurrentUser'], context.prevUser)
-      queryClient.setQueryData(['Seats'], context.prevSeat)
+      queryClientV5.setQueryData(
+        SelfHostedSeatsConfigQueryOpts({ provider }).queryKey,
+        context.prevSeat
+      )
     },
     onSettled: () => {
       queryClient.invalidateQueries(['SelfHostedCurrentUser'])
-      queryClient.invalidateQueries(['Seats'])
+      queryClientV5.invalidateQueries(
+        SelfHostedSeatsConfigQueryOpts({ provider }).queryKey
+      )
     },
   })
 }
