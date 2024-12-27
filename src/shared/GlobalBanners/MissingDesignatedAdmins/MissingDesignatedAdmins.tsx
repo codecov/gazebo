@@ -45,7 +45,7 @@ const MissingDesignatedAdmins: React.FC<MissingDesignatedAdminsProps> = ({
 }
 
 interface URLParams {
-  provider: Provider
+  provider?: Provider
 }
 
 const MissingDesignatedAdminsWrapper = () => {
