@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   QueryClientProvider as QueryClientProviderV5,
   QueryClient as QueryClientV5,
@@ -19,9 +18,6 @@ const mockApiSelfHostedSetUpCorrectly = { config: { hasAdmins: true } }
 const mockApiSelfHostedSetUpIncorrectly = { config: { hasAdmins: false } }
 const mockApiCloud = { config: undefined }
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
 const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
@@ -30,13 +26,11 @@ const wrapper =
   (initialEntries = ['/gh/test-org/test-repo/pull/12']) =>
   ({ children }) => (
     <QueryClientProviderV5 client={queryClientV5}>
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo/pull/:pullId">
-            <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/pull/:pullId">
+          <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
     </QueryClientProviderV5>
   )
 
@@ -46,7 +40,6 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
   queryClientV5.clear()
   server.resetHandlers()
 })
