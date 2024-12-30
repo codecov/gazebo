@@ -56,7 +56,7 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  edges: any[]
+  edges: object[]
   isCurrentUserPartOfOrg?: boolean
 }
 
