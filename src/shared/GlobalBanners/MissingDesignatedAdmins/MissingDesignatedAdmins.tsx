@@ -19,7 +19,7 @@ const MissingDesignatedAdmins: React.FC<MissingDesignatedAdminsProps> = ({
     SelfHostedHasAdminsQueryOpts({ provider })
   )
 
-  if (!config.IS_SELF_HOSTED || !provider || hasAdmins || isFetching) {
+  if (!config.IS_SELF_HOSTED || hasAdmins || isFetching) {
     return null
   }
 
