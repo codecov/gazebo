@@ -1,9 +1,13 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useRepoConfigurationStatus } from './useRepoConfigurationStatus'
+import { RepoConfigurationStatusQueryOpts } from './RepoConfigurationStatusQueryOpts'
 
 const mockRepoNotFound = {
   owner: {
@@ -49,20 +53,22 @@ const mockGoodResponse = {
   },
 }
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
   server.listen()
 })
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 afterAll(() => {
@@ -104,11 +110,13 @@ describe('useRepoConfigurationStatus', () => {
     console.error = () => {}
     const { result } = renderHook(
       () =>
-        useRepoConfigurationStatus({
-          provider: 'gh',
-          owner: 'codecov',
-          repo: 'cool-repo',
-        }),
+        useQueryV5(
+          RepoConfigurationStatusQueryOpts({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'cool-repo',
+          })
+        ),
       { wrapper }
     )
 
@@ -128,11 +136,13 @@ describe('useRepoConfigurationStatus', () => {
     console.error = () => {}
     const { result } = renderHook(
       () =>
-        useRepoConfigurationStatus({
-          provider: 'gh',
-          owner: 'codecov',
-          repo: 'cool-repo',
-        }),
+        useQueryV5(
+          RepoConfigurationStatusQueryOpts({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'cool-repo',
+          })
+        ),
       { wrapper }
     )
 
@@ -152,11 +162,13 @@ describe('useRepoConfigurationStatus', () => {
     console.error = () => {}
     const { result } = renderHook(
       () =>
-        useRepoConfigurationStatus({
-          provider: 'gh',
-          owner: 'codecov',
-          repo: 'cool-repo',
-        }),
+        useQueryV5(
+          RepoConfigurationStatusQueryOpts({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'cool-repo',
+          })
+        ),
       { wrapper }
     )
 
@@ -175,11 +187,13 @@ describe('useRepoConfigurationStatus', () => {
     setup({ nullOwner: true })
     const { result } = renderHook(
       () =>
-        useRepoConfigurationStatus({
-          provider: 'gh',
-          owner: 'codecov',
-          repo: 'cool-repo',
-        }),
+        useQueryV5(
+          RepoConfigurationStatusQueryOpts({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'cool-repo',
+          })
+        ),
       { wrapper }
     )
 
@@ -197,11 +211,13 @@ describe('useRepoConfigurationStatus', () => {
     setup({})
     const { result } = renderHook(
       () =>
-        useRepoConfigurationStatus({
-          provider: 'gh',
-          owner: 'codecov',
-          repo: 'cool-repo',
-        }),
+        useQueryV5(
+          RepoConfigurationStatusQueryOpts({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'cool-repo',
+          })
+        ),
       { wrapper }
     )
 

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import {
@@ -7,7 +7,7 @@ import {
 } from 'services/repo'
 import { TierNames } from 'services/tier'
 import Api from 'shared/api/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const RepositorySchema = z.object({
@@ -51,7 +51,8 @@ const RequestSchema = z.object({
     .nullable(),
 })
 
-const query = `query GetRepoConfigurationStatus($owner: String!, $repo: String!){
+const query = `
+query GetRepoConfigurationStatus($owner: String!, $repo: String!) {
   owner(username: $owner) {
     plan {
       tierName
@@ -79,18 +80,18 @@ const query = `query GetRepoConfigurationStatus($owner: String!, $repo: String!)
   }
 }`
 
-interface UseRepoConfigurationStatusArgs {
+interface RepoConfigurationStatusQueryArgs {
   provider: string
   owner: string
   repo: string
 }
 
-export function useRepoConfigurationStatus({
+export function RepoConfigurationStatusQueryOpts({
   provider,
   owner,
   repo,
-}: UseRepoConfigurationStatusArgs) {
-  return useQuery({
+}: RepoConfigurationStatusQueryArgs) {
+  return queryOptionsV5({
     queryKey: ['GetRepoConfigurationStatus', provider, owner, repo],
     queryFn: ({ signal }) => {
       return Api.graphql({
@@ -105,25 +106,26 @@ export function useRepoConfigurationStatus({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useRepoConfigurationStatus - 404 Failed to parse data',
-          } satisfies NetworkErrorObject)
+            error: parsedRes.error,
+          })
         }
 
         const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useRepoConfigurationStatus - 404 Not found error',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -136,7 +138,7 @@ export function useRepoConfigurationStatus({
               ),
             },
             dev: 'useRepoConfigurationStatus - 403 Owner not activated error',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         return {
