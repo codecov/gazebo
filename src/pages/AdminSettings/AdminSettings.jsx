@@ -1,10 +1,11 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { lazy, Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
-import { useSelfHostedCurrentUser } from 'services/selfHosted'
+import { SelfHostedCurrentUserQueryOpts } from 'services/selfHosted/SelfHostedCurrentUserQueryOpts'
 import LoadingLogo from 'ui/LoadingLogo'
 import Spinner from 'ui/Spinner'
 
@@ -27,7 +28,9 @@ const SpinnerLoader = (
 
 function AdminSettings() {
   const { provider } = useParams()
-  const { data, isLoading } = useSelfHostedCurrentUser()
+  const { data, isLoading } = useSuspenseQueryV5(
+    SelfHostedCurrentUserQueryOpts({ provider })
+  )
 
   const redirectTo = `/admin/${provider}/access`
 

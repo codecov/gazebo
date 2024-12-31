@@ -13,11 +13,8 @@ import { vi } from 'vitest'
 import ActivationRequiredSelfHosted from './ActivationRequiredSelfHosted'
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { retry: false, suspense: false },
-  },
+  defaultOptions: { queries: { retry: false, suspense: false } },
 })
-
 const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
@@ -35,7 +32,6 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 const server = setupServer()
-
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
   console.error = () => {}
