@@ -8,7 +8,7 @@ import cs from 'classnames'
 import { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-import { OrderingDirection } from 'services/repos'
+import { OrderingDirection } from 'services/repos/config'
 import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
 import { Row } from 'shared/ContentsTable/utils'
 import Icon from 'ui/Icon'
