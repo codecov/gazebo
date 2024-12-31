@@ -1,5 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
+import {
   render,
   screen,
   waitFor,
@@ -19,10 +23,6 @@ import ReposTable from './ReposTable'
 
 import { repoDisplayOptions } from '../ListRepo'
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-const server = setupServer()
 const mockRepositories = (
   {
     coverageEnabled = true,
@@ -151,16 +151,12 @@ const mockUser = {
   },
 }
 
-beforeAll(() => {
-  server.listen()
-  console.error = () => {}
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
 })
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
-afterAll(() => server.close)
-
 const wrapper =
   (
     repoDisplay: string,
@@ -168,16 +164,30 @@ const wrapper =
     path: string = '/:provider'
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[url]}>
-        <Route path={path}>
-          <ActiveContext.Provider value={repoDisplay}>
-            {children}
-          </ActiveContext.Provider>
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[url]}>
+          <Route path={path}>
+            <ActiveContext.Provider value={repoDisplay}>
+              {children}
+            </ActiveContext.Provider>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
+
+const server = setupServer()
+beforeAll(() => {
+  server.listen()
+  console.error = () => {}
+})
+afterEach(() => {
+  queryClient.clear()
+  queryClientV5.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close)
 
 interface SetupArgs {
   edges?: any[]
