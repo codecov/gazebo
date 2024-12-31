@@ -4,7 +4,7 @@ import { Suspense, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { orderingOptions } from 'services/repos/config'
+import { orderingOptions } from 'services/repos/orderingOptions'
 import { TierNames, useTier } from 'services/tier'
 import { useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
