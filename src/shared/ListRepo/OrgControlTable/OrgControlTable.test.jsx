@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { orderingOptions } from 'services/repos'
+import { orderingOptions } from 'services/repos/config'
 
 import OrgControlTable from './OrgControlTable'
 

@@ -10,7 +10,7 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { OrderingDirection, TeamOrdering } from 'services/repos'
+import { OrderingDirection, TeamOrdering } from 'services/repos/config'
 import { ActiveContext } from 'shared/context'
 
 import ReposTableTeam, { getSortingOption } from './ReposTableTeam'
