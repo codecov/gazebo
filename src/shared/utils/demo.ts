@@ -1,4 +1,6 @@
-import { useRepos } from 'services/repos'
+import { ReposQueryOpts } from 'services/repos/ReposQueryOpts'
+
+import { ExtractInfiniteQueryDataFromQueryFn } from './queries'
 
 export const DEMO_REPO = {
   provider: 'github',
@@ -7,10 +9,12 @@ export const DEMO_REPO = {
   displayName: 'Codecov demo',
 }
 
-type UseReposData = ReturnType<typeof useRepos>['data']
+type ReposQueryData = ExtractInfiniteQueryDataFromQueryFn<
+  ReturnType<typeof ReposQueryOpts>['queryFn']
+>
 
 export function formatDemoRepos(
-  demoReposData: UseReposData,
+  demoReposData: ReposQueryData,
   searchValue: string
 ) {
   return (

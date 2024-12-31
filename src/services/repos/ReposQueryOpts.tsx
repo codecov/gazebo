@@ -161,10 +161,9 @@ function ReposQueryOpts({
           })
         }
 
-        const owner = parsedRes?.data?.owner
         return {
-          repos: mapEdges(owner?.repositories),
-          pageInfo: owner?.repositories?.pageInfo,
+          repos: mapEdges(parsedRes?.data?.owner?.repositories),
+          pageInfo: parsedRes?.data?.owner?.repositories?.pageInfo,
         }
       })
     },

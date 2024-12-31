@@ -1,6 +1,6 @@
 import { createColumnHelper } from '@tanstack/react-table'
 
-import { RepositoryResult } from 'services/repos'
+import { RepositoryResult } from 'services/repos/ReposQueryOpts'
 import { formatTimeToNow } from 'shared/utils/dates'
 import TotalsNumber from 'ui/TotalsNumber'
 
