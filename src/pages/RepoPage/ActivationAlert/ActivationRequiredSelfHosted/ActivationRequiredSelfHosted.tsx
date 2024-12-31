@@ -2,7 +2,7 @@ import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router'
 
 import upsideDownUmbrella from 'layouts/shared/NetworkErrorBoundary/assets/error-upsidedown-umbrella.svg'
-import { useSelfHostedCurrentUser } from 'services/selfHosted'
+import { SelfHostedCurrentUserQueryOpts } from 'services/selfHosted/SelfHostedCurrentUserQueryOpts'
 import { SelfHostedSeatsConfigQueryOpts } from 'services/selfHosted/SelfHostedSeatsConfigQueryOpts'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -62,9 +62,11 @@ interface URLParams {
 
 function ActivationRequiredSelfHosted() {
   const { provider } = useParams<URLParams>()
-  const { data } = useSelfHostedCurrentUser()
   const { data: selfHostedSeats } = useSuspenseQueryV5(
     SelfHostedSeatsConfigQueryOpts({ provider })
+  )
+  const { data } = useSuspenseQueryV5(
+    SelfHostedCurrentUserQueryOpts({ provider })
   )
 
   const hasSelfHostedSeats =

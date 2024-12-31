@@ -1,11 +1,14 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { PropsWithChildren } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useSelfHostedCurrentUser } from './useSelfHostedCurrentUser'
+import { SelfHostedCurrentUserQueryOpts } from './SelfHostedCurrentUserQueryOpts'
 
 const user = {
   activated: false,
@@ -16,15 +19,13 @@ const user = {
   username: 'codecov',
 }
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh']}>
-      <Route path="/:provider">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
@@ -32,9 +33,9 @@ beforeAll(() => {
   server.listen()
 })
 
-beforeEach(() => {
+afterEach(() => {
+  queryClientV5.clear()
   server.resetHandlers()
-  queryClient.clear()
 })
 
 afterAll(() => {
@@ -54,9 +55,10 @@ describe('useSelfHostedCurrentUser', () => {
     describe('when data is loaded', () => {
       it('returns the user info', async () => {
         setup()
-        const { result } = renderHook(() => useSelfHostedCurrentUser(), {
-          wrapper,
-        })
+        const { result } = renderHook(
+          () => useQueryV5(SelfHostedCurrentUserQueryOpts({ provider: 'gh' })),
+          { wrapper }
+        )
 
         await waitFor(() => expect(result.current.data).toEqual(user))
       })

@@ -17,7 +17,6 @@ const queryClient = new QueryClient({
 const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
-
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProviderV5 client={queryClientV5}>
     <QueryClientProvider client={queryClient}>
