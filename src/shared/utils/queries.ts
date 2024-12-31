@@ -12,6 +12,7 @@ import { InfiniteData, QueryFunction } from '@tanstack/react-queryV5'
  *
  * type ReturnData = ExtractInfiniteQueryDataFromQueryFn<
  *   ReturnType<typeof InfiniteQueryOpts>['queryFn']>
+ * >
  * ```
  */
 export type ExtractInfiniteQueryDataFromQueryFn<
@@ -30,6 +31,7 @@ export type ExtractInfiniteQueryDataFromQueryFn<
  *
  * type ReturnData = ExtractQueryDataFromQueryFn<
  *   ReturnType<typeof QueryOpts>['queryFn']>
+ * >
  * ```
  */
 export type ExtractQueryDataFromQueryFn<
