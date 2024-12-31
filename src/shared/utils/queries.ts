@@ -1,4 +1,14 @@
-import { InfiniteData, QueryFunction } from '@tanstack/react-queryV5'
+import {
+  InfiniteData,
+  UseInfiniteQueryOptions,
+  UseQueryOptions,
+} from '@tanstack/react-queryV5'
+
+type AnyFunction = (...args: any) => any
+
+type KnownInfiniteQueryFnReturn<
+  T extends (...args: any) => UseInfiniteQueryOptions,
+> = NonNullable<ReturnType<T>['queryFn']>
 
 /**
  * Extracts the infinite query data from a query function - **Only works for TanStack Query V5**.
@@ -10,14 +20,17 @@ import { InfiniteData, QueryFunction } from '@tanstack/react-queryV5'
  * ```ts
  * import { InfiniteQueryOpts } from './InfiniteQueryOpts'
  *
- * type ReturnData = ExtractInfiniteQueryDataFromQueryFn<
- *   ReturnType<typeof InfiniteQueryOpts>['queryFn']>
- * >
+ * type ReturnData = ExtractInfiniteQueryDataType<typeof InfiniteQueryOpts>
  * ```
  */
-export type ExtractInfiniteQueryDataFromQueryFn<
-  T extends QueryFunction<any, any, any> | undefined,
-> = InfiniteData<Awaited<ReturnType<NonNullable<T>>>>
+export type ExtractInfiniteQueryDataType<T extends AnyFunction> = InfiniteData<
+  Awaited<ReturnType<KnownInfiniteQueryFnReturn<T>>>
+>
+
+// -----------------------------------------------------------------------------
+
+type KnownQueryFnReturn<T extends (...args: any) => UseQueryOptions> =
+  NonNullable<ReturnType<T>['queryFn']>
 
 /**
  * Extracts the query data from a query function - **Only works for TanStack Query V5**.
@@ -29,11 +42,9 @@ export type ExtractInfiniteQueryDataFromQueryFn<
  * ```ts
  * import { QueryOpts } from './QueryOpts'
  *
- * type ReturnData = ExtractQueryDataFromQueryFn<
- *   ReturnType<typeof QueryOpts>['queryFn']>
- * >
+ * type ReturnData = ExtractQueryDataType<typeof QueryOpts>
  * ```
  */
-export type ExtractQueryDataFromQueryFn<
-  T extends QueryFunction<any, any, never> | undefined,
-> = Awaited<ReturnType<NonNullable<T>>>
+export type ExtractQueryDataType<T extends AnyFunction> = Awaited<
+  ReturnType<KnownQueryFnReturn<T>>
+>

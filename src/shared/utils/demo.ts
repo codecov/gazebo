@@ -1,6 +1,6 @@
 import { ReposQueryOpts } from 'services/repos/ReposQueryOpts'
 
-import { ExtractInfiniteQueryDataFromQueryFn } from './queries'
+import { ExtractInfiniteQueryDataType } from './queries'
 
 export const DEMO_REPO = {
   provider: 'github',
@@ -9,33 +9,33 @@ export const DEMO_REPO = {
   displayName: 'Codecov demo',
 }
 
-type ReposQueryData = ExtractInfiniteQueryDataFromQueryFn<
-  ReturnType<typeof ReposQueryOpts>['queryFn']
->
+type ReposQueryData = ExtractInfiniteQueryDataType<typeof ReposQueryOpts>
 
 export function formatDemoRepos(
-  demoReposData: ReposQueryData,
+  demoReposData: ReposQueryData | undefined,
   searchValue: string
 ) {
-  return (
-    demoReposData?.pages
-      .flatMap((page) => page.repos)
-      .filter(isNotNull)
-      .map(
-        // tag the repo as demo and overwrite its display name
-        (repo) => ({
-          ...repo,
-          isDemo: true,
-          name: DEMO_REPO.displayName,
-        })
-      )
-      .filter(
-        // filter if name does not match the search value
-        (repo: { name: string }) =>
-          !searchValue ||
-          repo.name.toLowerCase().includes(searchValue.toLowerCase())
-      ) ?? []
-  )
+  if (!demoReposData) {
+    return []
+  }
+
+  return demoReposData?.pages
+    .flatMap((page) => page.repos)
+    .filter(isNotNull)
+    .map(
+      // tag the repo as demo and overwrite its display name
+      (repo) => ({
+        ...repo,
+        isDemo: true,
+        name: DEMO_REPO.displayName,
+      })
+    )
+    .filter(
+      // filter if name does not match the search value
+      (repo: { name: string }) =>
+        !searchValue ||
+        repo.name.toLowerCase().includes(searchValue.toLowerCase())
+    )
 }
 
 // isNotNull can be used in filter to exclude null elements while conveying to
