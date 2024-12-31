@@ -27,7 +27,7 @@ type FormData = z.infer<typeof emailSchema>
 function EmailAddress() {
   const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isEditMode, setEditMode] = useState(false)
   const currentCustomerEmail =
     accountDetails?.subscriptionDetail?.customer?.email || 'No email provided'
 
@@ -50,7 +50,7 @@ function EmailAddress() {
       { newEmail: data?.newCustomerEmail },
       {
         onSuccess: () => {
-          setIsFormOpen(false)
+          setEditMode(false)
         },
       }
     )
@@ -60,18 +60,18 @@ function EmailAddress() {
     <div className="flex flex-col gap-2 border-t p-4">
       <div className="flex justify-between">
         <h4 className="font-semibold">Email address</h4>{' '}
-        {!isFormOpen && (
+        {!isEditMode && (
           /* @ts-expect-error - A hasn't been typed yet */
           <A
             variant="semibold"
-            onClick={() => setIsFormOpen(true)}
+            onClick={() => setEditMode(true)}
             hook="edit-email"
           >
             Edit <Icon name="chevronRight" size="sm" variant="solid" />
           </A>
         )}
       </div>
-      {isFormOpen ? (
+      {isEditMode ? (
         <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-2">
           <TextInput
             data-testid="billing-email-input"
@@ -99,7 +99,7 @@ function EmailAddress() {
               hook="cancel-email"
               variant="plain"
               disabled={isLoading}
-              onClick={() => setIsFormOpen(false)}
+              onClick={() => setEditMode(false)}
             >
               Cancel
             </Button>

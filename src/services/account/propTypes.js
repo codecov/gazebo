@@ -1,5 +1,8 @@
 import PropType from 'prop-types'
 
+// TODO: These types were duplicated into types.ts, 
+// delete this file once all usages are migrated to TS
+
 export const invoicePropType = PropType.shape({
   created: PropType.number.isRequired,
   dueDate: PropType.number,

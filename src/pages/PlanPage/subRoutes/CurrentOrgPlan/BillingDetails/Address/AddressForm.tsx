@@ -105,7 +105,7 @@ function AddressForm({
             disabled={isLoading}
             to={undefined}
           >
-            Update
+            Save
           </Button>
           <Button
             type="button"

@@ -10,50 +10,47 @@ import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
 import AddressForm from './AddressForm'
+import { cn } from 'shared/utils/cn'
 
 interface AddressCardProps {
+  isEditMode: boolean
+  setEditMode: (isEditMode: boolean) => void
   subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
   provider: string
   owner: string
+  className?: string
 }
 
 function AddressCard({
+  isEditMode,
+  setEditMode,
   subscriptionDetail,
   provider,
   owner,
+  className,
 }: AddressCardProps) {
-  const [isFormOpen, setIsFormOpen] = useState(false)
   const billingDetails =
     subscriptionDetail?.defaultPaymentMethod?.billingDetails
 
+  const isAddressSameAsPrimary = true // TODO
+
   return (
-    <div className="flex flex-col gap-2 border-t p-4">
-      {isFormOpen && (
+    <div className={cn('flex gap-2', className)}>
+      {isEditMode && (
         <AddressForm
           name={billingDetails?.name || ''}
           address={billingDetails?.address}
           provider={provider}
           owner={owner}
-          closeForm={() => setIsFormOpen(false)}
+          closeForm={() => setEditMode(false)}
         />
       )}
-      {!isFormOpen && (
+      {!isEditMode && (
         <>
-          <div className="flex justify-between">
-            <h4 className="font-semibold">Cardholder name</h4>
-            <A
-              variant="semibold"
-              onClick={() => setIsFormOpen(true)}
-              hook="edit-address"
-              isExternal={false}
-              to={undefined}
-            >
-              Edit <Icon name="chevronRight" size="sm" variant="solid" />
-            </A>
-          </div>
           <BillingInner
             billingDetails={billingDetails}
-            setIsFormOpen={setIsFormOpen}
+            setEditMode={setEditMode}
+            isAddressSameAsPrimary={isAddressSameAsPrimary}
           />
         </>
       )}
@@ -63,27 +60,36 @@ function AddressCard({
 
 interface BillingInnerProps {
   billingDetails?: z.infer<typeof BillingDetailsSchema>
-  setIsFormOpen: (val: boolean) => void
+  setEditMode: (val: boolean) => void
+  isAddressSameAsPrimary: boolean
 }
 
-function BillingInner({ billingDetails, setIsFormOpen }: BillingInnerProps) {
+function BillingInner({
+  billingDetails,
+  setEditMode,
+  isAddressSameAsPrimary,
+}: BillingInnerProps) {
   if (billingDetails) {
     return (
       <div>
-        <p>{`${billingDetails.name ?? 'N/A'}`}</p>
-        <br />
         <h4 className="mb-2 font-semibold">Billing address</h4>
-        <p>{`${billingDetails.address?.line1 ?? ''} ${
-          billingDetails.address?.line2 ?? ''
-        }`}</p>
-        <p>
-          {billingDetails.address?.city
-            ? `${billingDetails.address?.city}, `
-            : ''}
-          {`${billingDetails.address?.state ?? ''} ${
-            billingDetails.address?.postalCode ?? ''
-          }`}
-        </p>
+        {isAddressSameAsPrimary ? (
+          <p>Same as primary address</p>
+        ) : (
+          <>
+            <p>{`${billingDetails.address?.line1 ?? ''} ${
+              billingDetails.address?.line2 ?? ''
+            }`}</p>
+            <p>
+              {billingDetails.address?.city
+                ? `${billingDetails.address?.city}, `
+                : ''}
+              {`${billingDetails.address?.state ?? ''} ${
+                billingDetails.address?.postalCode ?? ''
+              }`}
+            </p>
+          </>
+        )}
       </div>
     )
   }
@@ -98,7 +104,7 @@ function BillingInner({ billingDetails, setIsFormOpen }: BillingInnerProps) {
         <Button
           hook="open-modal"
           variant="primary"
-          onClick={() => setIsFormOpen(true)}
+          onClick={() => setEditMode(true)}
           to={undefined}
           disabled={false}
         >

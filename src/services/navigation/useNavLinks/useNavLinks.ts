@@ -967,5 +967,26 @@ export function useNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    billingEditPrimary: {
+      path: (
+        { provider = p, owner = o} = {
+          provider: p,
+          owner: o,
+        }
+      ) =>
+        `/plan/${provider}/${owner}?tab=primary`,
+      isExternalLink: false,
+      text: 'Primary payment method',
+    },
+    billingEditSecondary: {
+      path: (
+        { provider = p, owner = o} = {
+          provider: p,
+          owner: o,
+        }
+      ) => `/plan/${provider}/${owner}?tab=secondary`,
+      isExternalLink: false,
+      text: 'Secondary payment method',
+    },
   }
 }
