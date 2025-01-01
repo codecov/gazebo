@@ -7,7 +7,7 @@ import PaymentMethod from './PaymentMethod'
 import Button from 'ui/Button'
 import { useState } from 'react'
 import A from 'ui/A'
-import EditablePaymentMethod from './EditablePaymentMethod'
+import EditablePaymentMethod from './EditPaymentMethod'
 
 interface URLParams {
   provider: string
@@ -32,8 +32,9 @@ function BillingDetails() {
   console.log('iseditmode', isEditMode)
 
   return (
-    <div className="flex flex-col border">
-      <div className="grid grid-cols-[1fr_auto] items-center gap-4 p-4">
+    <div className="flex flex-col divide-y border">
+      {/* Billing Details Section */}
+      <div className="flex items-center justify-between gap-4 p-4">
         <div>
           <h3 className="font-semibold">Billing details</h3>
           <p className="pt-1 text-xs text-ds-gray-octonary">
@@ -50,6 +51,7 @@ function BillingDetails() {
             onClick={() => setEditMode(true)}
             variant="default"
             disabled={!isAdmin}
+            className="flex-none"
           >
             Edit payment
           </Button>
@@ -57,10 +59,11 @@ function BillingDetails() {
           <Button
             hook="button"
             onClick={() => setEditMode(false)}
-            variant="danger"
+            variant="default"
             disabled={!isAdmin}
+            className="flex-none"
           >
-            Cancel edit
+            Back
           </Button>
         )}
       </div>

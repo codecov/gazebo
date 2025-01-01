@@ -28,21 +28,21 @@ function CardInformation({ subscriptionDetail, card }: CardInformationProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex gap-2">
+      <div className="flex gap-1">
         <img
-          className="h-auto w-16 self-center"
+          className="h-auto w-8 self-center"
           alt="credit card logo"
           src={typeCard?.logo}
         />
         <div className="flex flex-col self-center">
-          <b className="tracking-widest">••••&nbsp;{card?.last4}</b>
+          <b>••••&nbsp;{card?.last4}</b>
         </div>
       </div>
       <p className="text-ds-gray-quinary">
         Expires {card?.expMonth}/{lastTwoDigits(card?.expYear)}
       </p>
       {nextBilling && (
-        <p className="text-sm text-ds-gray-quinary">
+        <p className="text-ds-gray-quinary">
           Your next billing date is{' '}
           <span className="text-ds-gray-octonary">{nextBilling}</span>.
         </p>

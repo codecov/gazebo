@@ -32,7 +32,7 @@ function AddressCard({
   const billingDetails =
     subscriptionDetail?.defaultPaymentMethod?.billingDetails
 
-  const isAddressSameAsPrimary = true // TODO
+  const isAddressSameAsPrimary = false // TODO
 
   return (
     <div className={cn('flex gap-2', className)}>
@@ -46,13 +46,11 @@ function AddressCard({
         />
       )}
       {!isEditMode && (
-        <>
-          <BillingInner
-            billingDetails={billingDetails}
-            setEditMode={setEditMode}
-            isAddressSameAsPrimary={isAddressSameAsPrimary}
-          />
-        </>
+        <BillingInner
+          billingDetails={billingDetails}
+          setEditMode={setEditMode}
+          isAddressSameAsPrimary={isAddressSameAsPrimary}
+        />
       )}
     </div>
   )
@@ -69,12 +67,21 @@ function BillingInner({
   setEditMode,
   isAddressSameAsPrimary,
 }: BillingInnerProps) {
+  const isEmptyAddress =
+    !billingDetails?.address?.line1 &&
+    !billingDetails?.address?.line2 &&
+    !billingDetails?.address?.city &&
+    !billingDetails?.address?.state &&
+    !billingDetails?.address?.postalCode
+
   if (billingDetails) {
     return (
       <div>
         <h4 className="mb-2 font-semibold">Billing address</h4>
         {isAddressSameAsPrimary ? (
           <p>Same as primary address</p>
+        ) : isEmptyAddress ? (
+          <p>-</p>
         ) : (
           <>
             <p>{`${billingDetails.address?.line1 ?? ''} ${

@@ -145,7 +145,7 @@ interface EditablePaymentMethodProps {
   clientSecret: string
 }
 
-const EditablePaymentMethod: React.FC<EditablePaymentMethodProps> = ({
+const EditPaymentMethod: React.FC<EditablePaymentMethodProps> = ({
   clientSecret,
 }) => {
   return (
@@ -163,4 +163,4 @@ const EditablePaymentMethod: React.FC<EditablePaymentMethodProps> = ({
   )
 }
 
-export default EditablePaymentMethod
+export default EditPaymentMethod
