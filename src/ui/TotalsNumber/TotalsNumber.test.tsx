@@ -135,7 +135,6 @@ describe('TotalsNumber', () => {
         />
       )
 
-
       const changeValue = screen.getByTestId('change-value')
       expect(changeValue).toHaveTextContent('0')
       expect(changeValue).not.toHaveClass("before:content-['+']")
