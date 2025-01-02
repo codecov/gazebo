@@ -100,7 +100,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('useReposTeam', () => {
+describe('ReposTeamQueryOpts', () => {
   function setup({ invalidResponse = false } = {}) {
     server.use(
       graphql.query('GetReposTeam', (info) => {

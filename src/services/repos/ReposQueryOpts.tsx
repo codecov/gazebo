@@ -132,7 +132,7 @@ function ReposQueryOpts({
   isPublic = null, // by default, get both public and private repos
 }: UseReposArgs) {
   const variables = {
-    filters: { activated, term, repoNames, isPublic },
+    filters: { activated, term, repoNames, isPublic: Boolean(isPublic) },
     ordering: sortItem?.ordering,
     direction: sortItem?.direction,
     first,
@@ -148,7 +148,7 @@ function ReposQueryOpts({
         variables: {
           ...variables,
           owner,
-          after: pageParam,
+          after: pageParam === '' ? undefined : pageParam,
         },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
