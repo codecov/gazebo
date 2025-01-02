@@ -28,7 +28,7 @@ const getNumberClasses = ({
       hasValue && parseFloat(value.toFixed(2)) < 0 && !plain,
     'bg-ds-coverage-covered':
       hasValue && parseFloat(value.toFixed(2)) >= 0 && !plain,
-    "before:content-['+']": hasValue && showChange,
+    "before:content-['+']": hasValue && showChange && value > 0,
   })
 }
 
