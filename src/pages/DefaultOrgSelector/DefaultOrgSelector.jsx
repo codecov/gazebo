@@ -25,6 +25,7 @@ import Button from 'ui/Button'
 import Icon from 'ui/Icon/Icon'
 import Select from 'ui/Select'
 
+import { ONBOARDING_SOURCE } from './constants'
 import GitHubHelpBanner from './GitHubHelpBanner'
 import { useMyOrganizations } from './hooks/useMyOrganizations'
 
@@ -140,7 +141,9 @@ function DefaultOrgSelector() {
       fireTrial({ owner: selectedOrg })
     }
 
-    return history.push(`/${provider}/${selectedOrg}?source=onboarding`)
+    return history.push(
+      `/${provider}/${selectedOrg}?source=${ONBOARDING_SOURCE}`
+    )
   }
 
   if (userIsLoading) return null
