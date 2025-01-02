@@ -1,26 +1,17 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import * as apiHelpers from 'shared/api/helpers'
+
 import { useRegenerateOrgUploadToken } from './useRegenerateOrgUploadToken'
-import { rejectNetworkError } from 'shared/api/helpers'
 
-vi.mock('shared/api/helpers', () => ({
-  rejectNetworkError: vi.fn(),
-}))
-
-vi.mock(import('shared/api/helpers'), async (importOriginal) => {
-  const actual = await importOriginal()
-  return {
-    ...actual,
-    rejectNetworkError: vi.fn(),
-  }
-})
+vi.mock('shared/api/helpers')
 
 const mocks = {
-  rejectNetworkError: vi.mocked(rejectNetworkError),
+  rejectNetworkError: vi.spyOn(apiHelpers, 'rejectNetworkError'),
 }
 
 const mockData = {
@@ -59,7 +50,7 @@ describe('useRegenerateOrgUploadToken', () => {
 
   function setup({ data = mockData }: { data?: SetupArgs } = {}) {
     server.use(
-      graphql.mutation('regenerateOrgUploadToken', () => {
+      graphql.mutation('RegenerateOrgUploadToken', () => {
         return HttpResponse.json({ data })
       })
     )

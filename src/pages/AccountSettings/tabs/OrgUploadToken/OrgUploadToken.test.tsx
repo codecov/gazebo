@@ -68,8 +68,8 @@ describe('OrgUploadToken', () => {
     const user = userEvent.setup()
     const mutate = vi.fn()
     const addNotification = vi.fn()
-    vi.mocked(useFlags).mockReturnValue({ tokenlessSection: true })
 
+    vi.mocked(useFlags).mockReturnValue({ tokenlessSection: true })
     vi.mocked(useAddNotification).mockReturnValue(addNotification)
 
     server.use(
@@ -92,8 +92,8 @@ describe('OrgUploadToken', () => {
           },
         })
       }),
-      graphql.mutation('regenerateOrgUploadToken', () => {
-        mutate('regenerateOrgUploadToken')
+      graphql.mutation('RegenerateOrgUploadToken', () => {
+        mutate('RegenerateOrgUploadToken')
         return HttpResponse.json({
           data: {
             regenerateOrgUploadToken: {
@@ -170,7 +170,7 @@ describe('OrgUploadToken', () => {
 
   describe('when user clicks on Generate button', () => {
     it('calls the mutation', async () => {
-      const { mutate, user } = setup({ orgUploadToken: 'token' })
+      const { mutate, user } = setup({ orgUploadToken: '' })
 
       render(<OrgUploadToken />, { wrapper })
 
@@ -197,7 +197,7 @@ describe('OrgUploadToken', () => {
         await waitFor(() => expect(mutate).toHaveBeenCalled())
       })
 
-      it.only('adds an error notification', async () => {
+      it('adds an error notification', async () => {
         const { addNotification, user } = setup({
           orgUploadToken: '',
           error: 'UnauthenticatedError',

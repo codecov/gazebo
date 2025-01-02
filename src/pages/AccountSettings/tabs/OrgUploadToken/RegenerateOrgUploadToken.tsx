@@ -52,7 +52,7 @@ function RegenerateOrgUploadToken({
   orgUploadToken: string
 }) {
   const { owner } = useParams<URLParams>()
-  const { regenerateToken, isLoading } = useGenerateOrgUploadToken()
+  const { regenerateTokenAsync, isLoading } = useGenerateOrgUploadToken()
   const [showModal, setShowModal] = useState(false)
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
 
@@ -87,7 +87,7 @@ function RegenerateOrgUploadToken({
         {showModal && (
           <RegenerateTokenModal
             closeModal={() => setShowModal(false)}
-            regenerateToken={() => Promise.resolve(regenerateToken())}
+            regenerateToken={regenerateTokenAsync}
             isLoading={isLoading}
           />
         )}

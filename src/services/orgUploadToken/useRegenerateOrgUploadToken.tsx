@@ -6,7 +6,7 @@ import Api from 'shared/api'
 import { Provider, rejectNetworkError } from 'shared/api/helpers'
 
 const query = `
-  mutation regenerateOrgUploadToken(
+  mutation RegenerateOrgUploadToken(
     $input: RegenerateOrgUploadTokenInput!
   ) {
     regenerateOrgUploadToken(input: $input) {
@@ -33,7 +33,6 @@ const ResponseSchema = z.object({
             __typename: z.literal('UnauthenticatedError'),
           }),
         ])
-        .optional()
         .nullish(),
       orgUploadToken: z.string().nullish(),
     })
@@ -45,10 +44,10 @@ interface URLParams {
   owner: string
 }
 
-type RegenerateOrgUploadTokenData = z.infer<typeof ResponseSchema>
-
 interface UseRegenerateOrgUploadTokenProps {
-  onSuccess?: (data: RegenerateOrgUploadTokenData) => void
+  onSuccess?: (
+    data: z.infer<typeof ResponseSchema>['regenerateOrgUploadToken']
+  ) => void
 }
 
 export function useRegenerateOrgUploadToken({
@@ -63,7 +62,7 @@ export function useRegenerateOrgUploadToken({
         provider,
         query,
         variables: { input: { owner } },
-        mutationPath: 'regenerateOrgUploadToken',
+        mutationPath: 'RegenerateOrgUploadToken',
       })
     },
     useErrorBoundary: true,
@@ -78,8 +77,7 @@ export function useRegenerateOrgUploadToken({
         })
       }
 
-      console.log("MY DEBUG 3", parsedRes.data)
-      onSuccess(parsedRes.data)
+      onSuccess(parsedRes.data.regenerateOrgUploadToken)
     },
     onSettled: () => {
       queryClient.invalidateQueries(['DetailOwner'])
