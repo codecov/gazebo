@@ -1,3 +1,4 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router'
 
 import { TierNames } from 'services/tier'
@@ -5,9 +6,9 @@ import { TierNames } from 'services/tier'
 import FeatureGroup from './components/FeatureGroup'
 import FeatureItem from './components/FeatureItem/FeatureItem'
 import {
+  RepoConfigurationStatusQueryOpts,
   RepositoryConfiguration,
-  useRepoConfigurationStatus,
-} from './hooks/useRepoConfigurationStatus/useRepoConfigurationStatus'
+} from './hooks/useRepoConfigurationStatus/RepoConfigurationStatusQueryOpts'
 
 interface URLParams {
   provider: string
@@ -17,11 +18,13 @@ interface URLParams {
 
 function ConfigurationManager() {
   const { provider, owner, repo } = useParams<URLParams>()
-  const { data: repoConfiguration } = useRepoConfigurationStatus({
-    provider,
-    owner,
-    repo,
-  })
+  const { data: repoConfiguration } = useSuspenseQueryV5(
+    RepoConfigurationStatusQueryOpts({
+      provider,
+      owner,
+      repo,
+    })
+  )
 
   return (
     <div className="flex flex-col gap-6 lg:w-3/4">
