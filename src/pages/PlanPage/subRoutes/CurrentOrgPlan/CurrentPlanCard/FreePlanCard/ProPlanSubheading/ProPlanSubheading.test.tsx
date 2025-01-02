@@ -24,6 +24,7 @@ const mockResponse = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isProPlan: false,
   isFreePlan: true,
   isTeamPlan: false,
 }
@@ -74,6 +75,7 @@ describe('ProPlanSubheading', () => {
               hasPrivateRepos,
               plan: {
                 ...mockResponse,
+                isTrialPlan: planValue === Plans.USERS_TRIAL,
                 trialStatus,
                 value: planValue,
               },
@@ -147,7 +149,7 @@ describe('ProPlanSubheading', () => {
     it('renders correct text', async () => {
       setup({
         trialStatus: TrialStatuses.ONGOING,
-        planValue: 'users-trial',
+        planValue: Plans.USERS_TRIAL,
       })
 
       render(<ProPlanSubheading />, { wrapper })
@@ -159,7 +161,7 @@ describe('ProPlanSubheading', () => {
     it('renders link to faqs', async () => {
       setup({
         trialStatus: TrialStatuses.ONGOING,
-        planValue: 'users-trial',
+        planValue: Plans.USERS_TRIAL,
       })
 
       render(<ProPlanSubheading />, { wrapper })

@@ -215,9 +215,11 @@ describe('DefaultOrgSelector', () => {
               plan: {
                 ...mockTrialData,
                 isEnterprisePlan: false,
-                isFreePlan: false,
+                isProPlan: false,
+                isFreePlan: value === Plans.USERS_BASIC,
                 isTeamPlan:
                   value === Plans.USERS_TEAMM || value === Plans.USERS_TEAMY,
+                isTrialPlan: value === Plans.USERS_TRIAL,
                 trialStatus,
                 value,
               },

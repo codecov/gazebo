@@ -1,3 +1,4 @@
+import { useInfiniteQuery as useInfiniteQueryV5 } from '@tanstack/react-queryV5'
 import type { SortingState } from '@tanstack/react-table'
 import {
   createColumnHelper,
@@ -8,16 +9,16 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import PropTypes from 'prop-types'
 import { useContext, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
   OrderingDirection,
   Repository,
+  ReposTeamQueryOpts,
   TeamOrdering,
-  useReposTeam,
-} from 'services/repos'
+} from 'services/repos/ReposTeamQueryOpts'
+import { Provider } from 'shared/api/helpers'
 import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
@@ -144,7 +145,12 @@ const getColumns = ({
   ]
 }
 
+interface URLParams {
+  provider: Provider
+}
+
 const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
+  const { provider } = useParams<URLParams>()
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: 'latestCommitAt',
@@ -168,12 +174,15 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
     hasNextPage,
     isFetching,
     isFetchingNextPage,
-  } = useReposTeam({
-    activated,
-    sortItem: getSortingOption(sorting),
-    term: searchValue,
-    owner,
-  })
+  } = useInfiniteQueryV5(
+    ReposTeamQueryOpts({
+      provider,
+      activated,
+      sortItem: getSortingOption(sorting),
+      term: searchValue,
+      owner,
+    })
+  )
 
   const isCurrentUserPartOfOrg = !!reposData?.pages?.[0]?.isCurrentUserPartOfOrg
 
@@ -276,10 +285,6 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
       )}
     </div>
   )
-}
-
-ReposTableTeam.propTypes = {
-  searchValue: PropTypes.string.isRequired,
 }
 
 export default ReposTableTeam

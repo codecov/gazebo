@@ -1,10 +1,11 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { differenceInCalendarDays } from 'date-fns'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useSelfHostedSeatsAndLicense } from 'services/selfHosted/useSelfHostedSeatsAndLicense'
+import { SelfHostedSeatsAndLicenseQueryOpts } from 'services/selfHosted/SelfHostedSeatsAndLicenseQueryOpts'
 import { Provider } from 'shared/api/helpers'
 import Banner from 'ui/Banner'
 import Button from 'ui/Button'
@@ -56,24 +57,17 @@ interface URLParams {
 const SelfHostedLicenseExpiration = () => {
   const { provider } = useParams<URLParams>()
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const isSelfHosted = !!config.IS_SELF_HOSTED
-  const isDedicatedNamespace = !!config.IS_DEDICATED_NAMESPACE
-  const { data } = useSelfHostedSeatsAndLicense({
-    provider,
-    opts: { enabled: !!provider && isSelfHosted && isDedicatedNamespace },
-  })
+  const { data } = useSuspenseQueryV5(
+    SelfHostedSeatsAndLicenseQueryOpts({
+      provider,
+    })
+  )
 
   const licenseExpirationDate = data?.selfHostedLicense?.expirationDate
   const seatsUsed = data?.seatsUsed
   const seatsLimit = data?.seatsLimit
 
-  if (
-    !isSelfHosted ||
-    !isDedicatedNamespace ||
-    !licenseExpirationDate ||
-    !seatsUsed ||
-    !seatsLimit
-  ) {
+  if (!licenseExpirationDate || !seatsUsed || !seatsLimit) {
     return null
   }
 
@@ -81,6 +75,7 @@ const SelfHostedLicenseExpiration = () => {
     new Date(licenseExpirationDate),
     new Date()
   )
+
   const isSeatsLimitReached = seatsUsed === seatsLimit
   const isLicenseExpired = dateDiff < 0
   const isLicenseExpiringWithin30Days = dateDiff < 31 && dateDiff >= 0
@@ -122,4 +117,18 @@ const SelfHostedLicenseExpiration = () => {
   )
 }
 
-export default SelfHostedLicenseExpiration
+// This wrapper is just so we don't make a request to the API if we're not on a
+// self-hosted instance, this is because we're useSuspenseQuery is not
+// toggle'ble through a `enabled` field like useQuery
+function SelfHostedLicenseExpirationWrapper() {
+  const isSelfHosted = !!config.IS_SELF_HOSTED
+  const isDedicatedNamespace = !!config.IS_DEDICATED_NAMESPACE
+
+  if (!isSelfHosted || !isDedicatedNamespace) {
+    return null
+  }
+
+  return <SelfHostedLicenseExpiration />
+}
+
+export default SelfHostedLicenseExpirationWrapper
