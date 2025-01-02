@@ -1,11 +1,39 @@
 import { z } from 'zod'
 
+import amexLogo from 'assets/billing/amex.svg'
+import discoverLogo from 'assets/billing/discover.svg'
+import mastercardLogo from 'assets/billing/mastercard.svg'
+import visaLogo from 'assets/billing/visa.svg'
 import { SubscriptionDetailSchema } from 'services/account'
-import { CardBrand, CardBrands } from 'services/account/types'
-import {  
+import {
   formatTimestampToCalendarDate,
   lastTwoDigits,
 } from 'shared/utils/billing'
+
+const cardBrands = {
+  amex: {
+    logo: amexLogo,
+    name: 'American Express',
+  },
+  discover: {
+    logo: discoverLogo,
+    name: 'Discover',
+  },
+  mastercard: {
+    logo: mastercardLogo,
+    name: 'MasterCard',
+  },
+  visa: {
+    logo: visaLogo,
+    name: 'Visa',
+  },
+  fallback: {
+    logo: visaLogo,
+    name: 'Credit card',
+  },
+}
+
+type CardBrand = keyof typeof cardBrands
 
 interface CardInformationProps {
   subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
@@ -17,7 +45,7 @@ interface CardInformationProps {
   }
 }
 function CardInformation({ subscriptionDetail, card }: CardInformationProps) {
-  const typeCard = CardBrands[card?.brand as CardBrand] ?? CardBrands.fallback
+  const typeCard = cardBrands[card?.brand as CardBrand] ?? cardBrands.fallback
   let nextBilling = null
 
   if (!subscriptionDetail?.cancelAtPeriodEnd) {
