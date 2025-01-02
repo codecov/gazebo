@@ -29,7 +29,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/account/gh/codecov/orgUploadToken']}>
     <QueryClientProvider client={queryClient}>
       <Route path="/account/:provider/:owner/orgUploadToken">
@@ -46,26 +46,31 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
+  vi.clearAllMocks()
 })
 
 afterAll(() => {
   server.close()
 })
 
+type SetupOptions = {
+  orgUploadToken?: string | null
+  error?: string | null
+  isAdmin?: boolean
+}
+
 describe('OrgUploadToken', () => {
-  function setup(
-    { orgUploadToken = null, error = null, isAdmin = true } = {
-      orgUploadToken: null,
-      error: null,
-      isAdmin: true,
-    }
-  ) {
+  function setup({
+    orgUploadToken = null,
+    error = null,
+    isAdmin = true,
+  }: SetupOptions = {}) {
     const user = userEvent.setup()
     const mutate = vi.fn()
     const addNotification = vi.fn()
-    useFlags.mockReturnValue({ tokenlessSection: true })
 
-    useAddNotification.mockReturnValue(addNotification)
+    vi.mocked(useFlags).mockReturnValue({ tokenlessSection: true })
+    vi.mocked(useAddNotification).mockReturnValue(addNotification)
 
     server.use(
       graphql.query('DetailOwner', () => {
@@ -87,15 +92,17 @@ describe('OrgUploadToken', () => {
           },
         })
       }),
-      graphql.mutation('regenerateOrgUploadToken', () => {
-        mutate('regenerateOrgUploadToken')
+      graphql.mutation('RegenerateOrgUploadToken', () => {
+        mutate('RegenerateOrgUploadToken')
         return HttpResponse.json({
           data: {
             regenerateOrgUploadToken: {
               orgUploadToken,
-              error: {
-                __typename: error,
-              },
+              ...(error && {
+                error: {
+                  __typename: error,
+                },
+              }),
             },
           },
         })
@@ -163,7 +170,7 @@ describe('OrgUploadToken', () => {
 
   describe('when user clicks on Generate button', () => {
     it('calls the mutation', async () => {
-      const { mutate, user } = setup()
+      const { mutate, user } = setup({ orgUploadToken: '' })
 
       render(<OrgUploadToken />, { wrapper })
 
@@ -177,7 +184,7 @@ describe('OrgUploadToken', () => {
       it('calls the mutation', async () => {
         const { user, mutate } = setup({
           orgUploadToken: '',
-          error: 'Authentication Error',
+          error: 'UnauthenticatedError',
           isAdmin: true,
         })
         render(<OrgUploadToken />, { wrapper })
@@ -193,7 +200,7 @@ describe('OrgUploadToken', () => {
       it('adds an error notification', async () => {
         const { addNotification, user } = setup({
           orgUploadToken: '',
-          error: 'Authentication Error',
+          error: 'UnauthenticatedError',
           isAdmin: true,
         })
         const { rerender } = render(<OrgUploadToken />, { wrapper })
@@ -203,12 +210,12 @@ describe('OrgUploadToken', () => {
 
         await user.click(genBtn)
 
-        rerender()
+        rerender(<OrgUploadToken />)
 
         await waitFor(() =>
           expect(addNotification).toHaveBeenCalledWith({
             type: 'error',
-            text: 'Authentication Error',
+            text: 'UnauthenticatedError',
           })
         )
       })
@@ -299,7 +306,7 @@ describe('OrgUploadToken', () => {
 
       const show = await screen.findAllByText('Show')
       expect(show[1]).toBeInTheDocument()
-      await user.click(show[1])
+      await user.click(show[1]!)
 
       const token1 = await screen.findByText('CODECOV_TOKEN=token')
       expect(token1).toBeInTheDocument()
