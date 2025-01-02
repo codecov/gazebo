@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -15,9 +14,11 @@ const TokenFormatEnum = Object.freeze({
   SECOND_FORMAT: 'CODECOV_TOKEN=',
 })
 
-const UploadToken = ({ token, format }) => {
+const UploadToken = ({ token, format }: { token: string; format: string }) => {
   const [hideClipboard, setHideClipboard] = useState(true)
-  const encodedToken = hideClipboard && format + token.replace(/[^w-]|/g, 'x')
+  const encodedToken = hideClipboard
+    ? format + token.replace(/[^w-]|/g, 'x')
+    : undefined
 
   return (
     <div className="flex items-center gap-2">
@@ -28,7 +29,7 @@ const UploadToken = ({ token, format }) => {
         data-testid="hide-token"
       >
         <Icon
-          name={hideClipboard ? 'eye' : 'eye-off'}
+          name={hideClipboard ? 'eye' : 'eyeOff'}
           size="sm"
           variant="solid"
         />
@@ -40,14 +41,18 @@ const UploadToken = ({ token, format }) => {
   )
 }
 
-UploadToken.propTypes = {
-  token: PropTypes.string.isRequired,
-  format: PropTypes.string.isRequired,
+interface URLParams {
+  provider: string
+  owner: string
 }
 
-function RegenerateOrgUploadToken({ orgUploadToken }) {
-  const { owner } = useParams()
-  const { regenerateToken, isLoading } = useGenerateOrgUploadToken()
+function RegenerateOrgUploadToken({
+  orgUploadToken,
+}: {
+  orgUploadToken: string
+}) {
+  const { owner } = useParams<URLParams>()
+  const { regenerateTokenAsync, isLoading } = useGenerateOrgUploadToken()
   const [showModal, setShowModal] = useState(false)
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
 
@@ -66,7 +71,7 @@ function RegenerateOrgUploadToken({ orgUploadToken }) {
         />
         {!isAdmin && (
           <div className="flex gap-1">
-            <Icon name="information-circle" size="sm" />
+            <Icon name="informationCircle" size="sm" />
             Only organization admins can regenerate this token.
           </div>
         )}
@@ -82,17 +87,13 @@ function RegenerateOrgUploadToken({ orgUploadToken }) {
         {showModal && (
           <RegenerateTokenModal
             closeModal={() => setShowModal(false)}
-            regenerateToken={regenerateToken}
+            regenerateToken={regenerateTokenAsync}
             isLoading={isLoading}
           />
         )}
       </div>
     </div>
   )
-}
-
-RegenerateOrgUploadToken.propTypes = {
-  orgUploadToken: PropTypes.string.isRequired,
 }
 
 export default RegenerateOrgUploadToken
