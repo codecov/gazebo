@@ -150,22 +150,20 @@ export function useUpdateProfile({ provider }: { provider: string }) {
             email,
           },
         },
+      }).then((res) => {
+        const parsedData = UpdateProfileResponseSchema.safeParse(res.data)
+        if (!parsedData.success) {
+          return rejectNetworkError({
+            status: 404,
+            data: {},
+            dev: 'useUpdateProfile - 404 failed to parse',
+          } satisfies NetworkErrorObject)
+        }
+        return parsedData.data.updateProfile?.me
       })
     },
-    onSuccess: ({ data }) => {
-      const parsedData = UpdateProfileResponseSchema.safeParse(data)
-      if (!parsedData.success) {
-        return rejectNetworkError({
-          status: 404,
-          data: {},
-          dev: 'useUpdateProfile - 404 failed to parse',
-        } satisfies NetworkErrorObject)
-      }
-
-      queryClient.setQueryData(
-        ['currentUser', provider],
-        () => parsedData.data.updateProfile?.me
-      )
+    onSuccess: (res) => {
+      queryClient.setQueryData(['currentUser', provider], () => res)
 
       if (config.IS_SELF_HOSTED) {
         queryClient.invalidateQueries(['SelfHostedCurrentUser'])

@@ -50,9 +50,13 @@ describe('useUpdateProfile', () => {
     server.use(
       graphql.mutation('UpdateProfile', (info) => {
         const newUser = {
-          ...user,
-          name: info.variables.input.name,
           email: info.variables.input.email,
+          onboardingCompleted: user.onboardingCompleted,
+          user: {
+            name: info.variables.input.name,
+            username: user.username,
+            avatarUrl: user.avatarUrl,
+          },
         }
 
         return HttpResponse.json({
@@ -88,16 +92,12 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            data: {
-              updateProfile: {
-                me: {
-                  avatarUrl: 'http://127.0.0.1/avatar-url',
-                  email: 'newemail@test.com',
-                  name: 'new name',
-                  onboardingCompleted: false,
-                  username: 'TerrySmithDC',
-                },
-              },
+            email: 'newemail@test.com',
+            onboardingCompleted: false,
+            user: {
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+              name: 'new name',
+              username: 'TerrySmithDC',
             },
           })
         )
@@ -114,16 +114,12 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            data: {
-              updateProfile: {
-                me: {
-                  avatarUrl: 'http://127.0.0.1/avatar-url',
-                  email: 'newemail@test.com',
-                  name: 'new name',
-                  onboardingCompleted: false,
-                  username: 'TerrySmithDC',
-                },
-              },
+            email: 'newemail@test.com',
+            onboardingCompleted: false,
+            user: {
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+              name: 'new name',
+              username: 'TerrySmithDC',
             },
           })
         )
@@ -165,16 +161,12 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            data: {
-              updateProfile: {
-                me: {
-                  avatarUrl: 'http://127.0.0.1/avatar-url',
-                  email: 'newemail@test.com',
-                  name: 'new name',
-                  onboardingCompleted: false,
-                  username: 'TerrySmithDC',
-                },
-              },
+            email: 'newemail@test.com',
+            onboardingCompleted: false,
+            user: {
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+              name: 'new name',
+              username: 'TerrySmithDC',
             },
           })
         )
