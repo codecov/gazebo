@@ -1,11 +1,11 @@
 import { z } from 'zod'
 
 import { SubscriptionDetailSchema } from 'services/account'
+import Button from 'ui/Button'
 import { ExpandableSection } from 'ui/ExpandableSection'
 
 import AddressCard from '../Address/AddressCard'
 import PaymentCard from '../PaymentCard'
-import Button from 'ui/Button'
 
 function PaymentMethod({
   heading,
@@ -25,12 +25,8 @@ function PaymentMethod({
   owner: string
 }) {
   const isAdmin = true // TODO
-
   const isCreditCard = subscriptionDetail?.defaultPaymentMethod?.card // TODO
 
-  console.log(subscriptionDetail)
-
-  console.log(isEditMode)
   return (
     <div>
       <ExpandableSection className="m-0 border-0" defaultOpen={isPrimary}>
@@ -47,14 +43,14 @@ function PaymentMethod({
             ) : null}
             <div className="flex">
               {/* Payment method summary */}
-                <PaymentCard
-                  className="w-2/5 flex-1"
-                  isEditMode={isEditMode}
-                  setEditMode={setEditMode}
-                  subscriptionDetail={subscriptionDetail}
-                  provider={provider}
-                  owner={owner}
-                />
+              <PaymentCard
+                className="w-2/5 flex-1"
+                isEditMode={isEditMode}
+                setEditMode={setEditMode}
+                subscriptionDetail={subscriptionDetail}
+                provider={provider}
+                owner={owner}
+              />
               {/* Cardholder name */}
               <div className="mx-4 w-1/5 border-x border-ds-gray-tertiary px-4">
                 <h4 className="mb-2 font-semibold">
@@ -63,20 +59,20 @@ function PaymentMethod({
                 <p>N/A</p>
               </div>
               {/* Address */}
-                <AddressCard
-                  className="flex-1"
-                  isEditMode={isEditMode}
-                  setEditMode={setEditMode}
-                  subscriptionDetail={subscriptionDetail}
-                  provider={provider}
-                  owner={owner}
-                />
+              <AddressCard
+                className="flex-1"
+                isEditMode={isEditMode}
+                setEditMode={setEditMode}
+                subscriptionDetail={subscriptionDetail}
+                provider={provider}
+                owner={owner}
+              />
             </div>
             {!isPrimary ? (
               <Button
                 hook="button"
                 disabled={!isAdmin}
-                onClick={() => console.log('TODO - implement me')}
+                onClick={() => setEditMode(true)}
                 className="mt-4"
               >
                 Set as primary

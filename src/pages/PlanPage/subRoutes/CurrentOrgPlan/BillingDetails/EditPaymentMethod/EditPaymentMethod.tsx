@@ -1,28 +1,29 @@
-import React, { useState } from 'react'
-import AddressForm from '../Address/AddressForm'
 import {
   Elements,
-  CardElement,
-  IbanElement,
-  useStripe,
+  PaymentElement,
   useElements,
+  useStripe,
 } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import CreditCardForm from '../PaymentCard/CreditCardForm'
-import { RadioTileGroup } from 'ui/RadioTileGroup'
-import Icon from 'ui/Icon'
+import React, { useState } from 'react'
 
-// Load your Stripe public key
-const stripePromise = loadStripe('your-publishable-key-here')
+import Button from 'ui/Button'
+
+import AddressForm from '../Address/AddressForm'
+
+// TODO - fetch from API
+const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY || ''
+const MANUALLY_FETCHED_CLIENT_SECRET = process.env.STRIPE_CLIENT_SECRET || ''
+
+const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY)
 
 interface PaymentFormProps {
   clientSecret: string
 }
 
-const PaymentForm: React.FC<PaymentFormProps> = ({ clientSecret }) => {
+const PaymentForm: React.FC<PaymentFormProps> = () => {
   const stripe = useStripe()
   const elements = useElements()
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'bank'>('card')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -37,21 +38,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ clientSecret }) => {
       return
     }
 
-    const paymentElement = elements.getElement(
-      paymentMethod === 'card' ? CardElement : IbanElement
-    )
-
-    if (!paymentElement) {
-      setErrorMessage('Payment element is missing.')
-      setIsSubmitting(false)
-      return
-    }
-
-    // Confirm payment based on selected method
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: 'https://your-website.com/order-complete', // Redirect URL
+        // eslint-disable-next-line camelcase
+        return_url: 'https://codecov.io',
       },
     })
 
@@ -64,73 +55,50 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ clientSecret }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-lg font-bold">Choose Payment Method</h2>
-
-      <RadioTileGroup
-        value={paymentMethod}
-        onValueChange={(value: 'card' | 'bank') => setPaymentMethod(value)}
-        className="flex-row"
-      >
-        <RadioTileGroup.Item value="card" data-testid="card-radio">
-          <RadioTileGroup.Label>
-            <div className="flex items-center gap-2">
-              <Icon name="checkCircle"></Icon>
-              Card
-            </div>
-          </RadioTileGroup.Label>
-        </RadioTileGroup.Item>
-        <RadioTileGroup.Item value="bank" data-testid="bank-radio">
-          <RadioTileGroup.Label>
-            <div className="flex items-center gap-2">
-              <Icon name="checkCircle"></Icon>
-              Bank Account
-            </div>
-          </RadioTileGroup.Label>
-        </RadioTileGroup.Item>
-      </RadioTileGroup>
-
-      {/* Payment Element */}
-      {paymentMethod === 'card' && (
-        <div>
-          <h3 className="font-semibold">Card Details</h3>
-          <CreditCardForm
-            closeForm={function (): void {
-              throw new Error('Function not implemented.')
-            }}
-            provider={''}
-            owner={''}
-          />
-        </div>
-      )}
-
-      {paymentMethod === 'bank' && (
-        <div>
-          <h3 className="font-semibold">Bank Account Details</h3>
-          <IbanElement
-            className="border p-2 rounded"
-            options={{
-              supportedCountries: ['SEPA'], // Specify the supported countries
-            }}
-          />
-        </div>
-      )}
+    <div>
+      <PaymentElement
+        options={{
+          layout: 'tabs',
+          defaultValues: {
+            billingDetails: {
+              name: 'John Doe',
+            },
+          },
+        }}
+      />
+      <div className="mb-8 mt-4 flex gap-1">
+        <Button
+          hook="submit-address-update"
+          type="submit"
+          variant="primary"
+          disabled={isSubmitting} // TODO - handle
+          onClick={handleSubmit}
+          to={undefined}
+        >
+          Save
+        </Button>
+        <Button
+          type="button"
+          hook="cancel-address-update"
+          variant="plain"
+          // disabled={isLoading}
+          onClick={() => console.log('TODO - implement me')} // TODO - implement me
+          to={undefined}
+        >
+          Cancel
+        </Button>
+      </div>
 
       {errorMessage && <div className="text-red-500">{errorMessage}</div>}
-    </form>
+    </div>
   )
 }
 
-// Wrapper Component to provide Stripe Elements
 const PaymentPage: React.FC<{ clientSecret: string }> = ({ clientSecret }) => {
-  // if (!clientSecret) {
-  //   return <div>Loading...</div>
-  // }
-
   const options = {
     clientSecret,
     appearance: {
-      theme: 'stripe',
+      theme: 'stripe' as const,
     },
   }
 
@@ -145,20 +113,48 @@ interface EditablePaymentMethodProps {
   clientSecret: string
 }
 
-const EditPaymentMethod: React.FC<EditablePaymentMethodProps> = ({
-  clientSecret,
-}) => {
+const EditPaymentMethod: React.FC<EditablePaymentMethodProps> = () => {
+  const clientSecret = MANUALLY_FETCHED_CLIENT_SECRET // TODO - fetch from API
+
+  const [activeTab, setActiveTab] = useState<'primary' | 'secondary'>('primary')
+
   return (
     <div className="flex flex-col gap-4 p-4">
       <h3 className="font-semibold">Edit payment method</h3>
-      <PaymentPage clientSecret={clientSecret} />
-      <AddressForm
-        closeForm={function (): void {
-          throw new Error('TODO')
-        }}
-        provider={''}
-        owner={''}
-      />
+      <div>
+        {/* Tabs for Primary and Secondary Payment Methods */}
+        <div className="ml-2 flex border-b border-ds-gray-tertiary">
+          {['primary', 'secondary'].map((tab) => (
+            <button
+              key={tab}
+              className={`py-2 ${tab === 'primary' ? 'mr-4' : ''} ${
+                activeTab === tab
+                  ? 'border-b-2 border-ds-gray-octonary font-semibold text-ds-gray-octonary'
+                  : 'text-ds-gray-quinary hover:border-b-2 hover:border-ds-gray-quinary'
+              }`}
+              onClick={() => setActiveTab(tab as 'primary' | 'secondary')}
+            >
+              {tab === 'primary' ? 'Primary' : 'Secondary'} Payment Method
+            </button>
+          ))}
+        </div>
+
+        {/* Payment Details for the selected tab */}
+        <div className="m-4">
+          {activeTab === 'primary' && (
+            <div>
+              <PaymentPage clientSecret={clientSecret} />
+              <AddressForm closeForm={() => {}} provider={''} owner={''} />
+            </div>
+          )}
+          {activeTab === 'secondary' && (
+            <div>
+              <PaymentPage clientSecret={clientSecret} />
+              <AddressForm closeForm={() => {}} provider={''} owner={''} />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
