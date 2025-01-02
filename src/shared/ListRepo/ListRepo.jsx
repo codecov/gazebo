@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Suspense, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { ONBOARDING_SOURCE } from 'pages/DefaultOrgSelector'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos/orderingOptions'
 import { TierNames, useTier } from 'services/tier'
@@ -54,7 +55,7 @@ function ListRepo({ canRefetch }) {
     </div>
   )
 
-  const cameFromOnboarding = params['source'] === 'onboarding'
+  const cameFromOnboarding = params['source'] === ONBOARDING_SOURCE
   const isMyOwnerPage = currentUser?.user?.username === owner
   const showDemoAlert = cameFromOnboarding && isMyOwnerPage
 
