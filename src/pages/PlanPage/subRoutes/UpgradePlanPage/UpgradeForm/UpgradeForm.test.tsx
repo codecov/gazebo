@@ -359,6 +359,7 @@ describe('UpgradeForm', () => {
                 isTeamPlan:
                   planValue === Plans.USERS_TEAMM ||
                   planValue === Plans.USERS_TEAMY,
+                isTrialPlan: planValue === Plans.USERS_TRIAL,
                 value: planValue,
                 planUserCount,
               },

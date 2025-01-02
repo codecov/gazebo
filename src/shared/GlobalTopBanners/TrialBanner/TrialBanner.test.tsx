@@ -34,6 +34,7 @@ const proPlanMonth = {
   isFreePlan: false,
   isProPlan: true,
   isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const trialPlan = {
@@ -55,6 +56,7 @@ const trialPlan = {
   isFreePlan: false,
   isProPlan: false,
   isTeamPlan: false,
+  isTrialPlan: true,
 }
 
 const basicPlan = {
@@ -75,6 +77,7 @@ const basicPlan = {
   isFreePlan: true,
   isProPlan: false,
   isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const queryClient = new QueryClient()
@@ -165,6 +168,7 @@ describe('TrialBanner', () => {
                 isFreePlan: plan.isFreePlan,
                 isProPlan: plan.isProPlan,
                 isTeamPlan: plan.isTeamPlan,
+                isTrialPlan: plan.isTrialPlan,
               },
             },
           },

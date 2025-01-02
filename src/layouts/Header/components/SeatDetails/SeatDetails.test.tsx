@@ -1,7 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import SeatDetails from './SeatDetails'
@@ -14,8 +19,15 @@ const mockData = {
 }
 
 const mockUndefinedSeats = {
-  config: {},
+  config: null,
 }
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: ({
   initialEntries,
@@ -24,18 +36,16 @@ const wrapper: ({
 }) => React.FC<React.PropsWithChildren> =
   ({ initialEntries = '/gh' }) =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider" exact>
-          {children}
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider" exact>
+            <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
 
 const server = setupServer()
 beforeAll(() => {
@@ -43,8 +53,9 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  server.resetHandlers()
   queryClient.clear()
+  queryClientV5.clear()
+  server.resetHandlers()
 })
 
 afterAll(() => {
@@ -62,12 +73,10 @@ describe('SeatDetails', () => {
 
   describe('renders component', () => {
     describe('values are defined', () => {
-      beforeEach(() => {
-        setup({})
-      })
-
       it('displays the number of active seats', async () => {
+        setup({})
         render(<SeatDetails />, { wrapper: wrapper({}) })
+
         const number = await screen.findByText('5')
         expect(number).toBeInTheDocument()
 
@@ -76,6 +85,7 @@ describe('SeatDetails', () => {
       })
 
       it('displays the number of total seats', async () => {
+        setup({})
         render(<SeatDetails />, { wrapper: wrapper({}) })
 
         const number = await screen.findByText('10')

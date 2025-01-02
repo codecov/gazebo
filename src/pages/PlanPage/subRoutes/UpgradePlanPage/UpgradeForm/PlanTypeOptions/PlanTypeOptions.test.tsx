@@ -191,6 +191,7 @@ describe('PlanTypeOptions', () => {
           isFreePlan: false,
           isProPlan: false,
           isTeamPlan: false,
+          isTrialPlan: false,
         }
         if (planValue === Plans.USERS_BASIC) {
           return HttpResponse.json({
@@ -202,7 +203,7 @@ describe('PlanTypeOptions', () => {
           })
         } else if (planValue === Plans.USERS_TRIAL) {
           return HttpResponse.json({
-            data: { plan: { ...trialPlan, ...planChunk } },
+            data: { plan: { ...trialPlan, ...planChunk, isTrialPlan: true } },
           })
         } else if (planValue === Plans.USERS_TEAMY) {
           return HttpResponse.json({

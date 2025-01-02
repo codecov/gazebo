@@ -15,7 +15,6 @@ import {
   findSentryPlans,
   findTeamPlans,
   isSentryPlan,
-  isTrialPlan,
   PlanName,
   Plans,
 } from 'shared/utils/billing'
@@ -154,7 +153,7 @@ export function shouldRenderCancelLink({
   }
 
   // if user is on trial can't cancel plan
-  if (isTrialPlan(plan?.value) && trialStatus === TrialStatuses.ONGOING) {
+  if (plan?.isTrialPlan && trialStatus === TrialStatuses.ONGOING) {
     return false
   }
 
