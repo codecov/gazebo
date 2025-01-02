@@ -107,7 +107,7 @@ const query = `query ReposForOwner(
   }
 }`
 
-interface UseReposArgs {
+interface ReposQueryArgs {
   provider: string
   owner: string
   activated?: boolean
@@ -130,7 +130,7 @@ function ReposQueryOpts({
   first = 20,
   repoNames,
   isPublic = null, // by default, get both public and private repos
-}: UseReposArgs) {
+}: ReposQueryArgs) {
   const variables = {
     filters: { activated, term, repoNames, isPublic: Boolean(isPublic) },
     ordering: sortItem?.ordering,
