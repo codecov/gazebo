@@ -1,7 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 
 export const SelfHostedSeatsAndLicenseSchema = z
   .object({
@@ -19,32 +20,24 @@ export const SelfHostedSeatsAndLicenseSchema = z
   })
   .nullable()
 
-export interface UseSelfHostedSeatsAndLicenseArgs {
-  provider: string
-  opts?: {
-    enabled: boolean
-  }
-}
-
-const query = `
-  query SelfHostedSeatsAndLicense {
-    config {
-      seatsUsed
-      seatsLimit
-      selfHostedLicense {
-        expirationDate
-      }
+const query = `query SelfHostedSeatsAndLicense {
+  config {
+    seatsUsed
+    seatsLimit
+    selfHostedLicense {
+      expirationDate
     }
   }
-`
+}`
 
-export const useSelfHostedSeatsAndLicense = ({
+export interface SelfHostedSeatsAndLicenseQueryArgs {
+  provider: string
+}
+
+export const SelfHostedSeatsAndLicenseQueryOpts = ({
   provider,
-  opts = {
-    enabled: true,
-  },
-}: UseSelfHostedSeatsAndLicenseArgs) =>
-  useQuery({
+}: SelfHostedSeatsAndLicenseQueryArgs) =>
+  queryOptionsV5({
     queryKey: ['SelfHostedSeatsAndLicense', provider, query],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -55,13 +48,14 @@ export const useSelfHostedSeatsAndLicense = ({
         const parsedRes = SelfHostedSeatsAndLicenseSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
-            data: null,
+            data: {},
+            dev: `SelfHostedSeatsAndLicenseQueryOpts - 404 Failed to parse`,
+            error: parsedRes.error,
           })
         }
 
         return parsedRes.data?.config ?? null
       }),
-    ...(!!opts && opts),
   })

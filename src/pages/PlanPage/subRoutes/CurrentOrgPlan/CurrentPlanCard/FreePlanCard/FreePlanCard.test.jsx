@@ -127,6 +127,9 @@ const freePlan = {
   monthlyUploadLimit: null,
   isFreePlan: true,
   isEnterprisePlan: false,
+  isProPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const scheduledPhase = {
@@ -150,6 +153,8 @@ const mockPlanData = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isProPlan: false,
+  isTrialPlan: false,
 }
 
 const mockPreTrialPlanInfo = {
@@ -224,6 +229,10 @@ describe('FreePlanCard', () => {
                 value: planValue,
                 planUserCount,
                 isFreePlan: planValue === Plans.USERS_BASIC,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
+                isTrialPlan: planValue === Plans.USERS_TRIAL,
               },
               pretrialPlan: mockPreTrialPlanInfo,
             },
@@ -347,7 +356,7 @@ describe('FreePlanCard', () => {
     describe('the user is currently on a trial', () => {
       it('renders downgrade text', async () => {
         setup({
-          planValue: 'users-trial',
+          planValue: Plans.USERS_TRIAL,
           trialStatus: TrialStatuses.ONGOING,
           plans: allPlans,
         })
@@ -364,7 +373,7 @@ describe('FreePlanCard', () => {
 
       it('renders the pretrial benefits', async () => {
         setup({
-          planValue: 'users-trial',
+          planValue: Plans.USERS_TRIAL,
           trialStatus: TrialStatuses.ONGOING,
           plans: allPlans,
         })
@@ -382,7 +391,7 @@ describe('FreePlanCard', () => {
 
       it('renders the team plan component if less than 10 users', async () => {
         setup({
-          planValue: 'users-trial',
+          planValue: Plans.USERS_TRIAL,
           trialStatus: TrialStatuses.ONGOING,
           plans: allPlans,
         })
@@ -397,7 +406,7 @@ describe('FreePlanCard', () => {
 
       it('does not render the team plan component if more than 10 users', () => {
         setup({
-          planValue: 'users-trial',
+          planValue: Plans.USERS_TRIAL,
           trialStatus: TrialStatuses.ONGOING,
           plans: allPlans,
         })

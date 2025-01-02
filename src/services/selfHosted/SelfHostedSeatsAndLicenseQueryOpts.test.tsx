@@ -1,10 +1,14 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { type MockInstance } from 'vitest'
 
-import { useSelfHostedSeatsAndLicense } from './useSelfHostedSeatsAndLicense'
+import { SelfHostedSeatsAndLicenseQueryOpts } from './SelfHostedSeatsAndLicenseQueryOpts'
 
 const mockSelfHostedLicense = {
   config: {
@@ -16,12 +20,14 @@ const mockSelfHostedLicense = {
 
 const mockUnsuccessfulParseError = {}
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
@@ -30,7 +36,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -61,7 +67,10 @@ describe('useSelfHostedSeatsAndLicense', () => {
         it('returns the license details', async () => {
           setup({})
           const { result } = renderHook(
-            () => useSelfHostedSeatsAndLicense({ provider: 'gh' }),
+            () =>
+              useQueryV5(
+                SelfHostedSeatsAndLicenseQueryOpts({ provider: 'gh' })
+              ),
             { wrapper }
           )
 
@@ -91,7 +100,8 @@ describe('useSelfHostedSeatsAndLicense', () => {
       it('throws a 404', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
-          () => useSelfHostedSeatsAndLicense({ provider: 'gh' }),
+          () =>
+            useQueryV5(SelfHostedSeatsAndLicenseQueryOpts({ provider: 'gh' })),
           { wrapper }
         )
 

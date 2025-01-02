@@ -348,7 +348,7 @@ describe('Summary', () => {
     describe('there is a next page', () => {
       it('calls fetchNextPage', async () => {
         const mockSetNewPath = vi.fn()
-        const { fetchNextPage, user } = setup({
+        const { fetchNextPage } = setup({
           isIntersecting: true,
           hasNextPage: true,
           coverageRedirectData: {
@@ -360,11 +360,6 @@ describe('Summary', () => {
           },
         })
         render(<SummaryTeamPlan />, { wrapper: wrapper() })
-
-        const select = await screen.findByRole('button', {
-          name: 'select branch',
-        })
-        await user.click(select)
 
         await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
       })

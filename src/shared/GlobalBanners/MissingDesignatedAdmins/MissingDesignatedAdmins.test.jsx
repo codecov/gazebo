@@ -1,7 +1,11 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
@@ -14,9 +18,21 @@ const mockApiSelfHostedSetUpCorrectly = { config: { hasAdmins: true } }
 const mockApiSelfHostedSetUpIncorrectly = { config: { hasAdmins: false } }
 const mockApiCloud = { config: undefined }
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
+
+const wrapper =
+  (initialEntries = ['/gh/test-org/test-repo/pull/12']) =>
+  ({ children }) => (
+    <QueryClientProviderV5 client={queryClientV5}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/pull/:pullId">
+          <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProviderV5>
+  )
 
 const server = setupServer()
 beforeAll(() => {
@@ -24,23 +40,13 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
 afterAll(() => {
   server.close()
 })
-
-const wrapper =
-  (initialEntries = ['/gh/test-org/test-repo/pull/12']) =>
-  ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
 
 describe('MissingDesignatedAdmins', () => {
   function setup(overrideData) {

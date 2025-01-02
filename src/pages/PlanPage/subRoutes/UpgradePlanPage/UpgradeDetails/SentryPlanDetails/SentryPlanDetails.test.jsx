@@ -127,6 +127,8 @@ const mockPlanData = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isProPlan: false,
+  isTrialPlan: false,
 }
 
 const server = setupServer()
@@ -180,6 +182,7 @@ describe('SentryPlanDetails', () => {
               plan: {
                 ...mockPlanData,
                 isFreePlan: !isProPlan,
+                isTeamPlan: false,
                 trialStatus: isOngoingTrial
                   ? TrialStatuses.ONGOING
                   : TrialStatuses.CANNOT_TRIAL,

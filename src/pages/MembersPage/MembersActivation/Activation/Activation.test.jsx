@@ -28,6 +28,9 @@ const mockedAccountDetails = {
 const mockPlanData = {
   isEnterprisePlan: false,
   isFreePlan: true,
+  isProPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
   baseUnitPrice: 10,
   benefits: [],
   billingRate: BillingRate.MONTHLY,
@@ -89,6 +92,7 @@ describe('Activation', () => {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
+                isTrialPlan: planValue === Plans.USERS_TRIAL,
                 trialStatus,
                 value: planValue,
               },
@@ -146,7 +150,7 @@ describe('Activation', () => {
 
     describe('user is currently on a trial', () => {
       it('displays title', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, Plans.USERS_TRIAL)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -157,7 +161,7 @@ describe('Activation', () => {
       })
 
       it('displays number of activated users', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, Plans.USERS_TRIAL)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -169,7 +173,7 @@ describe('Activation', () => {
       })
 
       it('displays on trial notice', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, Plans.USERS_TRIAL)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -180,7 +184,7 @@ describe('Activation', () => {
       })
 
       it('displays upgrade plan link', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, Plans.USERS_TRIAL)
 
         render(<Activation />, { wrapper: wrapper() })
 

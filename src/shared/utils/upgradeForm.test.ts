@@ -155,6 +155,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           billingRate: BillingRate.MONTHLY,
           value: Plans.USERS_TEAMM,
           planUserCount: 1,
+          isTeamPlan: true,
         } as Plan,
       })
 
@@ -173,6 +174,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           billingRate: BillingRate.MONTHLY,
           value: Plans.USERS_SENTRYY,
           planUserCount: 1,
+          isTeamPlan: false,
         } as Plan,
       })
 
@@ -181,6 +183,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           billingRate: BillingRate.MONTHLY,
           value: Plans.USERS_SENTRYY,
           planUserCount: 1,
+          isTeamPlan: false,
         },
         seats: 5,
       })
@@ -537,7 +540,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: { value: Plans.USERS_TRIAL, isFreePlan: false } as Plan,
+        plan: { isFreePlan: false, isTrialPlan: true } as Plan,
         trialStatus: TrialStatuses.ONGOING,
       })
 

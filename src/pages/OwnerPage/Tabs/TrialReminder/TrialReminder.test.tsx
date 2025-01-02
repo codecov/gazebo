@@ -40,6 +40,8 @@ const mockResponse = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isProPlan: false,
+  isTrialPlan: false,
 }
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -103,6 +105,9 @@ describe('TrialReminder', () => {
                 trialEndDate,
                 value: planValue,
                 isFreePlan: planValue === Plans.USERS_BASIC,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
               },
             },
           },

@@ -90,6 +90,7 @@ const mockPlanBasic = {
   hasSeatsLeft: true,
   planUserCount: 1,
   isFreePlan: true,
+  isTeamPlan: false,
 }
 
 const mockPlanProMonthly = {
@@ -102,6 +103,7 @@ const mockPlanProMonthly = {
   hasSeatsLeft: true,
   planUserCount: 4,
   isFreePlan: false,
+  isTeamPlan: false,
 }
 
 const mockPlanTeamMonthly = {
@@ -114,6 +116,7 @@ const mockPlanTeamMonthly = {
   hasSeatsLeft: true,
   planUserCount: 3,
   isFreePlan: false,
+  isTeamPlan: true,
 }
 
 interface SetupArgs {
@@ -135,6 +138,8 @@ describe('UpdateButton', () => {
           trialTotalDays: 0,
           pretrialUsersCount: 0,
           isEnterprisePlan: false,
+          isProPlan: false,
+          isTrialPlan: false,
         }
         if (planValue.value === Plans.USERS_BASIC) {
           return HttpResponse.json({

@@ -1,5 +1,3 @@
-import { renderHook } from '@testing-library/react'
-
 import { IndividualPlan } from 'services/account'
 
 import {
@@ -11,16 +9,10 @@ import {
   formatNumberToUSD,
   formatTimestampToCalendarDate,
   getNextBillingDate,
-  isBasicPlan,
-  isCodecovProPlan,
-  isProPlan,
   isSentryPlan,
-  isTeamPlan,
-  isTrialPlan,
   lastTwoDigits,
   Plans,
   shouldDisplayTeamCard,
-  useProPlans,
 } from './billing'
 
 const mocks = vi.hoisted(() => ({
@@ -196,48 +188,6 @@ describe('shouldDisplayTeamCard', () => {
       },
     ]
     expect(shouldDisplayTeamCard({ plans })).toBe(false)
-  })
-})
-
-describe('useProPlans', () => {
-  function setup(flagValue: boolean) {
-    mocks.useFlags.mockReturnValue({
-      enterpriseCloudPlanSupport: flagValue,
-    })
-  }
-
-  it('does not contain enterprise plans', () => {
-    setup(false)
-    const { result } = renderHook(() => useProPlans({ plans: getPlans() }))
-
-    expect(result.current).toEqual({
-      proPlanMonth: {
-        marketingName: 'Pro Team',
-        value: Plans.USERS_PR_INAPPM,
-        billingRate: BillingRate.MONTHLY,
-        baseUnitPrice: 12,
-        monthlyUploadLimit: null,
-        benefits: [
-          'Configureable # of users',
-          'Unlimited public repositories',
-          'Unlimited private repositories',
-          'Priorty Support',
-        ],
-      },
-      proPlanYear: {
-        marketingName: 'Pro Team',
-        value: Plans.USERS_PR_INAPPY,
-        billingRate: BillingRate.ANNUALLY,
-        baseUnitPrice: 10,
-        monthlyUploadLimit: null,
-        benefits: [
-          'Configureable # of users',
-          'Unlimited public repositories',
-          'Unlimited private repositories',
-          'Priorty Support',
-        ],
-      },
-    })
   })
 })
 
@@ -491,76 +441,5 @@ describe('canApplySentryUpgrade', () => {
     })
 
     expect(result).toBeFalsy()
-  })
-})
-
-describe('isBasicPlan', () => {
-  it('returns true when plan is basic', () => {
-    expect(isBasicPlan(Plans.USERS_BASIC)).toBeTruthy()
-  })
-
-  it('returns false when plan is not basic', () => {
-    expect(isBasicPlan(Plans.USERS_FREE)).toBeFalsy()
-    expect(isBasicPlan(Plans.USERS_INAPP)).toBeFalsy()
-    expect(isBasicPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
-    expect(isBasicPlan(Plans.USERS_SENTRYM)).toBeFalsy()
-  })
-})
-
-describe('isTeamPlan', () => {
-  it('returns true when plan is team monthly or yearly', () => {
-    expect(isTeamPlan(Plans.USERS_TEAMM)).toBeTruthy()
-    expect(isTeamPlan(Plans.USERS_TEAMY)).toBeTruthy()
-  })
-
-  it('returns false when plan is not team monthly or yearly', () => {
-    expect(isTeamPlan(Plans.USERS_FREE)).toBeFalsy()
-    expect(isTeamPlan(Plans.USERS_BASIC)).toBeFalsy()
-    expect(isTeamPlan(Plans.USERS_INAPP)).toBeFalsy()
-    expect(isTeamPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
-    expect(isTeamPlan(Plans.USERS_SENTRYM)).toBeFalsy()
-  })
-})
-
-describe('isTrialPlan', () => {
-  it('returns true when plan is trial', () => {
-    expect(isTrialPlan(Plans.USERS_TRIAL)).toBeTruthy()
-  })
-
-  it('returns false when plan is not trial', () => {
-    expect(isTrialPlan(Plans.USERS_FREE)).toBeFalsy()
-    expect(isTrialPlan(Plans.USERS_INAPP)).toBeFalsy()
-    expect(isTrialPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
-    expect(isTrialPlan(Plans.USERS_SENTRYM)).toBeFalsy()
-    expect(isTrialPlan(Plans.USERS_BASIC)).toBeFalsy()
-  })
-})
-
-describe('isProPlan', () => {
-  it('returns true when plan is pro', () => {
-    expect(isProPlan(Plans.USERS_PR_INAPPM)).toBeTruthy()
-  })
-
-  it('returns true when plan is sentry pro', () => {
-    expect(isProPlan(Plans.USERS_SENTRYM)).toBeTruthy()
-  })
-
-  it('returns false when plan is not pro', () => {
-    expect(isProPlan(Plans.USERS_FREE)).toBeFalsy()
-    expect(isProPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
-    expect(isProPlan(Plans.USERS_BASIC)).toBeFalsy()
-  })
-})
-
-describe('isCodecovProPlan', () => {
-  it('returns true when plan is codecov pro', () => {
-    expect(isCodecovProPlan(Plans.USERS_PR_INAPPM)).toBeTruthy()
-  })
-
-  it('returns false when plan is not codecov pro', () => {
-    expect(isCodecovProPlan(Plans.USERS_FREE)).toBeFalsy()
-    expect(isCodecovProPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
-    expect(isCodecovProPlan(Plans.USERS_SENTRYM)).toBeFalsy()
-    expect(isCodecovProPlan(Plans.USERS_BASIC)).toBeFalsy()
   })
 })

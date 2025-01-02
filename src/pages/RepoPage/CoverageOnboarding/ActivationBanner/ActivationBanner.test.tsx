@@ -64,6 +64,8 @@ const mockTrialData = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
+  isProPlan: false,
+  isTrialPlan: false,
 }
 
 describe('ActivationBanner', () => {
@@ -88,6 +90,8 @@ describe('ActivationBanner', () => {
                 value,
                 hasSeatsLeft,
                 isFreePlan: value === Plans.USERS_BASIC,
+                isTeamPlan:
+                  value === Plans.USERS_TEAMM || value === Plans.USERS_TEAMY,
               },
               pretrialPlan: {
                 baseUnitPrice: 10,
