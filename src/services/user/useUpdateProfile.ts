@@ -6,64 +6,45 @@ import config from 'config'
 import Api from 'shared/api'
 import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 
-const TypeProjectsSchema = z.array(
-  z.union([
-    z.literal('PERSONAL'),
-    z.literal('YOUR_ORG'),
-    z.literal('OPEN_SOURCE'),
-    z.literal('EDUCATIONAL'),
-  ])
-)
-
-const GoalsSchema = z.array(
-  z.union([
-    z.literal('STARTING_WITH_TESTS'),
-    z.literal('IMPROVE_COVERAGE'),
-    z.literal('MAINTAIN_COVERAGE'),
-    z.literal('TEAM_REQUIREMENTS'),
-    z.literal('OTHER'),
-  ])
-)
+import { GoalsSchema, TypeProjectsSchema } from './useUser'
 
 const CurrentUserFragment = z.object({
-  email: z.string().nullish(),
-  privateAccess: z.boolean().nullish(),
-  onboardingCompleted: z.boolean().nullish(),
-  businessEmail: z.string().nullish(),
-  user: z
-    .object({
-      name: z.string().nullish(),
-      username: z.string().nullish(),
-      avatarUrl: z.string().nullish(),
-      avatar: z.string().nullish(),
-      student: z.boolean().nullish(),
-      studentCreatedAt: z.string().nullish(),
-      studentUpdatedAt: z.string().nullish(),
-    })
-    .nullish(),
+  email: z.string().nullable(),
+  privateAccess: z.boolean().nullable(),
+  onboardingCompleted: z.boolean(),
+  businessEmail: z.string().nullable(),
+  user: z.object({
+    name: z.string().nullable(),
+    username: z.string(),
+    avatarUrl: z.string(),
+    avatar: z.string(),
+    student: z.boolean(),
+    studentCreatedAt: z.string().nullable(),
+    studentUpdatedAt: z.string().nullable(),
+  }),
   trackingMetadata: z
     .object({
-      service: z.string().nullish(),
-      ownerid: z.number().nullish(),
-      serviceId: z.string().nullish(),
-      plan: z.string().nullish(),
-      staff: z.boolean().nullish(),
+      service: z.string(),
+      ownerid: z.number(),
+      serviceId: z.string(),
+      plan: z.string().nullable(),
+      staff: z.boolean().nullable(),
       hasYaml: z.boolean(),
-      bot: z.string().nullish(),
-      delinquent: z.boolean().nullish(),
-      didTrial: z.boolean().nullish(),
-      planProvider: z.string().nullish(),
-      planUserCount: z.number().nullish(),
-      createdAt: z.string().nullish(),
-      updatedAt: z.string().nullish(),
+      bot: z.string().nullable(),
+      delinquent: z.boolean().nullable(),
+      didTrial: z.boolean().nullable(),
+      planProvider: z.string().nullable(),
+      planUserCount: z.number().nullable(),
+      createdAt: z.string().nullable(),
+      updatedAt: z.string().nullable(),
       profile: z
         .object({
-          createdAt: z.string().nullish(),
-          otherGoal: z.string().nullish(),
-          typeProjects: TypeProjectsSchema.nullish(),
-          goals: GoalsSchema.nullish(),
+          createdAt: z.string(),
+          otherGoal: z.string().nullable(),
+          typeProjects: TypeProjectsSchema,
+          goals: GoalsSchema,
         })
-        .nullish(),
+        .nullable(),
     })
     .nullish(),
 })
