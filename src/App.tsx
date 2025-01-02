@@ -20,6 +20,7 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import AccountSettings from './pages/AccountSettings'
 import AdminSettings from './pages/AdminSettings'
+import { OnboardingContainerProvider } from './pages/OwnerPage/OnboardingContainerContext/context'
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CodecovAIPage = lazy(() => import('./pages/CodecovAIPage'))
 const CommitDetailPage = lazy(() => import('./pages/CommitDetailPage'))
@@ -41,7 +42,6 @@ const HomePageRedirect = () => {
   const { data: currentUser } = useUser()
   const { data: internalUser } = useInternalUser({})
   const { params } = useLocationParams()
-  // @ts-expect-error useLocationParams needs to be typed
   const { setup_action: setupAction, to } = params
 
   let redirectURL = '/login'
@@ -197,8 +197,10 @@ function App() {
     <>
       <ThemeContextProvider>
         <ToastNotificationProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-          <MainAppRoutes />
+          <OnboardingContainerProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+            <MainAppRoutes />
+          </OnboardingContainerProvider>
         </ToastNotificationProvider>
         <Toaster />
       </ThemeContextProvider>
