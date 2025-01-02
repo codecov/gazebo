@@ -17,7 +17,9 @@ const TokenFormatEnum = Object.freeze({
 
 const UploadToken = ({ token, format }) => {
   const [hideClipboard, setHideClipboard] = useState(true)
-  const encodedToken = hideClipboard && format + token.replace(/[^w-]|/g, 'x')
+  const encodedToken = hideClipboard
+    ? format + token.replace(/[^w-]|/g, 'x')
+    : undefined
 
   return (
     <div className="flex items-center gap-2">

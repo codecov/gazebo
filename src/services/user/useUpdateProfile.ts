@@ -162,8 +162,8 @@ export function useUpdateProfile({ provider }: { provider: string }) {
         return parsedData.data.updateProfile?.me
       })
     },
-    onSuccess: (res) => {
-      queryClient.setQueryData(['currentUser', provider], () => res)
+    onSuccess: (currentUser) => {
+      queryClient.setQueryData(['currentUser', provider], () => currentUser)
 
       if (config.IS_SELF_HOSTED) {
         queryClient.invalidateQueries(['SelfHostedCurrentUser'])
