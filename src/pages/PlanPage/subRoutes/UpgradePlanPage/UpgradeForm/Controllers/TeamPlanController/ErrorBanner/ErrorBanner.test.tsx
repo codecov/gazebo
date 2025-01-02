@@ -24,6 +24,8 @@ const basicPlan = {
   ],
   monthlyUploadLimit: 250,
   hasSeatsLeft: true,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const teamPlanMonth = {
@@ -34,6 +36,8 @@ const teamPlanMonth = {
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
   hasSeatsLeft: true,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanYear = {
@@ -44,6 +48,8 @@ const teamPlanYear = {
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
   hasSeatsLeft: true,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const proPlanYear = {
@@ -54,6 +60,8 @@ const proPlanYear = {
   marketingName: 'Users Pro',
   monthlyUploadLimit: null,
   hasSeatsLeft: true,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -135,6 +143,7 @@ describe('ErrorBanner', () => {
           isEnterprisePlan: false,
           isFreePlan: false,
           isProPlan: false,
+          isSentryPlan: false,
           isTeamPlan: false,
           isTrialPlan: false,
         }

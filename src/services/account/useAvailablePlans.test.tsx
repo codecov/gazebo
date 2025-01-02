@@ -19,6 +19,8 @@ const mockAvailablePlans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -32,6 +34,8 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -45,6 +49,8 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Sentry Pro Team',
@@ -58,6 +64,8 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: true,
   },
   {
     marketingName: 'Pro Team',
@@ -71,6 +79,8 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -84,6 +94,8 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Team',
@@ -92,6 +104,8 @@ const mockAvailablePlans = [
     baseUnitPrice: 6,
     benefits: ['Patch coverage analysis'],
     monthlyUploadLimit: null,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
 ]
 

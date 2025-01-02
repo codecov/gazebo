@@ -25,6 +25,8 @@ const proPlanMonth = {
   ],
   quantity: 10,
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanYear = {
@@ -40,6 +42,8 @@ const proPlanYear = {
   ],
   monthlyUploadLimit: null,
   quantity: 13,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const sentryPlanMonth = {
@@ -56,6 +60,8 @@ const sentryPlanMonth = {
   monthlyUploadLimit: null,
   trialDays: 14,
   quantity: 10,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const sentryPlanYear = {
@@ -72,6 +78,8 @@ const sentryPlanYear = {
   monthlyUploadLimit: null,
   trialDays: 14,
   quantity: 21,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const teamPlanMonth = {
@@ -81,6 +89,8 @@ const teamPlanMonth = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanYear = {
@@ -90,6 +100,8 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 describe('Controller', () => {

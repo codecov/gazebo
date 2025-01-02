@@ -175,6 +175,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           value: Plans.USERS_SENTRYY,
           planUserCount: 1,
           isTeamPlan: false,
+          isSentryPlan: true,
         } as Plan,
       })
 
@@ -184,6 +185,7 @@ describe('getDefaultValuesUpgradeForm', () => {
           value: Plans.USERS_SENTRYY,
           planUserCount: 1,
           isTeamPlan: false,
+          isSentryPlan: true,
         },
         seats: 5,
       })
@@ -311,6 +313,8 @@ describe('getSchema', () => {
         accountDetails,
         selectedPlan: {
           value: Plans.USERS_TEAMY,
+          isTeamPlan: true,
+          isTrialPlan: false,
         } as Plan,
       })
 
@@ -375,24 +379,24 @@ describe('extractSeats', () => {
   describe('user on free plan and can upgrade to sentry plan', () => {
     it('returns min seats when members are less than min', () => {
       const seats = extractSeats({
-        value: Plans.USERS_BASIC,
         quantity: 1,
         isSentryUpgrade: true,
         activatedUserCount: 0,
         inactiveUserCount: 0,
         isFreePlan: true,
+        isTrialPlan: false,
       })
       expect(seats).toEqual(5)
     })
 
     it('returns members number as seats when members are greater than min', () => {
       const seats = extractSeats({
-        value: Plans.USERS_BASIC,
         quantity: 1,
         isSentryUpgrade: true,
         activatedUserCount: 10,
         inactiveUserCount: 2,
         isFreePlan: true,
+        isTrialPlan: false,
       })
       expect(seats).toEqual(12)
     })
@@ -401,24 +405,24 @@ describe('extractSeats', () => {
   describe('user on free plan and can not upgrade to sentry plan', () => {
     it('returns min seats when members are less than min', () => {
       const seats = extractSeats({
-        value: Plans.USERS_BASIC,
         quantity: 1,
         isSentryUpgrade: false,
         activatedUserCount: 0,
         inactiveUserCount: 0,
         isFreePlan: true,
+        isTrialPlan: false,
       })
       expect(seats).toEqual(2)
     })
 
     it('returns members number as seats when members are greater than min', () => {
       const seats = extractSeats({
-        value: Plans.USERS_BASIC,
         quantity: 1,
         activatedUserCount: 10,
         inactiveUserCount: 2,
         isSentryUpgrade: false,
         isFreePlan: true,
+        isTrialPlan: false,
       })
       expect(seats).toEqual(12)
     })
@@ -427,11 +431,12 @@ describe('extractSeats', () => {
   describe('user on paid plan', () => {
     it('returns members number as seats', () => {
       const seats = extractSeats({
-        value: Plans.USERS_PR_INAPPM,
         quantity: 8,
         activatedUserCount: 12,
         inactiveUserCount: 0,
         isSentryUpgrade: false,
+        isFreePlan: false,
+        isTrialPlan: false,
       })
       expect(seats).toEqual(8)
     })
@@ -440,12 +445,12 @@ describe('extractSeats', () => {
   describe('user on sentry plan', () => {
     it('returns members number as seats', () => {
       const seats = extractSeats({
-        value: Plans.USERS_SENTRYM,
         quantity: 8,
         activatedUserCount: 12,
         inactiveUserCount: 0,
         isSentryUpgrade: false,
         isFreePlan: false,
+        isTrialPlan: false,
       })
       expect(seats).toEqual(8)
     })
@@ -454,22 +459,22 @@ describe('extractSeats', () => {
   describe('user on paid plan and can upgrade to sentry plan', () => {
     it('returns members number as seats if greater than min', () => {
       const seats = extractSeats({
-        value: Plans.USERS_PR_INAPPM,
         quantity: 8,
         activatedUserCount: 12,
         inactiveUserCount: 0,
         isSentryUpgrade: true,
         isFreePlan: false,
+        isTrialPlan: false,
       })
       expect(seats).toEqual(8)
     })
 
     it('returns min seats if less than min', () => {
       const seats = extractSeats({
-        value: Plans.USERS_PR_INAPPM,
         quantity: 2,
         isSentryUpgrade: true,
         isFreePlan: false,
+        isTrialPlan: false,
       })
       expect(seats).toEqual(5)
     })
@@ -479,13 +484,13 @@ describe('extractSeats', () => {
     describe('user has access to sentry upgrade', () => {
       it('returns sentry plan base seat count as seats', () => {
         const seats = extractSeats({
-          value: Plans.USERS_TRIAL,
           quantity: 8,
           activatedUserCount: 12,
           inactiveUserCount: 0,
           isSentryUpgrade: true,
           trialStatus: TrialStatuses.ONGOING,
           isFreePlan: false,
+          isTrialPlan: true,
         })
 
         expect(seats).toEqual(5)
@@ -495,13 +500,13 @@ describe('extractSeats', () => {
     describe('user does not have access to sentry upgrade', () => {
       it('returns pro plan base seat count as seats', () => {
         const seats = extractSeats({
-          value: Plans.USERS_TRIAL,
           quantity: 8,
           activatedUserCount: 12,
           inactiveUserCount: 0,
           isSentryUpgrade: false,
           trialStatus: TrialStatuses.ONGOING,
           isFreePlan: false,
+          isTrialPlan: true,
         })
 
         expect(seats).toEqual(2)
@@ -515,7 +520,7 @@ describe('shouldRenderCancelLink', () => {
     // eslint-disable-next-line testing-library/render-result-naming-convention
     const value = shouldRenderCancelLink({
       cancelAtPeriodEnd: false,
-      plan: { value: Plans.USERS_PR_INAPPY, isFreePlan: false } as Plan,
+      plan: { isFreePlan: false, isTrialPlan: false } as Plan,
       trialStatus: TrialStatuses.NOT_STARTED,
     })
 
@@ -527,7 +532,7 @@ describe('shouldRenderCancelLink', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const cancelLinkResult = shouldRenderCancelLink({
         cancelAtPeriodEnd: false,
-        plan: { value: Plans.USERS_BASIC, isFreePlan: true } as Plan,
+        plan: { isFreePlan: true, isTrialPlan: false } as Plan,
         trialStatus: TrialStatuses.NOT_STARTED,
       })
 
@@ -577,6 +582,8 @@ describe('shouldRenderCancelLink', () => {
           billingRate: BillingRate.ANNUALLY,
           value: Plans.USERS_TEAMY,
           planUserCount: 1,
+          isTeamPlan: true,
+          isSentryPlan: false,
         } as Plan,
       })
 

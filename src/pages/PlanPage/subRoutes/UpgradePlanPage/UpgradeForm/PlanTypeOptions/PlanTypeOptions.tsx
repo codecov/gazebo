@@ -14,7 +14,6 @@ import {
   findProPlans,
   findSentryPlans,
   findTeamPlans,
-  Plans,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
@@ -58,11 +57,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const monthlyPlan = newPlan?.billingRate === BillingRate.MONTHLY
 
   let planOption = null
-  if (
-    (hasTeamPlans && planParam === TierNames.TEAM) ||
-    newPlan?.value === Plans.USERS_TEAMM ||
-    newPlan?.value === Plans.USERS_TEAMY
-  ) {
+  if ((hasTeamPlans && planParam === TierNames.TEAM) || newPlan?.isTeamPlan) {
     planOption = TierName.TEAM
   } else {
     planOption = TierName.PRO

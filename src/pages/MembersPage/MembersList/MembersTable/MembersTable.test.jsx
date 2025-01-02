@@ -92,6 +92,7 @@ const queryClient = new QueryClient({
 const mockPlanData = {
   isEnterprisePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTrialPlan: false,
   baseUnitPrice: 10,
   benefits: [],

@@ -22,6 +22,8 @@ const teamPlanMonth = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanYear = {
@@ -31,6 +33,8 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const allPlans = [
@@ -45,6 +49,8 @@ const allPlans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro',
@@ -58,6 +64,8 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro',
@@ -72,6 +80,8 @@ const allPlans = [
     ],
     quantity: 10,
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   teamPlanMonth,
   teamPlanYear,
@@ -94,6 +104,7 @@ const mockPlanData = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: false,
   isTrialPlan: false,
 }

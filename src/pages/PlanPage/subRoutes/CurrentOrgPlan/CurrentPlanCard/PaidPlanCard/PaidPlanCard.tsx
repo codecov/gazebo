@@ -30,7 +30,6 @@ function PaidPlanCard() {
   const plan = planData?.plan
   const marketingName = plan?.marketingName
   const benefits = plan?.benefits
-  const value = plan?.value
   const baseUnitPrice = plan?.baseUnitPrice
   const seats = plan?.planUserCount
   const numberOfUploads = ownerData?.numberOfUploads
@@ -57,12 +56,8 @@ function PaidPlanCard() {
         <div className="flex flex-col border-t pt-2 sm:border-0 sm:p-0">
           <p className="mb-2 text-xs font-semibold">Pricing</p>
           <div className="mb-4">
-            {value && baseUnitPrice ? (
-              <PlanPricing
-                plan={plan}
-                value={value}
-                baseUnitPrice={baseUnitPrice}
-              />
+            {baseUnitPrice ? (
+              <PlanPricing plan={plan} baseUnitPrice={baseUnitPrice} />
             ) : null}
             {seats ? (
               <p className="text-xs text-ds-gray-senary">
