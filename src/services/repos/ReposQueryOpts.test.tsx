@@ -86,7 +86,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('useRepos', () => {
+describe('ReposQueryOpts', () => {
   function setup({ invalidResponse = false } = {}) {
     server.use(
       graphql.query('ReposForOwner', (info) => {
