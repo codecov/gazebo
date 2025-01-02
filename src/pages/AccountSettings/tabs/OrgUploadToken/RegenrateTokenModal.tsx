@@ -1,9 +1,15 @@
-import PropTypes from 'prop-types'
-
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-const RegenerateTokenModal = ({ closeModal, regenerateToken, isLoading }) => (
+const RegenerateTokenModal = ({
+  closeModal,
+  regenerateToken,
+  isLoading,
+}: {
+  closeModal: () => void
+  regenerateToken: () => Promise<unknown>
+  isLoading: boolean
+}) => (
   <Modal
     isOpen={true}
     onClose={closeModal}
@@ -44,11 +50,5 @@ const RegenerateTokenModal = ({ closeModal, regenerateToken, isLoading }) => (
     }
   />
 )
-
-RegenerateTokenModal.propTypes = {
-  closeModal: PropTypes.func.isRequired,
-  regenerateToken: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool.isRequired,
-}
 
 export default RegenerateTokenModal
