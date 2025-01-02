@@ -61,8 +61,8 @@ function RepoSelector({
     isLoading,
     fetchNextPage,
     hasNextPage,
-  } = useInfiniteQueryV5({
-    ...ReposQueryOpts({
+  } = useInfiniteQueryV5(
+    ReposQueryOpts({
       provider,
       owner,
       sortItem,
@@ -70,8 +70,8 @@ function RepoSelector({
       term: search,
       first: Infinity,
       isPublic: shouldDisplayPublicReposOnly,
-    }),
-  })
+    })
+  )
 
   const reposSelectData = useMemo(() => {
     const data = reposData?.pages?.map((page) => page?.repos).flat()
