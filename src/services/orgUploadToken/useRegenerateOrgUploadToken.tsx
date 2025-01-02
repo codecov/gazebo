@@ -63,25 +63,24 @@ export function useRegenerateOrgUploadToken({
         query,
         variables: { input: { owner } },
         mutationPath: 'RegenerateOrgUploadToken',
+      }).then(({ data }) => {
+        const parsedRes = ResponseSchema.safeParse(data)
+        if (!parsedRes.success) {
+          return rejectNetworkError({
+            status: 404,
+            data: {},
+            dev: 'useRegenerateOrgUploadToken - 404 schema parsing failed',
+            error: parsedRes.error,
+          })
+        }
+
+        return parsedRes.data.regenerateOrgUploadToken
       })
     },
     useErrorBoundary: true,
-    onSuccess: ({ data }) => {
-      const parsedRes = ResponseSchema.safeParse(data)
-      if (!parsedRes.success) {
-        return rejectNetworkError({
-          status: 404,
-          data: {},
-          dev: 'useRegenerateOrgUploadToken - 404 schema parsing failed',
-          error: parsedRes.error,
-        })
-      }
-
-      onSuccess(parsedRes.data.regenerateOrgUploadToken)
+    onSuccess: (res) => {
+      onSuccess(res)
+      queryClient.invalidateQueries(['DetailOwner', 'GetOrgUploadToken'])
     },
-    onSettled: () => {
-      queryClient.invalidateQueries(['DetailOwner'])
-    },
-    retry: false,
   })
 }

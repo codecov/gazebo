@@ -7,7 +7,7 @@ const RegenerateTokenModal = ({
   isLoading,
 }: {
   closeModal: () => void
-  regenerateToken: () => Promise<void>
+  regenerateToken: () => Promise<unknown>
   isLoading: boolean
 }) => (
   <Modal
