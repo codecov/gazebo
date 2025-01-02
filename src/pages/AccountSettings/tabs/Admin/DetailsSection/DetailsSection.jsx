@@ -39,7 +39,9 @@ function DetailsSection({ email, name }) {
 
   function submit(formData) {
     mutate(formData, {
-      onSuccess: (updatedUser) => {
+      onSuccess: ({ data }) => {
+        const updatedUser = data?.updateProfile?.me
+
         queryClient.invalidateQueries(['user', provider])
 
         addToast({

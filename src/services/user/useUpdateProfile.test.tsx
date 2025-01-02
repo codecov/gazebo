@@ -88,11 +88,17 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            avatarUrl: 'http://127.0.0.1/avatar-url',
-            email: 'newemail@test.com',
-            name: 'new name',
-            onboardingCompleted: false,
-            username: 'TerrySmithDC',
+            data: {
+              updateProfile: {
+                me: {
+                  avatarUrl: 'http://127.0.0.1/avatar-url',
+                  email: 'newemail@test.com',
+                  name: 'new name',
+                  onboardingCompleted: false,
+                  username: 'TerrySmithDC',
+                },
+              },
+            },
           })
         )
       })
@@ -108,11 +114,17 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            avatarUrl: 'http://127.0.0.1/avatar-url',
-            email: 'newemail@test.com',
-            name: 'new name',
-            onboardingCompleted: false,
-            username: 'TerrySmithDC',
+            data: {
+              updateProfile: {
+                me: {
+                  avatarUrl: 'http://127.0.0.1/avatar-url',
+                  email: 'newemail@test.com',
+                  name: 'new name',
+                  onboardingCompleted: false,
+                  username: 'TerrySmithDC',
+                },
+              },
+            },
           })
         )
       })
@@ -153,11 +165,17 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            avatarUrl: 'http://127.0.0.1/avatar-url',
-            email: 'newemail@test.com',
-            name: 'new name',
-            onboardingCompleted: false,
-            username: 'TerrySmithDC',
+            data: {
+              updateProfile: {
+                me: {
+                  avatarUrl: 'http://127.0.0.1/avatar-url',
+                  email: 'newemail@test.com',
+                  name: 'new name',
+                  onboardingCompleted: false,
+                  username: 'TerrySmithDC',
+                },
+              },
+            },
           })
         )
       })

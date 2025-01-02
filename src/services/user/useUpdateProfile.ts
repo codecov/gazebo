@@ -7,35 +7,43 @@ import Api from 'shared/api'
 import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 
 const CurrentUserFragment = z.object({
-  email: z.string(),
-  privateAccess: z.boolean(),
-  onboardingCompleted: z.boolean(),
-  businessEmail: z.string(),
-  user: z.object({
-    name: z.string(),
-    username: z.string(),
-    avatarUrl: z.string(),
-    avatar: z.string(),
-    student: z.boolean(),
-    studentCreatedAt: z.string(),
-    studentUpdatedAt: z.string(),
-  }),
-  trackingMetadata: z.object({
-    service: z.string(),
-    ownerid: z.string(),
-    serviceId: z.string(),
-  }),
+  email: z.string().nullish(),
+  privateAccess: z.boolean().nullish(),
+  onboardingCompleted: z.boolean().nullish(),
+  businessEmail: z.string().nullish(),
+  user: z
+    .object({
+      name: z.string().nullish(),
+      username: z.string().nullish(),
+      avatarUrl: z.string().nullish(),
+      avatar: z.string().nullish(),
+      student: z.boolean().nullish(),
+      studentCreatedAt: z.string().nullish(),
+      studentUpdatedAt: z.string().nullish(),
+    })
+    .nullish(),
+  trackingMetadata: z
+    .object({
+      service: z.string().nullish(),
+      ownerid: z.number().nullish(),
+      serviceId: z.string().nullish(),
+    })
+    .nullish(),
 })
 
-const CurrentUserFragmentSchema = z.object({
-  me: CurrentUserFragment.nullable(),
-  error: z
-    .discriminatedUnion('__typename', [
-      z.object({
-        __typename: z.literal('ValidationError'),
-      }),
-    ])
-    .nullable(),
+const UpdateProfileResponseSchema = z.object({
+  updateProfile: z
+    .object({
+      me: CurrentUserFragment.nullish(),
+      error: z
+        .discriminatedUnion('__typename', [
+          z.object({
+            __typename: z.literal('ValidationError'),
+          }),
+        ])
+        .nullish(),
+    })
+    .nullish(),
 })
 
 const currentUserFragment = `
@@ -109,7 +117,7 @@ export function useUpdateProfile({ provider }: { provider: string }) {
       })
     },
     onSuccess: ({ data }) => {
-      const parsedData = CurrentUserFragmentSchema.safeParse(data)
+      const parsedData = UpdateProfileResponseSchema.safeParse(data)
       if (!parsedData.success) {
         return rejectNetworkError({
           status: 404,
@@ -118,7 +126,10 @@ export function useUpdateProfile({ provider }: { provider: string }) {
         } satisfies NetworkErrorObject)
       }
 
-      queryClient.setQueryData(['currentUser', provider], () => user)
+      queryClient.setQueryData(
+        ['currentUser', provider],
+        () => parsedData.data.updateProfile?.me
+      )
 
       if (config.IS_SELF_HOSTED) {
         queryClient.invalidateQueries(['SelfHostedCurrentUser'])
