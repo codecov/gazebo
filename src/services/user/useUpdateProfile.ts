@@ -6,6 +6,25 @@ import config from 'config'
 import Api from 'shared/api'
 import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 
+const TypeProjectsSchema = z.array(
+  z.union([
+    z.literal('PERSONAL'),
+    z.literal('YOUR_ORG'),
+    z.literal('OPEN_SOURCE'),
+    z.literal('EDUCATIONAL'),
+  ])
+)
+
+const GoalsSchema = z.array(
+  z.union([
+    z.literal('STARTING_WITH_TESTS'),
+    z.literal('IMPROVE_COVERAGE'),
+    z.literal('MAINTAIN_COVERAGE'),
+    z.literal('TEAM_REQUIREMENTS'),
+    z.literal('OTHER'),
+  ])
+)
+
 const CurrentUserFragment = z.object({
   email: z.string().nullish(),
   privateAccess: z.boolean().nullish(),
@@ -27,6 +46,24 @@ const CurrentUserFragment = z.object({
       service: z.string().nullish(),
       ownerid: z.number().nullish(),
       serviceId: z.string().nullish(),
+      plan: z.string().nullish(),
+      staff: z.boolean().nullish(),
+      hasYaml: z.boolean(),
+      bot: z.string().nullish(),
+      delinquent: z.boolean().nullish(),
+      didTrial: z.boolean().nullish(),
+      planProvider: z.string().nullish(),
+      planUserCount: z.number().nullish(),
+      createdAt: z.string().nullish(),
+      updatedAt: z.string().nullish(),
+      profile: z
+        .object({
+          createdAt: z.string().nullish(),
+          otherGoal: z.string().nullish(),
+          typeProjects: TypeProjectsSchema.nullish(),
+          goals: GoalsSchema.nullish(),
+        })
+        .nullish(),
     })
     .nullish(),
 })
@@ -68,7 +105,6 @@ fragment CurrentUserFragment on Me {
     plan
     staff
     hasYaml
-    service
     bot
     delinquent
     didTrial
