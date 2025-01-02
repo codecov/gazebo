@@ -23,8 +23,8 @@ if (
   process.env.REACT_APP_MSW_BROWSER
 ) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  // const { worker } = require('./mocks/browser')
-  // worker.start()
+  const { worker } = require('./mocks/browser')
+  worker.start()
 }
 
 ReactModal.setAppElement('#root')
