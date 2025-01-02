@@ -23,6 +23,10 @@ const mockCommitData = {
           __typename: 'Comparison',
         },
         bundleAnalysis: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+            isCached: false,
+          },
           bundleAnalysisCompareWithParent: {
             __typename: 'BundleAnalysisComparison',
           },
@@ -89,7 +93,7 @@ interface SetupArgs {
   isNullOwner?: boolean
 }
 
-describe('useCommitPageData', () => {
+describe('CommitPageData', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
@@ -146,6 +150,10 @@ describe('useCommitPageData', () => {
                 __typename: 'Comparison',
               },
               bundleAnalysis: {
+                bundleAnalysisReport: {
+                  __typename: 'BundleAnalysisReport',
+                  isCached: false,
+                },
                 bundleAnalysisCompareWithParent: {
                   __typename: 'BundleAnalysisComparison',
                 },
