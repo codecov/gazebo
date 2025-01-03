@@ -1,23 +1,27 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useInfiniteQuery as useInfiniteQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { MockInstance } from 'vitest'
 
-import { useRepos } from './useRepos'
+import { ReposQueryOpts } from './ReposQueryOpts'
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper =
   (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProviderV5 client={queryClientV5}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <Route path="/:provider">{children}</Route>
       </MemoryRouter>
-    </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 const repo1 = {
@@ -74,7 +78,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -82,7 +86,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('useRepos', () => {
+describe('ReposQueryOpts', () => {
   function setup({ invalidResponse = false } = {}) {
     server.use(
       graphql.query('ReposForOwner', (info) => {
@@ -95,16 +99,8 @@ describe('useRepos', () => {
             username: 'codecov',
             repositories: {
               edges: info.variables.after
-                ? [
-                    {
-                      node: repo2,
-                    },
-                  ]
-                : [
-                    {
-                      node: repo1,
-                    },
-                  ],
+                ? [{ node: repo2 }]
+                : [{ node: repo1 }],
               pageInfo: {
                 hasNextPage: info.variables.after ? false : true,
                 endCursor: info.variables.after
@@ -123,10 +119,9 @@ describe('useRepos', () => {
   it('returns repositories of the owner', async () => {
     setup()
     const { result } = renderHook(
-      () => useRepos({ provider: '', owner: 'codecov' }),
-      {
-        wrapper: wrapper(),
-      }
+      () =>
+        useInfiniteQueryV5(ReposQueryOpts({ provider: '', owner: 'codecov' })),
+      { wrapper: wrapper() }
     )
 
     await waitFor(() => {
@@ -146,10 +141,8 @@ describe('useRepos', () => {
     it('returns next set of repositories', async () => {
       setup()
       const { result } = renderHook(
-        () => useRepos({ provider: '', owner: '' }),
-        {
-          wrapper: wrapper(),
-        }
+        () => useInfiniteQueryV5(ReposQueryOpts({ provider: '', owner: '' })),
+        { wrapper: wrapper() }
       )
 
       await waitFor(() => result.current.isFetching)
@@ -190,13 +183,17 @@ describe('useRepos', () => {
     it('throws an error', async () => {
       setup({ invalidResponse: true })
       const { result } = renderHook(
-        () => useRepos({ provider: '', owner: 'owner1' }),
+        () =>
+          useInfiniteQueryV5(ReposQueryOpts({ provider: '', owner: 'owner1' })),
         { wrapper: wrapper() }
       )
 
       await waitFor(() =>
         expect(result.current.error).toEqual(
-          expect.objectContaining({ status: 404 })
+          expect.objectContaining({
+            status: 404,
+            dev: 'ReposQueryOpts - 404 Failed to parse schema',
+          })
         )
       )
     })

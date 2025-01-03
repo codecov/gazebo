@@ -1,8 +1,9 @@
+import { useInfiniteQuery as useInfiniteQueryV5 } from '@tanstack/react-queryV5'
 import PropTypes from 'prop-types'
 import { useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useRepos } from 'services/repos'
+import { ReposQueryOpts } from 'services/repos/ReposQueryOpts'
 import { TierNames, useTier } from 'services/tier'
 import A from 'ui/A'
 import DateRangePicker from 'ui/DateRangePicker'
@@ -60,16 +61,17 @@ function RepoSelector({
     isLoading,
     fetchNextPage,
     hasNextPage,
-  } = useRepos({
-    provider,
-    owner,
-    sortItem,
-    activated: active,
-    term: search,
-    first: Infinity,
-    suspense: false,
-    isPublic: shouldDisplayPublicReposOnly,
-  })
+  } = useInfiniteQueryV5(
+    ReposQueryOpts({
+      provider,
+      owner,
+      sortItem,
+      activated: active,
+      term: search,
+      first: Infinity,
+      isPublic: shouldDisplayPublicReposOnly,
+    })
+  )
 
   const reposSelectData = useMemo(() => {
     const data = reposData?.pages?.map((page) => page?.repos).flat()
