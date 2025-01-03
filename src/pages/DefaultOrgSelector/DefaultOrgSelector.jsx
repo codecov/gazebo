@@ -69,7 +69,7 @@ function DefaultOrgSelector() {
   })
 
   const { provider } = useParams()
-  const isGh = providerToName(provider) === 'Github'
+  const isGh = providerToName(provider) === 'GitHub'
 
   const history = useHistory()
 

@@ -11,7 +11,7 @@ interface URLParams {
 
 const GitHubRateLimitExceededBanner = () => {
   const { provider } = useParams<URLParams>()
-  const isGh = providerToName(provider) === 'Github'
+  const isGh = providerToName(provider) === 'GitHub'
 
   if (!isGh) return null
 

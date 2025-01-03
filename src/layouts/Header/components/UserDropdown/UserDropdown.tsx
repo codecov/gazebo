@@ -33,7 +33,7 @@ function UserDropdown() {
   })
 
   const { provider } = useParams<URLParams>()
-  const isGh = providerToName(provider) === 'Github'
+  const isGh = providerToName(provider) === 'GitHub'
   const history = useHistory()
 
   const items =

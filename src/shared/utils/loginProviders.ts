@@ -11,12 +11,12 @@ import sentryLogo from 'assets/providers/sentry-icon.svg'
 export const LoginProvidersEnum = {
   BITBUCKET: {
     provider: 'bb',
-    name: 'Bitbucket',
+    name: 'BitBucket',
     external: 'BITBUCKET',
     externalKey: 'bb',
     selfHosted: 'BITBUCKET_SERVER',
     selfHostedKey: 'bbs',
-    selfHostedName: 'Bitbucket Server',
+    selfHostedName: 'BitBucket Server',
     variant: 'bitbucket',
   },
   GITHUB: {
@@ -70,17 +70,17 @@ export function loginProviderToShortName(loginProvider?: string) {
 }
 
 export const LOGIN_PROVIDER_NAMES = {
-  gh: 'Github',
+  gh: 'GitHub',
   bb: 'BitBucket',
-  gl: 'Gitlab',
-  ghe: 'Github Enterprise',
-  gle: 'Gitlab Enterprise',
+  gl: 'GitLab',
+  ghe: 'GitHub Enterprise',
+  gle: 'GitLab Enterprise',
   bbs: 'BitBucket Server',
-  github: 'Github',
+  github: 'GitHub',
   bitbucket: 'BitBucket',
-  gitlab: 'Gitlab',
-  github_enterprise: 'Github Enterprise',
-  gitlab_enterprise: 'Gitlab Enterprise',
+  gitlab: 'GitLab',
+  github_enterprise: 'GitHub Enterprise',
+  gitlab_enterprise: 'GitLab Enterprise',
   bitbucket_server: 'BitBucket Server',
   sentry: 'Sentry',
   okta: 'Okta',
@@ -97,22 +97,22 @@ export function loginProviderToName(loginProvider?: string) {
 }
 
 export const LOGIN_PROVIDER_IMAGES = {
-  Github: githubLogo,
-  Gitlab: gitlabLogo,
+  GitHub: githubLogo,
+  GitLab: gitlabLogo,
   BitBucket: bitbucketLogo,
-  'Github Enterprise': githubLogo,
-  'Gitlab Enterprise': gitlabLogo,
+  'GitHub Enterprise': githubLogo,
+  'GitLab Enterprise': gitlabLogo,
   'BitBucket Server': bitbucketLogo,
   Sentry: sentryLogo,
   Okta: oktaLogo,
 } as const
 
 export const LOGIN_PROVIDER_DARK_MODE_IMAGES = {
-  Github: githubLogoWhite,
-  Gitlab: gitlabLogo,
+  GitHub: githubLogoWhite,
+  GitLab: gitlabLogo,
   BitBucket: bitbucketLogo,
-  'Github Enterprise': githubLogoWhite,
-  'Gitlab Enterprise': gitlabLogo,
+  'GitHub Enterprise': githubLogoWhite,
+  'GitLab Enterprise': gitlabLogo,
   'BitBucket Server': bitbucketLogo,
   Sentry: sentryLogoWhite,
   Okta: oktaLogo,

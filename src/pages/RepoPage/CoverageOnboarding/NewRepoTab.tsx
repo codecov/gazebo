@@ -40,7 +40,7 @@ type CIUrls = Record<keyof typeof CI_PROVIDERS, string>
 
 const getInitialProvider = (provider: Provider, path: string, urls: CIUrls) => {
   const defaultProvider =
-    providerToName(provider) !== 'Github'
+    providerToName(provider) !== 'GitHub'
       ? CI_PROVIDERS.OtherCI
       : CI_PROVIDERS.GitHubActions
   if (path === urls.CircleCI) {
