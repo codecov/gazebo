@@ -49,6 +49,7 @@ const mockPullPageData = {
     bundleAnalysis: {
       bundleAnalysisReport: {
         __typename: 'BundleAnalysisReport',
+        isCached: false,
       },
     },
   },
@@ -75,6 +76,7 @@ const mockPullPageDataTeam = {
     bundleAnalysis: {
       bundleAnalysisReport: {
         __typename: 'BundleAnalysisReport',
+        isCached: false,
       },
     },
   },

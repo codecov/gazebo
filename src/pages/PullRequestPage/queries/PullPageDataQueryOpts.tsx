@@ -17,6 +17,11 @@ import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
+const BundleAnalysisReportSchema = z.object({
+  __typename: z.literal('BundleAnalysisReport'),
+  isCached: z.boolean(),
+})
+
 const BundleAnalysisComparisonResult = z.union([
   z.literal('BundleAnalysisComparison'),
   FirstPullRequestSchema.shape.__typename,
@@ -50,7 +55,7 @@ const RepositorySchema = z.object({
             .object({
               bundleAnalysisReport: z
                 .discriminatedUnion('__typename', [
-                  z.object({ __typename: z.literal('BundleAnalysisReport') }),
+                  BundleAnalysisReportSchema,
                   z.object({ __typename: z.literal('MissingHeadReport') }),
                 ])
                 .nullable(),
@@ -122,6 +127,12 @@ query PullPageData(
             bundleAnalysis {
               bundleAnalysisReport {
                 __typename
+                ... on BundleAnalysisReport {
+                  isCached
+                }
+              }
+              bundleAnalysisReport {
+                __typename
               }
             }
           }
@@ -155,6 +166,7 @@ query PullPageData(
           }
           bundleAnalysisCompareWithBase {
             __typename
+            
           }
         }
       }

@@ -25,6 +25,7 @@ const mockPullData = {
           bundleAnalysis: {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
+              isCached: false,
             },
           },
         },
@@ -60,6 +61,7 @@ const mockPullDataTeam = {
           bundleAnalysis: {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
+              isCached: false,
             },
           },
         },
@@ -195,6 +197,7 @@ describe('PullPageDataQueryOpts', () => {
                   bundleAnalysis: {
                     bundleAnalysisReport: {
                       __typename: 'BundleAnalysisReport',
+                      isCached: false,
                     },
                   },
                 },
@@ -402,6 +405,7 @@ describe('PullPageDataQueryOpts', () => {
                 bundleAnalysis: {
                   bundleAnalysisReport: {
                     __typename: 'BundleAnalysisReport',
+                    isCached: false,
                   },
                 },
               },
