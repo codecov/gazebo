@@ -9,8 +9,8 @@ import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 
 export const ProvidersEnum = Object.freeze({
-  Github: 'Github',
-  Gitlab: 'Gitlab',
+  Github: 'GitHub',
+  Gitlab: 'GitLab',
   BitBucket: 'BitBucket',
 })
 

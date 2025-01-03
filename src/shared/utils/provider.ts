@@ -49,11 +49,11 @@ export function getProviderCommitURL({
   commit: string
 }) {
   return {
-    Github: `https://github.com/${owner}/${repo}/commit/${commit}`,
+    GitHub: `https://github.com/${owner}/${repo}/commit/${commit}`,
     BitBucket: `https://bitbucket.org/${owner}/${repo}/commits/${commit}`,
-    Gitlab: `https://gitlab.com/${owner}/${repo}/-/commit/${commit}`,
-    'Github Enterprise': `${config.GHE_URL}/${owner}/${repo}/commit/${commit}`,
-    'Gitlab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/commit/${commit}`,
+    GitLab: `https://gitlab.com/${owner}/${repo}/-/commit/${commit}`,
+    'GitHub Enterprise': `${config.GHE_URL}/${owner}/${repo}/commit/${commit}`,
+    'GitLab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/commit/${commit}`,
     'BitBucket Server': `${config.BBS_URL}/${owner}/${repo}/commits/${commit}`,
     // @ts-expect-error - provider could be undefined but it should be fine
   }[providerToName(provider)]

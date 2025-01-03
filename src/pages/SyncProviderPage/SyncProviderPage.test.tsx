@@ -126,19 +126,19 @@ describe('SyncProviderPage', () => {
         setup()
         render(<SyncProviderPage />, { wrapper })
 
-        const githubSyncButton = await screen.findByText(/Sync with Github/)
+        const githubSyncButton = await screen.findByText(/Sync with GitHub/)
         expect(githubSyncButton).toBeInTheDocument()
       })
 
-      it('renders github enterprise sync button', async () => {
+      it('renders gitlab enterprise sync button', async () => {
         setup()
 
         render(<SyncProviderPage />, { wrapper })
 
-        const gheSyncButton = await screen.findByText(
-          /Sync with Gitlab Enterprise/
+        const gleSyncButton = await screen.findByText(
+          /Sync with GitLab Enterprise/
         )
-        expect(gheSyncButton).toBeInTheDocument()
+        expect(gleSyncButton).toBeInTheDocument()
       })
     })
 
