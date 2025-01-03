@@ -19,7 +19,6 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import { ImpactedFileType, useCommit } from 'services/commit'
 import { OrderingDirection, OrderingParameter } from 'services/pull/usePull'
-import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
@@ -71,7 +70,7 @@ function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
   return undefined
 }
 
-function getColumns({ commitId }: { commitId: string }) {
+function getColumns() {
   return [
     columnHelper.accessor('headName', {
       id: 'name',
@@ -83,41 +82,16 @@ function getColumns({ commitId }: { commitId: string }) {
         return (
           <div className="flex flex-row items-center break-all">
             {!isDeletedFile ? (
-              <span
-                data-action="clickable"
-                data-testid="file-diff-expand"
-                className={cs(
-                  'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
-                  {
-                    'text-ds-blue-default': row.getIsExpanded(),
-                  }
-                )}
-                {...{
-                  onClick: row.getToggleExpandedHandler(),
-                }}
-              >
+              <div className="inline-flex items-center gap-1 font-sans">
                 <Icon
                   size="md"
                   name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
                   variant="solid"
                 />
-              </span>
-            ) : null}
-            {isDeletedFile ? (
-              <>{headName}</>
+                <span>{headName}</span>
+              </div>
             ) : (
-              /* @ts-expect-error - A hasn't been typed yet */
-              <A
-                to={{
-                  pageName: 'commitFileDiff',
-                  options: {
-                    commit: commitId,
-                    tree: headName,
-                  },
-                }}
-              >
-                {headName}
-              </A>
+              <span>{headName}</span>
             )}
             {row.original?.isCriticalFile ? (
               <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
@@ -286,7 +260,7 @@ export default function FilesChangedTable() {
   }, [commit?.compareWithParent])
 
   const table = useReactTable({
-    columns: getColumns({ commitId: commitSha }),
+    columns: getColumns(),
     data: filesChanged,
     state: {
       expanded,
@@ -366,7 +340,12 @@ export default function FilesChangedTable() {
         ))}
         {table.getRowModel().rows.map((row, i) => (
           <Fragment key={i}>
-            <div className="filelistui-row">
+            <div
+              className="filelistui-row"
+              data-action="clickable"
+              data-testid="file-diff-expand"
+              onClick={() => row.toggleExpanded()}
+            >
               {row.getVisibleCells().map((cell) => {
                 return (
                   <div
