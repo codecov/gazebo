@@ -57,7 +57,7 @@ const mockGetUploadTokenRequired = {
 
 const mockDetailOwner = {
   owner: {
-    ownerid: '1234',
+    ownerid: 1234,
     username: 'codecov',
     avatarUrl: 'https://avatars.githubusercontent.com/u/1234?v=4',
     isCurrentUserPartOfOrg: true,

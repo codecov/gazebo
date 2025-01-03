@@ -52,6 +52,8 @@ const mockActiveUserRequest = {
 
 const mockPlanData = {
   isEnterprisePlan: false,
+  isProPlan: false,
+  isTrialPlan: false,
   baseUnitPrice: 10,
   benefits: [],
   billingRate: 'monthly',

@@ -30,6 +30,10 @@ const mockPlanData = {
     hasPrivateRepos: true,
     plan: {
       isEnterprisePlan: false,
+      isFreePlan: true,
+      isProPlan: false,
+      isTeamPlan: false,
+      isTrialPlan: false,
       baseUnitPrice: 10,
       benefits: [],
       billingRate: 'monthly',

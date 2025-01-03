@@ -60,7 +60,18 @@ describe('NameEmailCard', () => {
               updateProfile: {
                 me: {
                   email: json.variables.input.email || '',
-                  user: { name: json.variables.input.name || '' },
+                  privateAccess: null,
+                  onboardingCompleted: true,
+                  businessEmail: null,
+                  user: {
+                    name: json.variables.input.name || '',
+                    username: 'test',
+                    avatarUrl: 'http://127.0.0.1/avatar-url',
+                    avatar: 'http://127.0.0.1/avatar-url',
+                    student: false,
+                    studentCreatedAt: null,
+                    studentUpdatedAt: null,
+                  },
                 },
               },
             },

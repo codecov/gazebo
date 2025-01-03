@@ -1,51 +1,25 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useSelfHostedHasAdmins } from 'services/selfHosted'
+import { SelfHostedHasAdminsQueryOpts } from 'services/selfHosted/SelfHostedHasAdminsQueryOpts'
 import { Provider } from 'shared/api/helpers'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 
-interface Props {
+interface MissingDesignatedAdminsProps {
   provider: Provider
-  hasAdmins?: boolean | null
-  isFetching?: boolean
-  isSelfHosted?: boolean
 }
 
-const useHideBanner = ({
+const MissingDesignatedAdmins: React.FC<MissingDesignatedAdminsProps> = ({
   provider,
-  hasAdmins,
-  isFetching,
-  isSelfHosted,
-}: Props) => {
-  if (!isSelfHosted || !provider || hasAdmins || isFetching) {
-    return true
-  }
-
-  return false
-}
-
-interface URLParams {
-  provider: Provider
-}
-
-const MissingDesignatedAdmins = () => {
-  const { provider } = useParams<URLParams>()
-  const { data: hasAdmins, isFetching } = useSelfHostedHasAdmins(
-    { provider },
-    { enabled: !!provider && !!config.IS_SELF_HOSTED }
+}) => {
+  const { data: hasAdmins, isFetching } = useSuspenseQueryV5(
+    SelfHostedHasAdminsQueryOpts({ provider })
   )
-  // This hook is purely side stepping the complexity rule here.
-  const hideBanner = useHideBanner({
-    provider,
-    hasAdmins,
-    isFetching,
-    isSelfHosted: !!config.IS_SELF_HOSTED,
-  })
 
-  if (hideBanner) {
+  if (!config.IS_SELF_HOSTED || hasAdmins || isFetching) {
     return null
   }
 
@@ -70,4 +44,18 @@ const MissingDesignatedAdmins = () => {
   )
 }
 
-export default MissingDesignatedAdmins
+interface URLParams {
+  provider?: Provider
+}
+
+const MissingDesignatedAdminsWrapper = () => {
+  const { provider } = useParams<URLParams>()
+
+  if (provider) {
+    return <MissingDesignatedAdmins provider={provider} />
+  }
+
+  return null
+}
+
+export default MissingDesignatedAdminsWrapper

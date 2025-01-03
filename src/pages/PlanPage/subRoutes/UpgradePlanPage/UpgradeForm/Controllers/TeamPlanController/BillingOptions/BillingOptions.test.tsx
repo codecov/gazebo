@@ -60,7 +60,9 @@ const mockPlanDataResponse = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isFreePlan: false,
+  isProPlan: false,
   isTeamPlan: true,
+  isTrialPlan: false,
 }
 
 const server = setupServer()
