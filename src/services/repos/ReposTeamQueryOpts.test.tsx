@@ -156,7 +156,7 @@ describe('useReposTeam', () => {
               },
             },
           ],
-          pageParams: [''],
+          pageParams: [undefined],
         })
       )
     })
@@ -200,7 +200,7 @@ describe('useReposTeam', () => {
               pageInfo: { hasNextPage: false, endCursor: 'aa' },
             },
           ],
-          pageParams: ['', 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA='],
+          pageParams: [undefined, 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA='],
         })
       )
     })
