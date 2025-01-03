@@ -1,16 +1,11 @@
-import { infiniteQueryOptions as infiniteQueryOptionsV5 } from '@tanstack/react-queryV5'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
 import { mapEdges } from 'shared/utils/graphql'
 
-import {
-  nonActiveOrderingOptions,
-  OrderingDirection,
-  orderingOptions,
-  TeamOrdering,
-} from './orderingOptions'
+import { orderingOptions } from './config'
 
 const RepositorySchema = z
   .object({
@@ -32,7 +27,7 @@ const RepositorySchema = z
   })
   .nullable()
 
-type Repository = z.infer<typeof RepositorySchema>
+export type Repository = z.infer<typeof RepositorySchema>
 
 const RequestSchema = z.object({
   owner: z
@@ -97,8 +92,7 @@ const query = `query GetReposTeam(
   }
 }`
 
-interface ReposTeamQueryArgs {
-  provider: string
+interface UseReposTeamArgs {
   activated?: boolean
   term?: string
   owner: string
@@ -110,15 +104,16 @@ interface ReposTeamQueryArgs {
   repoNames?: string[]
 }
 
-function ReposTeamQueryOpts({
-  provider,
+export function useReposTeam({
   activated,
   term,
   owner,
   sortItem = orderingOptions[0],
   first = 20,
   repoNames,
-}: ReposTeamQueryArgs) {
+  ...options
+}: UseReposTeamArgs) {
+  const { provider } = useParams<{ provider: string }>()
   const variables = {
     filters: { activated, term, repoNames },
     ordering: sortItem?.ordering,
@@ -126,7 +121,7 @@ function ReposTeamQueryOpts({
     first,
   }
 
-  return infiniteQueryOptionsV5({
+  return useInfiniteQuery({
     queryKey: ['GetReposTeam', provider, variables, owner],
     queryFn: ({ pageParam, signal }) => {
       return Api.graphql({
@@ -142,11 +137,9 @@ function ReposTeamQueryOpts({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return rejectNetworkError({
+          return Promise.reject({
             status: 404,
-            data: {},
-            dev: 'ReposTeamQueryOpts - 404 Failed to parse schema',
-            error: parsedRes.error,
+            data: null,
           })
         }
 
@@ -159,21 +152,8 @@ function ReposTeamQueryOpts({
         }
       })
     },
-    initialPageParam: '',
-    getNextPageParam: (data) => {
-      if (data?.pageInfo?.hasNextPage) {
-        return data.pageInfo.endCursor
-      }
-      return null
-    },
+    getNextPageParam: (data) =>
+      data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+    ...options,
   })
-}
-
-export {
-  type Repository,
-  orderingOptions,
-  nonActiveOrderingOptions,
-  OrderingDirection,
-  ReposTeamQueryOpts,
-  TeamOrdering,
 }

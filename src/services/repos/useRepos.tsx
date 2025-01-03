@@ -5,7 +5,7 @@ import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'
 
-import { orderingOptions } from './orderingOptions'
+import { orderingOptions } from './config'
 
 const RepositorySchema = z
   .object({

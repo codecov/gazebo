@@ -1,25 +1,21 @@
-import {
-  QueryClientProvider as QueryClientProviderV5,
-  QueryClient as QueryClientV5,
-  useInfiniteQuery as useInfiniteQueryV5,
-} from '@tanstack/react-queryV5'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { MockInstance } from 'vitest'
 
-import { ReposTeamQueryOpts } from './ReposTeamQueryOpts'
+import { useReposTeam } from './useReposTeam'
 
-const queryClientV5 = new QueryClientV5({
+const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProviderV5 client={queryClientV5}>
+  <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/some-owner']}>
       <Route path="/:provider/:owner">{children}</Route>
     </MemoryRouter>
-  </QueryClientProviderV5>
+  </QueryClientProvider>
 )
 
 const repo1 = {
@@ -92,8 +88,8 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
-  queryClientV5.clear()
   server.resetHandlers()
+  queryClient.clear()
 })
 
 afterAll(() => {
@@ -133,14 +129,7 @@ describe('useReposTeam', () => {
     it('returns repositories', async () => {
       setup()
       const { result } = renderHook(
-        () =>
-          useInfiniteQueryV5(
-            ReposTeamQueryOpts({
-              provider: 'gh',
-              activated: true,
-              owner: 'codecov',
-            })
-          ),
+        () => useReposTeam({ activated: true, owner: 'codecov' }),
         { wrapper }
       )
 
@@ -156,7 +145,7 @@ describe('useReposTeam', () => {
               },
             },
           ],
-          pageParams: [''],
+          pageParams: [undefined],
         })
       )
     })
@@ -166,15 +155,7 @@ describe('useReposTeam', () => {
     it('returns repositories of the user', async () => {
       setup()
       const { result } = renderHook(
-        () =>
-          useInfiniteQueryV5(
-            ReposTeamQueryOpts({
-              provider: 'gh',
-              activated: true,
-              owner: 'codecov',
-              first: 2,
-            })
-          ),
+        () => useReposTeam({ owner: 'codecov', activated: true, first: 2 }),
         { wrapper }
       )
 
@@ -197,10 +178,13 @@ describe('useReposTeam', () => {
             {
               repos: [repo3, repo4],
               isCurrentUserPartOfOrg: true,
-              pageInfo: { hasNextPage: false, endCursor: 'aa' },
+              pageInfo: {
+                hasNextPage: false,
+                endCursor: 'aa',
+              },
             },
           ],
-          pageParams: ['', 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA='],
+          pageParams: [undefined, 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA='],
         })
       )
     })
@@ -220,24 +204,13 @@ describe('useReposTeam', () => {
     it('throws an error', async () => {
       setup({ invalidResponse: true })
       const { result } = renderHook(
-        () =>
-          useInfiniteQueryV5(
-            ReposTeamQueryOpts({
-              provider: 'gh',
-              activated: true,
-              owner: 'codecov',
-              first: 2,
-            })
-          ),
+        () => useReposTeam({ owner: 'codecov', activated: true, first: 2 }),
         { wrapper }
       )
 
       await waitFor(() =>
         expect(result.current.error).toEqual(
-          expect.objectContaining({
-            status: 404,
-            dev: 'ReposTeamQueryOpts - 404 Failed to parse schema',
-          })
+          expect.objectContaining({ status: 404 })
         )
       )
     })

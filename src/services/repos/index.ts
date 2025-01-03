@@ -1,2 +1,3 @@
 export * from './useRepos'
-export * from './orderingOptions'
+export * from './config'
+export * from './useReposTeam'

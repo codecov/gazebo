@@ -1,8 +1,4 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  QueryClientProvider as QueryClientProviderV5,
-  QueryClient as QueryClientV5,
-} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
@@ -20,34 +16,14 @@ import { repoDisplayOptions } from '../ListRepo'
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const queryClientV5 = new QueryClientV5({
-  defaultOptions: { queries: { retry: false } },
-})
-
-const wrapper =
-  (repoDisplay: string): React.FC<React.PropsWithChildren> =>
-  ({ children }) => (
-    <QueryClientProviderV5 client={queryClientV5}>
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gl']}>
-          <Route path="/:provider">
-            <ActiveContext.Provider value={repoDisplay}>
-              {children}
-            </ActiveContext.Provider>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    </QueryClientProviderV5>
-  )
-
 const server = setupServer()
+
 beforeAll(() => {
   server.listen()
 })
 
 afterEach(() => {
   queryClient.clear()
-  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -55,13 +31,22 @@ afterAll(() => {
   server.close()
 })
 
-interface SetupArgs {
-  edges: object[]
-  isCurrentUserPartOfOrg?: boolean
-}
+const wrapper =
+  (repoDisplay) =>
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gl']}>
+        <Route path="/:provider">
+          <ActiveContext.Provider value={repoDisplay}>
+            {children}
+          </ActiveContext.Provider>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 describe('ReposTableTeam', () => {
-  function setup({ edges = [], isCurrentUserPartOfOrg = true }: SetupArgs) {
+  function setup({ edges = [], isCurrentUserPartOfOrg = true }) {
     const mockApiVars = vi.fn()
     const fetchNextPage = vi.fn()
     const user = userEvent.setup()
@@ -95,13 +80,8 @@ describe('ReposTableTeam', () => {
   }
 
   describe('rendering table', () => {
-    interface EdgeArgs {
-      coverageEnabled?: boolean
-      bundleAnalysisEnabled?: boolean
-    }
-
     const edges = (
-      { coverageEnabled = true, bundleAnalysisEnabled = true }: EdgeArgs = {
+      { coverageEnabled, bundleAnalysisEnabled } = {
         coverageEnabled: true,
         bundleAnalysisEnabled: true,
       }
@@ -464,8 +444,15 @@ describe('ReposTableTeam', () => {
   })
 
   describe('when rendered empty repos', () => {
+    beforeEach(() => {
+      setup({
+        edges: [],
+        repoDisplayPassed: repoDisplayOptions.ALL.text,
+        privateAccess: true,
+      })
+    })
+
     it('renders no repos detected', async () => {
-      setup({ edges: [] })
       render(<ReposTableTeam searchValue="" />, {
         wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
@@ -482,8 +469,12 @@ describe('ReposTableTeam', () => {
   })
 
   describe('when rendered empty search', () => {
+    beforeEach(() => {
+      setup({
+        edges: [],
+      })
+    })
     it('renders no results found', async () => {
-      setup({ edges: [] })
       render(<ReposTableTeam searchValue="something" />, {
         wrapper: wrapper(repoDisplayOptions.ALL.text),
       })
@@ -920,14 +911,24 @@ describe('ReposTableTeam', () => {
 
 describe('getSortingOption', () => {
   it('returns the correct sorting options for name column', () => {
-    const nameAsc = getSortingOption([{ id: 'name', desc: false }])
+    const nameAsc = getSortingOption([
+      {
+        id: 'name',
+        desc: false,
+      },
+    ])
 
     expect(nameAsc).toEqual({
       ordering: TeamOrdering.NAME,
       direction: OrderingDirection.ASC,
     })
 
-    const nameDesc = getSortingOption([{ id: 'name', desc: true }])
+    const nameDesc = getSortingOption([
+      {
+        id: 'name',
+        desc: true,
+      },
+    ])
 
     expect(nameDesc).toEqual({
       ordering: TeamOrdering.NAME,
@@ -937,7 +938,10 @@ describe('getSortingOption', () => {
 
   it('returns the correct sorting options for last updated column', () => {
     const lastUpdatedAsc = getSortingOption([
-      { id: 'latestCommitAt', desc: false },
+      {
+        id: 'latestCommitAt',
+        desc: false,
+      },
     ])
 
     expect(lastUpdatedAsc).toEqual({
@@ -946,7 +950,10 @@ describe('getSortingOption', () => {
     })
 
     const lastUpdatedDesc = getSortingOption([
-      { id: 'latestCommitAt', desc: true },
+      {
+        id: 'latestCommitAt',
+        desc: true,
+      },
     ])
 
     expect(lastUpdatedDesc).toEqual({
