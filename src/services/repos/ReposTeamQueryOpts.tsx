@@ -159,7 +159,7 @@ function ReposTeamQueryOpts({
         }
       })
     },
-    initialPageParam: '',
+    initialPageParam: undefined as string | undefined,
     getNextPageParam: (data) => {
       if (data?.pageInfo?.hasNextPage) {
         return data.pageInfo.endCursor
