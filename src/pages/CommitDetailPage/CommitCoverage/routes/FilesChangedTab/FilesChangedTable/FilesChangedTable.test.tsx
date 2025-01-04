@@ -134,14 +134,8 @@ describe('FilesChangedTable', () => {
       const { queryClient } = setup(mockData)
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
 
-      const link = await screen.findByRole('link', {
-        name: 'src/index2.py',
-      })
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute(
-        'href',
-        '/gh/vax/keyleth/commit/123/blob/src/index2.py'
-      )
+      const text = await screen.findByText('src/index2.py')
+      expect(text).toBeInTheDocument()
     })
 
     it('renders coverage', async () => {

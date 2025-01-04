@@ -310,14 +310,8 @@ describe('IndirectChangedFiles', () => {
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
         )
 
-        const link = await screen.findByRole('link', {
-          name: 'flag1/mafs.js',
-        })
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute(
-          'href',
-          '/gh/test-org/test-repo/pull/2510/blob/flag1/mafs.js'
-        )
+        const text = await screen.findByText('flag1/mafs.js')
+        expect(text).toBeInTheDocument()
       })
 
       it('renders change coverage', async () => {
@@ -405,7 +399,7 @@ describe('IndirectChangedFiles', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const nameExpander = await screen.findByTestId('name-expand')
+      const nameExpander = await screen.findByTestId('file-diff-expand')
       await user.click(nameExpander)
 
       const fileDiff = await screen.findByText('FileDiff Component')

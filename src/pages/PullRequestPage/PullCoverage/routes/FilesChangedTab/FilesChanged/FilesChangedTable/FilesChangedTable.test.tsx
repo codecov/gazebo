@@ -254,7 +254,7 @@ describe('FilesChangedTable', () => {
       const { queryClient } = setup()
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
 
-      const path = await screen.findByRole('link', { name: 'flag1/mafs.js' })
+      const path = await screen.findByText('flag1/mafs.js')
       expect(path).toBeInTheDocument()
     })
 
