@@ -348,6 +348,7 @@ export default function FilesChangedTable() {
                   'cursor-pointer': !isDeletedFile,
                   'cursor-default': isDeletedFile,
                 })}
+                data-testid="file-diff-expand"
                 onClick={() => !isDeletedFile && row.toggleExpanded()}
                 {...(!isDeletedFile && { 'data-highlight-row': 'onHover' })}
               >

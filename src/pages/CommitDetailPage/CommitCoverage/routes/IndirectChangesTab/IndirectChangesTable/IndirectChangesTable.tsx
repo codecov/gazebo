@@ -37,10 +37,7 @@ function getColumns() {
         const isDeletedFile = row.original?.headCoverage === null
 
         return (
-          <div
-            className="flex items-center gap-2"
-            data-testid="file-diff-expand"
-          >
+          <div className="flex items-center gap-2">
             {!isDeletedFile ? (
               <div className="inline-flex items-center gap-1 font-sans">
                 <Icon
