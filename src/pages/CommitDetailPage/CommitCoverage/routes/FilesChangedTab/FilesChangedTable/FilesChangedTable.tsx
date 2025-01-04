@@ -82,18 +82,14 @@ function getColumns() {
         return (
           <div className="flex flex-row items-center break-all">
             {!isDeletedFile ? (
-              <div className="inline-flex items-center gap-1 font-sans">
-                <Icon
-                  size="md"
-                  name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
-                  variant="solid"
-                  className="flex-none"
-                />
-                <span>{headName}</span>
-              </div>
-            ) : (
-              <span>{headName}</span>
-            )}
+              <Icon
+                size="md"
+                name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
+                variant="solid"
+                className="flex-none"
+              />
+            ) : null}
+            <span>{headName}</span>
             {row.original?.isCriticalFile ? (
               <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Critical file

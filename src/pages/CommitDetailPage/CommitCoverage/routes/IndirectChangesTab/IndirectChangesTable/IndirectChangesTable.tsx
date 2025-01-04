@@ -39,21 +39,14 @@ function getColumns() {
         return (
           <div className="flex items-center gap-2">
             {!isDeletedFile ? (
-              <div className="inline-flex items-center gap-1 font-sans">
-                <Icon
-                  size="md"
-                  name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
-                  variant="solid"
-                  className="flex-none"
-                />
-                <span>{headName}</span>
-              </div>
-            ) : (
-              <span>{headName}</span>
-            )}
-            <div className="flex flex-col break-all">
-              <span>{headName}</span>
-            </div>
+              <Icon
+                size="md"
+                name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
+                variant="solid"
+                className="flex-none"
+              />
+            ) : null}
+            <span>{headName}</span>
             {row.original?.isCriticalFile ? (
               <span className="flex-none self-center rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Critical file
@@ -249,7 +242,7 @@ export default function FilesChangedTable() {
                       'cursor-default': isDeletedFile,
                     })}
                     data-testid="file-diff-expand"
-                    onClick={row.getToggleExpandedHandler()}
+                    onClick={() => !isDeletedFile && row.toggleExpanded()}
                     {...(!isDeletedFile && { 'data-highlight-row': 'onHover' })}
                   >
                     {row.getVisibleCells().map((cell) => {

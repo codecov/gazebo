@@ -188,7 +188,7 @@ export default function IndirectChangedFiles() {
                       'cursor-default': isDeletedFile,
                     })}
                     data-testid="file-diff-expand"
-                    onClick={row.getToggleExpandedHandler()}
+                    onClick={() => !isDeletedFile && row.toggleExpanded()}
                     {...(!isDeletedFile && { 'data-highlight-row': 'onHover' })}
                   >
                     {row.getVisibleCells().map((cell) => {
