@@ -87,6 +87,7 @@ function getColumns() {
                   size="md"
                   name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
                   variant="solid"
+                  className="flex-none"
                 />
                 <span>{headName}</span>
               </div>
@@ -271,7 +272,7 @@ export default function FilesChangedTable() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    getRowCanExpand: () => true,
+    getRowCanExpand: (row) => row.original?.headCoverage !== null, // deleted files are not expandable
   })
 
   if (isLoading || commit?.state === 'pending') {
@@ -295,7 +296,7 @@ export default function FilesChangedTable() {
   }
 
   return (
-    <div className="filelistui" data-highlight-row="onHover">
+    <div className="filelistui">
       <div>
         {table.getHeaderGroups().map((headerGroup) => (
           <div key={headerGroup.id} className="filelistui-thead">
@@ -338,38 +339,46 @@ export default function FilesChangedTable() {
             })}
           </div>
         ))}
-        {table.getRowModel().rows.map((row, i) => (
-          <Fragment key={i}>
-            <div
-              className="filelistui-row"
-              data-action="clickable"
-              data-testid="file-diff-expand"
-              onClick={() => row.toggleExpanded()}
-            >
-              {row.getVisibleCells().map((cell) => {
-                return (
-                  <div
-                    key={cell.id}
-                    {...(isNumericValue(cell.column.id)
-                      ? {
-                          'data-type': 'numeric',
-                        }
-                      : {})}
-                    className={cs({
-                      'w-6/12': cell.column.id === 'name',
-                      'w-2/12 justify-end	flex': cell.column.id !== 'name',
-                    })}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </div>
-                )
-              })}
-            </div>
-            <div data-expanded={row.getIsExpanded()}>
-              {row.getIsExpanded() ? <RenderSubComponent row={row} /> : null}
-            </div>
-          </Fragment>
-        ))}
+        {table.getRowModel().rows.map((row, i) => {
+          const isDeletedFile = row.original?.headCoverage === null
+          return (
+            <Fragment key={i}>
+              <div
+                className={cs('filelistui-row', {
+                  'cursor-pointer': !isDeletedFile,
+                  'cursor-default': isDeletedFile,
+                })}
+                onClick={() => !isDeletedFile && row.toggleExpanded()}
+                {...(!isDeletedFile && { 'data-highlight-row': 'onHover' })}
+              >
+                {row.getVisibleCells().map((cell) => {
+                  return (
+                    <div
+                      key={cell.id}
+                      {...(isNumericValue(cell.column.id)
+                        ? {
+                            'data-type': 'numeric',
+                          }
+                        : {})}
+                      className={cs({
+                        'w-6/12': cell.column.id === 'name',
+                        'w-2/12 justify-end	flex': cell.column.id !== 'name',
+                      })}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              <div data-expanded={row.getIsExpanded()}>
+                {row.getIsExpanded() ? <RenderSubComponent row={row} /> : null}
+              </div>
+            </Fragment>
+          )
+        })}
       </div>
     </div>
   )

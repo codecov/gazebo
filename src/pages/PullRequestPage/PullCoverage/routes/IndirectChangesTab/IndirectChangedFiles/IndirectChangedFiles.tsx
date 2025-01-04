@@ -12,7 +12,6 @@ import cs from 'classnames'
 import { Fragment, Suspense, useMemo, useState } from 'react'
 
 import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
-import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
@@ -45,19 +44,10 @@ function getColumns() {
       header: 'Name',
       cell: ({ getValue, row }) => {
         return (
-          <div className="flex cursor-pointer items-center gap-2">
+          <div className="flex items-center gap-2">
             <NameColumn row={row} getValue={() => ''}></NameColumn>
             <div className="flex flex-col break-all">
-              <A
-                hook={undefined}
-                isExternal={false}
-                to={{
-                  pageName: 'pullFileView',
-                  options: { pullId: row.original.pullId, tree: getValue() },
-                }}
-              >
-                {getValue()}
-              </A>
+              <span>{getValue()}</span>
             </div>
             {row.original.isCriticalFile ? (
               <span className="flex-none self-center rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
@@ -148,13 +138,13 @@ export default function IndirectChangedFiles() {
     getSortedRowModel: getSortedRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    getRowCanExpand: () => true,
+    getRowCanExpand: (row) => row.original?.headCoverage !== null, // deleted files are not expandable
   })
 
   return (
     <>
       <ToggleHeader />
-      <div className="filelistui" data-highlight-row="onHover">
+      <div className="filelistui">
         <div>
           {table.getHeaderGroups().map((headerGroup) => (
             <div key={headerGroup.id} className="filelistui-thead">
@@ -173,10 +163,7 @@ export default function IndirectChangedFiles() {
                       'justify-end w-2/12': header.id !== 'name',
                     })}
                   >
-                    <span
-                      className="text-ds-blue-darker"
-                      data-sort-direction={isSorted}
-                    >
+                    <span data-sort-direction={isSorted}>
                       <Icon name="arrowUp" size="sm" />
                     </span>
                     {flexRender(
@@ -191,38 +178,50 @@ export default function IndirectChangedFiles() {
           {isLoading ? (
             <Loader />
           ) : (
-            table.getRowModel().rows.map((row, i) => (
-              <Fragment key={i}>
-                <div className="filelistui-row">
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <div
-                        key={cell.id}
-                        {...(isNumericValue(cell.column.id)
-                          ? {
-                              'data-type': 'numeric',
-                            }
-                          : {})}
-                        className={cs({
-                          'w-6/12': cell.column.id === 'name',
-                          'flex justify-end w-2/12': cell.column.id !== 'name',
-                        })}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-                <div data-expanded={row.getIsExpanded()}>
-                  {row.getIsExpanded() ? (
-                    <RenderSubComponent row={row} />
-                  ) : null}
-                </div>
-              </Fragment>
-            ))
+            table.getRowModel().rows.map((row, i) => {
+              const isDeletedFile = row.original?.headCoverage === null
+              return (
+                <Fragment key={i}>
+                  <div
+                    className={cs('filelistui-row', {
+                      'cursor-pointer': !isDeletedFile,
+                      'cursor-default': isDeletedFile,
+                    })}
+                    data-testid="file-diff-expand"
+                    onClick={row.getToggleExpandedHandler()}
+                    {...(!isDeletedFile && { 'data-highlight-row': 'onHover' })}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <div
+                          key={cell.id}
+                          {...(isNumericValue(cell.column.id)
+                            ? {
+                                'data-type': 'numeric',
+                              }
+                            : {})}
+                          className={cs({
+                            'w-6/12': cell.column.id === 'name',
+                            'flex justify-end w-2/12':
+                              cell.column.id !== 'name',
+                          })}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div data-expanded={row.getIsExpanded()}>
+                    {row.getIsExpanded() ? (
+                      <RenderSubComponent row={row} />
+                    ) : null}
+                  </div>
+                </Fragment>
+              )
+            })
           )}
         </div>
       </div>

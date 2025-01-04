@@ -17,7 +17,6 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import { ImpactedFileType, useCommit } from 'services/commit/useCommit'
-import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
@@ -28,43 +27,35 @@ const columnHelper = createColumnHelper<ImpactedFileType>()
 
 const isNumericValue = (value: string) => value === 'head' || value === 'change'
 
-function getColumns({ commitid }: { commitid: string }) {
+function getColumns() {
   return [
     columnHelper.accessor('headName', {
       id: 'name',
       header: 'Name',
       cell: ({ getValue, row }) => {
         const headName = getValue()
+        const isDeletedFile = row.original?.headCoverage === null
 
         return (
           <div
-            className="flex cursor-pointer items-center gap-2"
+            className="flex items-center gap-2"
             data-testid="file-diff-expand"
-            onClick={() => row.toggleExpanded()}
           >
-            <span
-              className={cs({
-                'text-ds-blue-darker': row.getIsExpanded(),
-                'text-current': !row.getIsExpanded(),
-              })}
-            >
-              <Icon
-                size="md"
-                name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
-                variant="solid"
-              />
-            </span>
+            {!isDeletedFile ? (
+              <div className="inline-flex items-center gap-1 font-sans">
+                <Icon
+                  size="md"
+                  name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
+                  variant="solid"
+                  className="flex-none"
+                />
+                <span>{headName}</span>
+              </div>
+            ) : (
+              <span>{headName}</span>
+            )}
             <div className="flex flex-col break-all">
-              <A
-                hook="commit-file-diff"
-                isExternal={false}
-                to={{
-                  pageName: 'commitFileDiff',
-                  options: { commit: commitid, tree: headName },
-                }}
-              >
-                {headName}
-              </A>
+              <span>{headName}</span>
             </div>
             {row.original?.isCriticalFile ? (
               <span className="flex-none self-center rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
@@ -183,7 +174,7 @@ export default function FilesChangedTable() {
   }, [commitData?.commit?.compareWithParent])
 
   const table = useReactTable({
-    columns: getColumns({ commitid: commitSha }),
+    columns: getColumns(),
     data,
     state: {
       expanded,
@@ -191,6 +182,7 @@ export default function FilesChangedTable() {
     onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
+    getRowCanExpand: (row) => row.original?.headCoverage !== null, // deleted files are not expandable
   })
 
   if (commitData?.commit?.state === 'pending') {
@@ -223,7 +215,7 @@ export default function FilesChangedTable() {
   return (
     <>
       <ToggleHeader />
-      <div className="filelistui" data-highlight-row="onHover">
+      <div className="filelistui">
         <div>
           {table.getHeaderGroups().map((headerGroup) => (
             <div key={headerGroup.id} className="filelistui-thead">
@@ -250,39 +242,50 @@ export default function FilesChangedTable() {
           {isLoading ? (
             <Loader />
           ) : (
-            table.getRowModel().rows.map((row, i) => (
-              <Fragment key={i}>
-                <div className="filelistui-row">
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <div
-                        key={cell.id}
-                        {...(isNumericValue(cell.column.id)
-                          ? {
-                              'data-type': 'numeric',
-                            }
-                          : {})}
-                        className={cs({
-                          'w-8/12': cell.column.id === 'name',
-                          'flex justify-end': cell.column.id !== 'name',
-                          'w-3/12': cell.column.id === 'change',
-                        })}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-                <div data-expanded={row.getIsExpanded()}>
-                  {row.getIsExpanded() ? (
-                    <RenderSubComponent row={row} />
-                  ) : null}
-                </div>
-              </Fragment>
-            ))
+            table.getRowModel().rows.map((row, i) => {
+              const isDeletedFile = row.original?.headCoverage === null
+              return (
+                <Fragment key={i}>
+                  <div
+                    className={cs('filelistui-row', {
+                      'cursor-pointer': !isDeletedFile,
+                      'cursor-default': isDeletedFile,
+                    })}
+                    data-testid="file-diff-expand"
+                    onClick={row.getToggleExpandedHandler()}
+                    {...(!isDeletedFile && { 'data-highlight-row': 'onHover' })}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <div
+                          key={cell.id}
+                          {...(isNumericValue(cell.column.id)
+                            ? {
+                                'data-type': 'numeric',
+                              }
+                            : {})}
+                          className={cs({
+                            'w-8/12': cell.column.id === 'name',
+                            'flex justify-end': cell.column.id !== 'name',
+                            'w-3/12': cell.column.id === 'change',
+                          })}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div data-expanded={row.getIsExpanded()}>
+                    {row.getIsExpanded() ? (
+                      <RenderSubComponent row={row} />
+                    ) : null}
+                  </div>
+                </Fragment>
+              )
+            })
           )}
         </div>
       </div>
