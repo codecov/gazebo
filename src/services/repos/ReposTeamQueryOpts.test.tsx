@@ -100,7 +100,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('useReposTeam', () => {
+describe('ReposTeamQueryOpts', () => {
   function setup({ invalidResponse = false } = {}) {
     server.use(
       graphql.query('GetReposTeam', (info) => {
@@ -156,7 +156,7 @@ describe('useReposTeam', () => {
               },
             },
           ],
-          pageParams: [undefined],
+          pageParams: [''],
         })
       )
     })
@@ -200,7 +200,7 @@ describe('useReposTeam', () => {
               pageInfo: { hasNextPage: false, endCursor: 'aa' },
             },
           ],
-          pageParams: [undefined, 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA='],
+          pageParams: ['', 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA='],
         })
       )
     })

@@ -1,11 +1,17 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { infiniteQueryOptions as infiniteQueryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 import { mapEdges } from 'shared/utils/graphql'
 
-import { orderingOptions } from './orderingOptions'
+import {
+  nonActiveOrderingOptions,
+  OrderingDirection,
+  orderingOptions,
+  TeamOrdering,
+} from './orderingOptions'
 
 const RepositorySchema = z
   .object({
@@ -30,7 +36,7 @@ const RepositorySchema = z
   })
   .nullable()
 
-export type RepositoryResult = z.infer<typeof RepositorySchema>
+type RepositoryResult = z.infer<typeof RepositorySchema>
 
 const RequestSchema = z.object({
   owner: z
@@ -101,7 +107,7 @@ const query = `query ReposForOwner(
   }
 }`
 
-interface UseReposArgs {
+interface ReposQueryArgs {
   provider: string
   owner: string
   activated?: boolean
@@ -115,7 +121,7 @@ interface UseReposArgs {
   isPublic?: true | false | null
 }
 
-export function useRepos({
+function ReposQueryOpts({
   provider,
   owner,
   activated,
@@ -124,8 +130,7 @@ export function useRepos({
   first = 20,
   repoNames,
   isPublic = null, // by default, get both public and private repos
-  ...options
-}: UseReposArgs) {
+}: ReposQueryArgs) {
   const variables = {
     filters: { activated, term, repoNames, isPublic },
     ordering: sortItem?.ordering,
@@ -133,7 +138,7 @@ export function useRepos({
     first,
   }
 
-  return useInfiniteQuery({
+  return infiniteQueryOptionsV5({
     queryKey: ['repos', provider, owner, variables],
     queryFn: ({ pageParam, signal }) => {
       return Api.graphql({
@@ -143,27 +148,37 @@ export function useRepos({
         variables: {
           ...variables,
           owner,
-          after: pageParam,
+          after: pageParam === '' ? undefined : pageParam,
         },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
         if (!parsedRes.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
-            data: null,
+            data: {},
+            dev: 'ReposQueryOpts - 404 Failed to parse schema',
+            error: parsedRes.error,
           })
         }
 
-        const owner = parsedRes?.data?.owner
         return {
-          repos: mapEdges(owner?.repositories),
-          pageInfo: owner?.repositories?.pageInfo,
+          repos: mapEdges(parsedRes?.data?.owner?.repositories),
+          pageInfo: parsedRes?.data?.owner?.repositories?.pageInfo,
         }
       })
     },
-    suspense: false,
-    getNextPageParam: (data) =>
-      data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
-    ...options,
+    initialPageParam: '',
+    getNextPageParam: (data) => {
+      return data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : null
+    },
   })
+}
+
+export {
+  type RepositoryResult,
+  ReposQueryOpts,
+  orderingOptions,
+  OrderingDirection,
+  TeamOrdering,
+  nonActiveOrderingOptions,
 }

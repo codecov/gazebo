@@ -4,9 +4,9 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import {
-  useSuspenseQuery as useSuspenseQueryV5,
   useInfiniteQuery as useInfiniteQueryV5,
   useQueryClient as useQueryClientV5,
+  useSuspenseQuery as useSuspenseQueryV5,
 } from '@tanstack/react-queryV5'
 import {
   createColumnHelper,

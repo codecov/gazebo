@@ -136,7 +136,7 @@ function ReposTeamQueryOpts({
         variables: {
           ...variables,
           owner,
-          after: pageParam,
+          after: pageParam === '' ? undefined : pageParam,
         },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
@@ -159,7 +159,7 @@ function ReposTeamQueryOpts({
         }
       })
     },
-    initialPageParam: undefined as string | undefined,
+    initialPageParam: '',
     getNextPageParam: (data) => {
       if (data?.pageInfo?.hasNextPage) {
         return data.pageInfo.endCursor
