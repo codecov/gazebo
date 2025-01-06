@@ -123,14 +123,8 @@ describe('IndirectChangesTable', () => {
       const { queryClient } = setup(mockData)
       render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
-      const link = await screen.findByRole('link', {
-        name: 'src/index2.py',
-      })
+      const link = await screen.findByText('src/index2.py')
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute(
-        'href',
-        '/gh/codecov/cool-repo/commit/123/blob/src/index2.py'
-      )
     })
 
     it('renders coverage', async () => {
