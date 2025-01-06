@@ -22,6 +22,8 @@ const freePlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanMonthly = {
@@ -36,6 +38,8 @@ const proPlanMonthly = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanYearly = {
@@ -50,6 +54,8 @@ const proPlanYearly = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const server = setupServer()
@@ -139,6 +145,7 @@ describe('UpdateButton', () => {
           pretrialUsersCount: 0,
           isEnterprisePlan: false,
           isProPlan: false,
+          isSentryPlan: false,
           isTrialPlan: false,
         }
         if (planValue.value === Plans.USERS_BASIC) {

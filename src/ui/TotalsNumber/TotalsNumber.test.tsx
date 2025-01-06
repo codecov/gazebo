@@ -137,6 +137,25 @@ describe('TotalsNumber', () => {
 
       const changeValue = screen.getByTestId('change-value')
       expect(changeValue).toHaveTextContent('0')
+      expect(changeValue).not.toHaveClass("before:content-['+']")
+
+      const numberValue = screen.getByTestId('number-value')
+      expect(numberValue).toHaveClass('bg-ds-coverage-covered')
+    })
+
+    it('does not render + sign for zero value', () => {
+      render(
+        <TotalsNumber
+          value={0}
+          variant="default"
+          showChange
+          data-testid="change-value"
+        />
+      )
+
+      const changeValue = screen.getByTestId('change-value')
+      expect(changeValue).toHaveTextContent('0')
+      expect(changeValue).not.toHaveClass("before:content-['+']")
 
       const numberValue = screen.getByTestId('number-value')
       expect(numberValue).toHaveClass('bg-ds-coverage-covered')

@@ -22,7 +22,6 @@ import {
   OrderingParameter,
   usePull,
 } from 'services/pull/usePull'
-import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
@@ -84,7 +83,7 @@ export function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
   return undefined
 }
 
-function getColumns({ pullId }: { pullId: string }) {
+function getColumns() {
   return [
     columnHelper.accessor('headName', {
       id: 'name',
@@ -96,37 +95,14 @@ function getColumns({ pullId }: { pullId: string }) {
         return (
           <div className="flex flex-row items-center break-all">
             {!isDeletedFile ? (
-              <span
-                data-action="clickable"
-                data-testid="file-diff-expand"
-                className={cs(
-                  'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
-                  {
-                    'text-ds-blue-default': row.getIsExpanded(),
-                  }
-                )}
-                onClick={row.getToggleExpandedHandler()}
-              >
-                <Icon
-                  size="md"
-                  name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
-                  variant="solid"
-                />
-              </span>
+              <Icon
+                size="md"
+                name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
+                variant="solid"
+                className="flex-none"
+              />
             ) : null}
-            {isDeletedFile ? (
-              <>{headName}</>
-            ) : (
-              /* @ts-expect-error - A hasn't been typed yet */
-              <A
-                to={{
-                  pageName: 'pullFileView',
-                  options: { pullId, tree: headName },
-                }}
-              >
-                {headName}
-              </A>
-            )}
+            <span>{headName}</span>
             {row.original?.isCriticalFile ? (
               <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Critical file
@@ -292,7 +268,7 @@ export default function FilesChangedTable() {
   }, [data, currentlySelectedFile])
 
   const table = useReactTable({
-    columns: getColumns({ pullId }),
+    columns: getColumns(),
     data,
     state: {
       expanded,
@@ -303,7 +279,7 @@ export default function FilesChangedTable() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    getRowCanExpand: () => true,
+    getRowCanExpand: (row) => row.original?.headCoverage !== null, // deleted files are not expandable
   })
 
   if (mostRecentCompare?.state === 'pending') {
@@ -315,7 +291,7 @@ export default function FilesChangedTable() {
   }
 
   return (
-    <div className="filelistui" data-highlight-row="onHover">
+    <div className="filelistui">
       <div>
         {table.getHeaderGroups().map((headerGroup) => (
           <div key={headerGroup.id} className="filelistui-thead">
@@ -361,36 +337,49 @@ export default function FilesChangedTable() {
         {isLoading ? (
           <Loader />
         ) : (
-          table.getRowModel().rows.map((row, i) => (
-            <Fragment key={i}>
-              <div className="filelistui-row">
-                {row.getVisibleCells().map((cell) => {
-                  return (
-                    <div
-                      key={cell.id}
-                      {...(isNumericValue(cell.column.id)
-                        ? {
-                            'data-type': 'numeric',
-                          }
-                        : {})}
-                      className={cs({
-                        'w-8/12': cell.column.id === 'name',
-                        'w-1/12 justify-end	flex': cell.column.id !== 'name',
-                      })}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-              <div data-expanded={row.getIsExpanded()}>
-                {row.getIsExpanded() ? <RenderSubComponent row={row} /> : null}
-              </div>
-            </Fragment>
-          ))
+          table.getRowModel().rows.map((row, i) => {
+            const isDeletedFile = row.original?.headCoverage === null
+            return (
+              <Fragment key={i}>
+                <div
+                  className={cs('filelistui-row', {
+                    'cursor-pointer': !isDeletedFile,
+                    'cursor-default': isDeletedFile,
+                  })}
+                  data-testid="file-diff-expand"
+                  onClick={() => !isDeletedFile && row.toggleExpanded()}
+                  data-highlight-row={!isDeletedFile ? 'onHover' : undefined}
+                >
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <div
+                        key={cell.id}
+                        {...(isNumericValue(cell.column.id)
+                          ? {
+                              'data-type': 'numeric',
+                            }
+                          : {})}
+                        className={cs({
+                          'w-8/12': cell.column.id === 'name',
+                          'w-1/12 justify-end	flex': cell.column.id !== 'name',
+                        })}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+                <div data-expanded={row.getIsExpanded()}>
+                  {row.getIsExpanded() ? (
+                    <RenderSubComponent row={row} />
+                  ) : null}
+                </div>
+              </Fragment>
+            )
+          })
         )}
       </div>
     </div>
