@@ -156,7 +156,7 @@ describe('ReposTeamQueryOpts', () => {
               },
             },
           ],
-          pageParams: [undefined],
+          pageParams: [''],
         })
       )
     })
@@ -200,7 +200,7 @@ describe('ReposTeamQueryOpts', () => {
               pageInfo: { hasNextPage: false, endCursor: 'aa' },
             },
           ],
-          pageParams: [undefined, 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA='],
+          pageParams: ['', 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA='],
         })
       )
     })
