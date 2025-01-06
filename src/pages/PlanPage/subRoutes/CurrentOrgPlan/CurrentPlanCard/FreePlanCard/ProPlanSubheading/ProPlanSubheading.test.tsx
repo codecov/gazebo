@@ -24,8 +24,9 @@ const mockResponse = {
   planUserCount: 1,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
-  isProPlan: false,
   isFreePlan: true,
+  isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: false,
 }
 

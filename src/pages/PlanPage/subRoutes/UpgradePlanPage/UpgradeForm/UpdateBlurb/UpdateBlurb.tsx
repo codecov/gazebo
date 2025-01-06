@@ -1,5 +1,5 @@
 import { IndividualPlan, Plan } from 'services/account'
-import { BillingRate, Plans } from 'shared/utils/billing'
+import { BillingRate } from 'shared/utils/billing'
 
 const UpdateBlurb = ({
   currentPlan,
@@ -14,8 +14,7 @@ const UpdateBlurb = ({
 }) => {
   const currentIsFree = currentPlan?.isFreePlan
   const currentIsTeam = currentPlan?.isTeamPlan
-  const selectedIsTeam =
-    newPlan?.value === Plans.USERS_TEAMM || newPlan?.value === Plans.USERS_TEAMY
+  const selectedIsTeam = newPlan?.isTeamPlan
   const diffPlanType = currentIsFree || currentIsTeam !== selectedIsTeam
 
   const currentIsAnnual = currentPlan?.billingRate === BillingRate.ANNUALLY

@@ -33,6 +33,7 @@ const proPlanMonth = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: true,
+  isSentryPlan: false,
   isTeamPlan: false,
   isTrialPlan: false,
 }
@@ -55,6 +56,7 @@ const trialPlan = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: false,
   isTrialPlan: true,
 }
@@ -76,6 +78,7 @@ const basicPlan = {
   planUserCount: 1,
   isFreePlan: true,
   isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: false,
   isTrialPlan: false,
 }
@@ -169,6 +172,7 @@ describe('TrialBanner', () => {
                 isProPlan: plan.isProPlan,
                 isTeamPlan: plan.isTeamPlan,
                 isTrialPlan: plan.isTrialPlan,
+                isSentryPlan: plan.isSentryPlan,
               },
             },
           },

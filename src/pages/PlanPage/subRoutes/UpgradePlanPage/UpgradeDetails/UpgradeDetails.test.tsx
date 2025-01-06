@@ -28,6 +28,8 @@ const proPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanMonth = {
@@ -42,6 +44,8 @@ const proPlanMonth = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const sentryPlanYear = {
@@ -56,6 +60,8 @@ const sentryPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const sentryPlanMonth = {
@@ -70,6 +76,8 @@ const sentryPlanMonth = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isSentryPlan: true,
+  isTeamPlan: false,
 }
 
 const teamPlanYear = {
@@ -79,6 +87,8 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanMonth = {
@@ -88,6 +98,8 @@ const teamPlanMonth = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 type WrapperClosure = (
