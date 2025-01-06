@@ -22,9 +22,9 @@ const BundleAnalysisReportSchema = z.object({
   isCached: z.boolean(),
 })
 
-const BundleAnalysisReportUnion = z.union([
+const BundleAnalysisReportUnion = z.discriminatedUnion('__typename', [
   BundleAnalysisReportSchema,
-  MissingHeadReportSchema.shape.__typename,
+  z.object({ __typename: MissingHeadReportSchema.shape.__typename }),
 ])
 
 const BundleAnalysisComparisonResult = z.union([
