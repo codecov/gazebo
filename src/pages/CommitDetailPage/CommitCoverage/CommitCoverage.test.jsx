@@ -317,10 +317,6 @@ const mockCommitPageData = (
                 : 'Comparison',
         },
         bundleAnalysis: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            isCached: false,
-          },
           bundleAnalysisCompareWithParent: {
             __typename: 'BundleAnalysisComparison',
           },

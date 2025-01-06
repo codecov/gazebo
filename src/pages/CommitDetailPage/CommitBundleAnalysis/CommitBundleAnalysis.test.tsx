@@ -41,10 +41,6 @@ const mockCommitPageData = ({
           __typename: 'Comparison',
         },
         bundleAnalysis: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            isCached: false,
-          },
           bundleAnalysisCompareWithParent: {
             __typename: firstPullRequest
               ? 'FirstPullRequest'

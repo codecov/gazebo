@@ -17,16 +17,6 @@ import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
-const BundleAnalysisReportSchema = z.object({
-  __typename: z.literal('BundleAnalysisReport'),
-  isCached: z.boolean(),
-})
-
-const BundleAnalysisReportUnion = z.union([
-  BundleAnalysisReportSchema,
-  MissingHeadReportSchema.shape.__typename,
-])
-
 const BundleAnalysisComparisonResult = z.union([
   z.literal('BundleAnalysisComparison'),
   FirstPullRequestSchema.shape.__typename,
@@ -64,7 +54,6 @@ const RepositorySchema = z.object({
         .nullable(),
       bundleAnalysis: z
         .object({
-          bundleAnalysisReport: BundleAnalysisReportUnion.nullable(),
           bundleAnalysisCompareWithParent: z
             .object({
               __typename: BundleAnalysisComparisonResult,
@@ -109,12 +98,6 @@ query CommitPageData($owner: String!, $repo: String!, $commitId: String!) {
             __typename
           }
           bundleAnalysis {
-            bundleAnalysisReport {
-              __typename
-              ... on BundleAnalysisReport {
-                isCached
-              }
-            }
             bundleAnalysisCompareWithParent {
               __typename
             }
@@ -129,8 +112,7 @@ query CommitPageData($owner: String!, $repo: String!, $commitId: String!) {
       }
     }
   }
-}
-`
+}`
 
 interface CommitPageDataQueryArgs {
   provider: string
