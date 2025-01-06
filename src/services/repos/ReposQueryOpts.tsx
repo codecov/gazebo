@@ -132,7 +132,7 @@ function ReposQueryOpts({
   isPublic = null, // by default, get both public and private repos
 }: ReposQueryArgs) {
   const variables = {
-    filters: { activated, term, repoNames, isPublic: Boolean(isPublic) },
+    filters: { activated, term, repoNames, isPublic },
     ordering: sortItem?.ordering,
     direction: sortItem?.direction,
     first,
