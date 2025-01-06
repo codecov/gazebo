@@ -21,6 +21,8 @@ const freePlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanMonthly = {
@@ -35,6 +37,8 @@ const proPlanMonthly = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const teamPlanMonthly = {
@@ -44,6 +48,8 @@ const teamPlanMonthly = {
   baseUnitPrice: 5,
   benefits: ['Patch coverage analysis'],
   monthlyUploadLimit: null,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanYearly = {
@@ -53,6 +59,8 @@ const teamPlanYearly = {
   baseUnitPrice: 4,
   benefits: ['Patch coverage analysis'],
   monthlyUploadLimit: null,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const availablePlans = [

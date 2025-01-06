@@ -48,6 +48,8 @@ const mockPullPageData = (
           bundleAnalysis: {
             bundleAnalysisReport: {
               __typename: headBundleType,
+              isCached:
+                headBundleType === 'BundleAnalysisReport' ? false : undefined,
             },
           },
         },

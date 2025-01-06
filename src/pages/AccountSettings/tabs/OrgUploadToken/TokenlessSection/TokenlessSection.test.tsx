@@ -99,7 +99,9 @@ describe('TokenlessSection', () => {
     setup()
     render(<TokenlessSection />, { wrapper })
 
-    const title = await screen.findByText('Token authentication')
+    const title = await screen.findByText(
+      'Token authentication for public repositories'
+    )
     expect(title).toBeInTheDocument()
   })
 
@@ -126,7 +128,7 @@ describe('TokenlessSection', () => {
     render(<TokenlessSection />, { wrapper })
 
     const notRequiredDescription = await screen.findByText(
-      'When a token is not required, your team can upload coverage reports without one. Existing tokens will still work, and no action is needed for past uploads. Designed for public open-source projects.'
+      'When a token is not required, your team can upload coverage reports without one. Existing tokens will still work, and no action is needed for past uploads.'
     )
     expect(notRequiredDescription).toBeInTheDocument()
   })
@@ -136,7 +138,7 @@ describe('TokenlessSection', () => {
     render(<TokenlessSection />, { wrapper })
 
     const requiredDescription = await screen.findByText(
-      'When a token is required, your team must use a global or repo-specific token for uploads. Designed for private repositories and closed-source projects.'
+      'When a token is required, your team must use a global or repo-specific token for uploads.'
     )
     expect(requiredDescription).toBeInTheDocument()
   })

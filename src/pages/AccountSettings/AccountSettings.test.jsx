@@ -168,6 +168,7 @@ describe('AccountSettings', () => {
                   planValue === Plans.USERS_TEAMM ||
                   planValue === Plans.USERS_TEAMY,
                 isTrialPlan: false,
+                isSentryPlan: false,
               },
             },
           },

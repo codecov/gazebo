@@ -8,6 +8,8 @@ const IndividualPlanSchema = z.object({
   baseUnitPrice: z.number(),
   benefits: z.array(z.string()),
   billingRate: z.nativeEnum(BillingRate).nullish(),
+  isTeamPlan: z.boolean(),
+  isSentryPlan: z.boolean(),
   marketingName: z.string(),
   monthlyUploadLimit: z.number().nullable(),
   value: z.nativeEnum(Plans),
@@ -32,6 +34,8 @@ const query = `
         baseUnitPrice
         benefits
         billingRate
+        isSentryPlan
+        isTeamPlan
         marketingName
         monthlyUploadLimit
         value
