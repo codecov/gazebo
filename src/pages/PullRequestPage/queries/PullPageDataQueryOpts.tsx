@@ -22,6 +22,11 @@ const BundleAnalysisReportSchema = z.object({
   isCached: z.boolean(),
 })
 
+const BundleAnalysisReportUnion = z.discriminatedUnion('__typename', [
+  BundleAnalysisReportSchema,
+  z.object({ __typename: MissingHeadReportSchema.shape.__typename }),
+])
+
 const BundleAnalysisComparisonResult = z.union([
   z.literal('BundleAnalysisComparison'),
   FirstPullRequestSchema.shape.__typename,
@@ -53,12 +58,7 @@ const RepositorySchema = z.object({
           commitid: z.string(),
           bundleAnalysis: z
             .object({
-              bundleAnalysisReport: z
-                .discriminatedUnion('__typename', [
-                  BundleAnalysisReportSchema,
-                  z.object({ __typename: z.literal('MissingHeadReport') }),
-                ])
-                .nullable(),
+              bundleAnalysisReport: BundleAnalysisReportUnion.nullable(),
             })
             .nullable(),
         })
