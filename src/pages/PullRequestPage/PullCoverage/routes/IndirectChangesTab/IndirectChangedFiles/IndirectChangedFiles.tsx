@@ -189,7 +189,7 @@ export default function IndirectChangedFiles() {
                     })}
                     data-testid="file-diff-expand"
                     onClick={() => !isDeletedFile && row.toggleExpanded()}
-                    {...(!isDeletedFile && { 'data-highlight-row': 'onHover' })}
+                    data-highlight-row={!isDeletedFile ? 'onHover' : undefined}
                   >
                     {row.getVisibleCells().map((cell) => {
                       return (
