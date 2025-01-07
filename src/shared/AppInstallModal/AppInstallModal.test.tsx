@@ -89,4 +89,95 @@ describe('AppInstallModal', () => {
       expect(onComplete).toHaveBeenCalled()
     })
   })
+
+  describe('when isShareRequestVersion is true (default)', () => {
+    it('renders share request version of modal', () => {
+      render(
+        <AppInstallModal
+          isOpen={true}
+          onClose={onClose}
+          onComplete={onComplete}
+        />
+      )
+
+      expect(
+        screen.getByText('Share GitHub app installation')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          "Copy the link below and share it with your organization's admin or owner to assist."
+        )
+      ).toBeInTheDocument()
+
+      const doneButton = screen.getByText('Done')
+      expect(doneButton).toBeInTheDocument()
+      expect(screen.queryByText('Cancel')).not.toBeInTheDocument()
+    })
+
+    it('calls onComplete when Done button is clicked', async () => {
+      render(
+        <AppInstallModal
+          isOpen={true}
+          onClose={onClose}
+          onComplete={onComplete}
+        />
+      )
+
+      await userEvent.click(screen.getByText('Done'))
+      expect(onComplete).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('when isShareRequestVersion is false', () => {
+    it('renders install version of modal', () => {
+      render(
+        <AppInstallModal
+          isOpen={true}
+          isShareRequestVersion={false}
+          onClose={onClose}
+          onComplete={onComplete}
+        />
+      )
+
+      expect(screen.getByText('Install Codecov app')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'You need to install Codecov app on your GitHub organization as an admin.'
+        )
+      ).toBeInTheDocument()
+
+      expect(screen.getByText('Cancel')).toBeInTheDocument()
+      expect(
+        screen.getByText('Install Codecov app via GitHub')
+      ).toBeInTheDocument()
+    })
+
+    it('calls onClose when Cancel button is clicked', async () => {
+      render(
+        <AppInstallModal
+          isOpen={true}
+          isShareRequestVersion={false}
+          onClose={onClose}
+          onComplete={onComplete}
+        />
+      )
+
+      await userEvent.click(screen.getByText('Cancel'))
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('calls onComplete when Install button is clicked', async () => {
+      render(
+        <AppInstallModal
+          isOpen={true}
+          isShareRequestVersion={false}
+          onClose={onClose}
+          onComplete={onComplete}
+        />
+      )
+
+      await userEvent.click(screen.getByText('Install Codecov app via GitHub'))
+      expect(onComplete).toHaveBeenCalledTimes(1)
+    })
+  })
 })
