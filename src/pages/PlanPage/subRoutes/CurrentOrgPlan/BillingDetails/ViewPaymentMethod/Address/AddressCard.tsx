@@ -1,16 +1,11 @@
-import { useState } from 'react'
 import { z } from 'zod'
 
 import {
   BillingDetailsSchema,
   SubscriptionDetailSchema,
 } from 'services/account'
-import A from 'ui/A'
-import Button from 'ui/Button'
-import Icon from 'ui/Icon'
-
-import AddressForm from './AddressForm'
 import { cn } from 'shared/utils/cn'
+import Button from 'ui/Button'
 
 interface AddressCardProps {
   isEditMode: boolean
@@ -22,11 +17,8 @@ interface AddressCardProps {
 }
 
 function AddressCard({
-  isEditMode,
   setEditMode,
   subscriptionDetail,
-  provider,
-  owner,
   className,
 }: AddressCardProps) {
   const billingDetails =
@@ -36,22 +28,11 @@ function AddressCard({
 
   return (
     <div className={cn('flex gap-2', className)}>
-      {isEditMode && (
-        <AddressForm
-          name={billingDetails?.name || ''}
-          address={billingDetails?.address}
-          provider={provider}
-          owner={owner}
-          closeForm={() => setEditMode(false)}
-        />
-      )}
-      {!isEditMode && (
-        <BillingInner
-          billingDetails={billingDetails}
-          setEditMode={setEditMode}
-          isAddressSameAsPrimary={isAddressSameAsPrimary}
-        />
-      )}
+      <BillingInner
+        billingDetails={billingDetails}
+        setEditMode={setEditMode}
+        isAddressSameAsPrimary={isAddressSameAsPrimary}
+      />
     </div>
   )
 }

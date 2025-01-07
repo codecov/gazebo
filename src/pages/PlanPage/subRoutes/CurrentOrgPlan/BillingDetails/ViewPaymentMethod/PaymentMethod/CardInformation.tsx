@@ -37,14 +37,9 @@ type CardBrand = keyof typeof cardBrands
 
 interface CardInformationProps {
   subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
-  card: {
-    brand: string
-    last4: string
-    expMonth: number
-    expYear: number
-  }
 }
-function CardInformation({ subscriptionDetail, card }: CardInformationProps) {
+function CardInformation({ subscriptionDetail }: CardInformationProps) {
+  const card = subscriptionDetail?.defaultPaymentMethod?.card
   const typeCard = cardBrands[card?.brand as CardBrand] ?? cardBrands.fallback
   let nextBilling = null
 

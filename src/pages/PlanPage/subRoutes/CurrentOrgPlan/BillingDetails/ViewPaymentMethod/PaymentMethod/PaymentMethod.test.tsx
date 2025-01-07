@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 import { Plans } from 'shared/utils/billing'
 
-import PaymentCard from './PaymentCard'
+import PaymentMethod from './PaymentMethod'
 
 const mocks = vi.hoisted(() => ({
   useUpdateCard: vi.fn(),
@@ -66,7 +66,11 @@ describe('PaymentCard', () => {
     // BillingDetails.tsx if there is no subscriptionDetail
     it('renders the set card message', () => {
       render(
-        <PaymentCard subscriptionDetail={null} provider="gh" owner="codecov" />
+        <PaymentMethod
+          subscriptionDetail={null}
+          provider="gh"
+          owner="codecov"
+        />
       )
 
       expect(
@@ -80,7 +84,7 @@ describe('PaymentCard', () => {
   describe(`when the user doesn't have any card`, () => {
     it('renders an error message', () => {
       render(
-        <PaymentCard
+        <PaymentMethod
           subscriptionDetail={{
             ...subscriptionDetail,
             defaultPaymentMethod: null,
@@ -102,7 +106,7 @@ describe('PaymentCard', () => {
       it(`doesn't render the card anymore`, async () => {
         const { user } = setup()
         render(
-          <PaymentCard
+          <PaymentMethod
             subscriptionDetail={{
               ...subscriptionDetail,
               defaultPaymentMethod: null,
@@ -125,7 +129,7 @@ describe('PaymentCard', () => {
       it('renders the form', async () => {
         const { user } = setup()
         render(
-          <PaymentCard
+          <PaymentMethod
             subscriptionDetail={{
               ...subscriptionDetail,
               defaultPaymentMethod: null,
@@ -152,7 +156,7 @@ describe('PaymentCard', () => {
   describe('when the user have a card', () => {
     it('renders the card', () => {
       render(
-        <PaymentCard
+        <PaymentMethod
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
@@ -166,7 +170,7 @@ describe('PaymentCard', () => {
 
     it('renders the next billing', () => {
       render(
-        <PaymentCard
+        <PaymentMethod
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
@@ -181,7 +185,7 @@ describe('PaymentCard', () => {
   describe('when the subscription is set to expire', () => {
     it(`doesn't render the next billing`, () => {
       render(
-        <PaymentCard
+        <PaymentMethod
           subscriptionDetail={{
             ...subscriptionDetail,
             cancelAtPeriodEnd: true,
@@ -206,7 +210,7 @@ describe('PaymentCard', () => {
       })
 
       render(
-        <PaymentCard
+        <PaymentMethod
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
@@ -226,7 +230,7 @@ describe('PaymentCard', () => {
         isLoading: false,
       })
       render(
-        <PaymentCard
+        <PaymentMethod
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
@@ -249,7 +253,7 @@ describe('PaymentCard', () => {
           isLoading: false,
         })
         render(
-          <PaymentCard
+          <PaymentMethod
             subscriptionDetail={subscriptionDetail}
             provider="gh"
             owner="codecov"
@@ -271,7 +275,7 @@ describe('PaymentCard', () => {
           isLoading: false,
         })
         render(
-          <PaymentCard
+          <PaymentMethod
             subscriptionDetail={subscriptionDetail}
             provider="gh"
             owner="codecov"
@@ -298,7 +302,7 @@ describe('PaymentCard', () => {
         error: { message: randomError },
       })
       render(
-        <PaymentCard
+        <PaymentMethod
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
@@ -320,7 +324,7 @@ describe('PaymentCard', () => {
         isLoading: true,
       })
       render(
-        <PaymentCard
+        <PaymentMethod
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"

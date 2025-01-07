@@ -4,7 +4,6 @@ import { z } from 'zod'
 
 import { AddressSchema } from 'services/account'
 import { useUpdateBillingAddress } from 'services/account/useUpdateBillingAddress'
-import { Theme, useThemeContext } from 'shared/ThemeContext'
 import Button from 'ui/Button'
 
 interface AddressFormProps {
@@ -23,28 +22,6 @@ function AddressForm({
   owner,
 }: AddressFormProps) {
   const elements = useElements()
-  const { theme } = useThemeContext()
-  const isDarkMode = theme === Theme.DARK
-
-  // Note: unfortunately seems Stripe doesn't let us reference like `var(--<var name>)` so rgbs are hardcoded in below
-  elements?.update({
-    appearance: {
-      variables: {
-        fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
-      },
-      rules: {
-        '.Label': {
-          fontWeight: '600',
-          color: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
-        },
-        '.Input': {
-          backgroundColor: isDarkMode ? 'rgb(22,24,29)' : 'rgb(255,255,255)', // Same values as --color-app-container.
-          borderColor: isDarkMode ? 'rgb(47,51,60)' : 'rgb(216,220,226)', // Same values as --color-ds-gray-tertiary.
-          color: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
-        },
-      },
-    },
-  })
 
   const {
     mutate: updateAddress,

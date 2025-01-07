@@ -1,13 +1,13 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
-
-import EmailAddress from './EmailAddress'
-import PaymentMethod from './PaymentMethod'
-import Button from 'ui/Button'
-import { useState } from 'react'
 import A from 'ui/A'
-import EditablePaymentMethod from './EditPaymentMethod'
+import Button from 'ui/Button'
+
+import EditPaymentMethods from './EditPaymentMethods'
+import EmailAddress from './EmailAddress'
+import { ViewPaymentMethod } from './ViewPaymentMethod'
 
 interface URLParams {
   provider: string
@@ -22,14 +22,11 @@ function BillingDetails() {
   })
   const subscriptionDetail = accountDetails?.subscriptionDetail
   const [isEditMode, setEditMode] = useState(false)
-
-  const isAdmin = true // TODO
+  const secondaryPaymentFeatureEnabled = false
 
   if (!subscriptionDetail) {
     return null
   }
-
-  console.log('iseditmode', isEditMode)
 
   return (
     <div className="flex flex-col divide-y border">
@@ -50,7 +47,6 @@ function BillingDetails() {
             hook="button"
             onClick={() => setEditMode(true)}
             variant="default"
-            disabled={!isAdmin}
             className="flex-none"
           >
             Edit payment
@@ -60,7 +56,6 @@ function BillingDetails() {
             hook="button"
             onClick={() => setEditMode(false)}
             variant="default"
-            disabled={!isAdmin}
             className="flex-none"
           >
             Back
@@ -68,28 +63,35 @@ function BillingDetails() {
         )}
       </div>
       {isEditMode ? (
-        <EditablePaymentMethod />
+        <EditPaymentMethods
+          setEditMode={setEditMode}
+          provider={provider}
+          owner={owner}
+          existingSubscriptionDetail={subscriptionDetail}
+        />
       ) : (
         <>
           <EmailAddress />
-          <PaymentMethod
+          <ViewPaymentMethod
             heading="Primary Payment Method"
-            isPrimary={true}
+            isPrimaryPaymentMethod={true}
             isEditMode={isEditMode}
             setEditMode={setEditMode}
             subscriptionDetail={subscriptionDetail}
             provider={provider}
             owner={owner}
           />
-          <PaymentMethod
-            heading="Secondary Payment Method"
-            isPrimary={false}
-            isEditMode={isEditMode}
-            setEditMode={setEditMode}
-            subscriptionDetail={subscriptionDetail}
-            provider={provider}
-            owner={owner}
-          />
+          {secondaryPaymentFeatureEnabled && (
+            <ViewPaymentMethod
+              heading="Secondary Payment Method"
+              isPrimaryPaymentMethod={false}
+              isEditMode={isEditMode}
+              setEditMode={setEditMode}
+              subscriptionDetail={subscriptionDetail}
+              provider={provider}
+              owner={owner}
+            />
+          )}
           {subscriptionDetail?.taxIds?.length ? (
             <div className="flex flex-col gap-2 p-4">
               <h4 className="font-semibold">Tax ID</h4>
