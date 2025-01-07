@@ -82,7 +82,7 @@ interface SetupArgs {
   nullOwner?: boolean
 }
 
-describe('useRepoConfigurationStatus', () => {
+describe('RepoConfigurationStatusQueryOpts', () => {
   function setup({
     badResponse = false,
     repoNotFound = false,
@@ -126,7 +126,7 @@ describe('useRepoConfigurationStatus', () => {
       expect(result.current.failureReason).toMatchObject({
         status: 404,
         data: {},
-        dev: 'useRepoConfigurationStatus - 404 Failed to parse data',
+        dev: 'RepoConfigurationStatusQueryOpts - 404 Failed to parse data',
       })
     )
   })
@@ -152,7 +152,7 @@ describe('useRepoConfigurationStatus', () => {
       expect(result.current.failureReason).toMatchObject({
         status: 404,
         data: {},
-        dev: 'useRepoConfigurationStatus - 404 Not found error',
+        dev: 'RepoConfigurationStatusQueryOpts - 404 Not found error',
       })
     )
   })
@@ -178,7 +178,7 @@ describe('useRepoConfigurationStatus', () => {
       expect(result.current.failureReason).toMatchObject({
         status: 403,
         data: {},
-        dev: 'useRepoConfigurationStatus - 403 Owner not activated error',
+        dev: 'RepoConfigurationStatusQueryOpts - 403 Owner not activated error',
       })
     )
   })

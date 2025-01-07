@@ -109,7 +109,7 @@ export function RepoConfigurationStatusQueryOpts({
           return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useRepoConfigurationStatus - 404 Failed to parse data',
+            dev: 'RepoConfigurationStatusQueryOpts - 404 Failed to parse data',
             error: parsedRes.error,
           })
         }
@@ -120,7 +120,7 @@ export function RepoConfigurationStatusQueryOpts({
           return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useRepoConfigurationStatus - 404 Not found error',
+            dev: 'RepoConfigurationStatusQueryOpts - 404 Not found error',
           })
         }
 
@@ -137,7 +137,7 @@ export function RepoConfigurationStatusQueryOpts({
                 </p>
               ),
             },
-            dev: 'useRepoConfigurationStatus - 403 Owner not activated error',
+            dev: 'RepoConfigurationStatusQueryOpts - 403 Owner not activated error',
           })
         }
 
