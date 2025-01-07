@@ -8,6 +8,7 @@ import { type Mock } from 'vitest'
 
 import config from 'config'
 
+import { OnboardingContainerProvider } from 'pages/OwnerPage/OnboardingContainerContext/context'
 import { useImage } from 'services/image'
 import { Plans } from 'shared/utils/billing'
 
@@ -72,18 +73,20 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
-        <Switch>
-          <Route path="/:provider" exact>
-            {children}
-            <Route
-              path="*"
-              render={({ location }) => {
-                testLocation = location
-                return null
-              }}
-            />
-          </Route>
-        </Switch>
+        <OnboardingContainerProvider>
+          <Switch>
+            <Route path="/:provider" exact>
+              {children}
+              <Route
+                path="*"
+                render={({ location }) => {
+                  testLocation = location
+                  return null
+                }}
+              />
+            </Route>
+          </Switch>
+        </OnboardingContainerProvider>
       </MemoryRouter>
     </QueryClientProvider>
   )
