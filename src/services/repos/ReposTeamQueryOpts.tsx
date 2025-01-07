@@ -129,6 +129,8 @@ function ReposTeamQueryOpts({
   return infiniteQueryOptionsV5({
     queryKey: ['GetReposTeam', provider, variables, owner],
     queryFn: ({ pageParam, signal }) => {
+      const after = pageParam === '' ? undefined : pageParam
+
       return Api.graphql({
         provider,
         query,
@@ -136,7 +138,7 @@ function ReposTeamQueryOpts({
         variables: {
           ...variables,
           owner,
-          after: pageParam === '' ? undefined : pageParam,
+          after,
         },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
@@ -161,10 +163,7 @@ function ReposTeamQueryOpts({
     },
     initialPageParam: '',
     getNextPageParam: (data) => {
-      if (data?.pageInfo?.hasNextPage) {
-        return data.pageInfo.endCursor
-      }
-      return null
+      return data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined
     },
   })
 }

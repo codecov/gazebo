@@ -141,6 +141,8 @@ function ReposQueryOpts({
   return infiniteQueryOptionsV5({
     queryKey: ['repos', provider, owner, variables],
     queryFn: ({ pageParam, signal }) => {
+      const after = pageParam === '' ? undefined : pageParam
+
       return Api.graphql({
         provider,
         query,
@@ -148,7 +150,7 @@ function ReposQueryOpts({
         variables: {
           ...variables,
           owner,
-          after: pageParam === '' ? undefined : pageParam,
+          after,
         },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
@@ -169,7 +171,7 @@ function ReposQueryOpts({
     },
     initialPageParam: '',
     getNextPageParam: (data) => {
-      return data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : null
+      return data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined
     },
   })
 }

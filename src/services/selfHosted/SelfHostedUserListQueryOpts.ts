@@ -67,7 +67,7 @@ export const SelfHostedUserListQueryOpts = ({
         const { searchParams } = new URL(data.next)
         return searchParams.get('page')
       }
-      return null
+      return undefined
     },
   })
 }

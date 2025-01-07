@@ -258,6 +258,8 @@ export const BundleAssetsQueryOpts = ({
       orderingDirection,
     ],
     queryFn: ({ signal, pageParam }) => {
+      const assetsAfter = pageParam ? pageParam : undefined
+
       return Api.graphql({
         query,
         provider,
@@ -271,7 +273,7 @@ export const BundleAssetsQueryOpts = ({
           dateBefore,
           dateAfter,
           filters,
-          assetsAfter: pageParam,
+          assetsAfter,
           ordering,
           orderingDirection,
         },
@@ -353,6 +355,6 @@ export const BundleAssetsQueryOpts = ({
     // matches the type for initialPageParam.
     initialPageParam: '',
     getNextPageParam: (data) => {
-      return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : null
+      return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : undefined
     },
   })
