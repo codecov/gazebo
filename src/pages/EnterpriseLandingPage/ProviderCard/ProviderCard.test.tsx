@@ -27,7 +27,7 @@ describe('ProviderCard', () => {
         )
 
         const element = screen.getByRole('link', {
-          name: 'Login via Bitbucket',
+          name: 'Login via BitBucket',
         })
         expect(element).toBeInTheDocument()
         expect(element).toHaveAttribute('href', '/login/bb')
@@ -43,7 +43,7 @@ describe('ProviderCard', () => {
         )
 
         const element = screen.getByRole('link', {
-          name: 'Login via Bitbucket Server',
+          name: 'Login via BitBucket Server',
         })
         expect(element).toBeInTheDocument()
         expect(element).toHaveAttribute('href', '/login/bbs')
