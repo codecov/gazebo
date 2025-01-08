@@ -218,6 +218,7 @@ describe('ContextSwitcher', () => {
           ]}
           currentUser={{
             defaultOrgUsername: 'spotify',
+            username: 'laudna',
           }}
           src="imageUrl"
           isLoading={false}
@@ -232,7 +233,9 @@ describe('ContextSwitcher', () => {
       )
       await user.click(button)
 
-      const laudnaUsers = await screen.findAllByText('laudna')
+      const laudnaUsers = await screen.findAllByText(
+        "laudna's personal organization"
+      )
       expect(laudnaUsers.length).toBe(2)
 
       const codecovOwner = await screen.findByText('codecov')
