@@ -38,7 +38,7 @@ describe('SyncButton', () => {
     it('renders sync button', () => {
       render(<SyncButton provider="bb" />, { wrapper })
 
-      const link = screen.getByRole('link', { name: /Sync with BitBucket/ })
+      const link = screen.getByRole('link', { name: /Sync with Bitbucket/ })
 
       const expectedRedirect = encodeURIComponent('http://localhost:3000/bb')
       expect(link).toBeInTheDocument()
@@ -79,7 +79,7 @@ describe('SyncButton', () => {
       render(<SyncButton provider="bbs" />, { wrapper })
 
       const link = screen.getByRole('link', {
-        name: /Sync with BitBucket Server/,
+        name: /Sync with Bitbucket Server/,
       })
 
       const expectedRedirect = encodeURIComponent('http://localhost:3000/bbs')

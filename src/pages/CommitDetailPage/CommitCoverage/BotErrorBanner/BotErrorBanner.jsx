@@ -11,7 +11,7 @@ import BannerHeading from 'ui/Banner/BannerHeading'
 export const ProvidersEnum = Object.freeze({
   Github: 'GitHub',
   Gitlab: 'GitLab',
-  BitBucket: 'BitBucket',
+  Bitbucket: 'Bitbucket',
 })
 
 function useProviderSetting() {
@@ -28,7 +28,7 @@ function useProviderSetting() {
   const ghWithNoApp =
     !accountDetails?.integrationId && provider === ProvidersEnum.Github
 
-  const bbProvider = provider === ProvidersEnum.BitBucket
+  const bbProvider = provider === ProvidersEnum.Bitbucket
   const glProvider = provider === ProvidersEnum.Gitlab
 
   return { ghWithNoApp, bbProvider, glProvider, ghWithApp }
@@ -83,7 +83,7 @@ const BotErrorHeading = () => {
 
   if (ghWithApp) {
     return (
-      <p className="font-semibold">There was an issue with the Github app</p>
+      <p className="font-semibold">There was an issue with the GitHub app</p>
     )
   }
 

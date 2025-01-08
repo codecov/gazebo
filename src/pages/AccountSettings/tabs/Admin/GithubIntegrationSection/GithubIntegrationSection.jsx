@@ -47,7 +47,7 @@ function GithubIntegrationSection() {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Github Integration</h2>
+      <h2 className="text-lg font-semibold">GitHub Integration</h2>
       <GithubIntegrationCopy integrationId={accountDetails?.integrationId} />
     </div>
   )

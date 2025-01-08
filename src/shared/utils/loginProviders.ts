@@ -11,12 +11,12 @@ import sentryLogo from 'assets/providers/sentry-icon.svg'
 export const LoginProvidersEnum = {
   BITBUCKET: {
     provider: 'bb',
-    name: 'BitBucket',
+    name: 'Bitbucket',
     external: 'BITBUCKET',
     externalKey: 'bb',
     selfHosted: 'BITBUCKET_SERVER',
     selfHostedKey: 'bbs',
-    selfHostedName: 'BitBucket Server',
+    selfHostedName: 'Bitbucket Server',
     variant: 'bitbucket',
   },
   GITHUB: {
@@ -71,17 +71,17 @@ export function loginProviderToShortName(loginProvider?: string) {
 
 export const LOGIN_PROVIDER_NAMES = {
   gh: 'GitHub',
-  bb: 'BitBucket',
+  bb: 'Bitbucket',
   gl: 'GitLab',
   ghe: 'GitHub Enterprise',
   gle: 'GitLab Enterprise',
-  bbs: 'BitBucket Server',
+  bbs: 'Bitbucket Server',
   github: 'GitHub',
-  bitbucket: 'BitBucket',
+  bitbucket: 'Bitbucket',
   gitlab: 'GitLab',
   github_enterprise: 'GitHub Enterprise',
   gitlab_enterprise: 'GitLab Enterprise',
-  bitbucket_server: 'BitBucket Server',
+  bitbucket_server: 'Bitbucket Server',
   sentry: 'Sentry',
   okta: 'Okta',
 } as const
@@ -99,10 +99,10 @@ export function loginProviderToName(loginProvider?: string) {
 export const LOGIN_PROVIDER_IMAGES = {
   GitHub: githubLogo,
   GitLab: gitlabLogo,
-  BitBucket: bitbucketLogo,
+  Bitbucket: bitbucketLogo,
   'GitHub Enterprise': githubLogo,
   'GitLab Enterprise': gitlabLogo,
-  'BitBucket Server': bitbucketLogo,
+  'Bitbucket Server': bitbucketLogo,
   Sentry: sentryLogo,
   Okta: oktaLogo,
 } as const
@@ -110,10 +110,10 @@ export const LOGIN_PROVIDER_IMAGES = {
 export const LOGIN_PROVIDER_DARK_MODE_IMAGES = {
   GitHub: githubLogoWhite,
   GitLab: gitlabLogo,
-  BitBucket: bitbucketLogo,
+  Bitbucket: bitbucketLogo,
   'GitHub Enterprise': githubLogoWhite,
   'GitLab Enterprise': gitlabLogo,
-  'BitBucket Server': bitbucketLogo,
+  'Bitbucket Server': bitbucketLogo,
   Sentry: sentryLogoWhite,
   Okta: oktaLogo,
 } as const
