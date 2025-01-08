@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom'
 
 import { CachedBundleContentBanner } from 'shared/CachedBundleContentBanner/CachedBundleContentBanner'
 import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
-import { useFlags } from 'shared/featureFlags'
 import { ReportUploadType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
 
@@ -43,10 +42,6 @@ const BundleContent: React.FC<BundleContentProps> = ({
   bundleCompareType,
   hasCachedBundle,
 }) => {
-  const { displayCachedBundleBanner } = useFlags({
-    displayCachedBundleBanner: false,
-  })
-
   if (bundleCompareType === 'FirstPullRequest') {
     return (
       <>
@@ -70,9 +65,7 @@ const BundleContent: React.FC<BundleContentProps> = ({
 
   return (
     <>
-      {hasCachedBundle && displayCachedBundleBanner ? (
-        <CachedBundleContentBanner />
-      ) : null}
+      {hasCachedBundle ? <CachedBundleContentBanner /> : null}
       <Suspense fallback={<Loader />}>
         <CommitBundleAnalysisTable />
       </Suspense>
