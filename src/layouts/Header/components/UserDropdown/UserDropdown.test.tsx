@@ -8,7 +8,11 @@ import { type Mock } from 'vitest'
 
 import config from 'config'
 
-import { OnboardingContainerProvider } from 'pages/OwnerPage/OnboardingContainerContext/context'
+import {
+  OnboardingContainerProvider,
+  useOnboardingContainer,
+} from 'pages/OwnerPage/OnboardingContainerContext/context'
+import { LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER } from 'pages/OwnerPage/OnboardingOrg/constants'
 import { useImage } from 'services/image'
 import { Plans } from 'shared/utils/billing'
 
@@ -286,6 +290,40 @@ describe('UserDropdown', () => {
         expect(
           screen.queryByText('Install Codecov app')
         ).not.toBeInTheDocument()
+      })
+    })
+  })
+  describe('toggle onboarding container', () => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+      localStorage.clear()
+    })
+
+    it('toggles onboarding container visibility and updates localStorage', async () => {
+      const setShowOnboardingContainer = vi.fn()
+      const mockUseOnboardingContainer = useOnboardingContainer as Mock
+      mockUseOnboardingContainer.mockReturnValue({
+        showOnboardingContainer: false,
+        setShowOnboardingContainer,
+      })
+
+      const { user } = setup()
+      render(<UserDropdown />)
+
+      // Open dropdown
+      const trigger = screen.getByTestId('user-dropdown-trigger')
+      await user.click(trigger)
+
+      const toggleButton = screen.getByText('Show getting started')
+      await user.click(toggleButton)
+
+      expect(setShowOnboardingContainer).toHaveBeenCalledWith(true)
+
+      // Verify localStorage was updated
+      await waitFor(() => {
+        expect(
+          localStorage.getItem(LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER)
+        ).toBe('true')
       })
     })
   })
