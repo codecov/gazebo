@@ -505,7 +505,7 @@ module.exports = {
     'no-restricted-syntax': [
       'warn',
       {
-        selector: "JSXText[value=/\\bGithub\\b|\\bGitlab\\b/]",
+        selector: "JSXText[value=/\\bGithub\\b|\\bGitlab\\b|\\bBitBucket\\b/]",
         message: "Use correct casing (GitHub, GitLab)"
       }
     ]

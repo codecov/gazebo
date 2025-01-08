@@ -157,7 +157,7 @@ function Step4() {
           tests result on the following areas:
         </p>
         <ul className="list-inside list-disc">
-          <li>Github pull request comment</li>
+          <li>GitHub pull request comment</li>
           <li>Failed tests dashboard here.</li>
         </ul>
       </Card.Content>
