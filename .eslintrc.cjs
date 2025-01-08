@@ -505,7 +505,7 @@ module.exports = {
       'warn',
       {
         selector: "JSXText[value=/\\bGithub\\b|\\bGitlab\\b|\\bBitBucket\\b/]",
-        message: "Use correct casing (GitHub, GitLab)"
+        message: "Use correct casing (GitHub, GitLab, Bitbucket)"
       }
     ]
   },
