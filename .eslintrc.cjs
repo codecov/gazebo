@@ -21,6 +21,7 @@ module.exports = {
     'plugin:tailwindcss/recommended',
   ],
   plugins: ['@vitest', 'jsx-a11y', 'import'],
+
   globals: {
     vi: true,
   },
@@ -500,5 +501,14 @@ module.exports = {
     // https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
+
+    'no-restricted-syntax': [
+      'warn',
+      {
+        selector: "Literal[value=Github|Gitlab]",
+        message: "Use correct casing (GitHub, GitLab)"
+      }
+    ]
+
   },
 }

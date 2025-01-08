@@ -6,17 +6,17 @@ import { Provider } from 'shared/api/helpers'
 export function providerToName(provider: Provider) {
   return {
     gh: 'GitHub',
-    bb: 'BitBucket',
+    bb: 'Bitbucket',
     gl: 'GitLab',
     ghe: 'GitHub Enterprise',
     gle: 'GitLab Enterprise',
-    bbs: 'BitBucket Server',
+    bbs: 'Bitbucket Server',
     github: 'GitHub',
-    bitbucket: 'BitBucket',
+    bitbucket: 'Bitbucket',
     gitlab: 'GitLab',
     github_enterprise: 'GitHub Enterprise',
     gitlab_enterprise: 'GitLab Enterprise',
-    bitbucket_server: 'BitBucket Server',
+    bitbucket_server: 'Bitbucket Server',
   }[provider.toLowerCase()]
 }
 
@@ -50,11 +50,11 @@ export function getProviderCommitURL({
 }) {
   return {
     GitHub: `https://github.com/${owner}/${repo}/commit/${commit}`,
-    BitBucket: `https://bitbucket.org/${owner}/${repo}/commits/${commit}`,
+    Bitbucket: `https://bitbucket.org/${owner}/${repo}/commits/${commit}`,
     GitLab: `https://gitlab.com/${owner}/${repo}/-/commit/${commit}`,
     'GitHub Enterprise': `${config.GHE_URL}/${owner}/${repo}/commit/${commit}`,
     'GitLab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/commit/${commit}`,
-    'BitBucket Server': `${config.BBS_URL}/${owner}/${repo}/commits/${commit}`,
+    'Bitbucket Server': `${config.BBS_URL}/${owner}/${repo}/commits/${commit}`,
     // @ts-expect-error - provider could be undefined but it should be fine
   }[providerToName(provider)]
 }
@@ -72,11 +72,11 @@ export function getProviderPullURL({
 }) {
   return {
     GitHub: `https://github.com/${owner}/${repo}/pull/${pullId}`,
-    BitBucket: `https://bitbucket.org/${owner}/${repo}/pull-requests/${pullId}`,
+    Bitbucket: `https://bitbucket.org/${owner}/${repo}/pull-requests/${pullId}`,
     GitLab: `https://gitlab.com/${owner}/${repo}/-/merge_requests/${pullId}`,
     'GitHub Enterprise': `${config.GHE_URL}/${owner}/${repo}/pull/${pullId}`,
     'GitLab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/merge_requests/${pullId}`,
-    'BitBucket Server': `${config.BBS_URL}/${owner}/${repo}/pull-requests/${pullId}`,
+    'Bitbucket Server': `${config.BBS_URL}/${owner}/${repo}/pull-requests/${pullId}`,
     // @ts-expect-error - provider could be undefined but it should be fine
   }[providerToName(provider)]
 }

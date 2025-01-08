@@ -11,74 +11,74 @@ vi.mock('config')
 
 describe('providerToName', () => {
   describe('when called with gh', () => {
-    it('returns Github', () => {
+    it('returns GitHub', () => {
       expect(providerToName('gh')).toBe('GitHub')
     })
   })
 
   describe('when called with gl', () => {
-    it('returns Gitlab', () => {
+    it('returns GitLab', () => {
       expect(providerToName('gl')).toBe('GitLab')
     })
   })
 
   describe('when called with bb', () => {
-    it('returns BitBucket', () => {
-      expect(providerToName('bb')).toBe('BitBucket')
+    it('returns Bitbucket', () => {
+      expect(providerToName('bb')).toBe('Bitbucket')
     })
   })
 
   describe('when called with ghe', () => {
-    it('returns Github Enterprise', () => {
+    it('returns GitHub Enterprise', () => {
       expect(providerToName('ghe')).toBe('GitHub Enterprise')
     })
   })
 
   describe('when called with gle', () => {
-    it('returns Gitlab Enterprise', () => {
+    it('returns GitLab Enterprise', () => {
       expect(providerToName('gle')).toBe('GitLab Enterprise')
     })
   })
 
   describe('when called with bbs', () => {
-    it('returns BitBucket Server', () => {
-      expect(providerToName('bbs')).toBe('BitBucket Server')
+    it('returns Bitbucket Server', () => {
+      expect(providerToName('bbs')).toBe('Bitbucket Server')
     })
   })
 
-  describe('when called with Github', () => {
-    it('returns Github', () => {
+  describe('when called with GitHub', () => {
+    it('returns GitHub', () => {
       expect(providerToName('github')).toBe('GitHub')
     })
   })
 
-  describe('when called with Gitlab', () => {
-    it('returns Gitlab', () => {
+  describe('when called with GitLab', () => {
+    it('returns GitLab', () => {
       expect(providerToName('gitlab')).toBe('GitLab')
     })
   })
 
-  describe('when called with BitBucket', () => {
-    it('returns BitBucket', () => {
-      expect(providerToName('bitbucket')).toBe('BitBucket')
+  describe('when called with Bitbucket', () => {
+    it('returns Bitbucket', () => {
+      expect(providerToName('bitbucket')).toBe('Bitbucket')
     })
   })
 
   describe('when called with github_enterprise', () => {
-    it('returns Github Enterprise', () => {
+    it('returns GitHub Enterprise', () => {
       expect(providerToName('github_enterprise')).toBe('GitHub Enterprise')
     })
   })
 
   describe('when called with gitlab-enterprise', () => {
-    it('returns Gitlab Enterprise', () => {
+    it('returns GitLab Enterprise', () => {
       expect(providerToName('gitlab_enterprise')).toBe('GitLab Enterprise')
     })
   })
 
   describe('when called with bitbucket_server', () => {
-    it('returns BitBucket Server', () => {
-      expect(providerToName('bitbucket_server')).toBe('BitBucket Server')
+    it('returns Bitbucket Server', () => {
+      expect(providerToName('bitbucket_server')).toBe('Bitbucket Server')
     })
   })
 })
@@ -203,19 +203,19 @@ describe('providerToInternalProvider', () => {
     })
   })
 
-  describe('when called with Github', () => {
+  describe('when called with GitHub', () => {
     it('returns github', () => {
       expect(providerToInternalProvider('github')).toBe('github')
     })
   })
 
-  describe('when called with Gitlab', () => {
+  describe('when called with GitLab', () => {
     it('returns gitlab', () => {
       expect(providerToInternalProvider('gitlab')).toBe('gitlab')
     })
   })
 
-  describe('when called with BitBucket', () => {
+  describe('when called with Bitbucket', () => {
     it('returns bitbucket', () => {
       expect(providerToInternalProvider('bitbucket')).toBe('bitbucket')
     })
