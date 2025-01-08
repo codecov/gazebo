@@ -37,7 +37,7 @@ function useProviderSetting() {
 const BotErrorContent = () => {
   const { ghWithNoApp, bbProvider, glProvider, ghWithApp } =
     useProviderSetting()
-
+  console.log('Github')
   if (ghWithNoApp) {
     return (
       <p>
