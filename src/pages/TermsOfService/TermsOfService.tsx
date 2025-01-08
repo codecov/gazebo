@@ -203,7 +203,7 @@ export default function TermsOfService() {
                 htmlFor="tos"
                 aria-label="I agree to the TOS and privacy policy"
               >
-                <span className="font-semibold">
+                <span className="font-medium">
                   I agree to{' '}
                   <A
                     hook="terms of service"
