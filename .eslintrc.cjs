@@ -505,7 +505,7 @@ module.exports = {
     'no-restricted-syntax': [
       'warn',
       {
-        selector: "Literal[value=Github|Gitlab]",
+        selector: "Literal[value=/\\bGithub\\b|\\bGitlab\\b/]",
         message: "Use correct casing (GitHub, GitLab)"
       }
     ]
