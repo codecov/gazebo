@@ -146,7 +146,7 @@ describe('GithubIntegrationSection', () => {
       render(<GithubIntegrationSection />, { wrapper: wrapper() })
 
       const link = await screen.findByRole('link', {
-        name: /Github/i,
+        name: /GitHub/i,
       })
       expect(link).toBeInTheDocument()
     })
