@@ -334,31 +334,46 @@ describe('UserDropdown', () => {
       localStorage.clear()
     })
 
-    it('toggles onboarding container visibility and updates localStorage', async () => {
-      const setShowOnboardingContainer = vi.fn()
-      const mockUseOnboardingContainer = useOnboardingContainer as Mock
-      mockUseOnboardingContainer.mockReturnValue({
-        showOnboardingContainer: false,
-        setShowOnboardingContainer,
-      })
+    it('changes onboarding container visibility when clicking the toggle button', async () => {
+      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
+
+      const TestComponent = () => {
+        const { showOnboardingContainer } = useOnboardingContainer()
+        return (
+          <div data-testid="context-value">
+            {String(showOnboardingContainer)}
+          </div>
+        )
+      }
 
       const { user } = setup()
-      render(<UserDropdown />)
+      render(
+        <>
+          <UserDropdown />
+          <TestComponent />
+        </>,
+        { wrapper: wrapper() }
+      )
 
-      // Open dropdown
+      // Check initial state
+      expect(screen.getByTestId('context-value')).toHaveTextContent('false')
+
+      // Open the dropdown
       const trigger = screen.getByTestId('user-dropdown-trigger')
       await user.click(trigger)
 
+      // Click the toggle button
       const toggleButton = screen.getByText('Show getting started')
       await user.click(toggleButton)
 
-      expect(setShowOnboardingContainer).toHaveBeenCalledWith(true)
+      // Verify localStorage was called with the correct value
+      expect(setItemSpy).toHaveBeenCalledWith(
+        LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER,
+        'true'
+      )
 
-      // Verify localStorage was updated
       await waitFor(() => {
-        expect(
-          localStorage.getItem(LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER)
-        ).toBe('true')
+        expect(screen.getByTestId('context-value')).toHaveTextContent('true')
       })
     })
   })

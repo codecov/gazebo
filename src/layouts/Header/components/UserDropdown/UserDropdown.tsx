@@ -44,6 +44,7 @@ function UserDropdown() {
   const items: DropdownItem[] = [
     {
       onClick: () => {
+        console.log('qwerty shetting show onboarding container')
         setShowOnboardingContainer(!showOnboardingContainer)
         localStorage.setItem(
           LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER,
