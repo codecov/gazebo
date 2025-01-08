@@ -15,7 +15,11 @@ export const OnboardingContainerContext =
 export const OnboardingContainerProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const { params } = useLocationParams()
+  const {
+    params,
+  }: {
+    params: { source?: string }
+  } = useLocationParams()
   if (
     params['source'] === ONBOARDING_SOURCE &&
     localStorage.getItem(LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER) === null

@@ -2,9 +2,7 @@ import omitBy from 'lodash/omitBy'
 import qs from 'qs'
 import { useHistory, useLocation } from 'react-router-dom'
 
-export function useLocationParams(
-  defaultParams: Record<string, unknown> = {}
-): Record<string, any> {
+export function useLocationParams(defaultParams: Record<string, unknown> = {}) {
   const { push } = useHistory()
   const { pathname, search, state } = useLocation()
   const params = state || {
