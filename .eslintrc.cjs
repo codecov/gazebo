@@ -508,6 +508,5 @@ module.exports = {
         message: "Use correct casing (GitHub, GitLab)"
       }
     ]
-
   },
 }
