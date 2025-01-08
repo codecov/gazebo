@@ -5,10 +5,10 @@ import { z } from 'zod'
 import Api from 'shared/api'
 
 const SaveTermsAgreementInputConfig = z.object({
-  businessEmail: z.string().nullable().optional(),
+  businessEmail: z.string(),
+  marketingName: z.string(),
   termsAgreement: z.boolean(),
   marketingConsent: z.boolean().optional(),
-  customerIntent: z.string(),
 })
 
 export type SaveTermsAgreementInput = z.infer<
@@ -47,12 +47,8 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
     mutationFn: (input: SaveTermsAgreementInput) => {
       const parsedInput = SaveTermsAgreementInputConfig.parse(input)
 
-      const {
-        businessEmail,
-        termsAgreement,
-        marketingConsent,
-        customerIntent,
-      } = parsedInput
+      const { businessEmail, termsAgreement, marketingConsent, marketingName } =
+        parsedInput
 
       const querySignAgreement = `
         mutation SigningTermsAgreement($tosInput: SaveTermsAgreementInput!) {
@@ -72,7 +68,7 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
           businessEmail,
           termsAgreement,
           marketingConsent,
-          customerIntent,
+          marketingName,
         },
       }
       return Api.graphqlMutation({
