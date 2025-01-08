@@ -8,19 +8,18 @@ import config from 'config'
 import { SentryBugReporter } from 'sentry'
 
 import umbrellaSvg from 'assets/svg/umbrella.svg'
-import { CustomerIntent, useInternalUser } from 'services/user'
+import { useInternalUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
-import RadioInput from 'ui/RadioInput/RadioInput'
 import TextInput from 'ui/TextInput'
 
 import { useSaveTermsAgreement } from './hooks/useTermsOfService'
 
 const FormSchema = z.object({
-  marketingEmail: z.string().email().nullish(),
+  marketingName: z.string(),
+  marketingEmail: z.string().email(),
   marketingConsent: z.boolean().nullish(),
   tos: z.literal(true),
-  customerIntent: z.string(),
 })
 
 interface IsDisabled {
@@ -33,24 +32,45 @@ function isDisabled({ isValid, isDirty, isMutationLoading }: IsDisabled) {
   return (!isValid && isDirty) || !isDirty || isMutationLoading
 }
 
+interface NameInputProps {
+  register: ReturnType<typeof useForm>['register']
+  marketingNameMessage?: string
+}
+
+function NameInput({ register, marketingNameMessage }: NameInputProps) {
+  return (
+    <div className="mb-4 mt-2 flex flex-col gap-1">
+      <label htmlFor="marketingName" className="cursor-pointer">
+        <span className="font-semibold">Enter your name</span>{' '}
+      </label>
+      <div className="flex max-w-xs flex-col gap-2">
+        <TextInput
+          {...register('marketingName', {
+            required: true,
+          })}
+          type="text"
+          id="marketingName"
+          placeholder="John Doe"
+          dataMarketing="name"
+        />
+        {marketingNameMessage && (
+          <p className="mt-1 text-ds-primary-red">{marketingNameMessage}</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
 interface EmailInputProps {
   register: ReturnType<typeof useForm>['register']
   marketingEmailMessage?: string
-  showEmailRequired: boolean
 }
 
-function EmailInput({
-  register,
-  marketingEmailMessage,
-  showEmailRequired,
-}: EmailInputProps) {
-  if (!showEmailRequired) return null
-
+function EmailInput({ register, marketingEmailMessage }: EmailInputProps) {
   return (
     <div className="mb-4 mt-2 flex flex-col gap-1">
       <label htmlFor="marketingEmail" className="cursor-pointer">
-        <span className="font-semibold">Contact email</span>{' '}
-        <small className="text-xs">required</small>
+        <span className="font-semibold">Enter your email</span>{' '}
       </label>
       <div className="flex max-w-xs flex-col gap-2">
         <TextInput
@@ -59,7 +79,7 @@ function EmailInput({
           })}
           type="text"
           id="marketingEmail"
-          placeholder="Email to receive updates"
+          placeholder="name@example.com"
           dataMarketing="Email to receive updates"
         />
         {marketingEmailMessage && (
@@ -71,6 +91,7 @@ function EmailInput({
 }
 
 export default function TermsOfService() {
+  const { data: currentUser, isLoading: userIsLoading } = useInternalUser({})
   const {
     register,
     handleSubmit,
@@ -81,6 +102,14 @@ export default function TermsOfService() {
   } = useForm({
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
+    defaultValues: {
+      marketingName: currentUser?.name ?? undefined,
+      marketingEmail: currentUser?.email ?? undefined,
+      marketingConsent: undefined,
+      tos: false,
+      // this field just used for custom form error
+      apiError: undefined,
+    },
   })
   const { mutate, isLoading: isMutationLoading } = useSaveTermsAgreement({
     onSuccess: ({ data }) => {
@@ -91,7 +120,6 @@ export default function TermsOfService() {
     },
     onError: (error) => setError('apiError', error),
   })
-  const { data: currentUser, isLoading: userIsLoading } = useInternalUser({})
 
   useLayoutEffect(() => {
     if (!config.SENTRY_DSN) {
@@ -102,17 +130,19 @@ export default function TermsOfService() {
   }, [])
 
   interface FormValues {
-    marketingEmail?: string
     marketingConsent?: boolean
-    customerIntent?: string
+    marketingName?: string
+    marketingEmail?: string
   }
 
   const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
+    if (!data.marketingName || !data.marketingEmail) return
+
     mutate({
-      businessEmail: data?.marketingEmail || currentUser?.email,
-      termsAgreement: true,
+      businessEmail: data.marketingEmail,
       marketingConsent: data?.marketingConsent,
-      customerIntent: data?.customerIntent || CustomerIntent.PERSONAL,
+      marketingName: data.marketingName,
+      termsAgreement: true,
     })
   }
 
@@ -139,41 +169,16 @@ export default function TermsOfService() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mt-4 border-y border-ds-gray-tertiary">
           <div className="my-6 flex flex-col gap-2">
-            <label htmlFor="customerIntent" className="mb-2 font-semibold">
-              What brings you to Codecov?
-            </label>
-            <div className="bg-ds-gray-primary p-4">
-              <RadioInput
-                {...register('customerIntent')}
-                dataMarketing="Personal use"
-                id="customerIntent-personal-use"
-                aria-label="Personal use"
-                label="Personal Use"
-                value={CustomerIntent.PERSONAL}
-              />
-              <label
-                htmlFor="customerIntent-personal-use"
-                className="ml-5 text-ds-gray-quinary hover:cursor-pointer"
-              >
-                For Open Source and single developer projects, always free
-              </label>
-            </div>
-            <div className="bg-ds-gray-primary p-4">
-              <RadioInput
-                {...register('customerIntent')}
-                dataMarketing="Business use"
-                id="customerIntent-business-use"
-                aria-label="Business use"
-                label="Business Use"
-                value={CustomerIntent.BUSINESS}
-              />
-              <label
-                htmlFor="customerIntent-business-use"
-                className="ml-5 text-ds-gray-quinary hover:cursor-pointer"
-              >
-                For development teams, start with a two week free trial
-              </label>
-            </div>
+            <NameInput
+              register={register}
+              // @ts-expect-error - the types on this need to be updated to match the type of message
+              marketingNameMessage={formErrors?.marketingName?.message}
+            />
+            <EmailInput
+              register={register}
+              // @ts-expect-error - the types on this need to be updated to match the type of message
+              marketingEmailMessage={formErrors?.marketingEmail?.message}
+            />
             <div className="mt-4 flex gap-2">
               <input
                 {...register('marketingConsent')}
@@ -182,25 +187,10 @@ export default function TermsOfService() {
                 aria-label="sign up for marketing emails"
               />
               <label className="cursor-pointer" htmlFor="marketingConsent">
-                I would like to receive updates via email
-                {currentUser?.email && (
-                  <>
-                    {' '}
-                    <span className="text-xs text-ds-gray-quaternary">
-                      ({currentUser?.email})
-                    </span>
-                  </>
-                )}
+                I would like to receive updates via email{' '}
+                <span className="italic">- optional</span>
               </label>
             </div>
-            <EmailInput
-              register={register}
-              // @ts-expect-error - the types on this need to be updated to match the type of message
-              marketingEmailMessage={formErrors?.marketingEmail?.message}
-              showEmailRequired={
-                watch('marketingConsent') && !currentUser?.email
-              }
-            />
             <div className="flex gap-2">
               <input
                 {...register('tos', { required: true })}
@@ -233,7 +223,6 @@ export default function TermsOfService() {
                     privacy policy
                   </A>
                 </span>{' '}
-                <small className="text-xs">required</small>
               </label>
             </div>
             {formErrors?.tos && (
