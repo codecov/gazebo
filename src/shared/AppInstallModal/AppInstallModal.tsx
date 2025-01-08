@@ -4,7 +4,7 @@ import { CodeSnippet } from 'ui/CodeSnippet'
 import Modal from 'ui/Modal'
 
 const COPY_APP_INSTALL_STRING =
-  "Hello, could you help approve the installation of the Codecov app on GitHub for our organization? Here's the link: https://github.com/apps/codecov/installations/select_target"
+  "Hello, could you help approve the installation of the Codecov app on GitHub for our organization? Here's the Codecov App Installation link: https://github.com/apps/codecov/installations/select_target"
 
 interface AppInstallModalProps {
   isOpen: boolean
@@ -55,11 +55,11 @@ function AppInstallModal({
             </div>
             <span className="mb-2 text-sm">
               If you&apos;re
-              <b>
+              <span className="font-bold">
                 {' '}
                 not an admin, share the link below with your organization&apos;s
                 owner{' '}
-              </b>
+              </span>
               to install the Codecov app:
             </span>
             <CodeSnippet clipboard={COPY_APP_INSTALL_STRING}>
