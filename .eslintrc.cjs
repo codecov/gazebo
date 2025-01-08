@@ -21,7 +21,6 @@ module.exports = {
     'plugin:tailwindcss/recommended',
   ],
   plugins: ['@vitest', 'jsx-a11y', 'import'],
-
   globals: {
     vi: true,
   },
@@ -509,6 +508,5 @@ module.exports = {
         message: "Use correct casing (GitHub, GitLab)"
       }
     ]
-
   },
 }
