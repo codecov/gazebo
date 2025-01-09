@@ -1,7 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { subDays } from 'date-fns'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -25,7 +28,6 @@ global.ResizeObserver = ResizeObserverMock
 
 const mocks = vi.hoisted(() => ({
   useIntersection: vi.fn(),
-  useRepos: vi.fn(),
 }))
 
 vi.mock('react-use', async () => {
@@ -36,46 +38,71 @@ vi.mock('react-use', async () => {
   }
 })
 
-vi.mock('services/repos', async () => {
-  const actual = await vi.importActual('services/repos')
-  return {
-    ...actual,
-    useRepos: mocks.useRepos,
-  }
-})
-
 const repositories = [
   {
+    name: 'Repo name 1',
+    active: true,
+    activated: true,
+    coverageAnalytics: {
+      lines: 99,
+      percentCovered: null,
+    },
     private: false,
+    updatedAt: '2021-04-22T14:09:39.822872+00:00',
     author: {
       username: 'owner1',
     },
-    name: 'Repo name 1',
-    latestCommitAt: subDays(new Date(), 3),
-    coverage: 43,
-    activated: true,
+    repositoryConfig: {
+      indicationRange: {
+        upperRange: 80,
+        lowerRange: 60,
+      },
+    },
+    latestCommitAt: null,
+    coverageEnabled: true,
+    bundleAnalysisEnabled: true,
   },
   {
+    name: 'Repo name 3',
+    active: false,
+    activated: true,
+    coverageAnalytics: {
+      lines: 99,
+      percentCovered: null,
+    },
     private: false,
+    updatedAt: '2021-04-22T14:09:39.826948+00:00',
     author: {
       username: 'owner2',
     },
-    name: 'Repo name 3',
-    latestCommitAt: subDays(new Date(), 4),
-    coverage: 35,
-    activated: false,
+    repositoryConfig: {
+      indicationRange: {
+        upperRange: 80,
+        lowerRange: 60,
+      },
+    },
+    latestCommitAt: null,
+    coverageEnabled: true,
+    bundleAnalysisEnabled: true,
   },
 ]
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-      <Route path="/analytics/:provider/:owner">
-        <Suspense fallback={<p>Suspense</p>}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
+        <Route path="/analytics/:provider/:owner">
+          <Suspense fallback={<p>Suspense</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
@@ -86,6 +113,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -102,34 +130,42 @@ describe('ChartSelectors', () => {
   function setup({ hasNextPage = false, tierValue = TierNames.PRO }) {
     // https://github.com/testing-library/user-event/issues/1034
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-
     const fetchNextPage = vi.fn()
-
-    mocks.useRepos.mockReturnValue({
-      data: {
-        pages: [
-          {
-            repos: repositories,
-            pageInfo: {
-              hasNextPage: true,
-              endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
-            },
-          },
-        ],
-      },
-      fetchNextPage,
-      hasNextPage,
-    })
+    const searchTerm = vi.fn()
 
     server.use(
       graphql.query('OwnerTier', () => {
         return HttpResponse.json({
           data: { owner: { plan: { tierName: tierValue } } },
         })
+      }),
+      graphql.query('ReposForOwner', ({ variables }) => {
+        if (variables?.filters?.term) {
+          searchTerm(variables.filters.term)
+        }
+
+        if (variables?.after) {
+          fetchNextPage()
+        }
+
+        return HttpResponse.json({
+          data: {
+            owner: {
+              username: 'owner',
+              repositories: {
+                edges: [{ node: repositories[0] }, { node: repositories[1] }],
+                pageInfo: {
+                  hasNextPage,
+                  endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+                },
+              },
+            },
+          },
+        })
       })
     )
 
-    return { fetchNextPage, user }
+    return { fetchNextPage, user, searchTerm }
   }
 
   describe('renders component', () => {
@@ -148,7 +184,7 @@ describe('ChartSelectors', () => {
         { wrapper }
       )
 
-      const datePicker = screen.getByText('Pick a date')
+      const datePicker = await screen.findByText('Pick a date')
       expect(datePicker).toBeInTheDocument()
     })
 
@@ -208,13 +244,13 @@ describe('ChartSelectors', () => {
         { wrapper }
       )
 
-      let datePicker = screen.getByText('Pick a date')
+      let datePicker = await screen.findByText('Pick a date')
       await act(async () => {
         await user.click(datePicker)
       })
 
-      const gridCells = screen.getAllByRole('gridcell', { name: '31' })
-      const date = within(gridCells[0]).getByText('31')
+      const gridCells = await screen.findAllByRole('gridcell', { name: '31' })
+      const date = await within(gridCells[0]).findByText('31')
       await act(async () => {
         await user.click(date)
       })
@@ -252,13 +288,13 @@ describe('ChartSelectors', () => {
           { wrapper }
         )
 
-        let datePicker = screen.getByText('Mar 31, 2022 - Mar 31, 2022')
+        let datePicker = await screen.findByText('Mar 31, 2022 - Mar 31, 2022')
         await act(async () => {
           await user.click(datePicker)
         })
 
-        let gridCells = screen.getAllByRole('gridcell', { name: '31' })
-        let date = within(gridCells[0]).getByText('31')
+        let gridCells = await screen.findAllByRole('gridcell', { name: '31' })
+        let date = await within(gridCells[0]).findByText('31')
         await act(async () => {
           await user.click(date)
         })
@@ -282,13 +318,13 @@ describe('ChartSelectors', () => {
         { wrapper }
       )
 
-      const multiselect = screen.getByText('All Repos')
+      const multiselect = await screen.findByText('All Repos')
       await user.click(multiselect)
 
-      const repo1 = screen.getByText('Repo name 1')
+      const repo1 = await screen.findByText('Repo name 1')
       expect(repo1).toBeInTheDocument()
 
-      const repo3 = screen.getByText('Repo name 3')
+      const repo3 = await screen.findByText('Repo name 3')
       expect(repo3).toBeInTheDocument()
     })
 
@@ -308,13 +344,13 @@ describe('ChartSelectors', () => {
           { wrapper }
         )
 
-        const multiselect = screen.getByText('1 Repo selected')
+        const multiselect = await screen.findByText('1 Repo selected')
         await user.click(multiselect)
 
-        const repo1 = screen.getByText('Repo name 3')
+        const repo1 = await screen.findByText('Repo name 3')
         await user.click(repo1)
 
-        const multiSelectUpdated = screen.getByText('2 Repos selected')
+        const multiSelectUpdated = await screen.findByText('2 Repos selected')
         expect(multiSelectUpdated).toBeInTheDocument()
       })
 
@@ -334,10 +370,10 @@ describe('ChartSelectors', () => {
           { wrapper }
         )
 
-        const multiselect = screen.getByText('All Repos')
+        const multiselect = await screen.findByText('All Repos')
         await user.click(multiselect)
 
-        const repo1 = screen.getByText('Repo name 1')
+        const repo1 = await screen.findByText('Repo name 1')
         await user.click(repo1)
 
         await waitFor(() =>
@@ -364,15 +400,15 @@ describe('ChartSelectors', () => {
           { wrapper }
         )
 
-        const multiselect = screen.getByText('All Repos')
+        const multiselect = await screen.findByText('All Repos')
         await user.click(multiselect)
 
-        const searchBox = screen.getByPlaceholderText('Search for Repos')
+        const searchBox = await screen.findByPlaceholderText('Search for Repos')
         expect(searchBox).toBeInTheDocument()
       })
 
       it('updates the textbox value when typing', async () => {
-        const { user } = setup({})
+        const { user, searchTerm } = setup({})
         render(
           <ChartSelectors
             active={true}
@@ -386,29 +422,18 @@ describe('ChartSelectors', () => {
           { wrapper }
         )
 
-        const multiselect = screen.getByText('All Repos')
+        const multiselect = await screen.findByText('All Repos')
         await user.click(multiselect)
 
-        const searchBox = screen.getByPlaceholderText('Search for Repos')
+        const searchBox = await screen.findByPlaceholderText('Search for Repos')
         await user.type(searchBox, 'codecov')
 
-        const searchBoxUpdated = screen.getByPlaceholderText('Search for Repos')
+        const searchBoxUpdated =
+          await screen.findByPlaceholderText('Search for Repos')
         expect(searchBoxUpdated).toHaveAttribute('value', 'codecov')
 
         await waitFor(() => {
-          expect(mocks.useRepos).toHaveBeenCalledWith({
-            activated: true,
-            first: Infinity,
-            owner: 'codecov',
-            provider: 'gh',
-            sortItem: {
-              direction: 'ASC',
-              ordering: 'NAME',
-            },
-            suspense: false,
-            term: 'codecov',
-            isPublic: null,
-          })
+          expect(searchTerm).toHaveBeenCalledWith('codecov')
         })
       })
     })
@@ -434,7 +459,7 @@ describe('ChartSelectors', () => {
             { wrapper }
           )
 
-          const multiselect = screen.getByText('All Repos')
+          const multiselect = await screen.findByText('All Repos')
           await user.click(multiselect)
 
           await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
@@ -458,7 +483,7 @@ describe('ChartSelectors', () => {
             { wrapper }
           )
 
-          const multiselect = screen.getByText('All Repos')
+          const multiselect = await screen.findByText('All Repos')
           await user.click(multiselect)
 
           expect(fetchNextPage).not.toHaveBeenCalled()
@@ -484,7 +509,7 @@ describe('ChartSelectors', () => {
         { wrapper }
       )
 
-      const clearFilters = screen.getByRole('button', {
+      const clearFilters = await screen.findByRole('button', {
         name: 'Clear filters',
       })
       await user.click(clearFilters)
@@ -521,21 +546,6 @@ describe('ChartSelectors', () => {
       const upgradeLink = await screen.findByRole('link', { name: 'Upgrade' })
       expect(upgradeLink).toBeInTheDocument()
       expect(upgradeLink).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
-      await waitFor(() => {
-        expect(mocks.useRepos).toHaveBeenCalledWith({
-          activated: true,
-          first: Infinity,
-          owner: 'codecov',
-          provider: 'gh',
-          sortItem: {
-            direction: 'ASC',
-            ordering: 'NAME',
-          },
-          suspense: false,
-          term: '',
-          isPublic: true,
-        })
-      })
     })
   })
 })

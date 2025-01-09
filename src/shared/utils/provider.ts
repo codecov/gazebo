@@ -5,18 +5,18 @@ import { Provider } from 'shared/api/helpers'
 
 export function providerToName(provider: Provider) {
   return {
-    gh: 'Github',
-    bb: 'BitBucket',
-    gl: 'Gitlab',
-    ghe: 'Github Enterprise',
-    gle: 'Gitlab Enterprise',
-    bbs: 'BitBucket Server',
-    github: 'Github',
-    bitbucket: 'BitBucket',
-    gitlab: 'Gitlab',
-    github_enterprise: 'Github Enterprise',
-    gitlab_enterprise: 'Gitlab Enterprise',
-    bitbucket_server: 'BitBucket Server',
+    gh: 'GitHub',
+    bb: 'Bitbucket',
+    gl: 'GitLab',
+    ghe: 'GitHub Enterprise',
+    gle: 'GitLab Enterprise',
+    bbs: 'Bitbucket Server',
+    github: 'GitHub',
+    bitbucket: 'Bitbucket',
+    gitlab: 'GitLab',
+    github_enterprise: 'GitHub Enterprise',
+    gitlab_enterprise: 'GitLab Enterprise',
+    bitbucket_server: 'Bitbucket Server',
   }[provider.toLowerCase()]
 }
 
@@ -49,12 +49,12 @@ export function getProviderCommitURL({
   commit: string
 }) {
   return {
-    Github: `https://github.com/${owner}/${repo}/commit/${commit}`,
-    BitBucket: `https://bitbucket.org/${owner}/${repo}/commits/${commit}`,
-    Gitlab: `https://gitlab.com/${owner}/${repo}/-/commit/${commit}`,
-    'Github Enterprise': `${config.GHE_URL}/${owner}/${repo}/commit/${commit}`,
-    'Gitlab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/commit/${commit}`,
-    'BitBucket Server': `${config.BBS_URL}/${owner}/${repo}/commits/${commit}`,
+    GitHub: `https://github.com/${owner}/${repo}/commit/${commit}`,
+    Bitbucket: `https://bitbucket.org/${owner}/${repo}/commits/${commit}`,
+    GitLab: `https://gitlab.com/${owner}/${repo}/-/commit/${commit}`,
+    'GitHub Enterprise': `${config.GHE_URL}/${owner}/${repo}/commit/${commit}`,
+    'GitLab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/commit/${commit}`,
+    'Bitbucket Server': `${config.BBS_URL}/${owner}/${repo}/commits/${commit}`,
     // @ts-expect-error - provider could be undefined but it should be fine
   }[providerToName(provider)]
 }
@@ -71,12 +71,12 @@ export function getProviderPullURL({
   pullId: number
 }) {
   return {
-    Github: `https://github.com/${owner}/${repo}/pull/${pullId}`,
-    BitBucket: `https://bitbucket.org/${owner}/${repo}/pull-requests/${pullId}`,
-    Gitlab: `https://gitlab.com/${owner}/${repo}/-/merge_requests/${pullId}`,
-    'Github Enterprise': `${config.GHE_URL}/${owner}/${repo}/pull/${pullId}`,
-    'Gitlab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/merge_requests/${pullId}`,
-    'BitBucket Server': `${config.BBS_URL}/${owner}/${repo}/pull-requests/${pullId}`,
+    GitHub: `https://github.com/${owner}/${repo}/pull/${pullId}`,
+    Bitbucket: `https://bitbucket.org/${owner}/${repo}/pull-requests/${pullId}`,
+    GitLab: `https://gitlab.com/${owner}/${repo}/-/merge_requests/${pullId}`,
+    'GitHub Enterprise': `${config.GHE_URL}/${owner}/${repo}/pull/${pullId}`,
+    'GitLab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/merge_requests/${pullId}`,
+    'Bitbucket Server': `${config.BBS_URL}/${owner}/${repo}/pull-requests/${pullId}`,
     // @ts-expect-error - provider could be undefined but it should be fine
   }[providerToName(provider)]
 }

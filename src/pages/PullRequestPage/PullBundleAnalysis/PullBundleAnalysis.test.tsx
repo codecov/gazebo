@@ -6,6 +6,7 @@ import {
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
@@ -16,6 +17,14 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import PullBundleAnalysis from './PullBundleAnalysis'
 
 import { TBundleAnalysisComparisonResult } from '../queries/PullPageDataQueryOpts'
+
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(),
+}))
+
+vi.mock('shared/featureFlags', () => ({
+  useFlags: mocks.useFlags,
+}))
 
 vi.mock('./EmptyTable', () => ({
   default: () => <div>EmptyTable</div>,
@@ -31,7 +40,8 @@ const mockPullPageData = (
   compareType: TBundleAnalysisComparisonResult = 'BundleAnalysisComparison',
   headBundleType: string = 'BundleAnalysisReport',
   coverageEnabled: boolean = true,
-  bundleAnalysisEnabled: boolean = true
+  bundleAnalysisEnabled: boolean = true,
+  hasCachedBundle = false
 ) => ({
   owner: {
     repository: {
@@ -48,6 +58,10 @@ const mockPullPageData = (
           bundleAnalysis: {
             bundleAnalysisReport: {
               __typename: headBundleType,
+              isCached:
+                headBundleType === 'BundleAnalysisReport'
+                  ? hasCachedBundle
+                  : undefined,
             },
           },
         },
@@ -144,6 +158,8 @@ interface SetupArgs {
   headBundleType?: string
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
+  hasCachedBundle?: boolean
+  featureFlag?: boolean
 }
 
 describe('PullBundleAnalysis', () => {
@@ -152,7 +168,11 @@ describe('PullBundleAnalysis', () => {
     headBundleType = 'BundleAnalysisReport',
     coverageEnabled = false,
     bundleAnalysisEnabled = false,
+    hasCachedBundle = false,
+    featureFlag = false,
   }: SetupArgs) {
+    mocks.useFlags.mockReturnValue({ displayCachedBundleBanner: featureFlag })
+
     server.use(
       graphql.query('PullPageData', () => {
         return HttpResponse.json({
@@ -160,7 +180,8 @@ describe('PullBundleAnalysis', () => {
             compareType,
             headBundleType,
             coverageEnabled,
-            bundleAnalysisEnabled
+            bundleAnalysisEnabled,
+            hasCachedBundle
           ),
         })
       }),
@@ -194,6 +215,45 @@ describe('PullBundleAnalysis', () => {
 
         const table = await screen.findByText('PullBundleComparisonTable')
         expect(table).toBeInTheDocument()
+      })
+
+      describe('feature flag is enabled', () => {
+        describe('there is a cached bundle', () => {
+          it('renders the CachedBundleContentBanner', async () => {
+            setup({
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
+              hasCachedBundle: true,
+              featureFlag: true,
+            })
+            render(<PullBundleAnalysis />, { wrapper })
+
+            const cachedBundleContentBanner = await screen.findByText(
+              'The reported bundle size includes cached data from previous commits'
+            )
+            expect(cachedBundleContentBanner).toBeInTheDocument()
+          })
+        })
+
+        describe('there is not a cached bundle', () => {
+          it('does not render the CachedBundleContentBanner', async () => {
+            setup({
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
+              hasCachedBundle: false,
+              featureFlag: true,
+            })
+            render(<PullBundleAnalysis />, { wrapper })
+
+            await waitFor(() => queryClientV5.isFetching())
+            await waitFor(() => !queryClientV5.isFetching())
+
+            const cachedBundleContentBanner = screen.queryByText(
+              'The reported bundle size includes cached data from previous commits'
+            )
+            expect(cachedBundleContentBanner).not.toBeInTheDocument()
+          })
+        })
       })
     })
 
@@ -309,6 +369,45 @@ describe('PullBundleAnalysis', () => {
 
         const table = await screen.findByText('PullBundleComparisonTable')
         expect(table).toBeInTheDocument()
+      })
+
+      describe('feature flag is enabled', () => {
+        describe('there is a cached bundle', () => {
+          it('renders the CachedBundleContentBanner', async () => {
+            setup({
+              coverageEnabled: false,
+              bundleAnalysisEnabled: true,
+              hasCachedBundle: true,
+              featureFlag: true,
+            })
+            render(<PullBundleAnalysis />, { wrapper })
+
+            const cachedBundleContentBanner = await screen.findByText(
+              'The reported bundle size includes cached data from previous commits'
+            )
+            expect(cachedBundleContentBanner).toBeInTheDocument()
+          })
+        })
+
+        describe('there is not a cached bundle', () => {
+          it('does not render the CachedBundleContentBanner', async () => {
+            setup({
+              coverageEnabled: false,
+              bundleAnalysisEnabled: true,
+              hasCachedBundle: false,
+              featureFlag: true,
+            })
+            render(<PullBundleAnalysis />, { wrapper })
+
+            await waitFor(() => queryClientV5.isFetching())
+            await waitFor(() => !queryClientV5.isFetching())
+
+            const cachedBundleContentBanner = screen.queryByText(
+              'The reported bundle size includes cached data from previous commits'
+            )
+            expect(cachedBundleContentBanner).not.toBeInTheDocument()
+          })
+        })
       })
     })
 

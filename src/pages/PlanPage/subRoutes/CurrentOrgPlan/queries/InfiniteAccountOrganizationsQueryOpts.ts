@@ -36,9 +36,9 @@ const RequestSchema = z.object({
 })
 
 const query = `query InfiniteAccountOrganizations(
-  $owner: String!, 
-  $after: String, 
-  $first: Int!, 
+  $owner: String!,
+  $after: String,
+  $first: Int!,
   $direction: OrderingDirection!
 ) {
   owner(username: $owner) {
@@ -85,15 +85,17 @@ export function InfiniteAccountOrganizationsQueryOpts({
 
   return infiniteQueryOptionsV5({
     queryKey: ['InfiniteAccountOrganizations', provider, owner, variables],
-    queryFn: ({ pageParam, signal }) =>
-      Api.graphql({
+    queryFn: ({ pageParam, signal }) => {
+      const after = pageParam ? pageParam : undefined
+
+      return Api.graphql({
         provider,
         signal,
         query,
         variables: {
           ...variables,
           owner,
-          after: pageParam,
+          after,
         },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res.data)
@@ -121,10 +123,11 @@ export function InfiniteAccountOrganizationsQueryOpts({
           organizations: mapEdges(account.organizations),
           pageInfo: account.organizations.pageInfo,
         }
-      }),
+      })
+    },
     initialPageParam: '',
     getNextPageParam: (data) => {
-      return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : null
+      return data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : undefined
     },
   })
 }

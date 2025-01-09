@@ -102,6 +102,7 @@ const mockPullData = {
         bundleAnalysis: {
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
+            isCached: false,
           },
         },
       },

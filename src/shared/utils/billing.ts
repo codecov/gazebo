@@ -1,6 +1,5 @@
 import { format, fromUnixTime } from 'date-fns'
 import isArray from 'lodash/isArray'
-import isString from 'lodash/isString'
 import isUndefined from 'lodash/isUndefined'
 import { z } from 'zod'
 
@@ -34,13 +33,6 @@ export const CollectionMethods = Object.freeze({
   INVOICED_CUSTOMER_METHOD: 'send_invoice',
   AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
 })
-
-export function isSentryPlan(plan?: PlanName | null) {
-  if (isString(plan)) {
-    return plan === Plans.USERS_SENTRYM || plan === Plans.USERS_SENTRYY
-  }
-  return false
-}
 
 export const findProPlans = ({
   plans,

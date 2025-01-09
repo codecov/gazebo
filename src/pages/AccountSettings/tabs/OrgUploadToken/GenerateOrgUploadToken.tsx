@@ -7,8 +7,12 @@ import Icon from 'ui/Icon'
 
 import useGenerateOrgUploadToken from './useGenerateOrgUploadToken'
 
+interface URLParams {
+  owner: string
+}
+
 function GenerateOrgUploadToken() {
-  const { owner } = useParams()
+  const { owner } = useParams<URLParams>()
   const { regenerateToken, isLoading } = useGenerateOrgUploadToken()
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
 
@@ -33,11 +37,12 @@ function GenerateOrgUploadToken() {
       </div>
       {!isAdmin && (
         <div className="flex gap-1">
-          <Icon name="information-circle" size="sm" />
+          <Icon name="informationCircle" size="sm" />
           Only organization admins can regenerate this token.
         </div>
       )}
       <div className="flex gap-1">
+        {/* @ts-expect-error error until convert A to ts */}
         <A to={{ pageName: 'orgUploadTokenDoc' }}>Learn more</A>
         <p>how to generate and use the global upload token.</p>
       </div>

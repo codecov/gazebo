@@ -36,7 +36,7 @@ function InstallationHelpBanner() {
   const { provider } = useParams()
   const { params } = useLocationParams()
 
-  if (providerToName(provider) !== 'Github') return null
+  if (providerToName(provider) !== 'GitHub') return null
 
   const { setup_action: setupAction } = params
   if (setupAction !== 'install') return null

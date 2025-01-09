@@ -1,3 +1,4 @@
+import { useInfiniteQuery as useInfiniteQueryV5 } from '@tanstack/react-queryV5'
 import {
   flexRender,
   getCoreRowModel,
@@ -13,7 +14,10 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { OrderingDirection, useRepos } from 'services/repos'
+import {
+  OrderingDirection,
+  ReposQueryOpts,
+} from 'services/repos/ReposQueryOpts'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
@@ -134,23 +138,27 @@ const ReposTable = ({
     hasNextPage,
     isLoading: isReposLoading,
     isFetchingNextPage,
-  } = useRepos({
-    provider,
-    owner,
-    activated,
-    sortItem: getOrderingDirection(sorting),
-    term: searchValue,
-    repoNames: filterValues,
-    isPublic: shouldDisplayPublicReposOnly,
-  })
+  } = useInfiniteQueryV5(
+    ReposQueryOpts({
+      provider,
+      owner,
+      activated,
+      sortItem: getOrderingDirection(sorting),
+      term: searchValue,
+      repoNames: filterValues,
+      isPublic: shouldDisplayPublicReposOnly,
+    })
+  )
 
   // fetch demo repo(s)
-  const { data: demoReposData } = useRepos({
-    provider: DEMO_REPO.provider,
-    owner: DEMO_REPO.owner,
-    activated,
-    repoNames: [DEMO_REPO.repo],
-  })
+  const { data: demoReposData } = useInfiniteQueryV5(
+    ReposQueryOpts({
+      provider: DEMO_REPO.provider,
+      owner: DEMO_REPO.owner,
+      activated,
+      repoNames: [DEMO_REPO.repo],
+    })
+  )
 
   const isMyOwnerPage = currentUser?.user?.username === owner
 

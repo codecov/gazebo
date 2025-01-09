@@ -14,7 +14,7 @@ describe('SyncButton', () => {
     it('renders sync button', () => {
       render(<SyncButton provider="gh" />, { wrapper })
 
-      const link = screen.getByRole('link', { name: /Sync with Github/ })
+      const link = screen.getByRole('link', { name: /Sync with GitHub/ })
 
       const expectedRedirect = encodeURIComponent('http://localhost:3000/gh')
       expect(link).toBeInTheDocument()
@@ -26,7 +26,7 @@ describe('SyncButton', () => {
     it('renders sync button', () => {
       render(<SyncButton provider="gl" />, { wrapper })
 
-      const link = screen.getByRole('link', { name: /Sync with Gitlab/ })
+      const link = screen.getByRole('link', { name: /Sync with GitLab/ })
 
       const expectedRedirect = encodeURIComponent('http://localhost:3000/gl')
       expect(link).toBeInTheDocument()
@@ -38,7 +38,7 @@ describe('SyncButton', () => {
     it('renders sync button', () => {
       render(<SyncButton provider="bb" />, { wrapper })
 
-      const link = screen.getByRole('link', { name: /Sync with BitBucket/ })
+      const link = screen.getByRole('link', { name: /Sync with Bitbucket/ })
 
       const expectedRedirect = encodeURIComponent('http://localhost:3000/bb')
       expect(link).toBeInTheDocument()
@@ -51,7 +51,7 @@ describe('SyncButton', () => {
       render(<SyncButton provider="ghe" />, { wrapper })
 
       const link = screen.getByRole('link', {
-        name: /Sync with Github Enterprise/,
+        name: /Sync with GitHub Enterprise/,
       })
 
       const expectedRedirect = encodeURIComponent('http://localhost:3000/ghe')
@@ -65,7 +65,7 @@ describe('SyncButton', () => {
       render(<SyncButton provider="gle" />, { wrapper })
 
       const link = screen.getByRole('link', {
-        name: /Sync with Gitlab Enterprise/,
+        name: /Sync with GitLab Enterprise/,
       })
 
       const expectedRedirect = encodeURIComponent('http://localhost:3000/gle')
@@ -79,7 +79,7 @@ describe('SyncButton', () => {
       render(<SyncButton provider="bbs" />, { wrapper })
 
       const link = screen.getByRole('link', {
-        name: /Sync with BitBucket Server/,
+        name: /Sync with Bitbucket Server/,
       })
 
       const expectedRedirect = encodeURIComponent('http://localhost:3000/bbs')

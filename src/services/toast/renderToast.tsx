@@ -1,7 +1,8 @@
 import { toast, type ToastOptions } from 'react-hot-toast'
 
-import ErrorToast from './ErrorToast'
-import GenericToast from './GenericToast'
+import { ErrorToast } from './ErrorToast/ErrorToast'
+import { GenericToast } from './GenericToast/GenericToast'
+import { SuccessToast } from './SuccessToast/SuccessToast'
 
 const TOAST_DURATION = 4000
 
@@ -10,7 +11,7 @@ export interface ToastProps {
   content: string
 }
 
-export type ToastTypes = 'generic' | 'error'
+export type ToastTypes = 'generic' | 'error' | 'success'
 
 export interface ToastArgs {
   title: string
@@ -30,6 +31,9 @@ export const renderToast = ({
   switch (type) {
     case 'error':
       component = <ErrorToast title={title} content={content} />
+      break
+    case 'success':
+      component = <SuccessToast title={title} content={content} />
       break
     default:
       component = <GenericToast title={title} content={content} />
