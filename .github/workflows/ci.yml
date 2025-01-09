@@ -249,7 +249,7 @@ jobs:
       - name: Upload coverage to QA
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
-          codecovcli -u ${{ secrets.CODECOV_QA_URL }} do-upload -t ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_QA_URL }} do-upload -t ${{ secrets.CODECOV_QA_GLOBAL_UPLOAD_TOKEN }} --fail-on-error
 
       - name: Upload coverage to Public QA
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
