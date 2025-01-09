@@ -220,7 +220,7 @@ jobs:
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
-          token: ${{ secrets.CODECOV_QA_TOKEN }}
+          token: ${{ secrets.CODECOV_QA_GLOBAL_UPLOAD_TOKEN }}
           url: ${{ secrets.CODECOV_QA_URL }}
 
       - name: Upload test results to Codecov public QA
