@@ -83,7 +83,7 @@ function Step4() {
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <p>
-          Codecov offers existing wrappers for the CLI (Github Actions, Circle
+          Codecov offers existing wrappers for the CLI (GitHub Actions, Circle
           CI Orb, Bitrise Step) that makes uploading coverage to Codecov easy,
           as described{' '}
           <A
@@ -164,7 +164,7 @@ function Step6() {
           tests result on the following areas:
         </p>
         <ul className="list-inside list-disc">
-          <li>Github pull request comment</li>
+          <li>GitHub pull request comment</li>
           <li>Failed tests dashboard here.</li>
         </ul>
       </Card.Content>

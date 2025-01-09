@@ -9,7 +9,6 @@ import {
   formatNumberToUSD,
   formatTimestampToCalendarDate,
   getNextBillingDate,
-  isSentryPlan,
   lastTwoDigits,
   Plans,
   shouldDisplayTeamCard,
@@ -40,9 +39,11 @@ function getPlans() {
         'Unlimited public repositories',
         'Unlimited private repositories',
       ],
+      isSentryPlan: false,
+      isTeamPlan: false,
     },
     {
-      marketingName: 'Pro Team',
+      marketingName: 'Pro',
       value: Plans.USERS_PR_INAPPM,
       billingRate: BillingRate.MONTHLY,
       baseUnitPrice: 12,
@@ -53,9 +54,11 @@ function getPlans() {
         'Unlimited private repositories',
         'Priorty Support',
       ],
+      isSentryPlan: false,
+      isTeamPlan: false,
     },
     {
-      marketingName: 'Pro Team',
+      marketingName: 'Pro',
       value: Plans.USERS_PR_INAPPY,
       billingRate: BillingRate.ANNUALLY,
       baseUnitPrice: 10,
@@ -66,9 +69,11 @@ function getPlans() {
         'Unlimited private repositories',
         'Priorty Support',
       ],
+      isSentryPlan: false,
+      isTeamPlan: false,
     },
     {
-      marketingName: 'Pro Team',
+      marketingName: 'Enterprise',
       value: Plans.USERS_ENTERPRISEM,
       billingRate: BillingRate.MONTHLY,
       baseUnitPrice: 12,
@@ -79,6 +84,8 @@ function getPlans() {
         'Unlimited private repositories',
         'Priorty Support',
       ],
+      isSentryPlan: false,
+      isTeamPlan: false,
     },
     {
       marketingName: 'Pro Team',
@@ -92,6 +99,8 @@ function getPlans() {
         'Unlimited private repositories',
         'Priorty Support',
       ],
+      isSentryPlan: false,
+      isTeamPlan: false,
     },
     {
       marketingName: 'Sentry Pro Team',
@@ -106,6 +115,8 @@ function getPlans() {
         'Priority Support',
       ],
       trialTotalDays: 14,
+      isSentryPlan: true,
+      isTeamPlan: false,
     },
     {
       marketingName: 'Sentry Pro Team',
@@ -120,6 +131,8 @@ function getPlans() {
         'Priority Support',
       ],
       trialTotalDays: 14,
+      isSentryPlan: true,
+      isTeamPlan: false,
     },
     {
       marketingName: 'Team',
@@ -134,6 +147,8 @@ function getPlans() {
         'Patch coverage analysis',
       ],
       trialTotalDays: null,
+      isSentryPlan: false,
+      isTeamPlan: true,
     },
     {
       marketingName: 'Team',
@@ -148,6 +163,8 @@ function getPlans() {
         'Patch coverage analysis',
       ],
       trialTotalDays: null,
+      isSentryPlan: false,
+      isTeamPlan: true,
     },
   ]
 }
@@ -172,6 +189,8 @@ describe('shouldDisplayTeamCard', () => {
           'Unlimited private repositories',
           'Priorty Support',
         ],
+        isSentryPlan: false,
+        isTeamPlan: false,
       },
       {
         marketingName: 'Pro Team',
@@ -185,6 +204,8 @@ describe('shouldDisplayTeamCard', () => {
           'Unlimited private repositories',
           'Priorty Support',
         ],
+        isSentryPlan: false,
+        isTeamPlan: false,
       },
     ]
     expect(shouldDisplayTeamCard({ plans })).toBe(false)
@@ -254,23 +275,6 @@ describe('getNextBillingDate', () => {
   })
 })
 
-describe('isSentryPlan', () => {
-  it('supports monthly plan', () => {
-    expect(isSentryPlan('users-sentrym')).toBe(true)
-    expect(isSentryPlan(Plans.USERS_SENTRYM)).toBe(true)
-  })
-
-  it('supports annual plan', () => {
-    expect(isSentryPlan('users-sentryy')).toBe(true)
-    expect(isSentryPlan(Plans.USERS_SENTRYY)).toBe(true)
-  })
-
-  it('Defaults to false otherwise', () => {
-    expect(isSentryPlan('users-inappy')).toBe(false)
-    expect(isSentryPlan(undefined)).toBe(false)
-  })
-})
-
 describe('findSentryPlans', () => {
   it('contains monthly plan', () => {
     const plans = getPlans()
@@ -289,6 +293,8 @@ describe('findSentryPlans', () => {
         'Priority Support',
       ],
       trialTotalDays: 14,
+      isSentryPlan: true,
+      isTeamPlan: false,
     }
 
     expect(sentryPlanMonth).toStrictEqual(expectedResult)
@@ -311,6 +317,8 @@ describe('findSentryPlans', () => {
         'Priority Support',
       ],
       trialTotalDays: 14,
+      isSentryPlan: true,
+      isTeamPlan: false,
     }
 
     expect(sentryPlanYear).toStrictEqual(expectedResult)
@@ -323,7 +331,7 @@ describe('findProPlans', () => {
     const { proPlanMonth } = findProPlans({ plans })
 
     const expectedResult = {
-      marketingName: 'Pro Team',
+      marketingName: 'Pro',
       value: Plans.USERS_PR_INAPPM,
       billingRate: BillingRate.MONTHLY,
       baseUnitPrice: 12,
@@ -334,6 +342,8 @@ describe('findProPlans', () => {
         'Unlimited private repositories',
         'Priorty Support',
       ],
+      isSentryPlan: false,
+      isTeamPlan: false,
     }
 
     expect(proPlanMonth).toStrictEqual(expectedResult)
@@ -344,7 +354,7 @@ describe('findProPlans', () => {
     const { proPlanYear } = findProPlans({ plans })
 
     const expectedResult = {
-      marketingName: 'Pro Team',
+      marketingName: 'Pro',
       value: Plans.USERS_PR_INAPPY,
       billingRate: BillingRate.ANNUALLY,
       baseUnitPrice: 10,
@@ -355,6 +365,8 @@ describe('findProPlans', () => {
         'Unlimited private repositories',
         'Priorty Support',
       ],
+      isSentryPlan: false,
+      isTeamPlan: false,
     }
 
     expect(proPlanYear).toStrictEqual(expectedResult)
@@ -379,6 +391,8 @@ describe('findTeamPlans', () => {
         'Patch coverage analysis',
       ],
       trialTotalDays: null,
+      isSentryPlan: false,
+      isTeamPlan: true,
     }
 
     expect(teamPlanMonth).toStrictEqual(expectedResult)
@@ -401,6 +415,8 @@ describe('findTeamPlans', () => {
         'Patch coverage analysis',
       ],
       trialTotalDays: null,
+      isSentryPlan: false,
+      isTeamPlan: true,
     }
 
     expect(teamPlanYear).toStrictEqual(expectedResult)
@@ -411,7 +427,9 @@ describe('canApplySentryUpgrade', () => {
   it('returns true when list contains monthly plan', () => {
     const result = canApplySentryUpgrade({
       isEnterprisePlan: false,
-      plans: [{ value: Plans.USERS_SENTRYM }] as IndividualPlan[],
+      plans: [
+        { value: Plans.USERS_SENTRYM, isSentryPlan: true },
+      ] as IndividualPlan[],
     })
 
     expect(result).toBeTruthy()
@@ -420,7 +438,9 @@ describe('canApplySentryUpgrade', () => {
   it('returns true when list contains annual plan', () => {
     const result = canApplySentryUpgrade({
       isEnterprisePlan: false,
-      plans: [{ value: Plans.USERS_SENTRYY }] as IndividualPlan[],
+      plans: [
+        { value: Plans.USERS_SENTRYY, isSentryPlan: true },
+      ] as IndividualPlan[],
     })
 
     expect(result).toBeTruthy()
@@ -428,7 +448,9 @@ describe('canApplySentryUpgrade', () => {
 
   it('returns false when plans are not in list', () => {
     const result = canApplySentryUpgrade({
-      plans: [{ value: Plans.USERS_FREE }] as IndividualPlan[],
+      plans: [
+        { value: Plans.USERS_FREE, isSentryPlan: false },
+      ] as IndividualPlan[],
     })
 
     expect(result).toBeFalsy()
@@ -437,7 +459,9 @@ describe('canApplySentryUpgrade', () => {
   it('returns false when user has enterprise plan', () => {
     const result = canApplySentryUpgrade({
       isEnterprisePlan: true,
-      plans: [{ value: Plans.USERS_SENTRYY }] as IndividualPlan[],
+      plans: [
+        { value: Plans.USERS_SENTRYY, isSentryPlan: true },
+      ] as IndividualPlan[],
     })
 
     expect(result).toBeFalsy()

@@ -220,6 +220,7 @@ describe('DefaultOrgSelector', () => {
                 isTeamPlan:
                   value === Plans.USERS_TEAMM || value === Plans.USERS_TEAMY,
                 isTrialPlan: value === Plans.USERS_TRIAL,
+                isSentryPlan: false,
                 trialStatus,
                 value,
               },

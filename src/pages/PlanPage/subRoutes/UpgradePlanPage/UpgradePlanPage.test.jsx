@@ -29,6 +29,8 @@ const plans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -42,6 +44,8 @@ const plans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -55,6 +59,8 @@ const plans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -68,6 +74,8 @@ const plans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -81,6 +89,8 @@ const plans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
 ]
 
@@ -97,6 +107,8 @@ const sentryPlanMonth = {
   ],
   monthlyUploadLimit: null,
   trialDays: 14,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const sentryPlanYear = {
@@ -112,6 +124,8 @@ const sentryPlanYear = {
   ],
   monthlyUploadLimit: null,
   trialDays: 14,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const teamPlanMonth = {
@@ -121,6 +135,8 @@ const teamPlanMonth = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanYear = {
@@ -130,6 +146,8 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const mockPlanData = {
@@ -216,6 +234,9 @@ describe('UpgradePlanPage', () => {
                 isFreePlan: planValue === Plans.USERS_BASIC,
                 isProPlan: planValue === Plans.USERS_PR_INAPPY,
                 isTrialPlan: planValue === Plans.USERS_TRIAL,
+                isSentryPlan:
+                  planValue === Plans.USERS_SENTRYY ||
+                  planValue === Plans.USERS_SENTRYM,
                 value: planValue,
               },
             },

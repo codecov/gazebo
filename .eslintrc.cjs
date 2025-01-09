@@ -500,5 +500,13 @@ module.exports = {
     // https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
+
+    'no-restricted-syntax': [
+      'warn',
+      {
+        selector: "JSXText[value=/\\bGithub\\b|\\bGitlab\\b|\\bBitBucket\\b/]",
+        message: "Use correct casing (GitHub, GitLab, Bitbucket)"
+      }
+    ]
   },
 }

@@ -5,11 +5,12 @@ export default function useGenerateOrgUploadToken() {
   const addToast = useAddNotification()
   const {
     mutate,
+    mutateAsync,
     data: res,
     ...rest
   } = useRegenerateOrgUploadToken({
-    onSuccess: (data) => {
-      const errString = data?.regenerateOrgUploadToken?.error?.__typename
+    onSuccess: (result) => {
+      const errString = result?.error?.__typename
 
       if (errString) {
         addToast({
@@ -25,5 +26,10 @@ export default function useGenerateOrgUploadToken() {
     },
   })
 
-  return { regenerateToken: mutate, res, ...rest }
+  return {
+    regenerateToken: mutate,
+    regenerateTokenAsync: mutateAsync,
+    res,
+    ...rest,
+  }
 }

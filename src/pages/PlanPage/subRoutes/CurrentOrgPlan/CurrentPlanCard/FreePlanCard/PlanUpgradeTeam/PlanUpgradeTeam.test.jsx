@@ -16,6 +16,7 @@ const mockPlanBasic = {
   isEnterprisePlan: false,
   isFreePlan: true,
   isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: false,
   isTrialPlan: false,
   baseUnitPrice: 0,
@@ -37,6 +38,7 @@ const mockPlanPro = {
   isEnterprisePlan: false,
   isProPlan: true,
   isFreePlan: false,
+  isSentryPlan: false,
   isTeamPlan: false,
   isTrialPlan: false,
   baseUnitPrice: 10,
@@ -58,6 +60,7 @@ const mockPlanTrialing = {
   isEnterprisePlan: false,
   isFreePlan: false,
   isProPlan: false,
+  isSentryPlan: false,
   isTeamPlan: false,
   isTrialPlan: true,
   baseUnitPrice: 10,
@@ -87,6 +90,8 @@ const mockAvailablePlans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -100,6 +105,8 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -113,6 +120,8 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -126,6 +135,8 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
@@ -139,6 +150,8 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     baseUnitPrice: 6,
@@ -147,6 +160,8 @@ const mockAvailablePlans = [
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMM,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
   {
     baseUnitPrice: 5,
@@ -155,6 +170,8 @@ const mockAvailablePlans = [
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMY,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
 ]
 

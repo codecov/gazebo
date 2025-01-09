@@ -59,7 +59,7 @@ describe('BotErrorBanner', () => {
       })
 
       const title = await screen.findByText(
-        'There was an issue with the Github app'
+        'There was an issue with the GitHub app'
       )
       expect(title).toBeInTheDocument()
     })

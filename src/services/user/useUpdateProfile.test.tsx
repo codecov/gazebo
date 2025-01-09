@@ -16,6 +16,11 @@ const user = {
   name: 'terry',
   avatarUrl: 'http://127.0.0.1/avatar-url',
   onboardingCompleted: false,
+  privateAccess: true,
+  businessEmail: null,
+  student: false,
+  studentCreatedAt: null,
+  studentUpdatedAt: null,
 }
 
 const queryClient = new QueryClient({
@@ -50,9 +55,19 @@ describe('useUpdateProfile', () => {
     server.use(
       graphql.mutation('UpdateProfile', (info) => {
         const newUser = {
-          ...user,
-          name: info.variables.input.name,
           email: info.variables.input.email,
+          onboardingCompleted: user.onboardingCompleted,
+          privateAccess: user.privateAccess,
+          businessEmail: user.businessEmail,
+          user: {
+            name: info.variables.input.name,
+            username: user.username,
+            avatarUrl: user.avatarUrl,
+            avatar: user.avatarUrl,
+            student: user.student,
+            studentCreatedAt: user.studentCreatedAt,
+            studentUpdatedAt: user.studentUpdatedAt,
+          },
         }
 
         return HttpResponse.json({
@@ -88,11 +103,19 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            avatarUrl: 'http://127.0.0.1/avatar-url',
             email: 'newemail@test.com',
-            name: 'new name',
+            privateAccess: true,
             onboardingCompleted: false,
-            username: 'TerrySmithDC',
+            businessEmail: null,
+            user: {
+              name: 'new name',
+              username: 'TerrySmithDC',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+              avatar: 'http://127.0.0.1/avatar-url',
+              student: false,
+              studentCreatedAt: null,
+              studentUpdatedAt: null,
+            },
           })
         )
       })
@@ -108,11 +131,19 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            avatarUrl: 'http://127.0.0.1/avatar-url',
             email: 'newemail@test.com',
-            name: 'new name',
+            privateAccess: true,
             onboardingCompleted: false,
-            username: 'TerrySmithDC',
+            businessEmail: null,
+            user: {
+              name: 'new name',
+              username: 'TerrySmithDC',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+              avatar: 'http://127.0.0.1/avatar-url',
+              student: false,
+              studentCreatedAt: null,
+              studentUpdatedAt: null,
+            },
           })
         )
       })
@@ -153,11 +184,19 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            avatarUrl: 'http://127.0.0.1/avatar-url',
             email: 'newemail@test.com',
-            name: 'new name',
+            privateAccess: true,
             onboardingCompleted: false,
-            username: 'TerrySmithDC',
+            businessEmail: null,
+            user: {
+              name: 'new name',
+              username: 'TerrySmithDC',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+              avatar: 'http://127.0.0.1/avatar-url',
+              student: false,
+              studentCreatedAt: null,
+              studentUpdatedAt: null,
+            },
           })
         )
       })

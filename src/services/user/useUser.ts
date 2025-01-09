@@ -5,7 +5,7 @@ import { z } from 'zod'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 
-const TypeProjectsSchema = z.array(
+export const TypeProjectsSchema = z.array(
   z.union([
     z.literal('PERSONAL'),
     z.literal('YOUR_ORG'),
@@ -14,7 +14,7 @@ const TypeProjectsSchema = z.array(
   ])
 )
 
-const GoalsSchema = z.array(
+export const GoalsSchema = z.array(
   z.union([
     z.literal('STARTING_WITH_TESTS'),
     z.literal('IMPROVE_COVERAGE'),
