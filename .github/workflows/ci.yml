@@ -115,13 +115,6 @@ jobs:
           ENABLE_TEST_REPORTER: true
           TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes-vitest.outputs.test_list_array)[matrix.runner-index]) }}
 
-      - name: Upload test results to Codecov QA
-        uses: codecov/test-results-action@v1
-        if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
-        with:
-          token: ${{ secrets.CODECOV_QA_GLOBAL_UPLOAD_TOKEN }}
-          url: ${{ secrets.CODECOV_QA_URL }}
-
       - name: Install CLI
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
