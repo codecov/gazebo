@@ -63,6 +63,8 @@ const HomePageRedirect = () => {
     }
   }
 
+  // test
+
   return <Redirect to={redirectURL} />
 }
 
