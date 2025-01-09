@@ -6,7 +6,7 @@ import Api from 'shared/api'
 
 const SaveTermsAgreementInputConfig = z.object({
   businessEmail: z.string(),
-  marketingName: z.string(),
+  name: z.string(),
   termsAgreement: z.boolean(),
   marketingConsent: z.boolean().optional(),
 })
@@ -47,7 +47,7 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
     mutationFn: (input: SaveTermsAgreementInput) => {
       const parsedInput = SaveTermsAgreementInputConfig.parse(input)
 
-      const { businessEmail, termsAgreement, marketingConsent, marketingName } =
+      const { businessEmail, termsAgreement, marketingConsent, name } =
         parsedInput
 
       const querySignAgreement = `
@@ -68,7 +68,7 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
           businessEmail,
           termsAgreement,
           marketingConsent,
-          marketingName,
+          name,
         },
       }
       return Api.graphqlMutation({

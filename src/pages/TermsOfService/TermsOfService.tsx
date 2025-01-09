@@ -103,8 +103,8 @@ export default function TermsOfService() {
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
     defaultValues: {
-      marketingName: currentUser?.name ?? undefined,
-      marketingEmail: currentUser?.email ?? undefined,
+      marketingName: currentUser?.name || '',
+      marketingEmail: currentUser?.email || '',
       marketingConsent: undefined,
       tos: false,
       // this field just used for custom form error
@@ -131,8 +131,8 @@ export default function TermsOfService() {
 
   interface FormValues {
     marketingConsent?: boolean
-    marketingName?: string
-    marketingEmail?: string
+    marketingName: string
+    marketingEmail: string
   }
 
   const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
@@ -141,7 +141,7 @@ export default function TermsOfService() {
     mutate({
       businessEmail: data.marketingEmail,
       marketingConsent: data?.marketingConsent,
-      marketingName: data.marketingName,
+      name: data.marketingName,
       termsAgreement: true,
     })
   }
