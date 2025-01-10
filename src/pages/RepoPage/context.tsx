@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-type Breadcrumb = {
+export type Breadcrumb = {
   pageName: string
   text?: string
   children?: JSX.Element
