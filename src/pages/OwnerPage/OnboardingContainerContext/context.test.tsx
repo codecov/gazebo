@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 
-import { ONBOARDING_SOURCE } from 'pages/DefaultOrgSelector/constants'
 import { LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER } from 'pages/OwnerPage/OnboardingOrg/constants'
+import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
 
 import { OnboardingContainerProvider, useOnboardingContainer } from './context'
 

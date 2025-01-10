@@ -19,8 +19,6 @@ import LoadingLogo from 'ui/LoadingLogo'
 import { NavigatorDataQueryOpts } from './hooks/NavigatorDataQueryOpts'
 import { useUserAccessGate } from './hooks/useUserAccessGate'
 
-const DefaultOrgSelector = lazy(() => import('pages/DefaultOrgSelector'))
-const InstallationHelpBanner = lazy(() => import('./InstallationHelpBanner'))
 const TermsOfService = lazy(() => import('pages/TermsOfService'))
 
 const FullPageLoader = () => (
@@ -30,20 +28,16 @@ const FullPageLoader = () => (
 )
 
 interface OnboardingOrChildrenProps extends React.PropsWithChildren {
-  isImpersonating: boolean
   isFullExperience: boolean
   showAgreeToTerms: boolean
   redirectToSyncPage: boolean
-  showDefaultOrgSelector: boolean
 }
 
 function OnboardingOrChildren({
   children,
-  isImpersonating,
   isFullExperience,
   showAgreeToTerms,
   redirectToSyncPage,
-  showDefaultOrgSelector,
 }: OnboardingOrChildrenProps) {
   if (showAgreeToTerms && !isFullExperience) {
     return (
@@ -55,14 +49,6 @@ function OnboardingOrChildren({
 
   if (redirectToSyncPage && !isFullExperience) {
     return <Redirect to="/sync" />
-  }
-
-  if (showDefaultOrgSelector && !isFullExperience && !isImpersonating) {
-    return (
-      <Suspense fallback={null}>
-        <DefaultOrgSelector />
-      </Suspense>
-    )
   }
 
   return <>{children}</>
@@ -81,7 +67,6 @@ function BaseLayout({ children }: React.PropsWithChildren) {
   const {
     isFullExperience,
     showAgreeToTerms,
-    showDefaultOrgSelector,
     redirectToSyncPage,
     isLoading: isUserAccessGateLoading,
   } = useUserAccessGate()
@@ -112,14 +97,10 @@ function BaseLayout({ children }: React.PropsWithChildren) {
         <Suspense>
           <ErrorBoundary errorComponent={<EmptyErrorComponent />}>
             <SilentNetworkErrorWrapper>
-              {isFullExperience || isImpersonating ? (
+              {(isFullExperience || isImpersonating) && (
                 <>
                   <GlobalTopBanners />
                   <Header hasRepoAccess={data?.hasRepoAccess} />
-                </>
-              ) : (
-                <>
-                  {showDefaultOrgSelector ? <InstallationHelpBanner /> : null}
                 </>
               )}
             </SilentNetworkErrorWrapper>
@@ -135,9 +116,7 @@ function BaseLayout({ children }: React.PropsWithChildren) {
                 <OnboardingOrChildren
                   isFullExperience={isFullExperience}
                   showAgreeToTerms={showAgreeToTerms}
-                  showDefaultOrgSelector={showDefaultOrgSelector}
                   redirectToSyncPage={redirectToSyncPage}
-                  isImpersonating={isImpersonating}
                 >
                   {children}
                 </OnboardingOrChildren>

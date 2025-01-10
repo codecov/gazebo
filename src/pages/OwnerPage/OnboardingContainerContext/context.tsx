@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from 'react'
 
-import { ONBOARDING_SOURCE } from 'pages/DefaultOrgSelector/constants'
 import { LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER } from 'pages/OwnerPage/OnboardingOrg/constants'
+import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
 import { useLocationParams } from 'services/navigation'
 
 type OnboardingContainerContextValue = {
@@ -20,7 +20,9 @@ export const OnboardingContainerProvider: React.FC<React.PropsWithChildren> = ({
   }: {
     params: { source?: string }
   } = useLocationParams()
+
   if (
+    // this should only show for newly onboarded users
     params['source'] === ONBOARDING_SOURCE &&
     localStorage.getItem(LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER) === null
   ) {
@@ -30,8 +32,17 @@ export const OnboardingContainerProvider: React.FC<React.PropsWithChildren> = ({
     LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER
   )
 
-  const [showOnboardingContainer, setShowOnboardingContainer] =
-    useState<boolean>(localStorageValue === 'true' ? true : false)
+  const [showOnboardingContainer, setShowFunction] = useState<boolean>(
+    localStorageValue === 'true' ? true : false
+  )
+
+  const setShowOnboardingContainer = (showOnboardingContainer: boolean) => {
+    setShowFunction(showOnboardingContainer)
+    localStorage.setItem(
+      LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER,
+      showOnboardingContainer ? 'true' : 'false'
+    )
+  }
 
   return (
     <OnboardingContainerContext.Provider
