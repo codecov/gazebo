@@ -2,8 +2,9 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import { eventTracker } from 'services/events/events'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { NetworkErrorObject, Provider } from 'shared/api/helpers'
 
 export const TypeProjectsSchema = z.array(
   z.union([
@@ -27,6 +28,8 @@ export const GoalsSchema = z.array(
 const MeSchema = z.object({
   owner: z.object({
     defaultOrgUsername: z.string().nullable(),
+    ownerid: z.number().nullable(),
+    username: z.string().nullable(),
   }),
   email: z.string().nullable(),
   privateAccess: z.boolean().nullable(),
@@ -80,6 +83,8 @@ const currentUserFragment = `
 fragment CurrentUserFragment on Me {
   owner {
     defaultOrgUsername
+    ownerid
+    username
   }
   email
   privateAccess
@@ -121,7 +126,8 @@ fragment CurrentUserFragment on Me {
 `
 
 interface URLParams {
-  provider: string
+  provider: Provider
+  owner: string
 }
 
 interface UseUserArgs {
@@ -134,7 +140,6 @@ interface UseUserArgs {
 
 export function useUser({ options }: UseUserArgs = {}) {
   const { provider } = useParams<URLParams>()
-
   const query = `
     query CurrentUser {
       me {
@@ -156,6 +161,16 @@ export function useUser({ options }: UseUserArgs = {}) {
             data: {},
             dev: 'useUser - 404 failed to parse',
           } satisfies NetworkErrorObject)
+        }
+
+        if (
+          parsedRes.data.me?.owner.ownerid &&
+          parsedRes.data.me?.owner.username
+        ) {
+          eventTracker(provider).identify(
+            parsedRes.data.me.owner.ownerid,
+            parsedRes.data.me.owner.username
+          )
         }
 
         return parsedRes.data.me
