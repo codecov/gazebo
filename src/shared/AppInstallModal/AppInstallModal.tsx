@@ -8,14 +8,12 @@ const COPY_APP_INSTALL_STRING =
 
 interface AppInstallModalProps {
   isOpen: boolean
-  isShareRequestVersion?: boolean
   onClose: () => void
   onComplete: () => void
 }
 
 function AppInstallModal({
   isOpen,
-  isShareRequestVersion = true,
   onClose,
   onComplete,
 }: AppInstallModalProps) {
@@ -23,66 +21,48 @@ function AppInstallModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={
-        isShareRequestVersion
-          ? 'Share GitHub app installation'
-          : 'Install Codecov app'
-      }
-      customHeaderClassname={isShareRequestVersion ? 'text-2xl' : 'text-lg'}
+      title="Install Codecov app"
+      customHeaderClassname="text-2xl"
       body={
-        isShareRequestVersion ? (
-          <div className="flex flex-col">
-            <span className="mb-4 text-sm">
-              Copy the link below and share it with your organization&apos;s
-              admin or owner to assist.
-            </span>
-            <CodeSnippet clipboard={COPY_APP_INSTALL_STRING}>
-              <div className="w-[90%] text-wrap">{COPY_APP_INSTALL_STRING}</div>
-            </CodeSnippet>
+        <div className="flex flex-col">
+          <span className="mb-5">
+            You need to install Codecov app on your GitHub organization as an
+            admin.
+          </span>
+          <div className="mb-5 bg-ds-gray-primary px-6 ">
+            <img
+              src={clickHereToInstall}
+              alt="click here to install screenshot"
+              className="mx-auto h-72 w-[508px] object-cover"
+            />
           </div>
-        ) : (
-          <div className="flex flex-col">
-            <span className="mb-5">
-              You need to install Codecov app on your GitHub organization as an
-              admin.
+          <span className="mb-2 text-sm">
+            If you&apos;re
+            <span className="font-bold">
+              {' '}
+              not an admin, share the link below with your organization&apos;s
+              owner{' '}
             </span>
-            <div className="mb-5 bg-ds-gray-primary px-6 ">
-              <img
-                src={clickHereToInstall}
-                alt="click here to install screenshot"
-                className="mx-auto h-72 w-[508px] object-cover"
-              />
-            </div>
-            <span className="mb-2 text-sm">
-              If you&apos;re
-              <span className="font-bold">
-                {' '}
-                not an admin, share the link below with your organization&apos;s
-                owner{' '}
-              </span>
-              to install the Codecov app:
-            </span>
-            <CodeSnippet clipboard={COPY_APP_INSTALL_STRING}>
-              <div className="w-[90%] text-wrap">{COPY_APP_INSTALL_STRING}</div>
-            </CodeSnippet>
-          </div>
-        )
+            to install the Codecov app:
+          </span>
+          <CodeSnippet clipboard={COPY_APP_INSTALL_STRING}>
+            <div className="w-[90%] text-wrap">{COPY_APP_INSTALL_STRING}</div>
+          </CodeSnippet>
+        </div>
       }
       footer={
-        <div className={isShareRequestVersion ? '' : 'flex justify-end gap-2'}>
-          {!isShareRequestVersion && (
-            <Button variant="default" onClick={onClose} hook="close-modal">
-              Cancel
-            </Button>
-          )}
+        <div className="flex justify-end gap-2">
+          <Button variant="default" onClick={onClose} hook="close-modal">
+            Cancel
+          </Button>
           <Button
             to={undefined}
-            hook="close-modal"
+            hook="install-link"
             disabled={false}
             variant="primary"
             onClick={onComplete}
           >
-            {isShareRequestVersion ? 'Done' : 'Install Codecov app via GitHub'}
+            Install Codecov app via GitHub
           </Button>
         </div>
       }

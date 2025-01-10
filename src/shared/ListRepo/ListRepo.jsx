@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Suspense, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { ONBOARDING_SOURCE } from 'pages/DefaultOrgSelector'
+import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos/orderingOptions'
 import { useIsTeamPlan } from 'services/useIsTeamPlan'

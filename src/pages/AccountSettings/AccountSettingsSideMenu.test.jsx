@@ -47,7 +47,6 @@ const mockCurrentUser = (username) => ({
       student: false,
       studentCreatedAt: null,
       studentUpdatedAt: null,
-      customerIntent: 'PERSONAL',
     },
     trackingMetadata: {
       service: 'github',

@@ -8,6 +8,7 @@ import config from 'config'
 
 import { SentryBugReporter } from 'sentry'
 
+import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
 import { TrialStatuses, usePlanData } from 'services/account'
 import {
   EVENT_METRICS,
@@ -25,9 +26,10 @@ import Button from 'ui/Button'
 import Icon from 'ui/Icon/Icon'
 import Select from 'ui/Select'
 
-import { ONBOARDING_SOURCE } from './constants'
 import GitHubHelpBanner from './GitHubHelpBanner'
 import { useMyOrganizations } from './hooks/useMyOrganizations'
+
+// TODO: remove this once non-PAT appless changes are finalized as this is no longer rendered anywhere
 
 const FormSchema = z.object({
   select: z.string().nullish(),
