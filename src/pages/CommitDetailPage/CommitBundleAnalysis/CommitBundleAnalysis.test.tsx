@@ -11,14 +11,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import CommitBundleAnalysis from './CommitBundleAnalysis'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
-vi.mock('shared/featureFlags', () => ({
-  useFlags: mocks.useFlags,
-}))
-
 vi.mock('./CommitBundleAnalysisTable', () => ({
   default: () => <div>CommitBundleAnalysisTable</div>,
 }))
@@ -190,7 +182,6 @@ interface SetupArgs {
   firstPullRequest?: boolean
   comparisonError?: boolean
   hasCachedBundle?: boolean
-  featureFlag?: boolean
 }
 
 describe('CommitBundleAnalysis', () => {
@@ -203,7 +194,6 @@ describe('CommitBundleAnalysis', () => {
       firstPullRequest = false,
       comparisonError = false,
       hasCachedBundle = false,
-      featureFlag = false,
     }: SetupArgs = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
@@ -212,11 +202,8 @@ describe('CommitBundleAnalysis', () => {
       firstPullRequest: false,
       comparisonError: false,
       hasCachedBundle: false,
-      featureFlag: false,
     }
   ) {
-    mocks.useFlags.mockReturnValue({ displayCachedBundleBanner: featureFlag })
-
     server.use(
       graphql.query('CommitPageData', () => {
         return HttpResponse.json({
@@ -259,32 +246,30 @@ describe('CommitBundleAnalysis', () => {
       expect(commitBundleAnalysisTable).toBeInTheDocument()
     })
 
-    describe('feature flag is enabled', () => {
-      describe('there are cached bundles', () => {
-        it('renders CachedBundleContentBanner', async () => {
-          setup({ featureFlag: true, hasCachedBundle: true })
-          render(<CommitBundleAnalysis />, { wrapper })
+    describe('there are cached bundles', () => {
+      it('renders CachedBundleContentBanner', async () => {
+        setup({ hasCachedBundle: true })
+        render(<CommitBundleAnalysis />, { wrapper })
 
-          const cachedBundleContentBanner = await screen.findByText(
-            'The reported bundle size includes cached data from previous commits'
-          )
-          expect(cachedBundleContentBanner).toBeInTheDocument()
-        })
+        const cachedBundleContentBanner = await screen.findByText(
+          'The reported bundle size includes cached data from previous commits'
+        )
+        expect(cachedBundleContentBanner).toBeInTheDocument()
       })
+    })
 
-      describe('there are no cached bundles', () => {
-        it('does not render CachedBundleContentBanner', async () => {
-          setup({ featureFlag: true, hasCachedBundle: false })
-          render(<CommitBundleAnalysis />, { wrapper })
+    describe('there are no cached bundles', () => {
+      it('does not render CachedBundleContentBanner', async () => {
+        setup({ hasCachedBundle: false })
+        render(<CommitBundleAnalysis />, { wrapper })
 
-          await waitFor(() => queryClientV5.isFetching())
-          await waitFor(() => !queryClientV5.isFetching())
+        await waitFor(() => queryClientV5.isFetching())
+        await waitFor(() => !queryClientV5.isFetching())
 
-          const cachedBundleContentBanner = screen.queryByText(
-            'The reported bundle size includes cached data from previous commits'
-          )
-          expect(cachedBundleContentBanner).not.toBeInTheDocument()
-        })
+        const cachedBundleContentBanner = screen.queryByText(
+          'The reported bundle size includes cached data from previous commits'
+        )
+        expect(cachedBundleContentBanner).not.toBeInTheDocument()
       })
     })
 
@@ -562,32 +547,30 @@ describe('CommitBundleAnalysis', () => {
       })
     })
 
-    describe('feature flag is enabled', () => {
-      describe('there are cached bundles', () => {
-        it('renders CachedBundleContentBanner', async () => {
-          setup({ featureFlag: true, hasCachedBundle: true })
-          render(<CommitBundleAnalysis />, { wrapper })
+    describe('there are cached bundles', () => {
+      it('renders CachedBundleContentBanner', async () => {
+        setup({ hasCachedBundle: true })
+        render(<CommitBundleAnalysis />, { wrapper })
 
-          const cachedBundleContentBanner = await screen.findByText(
-            'The reported bundle size includes cached data from previous commits'
-          )
-          expect(cachedBundleContentBanner).toBeInTheDocument()
-        })
+        const cachedBundleContentBanner = await screen.findByText(
+          'The reported bundle size includes cached data from previous commits'
+        )
+        expect(cachedBundleContentBanner).toBeInTheDocument()
       })
+    })
 
-      describe('there are no cached bundles', () => {
-        it('does not render CachedBundleContentBanner', async () => {
-          setup({ featureFlag: true, hasCachedBundle: false })
-          render(<CommitBundleAnalysis />, { wrapper })
+    describe('there are no cached bundles', () => {
+      it('does not render CachedBundleContentBanner', async () => {
+        setup({ hasCachedBundle: false })
+        render(<CommitBundleAnalysis />, { wrapper })
 
-          await waitFor(() => queryClientV5.isFetching())
-          await waitFor(() => !queryClientV5.isFetching())
+        await waitFor(() => queryClientV5.isFetching())
+        await waitFor(() => !queryClientV5.isFetching())
 
-          const cachedBundleContentBanner = screen.queryByText(
-            'The reported bundle size includes cached data from previous commits'
-          )
-          expect(cachedBundleContentBanner).not.toBeInTheDocument()
-        })
+        const cachedBundleContentBanner = screen.queryByText(
+          'The reported bundle size includes cached data from previous commits'
+        )
+        expect(cachedBundleContentBanner).not.toBeInTheDocument()
       })
     })
 
