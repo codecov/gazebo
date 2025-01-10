@@ -14,6 +14,7 @@ import Button from 'ui/Button'
 import RadioInput from 'ui/RadioInput/RadioInput'
 import TextInput from 'ui/TextInput'
 
+import { ONBOARDING_SOURCE } from './constants'
 import { useSaveTermsAgreement } from './hooks/useTermsOfService'
 
 const FormSchema = z.object({
@@ -114,6 +115,10 @@ export default function TermsOfService() {
       marketingConsent: data?.marketingConsent,
       customerIntent: data?.customerIntent || CustomerIntent.PERSONAL,
     })
+
+    const url = new URL(window.location.href)
+    url.searchParams.set('source', ONBOARDING_SOURCE)
+    window.location.href = url.toString()
   }
 
   useEffect(() => {

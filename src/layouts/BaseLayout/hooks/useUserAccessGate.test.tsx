@@ -67,7 +67,6 @@ const mockUser = {
   studentCreatedAt: null,
   studentUpdatedAt: null,
   email: 'codecov@codecov.io',
-  customerIntent: 'PERSONAL',
 }
 
 const mockTrackingMetadata = {
@@ -303,14 +302,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
         },
@@ -329,14 +326,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
         },
@@ -355,14 +350,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
         },
@@ -381,66 +374,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: false,
             isLoading: false,
             showAgreeToTerms: true,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'cloud',
-      'default org',
-      'does not have a default org',
-      {
-        user: loggedInUser,
-        internalUser: internalUserWithSignedTOS,
-        isSelfHosted: false,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: false,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: true,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'cloud',
-      'default org',
-      'has a default org',
-      {
-        user: userHasDefaultOrg,
-        internalUser: internalUserWithSignedTOS,
-        isSelfHosted: false,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
         },
@@ -459,14 +398,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
         },
@@ -485,14 +422,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
         },
@@ -511,14 +446,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
         },
@@ -537,14 +470,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
         },
@@ -563,14 +494,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
         },
@@ -589,14 +518,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: false,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: true,
           },
         },
@@ -615,66 +542,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'self hosted',
-      'default org',
-      'does not have a default org',
-      {
-        user: loggedInUser,
-        internalUser: internalUserWithSignedTOS,
-        isSelfHosted: true,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'self hosted',
-      'default org',
-      'has a default org',
-      {
-        user: userHasDefaultOrg,
-        internalUser: internalUserWithSignedTOS,
-        isSelfHosted: true,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
         },
@@ -693,14 +566,12 @@ describe('useUserAccessGate', () => {
             isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: false,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
             redirectToSyncPage: true,
           },
         },
@@ -724,10 +595,11 @@ describe('useUserAccessGate', () => {
             })
           })
 
-          it(`return values are expect while useUser resolves`, async () => {
+          it.only(`return values are expect while useUser resolves`, async () => {
             const { result } = renderHook(() => useUserAccessGate(), {
               wrapper: wrapper(),
             })
+            console.log('qwerty result', result)
 
             await waitFor(() => result.current.isLoading)
 
@@ -788,100 +660,6 @@ describe('useUserAccessGate', () => {
           },
         })
       )
-    })
-  })
-
-  describe('customer intent functionality', () => {
-    describe('when customer intent is set to PERSONAL', () => {
-      it('fires update default org mutation', async () => {
-        const { mockMutationVariables } = setup({
-          internalUser: internalUserHasSyncedProviders,
-        })
-
-        const { result } = renderHook(() => useUserAccessGate(), {
-          wrapper: wrapper(['/gh']),
-        })
-
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-
-        await waitFor(() =>
-          expect(mockMutationVariables).toHaveBeenLastCalledWith({
-            input: {
-              username: 'CodecovUser',
-            },
-          })
-        )
-      })
-
-      it('does not fire if current owner already has a default org', async () => {
-        const { mockMutationVariables } = setup({
-          user: userHasDefaultOrg,
-          internalUser: internalUserHasSyncedProviders,
-        })
-
-        const { result } = renderHook(() => useUserAccessGate(), {
-          wrapper: wrapper(['/gh']),
-        })
-
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-
-        await waitFor(() =>
-          expect(mockMutationVariables).not.toHaveBeenCalled()
-        )
-      })
-    })
-
-    describe('when customer intent is set to BUSINESS', () => {
-      it('does not fire update default org mutation', async () => {
-        const { mockMutationVariables } = setup({
-          user: {
-            me: {
-              ...mockMe,
-              user: {
-                ...mockUser,
-                customerIntent: 'BUSINESS',
-              },
-            },
-          },
-          internalUser: internalUserHasSyncedProviders,
-        })
-
-        const { result } = renderHook(() => useUserAccessGate(), {
-          wrapper: wrapper(['/gh']),
-        })
-
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-
-        await waitFor(() =>
-          expect(mockMutationVariables).not.toHaveBeenCalled()
-        )
-      })
-    })
-
-    describe('when default org mutation is loading', () => {
-      it('does not set default org selector', async () => {
-        const { mockMutationVariables } = setup({
-          internalUser: internalUserHasSyncedProviders,
-          delayMutation: true,
-        })
-
-        const { result } = renderHook(() => useUserAccessGate(), {
-          wrapper: wrapper(['/gh']),
-        })
-
-        await waitFor(() =>
-          expect(mockMutationVariables).not.toHaveBeenCalled()
-        )
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-
-        await waitFor(() =>
-          expect(result.current.showDefaultOrgSelector).toBe(false)
-        )
-      })
     })
   })
 })

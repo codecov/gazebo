@@ -12,6 +12,8 @@ import BannerHeading from 'ui/Banner/BannerHeading'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
+// TODO: remove this once non-PAT appless changes are finalized as this is no longer rendered anywhere
+
 function ResyncButton() {
   const { triggerResync, isSyncing } = useResyncUser()
 

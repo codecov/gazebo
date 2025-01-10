@@ -3,7 +3,6 @@ import { useHistory, useParams } from 'react-router-dom'
 import config from 'config'
 
 import { useOnboardingContainer } from 'pages/OwnerPage/OnboardingContainerContext/context'
-import { LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER } from 'pages/OwnerPage/OnboardingOrg/constants'
 import { useUser } from 'services/user'
 import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
@@ -44,10 +43,6 @@ function UserDropdown() {
     {
       onClick: () => {
         setShowOnboardingContainer(!showOnboardingContainer)
-        localStorage.setItem(
-          LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER,
-          showOnboardingContainer ? 'false' : 'true'
-        )
       },
       hook: 'toggle-onboarding-container',
       children: showOnboardingContainer
