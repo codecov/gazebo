@@ -595,7 +595,7 @@ describe('useUserAccessGate', () => {
             })
           })
 
-          it.only(`return values are expect while useUser resolves`, async () => {
+          it(`return values are expect while useUser resolves`, async () => {
             const { result } = renderHook(() => useUserAccessGate(), {
               wrapper: wrapper(),
             })
