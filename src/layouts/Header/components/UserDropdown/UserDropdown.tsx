@@ -2,6 +2,7 @@ import { useHistory, useParams } from 'react-router-dom'
 
 import config from 'config'
 
+import { eventTracker } from 'services/events/events'
 import { useUser } from 'services/user'
 import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
@@ -11,6 +12,8 @@ import { Dropdown } from 'ui/Dropdown/Dropdown'
 
 interface URLParams {
   provider: Provider
+  owner: string
+  repo?: string
 }
 
 type DropdownItem = {
@@ -32,8 +35,8 @@ function UserDropdown() {
     },
   })
 
-  const { provider } = useParams<URLParams>()
-  const isGh = providerToName(provider) === 'GitHub'
+  const { provider, owner, repo } = useParams<URLParams>()
+  const isGh = providerToName(provider) === 'Github'
   const history = useHistory()
 
   const items =
@@ -42,6 +45,11 @@ function UserDropdown() {
           {
             to: { pageName: 'codecovAppInstallation' },
             children: 'Install Codecov app',
+            onClick: () =>
+              eventTracker(provider, owner, repo).track('Button Clicked', {
+                buttonType: 'Install Github App',
+                buttonLocation: 'UserDropdown',
+              }),
           } as DropdownItem,
         ]
       : []
