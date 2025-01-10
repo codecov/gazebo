@@ -31,14 +31,14 @@ function useCompleteProps(
 ) {
   const path = pageConfig?.path(options)
 
-  const propsLink = pageConfig?.isExternalLink ? { href: path } : { to: path }
+  const propsLink = pageConfig?.isExternalLink
+    ? { href: path }
+    : Component === 'a'
+      ? { href: path }
+      : { to: path || '/' }
+
   const propsTarget = pageConfig?.openNewTab ? { target: '_blank' } : {}
-  const propsActive =
-    Component === NavLink
-      ? {
-          activeClassName,
-        }
-      : {}
+  const propsActive = Component === NavLink ? { activeClassName } : {}
 
   return {
     ...propsLink,
@@ -91,9 +91,9 @@ const AppLink = forwardRef<HTMLAnchorElement, AppLinkProps>(
     )
 
     if (!pageConfig) return null
-
     return (
       <Component
+        to={pageConfig.path}
         /*
           data-cy: hook for cypress tests
           data-marketing: hook for marketing tools

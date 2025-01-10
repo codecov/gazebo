@@ -1,12 +1,16 @@
 import defaultTo from 'lodash/defaultTo'
-import PropTypes from 'prop-types'
 import { Fragment } from 'react'
 
-import AppLink from 'shared/AppLink'
+import { Breadcrumb as BreadcrumbType } from 'pages/RepoPage/context'
 import { cn } from 'shared/utils/cn'
 import A from 'ui/A'
 
-function Breadcrumb({ paths = [], largeFont = false }) {
+interface BreadcrumbProps {
+  paths?: BreadcrumbType[]
+  largeFont?: boolean
+}
+
+function Breadcrumb({ paths = [], largeFont = false }: BreadcrumbProps) {
   return (
     // space-x-1 doesn't work when text is rendered rtl, using margins
     <nav
@@ -23,7 +27,9 @@ function Breadcrumb({ paths = [], largeFont = false }) {
                 {defaultTo(to.children, to.text)}
               </span>
             ) : (
-              <A to={to}>{defaultTo(to.children, to.text)}</A>
+              <A to={to} hook={undefined} isExternal={false}>
+                {defaultTo(to.children, to.text)}
+              </A>
             )}
 
             {i !== paths.length - 1 && <span>/</span>}
@@ -35,8 +41,3 @@ function Breadcrumb({ paths = [], largeFont = false }) {
 }
 
 export default Breadcrumb
-
-Breadcrumb.propTypes = {
-  paths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)),
-  largeFont: PropTypes.bool,
-}
