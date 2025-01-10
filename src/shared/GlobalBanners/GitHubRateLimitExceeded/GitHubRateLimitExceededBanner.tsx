@@ -28,7 +28,7 @@ const GitHubRateLimitExceededBanner = () => {
             hook={undefined}
             isExternal={true}
           >
-            Github documentation.
+            GitHub documentation.
           </A>
         </Alert.Description>
       </Alert>

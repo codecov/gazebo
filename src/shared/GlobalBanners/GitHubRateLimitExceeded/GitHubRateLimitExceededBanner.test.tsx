@@ -24,7 +24,7 @@ describe('GitHubRateLimitExceededBanner', () => {
       const description = screen.getByText(/Unable to calculate/)
       expect(description).toBeInTheDocument()
 
-      const link = screen.getByRole('link', { name: 'Github documentation.' })
+      const link = screen.getByRole('link', { name: 'GitHub documentation.' })
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute(
         'href',

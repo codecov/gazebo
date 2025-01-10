@@ -106,7 +106,7 @@ describe('EnterpriseLandingPage', () => {
     it('displays bitbucket card', async () => {
       render(<EnterpriseLandingPage />, { wrapper })
 
-      const element = await screen.findByRole('heading', { name: 'BitBucket' })
+      const element = await screen.findByRole('heading', { name: 'Bitbucket' })
       expect(element).toBeInTheDocument()
     })
 
@@ -138,7 +138,7 @@ describe('EnterpriseLandingPage', () => {
     it('displays bitbucket button', () => {
       render(<EnterpriseLandingPage />, { wrapper })
 
-      expect(screen.queryByText('BitBucket')).toBeNull()
+      expect(screen.queryByText('Bitbucket')).toBeNull()
     })
   })
 })

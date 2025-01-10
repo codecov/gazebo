@@ -163,7 +163,7 @@ export default function AdminTable() {
   if (!isLoading && !tableData?.length) {
     return (
       <p>
-        No admins yet. Note that admins in your Github organization are
+        No admins yet. Note that admins in your GitHub organization are
         automatically considered admins.
       </p>
     )
