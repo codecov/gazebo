@@ -8,6 +8,7 @@ import config from 'config'
 
 import { SentryBugReporter } from 'sentry'
 
+import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
 import { TrialStatuses, usePlanData } from 'services/account'
 import {
   EVENT_METRICS,
@@ -27,6 +28,8 @@ import Select from 'ui/Select'
 
 import GitHubHelpBanner from './GitHubHelpBanner'
 import { useMyOrganizations } from './hooks/useMyOrganizations'
+
+// TODO: remove this once non-PAT appless changes are finalized as this is no longer rendered anywhere
 
 const FormSchema = z.object({
   select: z.string().nullish(),
@@ -140,7 +143,9 @@ function DefaultOrgSelector() {
       fireTrial({ owner: selectedOrg })
     }
 
-    return history.push(`/${provider}/${selectedOrg}?source=onboarding`)
+    return history.push(
+      `/${provider}/${selectedOrg}?source=${ONBOARDING_SOURCE}`
+    )
   }
 
   if (userIsLoading) return null
