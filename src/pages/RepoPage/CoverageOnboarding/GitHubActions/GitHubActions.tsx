@@ -5,7 +5,6 @@ import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import { Provider } from 'shared/api/helpers'
-import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 
@@ -27,14 +26,10 @@ interface URLParams {
 }
 
 function GitHubActions() {
-  const { newRepoFlag: showOrgToken } = useFlags({
-    newRepoFlag: false,
-  })
   const { provider, owner, repo } = useParams<URLParams>()
   const { data: orgUploadToken } = useOrgUploadToken({
     provider,
     owner,
-    enabled: showOrgToken,
   })
 
   const [isUsingGlobalToken, setIsUsingGlobalToken] = useState<boolean>(true)

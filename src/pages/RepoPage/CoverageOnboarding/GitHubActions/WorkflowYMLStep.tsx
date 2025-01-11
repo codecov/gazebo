@@ -6,7 +6,6 @@ import {
 } from 'services/codecovEventMetrics'
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { Provider } from 'shared/api/helpers'
-import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
@@ -33,13 +32,9 @@ function WorkflowYMLStep({
 }: WorkflowYMLStepProps) {
   const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
   const { provider, owner, repo } = useParams<URLParams>()
-  const { newRepoFlag: showOrgToken } = useFlags({
-    newRepoFlag: false,
-  })
   const { data: orgUploadToken } = useOrgUploadToken({
     provider,
     owner,
-    enabled: showOrgToken,
   })
 
   const workflowYMLConfig = `- name: Upload coverage reports to Codecov

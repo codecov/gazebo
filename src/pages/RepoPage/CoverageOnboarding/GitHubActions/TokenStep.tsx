@@ -16,7 +16,6 @@ import { useRepo } from 'services/repo'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import { useIsCurrentUserAnAdmin } from 'services/user'
 import { Provider } from 'shared/api/helpers'
-import { useFlags } from 'shared/featureFlags'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -186,14 +185,10 @@ const AddTokenStep = ({
   stepNum: number
   isUsingGlobalToken: boolean
 }) => {
-  const { newRepoFlag: showOrgToken } = useFlags({
-    newRepoFlag: false,
-  })
   const { provider, owner, repo } = useParams<URLParams>()
   const { data: orgUploadToken } = useOrgUploadToken({
     provider,
     owner,
-    enabled: showOrgToken,
   })
   const { data } = useRepo({ provider, owner, repo })
   const repoUploadToken = data?.repository?.uploadToken ?? ''
@@ -249,9 +244,6 @@ function TokenStepSection({
   showAddTokenStep,
   showTokenSelector,
 }: TokenStepSectionProps) {
-  const { newRepoFlag: showOrgToken } = useFlags({
-    newRepoFlag: false,
-  })
   const { provider, owner } = useParams<URLParams>()
   const { data: uploadTokenRequiredData } = useUploadTokenRequired({
     provider,
@@ -261,7 +253,6 @@ function TokenStepSection({
   const { data: orgUploadToken } = useOrgUploadToken({
     provider,
     owner,
-    enabled: showOrgToken,
   })
 
   const handleValueChange = (value: string) => {
