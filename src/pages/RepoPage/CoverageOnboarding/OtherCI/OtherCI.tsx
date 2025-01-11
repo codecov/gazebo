@@ -5,7 +5,6 @@ import config from 'config'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
-import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
@@ -27,15 +26,11 @@ interface URLParams {
 }
 
 function OtherCI() {
-  const { newRepoFlag: showOrgToken } = useFlags({
-    newRepoFlag: false,
-  })
   const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
   const { data: orgUploadToken } = useOrgUploadToken({
     provider,
     owner,
-    enabled: showOrgToken,
   })
 
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken ?? ''

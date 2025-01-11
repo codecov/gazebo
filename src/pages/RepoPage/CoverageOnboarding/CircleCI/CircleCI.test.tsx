@@ -8,18 +8,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import CircleCI from './CircleCI'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
-vi.mock('shared/featureFlags', async () => {
-  const actual = await vi.importActual('shared/featureFlags')
-  return {
-    ...actual,
-    useFlags: mocks.useFlags,
-  }
-})
-
 const mockGetRepo = {
   owner: {
     isAdmin: null,
@@ -42,6 +30,12 @@ const mockGetRepo = {
 const mockGetOrgUploadToken = {
   owner: {
     orgUploadToken: 'org-token-asdf-1234',
+  },
+}
+
+const mockNoUploadToken = {
+  owner: {
+    orgUploadToken: null,
   },
 }
 
@@ -85,9 +79,6 @@ interface SetupArgs {
 
 describe('CircleCI', () => {
   function setup({ hasOrgUploadToken = false }: SetupArgs) {
-    mocks.useFlags.mockReturnValue({
-      newRepoFlag: hasOrgUploadToken,
-    })
     const mockMetricMutationVariables = vi.fn()
     const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
     mockGetItem.mockReturnValue(null)
@@ -97,7 +88,9 @@ describe('CircleCI', () => {
         return HttpResponse.json({ data: mockGetRepo })
       }),
       graphql.query('GetOrgUploadToken', () => {
-        return HttpResponse.json({ data: mockGetOrgUploadToken })
+        return HttpResponse.json({
+          data: hasOrgUploadToken ? mockGetOrgUploadToken : mockNoUploadToken,
+        })
       }),
       graphql.mutation('storeEventMetric', (info) => {
         mockMetricMutationVariables(info?.variables)
