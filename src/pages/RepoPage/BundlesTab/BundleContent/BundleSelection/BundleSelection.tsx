@@ -1,4 +1,8 @@
-import { lazy, useCallback, useRef } from 'react'
+import { lazy, useCallback, useRef, useState } from 'react'
+
+import { ConfigureCachedBundleModal } from 'pages/RepoPage/shared/ConfigureCachedBundleModal/ConfigureCachedBundleModal'
+import { useFlags } from 'shared/featureFlags'
+import Icon from 'ui/Icon'
 
 import BranchSelector from './BranchSelector'
 import { LoadSelector } from './LoadSelector'
@@ -9,6 +13,12 @@ const BundleSelection: React.FC = () => {
   const bundleSelectRef = useRef<{ resetSelected: () => void }>(null)
   const typesSelectRef = useRef<{ resetSelected: () => void }>(null)
   const loadingSelectRef = useRef<{ resetSelected: () => void }>(null)
+
+  const [showBundleCachingModal, setShowBundleCachingModal] = useState(false)
+
+  const { displayBundleCachingModal } = useFlags({
+    displayBundleCachingModal: false,
+  })
 
   const resetFilterSelects = useCallback(() => {
     typesSelectRef.current?.resetSelected()
@@ -30,6 +40,21 @@ const BundleSelection: React.FC = () => {
         />
         <TypeSelector ref={typesSelectRef} />
         <LoadSelector ref={loadingSelectRef} />
+        {displayBundleCachingModal ? (
+          <div className="flex w-full justify-end self-start md:w-auto">
+            <button
+              onClick={() => setShowBundleCachingModal(true)}
+              className="flex items-center gap-0.5 text-xs text-ds-blue-darker hover:cursor-pointer hover:underline"
+            >
+              <Icon name="cog" size="sm" variant="outline" />
+              Configure data caching
+            </button>
+            <ConfigureCachedBundleModal
+              isOpen={showBundleCachingModal}
+              setIsOpen={setShowBundleCachingModal}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   )
