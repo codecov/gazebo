@@ -10,6 +10,7 @@ import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import ToastNotifications from 'layouts/ToastNotifications'
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
+import { useEventContext } from 'services/events/events'
 import { useImpersonate } from 'services/impersonate'
 import { useTracking } from 'services/tracking'
 import GlobalBanners from 'shared/GlobalBanners'
@@ -77,6 +78,7 @@ interface URLParams {
 function BaseLayout({ children }: React.PropsWithChildren) {
   const { provider, owner, repo } = useParams<URLParams>()
   useTracking()
+  useEventContext()
   const { isImpersonating } = useImpersonate()
   const {
     isFullExperience,
