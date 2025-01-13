@@ -7,6 +7,7 @@ import {
 } from 'shared/utils/provider'
 
 import { EventTracker } from '../events'
+import { Event } from '../types'
 
 const AMPLITUDE_API_KEY = process.env.REACT_APP_AMPLITUDE_API_KEY
 
@@ -42,7 +43,13 @@ export class AmplitudeEventTracker implements EventTracker {
     this.#repo = repo
   }
 
-  identify(userOwnerId: number | string, username: string) {
+  identify({
+    userOwnerId,
+    username,
+  }: {
+    userOwnerId: number
+    username: string
+  }) {
     amplitude.setUserId(userOwnerId.toString())
     const identifyEvent = new amplitude.Identify()
     if (this.#provider) {
@@ -52,15 +59,15 @@ export class AmplitudeEventTracker implements EventTracker {
     amplitude.identify(identifyEvent)
   }
 
-  track(eventType: string, eventProperties: any) {
+  track(event: Event) {
     amplitude.track({
       // eslint-disable-next-line camelcase
-      event_type: eventType,
+      event_type: event.type,
       // eslint-disable-next-line camelcase
       event_properties: {
         owner: this.#providerOwner,
         repo: this.#repo,
-        ...eventProperties,
+        ...event.properties,
       },
       // This attaches the event to the owner's user group as well
       groups: this.#providerOwner
