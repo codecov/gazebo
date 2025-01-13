@@ -203,6 +203,7 @@ export const ConfigureCachedBundleModal = ({
 
   const { data: bundleData, isLoading: isBundlesLoading } = useQueryV5({
     ...CachedBundlesQueryOpts({ provider, owner, repo, branch: defaultBranch }),
+    // we can use the select hook to transform the data to the format we want
     select: (data) =>
       data.bundles.map((bundle) => ({
         bundleName: bundle.bundleName,
@@ -211,12 +212,13 @@ export const ConfigureCachedBundleModal = ({
     enabled: isOpen && !!defaultBranch,
   })
 
+  // if the bundle data is loaded and the bundle state is empty, set the bundle state
   if (bundleData && bundleData.length > 0 && bundleState.length === 0) {
     setBundleState(bundleData)
   }
 
   const closeModal = () => {
-    // this resets the context state when the modal is closed
+    // this resets the state when the modal is closed
     setBundleState([])
     setIsOpen(false)
   }
