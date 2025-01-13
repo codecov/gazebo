@@ -1,48 +1,64 @@
-import { Provider } from 'shared/api/helpers'
+import { captureException } from '@sentry/react'
+import { useEffect } from 'react'
+import { useParams } from 'react-router'
+
+import { useRepo } from 'services/repo'
+import { useOwner } from 'services/user'
 
 import { AmplitudeEventTracker, initAmplitude } from './amplitude/amplitude'
 import { StubbedEventTracker } from './stub'
-import { Event } from './types'
+import { EventTracker } from './types'
 
-const AMPLITUDE_API_KEY = process.env.REACT_APP_AMPLITUDE_API_KEY
-
-export abstract class EventTracker {
-  // Identifies the user this session belongs to.
-  identify({
-    userOwnerId: _userOwnerId,
-    username: _username,
-  }: {
-    userOwnerId: number
-    username: string
-  }): void {
-    throw new Error(
-      'EventTracker is abstract. Method identify must be implemented.'
-    )
-  }
-
-  track(_event: Event): void {
-    throw new Error(
-      'EventTracker is abstract. Method track must be implemented.'
-    )
-  }
-}
+// EventTracker singleton
+let EVENT_TRACKER: EventTracker = new StubbedEventTracker()
 
 export function initEventTracker(): void {
-  // Calls any init functions for EventTracker implementations
-  initAmplitude()
+  // Sets the global EventTracker singleton and calls necessary init functions
+  try {
+    initAmplitude()
+    EVENT_TRACKER = new AmplitudeEventTracker()
+  } catch (e) {
+    if (process.env.REACT_APP_ENV === 'production') {
+      // If in production, we need to know this has occured.
+      captureException(e)
+    }
+  }
 }
 
-// Returns an EventTracker. Provide any of provider, owner, repo that are
-// relevant to the event you're going to track. They will be attached to
-// any events you send with the returned EventTracker instance.
-export function eventTracker(
-  provider?: Provider,
-  owner?: string,
-  repo?: string
-): EventTracker {
-  if (!AMPLITUDE_API_KEY) {
-    // If the API key is not defined, we'll just return a stubbed EventTracker.
-    return new StubbedEventTracker()
-  }
-  return new AmplitudeEventTracker(provider, owner, repo)
+// Returns the global EventTracker instance.
+export function eventTracker(): EventTracker {
+  return EVENT_TRACKER
+}
+
+// Hook to keep the global EventTracker's context up-to-date.
+export function useEventContext() {
+  const { provider, owner, repo } = useParams<{
+    provider?: string
+    owner?: string
+    repo?: string
+  }>()
+
+  const { data: ownerData } = useOwner({ username: owner })
+  const { data: repoData } = useRepo({
+    provider: provider || '',
+    owner: owner || '',
+    repo: repo || '',
+    opts: { enabled: !!(provider && owner && repo) },
+  })
+
+  useEffect(() => {
+    EVENT_TRACKER.setContext({
+      owner: ownerData?.ownerid
+        ? {
+            id: ownerData?.ownerid,
+          }
+        : undefined,
+      repo: repoData?.repository
+        ? {
+            id: repoData?.repository?.repoid,
+            isPrivate: repoData?.repository.private || undefined,
+          }
+        : undefined,
+    })
+  }, [ownerData, repoData])
 }

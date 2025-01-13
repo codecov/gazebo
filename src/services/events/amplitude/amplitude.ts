@@ -1,19 +1,16 @@
 import * as amplitude from '@amplitude/analytics-browser'
 
-import { Provider } from 'shared/api/helpers'
-import {
-  InternalProvider,
-  providerToInternalProvider,
-} from 'shared/utils/provider'
+import { providerToInternalProvider } from 'shared/utils/provider'
 
-import { EventTracker } from '../events'
-import { Event } from '../types'
+import { Event, EventContext, EventTracker, Identity } from '../types'
 
 const AMPLITUDE_API_KEY = process.env.REACT_APP_AMPLITUDE_API_KEY
 
 export function initAmplitude() {
   if (!AMPLITUDE_API_KEY) {
-    return
+    throw new Error(
+      'AMPLITUDE_API_KEY is not defined. Amplitude events will not be tracked.'
+    )
   }
   amplitude.init(AMPLITUDE_API_KEY, {
     // Disable all autocapture - may change this in the future
@@ -23,40 +20,21 @@ export function initAmplitude() {
 }
 
 export class AmplitudeEventTracker implements EventTracker {
-  #provider?: InternalProvider
-  #owner?: string
-  #providerOwner?: string
-  #repo?: string
+  context: EventContext = {}
+  identity?: Identity
 
-  constructor(provider?: Provider, owner?: string, repo?: string) {
-    if (!AMPLITUDE_API_KEY) {
-      throw new Error(
-        'AMPLITUDE_API_KEY is not defined. Ensure the environment variable is defined before attempting to initialize AmplitudeEventTracker.'
-      )
+  identify(identity: Identity) {
+    if (JSON.stringify(this.identity) === JSON.stringify(identity)) {
+      // Don't identify this user again this session.
+      return
     }
-    this.#provider = provider ? providerToInternalProvider(provider) : undefined
-    this.#owner = owner
-    this.#providerOwner =
-      this.#provider && this.#owner
-        ? formatProviderOwner(this.#provider, this.#owner)
-        : undefined
-    this.#repo = repo
-  }
 
-  identify({
-    userOwnerId,
-    username,
-  }: {
-    userOwnerId: number
-    username: string
-  }) {
-    amplitude.setUserId(userOwnerId.toString())
+    amplitude.setUserId(identity.userOwnerId.toString())
     const identifyEvent = new amplitude.Identify()
-    if (this.#provider) {
-      identifyEvent.set('provider', this.#provider)
-    }
-    identifyEvent.set('username', username)
+    identifyEvent.set('provider', providerToInternalProvider(identity.provider))
     amplitude.identify(identifyEvent)
+
+    this.identity = identity
   }
 
   track(event: Event) {
@@ -65,23 +43,19 @@ export class AmplitudeEventTracker implements EventTracker {
       event_type: event.type,
       // eslint-disable-next-line camelcase
       event_properties: {
-        owner: this.#providerOwner,
-        repo: this.#repo,
         ...event.properties,
+        ...this.context,
       },
       // This attaches the event to the owner's user group as well
-      groups: this.#providerOwner
+      groups: this.context.owner?.id
         ? {
-            owner: this.#providerOwner,
+            owner: this.context.owner.id,
           }
         : undefined,
     })
   }
-}
 
-function formatProviderOwner(provider: InternalProvider, ownerName: string) {
-  // Helper function to format the owner group name.
-  // The reason for this is owner names are not unique on their own, but
-  // provider/owner names are.
-  return `${provider}/${ownerName}`
+  setContext(context: EventContext) {
+    this.context = context
+  }
 }

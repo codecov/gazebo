@@ -219,11 +219,11 @@ function ContextSwitcher({
             <A
               to={{ pageName: 'codecovAppInstallation' }}
               onClick={() =>
-                eventTracker(provider, owner).track({
+                eventTracker().track({
                   type: 'Button Clicked',
                   properties: {
-                    buttonType: 'Install Github App',
-                    buttonLocation: 'ContextSwitcher',
+                    buttonType: 'Install GitHub App',
+                    buttonLocation: 'Org selector',
                   },
                 })
               }

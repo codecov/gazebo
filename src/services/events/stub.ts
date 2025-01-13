@@ -1,13 +1,7 @@
-import { EventTracker } from './events'
-import { Event } from './types'
+import { Event, EventContext, EventTracker, Identity } from './types'
 
 export class StubbedEventTracker implements EventTracker {
-  identify({
-    userOwnerId: _userOwnerId,
-    username: _username,
-  }: {
-    userOwnerId: number
-    username: string
-  }): void {}
+  identify(_identity: Identity): void {}
   track(_event: Event): void {}
+  setContext(_context: EventContext): void {}
 }

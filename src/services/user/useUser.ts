@@ -167,9 +167,9 @@ export function useUser({ options }: UseUserArgs = {}) {
           parsedRes.data.me?.owner.ownerid &&
           parsedRes.data.me?.owner.username
         ) {
-          eventTracker(provider).identify({
+          eventTracker().identify({
             userOwnerId: parsedRes.data.me.owner.ownerid,
-            username: parsedRes.data.me.owner.username,
+            provider,
           })
         }
 

@@ -1,7 +1,4 @@
-import { useParams } from 'react-router'
-
 import { eventTracker } from 'services/events/events'
-import { Provider } from 'shared/api/helpers'
 import A from 'ui/A'
 
 function InactiveRepo({
@@ -15,7 +12,6 @@ function InactiveRepo({
   repoName?: string
   isCurrentUserPartOfOrg?: boolean
 }) {
-  const { provider } = useParams<{ provider: Provider }>()
   if (isActive) return <>Deactivated</>
   if (!isCurrentUserPartOfOrg) return <>Inactive</>
 
@@ -32,10 +28,11 @@ function InactiveRepo({
         },
       }}
       onClick={() =>
-        eventTracker(provider, owner, repoName).track({
+        eventTracker().track({
           type: 'Button Clicked',
           properties: {
             buttonType: 'Configure Repo',
+            buttonLocation: 'Repo list',
           },
         })
       }

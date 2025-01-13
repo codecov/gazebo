@@ -11,6 +11,7 @@ import {
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
+  repoid: z.number(),
   private: z.boolean().nullable(),
   uploadToken: z.string().nullable(),
   defaultBranch: z.string().nullable(),
@@ -47,6 +48,7 @@ const query = `
         repository(name: $repo) {
           __typename
           ... on Repository {
+            repoid
             private
             uploadToken
             defaultBranch
@@ -73,6 +75,7 @@ type UseRepoArgs = {
   repo: string
   opts?: {
     refetchOnWindowFocus?: boolean
+    enabled?: boolean
   }
 }
 
