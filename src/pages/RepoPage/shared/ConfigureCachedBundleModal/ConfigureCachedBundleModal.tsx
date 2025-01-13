@@ -203,7 +203,6 @@ export const ConfigureCachedBundleModal = ({
 
   const { data: bundleData, isPending: isBundlesPending } = useQueryV5({
     ...CachedBundlesQueryOpts({ provider, owner, repo, branch: defaultBranch }),
-
     select: (data) =>
       data.bundles.map((bundle) => ({
         bundleName: bundle.bundleName,
