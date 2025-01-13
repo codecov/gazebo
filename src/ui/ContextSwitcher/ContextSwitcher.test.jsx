@@ -220,6 +220,7 @@ describe('ContextSwitcher', () => {
           ]}
           currentUser={{
             defaultOrgUsername: 'spotify',
+            username: 'laudna',
           }}
           src="imageUrl"
           isLoading={false}
@@ -234,7 +235,9 @@ describe('ContextSwitcher', () => {
       )
       await user.click(button)
 
-      const laudnaUsers = await screen.findAllByText('laudna')
+      const laudnaUsers = await screen.findAllByText(
+        "laudna's personal organization"
+      )
       expect(laudnaUsers.length).toBe(2)
 
       const codecovOwner = await screen.findByText('codecov')
@@ -292,7 +295,9 @@ describe('ContextSwitcher', () => {
         { wrapper: wrapper() }
       )
 
-      const installCopy = await screen.findByText(/Install Codecov GitHub app/)
+      const installCopy = await screen.findByText(
+        /To add another organization, install Codecov GitHub App/
+      )
       expect(installCopy).toBeInTheDocument()
       expect(installCopy).toHaveAttribute(
         'href',
@@ -823,7 +828,9 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      const installCopy = await screen.findByText(/Install Codecov GitHub app/)
+      const installCopy = await screen.findByText(
+        /To add another organization, install Codecov GitHub App/
+      )
       expect(installCopy).toBeInTheDocument()
       expect(installCopy).toHaveAttribute(
         'href',
