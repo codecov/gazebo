@@ -33,9 +33,7 @@ function useCompleteProps(
 
   const propsLink = pageConfig?.isExternalLink
     ? { href: path }
-    : Component === 'a'
-      ? { href: path }
-      : { to: path || '/' }
+    : { to: path || '/' }
 
   const propsTarget = pageConfig?.openNewTab ? { target: '_blank' } : {}
   const propsActive = Component === NavLink ? { activeClassName } : {}
@@ -45,6 +43,7 @@ function useCompleteProps(
     ...propsTarget,
     ...props,
     ...propsActive,
+    ...(Component === 'a' && { to: undefined }),
   }
 }
 
