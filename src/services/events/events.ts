@@ -1,12 +1,13 @@
 import { Provider } from 'shared/api/helpers'
 
 import { AmplitudeEventTracker, initAmplitude } from './amplitude/amplitude'
+import { StubbedEventTracker } from './stub'
 
 const AMPLITUDE_API_KEY = process.env.REACT_APP_AMPLITUDE_API_KEY
 
 export interface EventTracker {
   // Identifies the user this session belongs to.
-  identify(userOwnerId: number | string, username: string): void
+  identify(userOwnerId: number, username: string): void
 
   // Add new events as a new overloaded method signature here.
   // Please keep the `eventType`s very generic as we have a limited number of
@@ -26,11 +27,6 @@ export interface EventTracker {
       pageName: 'OwnerPage'
     }
   ): void
-}
-
-class StubbedEventTracker implements EventTracker {
-  identify(_userOwnerId: string | number, _username: string): void {}
-  track(_eventType: string, _eventProperties: any): void {}
 }
 
 export function initEventTracker(): void {
