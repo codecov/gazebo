@@ -44,7 +44,7 @@ const BundleSelection: React.FC = () => {
           <div className="flex w-full justify-end self-start md:w-auto">
             <button
               onClick={() => setShowBundleCachingModal(true)}
-              className="flex items-center gap-0.5 text-xs text-ds-blue-darker hover:cursor-pointer hover:underline"
+              className="flex items-center gap-0.5 text-xs font-semibold text-ds-blue-darker hover:cursor-pointer hover:underline"
             >
               <Icon name="cog" size="sm" variant="outline" />
               Configure data caching
