@@ -134,13 +134,13 @@ const BundleTable: React.FC<BundleTableProps> = ({
 interface BundleCachingModalBodyProps {
   bundleState: CachedBundle[]
   setBundleState: SetBundleState
-  isBundlesLoading: boolean
+  isBundlesPending: boolean
 }
 
 const BundleCachingModalBody: React.FC<BundleCachingModalBodyProps> = ({
   bundleState,
   setBundleState,
-  isBundlesLoading,
+  isBundlesPending,
 }) => {
   return (
     <>
@@ -157,7 +157,7 @@ const BundleCachingModalBody: React.FC<BundleCachingModalBodyProps> = ({
           Note, if caching is removed trend data will not be available.
         </Alert.Description>
       </Alert>
-      {isBundlesLoading ? (
+      {isBundlesPending ? (
         <Loader />
       ) : (
         <BundleTable
@@ -188,11 +188,12 @@ export const ConfigureCachedBundleModal = ({
   const { provider, owner, repo } = useParams<URLParams>()
   const [bundleState, setBundleState] = useState<CachedBundle[]>([])
 
-  const { mutate: updateBundleCache, isPending } = useUpdateBundleCache({
-    provider,
-    owner,
-    repo,
-  })
+  const { mutate: updateBundleCache, isPending: updateBundleCachePending } =
+    useUpdateBundleCache({
+      provider,
+      owner,
+      repo,
+    })
 
   const { data: repoOverview } = useRepoOverview({
     provider,
@@ -201,7 +202,7 @@ export const ConfigureCachedBundleModal = ({
   })
   const defaultBranch = repoOverview?.defaultBranch ?? ''
 
-  const { data: bundleData, isLoading: isBundlesLoading } = useQueryV5({
+  const { data: bundleData, isPending: isBundlesPending } = useQueryV5({
     ...CachedBundlesQueryOpts({ provider, owner, repo, branch: defaultBranch }),
     // we can use the select hook to transform the data to the format we want
     select: (data) =>
@@ -232,7 +233,7 @@ export const ConfigureCachedBundleModal = ({
         <BundleCachingModalBody
           bundleState={bundleState}
           setBundleState={setBundleState}
-          isBundlesLoading={isBundlesLoading}
+          isBundlesPending={isBundlesPending}
         />
       }
       footer={
@@ -244,7 +245,7 @@ export const ConfigureCachedBundleModal = ({
           <div className="flex items-center gap-2">
             <Button
               hook="cancel-bundle-caching-modal"
-              disabled={isPending || isBundlesLoading}
+              disabled={updateBundleCachePending || isBundlesPending}
               onClick={() => closeModal()}
             >
               Cancel
@@ -252,7 +253,7 @@ export const ConfigureCachedBundleModal = ({
             <Button
               hook="save-bundle-caching-modal"
               variant="primary"
-              disabled={isPending || isBundlesLoading}
+              disabled={updateBundleCachePending || isBundlesPending}
               onClick={() => {
                 updateBundleCache(bundleState, {
                   onError: (error) => {
