@@ -8,7 +8,7 @@ import { type Mock } from 'vitest'
 
 import { Plans } from 'shared/utils/billing'
 
-import { useUpdateCard } from './useUpdateCard'
+import { useUpdatePaymentMethod } from './useUpdatePaymentMethod'
 
 const mocks = vi.hoisted(() => ({
   useStripe: vi.fn(),
@@ -70,9 +70,9 @@ describe('useUpdateCard', () => {
     last4: '1234',
   }
 
-  function setupStripe({ createPaymentMethod }: { createPaymentMethod: Mock }) {
+  function setupStripe({ confirmSetup }: { confirmSetup: Mock }) {
     mocks.useStripe.mockReturnValue({
-      createPaymentMethod,
+      confirmSetup,
     })
   }
 
@@ -80,7 +80,7 @@ describe('useUpdateCard', () => {
     describe('when the mutation is successful', () => {
       beforeEach(() => {
         setupStripe({
-          createPaymentMethod: vi.fn(
+          confirmSetup: vi.fn(
             () =>
               new Promise((resolve) => {
                 resolve({ paymentMethod: { id: 1 } })
@@ -100,7 +100,7 @@ describe('useUpdateCard', () => {
 
       it('returns the data from the server', async () => {
         const { result } = renderHook(
-          () => useUpdateCard({ provider, owner }),
+          () => useUpdatePaymentMethod({ provider, owner }),
           { wrapper: wrapper() }
         )
 
@@ -116,7 +116,7 @@ describe('useUpdateCard', () => {
         vi.spyOn(console, 'error').mockImplementation(() => {})
 
         setupStripe({
-          createPaymentMethod: vi.fn(
+          confirmSetup: vi.fn(
             () =>
               new Promise((resolve) => {
                 resolve({ error: { message: 'not good' } })
@@ -140,7 +140,7 @@ describe('useUpdateCard', () => {
 
       it('does something', async () => {
         const { result } = renderHook(
-          () => useUpdateCard({ provider, owner }),
+          () => useUpdatePaymentMethod({ provider, owner }),
           { wrapper: wrapper() }
         )
 

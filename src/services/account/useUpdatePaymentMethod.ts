@@ -1,15 +1,15 @@
-import { useStripe } from '@stripe/react-stripe-js'
-import { StripeCardElement } from '@stripe/stripe-js'
+import { useElements, useStripe } from '@stripe/react-stripe-js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-interface useUpdateCardParams {
+interface useUpdatePaymentMethodProps {
   provider: string
   owner: string
+  email: string
 }
 
-interface useUpdateCardReturn {
+interface useUpdatePaymentMethodReturn {
   reset: () => void
   error: null | Error
   isLoading: boolean
@@ -17,23 +17,37 @@ interface useUpdateCardReturn {
   data: undefined | unknown
 }
 
-function getPathAccountDetails({ provider, owner }: useUpdateCardParams) {
+function getPathAccountDetails({
+  provider,
+  owner,
+}: useUpdatePaymentMethodProps) {
   return `/${provider}/${owner}/account-details/`
 }
 
-export function useUpdateCard({
+export function useUpdatePaymentMethod({
   provider,
   owner,
-}: useUpdateCardParams): useUpdateCardReturn {
+  email,
+}: useUpdatePaymentMethodProps): useUpdatePaymentMethodReturn {
   const stripe = useStripe()
+  const elements = useElements()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (card: StripeCardElement) => {
+    mutationFn: () => {
       return stripe!
-        .createPaymentMethod({
-          type: 'card',
-          card,
+        .confirmSetup({
+          elements: elements!,
+          redirect: 'if_required',
+          confirmParams: {
+            // eslint-disable-next-line camelcase
+            payment_method_data: {
+              // eslint-disable-next-line camelcase
+              billing_details: {
+                email: email,
+              },
+            },
+          },
         })
         .then((result) => {
           if (result.error) return Promise.reject(result.error)
@@ -46,7 +60,7 @@ export function useUpdateCard({
             path,
             body: {
               /* eslint-disable-next-line camelcase */
-              payment_method: result.paymentMethod.id,
+              payment_method: result.setupIntent.payment_method,
             },
           })
         })

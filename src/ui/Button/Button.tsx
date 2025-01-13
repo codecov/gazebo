@@ -134,7 +134,8 @@ function Button({
   const className = cs(
     baseClass,
     { [baseDisabledClasses]: !isLoading },
-    pickVariant(variant, isLoading)
+    pickVariant(variant, isLoading),
+    props.className
   )
 
   const content = (

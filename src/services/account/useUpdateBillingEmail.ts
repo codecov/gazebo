@@ -20,6 +20,7 @@ export function useUpdateBillingEmail({ provider, owner }: UsePlanDataArgs) {
       const body = {
         /* eslint-disable camelcase */
         new_email: formData?.newEmail,
+        should_propagate_to_payment_methods: true,
       }
       return Api.patch({ path, provider, body })
     },
