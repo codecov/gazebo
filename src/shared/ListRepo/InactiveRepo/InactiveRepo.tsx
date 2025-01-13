@@ -32,8 +32,11 @@ function InactiveRepo({
         },
       }}
       onClick={() =>
-        eventTracker(provider, owner, repoName).track('Button Clicked', {
-          buttonType: 'Configure Repo',
+        eventTracker(provider, owner, repoName).track({
+          type: 'Button Clicked',
+          properties: {
+            buttonType: 'Configure Repo',
+          },
         })
       }
     >

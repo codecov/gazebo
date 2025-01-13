@@ -171,7 +171,7 @@ function ContextSwitcher({
   const intersectionRef = useLoadMore({ onLoadMore })
   const defaultOrgUsername = currentUser?.defaultOrgUsername
 
-  const isGh = providerToName(provider) === 'Github'
+  const isGh = providerToName(provider) === 'GitHub'
   const isSelfHosted = config.IS_SELF_HOSTED
   const isCustomGitHubApp = config.GH_APP !== DEFAULT_GH_APP
 
@@ -219,9 +219,12 @@ function ContextSwitcher({
             <A
               to={{ pageName: 'codecovAppInstallation' }}
               onClick={() =>
-                eventTracker(provider, owner).track('Button Clicked', {
-                  buttonType: 'Install Github App',
-                  buttonLocation: 'ContextSwitcher',
+                eventTracker(provider, owner).track({
+                  type: 'Button Clicked',
+                  properties: {
+                    buttonType: 'Install Github App',
+                    buttonLocation: 'ContextSwitcher',
+                  },
                 })
               }
               isExternal

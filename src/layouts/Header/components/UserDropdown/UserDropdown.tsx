@@ -36,7 +36,7 @@ function UserDropdown() {
   })
 
   const { provider, owner, repo } = useParams<URLParams>()
-  const isGh = providerToName(provider) === 'Github'
+  const isGh = providerToName(provider) === 'GitHub'
   const history = useHistory()
 
   const items =
@@ -46,9 +46,12 @@ function UserDropdown() {
             to: { pageName: 'codecovAppInstallation' },
             children: 'Install Codecov app',
             onClick: () =>
-              eventTracker(provider, owner, repo).track('Button Clicked', {
-                buttonType: 'Install Github App',
-                buttonLocation: 'UserDropdown',
+              eventTracker(provider, owner, repo).track({
+                type: 'Button Clicked',
+                properties: {
+                  buttonType: 'Install Github App',
+                  buttonLocation: 'UserDropdown',
+                },
               }),
           } as DropdownItem,
         ]
