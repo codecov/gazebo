@@ -8,7 +8,7 @@ import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 
 const GithubConfigBanner = () => {
-  const { provider, owner } = useParams()
+  const { provider } = useParams()
   const isGh = providerToName(provider) === 'GitHub'
 
   if (!isGh) return null
@@ -23,7 +23,7 @@ const GithubConfigBanner = () => {
               data-testid="codecovGithubApp-link"
               to={{ pageName: 'codecovGithubAppSelectTarget' }}
               onClick={() =>
-                eventTracker(provider, owner).track({
+                eventTracker().track({
                   type: 'Button Clicked',
                   properties: {
                     buttonType: 'Install GitHub App',

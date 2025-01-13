@@ -12,8 +12,6 @@ import { Dropdown } from 'ui/Dropdown/Dropdown'
 
 interface URLParams {
   provider: Provider
-  owner: string
-  repo?: string
 }
 
 type DropdownItem = {

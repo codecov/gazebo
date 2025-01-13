@@ -127,7 +127,6 @@ fragment CurrentUserFragment on Me {
 
 interface URLParams {
   provider: Provider
-  owner: string
 }
 
 interface UseUserArgs {
