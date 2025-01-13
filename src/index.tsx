@@ -12,6 +12,7 @@ import { Router } from 'react-router-dom'
 import { CompatRouter } from 'react-router-dom-v5-compat'
 
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
+import { initEventTracker } from 'services/events/events'
 import { withFeatureFlagProvider } from 'shared/featureFlags'
 
 import App from './App'
@@ -38,6 +39,7 @@ const history = createBrowserHistory()
 
 const TOO_MANY_REQUESTS_ERROR_CODE = 429
 
+initEventTracker()
 setupSentry({ history })
 
 const queryClient = new QueryClient({

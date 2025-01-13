@@ -7,6 +7,7 @@ import useClickAway from 'react-use/lib/useClickAway'
 import config, { DEFAULT_GH_APP } from 'config'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
+import { eventTracker } from 'services/events/events'
 import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
@@ -217,6 +218,15 @@ function ContextSwitcher({
           <li className="flex justify-between border-b border-ds-border-line px-4 py-3">
             <A
               to={{ pageName: 'codecovAppInstallation' }}
+              onClick={() =>
+                eventTracker(provider, owner).track({
+                  type: 'Button Clicked',
+                  properties: {
+                    buttonType: 'Install Github App',
+                    buttonLocation: 'ContextSwitcher',
+                  },
+                })
+              }
               isExternal
               hook="context-switcher-gh-install-link"
             >
