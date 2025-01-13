@@ -6,18 +6,18 @@ import { Provider } from 'shared/api/helpers'
 export function providerToName(provider: Provider) {
   return (
     {
-      gh: 'Github',
-      bb: 'BitBucket',
-      gl: 'Gitlab',
-      ghe: 'Github Enterprise',
-      gle: 'Gitlab Enterprise',
-      bbs: 'BitBucket Server',
-      github: 'Github',
-      bitbucket: 'BitBucket',
-      gitlab: 'Gitlab',
-      github_enterprise: 'Github Enterprise',
-      gitlab_enterprise: 'Gitlab Enterprise',
-      bitbucket_server: 'BitBucket Server',
+      gh: 'GitHub',
+      bb: 'Bitbucket',
+      gl: 'GitLab',
+      ghe: 'GitHub Enterprise',
+      gle: 'GitLab Enterprise',
+      bbs: 'Bitbucket Server',
+      github: 'GitHub',
+      bitbucket: 'Bitbucket',
+      gitlab: 'GitLab',
+      github_enterprise: 'GitHub Enterprise',
+      gitlab_enterprise: 'GitLab Enterprise',
+      bitbucket_server: 'Bitbucket Server',
     } as const
   )[provider]
 }
