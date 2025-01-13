@@ -1,6 +1,6 @@
 import {
   useQueryClient as useQueryClientV5,
-  useSuspenseQuery as useSuspenseQueryV5,
+  useQuery as useQueryV5,
 } from '@tanstack/react-queryV5'
 import {
   createColumnHelper,
@@ -8,16 +8,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import {
-  createContext,
-  Suspense,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { useMemo, useState } from 'react'
 import { useParams } from 'react-router'
-import { z } from 'zod'
 
 import { CachedBundlesQueryOpts } from 'services/bundleAnalysis/CachedBundlesQueryOpts'
 import { useUpdateBundleCache } from 'services/bundleAnalysis/useUpdateBundleCache'
@@ -36,20 +28,6 @@ const Loader = () => (
   </div>
 )
 
-const BundleArrayContentSchema = z.object({
-  bundleName: z.string(),
-  toggleCaching: z.boolean(),
-})
-
-const _ConfigureCacheModalContextSchema = z.array(BundleArrayContentSchema)
-
-type ConfigureCacheModalContextValue = z.infer<
-  typeof _ConfigureCacheModalContextSchema
->
-
-const ConfigureCacheModalContext =
-  createContext<ConfigureCacheModalContextValue | null>(null)
-
 const columnHelper = createColumnHelper<{
   bundleName: string
   toggleCaching: React.ReactElement
@@ -66,46 +44,24 @@ const columns = [
   }),
 ]
 
-interface URLParams {
-  provider: string
-  owner: string
-  repo: string
+type CachedBundle = {
+  bundleName: string
+  toggleCaching: boolean
 }
 
+type SetBundleState = React.Dispatch<React.SetStateAction<CachedBundle[]>>
+
 interface BundleTableProps {
-  defaultBranch: string
-  setContextState: SetContextState
+  bundleState: CachedBundle[]
+  setBundleState: SetBundleState
 }
 
 const BundleTable: React.FC<BundleTableProps> = ({
-  defaultBranch,
-  setContextState,
+  bundleState,
+  setBundleState,
 }) => {
-  const context = useContext(ConfigureCacheModalContext)
-  const { provider, owner, repo } = useParams<URLParams>()
-  const { data } = useSuspenseQueryV5(
-    CachedBundlesQueryOpts({ provider, owner, repo, branch: defaultBranch })
-  )
-
-  // need this effect to set the context state when the component is mounted
-  // so that we don't run into an error trying to set of a parent component
-  // while rendering a child component
-  useEffect(() => {
-    if (context?.length === 0 && data?.bundles) {
-      setContextState(
-        data.bundles.map((bundle) => ({
-          bundleName: bundle.bundleName,
-          toggleCaching: bundle.isCached,
-        }))
-      )
-    }
-  }, [context?.length, data?.bundles, setContextState])
-
   const tableData = useMemo(() => {
-    // early return if context is not set
-    if (!context) return []
-
-    return context?.map(({ bundleName, toggleCaching }) => ({
+    return bundleState.map(({ bundleName, toggleCaching }) => ({
       bundleName,
       toggleCaching: (
         <Toggle
@@ -113,7 +69,7 @@ const BundleTable: React.FC<BundleTableProps> = ({
           value={toggleCaching}
           label={toggleCaching ? 'Enabled' : 'Disabled'}
           onClick={() => {
-            setContextState((prev) =>
+            setBundleState((prev) =>
               prev.map((item) =>
                 item.bundleName === bundleName
                   ? { bundleName, toggleCaching: !toggleCaching }
@@ -124,7 +80,7 @@ const BundleTable: React.FC<BundleTableProps> = ({
         />
       ),
     }))
-  }, [context, setContextState])
+  }, [bundleState, setBundleState])
 
   const table = useReactTable({
     columns,
@@ -176,13 +132,15 @@ const BundleTable: React.FC<BundleTableProps> = ({
 }
 
 interface BundleCachingModalBodyProps {
-  setContextState: SetContextState
-  defaultBranch: string
+  bundleState: CachedBundle[]
+  setBundleState: SetBundleState
+  isBundlesLoading: boolean
 }
 
 const BundleCachingModalBody: React.FC<BundleCachingModalBodyProps> = ({
-  setContextState,
-  defaultBranch,
+  bundleState,
+  setBundleState,
+  isBundlesLoading,
 }) => {
   return (
     <>
@@ -199,14 +157,22 @@ const BundleCachingModalBody: React.FC<BundleCachingModalBodyProps> = ({
           Note, if caching is removed trend data will not be available.
         </Alert.Description>
       </Alert>
-      <Suspense fallback={<Loader />}>
+      {isBundlesLoading ? (
+        <Loader />
+      ) : (
         <BundleTable
-          defaultBranch={defaultBranch}
-          setContextState={setContextState}
+          bundleState={bundleState}
+          setBundleState={setBundleState}
         />
-      </Suspense>
+      )}
     </>
   )
+}
+
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
 }
 
 interface ConfigureCachedBundleModalProps {
@@ -214,18 +180,13 @@ interface ConfigureCachedBundleModalProps {
   setIsOpen: (isOpen: boolean) => void
 }
 
-type SetContextState = React.Dispatch<
-  React.SetStateAction<ConfigureCacheModalContextValue>
->
-
 export const ConfigureCachedBundleModal = ({
   isOpen,
   setIsOpen,
 }: ConfigureCachedBundleModalProps) => {
-  const { provider, owner, repo } = useParams<URLParams>()
   const queryClientV5 = useQueryClientV5()
-  const [contextState, setContextState] =
-    useState<ConfigureCacheModalContextValue>([])
+  const { provider, owner, repo } = useParams<URLParams>()
+  const [bundleState, setBundleState] = useState<CachedBundle[]>([])
 
   const { mutate: updateBundleCache, isPending } = useUpdateBundleCache({
     provider,
@@ -240,85 +201,98 @@ export const ConfigureCachedBundleModal = ({
   })
   const defaultBranch = repoOverview?.defaultBranch ?? ''
 
+  const { data: bundleData, isLoading: isBundlesLoading } = useQueryV5({
+    ...CachedBundlesQueryOpts({ provider, owner, repo, branch: defaultBranch }),
+    select: (data) =>
+      data.bundles.map((bundle) => ({
+        bundleName: bundle.bundleName,
+        toggleCaching: bundle.isCached,
+      })),
+    enabled: isOpen && !!defaultBranch,
+  })
+
+  if (bundleData && bundleData.length > 0 && bundleState.length === 0) {
+    setBundleState(bundleData)
+  }
+
   const closeModal = () => {
     // this resets the context state when the modal is closed
-    setContextState([])
+    setBundleState([])
     setIsOpen(false)
   }
 
   return (
-    <ConfigureCacheModalContext.Provider value={contextState}>
-      <Modal
-        isOpen={isOpen}
-        onClose={() => closeModal()}
-        title="Configure bundle caching data"
-        body={
-          <BundleCachingModalBody
-            setContextState={setContextState}
-            defaultBranch={defaultBranch}
-          />
-        }
-        footer={
-          <div className="flex flex-1 flex-row items-center justify-between gap-2">
-            <div className="text-xs text-gray-500">
-              ℹ️ When bundle caching is turned off, to turn it back on,
-              you&apos;ll need to upload the bundle report.
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                hook="cancel-bundle-caching-modal"
-                disabled={isPending}
-                onClick={() => closeModal()}
-              >
-                Cancel
-              </Button>
-              <Button
-                hook="save-bundle-caching-modal"
-                variant="primary"
-                disabled={isPending}
-                onClick={() => {
-                  updateBundleCache(contextState, {
-                    onError: (error) => {
-                      // 1. render the error toast
-                      renderToast({
-                        type: 'error',
-                        title: 'Error updating bundle caching',
-                        content: `Specify the error: ${error.message}`,
-                        options: { duration: 10000, position: 'bottom-left' },
-                      })
-                    },
-                    onSuccess: (bundles) => {
-                      // 1. render the success toast
-                      renderToast({
-                        type: 'success',
-                        title: 'Bundle caching updated',
-                        content: '',
-                        options: { duration: 10000, position: 'bottom-left' },
-                      })
-
-                      // 2. update the query data for the cached bundles
-                      queryClientV5.setQueryData(
-                        CachedBundlesQueryOpts({
-                          provider,
-                          owner,
-                          repo,
-                          branch: defaultBranch,
-                        }).queryKey,
-                        { bundles }
-                      )
-
-                      // 3. close the modal
-                      closeModal()
-                    },
-                  })
-                }}
-              >
-                Save
-              </Button>
-            </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => closeModal()}
+      title="Configure bundle caching data"
+      body={
+        <BundleCachingModalBody
+          bundleState={bundleState}
+          setBundleState={setBundleState}
+          isBundlesLoading={isBundlesLoading}
+        />
+      }
+      footer={
+        <div className="flex flex-1 flex-row items-center justify-between gap-2">
+          <div className="text-xs text-gray-500">
+            ℹ️ When bundle caching is turned off, to turn it back on,
+            you&apos;ll need to upload the bundle report.
           </div>
-        }
-      />
-    </ConfigureCacheModalContext.Provider>
+          <div className="flex items-center gap-2">
+            <Button
+              hook="cancel-bundle-caching-modal"
+              disabled={isPending || isBundlesLoading}
+              onClick={() => closeModal()}
+            >
+              Cancel
+            </Button>
+            <Button
+              hook="save-bundle-caching-modal"
+              variant="primary"
+              disabled={isPending || isBundlesLoading}
+              onClick={() => {
+                updateBundleCache(bundleState, {
+                  onError: (error) => {
+                    // 1. render the error toast
+                    renderToast({
+                      type: 'error',
+                      title: 'Error updating bundle caching',
+                      content: `Specify the error: ${error.message}`,
+                      options: { duration: 10000, position: 'bottom-left' },
+                    })
+                  },
+                  onSuccess: (bundles) => {
+                    // 1. render the success toast
+                    renderToast({
+                      type: 'success',
+                      title: 'Bundle caching updated',
+                      content: '',
+                      options: { duration: 10000, position: 'bottom-left' },
+                    })
+
+                    // 2. update the query data for the cached bundles
+                    queryClientV5.setQueryData(
+                      CachedBundlesQueryOpts({
+                        provider,
+                        owner,
+                        repo,
+                        branch: defaultBranch,
+                      }).queryKey,
+                      { bundles }
+                    )
+
+                    // 3. close the modal
+                    closeModal()
+                  },
+                })
+              }}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+      }
+    />
   )
 }
