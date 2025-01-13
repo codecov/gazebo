@@ -30,7 +30,7 @@ export type Event =
   | {
       type: 'Page Viewed'
       properties: {
-        pageName: 'OwnerPage'
+        pageName: 'Owner Page'
       }
     }
 

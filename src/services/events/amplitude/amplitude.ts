@@ -46,10 +46,10 @@ export class AmplitudeEventTracker implements EventTracker {
         ...event.properties,
         ...this.context,
       },
-      // This attaches the event to the owner's user group as well
+      // This attaches the event to the owner's user group (org) as well
       groups: this.context.owner?.id
         ? {
-            owner: this.context.owner.id,
+            org: this.context.owner.id,
           }
         : undefined,
     })
