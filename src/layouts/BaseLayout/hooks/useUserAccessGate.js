@@ -99,12 +99,6 @@ const useUserAccessGate = () => {
     isLoading = (userIsLoading && userIsFetching) || isLoading
   }
 
-  console.log('qwerty showAgreeToTerms', showAgreeToTerms)
-  console.log('qwerty redirectToSyncPage', redirectToSyncPage)
-  console.log(
-    'qwerty isFullExperience',
-    !showAgreeToTerms && !redirectToSyncPage
-  )
   // Not fully tested logic yet, waiting on API to be available.
   return {
     isFullExperience: !showAgreeToTerms && !redirectToSyncPage,

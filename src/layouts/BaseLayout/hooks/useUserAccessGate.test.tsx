@@ -599,7 +599,6 @@ describe('useUserAccessGate', () => {
             const { result } = renderHook(() => useUserAccessGate(), {
               wrapper: wrapper(),
             })
-            console.log('qwerty result', result)
 
             await waitFor(() => result.current.isLoading)
 
