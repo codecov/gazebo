@@ -16,11 +16,20 @@ import TextInput from 'ui/TextInput'
 import { useSaveTermsAgreement } from './hooks/useTermsOfService'
 
 const FormSchema = z.object({
-  marketingName: z.string(),
-  marketingEmail: z.string().email(),
+  marketingName: z.string().min(1, 'Name is required'),
+  marketingEmail: z.string().email('Invalid email'),
   marketingConsent: z.boolean().nullish(),
   tos: z.literal(true),
+  apiError: z.string().nullish(),
 })
+
+type FormData = {
+  marketingName?: string
+  marketingEmail?: string
+  marketingConsent?: boolean
+  tos?: boolean
+  apiError?: string
+}
 
 interface IsDisabled {
   isValid: boolean
@@ -45,9 +54,7 @@ function NameInput({ register, marketingNameMessage }: NameInputProps) {
       </label>
       <div className="flex max-w-xs flex-col gap-2">
         <TextInput
-          {...register('marketingName', {
-            required: true,
-          })}
+          {...register('marketingName')}
           type="text"
           id="marketingName"
           placeholder="John Doe"
@@ -74,9 +81,7 @@ function EmailInput({ register, marketingEmailMessage }: EmailInputProps) {
       </label>
       <div className="flex max-w-xs flex-col gap-2">
         <TextInput
-          {...register('marketingEmail', {
-            required: true,
-          })}
+          {...register('marketingEmail')}
           type="text"
           id="marketingEmail"
           placeholder="name@example.com"
@@ -94,12 +99,13 @@ export default function TermsOfService() {
   const { data: currentUser, isLoading: userIsLoading } = useInternalUser({})
   const {
     register,
+    reset,
     handleSubmit,
     formState: { isDirty, isValid, errors: formErrors },
     setError,
     watch,
     unregister,
-  } = useForm({
+  } = useForm<FormData>({
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
     defaultValues: {
@@ -111,6 +117,19 @@ export default function TermsOfService() {
       apiError: undefined,
     },
   })
+
+  useEffect(() => {
+    if (currentUser && !isDirty) {
+      reset({
+        marketingName: currentUser.name || '',
+        marketingEmail: currentUser.email || '',
+        marketingConsent: undefined,
+        tos: false,
+        apiError: undefined,
+      })
+    }
+  }, [currentUser, isDirty, reset])
+
   const { mutate, isLoading: isMutationLoading } = useSaveTermsAgreement({
     onSuccess: ({ data }) => {
       if (data?.saveTermsAgreement?.error) {
@@ -129,13 +148,7 @@ export default function TermsOfService() {
     return widget.removeFromDom
   }, [])
 
-  interface FormValues {
-    marketingConsent?: boolean
-    marketingName: string
-    marketingEmail: string
-  }
-
-  const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
+  const onSubmit: SubmitHandler<FormData> = (data: FormData) => {
     if (!data.marketingName || !data.marketingEmail) return
 
     mutate({
@@ -171,12 +184,10 @@ export default function TermsOfService() {
           <div className="my-6 flex flex-col gap-2">
             <NameInput
               register={register}
-              // @ts-expect-error - the types on this need to be updated to match the type of message
               marketingNameMessage={formErrors?.marketingName?.message}
             />
             <EmailInput
               register={register}
-              // @ts-expect-error - the types on this need to be updated to match the type of message
               marketingEmailMessage={formErrors?.marketingEmail?.message}
             />
             <div className="mt-4 flex gap-2">
@@ -193,7 +204,7 @@ export default function TermsOfService() {
             </div>
             <div className="flex gap-2">
               <input
-                {...register('tos', { required: true })}
+                {...register('tos')}
                 type="checkbox"
                 id="tos"
                 aria-label="I accept the terms of service and privacy policy"
