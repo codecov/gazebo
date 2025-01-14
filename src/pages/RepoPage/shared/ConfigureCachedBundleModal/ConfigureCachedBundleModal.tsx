@@ -236,8 +236,8 @@ export const ConfigureCachedBundleModal = ({
       footer={
         <div className="flex flex-1 flex-row items-center justify-between gap-2">
           <div className="text-xs text-gray-500">
-            ℹ️ When bundle caching is turned off, to turn it back on,
-            you&apos;ll need to upload the bundle report.
+            ℹ️ After turning bundle caching on, you&apos;ll need to upload a new
+            bundle report.
           </div>
           <div className="flex items-center gap-2">
             <Button

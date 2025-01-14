@@ -193,7 +193,7 @@ describe('ConfigureCachedBundleModal', () => {
       render(<MockTestComponent />, { wrapper })
 
       const footerText = await screen.findByText(
-        "ℹ️ When bundle caching is turned off, to turn it back on, you'll need to upload the bundle report."
+        "ℹ️ After turning bundle caching on, you'll need to upload a new bundle report."
       )
       expect(footerText).toBeInTheDocument()
 
