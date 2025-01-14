@@ -1,6 +1,8 @@
 import { useElements, useStripe } from '@stripe/react-stripe-js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import config from 'config'
+
 import Api from 'shared/api'
 
 import { useCreateStripeSetupIntent } from './useCreateStripeSetupIntent'
@@ -59,7 +61,7 @@ export function useUpdatePaymentMethod({
               },
             },
             // eslint-disable-next-line camelcase
-            return_url: `/plan/${provider}/${owner}`,
+            return_url: `${config.BASE_URL}/plan/${provider}/${owner}`,
           },
         })
         .then((result) => {
