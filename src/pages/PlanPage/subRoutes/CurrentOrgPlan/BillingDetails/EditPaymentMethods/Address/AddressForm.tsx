@@ -8,7 +8,7 @@ import Button from 'ui/Button'
 
 interface AddressFormProps {
   address?: z.infer<typeof AddressSchema>
-  name?: string | null | undefined
+  name?: string
   closeForm: () => void
   provider: string
   owner: string
@@ -23,12 +23,7 @@ function AddressForm({
 }: AddressFormProps) {
   const elements = useElements()
 
-  const {
-    mutate: updateAddress,
-    isLoading,
-    error,
-    reset,
-  } = useUpdateBillingAddress({
+  const { mutate: updateAddress, isLoading } = useUpdateBillingAddress({
     provider,
     owner,
   })
@@ -46,8 +41,6 @@ function AddressForm({
       updateAddress(newAddressObj.value, { onSuccess: closeForm })
     }
   }
-
-  const showError = error && !reset
 
   return (
     <form onSubmit={submit} aria-label="form">
@@ -72,7 +65,6 @@ function AddressForm({
               },
             }}
           />
-          <p className="mt-1 text-ds-primary-red">{showError && error}</p>
         </div>
         <div className="flex gap-1">
           <Button
@@ -80,7 +72,6 @@ function AddressForm({
             type="submit"
             variant="primary"
             disabled={isLoading}
-            to={undefined}
           >
             Save
           </Button>
@@ -90,7 +81,6 @@ function AddressForm({
             variant="plain"
             disabled={isLoading}
             onClick={closeForm}
-            to={undefined}
           >
             Cancel
           </Button>

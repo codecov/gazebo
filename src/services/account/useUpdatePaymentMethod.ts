@@ -8,7 +8,7 @@ import { useCreateStripeSetupIntent } from './useCreateStripeSetupIntent'
 interface useUpdatePaymentMethodProps {
   provider: string
   owner: string
-  email: string
+  email?: string
 }
 
 interface useUpdatePaymentMethodReturn {

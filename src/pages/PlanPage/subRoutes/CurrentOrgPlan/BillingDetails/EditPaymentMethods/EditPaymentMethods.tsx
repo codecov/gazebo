@@ -8,19 +8,19 @@ import PaymentMethodForm from './PaymentMethod/PaymentMethodForm'
 
 import { SECONDARY_PAYMENT_FEATURE_ENABLED } from '../BillingDetails'
 
-interface EditPaymentMethodProps {
+interface EditPaymentMethodsProps {
   setEditMode: (isEditMode: boolean) => void
   provider: string
   owner: string
-  existingSubscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
+  subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
 }
 
-const EditPaymentMethod = ({
+const EditPaymentMethods = ({
   setEditMode,
   provider,
   owner,
-  existingSubscriptionDetail,
-}: EditPaymentMethodProps) => {
+  subscriptionDetail,
+}: EditPaymentMethodsProps) => {
   const [activeTab, setActiveTab] = useState<'primary' | 'secondary'>('primary')
 
   const secondaryPaymentMethodFeatureEnabled = SECONDARY_PAYMENT_FEATURE_ENABLED
@@ -57,16 +57,16 @@ const EditPaymentMethod = ({
                 closeForm={() => setEditMode(false)}
                 provider={provider}
                 owner={owner}
-                existingSubscriptionDetail={existingSubscriptionDetail}
+                subscriptionDetail={subscriptionDetail}
               />
               <AddressForm
                 address={
-                  existingSubscriptionDetail?.defaultPaymentMethod
-                    ?.billingDetails?.address
+                  subscriptionDetail?.defaultPaymentMethod?.billingDetails
+                    ?.address
                 }
                 name={
-                  existingSubscriptionDetail?.defaultPaymentMethod
-                    ?.billingDetails?.name
+                  subscriptionDetail?.defaultPaymentMethod?.billingDetails
+                    ?.name || undefined
                 }
                 closeForm={() => setEditMode(false)}
                 provider={provider}
@@ -80,7 +80,7 @@ const EditPaymentMethod = ({
                 closeForm={() => setEditMode(false)}
                 provider={provider}
                 owner={owner}
-                existingSubscriptionDetail={existingSubscriptionDetail}
+                subscriptionDetail={subscriptionDetail}
               />
               <AddressForm
                 closeForm={() => setEditMode(false)}
@@ -95,4 +95,4 @@ const EditPaymentMethod = ({
   )
 }
 
-export default EditPaymentMethod
+export default EditPaymentMethods

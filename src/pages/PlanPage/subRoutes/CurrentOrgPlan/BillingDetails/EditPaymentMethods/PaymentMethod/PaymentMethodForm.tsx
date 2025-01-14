@@ -11,14 +11,14 @@ interface PaymentMethodFormProps {
   closeForm: () => void
   provider: string
   owner: string
-  existingSubscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
+  subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
 }
 
 const PaymentMethodForm = ({
   closeForm,
   provider,
   owner,
-  existingSubscriptionDetail,
+  subscriptionDetail,
 }: PaymentMethodFormProps) => {
   const [errorState, _] = useState('')
   const elements = useElements()
@@ -32,7 +32,8 @@ const PaymentMethodForm = ({
     provider,
     owner,
     email:
-      existingSubscriptionDetail?.defaultPaymentMethod?.billingDetails?.email,
+      subscriptionDetail?.defaultPaymentMethod?.billingDetails?.email ||
+      undefined,
   })
 
   async function submit(e: React.FormEvent) {
@@ -75,7 +76,7 @@ const PaymentMethodForm = ({
           </p>
           <div className="mb-8 mt-4 flex gap-1">
             <Button
-              hook="update-payment"
+              hook="update-payment-method"
               type="submit"
               variant="primary"
               disabled={isLoading}

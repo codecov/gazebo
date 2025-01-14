@@ -39,6 +39,7 @@ function PaymentMethod({
           <div className="flex self-start">
             <Button
               hook="open-edit-mode"
+              data-testid="open-edit-mode"
               variant="primary"
               onClick={() => setEditMode(true)}
             >

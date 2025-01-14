@@ -71,7 +71,7 @@ function BillingDetails() {
           setEditMode={setEditMode}
           provider={provider}
           owner={owner}
-          existingSubscriptionDetail={subscriptionDetail}
+          subscriptionDetail={subscriptionDetail}
         />
       ) : (
         <>

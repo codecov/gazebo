@@ -4,7 +4,7 @@ import { SubscriptionDetailSchema } from 'services/account'
 import Button from 'ui/Button'
 import { ExpandableSection } from 'ui/ExpandableSection'
 
-import AddressCard from './Address/AddressCard'
+import Address from './Address/Address'
 import PaymentMethod from './PaymentMethod/PaymentMethod'
 
 function ViewPaymentMethod({
@@ -63,7 +63,7 @@ function ViewPaymentMethod({
                 </p>
               </div>
               {/* Address */}
-              <AddressCard
+              <Address
                 className="flex-1"
                 setEditMode={setEditMode}
                 subscriptionDetail={subscriptionDetail}
