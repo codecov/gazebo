@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import {
@@ -6,6 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const RepositorySchema = z.object({
@@ -31,37 +32,36 @@ const GetRepoDataSchema = z.object({
 export type RepoDataTokensTeam = z.infer<typeof GetRepoDataSchema>
 
 const query = `
-  query RepoDataTokensTeam($owner: String!, $repo: String!) {
-    owner(username: $owner) {
-      repository(name: $repo) {
-        __typename
-        ... on Repository {
-          defaultBranch
-          private
-        }
-        ... on NotFoundError {
-          message
-        }
-        ... on OwnerNotActivatedError {
-          message
-        }
+query RepoDataTokensTeam($owner: String!, $repo: String!) {
+  owner(username: $owner) {
+    repository(name: $repo) {
+      __typename
+      ... on Repository {
+        defaultBranch
+        private
+      }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
       }
     }
   }
-`
+}`
 
-interface RepoDataTokensArgs {
+interface RepoForTokensTeamQueryArgs {
   provider: string
   owner: string
   repo: string
 }
 
-export const useRepoForTokensTeam = ({
+export const RepoForTokensTeamQueryOpts = ({
   provider,
   owner,
   repo,
-}: RepoDataTokensArgs) =>
-  useQuery({
+}: RepoForTokensTeamQueryArgs) =>
+  queryOptionsV5({
     queryKey: ['RepoDataTokensTeam', provider, owner, repo, query],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -77,23 +77,26 @@ export const useRepoForTokensTeam = ({
         const parsedData = GetRepoDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: `RepoForTokensTeamQueryOpts - 404 failed to parse schema`,
+            error: parsedData.error,
           })
         }
 
         const { data } = parsedData
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
+            dev: `RepoForTokensTeamQueryOpts - 404 not found`,
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -105,6 +108,7 @@ export const useRepoForTokensTeam = ({
                 </p>
               ),
             },
+            dev: `RepoForTokensTeamQueryOpts - 403 owner not activated`,
           })
         }
 
