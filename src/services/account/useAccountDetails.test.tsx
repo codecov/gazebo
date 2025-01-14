@@ -4,9 +4,10 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { z } from 'zod'
 
-import { accountDetailsObject, accountDetailsParsedObj } from './mocks'
-import { useAccountDetails } from './useAccountDetails'
+import { accountDetailsParsedObj } from './mocks'
+import { AccountDetailsSchema, useAccountDetails } from './useAccountDetails'
 
 vi.mock('js-cookie')
 
@@ -45,17 +46,17 @@ afterAll(() => {
 })
 
 describe('useAccountDetails', () => {
-  function setup() {
+  function setup(accountDetails: z.infer<typeof AccountDetailsSchema>) {
     server.use(
       http.get(`/internal/${provider}/${owner}/account-details/`, () => {
-        return HttpResponse.json(accountDetailsObject)
+        return HttpResponse.json(accountDetails)
       })
     )
   }
 
   describe('when called', () => {
     it('returns the data', async () => {
-      setup()
+      setup(accountDetailsParsedObj)
       const { result } = renderHook(
         () => useAccountDetails({ provider, owner }),
         { wrapper: wrapper() }
@@ -63,6 +64,44 @@ describe('useAccountDetails', () => {
 
       await waitFor(() =>
         expect(result.current.data).toEqual(accountDetailsParsedObj)
+      )
+    })
+
+    it('returns data with usBankAccount when enabled', async () => {
+      const withUSBankAccount = {
+        ...accountDetailsParsedObj,
+        subscriptionDetail: {
+          ...accountDetailsParsedObj.subscriptionDetail,
+          defaultPaymentMethod: {
+            billingDetails: null,
+            usBankAccount: {
+              bankName: 'Bank of America',
+              last4: '1234',
+            },
+          },
+        },
+      }
+      setup(withUSBankAccount)
+
+      const { result } = renderHook(
+        () => useAccountDetails({ provider, owner }),
+        { wrapper: wrapper() }
+      )
+
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          ...accountDetailsParsedObj,
+          subscriptionDetail: {
+            ...accountDetailsParsedObj.subscriptionDetail,
+            defaultPaymentMethod: {
+              billingDetails: null,
+              usBankAccount: {
+                bankName: 'Bank of America',
+                last4: '1234',
+              },
+            },
+          },
+        })
       )
     })
   })

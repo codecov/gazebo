@@ -1,3 +1,5 @@
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
@@ -12,6 +14,7 @@ import { useUpdatePaymentMethod } from './useUpdatePaymentMethod'
 
 const mocks = vi.hoisted(() => ({
   useStripe: vi.fn(),
+  useCreateStripeSetupIntent: vi.fn(),
 }))
 
 vi.mock('@stripe/react-stripe-js', async () => {
@@ -22,6 +25,12 @@ vi.mock('@stripe/react-stripe-js', async () => {
   }
 })
 
+vi.mock('./useCreateStripeSetupIntent', () => ({
+  useCreateStripeSetupIntent: mocks.useCreateStripeSetupIntent,
+}))
+
+const stripePromise = loadStripe('fake-publishable-key')
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -30,7 +39,9 @@ const wrapper =
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider">{children}</Route>
+        <Route path="/:provider">
+          <Elements stripe={stripePromise}>{children}</Elements>
+        </Route>
       </MemoryRouter>
     </QueryClientProvider>
   )
@@ -74,6 +85,9 @@ describe('useUpdatePaymentMethod', () => {
     mocks.useStripe.mockReturnValue({
       confirmSetup,
     })
+    mocks.useCreateStripeSetupIntent.mockReturnValue({
+      data: { clientSecret: 'test_secret' },
+    })
   }
 
   describe('when called', () => {
@@ -83,7 +97,9 @@ describe('useUpdatePaymentMethod', () => {
           confirmSetup: vi.fn(
             () =>
               new Promise((resolve) => {
-                resolve({ paymentMethod: { id: 1 } })
+                resolve({
+                  setupIntent: { payment_method: 'test_payment_method' },
+                })
               })
           ),
         })
@@ -100,7 +116,8 @@ describe('useUpdatePaymentMethod', () => {
 
       it('returns the data from the server', async () => {
         const { result } = renderHook(
-          () => useUpdatePaymentMethod({ provider, owner }),
+          () =>
+            useUpdatePaymentMethod({ provider, owner, email: 'test@test.com' }),
           { wrapper: wrapper() }
         )
 
@@ -140,7 +157,8 @@ describe('useUpdatePaymentMethod', () => {
 
       it('does something', async () => {
         const { result } = renderHook(
-          () => useUpdatePaymentMethod({ provider, owner }),
+          () =>
+            useUpdatePaymentMethod({ provider, owner, email: 'test@test.com' }),
           { wrapper: wrapper() }
         )
 

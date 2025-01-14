@@ -50,7 +50,14 @@ function PlanPage() {
   return (
     <div className="flex flex-col gap-4">
       <Tabs />
-      <Elements stripe={stripePromise} options={StripeAppearance(isDarkMode)}>
+      <Elements
+        stripe={stripePromise}
+        options={{
+          ...StripeAppearance(isDarkMode),
+          mode: 'setup',
+          currency: 'usd',
+        }}
+      >
         <PlanProvider>
           <PlanBreadcrumb />
           <Suspense fallback={<Loader />}>

@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { z } from 'zod'
 
 import { SubscriptionDetailSchema } from 'services/account'
-import { useCreateStripeSetupIntent } from 'services/account/useCreateStripeSetupIntent'
 import { useUpdatePaymentMethod } from 'services/account/useUpdatePaymentMethod'
 import Button from 'ui/Button'
 
@@ -22,13 +21,7 @@ const PaymentMethodForm = ({
   existingSubscriptionDetail,
 }: PaymentMethodFormProps) => {
   const [errorState, _] = useState('')
-  const { data: setupIntent } = useCreateStripeSetupIntent({ owner, provider })
   const elements = useElements()
-
-  elements?.update({
-    // @ts-expect-error clientSecret works actually
-    clientSecret: setupIntent?.clientSecret,
-  })
 
   const {
     mutate: updatePaymentMethod,
@@ -48,6 +41,8 @@ const PaymentMethodForm = ({
     if (!elements) {
       return null
     }
+
+    elements.submit()
 
     const paymentElement = elements.getElement(PaymentElement)
 

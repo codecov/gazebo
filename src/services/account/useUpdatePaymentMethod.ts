@@ -3,6 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
+import { useCreateStripeSetupIntent } from './useCreateStripeSetupIntent'
+
 interface useUpdatePaymentMethodProps {
   provider: string
   owner: string
@@ -16,11 +18,13 @@ interface useUpdatePaymentMethodReturn {
   mutate: (variables: any, data: any) => void
   data: undefined | unknown
 }
-
 function getPathAccountDetails({
   provider,
   owner,
-}: useUpdatePaymentMethodProps) {
+}: {
+  provider: string
+  owner: string
+}) {
   return `/${provider}/${owner}/account-details/`
 }
 
@@ -32,11 +36,18 @@ export function useUpdatePaymentMethod({
   const stripe = useStripe()
   const elements = useElements()
   const queryClient = useQueryClient()
+  const { data: setupIntent } = useCreateStripeSetupIntent({ owner, provider })
 
   return useMutation({
     mutationFn: () => {
+      const clientSecret = setupIntent?.clientSecret
+      if (!clientSecret) {
+        throw new Error('Client secret not found')
+      }
+
       return stripe!
         .confirmSetup({
+          clientSecret,
           elements: elements!,
           redirect: 'if_required',
           confirmParams: {
@@ -47,6 +58,8 @@ export function useUpdatePaymentMethod({
                 email: email,
               },
             },
+            // eslint-disable-next-line camelcase
+            return_url: `/plan/${provider}/${owner}`,
           },
         })
         .then((result) => {
