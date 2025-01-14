@@ -1,13 +1,12 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
-  useRepoOverview,
 } from 'services/repo'
 import Api from 'shared/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BranchSchema = z
@@ -71,32 +70,21 @@ query CoverageTabData($owner: String!, $repo: String!, $branch: String!) {
   }
 }`
 
-interface UseCoverageTabDataArgs {
+interface CoverageTabDataQueryArgs {
   provider: string
   owner: string
   repo: string
-  branch?: string
+  branch: string
 }
 
-export const useCoverageTabData = ({
+export const CoverageTabDataQueryOpts = ({
   provider,
   owner,
   repo,
   branch,
-}: UseCoverageTabDataArgs) => {
-  const { data: repoOverview } = useRepoOverview({
-    provider,
-    repo,
-    owner,
-    opts: {
-      enabled: !branch,
-    },
-  })
-
-  const passedBranch = branch ?? repoOverview?.defaultBranch
-
-  return useQuery({
-    queryKey: ['CoverageTabData', provider, owner, repo, passedBranch, query],
+}: CoverageTabDataQueryArgs) => {
+  return queryOptionsV5({
+    queryKey: ['CoverageTabData', provider, owner, repo, branch],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -105,31 +93,32 @@ export const useCoverageTabData = ({
         variables: {
           owner,
           repo,
-          branch: passedBranch,
+          branch,
         },
       }).then((res) => {
         const parsedData = GetBranchSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useCoverageTabData - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+            error: parsedData.error,
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
             dev: 'useCoverageTabData - 404 NotFoundError',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -142,13 +131,12 @@ export const useCoverageTabData = ({
               ),
             },
             dev: 'useCoverageTabData - 403 OwnerNotActivatedError',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         return {
           branch: data?.owner?.repository?.branch ?? null,
         }
       }),
-    enabled: !!passedBranch,
   })
 }
