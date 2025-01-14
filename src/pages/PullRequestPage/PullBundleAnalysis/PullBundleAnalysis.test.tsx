@@ -6,6 +6,7 @@ import {
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
@@ -31,7 +32,8 @@ const mockPullPageData = (
   compareType: TBundleAnalysisComparisonResult = 'BundleAnalysisComparison',
   headBundleType: string = 'BundleAnalysisReport',
   coverageEnabled: boolean = true,
-  bundleAnalysisEnabled: boolean = true
+  bundleAnalysisEnabled: boolean = true,
+  hasCachedBundle = false
 ) => ({
   owner: {
     repository: {
@@ -49,7 +51,9 @@ const mockPullPageData = (
             bundleAnalysisReport: {
               __typename: headBundleType,
               isCached:
-                headBundleType === 'BundleAnalysisReport' ? false : undefined,
+                headBundleType === 'BundleAnalysisReport'
+                  ? hasCachedBundle
+                  : undefined,
             },
           },
         },
@@ -146,6 +150,7 @@ interface SetupArgs {
   headBundleType?: string
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
+  hasCachedBundle?: boolean
 }
 
 describe('PullBundleAnalysis', () => {
@@ -154,6 +159,7 @@ describe('PullBundleAnalysis', () => {
     headBundleType = 'BundleAnalysisReport',
     coverageEnabled = false,
     bundleAnalysisEnabled = false,
+    hasCachedBundle = false,
   }: SetupArgs) {
     server.use(
       graphql.query('PullPageData', () => {
@@ -162,7 +168,8 @@ describe('PullBundleAnalysis', () => {
             compareType,
             headBundleType,
             coverageEnabled,
-            bundleAnalysisEnabled
+            bundleAnalysisEnabled,
+            hasCachedBundle
           ),
         })
       }),
@@ -196,6 +203,41 @@ describe('PullBundleAnalysis', () => {
 
         const table = await screen.findByText('PullBundleComparisonTable')
         expect(table).toBeInTheDocument()
+      })
+
+      describe('there is a cached bundle', () => {
+        it('renders the CachedBundleContentBanner', async () => {
+          setup({
+            coverageEnabled: true,
+            bundleAnalysisEnabled: true,
+            hasCachedBundle: true,
+          })
+          render(<PullBundleAnalysis />, { wrapper })
+
+          const cachedBundleContentBanner = await screen.findByText(
+            'The reported bundle size includes cached data from previous commits'
+          )
+          expect(cachedBundleContentBanner).toBeInTheDocument()
+        })
+      })
+
+      describe('there is not a cached bundle', () => {
+        it('does not render the CachedBundleContentBanner', async () => {
+          setup({
+            coverageEnabled: true,
+            bundleAnalysisEnabled: true,
+            hasCachedBundle: false,
+          })
+          render(<PullBundleAnalysis />, { wrapper })
+
+          await waitFor(() => queryClientV5.isFetching())
+          await waitFor(() => !queryClientV5.isFetching())
+
+          const cachedBundleContentBanner = screen.queryByText(
+            'The reported bundle size includes cached data from previous commits'
+          )
+          expect(cachedBundleContentBanner).not.toBeInTheDocument()
+        })
       })
     })
 
@@ -311,6 +353,41 @@ describe('PullBundleAnalysis', () => {
 
         const table = await screen.findByText('PullBundleComparisonTable')
         expect(table).toBeInTheDocument()
+      })
+
+      describe('there is a cached bundle', () => {
+        it('renders the CachedBundleContentBanner', async () => {
+          setup({
+            coverageEnabled: false,
+            bundleAnalysisEnabled: true,
+            hasCachedBundle: true,
+          })
+          render(<PullBundleAnalysis />, { wrapper })
+
+          const cachedBundleContentBanner = await screen.findByText(
+            'The reported bundle size includes cached data from previous commits'
+          )
+          expect(cachedBundleContentBanner).toBeInTheDocument()
+        })
+      })
+
+      describe('there is not a cached bundle', () => {
+        it('does not render the CachedBundleContentBanner', async () => {
+          setup({
+            coverageEnabled: false,
+            bundleAnalysisEnabled: true,
+            hasCachedBundle: false,
+          })
+          render(<PullBundleAnalysis />, { wrapper })
+
+          await waitFor(() => queryClientV5.isFetching())
+          await waitFor(() => !queryClientV5.isFetching())
+
+          const cachedBundleContentBanner = screen.queryByText(
+            'The reported bundle size includes cached data from previous commits'
+          )
+          expect(cachedBundleContentBanner).not.toBeInTheDocument()
+        })
       })
     })
 

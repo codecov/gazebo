@@ -7,18 +7,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import OtherCI from './OtherCI'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
-vi.mock('shared/featureFlags', async () => {
-  const actual = await vi.importActual('shared/featureFlags')
-  return {
-    ...actual,
-    useFlags: mocks.useFlags,
-  }
-})
-
 const mockGetRepo = {
   owner: {
     isAdmin: null,
@@ -41,6 +29,12 @@ const mockGetRepo = {
 const mockGetOrgUploadToken = {
   owner: {
     orgUploadToken: 'org-token-asdf-1234',
+  },
+}
+
+const mockNoUploadToken = {
+  owner: {
+    orgUploadToken: null,
   },
 }
 
@@ -86,16 +80,15 @@ interface SetupArgs {
 describe('OtherCI', () => {
   function setup({ hasOrgUploadToken = false }: SetupArgs) {
     const user = userEvent.setup()
-    mocks.useFlags.mockReturnValue({
-      newRepoFlag: hasOrgUploadToken,
-    })
 
     server.use(
       graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockGetRepo })
       }),
       graphql.query('GetOrgUploadToken', () => {
-        return HttpResponse.json({ data: mockGetOrgUploadToken })
+        return HttpResponse.json({
+          data: hasOrgUploadToken ? mockGetOrgUploadToken : mockNoUploadToken,
+        })
       })
     )
 
