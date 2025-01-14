@@ -172,7 +172,7 @@ describe('ConfigureCachedBundleModal', () => {
       expect(alertTitle).toBeInTheDocument()
 
       const alertDescription = await screen.findByText(
-        'When bundle data is not uploaded for a commit, we automatically cache carry forward the previous bundle data to prevent gaps in your reports. This ensures continuity in your analysis even if data is missing.'
+        'When bundle data is not uploaded for a commit, we automatically carry forward the previous bundle data to prevent gaps in your reports. This ensures continuity in your analysis even if data is missing.'
       )
       expect(alertDescription).toBeInTheDocument()
 
