@@ -147,10 +147,9 @@ const BundleCachingModalBody: React.FC<BundleCachingModalBodyProps> = ({
       <Alert>
         <Alert.Title>What is Bundle Caching?</Alert.Title>
         <Alert.Description>
-          When bundle data is not uploaded for a commit, we automatically cache
-          carry forward the previous bundle data to prevent gaps in your
-          reports. This ensures continuity in your analysis even if data is
-          missing.
+          When bundle data is not uploaded for a commit, we automatically carry
+          forward the previous bundle data to prevent gaps in your reports. This
+          ensures continuity in your analysis even if data is missing.
         </Alert.Description>
         <br />
         <Alert.Description>
@@ -204,7 +203,7 @@ export const ConfigureCachedBundleModal = ({
 
   const { data: bundleData, isPending: isBundlesPending } = useQueryV5({
     ...CachedBundlesQueryOpts({ provider, owner, repo, branch: defaultBranch }),
-    // we can use the select hook to transform the data to the format we want
+
     select: (data) =>
       data.bundles.map((bundle) => ({
         bundleName: bundle.bundleName,
@@ -213,13 +212,11 @@ export const ConfigureCachedBundleModal = ({
     enabled: isOpen && !!defaultBranch,
   })
 
-  // if the bundle data is loaded and the bundle state is empty, set the bundle state
   if (bundleData && bundleData.length > 0 && bundleState.length === 0) {
     setBundleState(bundleData)
   }
 
   const closeModal = () => {
-    // this resets the state when the modal is closed
     setBundleState([])
     setIsOpen(false)
   }
@@ -257,7 +254,6 @@ export const ConfigureCachedBundleModal = ({
               onClick={() => {
                 updateBundleCache(bundleState, {
                   onError: (error) => {
-                    // 1. render the error toast
                     renderToast({
                       type: 'error',
                       title: 'Error updating bundle caching',
@@ -266,7 +262,6 @@ export const ConfigureCachedBundleModal = ({
                     })
                   },
                   onSuccess: (bundles) => {
-                    // 1. render the success toast
                     renderToast({
                       type: 'success',
                       title: 'Bundle caching updated',
@@ -274,7 +269,6 @@ export const ConfigureCachedBundleModal = ({
                       options: { duration: 10000, position: 'bottom-left' },
                     })
 
-                    // 2. update the query data for the cached bundles
                     queryClientV5.setQueryData(
                       CachedBundlesQueryOpts({
                         provider,
@@ -285,7 +279,6 @@ export const ConfigureCachedBundleModal = ({
                       { bundles }
                     )
 
-                    // 3. close the modal
                     closeModal()
                   },
                 })
