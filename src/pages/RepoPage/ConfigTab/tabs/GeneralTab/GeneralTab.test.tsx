@@ -1,7 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import GeneralTab from './GeneralTab'
@@ -22,29 +27,51 @@ vi.mock('./DefaultBranch', () => ({
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/codecov-client/config']}>
-      <Route path="/:provider/:owner/:repo/config">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov/codecov-client/config']}>
+        <Route path="/:provider/:owner/:repo/config">
+          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
   console.error = () => {}
 })
+
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
+
+interface SetupArgs {
+  hasDefaultBranch?: boolean
+  isTeamPlan?: boolean
+  isPrivate?: boolean
+}
 
 describe('GeneralTab', () => {
   function setup(
-    { hasDefaultBranch = false, isTeamPlan = false, isPrivate = false } = {
+    {
+      hasDefaultBranch = false,
+      isTeamPlan = false,
+      isPrivate = false,
+    }: SetupArgs = {
       hasDefaultBranch: false,
       isTeamPlan: false,
       isPrivate: false,
@@ -112,19 +139,19 @@ describe('GeneralTab', () => {
       })
     })
 
-    it('render tokens component', () => {
+    it('render tokens component', async () => {
       setup({ isTeamPlan: true })
       render(<GeneralTab />, { wrapper })
 
-      const tokensComponent = screen.getByText(/Tokens Component/)
+      const tokensComponent = await screen.findByText(/Tokens Component/)
       expect(tokensComponent).toBeInTheDocument()
     })
 
-    it('render danger zone component', () => {
+    it('render danger zone component', async () => {
       setup({ isTeamPlan: true })
       render(<GeneralTab />, { wrapper })
 
-      const tokensComponent = screen.getByText(/DangerZone Component/)
+      const tokensComponent = await screen.findByText(/DangerZone Component/)
       expect(tokensComponent).toBeInTheDocument()
     })
   })
@@ -142,10 +169,10 @@ describe('GeneralTab', () => {
         expect(tokensComponent).toBeInTheDocument()
       })
 
-      it('render danger zone component', () => {
+      it('render danger zone component', async () => {
         render(<GeneralTab />, { wrapper })
 
-        const tokensComponent = screen.getByText(/DangerZone Component/)
+        const tokensComponent = await screen.findByText(/DangerZone Component/)
         expect(tokensComponent).toBeInTheDocument()
       })
     })
@@ -155,17 +182,17 @@ describe('GeneralTab', () => {
         setup({ isTeamPlan: true, isPrivate: false })
       })
 
-      it('render tokens component', () => {
+      it('render tokens component', async () => {
         render(<GeneralTab />, { wrapper })
 
-        const tokensComponent = screen.getByText(/Tokens Component/)
+        const tokensComponent = await screen.findByText(/Tokens Component/)
         expect(tokensComponent).toBeInTheDocument()
       })
 
-      it('render danger zone component', () => {
+      it('render danger zone component', async () => {
         render(<GeneralTab />, { wrapper })
 
-        const tokensComponent = screen.getByText(/DangerZone Component/)
+        const tokensComponent = await screen.findByText(/DangerZone Component/)
         expect(tokensComponent).toBeInTheDocument()
       })
     })
