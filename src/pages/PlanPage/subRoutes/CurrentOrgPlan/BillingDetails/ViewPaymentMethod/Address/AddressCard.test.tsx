@@ -85,13 +85,18 @@ describe('AddressCard', () => {
     // BillingDetails.tsx if there is no subscriptionDetail
     it('renders the set card message', () => {
       render(
-        <AddressCard subscriptionDetail={null} provider="gh" owner="codecov" />,
+        <AddressCard
+          subscriptionDetail={null}
+          provider="gh"
+          owner="codecov"
+          setEditMode={() => {}}
+        />,
         { wrapper }
       )
 
       expect(
         screen.getByText(
-          /No address has been set. Please contact support if you think it’s an error or set it yourself./
+          /No address has been set. Please contact support if you think it's an error or set it yourself./
         )
       ).toBeInTheDocument()
     })
@@ -108,13 +113,14 @@ describe('AddressCard', () => {
           }}
           provider="gh"
           owner="codecov"
+          setEditMode={() => {}}
         />,
         { wrapper }
       )
 
       expect(
         screen.getByText(
-          /No address has been set. Please contact support if you think it’s an error or set it yourself./
+          /No address has been set. Please contact support if you think it's an error or set it yourself./
         )
       ).toBeInTheDocument()
     })
@@ -131,6 +137,7 @@ describe('AddressCard', () => {
             }}
             provider="gh"
             owner="codecov"
+            setEditMode={() => {}}
           />,
           { wrapper }
         )
@@ -157,6 +164,7 @@ describe('AddressCard', () => {
             }}
             provider="gh"
             owner="codecov"
+            setEditMode={() => {}}
           />,
           { wrapper }
         )
@@ -181,6 +189,7 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
+          setEditMode={() => {}}
         />,
         { wrapper }
       )
@@ -220,6 +229,7 @@ describe('AddressCard', () => {
           }}
           provider="gh"
           owner="codecov"
+          setEditMode={() => {}}
         />,
         { wrapper }
       )
@@ -237,6 +247,7 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
+          setEditMode={() => {}}
         />,
         { wrapper }
       )
@@ -260,6 +271,7 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
+          setEditMode={() => {}}
         />,
         { wrapper }
       )
@@ -286,6 +298,7 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
+          setEditMode={() => {}}
         />,
         { wrapper }
       )
@@ -309,6 +322,7 @@ describe('AddressCard', () => {
             subscriptionDetail={subscriptionDetail}
             provider="gh"
             owner="codecov"
+            setEditMode={() => {}}
           />,
           { wrapper }
         )
@@ -331,6 +345,7 @@ describe('AddressCard', () => {
             subscriptionDetail={subscriptionDetail}
             provider="gh"
             owner="codecov"
+            setEditMode={() => {}}
           />,
           { wrapper }
         )
@@ -358,6 +373,7 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
+          setEditMode={() => {}}
         />,
         { wrapper }
       )
@@ -380,6 +396,7 @@ describe('AddressCard', () => {
           subscriptionDetail={subscriptionDetail}
           provider="gh"
           owner="codecov"
+          setEditMode={() => {}}
         />,
         { wrapper }
       )

@@ -10,7 +10,6 @@ import PaymentMethod from './PaymentMethod/PaymentMethod'
 function ViewPaymentMethod({
   heading,
   isPrimaryPaymentMethod,
-  isEditMode,
   setEditMode,
   subscriptionDetail,
   provider,
@@ -18,13 +17,12 @@ function ViewPaymentMethod({
 }: {
   heading: string
   isPrimaryPaymentMethod?: boolean
-  isEditMode: boolean
   setEditMode: (isEditMode: boolean) => void
   subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
   provider: string
   owner: string
 }) {
-  const isCreditCard = subscriptionDetail?.defaultPaymentMethod?.card // TODO
+  const isCreditCard = subscriptionDetail?.defaultPaymentMethod?.card
 
   return (
     <div>
@@ -47,7 +45,6 @@ function ViewPaymentMethod({
               {/* Payment method summary */}
               <PaymentMethod
                 className="w-2/5 flex-1"
-                isEditMode={isEditMode}
                 setEditMode={setEditMode}
                 subscriptionDetail={subscriptionDetail}
                 provider={provider}
@@ -68,7 +65,6 @@ function ViewPaymentMethod({
               {/* Address */}
               <AddressCard
                 className="flex-1"
-                isEditMode={isEditMode}
                 setEditMode={setEditMode}
                 subscriptionDetail={subscriptionDetail}
                 provider={provider}

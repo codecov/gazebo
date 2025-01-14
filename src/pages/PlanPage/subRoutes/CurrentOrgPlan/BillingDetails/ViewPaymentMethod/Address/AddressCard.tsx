@@ -7,8 +7,9 @@ import {
 import { cn } from 'shared/utils/cn'
 import Button from 'ui/Button'
 
+import { SECONDARY_PAYMENT_FEATURE_ENABLED } from '../../BillingDetails'
+
 interface AddressCardProps {
-  isEditMode: boolean
   setEditMode: (isEditMode: boolean) => void
   subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
   provider: string
@@ -24,7 +25,10 @@ function AddressCard({
   const billingDetails =
     subscriptionDetail?.defaultPaymentMethod?.billingDetails
 
-  const isAddressSameAsPrimary = false // TODO
+  // TODO: Implement this when we have secondary payment method feature
+  const isAddressSameAsPrimary = SECONDARY_PAYMENT_FEATURE_ENABLED
+    ? true
+    : undefined
 
   return (
     <div className={cn('flex gap-2', className)}>
@@ -40,7 +44,7 @@ function AddressCard({
 interface BillingInnerProps {
   billingDetails?: z.infer<typeof BillingDetailsSchema>
   setEditMode: (val: boolean) => void
-  isAddressSameAsPrimary: boolean
+  isAddressSameAsPrimary?: boolean
 }
 
 function BillingInner({

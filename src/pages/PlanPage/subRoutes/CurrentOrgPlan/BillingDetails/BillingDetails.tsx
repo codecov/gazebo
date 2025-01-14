@@ -9,6 +9,9 @@ import EditPaymentMethods from './EditPaymentMethods'
 import EmailAddress from './EmailAddress'
 import { ViewPaymentMethod } from './ViewPaymentMethod'
 
+// Remove this when we build Secondary Payment Method feature
+export const SECONDARY_PAYMENT_FEATURE_ENABLED = false
+
 interface URLParams {
   provider: string
   owner: string
@@ -22,7 +25,8 @@ function BillingDetails() {
   })
   const subscriptionDetail = accountDetails?.subscriptionDetail
   const [isEditMode, setEditMode] = useState(false)
-  const secondaryPaymentFeatureEnabled = false
+
+  const secondaryPaymentFeatureEnabled = SECONDARY_PAYMENT_FEATURE_ENABLED
 
   if (!subscriptionDetail) {
     return null
@@ -75,7 +79,6 @@ function BillingDetails() {
           <ViewPaymentMethod
             heading="Primary Payment Method"
             isPrimaryPaymentMethod={true}
-            isEditMode={isEditMode}
             setEditMode={setEditMode}
             subscriptionDetail={subscriptionDetail}
             provider={provider}
@@ -85,7 +88,6 @@ function BillingDetails() {
             <ViewPaymentMethod
               heading="Secondary Payment Method"
               isPrimaryPaymentMethod={false}
-              isEditMode={isEditMode}
               setEditMode={setEditMode}
               subscriptionDetail={subscriptionDetail}
               provider={provider}

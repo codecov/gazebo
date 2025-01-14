@@ -8,7 +8,7 @@ import Button from 'ui/Button'
 
 interface AddressFormProps {
   address?: z.infer<typeof AddressSchema>
-  name?: string
+  name?: string | null | undefined
   closeForm: () => void
   provider: string
   owner: string

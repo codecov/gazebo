@@ -95,6 +95,7 @@ describe('useUpdateBillingEmail', () => {
       await waitFor(() =>
         expect(mockBody).toHaveBeenCalledWith({
           new_email: 'test@gmail.com',
+          should_propagate_to_payment_methods: true,
         })
       )
     })

@@ -6,6 +6,8 @@ import { SubscriptionDetailSchema } from 'services/account/useAccountDetails'
 import AddressForm from './Address/AddressForm'
 import PaymentMethodForm from './PaymentMethod/PaymentMethodForm'
 
+import { SECONDARY_PAYMENT_FEATURE_ENABLED } from '../BillingDetails'
+
 interface EditPaymentMethodProps {
   setEditMode: (isEditMode: boolean) => void
   provider: string
@@ -20,7 +22,8 @@ const EditPaymentMethod = ({
   existingSubscriptionDetail,
 }: EditPaymentMethodProps) => {
   const [activeTab, setActiveTab] = useState<'primary' | 'secondary'>('primary')
-  const isSecondaryPaymentMethodFeatureEnabled = false
+
+  const secondaryPaymentMethodFeatureEnabled = SECONDARY_PAYMENT_FEATURE_ENABLED
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -30,7 +33,7 @@ const EditPaymentMethod = ({
         <div className="ml-2 flex border-b border-ds-gray-tertiary">
           {[
             'primary',
-            ...(isSecondaryPaymentMethodFeatureEnabled ? ['secondary'] : []),
+            ...(secondaryPaymentMethodFeatureEnabled ? ['secondary'] : []),
           ].map((tab) => (
             <button
               key={tab}
@@ -71,22 +74,21 @@ const EditPaymentMethod = ({
               />
             </div>
           )}
-          {activeTab === 'secondary' &&
-            isSecondaryPaymentMethodFeatureEnabled && (
-              <div>
-                <PaymentMethodForm
-                  closeForm={() => setEditMode(false)}
-                  provider={provider}
-                  owner={owner}
-                  existingSubscriptionDetail={existingSubscriptionDetail}
-                />
-                <AddressForm
-                  closeForm={() => setEditMode(false)}
-                  provider={provider}
-                  owner={owner}
-                />
-              </div>
-            )}
+          {activeTab === 'secondary' && (
+            <div>
+              <PaymentMethodForm
+                closeForm={() => setEditMode(false)}
+                provider={provider}
+                owner={owner}
+                existingSubscriptionDetail={existingSubscriptionDetail}
+              />
+              <AddressForm
+                closeForm={() => setEditMode(false)}
+                provider={provider}
+                owner={owner}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

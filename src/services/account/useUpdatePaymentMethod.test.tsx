@@ -65,7 +65,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('useUpdateCard', () => {
+describe('useUpdatePaymentMethod', () => {
   const card = {
     last4: '1234',
   }
