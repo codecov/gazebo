@@ -153,7 +153,7 @@ const BundleCachingModalBody: React.FC<BundleCachingModalBodyProps> = ({
         </Alert.Description>
         <br />
         <Alert.Description>
-          Note, if caching is removed trend data will not be available.
+          Note, if caching is removed, trend data will not be available.
         </Alert.Description>
       </Alert>
       {isBundlesPending ? (
