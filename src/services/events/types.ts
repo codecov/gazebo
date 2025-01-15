@@ -18,19 +18,23 @@ import { Provider } from 'shared/api/helpers'
 //    accidental correlation of unrelated events.
 //  - Never include names, only use ids. E.g., use repoid instead of repo name.
 //
+//
+// If this union type grows too unwieldy, we can split each event out into its
+// own type.
+//
 
 export type Event =
   | {
       type: 'Button Clicked'
       properties: {
-        buttonType: 'Install GitHub App' | 'Configure Repo'
+        buttonType: ButtonType
         buttonLocation?: string
       }
     }
   | {
       type: 'Page Viewed'
       properties: {
-        pageName: 'Owner Page'
+        pageName: PageName
       }
     }
 
@@ -74,3 +78,11 @@ export abstract class EventTracker {
     )
   }
 }
+
+//
+// String union types to make the above Event type easier to visually parse.
+// Extend as needed.
+//
+
+type ButtonType = 'Install GitHub App' | 'Configure Repo'
+type PageName = 'Owner Page'

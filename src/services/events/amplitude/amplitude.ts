@@ -1,10 +1,12 @@
 import * as amplitude from '@amplitude/analytics-browser'
 
+import config from 'config'
+
 import { providerToInternalProvider } from 'shared/utils/provider'
 
 import { Event, EventContext, EventTracker, Identity } from '../types'
 
-const AMPLITUDE_API_KEY = process.env.REACT_APP_AMPLITUDE_API_KEY
+const AMPLITUDE_API_KEY = config.AMPLITUDE_API_KEY
 
 export function initAmplitude() {
   if (!AMPLITUDE_API_KEY) {
@@ -24,7 +26,7 @@ export class AmplitudeEventTracker implements EventTracker {
   identity?: Identity
 
   identify(identity: Identity) {
-    if (JSON.stringify(this.identity) === JSON.stringify(identity)) {
+    if (this.identity?.userOwnerId === identity.userOwnerId) {
       // Don't identify this user again this session.
       return
     }
