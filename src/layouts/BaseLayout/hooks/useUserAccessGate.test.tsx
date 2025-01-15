@@ -600,8 +600,6 @@ describe('useUserAccessGate', () => {
               wrapper: wrapper(),
             })
 
-            await waitFor(() => result.current.isLoading)
-
             expect(result.current).toStrictEqual(expected.beforeSettled)
 
             await waitFor(() => result.current.isLoading)
