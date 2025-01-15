@@ -14,14 +14,6 @@ import { MemoryRouter, Route } from 'react-router'
 import ConfigurationManager from './ConfigurationManager'
 import { RepositoryConfiguration } from './hooks/useRepoConfigurationStatus/RepoConfigurationStatusQueryOpts'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn().mockReturnValue({ displayBundleCachingModal: true }),
-}))
-
-vi.mock('shared/featureFlags', () => ({
-  useFlags: mocks.useFlags,
-}))
-
 interface mockRepoConfigArgs {
   isTeamPlan?: boolean
   flags?: boolean
