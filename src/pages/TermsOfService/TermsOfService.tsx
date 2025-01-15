@@ -54,7 +54,7 @@ function NameInput({ register, marketingNameMessage }: NameInputProps) {
       </label>
       <div className="flex max-w-xs flex-col gap-2">
         <TextInput
-          {...register('marketingName')}
+          {...register('marketingName', { required: true })}
           type="text"
           id="marketingName"
           placeholder="John Doe"
@@ -81,7 +81,7 @@ function EmailInput({ register, marketingEmailMessage }: EmailInputProps) {
       </label>
       <div className="flex max-w-xs flex-col gap-2">
         <TextInput
-          {...register('marketingEmail')}
+          {...register('marketingEmail', { required: true })}
           type="text"
           id="marketingEmail"
           placeholder="name@example.com"
@@ -204,7 +204,7 @@ export default function TermsOfService() {
             </div>
             <div className="flex gap-2">
               <input
-                {...register('tos')}
+                {...register('tos', { required: true })}
                 type="checkbox"
                 id="tos"
                 aria-label="I accept the terms of service and privacy policy"
