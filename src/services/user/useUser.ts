@@ -29,7 +29,6 @@ const MeSchema = z.object({
   owner: z.object({
     defaultOrgUsername: z.string().nullable(),
     ownerid: z.number().nullable(),
-    username: z.string().nullable(),
   }),
   email: z.string().nullable(),
   privateAccess: z.boolean().nullable(),
@@ -84,7 +83,6 @@ fragment CurrentUserFragment on Me {
   owner {
     defaultOrgUsername
     ownerid
-    username
   }
   email
   privateAccess
@@ -162,10 +160,7 @@ export function useUser({ options }: UseUserArgs = {}) {
           } satisfies NetworkErrorObject)
         }
 
-        if (
-          parsedRes.data.me?.owner.ownerid &&
-          parsedRes.data.me?.owner.username
-        ) {
+        if (parsedRes.data.me?.owner.ownerid) {
           eventTracker().identify({
             userOwnerId: parsedRes.data.me.owner.ownerid,
             provider,

@@ -22,17 +22,7 @@ export function providerToName(provider: Provider) {
   )[provider]
 }
 
-export type InternalProvider =
-  | 'github'
-  | 'bitbucket'
-  | 'gitlab'
-  | 'github_enterprise'
-  | 'gitlab_enterprise'
-  | 'bitbucket_server'
-
-export function providerToInternalProvider(
-  provider: Provider
-): InternalProvider {
+export function providerToInternalProvider(provider: Provider) {
   return (
     {
       gh: 'github',
