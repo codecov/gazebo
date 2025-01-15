@@ -62,7 +62,6 @@ function OnboardingOrg() {
       </div>
       <AppInstallModal
         isOpen={showModal}
-        isShareRequestVersion={false}
         onClose={() => setShowModal(false)}
         onComplete={() => setShowModal(false)}
       />
