@@ -177,7 +177,7 @@ describe('ConfigureCachedBundleModal', () => {
       expect(alertDescription).toBeInTheDocument()
 
       const alertDescription2 = await screen.findByText(
-        'Note, if caching is removed trend data will not be available.'
+        'Note, if caching is removed, trend data will not be available.'
       )
       expect(alertDescription2).toBeInTheDocument()
 
