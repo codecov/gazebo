@@ -47,8 +47,6 @@ export const OwnerContextQueryOpts = ({
       }).then((res) => {
         const parsedRes = OwnerContextSchema.safeParse(res.data)
 
-        console.log('aewsr')
-
         if (!parsedRes.success) {
           return rejectNetworkError({
             status: 404,

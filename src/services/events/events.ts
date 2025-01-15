@@ -70,7 +70,6 @@ export function useEventContext() {
           }
         : undefined,
     }
-    console.log(newContext)
     EVENT_TRACKER.setContext(newContext)
     context.current = newContext
   }
