@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { NetworkErrorObject, Provider } from 'shared/api/helpers'
 
 export const CreateStripeSetupIntentSchema = z.object({
   createStripeSetupIntent: z.object({
@@ -15,13 +15,16 @@ export const CreateStripeSetupIntentSchema = z.object({
         z.object({
           __typename: z.literal('UnauthenticatedError'),
         }),
+        z.object({
+          __typename: z.literal('UnauthorizedError'),
+        }),
       ])
       .nullish(),
   }),
 })
 
 export interface UseCreateStripeSetupIntentArgs {
-  provider: string
+  provider: Provider
   owner: string
   opts?: {
     enabled?: boolean
@@ -33,7 +36,7 @@ function createStripeSetupIntent({
   owner,
   signal,
 }: {
-  provider: string
+  provider: Provider
   owner: string
   signal?: AbortSignal
 }) {

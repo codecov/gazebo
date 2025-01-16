@@ -8,6 +8,7 @@ import {
   useAccountDetails,
   useAvailablePlans,
 } from 'services/account'
+import { Provider } from 'shared/api/helpers'
 import {
   BillingRate,
   findTeamPlans,
@@ -34,7 +35,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
   seats,
   setFormValue,
 }) => {
-  const { provider, owner } = useParams<{ provider: string; owner: string }>()
+  const { provider, owner } = useParams<{ provider: Provider; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
   const perMonthPrice = calculatePriceTeamPlan({

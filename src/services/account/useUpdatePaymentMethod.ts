@@ -4,11 +4,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import config from 'config'
 
 import Api from 'shared/api'
+import { Provider } from 'shared/api/helpers'
 
 import { useCreateStripeSetupIntent } from './useCreateStripeSetupIntent'
 
 interface useUpdatePaymentMethodProps {
-  provider: string
+  provider: Provider
   owner: string
   email?: string
 }
@@ -24,7 +25,7 @@ function getPathAccountDetails({
   provider,
   owner,
 }: {
-  provider: string
+  provider: Provider
   owner: string
 }) {
   return `/${provider}/${owner}/account-details/`

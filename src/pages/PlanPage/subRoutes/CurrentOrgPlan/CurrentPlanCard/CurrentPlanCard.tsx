@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, usePlanData } from 'services/account'
+import { Provider } from 'shared/api/helpers'
 import { CollectionMethods } from 'shared/utils/billing'
 
 import EnterprisePlanCard from './EnterprisePlanCard'
@@ -8,7 +9,7 @@ import FreePlanCard from './FreePlanCard'
 import PaidPlanCard from './PaidPlanCard'
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { usePlanUpdatedNotification } from 'pages/PlanPage/context'
 import { useAccountDetails, usePlanData } from 'services/account'
+import { Provider } from 'shared/api/helpers'
 import { getScheduleStart } from 'shared/plan/ScheduledPlanDetails/ScheduledPlanDetails'
 import A from 'ui/A'
 import { Alert } from 'ui/Alert'
@@ -16,7 +17,7 @@ import LatestInvoiceCard from './LatestInvoiceCard'
 import { EnterpriseAccountDetailsQueryOpts } from './queries/EnterpriseAccountDetailsQueryOpts'
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 

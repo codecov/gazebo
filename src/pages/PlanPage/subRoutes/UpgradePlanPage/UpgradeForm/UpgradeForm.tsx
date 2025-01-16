@@ -9,6 +9,7 @@ import {
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
+import { Provider } from 'shared/api/helpers'
 import { canApplySentryUpgrade, getNextBillingDate } from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
@@ -24,7 +25,7 @@ import UpdateBlurb from './UpdateBlurb/UpdateBlurb'
 import UpdateButton from './UpdateButton'
 
 type URLParams = {
-  provider: string
+  provider: Provider
   owner: string
 }
 
