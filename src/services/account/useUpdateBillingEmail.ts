@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
+import { Provider } from 'shared/api/helpers'
 
 interface UsePlanDataArgs {
-  provider: string
+  provider: Provider
   owner: string
 }
 
@@ -20,6 +21,7 @@ export function useUpdateBillingEmail({ provider, owner }: UsePlanDataArgs) {
       const body = {
         /* eslint-disable camelcase */
         new_email: formData?.newEmail,
+        apply_to_default_payment_method: true,
       }
       return Api.patch({ path, provider, body })
     },
