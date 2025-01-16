@@ -1,4 +1,4 @@
-import { useElements, useStripe } from '@stripe/react-stripe-js'
+import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import config from 'config'
@@ -18,9 +18,13 @@ interface useUpdatePaymentMethodReturn {
   reset: () => void
   error: null | Error
   isLoading: boolean
-  mutate: (variables: any, data: any) => void
+  mutate: (
+    variables: typeof PaymentElement,
+    data?: { onSuccess?: () => void }
+  ) => void
   data: undefined | unknown
 }
+
 function getPathAccountDetails({
   provider,
   owner,
