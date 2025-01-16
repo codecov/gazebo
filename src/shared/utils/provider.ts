@@ -59,7 +59,6 @@ export function getProviderCommitURL({
     'GitHub Enterprise': `${config.GHE_URL}/${owner}/${repo}/commit/${commit}`,
     'GitLab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/commit/${commit}`,
     'Bitbucket Server': `${config.BBS_URL}/${owner}/${repo}/commits/${commit}`,
-    // @ts-expect-error - provider could be undefined but it should be fine
   }[providerToName(provider)]
 }
 
@@ -81,6 +80,5 @@ export function getProviderPullURL({
     'GitHub Enterprise': `${config.GHE_URL}/${owner}/${repo}/pull/${pullId}`,
     'GitLab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/merge_requests/${pullId}`,
     'Bitbucket Server': `${config.BBS_URL}/${owner}/${repo}/pull-requests/${pullId}`,
-    // @ts-expect-error - provider could be undefined but it should be fine
   }[providerToName(provider)]
 }
