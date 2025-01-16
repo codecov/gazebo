@@ -8,6 +8,7 @@ import config, { DEFAULT_GH_APP } from 'config'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { eventTracker } from 'services/events/events'
+import { useOwner } from 'services/user'
 import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
@@ -40,13 +41,10 @@ function LoadMoreTrigger({
 }
 
 interface ContextItemProps {
-  context: {
-    owner: { username: string | null } | null
-    pageName: string
-  }
+  context: Context
   defaultOrgUsername: string | null
   setToggle: (arg: boolean) => void
-  owner?: string
+  owner?: string | null
 }
 
 function ContextItem({
@@ -144,10 +142,7 @@ export interface Props {
   currentUser: {
     defaultOrgUsername: string | null
   }
-  activeContext: {
-    avatarUrl: string
-    username: string
-  }
+  activeContext: ReturnType<typeof useOwner>['data']
   onLoadMore?: () => void
   isLoading: boolean
 }
