@@ -8,12 +8,15 @@ import config from 'config'
 
 import { SentryRoute } from 'sentry'
 
+import { Theme, useThemeContext } from 'shared/ThemeContext'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { PlanProvider } from './context'
 import PlanBreadcrumb from './PlanBreadcrumb'
 import { PlanPageDataQueryOpts } from './queries/PlanPageDataQueryOpts'
 import Tabs from './Tabs'
+
+import { StripeAppearance } from '../../stripe'
 
 const CancelPlanPage = lazy(() => import('./subRoutes/CancelPlanPage'))
 const CurrentOrgPlan = lazy(() => import('./subRoutes/CurrentOrgPlan'))
@@ -37,6 +40,8 @@ function PlanPage() {
   const { data: ownerData } = useSuspenseQueryV5(
     PlanPageDataQueryOpts({ owner, provider })
   )
+  const { theme } = useThemeContext()
+  const isDarkMode = theme !== Theme.LIGHT
 
   if (config.IS_SELF_HOSTED || !ownerData?.isCurrentUserPartOfOrg) {
     return <Redirect to={`/${provider}/${owner}`} />
@@ -45,7 +50,14 @@ function PlanPage() {
   return (
     <div className="flex flex-col gap-4">
       <Tabs />
-      <Elements stripe={stripePromise}>
+      <Elements
+        stripe={stripePromise}
+        options={{
+          ...StripeAppearance(isDarkMode),
+          mode: 'setup',
+          currency: 'usd',
+        }}
+      >
         <PlanProvider>
           <PlanBreadcrumb />
           <Suspense fallback={<Loader />}>

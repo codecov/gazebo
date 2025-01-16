@@ -75,6 +75,12 @@ export const PaymentMethodSchema = z
         last4: z.string(),
       })
       .nullish(),
+    usBankAccount: z
+      .object({
+        bankName: z.string(),
+        last4: z.string(),
+      })
+      .nullish(),
     billingDetails: BillingDetailsSchema.nullable(),
   })
   .nullable()

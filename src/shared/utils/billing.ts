@@ -143,7 +143,7 @@ export function formatTimestampToCalendarDate(
   return new Intl.DateTimeFormat('en-US', options).format(date)
 }
 
-export function lastTwoDigits(value: number | string) {
+export function lastTwoDigits(value: number | string | undefined) {
   if (typeof value === 'number' || typeof value === 'string') {
     return value.toString().slice(-2)
   }

@@ -8,11 +8,15 @@ import { Plans } from 'shared/utils/billing'
 
 import BillingDetails from './BillingDetails'
 
-vi.mock('./PaymentCard/PaymentCard', () => ({ default: () => 'Payment Card' }))
+vi.mock('./ViewPaymentMethod/PaymentMethod/PaymentMethod', () => ({
+  default: () => 'Payment Method',
+}))
 vi.mock('./EmailAddress/EmailAddress', () => ({
   default: () => 'Email Address',
 }))
-vi.mock('./Address/AddressCard', () => ({ default: () => 'Address Card' }))
+vi.mock('./ViewPaymentMethod/Address/Address', () => ({
+  default: () => 'Address Card',
+}))
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -84,12 +88,12 @@ describe('BillingDetails', () => {
   }
 
   describe('when there is a subscription', () => {
-    it('renders the payment card', async () => {
+    it('renders the payment method card', async () => {
       setup({ hasSubscription: true })
       render(<BillingDetails />, { wrapper })
 
-      const paymentCard = await screen.findByText(/Payment Card/)
-      expect(paymentCard).toBeInTheDocument()
+      const paymentCards = await screen.findAllByText(/Payment Method/)
+      expect(paymentCards.length).toBeGreaterThan(0)
     })
 
     it('renders the email address component', async () => {
@@ -132,7 +136,7 @@ describe('BillingDetails', () => {
     it('renders the payment card', async () => {
       render(<BillingDetails />, { wrapper })
 
-      const paymentCard = screen.queryByText(/Payment Card/)
+      const paymentCard = screen.queryByText(/Payment Method/)
       expect(paymentCard).not.toBeInTheDocument()
     })
   })
