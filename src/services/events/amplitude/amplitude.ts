@@ -6,15 +6,14 @@ import { providerToInternalProvider } from 'shared/utils/provider'
 
 import { Event, EventContext, EventTracker, Identity } from '../types'
 
-const AMPLITUDE_API_KEY = config.AMPLITUDE_API_KEY
-
 export function initAmplitude() {
-  if (!AMPLITUDE_API_KEY) {
+  const apiKey = config.AMPLITUDE_API_KEY
+  if (!apiKey) {
     throw new Error(
       'AMPLITUDE_API_KEY is not defined. Amplitude events will not be tracked.'
     )
   }
-  amplitude.init(AMPLITUDE_API_KEY, {
+  amplitude.init(apiKey, {
     // Disable all autocapture - may change this in the future
     autocapture: false,
     minIdLength: 1, // Necessary to accommodate our owner ids

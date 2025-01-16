@@ -71,7 +71,7 @@ export abstract class EventTracker {
     )
   }
 
-  // Sets the current EventContext
+  // Sets the current EventContext - see useEventContext hook in hooks.tsx
   setContext(_context: EventContext): void {
     throw new Error(
       'EventTracker is abstract. Method setContext must be implemented.'

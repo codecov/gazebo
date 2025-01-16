@@ -1,4 +1,9 @@
-import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
+import {
+  queryOptions as queryOptionsV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
+import { useRef } from 'react'
+import { useParams } from 'react-router'
 import { z } from 'zod'
 
 import {
@@ -8,6 +13,48 @@ import {
 import Api from 'shared/api'
 import { Provider, rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
+
+import { eventTracker } from './events'
+import { EventContext } from './types'
+
+// Hook to keep the global EventTracker's context up-to-date.
+export function useEventContext() {
+  const { provider, owner, repo } = useParams<{
+    provider: Provider
+    owner?: string
+    repo?: string
+  }>()
+  const context = useRef<EventContext>({})
+
+  const { data: ownerData } = useQueryV5(
+    OwnerContextQueryOpts({ provider, owner })
+  )
+  const { data: repoData } = useQueryV5(
+    RepoContextQueryOpts({ provider, owner, repo })
+  )
+
+  if (
+    ownerData?.ownerid !== context.current.owner?.id ||
+    repoData?.repoid !== context.current.repo?.id
+  ) {
+    // only update if this is a new owner or repo
+    const newContext: EventContext = {
+      owner: ownerData?.ownerid
+        ? {
+            id: ownerData?.ownerid,
+          }
+        : undefined,
+      repo: repoData?.repoid
+        ? {
+            id: repoData.repoid,
+            isPrivate: repoData.private === null ? undefined : repoData.private,
+          }
+        : undefined,
+    }
+    eventTracker().setContext(newContext)
+    context.current = newContext
+  }
+}
 
 const OwnerContextSchema = z.object({
   owner: z
@@ -160,7 +207,7 @@ export const RepoContextQueryOpts = ({
                 </p>
               ),
             },
-            dev: 'RepoContextQueryOpts - 404 OwnerNotActivatedError',
+            dev: 'RepoContextQueryOpts - 403 OwnerNotActivatedError',
           })
         }
 
