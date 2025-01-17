@@ -23,7 +23,7 @@ export interface UseIsTeamPlanArgs {
 }
 
 const query = `
-  query OwnerPlan($owner: String!) {
+  query IsTeamPlan($owner: String!) {
     owner(username:$owner){
       plan {
         isTeamPlan
@@ -34,7 +34,7 @@ const query = `
 
 export const useIsTeamPlan = ({ provider, owner }: UseIsTeamPlanArgs) =>
   useQuery({
-    queryKey: ['OwnerPlan', provider, owner, query],
+    queryKey: ['IsTeamPlan', provider, owner, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -56,12 +56,3 @@ export const useIsTeamPlan = ({ provider, owner }: UseIsTeamPlanArgs) =>
         return parsedRes.data?.owner?.plan?.isTeamPlan ?? null
       }),
   })
-
-export const TierNames = {
-  BASIC: 'basic',
-  TEAM: 'team',
-  PRO: 'pro',
-  ENTERPRISE: 'enterprise',
-} as const
-
-export type TierNamesType = (typeof TierNames)[keyof typeof TierNames]

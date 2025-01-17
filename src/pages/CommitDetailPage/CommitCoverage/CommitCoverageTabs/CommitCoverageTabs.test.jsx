@@ -116,7 +116,7 @@ describe('CommitCoverageTabs', () => {
       graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillResponse })
       }),
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: { owner: { plan: { isTeamPlan } } },
         })

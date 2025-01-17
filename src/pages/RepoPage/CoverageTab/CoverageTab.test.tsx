@@ -92,7 +92,7 @@ interface SetupArgs {
 describe('CoverageTab', () => {
   function setup({ isTeamPlan = false }: SetupArgs) {
     server.use(
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({ data: { owner: { plan: { isTeamPlan } } } })
       }),
       graphql.query('GetRepoSettingsTeam', () => {

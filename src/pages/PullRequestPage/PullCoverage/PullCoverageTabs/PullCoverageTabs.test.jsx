@@ -205,7 +205,7 @@ describe('PullCoverageTabs', () => {
       graphql.query('GetCommits', () => {
         return HttpResponse.json({ data: mockCommits })
       }),
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: {
             owner: { plan: { isTeamPlan } },

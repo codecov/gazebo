@@ -55,7 +55,7 @@ interface SetupArgs {
 describe('Header', () => {
   function setup({ isTeamPlan = false, isPrivate = false }: SetupArgs) {
     server.use(
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: {
             owner: {

@@ -132,7 +132,7 @@ describe('ChartSelectors', () => {
     const searchTerm = vi.fn()
 
     server.use(
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: { owner: { plan: { isTeamPlan } } },
         })

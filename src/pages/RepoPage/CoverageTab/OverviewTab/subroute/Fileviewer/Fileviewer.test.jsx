@@ -213,7 +213,7 @@ describe('FileView', () => {
       graphql.query('FlagsSelect', () => {
         return HttpResponse.json({ data: mockFlagResponse })
       }),
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: { owner: { plan: { isTeamPlan } } },
         })

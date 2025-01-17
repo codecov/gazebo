@@ -213,7 +213,7 @@ describe('FlagMultiSelect', () => {
       graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: backfillData })
       }),
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: { owner: { plan: { isTeamPlan } } },
         })

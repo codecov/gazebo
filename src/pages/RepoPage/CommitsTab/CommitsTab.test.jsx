@@ -6,8 +6,6 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/useIsTeamPlan'
-
 import CommitsTab from './CommitsTab'
 
 import { RepoBreadcrumbProvider } from '../context'
@@ -509,7 +507,6 @@ describe('CommitsTab', () => {
           const { user } = setup({
             hasNextPage: false,
             returnBranch: 'main',
-            tierValue: TierNames.TEAM,
             isPrivate: true,
           })
           render(<CommitsTab />, { wrapper })
@@ -537,7 +534,6 @@ describe('CommitsTab', () => {
           const { user } = setup({
             hasNextPage: false,
             returnBranch: 'main',
-            tierValue: TierNames.TEAM,
             isPrivate: true,
           })
           render(<CommitsTab />, { wrapper })
@@ -563,7 +559,7 @@ describe('CommitsTab', () => {
 
     describe('user selects from the CI states multiselect', () => {
       it('selects the option', async () => {
-        const { user } = setup({ tierValue: TierNames.TEAM, isPrivate: true })
+        const { user } = setup({ isPrivate: true })
         render(<CommitsTab />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -586,7 +582,7 @@ describe('CommitsTab', () => {
       it('fetches request with search term', async () => {
         const { branchSearch, user } = setup({
           hasNextPage: false,
-          tierValue: TierNames.TEAM,
+
           isPrivate: true,
         })
         render(<CommitsTab />, { wrapper })
@@ -606,7 +602,7 @@ describe('CommitsTab', () => {
       it('hides All branches from list', async () => {
         const { branchSearch, user } = setup({
           hasNextPage: false,
-          tierValue: TierNames.TEAM,
+
           isPrivate: true,
         })
         render(<CommitsTab />, { wrapper })
@@ -630,7 +626,7 @@ describe('CommitsTab', () => {
       it('fetches commits request with search term', async () => {
         const { commitSearch, user } = setup({
           hasNextPage: false,
-          tierValue: TierNames.TEAM,
+
           isPrivate: true,
         })
         render(<CommitsTab />, { wrapper })

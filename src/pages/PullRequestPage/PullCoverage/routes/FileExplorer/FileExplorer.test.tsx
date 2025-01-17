@@ -299,7 +299,7 @@ describe('FileExplorer', () => {
       graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillData })
       }),
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: { owner: { plan: { isTeamPlan: false } } },
         })

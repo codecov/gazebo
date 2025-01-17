@@ -11,8 +11,6 @@ import { Suspense } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { MemoryRouter, Route } from 'react-router'
 
-import { TierNames, TierNamesType } from 'services/useIsTeamPlan'
-
 import ConfigurationManager from './ConfigurationManager'
 import { RepositoryConfiguration } from './hooks/useRepoConfigurationStatus/RepoConfigurationStatusQueryOpts'
 
@@ -25,7 +23,7 @@ vi.mock('shared/featureFlags', () => ({
 }))
 
 interface mockRepoConfigArgs {
-  tierName?: TierNamesType
+  isTeamPlan?: boolean
   flags?: boolean
   components?: boolean
   coverage?: boolean
@@ -38,7 +36,7 @@ interface mockRepoConfigArgs {
 const yamlWithProjectStatus = 'coverage:\n  status:\n    project: true\n'
 
 function mockRepoConfig({
-  tierName = TierNames.PRO,
+  isTeamPlan = false,
   flags = false,
   components = false,
   coverage = false,
@@ -49,7 +47,7 @@ function mockRepoConfig({
 }: mockRepoConfigArgs): RepositoryConfiguration {
   return {
     plan: {
-      tierName: tierName,
+      isTeamPlan,
     },
     repository: {
       __typename: 'Repository',
@@ -264,7 +262,7 @@ describe('Configuration Manager', () => {
 
     describe('when not on team plan', () => {
       it('does not render upgrade to pro messaging', async () => {
-        setup({ repoConfig: mockRepoConfig({ tierName: 'pro' }) })
+        setup({ repoConfig: mockRepoConfig({ isTeamPlan: false }) })
         render(<ConfigurationManager />, { wrapper })
 
         await waitFor(() =>
@@ -278,7 +276,7 @@ describe('Configuration Manager', () => {
 
     describe('when on team plan', () => {
       it('renders upgrade to pro message', async () => {
-        setup({ repoConfig: mockRepoConfig({ tierName: 'team' }) })
+        setup({ repoConfig: mockRepoConfig({ isTeamPlan: true }) })
         render(<ConfigurationManager />, { wrapper })
 
         const upgrade = await screen.findByText('Available with Pro Plan')
@@ -288,7 +286,7 @@ describe('Configuration Manager', () => {
       it('hides configured status for pro only items', async () => {
         setup({
           repoConfig: mockRepoConfig({
-            tierName: 'team',
+            isTeamPlan: true,
             coverage: true,
             yaml: yamlWithProjectStatus,
             flags: true,
@@ -303,7 +301,7 @@ describe('Configuration Manager', () => {
 
       it('hides unconfigured status for pro only items', async () => {
         setup({
-          repoConfig: mockRepoConfig({ tierName: 'team', coverage: true }),
+          repoConfig: mockRepoConfig({ isTeamPlan: true, coverage: true }),
         })
         render(<ConfigurationManager />, { wrapper })
 

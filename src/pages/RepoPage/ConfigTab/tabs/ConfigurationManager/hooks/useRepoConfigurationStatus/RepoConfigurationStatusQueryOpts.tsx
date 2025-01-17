@@ -5,7 +5,6 @@ import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
-import { TierNames } from 'services/useIsTeamPlan'
 import Api from 'shared/api/api'
 import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
@@ -27,7 +26,7 @@ const RepositorySchema = z.object({
 
 const PlanSchema = z
   .object({
-    tierName: z.nativeEnum(TierNames),
+    isTeamPlan: z.boolean(),
   })
   .nullable()
 
@@ -55,7 +54,7 @@ const query = `
 query GetRepoConfigurationStatus($owner: String!, $repo: String!) {
   owner(username: $owner) {
     plan {
-      tierName
+      isTeamPlan
     }
     repository(name:$repo) {
       __typename

@@ -91,7 +91,7 @@ interface SetupArgs {
 describe('FilesChangedTab', () => {
   function setup({ isTeamPlan, privateRepo }: SetupArgs) {
     server.use(
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({ data: { owner: { plan: { isTeamPlan } } } })
       }),
       graphql.query('GetPullTeam', () => {

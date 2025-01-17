@@ -149,3 +149,10 @@ export function lastTwoDigits(value: number | string) {
   }
   return null
 }
+
+export const TierNames = {
+  BASIC: 'basic',
+  TEAM: 'team',
+  PRO: 'pro',
+  ENTERPRISE: 'enterprise',
+} as const

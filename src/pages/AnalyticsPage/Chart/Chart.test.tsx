@@ -115,7 +115,7 @@ describe('Analytics coverage chart', () => {
 
         return HttpResponse.json({ data: mockDataPoints })
       }),
-      graphql.query('OwnerPlan', () =>
+      graphql.query('IsTeamPlan', () =>
         HttpResponse.json({ data: { owner: { plan: { isTeamPlan: false } } } })
       )
     )

@@ -111,7 +111,7 @@ describe('Flags Tab', () => {
     mocks.useRepoBackfilled.mockReturnValue(data)
 
     server.use(
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: { owner: { plan: { isTeamPlan } } },
         })

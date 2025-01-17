@@ -372,7 +372,7 @@ describe('Coverage overview tab', () => {
       graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillFlag })
       }),
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: { owner: { plan: { isTeamPlan } } },
         })

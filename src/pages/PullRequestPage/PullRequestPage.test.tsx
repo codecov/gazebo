@@ -236,7 +236,7 @@ describe('PullRequestPage', () => {
       graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(privateRepo) })
       }),
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: {
             owner: { plan: { isTeamPlan } },

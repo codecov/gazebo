@@ -255,7 +255,7 @@ describe('CommitDetailFileExplorerTable', () => {
       graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       }),
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: {
             owner: {

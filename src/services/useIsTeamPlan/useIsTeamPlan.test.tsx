@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 
 import { useIsTeamPlan } from './useIsTeamPlan'
 
-const mockOwnerPlan = {
+const mockIsTeamPlan = {
   owner: {
     plan: {
       isTeamPlan: true,
@@ -52,13 +52,13 @@ describe('useIsTeamPlan', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
           return HttpResponse.json({ data: mockNullOwner })
         } else {
-          return HttpResponse.json({ data: mockOwnerPlan })
+          return HttpResponse.json({ data: mockIsTeamPlan })
         }
       })
     )

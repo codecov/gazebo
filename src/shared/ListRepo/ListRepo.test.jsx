@@ -93,7 +93,7 @@ describe('ListRepo', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: { owner: { plan: { isTeamPlan } } },
         })

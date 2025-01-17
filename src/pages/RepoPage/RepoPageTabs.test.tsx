@@ -147,7 +147,7 @@ describe('RepoPageTabs', () => {
         })
       }),
 
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({ data: { owner: { plan: { isTeamPlan } } } })
       }),
       graphql.query('GetRepo', () => {
@@ -453,7 +453,7 @@ describe('useRepoTabs', () => {
           }),
         })
       }),
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({ data: { owner: { plan: { isTeamPlan } } } })
       }),
       graphql.query('GetRepo', () => {

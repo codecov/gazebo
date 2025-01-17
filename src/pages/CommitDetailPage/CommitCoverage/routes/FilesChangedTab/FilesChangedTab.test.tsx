@@ -69,7 +69,7 @@ interface SetupArgs {
 describe('FilesChangedTab', () => {
   function setup({ isTeamPlan, isPrivate = false }: SetupArgs) {
     server.use(
-      graphql.query('OwnerPlan', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: {
             owner: {

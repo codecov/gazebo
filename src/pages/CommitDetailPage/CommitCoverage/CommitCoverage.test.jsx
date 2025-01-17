@@ -198,7 +198,7 @@ const mockRepoSettingsTeamData = (isPrivate = false) => ({
   },
 })
 
-const mockOwnerPlan = (isTeamPlan = false) => ({
+const mockIsTeamPlan = (isTeamPlan = false) => ({
   owner: {
     plan: {
       isTeamPlan,
@@ -442,8 +442,8 @@ describe('CommitCoverage', () => {
           }),
         })
       }),
-      graphql.query('OwnerPlan', () => {
-        return HttpResponse.json({ data: mockOwnerPlan(isTeamPlan) })
+      graphql.query('IsTeamPlan', () => {
+        return HttpResponse.json({ data: mockIsTeamPlan(isTeamPlan) })
       }),
       graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockRepoBackfilledData })

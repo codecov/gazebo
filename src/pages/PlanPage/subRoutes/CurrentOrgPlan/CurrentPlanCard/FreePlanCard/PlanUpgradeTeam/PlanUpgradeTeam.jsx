@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans, usePlanData } from 'services/account'
-import { TierNames } from 'services/useIsTeamPlan'
 import BenefitList from 'shared/plan/BenefitList'
 import { findTeamPlans } from 'shared/utils/billing'
 import A from 'ui/A'
@@ -42,7 +41,7 @@ function PlanUpgradeTeam() {
               to={{
                 pageName: 'upgradeOrgPlan',
                 options: {
-                  params: { plan: TierNames.TEAM },
+                  params: { plan: 'team' },
                 },
               }}
               variant="primary"
