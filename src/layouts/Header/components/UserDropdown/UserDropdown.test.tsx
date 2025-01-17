@@ -8,6 +8,7 @@ import { type Mock } from 'vitest'
 
 import config from 'config'
 
+import { eventTracker } from 'services/events/events'
 import { useImage } from 'services/image'
 import { Plans } from 'shared/utils/billing'
 
@@ -60,6 +61,7 @@ const mockUser = {
 vi.mock('services/image')
 vi.mock('config')
 vi.mock('js-cookie')
+vi.mock('services/events/events')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -213,6 +215,39 @@ describe('UserDropdown', () => {
           'href',
           'https://github.com/apps/codecov/installations/new'
         )
+      })
+
+      describe('when app access link is clicked', () => {
+        it('tracks a Button Clicked event', async () => {
+          const { user } = setup()
+          render(<UserDropdown />, {
+            wrapper: wrapper(),
+          })
+
+          expect(
+            screen.queryByText('Install Codecov app')
+          ).not.toBeInTheDocument()
+
+          const openSelect = await screen.findByTestId('user-dropdown-trigger')
+          await user.click(openSelect)
+
+          const link = screen.getByText('Install Codecov app')
+          expect(link).toBeVisible()
+          expect(link).toHaveAttribute(
+            'href',
+            'https://github.com/apps/codecov/installations/new'
+          )
+
+          await user.click(link)
+
+          expect(eventTracker().track).toHaveBeenCalledWith({
+            type: 'Button Clicked',
+            properties: {
+              buttonType: 'Install GitHub App',
+              buttonLocation: 'User dropdown',
+            },
+          })
+        })
       })
     })
   })
