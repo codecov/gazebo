@@ -1,4 +1,4 @@
-import clickHereToInstall from 'assets/onboarding/click_here_to_install.png'
+import clickHereToInstall from 'assets/onboarding/org_list_install_app.png'
 import Button from 'ui/Button'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import Modal from 'ui/Modal'
@@ -29,11 +29,11 @@ function AppInstallModal({
             You need to install Codecov app on your GitHub organization as an
             admin.
           </span>
-          <div className="mb-5 bg-ds-gray-primary px-6 ">
+          <div className="mb-5 bg-ds-gray-primary px-6">
             <img
               src={clickHereToInstall}
               alt="click here to install screenshot"
-              className="mx-auto h-72 w-[508px] object-cover"
+              className="mx-auto h-72 w-[508px] object-contain"
             />
           </div>
           <span className="mb-2 text-sm">

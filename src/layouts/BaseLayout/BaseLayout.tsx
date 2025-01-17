@@ -99,12 +99,12 @@ function BaseLayout({ children }: React.PropsWithChildren) {
         <Suspense>
           <ErrorBoundary errorComponent={<EmptyErrorComponent />}>
             <SilentNetworkErrorWrapper>
-              {(isFullExperience || isImpersonating) && (
+              {isFullExperience || isImpersonating ? (
                 <>
                   <GlobalTopBanners />
                   <Header hasRepoAccess={data?.hasRepoAccess} />
                 </>
-              )}
+              ) : null}
             </SilentNetworkErrorWrapper>
           </ErrorBoundary>
         </Suspense>
@@ -128,12 +128,12 @@ function BaseLayout({ children }: React.PropsWithChildren) {
         </Suspense>
 
         {/* Footer */}
-        {isFullExperience && (
+        {isFullExperience ? (
           <>
             <Footer />
             <ToastNotifications />
           </>
-        )}
+        ) : null}
       </RepoBreadcrumbProvider>
     </>
   )

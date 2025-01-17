@@ -78,7 +78,7 @@ function OwnerPage() {
         </SilentNetworkErrorWrapper>
       </Suspense>
       <div>
-        {showOnboardingContainer && <OnboardingOrg />}
+        {showOnboardingContainer ? <OnboardingOrg /> : null}
         {ownerData?.isCurrentUserPartOfOrg && (
           <Tabs owner={ownerData} provider={provider} />
         )}
