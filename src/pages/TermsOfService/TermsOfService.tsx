@@ -13,6 +13,7 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
 
+import { ONBOARDING_SOURCE } from './constants'
 import { useSaveTermsAgreement } from './hooks/useTermsOfService'
 
 const FormSchema = z.object({
@@ -157,6 +158,10 @@ export default function TermsOfService() {
       name: data.marketingName,
       termsAgreement: true,
     })
+
+    const url = new URL(window.location.href)
+    url.searchParams.set('source', ONBOARDING_SOURCE)
+    window.location.href = url.toString()
   }
 
   useEffect(() => {
