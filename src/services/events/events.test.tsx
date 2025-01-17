@@ -1,6 +1,7 @@
 import config from 'config'
 
 import { eventTracker, initEventTracker, StubbedEventTracker } from './events'
+import { EventTracker } from './types'
 
 vi.mock('config')
 const mockCaptureException = vi.hoisted(() => vi.fn())
@@ -35,6 +36,51 @@ describe('EventTracker', () => {
           buttonLocation: 'test',
         },
       })
+    })
+  })
+
+  describe('abstract EventTracker', () => {
+    it('should throw errors if instantiated', () => {
+      // @ts-expect-error instantiating an abstract class
+      const tracker = new EventTracker()
+      try {
+        tracker.setContext({})
+      } catch (e) {
+        expect(e).toEqual(
+          new Error(
+            'EventTracker is abstract. Method setContext must be implemented.'
+          )
+        )
+      }
+
+      try {
+        tracker.identify({
+          userOwnerId: 1,
+          provider: 'gh',
+        })
+      } catch (e) {
+        expect(e).toEqual(
+          new Error(
+            'EventTracker is abstract. Method identify must be implemented.'
+          )
+        )
+      }
+
+      try {
+        tracker.track({
+          type: 'Button Clicked',
+          properties: {
+            buttonType: 'Install GitHub App',
+            buttonLocation: 'test',
+          },
+        })
+      } catch (e) {
+        expect(e).toEqual(
+          new Error(
+            'EventTracker is abstract. Method track must be implemented.'
+          )
+        )
+      }
     })
   })
 

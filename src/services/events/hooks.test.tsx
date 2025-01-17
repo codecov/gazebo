@@ -75,16 +75,25 @@ afterAll(() => {
 
 interface SetupArgs {
   badOwner?: boolean
+  nullOwnerid?: boolean
   badRepo?: boolean
   repoError?: 'NotFoundError' | 'OwnerNotActivatedError'
 }
 
 describe('useEventContext', () => {
-  function setup({ badOwner = false, badRepo = false, repoError }: SetupArgs) {
+  function setup({
+    badOwner = false,
+    nullOwnerid = false,
+    badRepo = false,
+    repoError,
+  }: SetupArgs) {
     server.use(
       graphql.query('OwnerContext', () => {
         if (badOwner) {
           return HttpResponse.json({ data: {} })
+        }
+        if (nullOwnerid) {
+          return HttpResponse.json({ data: { owner: { ownerid: null } } })
         }
         return HttpResponse.json({ data: mockOwnerContext })
       }),
@@ -144,6 +153,22 @@ describe('useEventContext', () => {
             id: mockRepoContext.owner.repository.repoid,
             isPrivate: mockRepoContext.owner.repository.private,
           },
+        })
+      })
+    })
+  })
+
+  describe('when called with null ownerid', () => {
+    it('sets event context with undefined ownerid', async () => {
+      setup({ nullOwnerid: true })
+      renderHook(() => useEventContext(), {
+        wrapper: ownerWrapper,
+      })
+
+      await waitFor(() => {
+        expect(mockedSetContext).toHaveBeenCalledWith({
+          owner: undefined,
+          repo: undefined,
         })
       })
     })

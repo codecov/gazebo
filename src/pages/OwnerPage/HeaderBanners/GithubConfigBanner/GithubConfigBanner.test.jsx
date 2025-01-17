@@ -1,7 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import { eventTracker } from 'services/events/events'
+
 import GithubConfigBanner from './GithubConfigBanner'
+
+vi.mock('services/events/events')
 
 const wrapper =
   ({ provider = 'gh' }) =>
@@ -33,6 +37,27 @@ describe('GithubConfigBanner', () => {
         /Enable status posts, comments, improved rate limit handling, and private repo management./
       )
       expect(body).toBeInTheDocument()
+    })
+
+    describe('and button is clicked', () => {
+      it('tracks a Button Clicked event', async () => {
+        render(<GithubConfigBanner />, {
+          wrapper: wrapper({ provider: 'gh' }),
+        })
+
+        const title = screen.getByText(/Codecov's GitHub app/)
+        expect(title).toBeInTheDocument()
+
+        act(() => title.click())
+
+        expect(eventTracker().track).toHaveBeenCalledWith({
+          type: 'Button Clicked',
+          properties: {
+            buttonType: 'Install GitHub App',
+            buttonLocation: 'Configure GitHub app banner',
+          },
+        })
+      })
     })
   })
 
