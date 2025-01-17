@@ -40,7 +40,7 @@ function AddressCard({
       {!isFormOpen && (
         <>
           <div className="flex justify-between">
-            <h4 className="font-semibold">Cardholder name</h4>
+            <h4 className="font-semibold">Full name</h4>
             <A
               variant="semibold"
               onClick={() => setIsFormOpen(true)}

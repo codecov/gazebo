@@ -6,11 +6,13 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
+import BankInformation from './BankInformation'
 import CardInformation from './CardInformation'
-import CreditCardForm from './CreditCardForm'
+import PaymentMethodForm from './PaymentMethodForm'
 function PaymentCard({ subscriptionDetail, provider, owner }) {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const card = subscriptionDetail?.defaultPaymentMethod?.card
+  const usBankAccount = subscriptionDetail?.defaultPaymentMethod?.usBankAccount
 
   return (
     <div className="flex flex-col gap-2 border-t p-4">
@@ -20,25 +22,28 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
           <A
             variant="semibold"
             onClick={() => setIsFormOpen(true)}
-            hook="edit-card"
+            hook="edit-payment-method"
           >
             Edit <Icon name="chevronRight" size="sm" variant="solid" />
           </A>
         )}
       </div>
       {isFormOpen ? (
-        <CreditCardForm
+        <PaymentMethodForm
           provider={provider}
           owner={owner}
           closeForm={() => setIsFormOpen(false)}
+          subscriptionDetail={subscriptionDetail}
         />
       ) : card ? (
         <CardInformation card={card} subscriptionDetail={subscriptionDetail} />
+      ) : usBankAccount ? (
+        <BankInformation subscriptionDetail={subscriptionDetail} />
       ) : (
         <div className="flex flex-col gap-4 text-ds-gray-quinary">
           <p className="mt-4">
-            No credit card set. Please contact support if you think it’s an
-            error or set it yourself.
+            No payment method set. Please contact support if you think it&apos;s
+            an error or set it yourself.
           </p>
           <div className="flex self-start">
             <Button

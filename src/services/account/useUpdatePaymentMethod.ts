@@ -1,4 +1,5 @@
-import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
+import { useElements, useStripe } from '@stripe/react-stripe-js'
+import { Address, StripePaymentElement } from '@stripe/stripe-js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import config from 'config'
@@ -11,7 +12,9 @@ import { useCreateStripeSetupIntent } from './useCreateStripeSetupIntent'
 interface useUpdatePaymentMethodProps {
   provider: Provider
   owner: string
+  name?: string
   email?: string
+  address?: Address
 }
 
 interface useUpdatePaymentMethodReturn {
@@ -19,7 +22,7 @@ interface useUpdatePaymentMethodReturn {
   error: null | Error
   isLoading: boolean
   mutate: (
-    variables: typeof PaymentElement,
+    variables: StripePaymentElement | null,
     data?: { onSuccess?: () => void }
   ) => void
   data: undefined | unknown
@@ -38,7 +41,9 @@ function getPathAccountDetails({
 export function useUpdatePaymentMethod({
   provider,
   owner,
+  name,
   email,
+  address,
 }: useUpdatePaymentMethodProps): useUpdatePaymentMethodReturn {
   const stripe = useStripe()
   const elements = useElements()
@@ -62,7 +67,9 @@ export function useUpdatePaymentMethod({
             payment_method_data: {
               // eslint-disable-next-line camelcase
               billing_details: {
+                name: name,
                 email: email,
+                address: address,
               },
             },
             // eslint-disable-next-line camelcase
