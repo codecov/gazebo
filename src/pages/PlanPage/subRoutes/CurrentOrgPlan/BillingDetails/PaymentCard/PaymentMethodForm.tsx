@@ -1,7 +1,6 @@
 import { PaymentElement, useElements } from '@stripe/react-stripe-js'
 import { StripePaymentElement } from '@stripe/stripe-js'
 import cs from 'classnames'
-import { useState } from 'react'
 import { z } from 'zod'
 
 import { stripeAddress, SubscriptionDetailSchema } from 'services/account'
@@ -22,7 +21,6 @@ const PaymentMethodForm = ({
   owner,
   subscriptionDetail,
 }: PaymentMethodFormProps) => {
-  const [errorState, setErrorState] = useState('')
   const elements = useElements()
 
   const {
@@ -64,14 +62,13 @@ const PaymentMethodForm = ({
     })
   }
 
-  const showError = (error && !reset) || errorState
+  const showError = error && !reset
 
   return (
     <form onSubmit={submit} aria-label="form">
       <div className={cs('flex flex-col gap-3')}>
         <div className="mt-2 flex flex-col gap-2">
           <PaymentElement
-            onChange={(e) => setErrorState(e?.value?.type || '')}
             options={{
               layout: 'tabs',
               fields: {
@@ -83,7 +80,7 @@ const PaymentMethodForm = ({
             }}
           />
           <p className="mt-1 text-ds-primary-red">
-            {showError && (error?.message || errorState)}
+            {showError && error?.message}
           </p>
           <div className="mb-8 mt-4 flex gap-1">
             <Button

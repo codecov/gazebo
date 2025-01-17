@@ -97,7 +97,7 @@ describe('PaymentMethodForm', () => {
         />,
         { wrapper }
       )
-      await user.click(screen.getByTestId('update-payment-method'))
+      await user.click(screen.getByTestId('save-payment-method'))
 
       expect(screen.queryByText(/Visa/)).not.toBeInTheDocument()
     })
@@ -118,7 +118,7 @@ describe('PaymentMethodForm', () => {
         />,
         { wrapper }
       )
-      await user.click(screen.getByTestId('update-payment-method'))
+      await user.click(screen.getByTestId('save-payment-method'))
 
       expect(screen.getByRole('button', { name: /Save/i })).toBeInTheDocument()
     })
@@ -140,7 +140,7 @@ describe('PaymentMethodForm', () => {
           />,
           { wrapper }
         )
-        await user.click(screen.getByTestId('update-payment-method'))
+        await user.click(screen.getByTestId('save-payment-method'))
         expect(updatePaymentMethod).toHaveBeenCalled()
       })
     })
@@ -163,7 +163,7 @@ describe('PaymentMethodForm', () => {
           { wrapper }
         )
 
-        await user.click(screen.getByTestId('update-payment-method'))
+        await user.click(screen.getByTestId('save-payment-method'))
         await user.click(screen.getByRole('button', { name: /Cancel/ }))
 
         expect(closeForm).toHaveBeenCalled()
@@ -189,7 +189,7 @@ describe('PaymentMethodForm', () => {
         { wrapper }
       )
 
-      await user.click(screen.getByTestId('update-payment-method'))
+      await user.click(screen.getByTestId('save-payment-method'))
 
       expect(screen.getByText(randomError)).toBeInTheDocument()
     })

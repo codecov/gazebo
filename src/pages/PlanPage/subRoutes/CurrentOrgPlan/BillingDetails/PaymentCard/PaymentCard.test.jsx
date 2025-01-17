@@ -35,6 +35,7 @@ vi.mock('services/account/useCreateStripeSetupIntent', async () => {
 })
 
 afterEach(() => {
+  queryClient.clear()
   vi.clearAllMocks()
 })
 
@@ -45,6 +46,20 @@ const subscriptionDetail = {
       expMonth: 12,
       expYear: 2021,
       last4: '1234',
+    },
+  },
+  plan: {
+    value: Plans.USERS_PR_INAPPY,
+  },
+  currentPeriodEnd: 1606851492,
+  cancelAtPeriodEnd: false,
+}
+
+const usBankSubscriptionDetail = {
+  defaultPaymentMethod: {
+    usBankAccount: {
+      bankName: 'STRIPE TEST BANK',
+      last4: '6789',
     },
   },
   plan: {
@@ -197,6 +212,22 @@ describe('PaymentCard', () => {
       )
 
       expect(screen.getByText(/December 1, 2020/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user has a US bank account', () => {
+    it('renders the bank account details', () => {
+      render(
+        <PaymentCard
+          subscriptionDetail={usBankSubscriptionDetail}
+          provider="gh"
+          owner="codecov"
+        />,
+        { wrapper }
+      )
+
+      expect(screen.getByText(/STRIPE TEST BANK/)).toBeInTheDocument()
+      expect(screen.getByText(/•••• 6789/)).toBeInTheDocument()
     })
   })
 
