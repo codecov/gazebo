@@ -36,8 +36,9 @@ function OnboardingOrg() {
         <div className="flex items-center justify-center gap-6 py-8">
           <div className="h-[107px] w-[169px]">
             <img
-              src={orgListInstallApp}
               alt="GitHub Organization Install List Example"
+              className="h-full object-cover"
+              src={orgListInstallApp}
             />
           </div>
           <div className="w-[350px] text-sm">
