@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { NetworkErrorObject, Provider } from 'shared/api/helpers'
 
 const InvoiceSchema = z
   .object({
@@ -72,6 +72,12 @@ export const PaymentMethodSchema = z
         brand: z.string(),
         expMonth: z.number(),
         expYear: z.number(),
+        last4: z.string(),
+      })
+      .nullish(),
+    usBankAccount: z
+      .object({
+        bankName: z.string(),
         last4: z.string(),
       })
       .nullish(),
@@ -147,7 +153,7 @@ export const AccountDetailsSchema = z.object({
 })
 
 export interface UseAccountDetailsArgs {
-  provider: string
+  provider: Provider
   owner: string
   opts?: {
     enabled?: boolean
@@ -158,7 +164,7 @@ function getPathAccountDetails({
   provider,
   owner,
 }: {
-  provider: string
+  provider: Provider
   owner: string
 }) {
   return `/${provider}/${owner}/account-details/`
@@ -169,7 +175,7 @@ function fetchAccountDetails({
   owner,
   signal,
 }: {
-  provider: string
+  provider: Provider
   owner: string
   signal?: AbortSignal
 }) {

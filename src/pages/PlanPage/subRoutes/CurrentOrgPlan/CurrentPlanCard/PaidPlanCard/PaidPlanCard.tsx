@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { PlanPageDataQueryOpts } from 'pages/PlanPage/queries/PlanPageDataQueryOpts'
 import { useAccountDetails, usePlanData } from 'services/account'
+import { Provider } from 'shared/api/helpers'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 
@@ -11,7 +12,7 @@ import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
 import PlanPricing from '../shared/PlanPricing'
 
 type URLParams = {
-  provider: string
+  provider: Provider
   owner: string
 }
 

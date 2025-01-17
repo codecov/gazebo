@@ -9,6 +9,7 @@ import {
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
+import { Provider } from 'shared/api/helpers'
 import { BillingRate, shouldDisplayTeamCard } from 'shared/utils/billing'
 import Spinner from 'ui/Spinner'
 
@@ -25,7 +26,7 @@ const Loader = () => (
 
 function CancelPlanPage() {
   const { provider, owner } = useParams<{
-    provider: string
+    provider: Provider
     owner: string
   }>()
   const { data: accountDetailsData } = useAccountDetails({ provider, owner })

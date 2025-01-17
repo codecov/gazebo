@@ -7,6 +7,13 @@ import { rejectNetworkError } from 'shared/api/helpers'
 const UpdateBundleCacheInputSchema = z.array(
   z.object({
     bundleName: z.string(),
+    toggleCaching: z.boolean(),
+  })
+)
+
+const UpdateBundleCacheOutputSchema = z.array(
+  z.object({
+    bundleName: z.string(),
     isCached: z.boolean(),
   })
 )
@@ -25,7 +32,7 @@ const MutationErrorSchema = z.discriminatedUnion('__typename', [
 const MutationRequestSchema = z.object({
   updateBundleCacheConfig: z
     .object({
-      results: UpdateBundleCacheInputSchema.nullable(),
+      results: UpdateBundleCacheOutputSchema.nullable(),
       error: MutationErrorSchema.nullable(),
     })
     .nullable(),
@@ -70,10 +77,20 @@ export const useUpdateBundleCache = ({
   return useMutationV5({
     throwOnError: false,
     mutationFn: (input: z.infer<typeof UpdateBundleCacheInputSchema>) => {
+      const parsedInput = UpdateBundleCacheInputSchema.safeParse(input)
+      if (!parsedInput.success) {
+        return rejectNetworkError({
+          status: 400,
+          error: parsedInput.error,
+          data: {},
+          dev: 'useUpdateBundleCache - 400 failed to parse input',
+        })
+      }
+
       return Api.graphqlMutation({
         provider,
         query,
-        variables: { owner, repo, bundles: input },
+        variables: { owner, repo, bundles: parsedInput.data },
         mutationPath: 'updateBundleCache',
       }).then((res) => {
         const parsedData = MutationRequestSchema.safeParse(res.data)

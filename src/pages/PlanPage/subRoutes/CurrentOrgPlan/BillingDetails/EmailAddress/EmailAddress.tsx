@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { useAccountDetails, useUpdateBillingEmail } from 'services/account'
+import { Provider } from 'shared/api/helpers'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
@@ -18,7 +19,7 @@ const emailSchema = z.object({
 })
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 

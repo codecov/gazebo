@@ -1,13 +1,14 @@
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
+import { Provider } from 'shared/api/helpers'
 
 import AddressCard from './Address/AddressCard'
 import EmailAddress from './EmailAddress'
 import PaymentCard from './PaymentCard'
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 

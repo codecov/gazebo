@@ -106,7 +106,7 @@ describe('useUpdateBundleCache', () => {
       )
 
       act(() =>
-        result.current.mutate([{ bundleName: 'bundle-1', isCached: true }])
+        result.current.mutate([{ bundleName: 'bundle-1', toggleCaching: true }])
       )
       await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -118,27 +118,60 @@ describe('useUpdateBundleCache', () => {
 
   describe('when the mutation fails', () => {
     describe('when the mutation fails with a parsing error', () => {
-      it('returns a parsing error', async () => {
-        setup({ isParsingError: true })
-        const { result } = renderHook(
-          () =>
-            useUpdateBundleCache({
-              provider: 'gh',
-              owner: 'owner',
-              repo: 'repo',
-            }),
-          { wrapper }
-        )
+      describe('the mutation input fails to parse', () => {
+        it('returns a parsing error', async () => {
+          setup({ isParsingError: true })
+          const { result } = renderHook(
+            () =>
+              useUpdateBundleCache({
+                provider: 'gh',
+                owner: 'owner',
+                repo: 'repo',
+              }),
+            { wrapper }
+          )
 
-        act(() =>
-          result.current.mutate([{ bundleName: 'bundle-1', isCached: true }])
-        )
-        await waitFor(() => expect(result.current.isError).toBe(true))
+          act(() =>
+            result.current.mutate([
+              // @ts-expect-error - this is a test
+              { bundleName: 'bundle-1', wrongKey: true },
+            ])
+          )
+          await waitFor(() => expect(result.current.isError).toBe(true))
 
-        expect(result.current.error).toEqual({
-          data: {},
-          dev: 'useUpdateBundleCache - 400 failed to parse data',
-          status: 400,
+          expect(result.current.error).toEqual({
+            data: {},
+            dev: 'useUpdateBundleCache - 400 failed to parse input',
+            status: 400,
+          })
+        })
+      })
+
+      describe('the mutation response fails to parse', () => {
+        it('returns a parsing error', async () => {
+          setup({ isParsingError: true })
+          const { result } = renderHook(
+            () =>
+              useUpdateBundleCache({
+                provider: 'gh',
+                owner: 'owner',
+                repo: 'repo',
+              }),
+            { wrapper }
+          )
+
+          act(() =>
+            result.current.mutate([
+              { bundleName: 'bundle-1', toggleCaching: true },
+            ])
+          )
+          await waitFor(() => expect(result.current.isError).toBe(true))
+
+          expect(result.current.error).toEqual({
+            data: {},
+            dev: 'useUpdateBundleCache - 400 failed to parse data',
+            status: 400,
+          })
         })
       })
     })
@@ -157,7 +190,9 @@ describe('useUpdateBundleCache', () => {
         )
 
         act(() =>
-          result.current.mutate([{ bundleName: 'bundle-1', isCached: true }])
+          result.current.mutate([
+            { bundleName: 'bundle-1', toggleCaching: true },
+          ])
         )
         await waitFor(() => expect(result.current.isError).toBe(true))
 
@@ -182,7 +217,9 @@ describe('useUpdateBundleCache', () => {
         )
 
         act(() =>
-          result.current.mutate([{ bundleName: 'bundle-1', isCached: true }])
+          result.current.mutate([
+            { bundleName: 'bundle-1', toggleCaching: true },
+          ])
         )
 
         await waitFor(() => expect(result.current.isError).toBe(true))

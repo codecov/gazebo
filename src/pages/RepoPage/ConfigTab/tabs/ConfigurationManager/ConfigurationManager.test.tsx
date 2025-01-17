@@ -4,14 +4,25 @@ import {
   QueryClient as QueryClientV5,
 } from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
+import { Toaster } from 'react-hot-toast'
 import { MemoryRouter, Route } from 'react-router'
 
 import { TierNames, TTierNames } from 'services/tier'
 
 import ConfigurationManager from './ConfigurationManager'
 import { RepositoryConfiguration } from './hooks/useRepoConfigurationStatus/RepoConfigurationStatusQueryOpts'
+
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn().mockReturnValue({ displayBundleCachingModal: true }),
+}))
+
+vi.mock('shared/featureFlags', () => ({
+  useFlags: mocks.useFlags,
+}))
 
 interface mockRepoConfigArgs {
   tierName?: TTierNames
@@ -55,6 +66,27 @@ function mockRepoConfig({
   }
 }
 
+const mockCachedBundles = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundles: [
+                { name: 'bundle1', isCached: true },
+                { name: 'bundle2', isCached: false },
+              ],
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -66,8 +98,11 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProviderV5 client={queryClientV5}>
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={['/gh/codecov/cool-repo/config']}>
-        <Route path="/:provider/:owner/:repo/config">{children}</Route>
+        <Route path="/:provider/:owner/:repo/config">
+          <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+        </Route>
       </MemoryRouter>
+      <Toaster />
     </QueryClientProvider>
   </QueryClientProviderV5>
 )
@@ -90,11 +125,18 @@ interface SetupArgs {
 
 describe('Configuration Manager', () => {
   function setup({ repoConfig = mockRepoConfig({}) }: SetupArgs) {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('GetRepoConfigurationStatus', () => {
         return HttpResponse.json({ data: { owner: repoConfig } })
+      }),
+      graphql.query('CachedBundleList', () => {
+        return HttpResponse.json({ data: mockCachedBundles })
       })
     )
+
+    return { user }
   }
 
   describe('CoverageConfiguration', () => {
@@ -372,6 +414,41 @@ describe('Configuration Manager', () => {
 
         const configuredStatus = await screen.findByText('Configured')
         expect(configuredStatus).toBeInTheDocument()
+      })
+    })
+
+    describe('bundle caching', () => {
+      it('renders bundle caching button', async () => {
+        setup({
+          repoConfig: mockRepoConfig({
+            bundleAnalysis: true,
+            languages: ['typescript'],
+          }),
+        })
+        render(<ConfigurationManager />, { wrapper })
+
+        const button = await screen.findByText('Configure data caching')
+        expect(button).toBeInTheDocument()
+      })
+
+      it('renders bundle caching modal', async () => {
+        const { user } = setup({
+          repoConfig: mockRepoConfig({
+            bundleAnalysis: true,
+            languages: ['typescript'],
+          }),
+        })
+        render(<ConfigurationManager />, { wrapper })
+
+        const button = await screen.findByText('Configure data caching')
+        expect(button).toBeInTheDocument()
+
+        await user.click(button)
+
+        const modalHeader = await screen.findByText(
+          'Configure bundle caching data'
+        )
+        expect(modalHeader).toBeInTheDocument()
       })
     })
   })
