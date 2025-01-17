@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
+import { TierNames } from 'services/useIsTeamPlan'
 
 import CommitsTab from './CommitsTab'
 

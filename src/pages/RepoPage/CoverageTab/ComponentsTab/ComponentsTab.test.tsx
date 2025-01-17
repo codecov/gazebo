@@ -6,8 +6,6 @@ import { setupServer } from 'msw/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames, TTierNames } from 'services/tier'
-
 import ComponentsTab from './ComponentsTab'
 
 vi.mock('./BackfillBanners/TriggerSyncBanner/TriggerSyncBanner.tsx', () => ({
@@ -161,25 +159,20 @@ describe('Components Tab', () => {
   function setup({
     data = {},
     flags = [nextPageFlagData, initialFlagData],
-    tierValue = TierNames.PRO,
+    isTeamPlan = false,
     isPrivate = false,
     isCurrentUserPartOfOrg = true,
   }: {
     data?: object
     flags?: any[]
-    tierValue?: TTierNames
+    isTeamPlan?: boolean
     isPrivate?: boolean
     isCurrentUserPartOfOrg?: boolean
   }) {
     server.use(
-      graphql.query('OwnerTier', () => {
-        if (tierValue === TierNames.TEAM) {
-          return HttpResponse.json({
-            data: { owner: { plan: { tierName: TierNames.TEAM } } },
-          })
-        }
+      graphql.query('OwnerPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: TierNames.PRO } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
       graphql.query('GetRepoSettingsTeam', () => {
@@ -216,7 +209,7 @@ describe('Components Tab', () => {
     describe('the repo is public', () => {
       it('renders the components tab', async () => {
         setup({
-          tierValue: TierNames.TEAM,
+          isTeamPlan: true,
           isPrivate: false,
           data: backfillDataCompleted,
         })
@@ -229,7 +222,7 @@ describe('Components Tab', () => {
 
     describe('the repo is private', () => {
       it('redirects to the coverage tab', async () => {
-        setup({ tierValue: TierNames.TEAM, isPrivate: true })
+        setup({ isTeamPlan: true, isPrivate: true })
         render(<ComponentsTab />, { wrapper })
 
         await waitFor(() =>

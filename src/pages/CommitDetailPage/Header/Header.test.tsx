@@ -4,8 +4,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import Header from './Header'
 
 vi.mock('./HeaderDefault', () => ({ default: () => 'Default Header' }))
@@ -49,21 +47,21 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 interface SetupArgs {
-  teamPlan: boolean
+  isTeamPlan: boolean
   isPrivate?: boolean
 }
 
 describe('Header', () => {
-  function setup({ teamPlan = false, isPrivate = false }: SetupArgs) {
+  function setup({ isTeamPlan = false, isPrivate = false }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', () => {
-        if (teamPlan) {
+      graphql.query('OwnerPlan', () => {
+        if (isTeamPlan) {
           return HttpResponse.json({
-            data: { owner: { plan: { tierName: TierNames.TEAM } } },
+            data: { owner: { plan: { isTeamPlan: true } } },
           })
         }
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: TierNames.PRO } } },
+          data: { owner: { plan: { isTeamPlan: false } } },
         })
       }),
       graphql.query('GetRepoSettingsTeam', () => {
@@ -72,9 +70,9 @@ describe('Header', () => {
     )
   }
 
-  describe('when rendered and customer is not team tier', () => {
+  describe('when rendered and customer is not team plan', () => {
     beforeEach(() => {
-      setup({ teamPlan: false })
+      setup({ isTeamPlan: false })
     })
 
     it('renders the default header component', async () => {
@@ -88,10 +86,10 @@ describe('Header', () => {
     })
   })
 
-  describe('when rendered and customer has team tier', () => {
+  describe('when rendered and customer has team plan', () => {
     describe('when the repository is private', () => {
       beforeEach(() => {
-        setup({ teamPlan: true, isPrivate: true })
+        setup({ isTeamPlan: true, isPrivate: true })
       })
 
       it('renders the team header component', async () => {
@@ -107,7 +105,7 @@ describe('Header', () => {
 
     describe('when the repository is public', () => {
       beforeEach(() => {
-        setup({ teamPlan: true, isPrivate: false })
+        setup({ isTeamPlan: true, isPrivate: false })
       })
 
       it('renders the default team component', async () => {

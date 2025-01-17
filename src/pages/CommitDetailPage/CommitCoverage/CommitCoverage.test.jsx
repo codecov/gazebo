@@ -13,7 +13,6 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier/useTier'
 import { UploadStateEnum } from 'shared/utils/commit'
 
 import CommitCoverage from './CommitCoverage'
@@ -199,10 +198,10 @@ const mockRepoSettingsTeamData = (isPrivate = false) => ({
   },
 })
 
-const mockOwnerTier = (tier = TierNames.PRO) => ({
+const mockOwnerPlan = (isTeamPlan = false) => ({
   owner: {
     plan: {
-      tierName: tier,
+      isTeamPlan,
     },
   },
 })
@@ -396,7 +395,7 @@ describe('CommitCoverage', () => {
   function setup(
     {
       isPrivate = false,
-      tierName = TierNames.PRO,
+      isTeamPlan = false,
       hasCommitErrors = false,
       hasErroredUploads = false,
       hasCommitPageMissingCommitDataError = false,
@@ -407,7 +406,7 @@ describe('CommitCoverage', () => {
       isGithubRateLimited = false,
     } = {
       isPrivate: false,
-      tierName: TierNames.PRO,
+      isTeamPlan: false,
       hasCommitErrors: false,
       hasErroredUploads: false,
       hasCommitPageMissingCommitDataError: false,
@@ -443,8 +442,8 @@ describe('CommitCoverage', () => {
           }),
         })
       }),
-      graphql.query('OwnerTier', () => {
-        return HttpResponse.json({ data: mockOwnerTier(tierName) })
+      graphql.query('OwnerPlan', () => {
+        return HttpResponse.json({ data: mockOwnerPlan(isTeamPlan) })
       }),
       graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockRepoBackfilledData })
@@ -582,7 +581,7 @@ describe('CommitCoverage', () => {
     describe('user is on a team plan', () => {
       it('does not render commit coverage summary', async () => {
         const { queryClient, queryClientV5 } = setup({
-          tierName: TierNames.TEAM,
+          isTeamPlan: true,
           isPrivate: true,
         })
         render(<CommitCoverage />, {
@@ -598,7 +597,7 @@ describe('CommitCoverage', () => {
 
       it('does not render indirect changes tab', async () => {
         const { queryClient, queryClientV5 } = setup({
-          tierName: TierNames.TEAM,
+          isTeamPlan: true,
           isPrivate: true,
         })
         render(<CommitCoverage />, {

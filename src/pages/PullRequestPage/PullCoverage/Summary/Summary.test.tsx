@@ -5,8 +5,6 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import Summary from './Summary'
 
 const queryClient = new QueryClient({
@@ -41,21 +39,21 @@ afterAll(() => {
 })
 
 interface SetupOptions {
-  tierValue?: (typeof TierNames)[keyof typeof TierNames]
+  isTeamPlan?: boolean
   privateRepo?: boolean
 }
 describe('Summary', () => {
   function setup(
-    { tierValue = TierNames.BASIC, privateRepo = false }: SetupOptions = {
-      tierValue: TierNames.BASIC,
+    { isTeamPlan = false, privateRepo = false }: SetupOptions = {
+      isTeamPlan: false,
       privateRepo: false,
     }
   ) {
     server.use(
-      graphql.query('OwnerTier', () => {
+      graphql.query('OwnerPlan', () => {
         return HttpResponse.json({
           data: {
-            owner: { plan: { tierName: tierValue.toLowerCase() } },
+            owner: { plan: { isTeamPlan } },
           },
         })
       }),
@@ -83,13 +81,13 @@ describe('Summary', () => {
     )
   }
   describe.each`
-    tierValue          | privateRepo
-    ${TierNames.BASIC} | ${true}
-    ${TierNames.BASIC} | ${false}
-    ${TierNames.TEAM}  | ${false}
-  `('renders the normal summary', ({ tierValue, privateRepo }) => {
-    it(`tierValue: ${tierValue}, privateRepo: ${privateRepo}`, async () => {
-      setup({ tierValue, privateRepo })
+    isTeamPlan | privateRepo
+    ${false}   | ${true}
+    ${false}   | ${false}
+    ${false}   | ${false}
+  `('renders the normal summary', ({ isTeamPlan, privateRepo }) => {
+    it(`isTeamPlan: ${isTeamPlan}, privateRepo: ${privateRepo}`, async () => {
+      setup({ isTeamPlan, privateRepo })
       render(<Summary />, { wrapper: wrapper() })
 
       await waitFor(() =>
@@ -109,7 +107,7 @@ describe('Summary', () => {
 
   it('renders the team summary', async () => {
     setup({
-      tierValue: TierNames.TEAM,
+      isTeamPlan: true,
       privateRepo: true,
     })
     render(<Summary />, { wrapper: wrapper() })

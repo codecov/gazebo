@@ -5,7 +5,7 @@ import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
-import { TierNames } from 'services/tier'
+import { TierNames } from 'services/useIsTeamPlan'
 import Api from 'shared/api/api'
 import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'

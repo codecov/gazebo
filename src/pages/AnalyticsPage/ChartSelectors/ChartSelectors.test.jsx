@@ -10,8 +10,6 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import ChartSelectors from './ChartSelectors'
 
 class ResizeObserverMock {
@@ -127,16 +125,16 @@ describe('ChartSelectors', () => {
     vi.clearAllMocks()
   })
 
-  function setup({ hasNextPage = false, tierValue = TierNames.PRO }) {
+  function setup({ hasNextPage = false, isTeamPlan = false }) {
     // https://github.com/testing-library/user-event/issues/1034
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     const fetchNextPage = vi.fn()
     const searchTerm = vi.fn()
 
     server.use(
-      graphql.query('OwnerTier', () => {
+      graphql.query('OwnerPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: tierValue } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
       graphql.query('ReposForOwner', ({ variables }) => {
@@ -526,7 +524,7 @@ describe('ChartSelectors', () => {
 
   describe('owner is on a team plan', () => {
     it('renders upgrade cta', async () => {
-      setup({ hasNextPage: false, tierValue: TierNames.TEAM })
+      setup({ hasNextPage: false, isTeamPlan: true })
       render(
         <ChartSelectors
           active={true}

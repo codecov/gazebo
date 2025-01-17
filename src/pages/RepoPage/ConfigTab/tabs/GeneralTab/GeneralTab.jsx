@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 
 import DangerZone from './DangerZone'
 import DefaultBranch from './DefaultBranch'
@@ -14,10 +14,10 @@ function GeneralTab() {
     owner,
     repo,
   })
-  const { data: tierData } = useTier({ provider, owner })
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
   const defaultBranch = repoData?.defaultBranch
   const isPrivate = repoData?.private
-  const showTokensTeam = isPrivate && tierData === TierNames.TEAM
+  const showTokensTeam = isPrivate && isTeamPlan
 
   return (
     <div className="flex flex-col gap-6 lg:w-3/4">

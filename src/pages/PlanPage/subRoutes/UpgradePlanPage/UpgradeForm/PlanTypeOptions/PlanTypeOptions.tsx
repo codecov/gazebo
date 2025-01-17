@@ -7,7 +7,7 @@ import {
   usePlanData,
 } from 'services/account'
 import { useLocationParams } from 'services/navigation'
-import { TierNames } from 'services/tier'
+import { TierNames } from 'services/useIsTeamPlan'
 import {
   BillingRate,
   canApplySentryUpgrade,

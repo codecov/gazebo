@@ -4,8 +4,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import FileView from './Fileviewer'
 
 window.requestAnimationFrame = (cb) => {
@@ -192,8 +190,8 @@ afterAll(() => {
 
 describe('FileView', () => {
   function setup(
-    { tierName = TierNames.PRO, isPrivate = false } = {
-      tierName: TierNames.PRO,
+    { isTeamPlan = false, isPrivate = false } = {
+      isTeamPlan: false,
       isPrivate: false,
     }
   ) {
@@ -215,9 +213,9 @@ describe('FileView', () => {
       graphql.query('FlagsSelect', () => {
         return HttpResponse.json({ data: mockFlagResponse })
       }),
-      graphql.query('OwnerTier', () => {
+      graphql.query('OwnerPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: tierName } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
       graphql.query('GetRepoSettingsTeam', () => {
@@ -310,7 +308,7 @@ describe('FileView', () => {
       describe('on a team plan', () => {
         describe('repo is public', () => {
           it('renders the flag multi select', async () => {
-            setup({ tierName: TierNames.TEAM, isPrivate: false })
+            setup({ isTeamPlan: true, isPrivate: false })
 
             render(<FileView />, { wrapper: wrapper() })
 
@@ -321,7 +319,7 @@ describe('FileView', () => {
 
         describe('repo is private', () => {
           it('does not render the flag multi select', async () => {
-            setup({ tierName: TierNames.TEAM, isPrivate: true })
+            setup({ isTeamPlan: true, isPrivate: true })
             render(<FileView />, { wrapper: wrapper() })
 
             await waitFor(() => queryClient.isFetching)

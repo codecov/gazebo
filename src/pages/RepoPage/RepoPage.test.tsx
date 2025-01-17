@@ -7,7 +7,6 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
-import { TierNames } from 'services/tier'
 
 import { RepoBreadcrumbProvider } from './context'
 import RepoPage from './RepoPage'
@@ -198,7 +197,7 @@ interface SetupArgs {
   isRepoPrivate?: boolean
   isRepoActivated?: boolean
   isRepoActive?: boolean
-  tierValue?: string
+  isTeamPlan?: boolean
   isCurrentUserActivated?: boolean
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
@@ -215,7 +214,7 @@ describe('RepoPage', () => {
       isRepoPrivate = false,
       isRepoActivated = true,
       isRepoActive = true,
-      tierValue = TierNames.PRO,
+      isTeamPlan = false,
       isCurrentUserActivated = true,
       coverageEnabled = true,
       bundleAnalysisEnabled = true,
@@ -228,7 +227,7 @@ describe('RepoPage', () => {
       isRepoPrivate: false,
       isRepoActivated: true,
       isRepoActive: true,
-      tierValue: TierNames.PRO,
+      isTeamPlan: false,
       isCurrentUserActivated: true,
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
@@ -261,14 +260,9 @@ describe('RepoPage', () => {
 
         return HttpResponse.json({ data: { owner: {} } })
       }),
-      graphql.query('OwnerTier', () => {
-        if (tierValue === TierNames.TEAM) {
-          return HttpResponse.json({
-            data: { owner: { plan: { tierName: TierNames.TEAM } } },
-          })
-        }
+      graphql.query('OwnerPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: TierNames.PRO } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
       graphql.query('GetRepoOverview', () => {

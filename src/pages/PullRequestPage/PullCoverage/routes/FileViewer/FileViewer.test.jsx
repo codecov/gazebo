@@ -174,7 +174,7 @@ describe('FileViewer', () => {
       graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('OwnerTier', () => {
+      graphql.query('OwnerPlan', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
       graphql.query('GetRepoOverview', () => {

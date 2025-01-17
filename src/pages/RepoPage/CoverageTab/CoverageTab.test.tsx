@@ -6,8 +6,6 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import { TierNames, TTierNames } from 'services/tier'
-
 import CoverageTab from './CoverageTab'
 
 const mockRepoSettingsTeam = {
@@ -88,14 +86,14 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  tierName?: TTierNames
+  isTeamPlan?: boolean
 }
 
 describe('CoverageTab', () => {
-  function setup({ tierName = TierNames.PRO }: SetupArgs) {
+  function setup({ isTeamPlan = false }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', () => {
-        return HttpResponse.json({ data: { owner: { plan: { tierName } } } })
+      graphql.query('OwnerPlan', () => {
+        return HttpResponse.json({ data: { owner: { plan: { isTeamPlan } } } })
       }),
       graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettingsTeam })
@@ -119,7 +117,7 @@ describe('CoverageTab', () => {
   })
 
   it('hides navigator when on team plan and private repo', async () => {
-    setup({ tierName: TierNames.TEAM })
+    setup({ isTeamPlan: true })
     render(<CoverageTab />, { wrapper: wrapper() })
 
     const overview = await screen.findByText('OverviewTab')

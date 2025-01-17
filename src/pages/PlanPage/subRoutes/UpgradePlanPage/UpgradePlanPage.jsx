@@ -2,7 +2,7 @@ import { useLayoutEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
 import { useAvailablePlans, usePlanData } from 'services/account'
-import { TierNames } from 'services/tier'
+import { TierNames } from 'services/useIsTeamPlan'
 import {
   canApplySentryUpgrade,
   findProPlans,

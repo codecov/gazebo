@@ -3,12 +3,12 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useTier } from './useTier'
+import { useIsTeamPlan } from './useIsTeamPlan'
 
-const mockOwnerTier = {
+const mockOwnerPlan = {
   owner: {
     plan: {
-      tierName: 'pro',
+      isTeamPlan: true,
     },
   },
 }
@@ -46,32 +46,32 @@ interface SetupArgs {
   isUnsuccessfulParseError?: boolean
 }
 
-describe('useTier', () => {
+describe('useIsTeamPlan', () => {
   function setup({
     isUnsuccessfulParseError = false,
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', () => {
+      graphql.query('OwnerPlan', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
           return HttpResponse.json({ data: mockNullOwner })
         } else {
-          return HttpResponse.json({ data: mockOwnerTier })
+          return HttpResponse.json({ data: mockOwnerPlan })
         }
       })
     )
   }
 
-  describe('when useTier is called', () => {
+  describe('when useIsTeamPlan is called', () => {
     describe('api returns valid response', () => {
-      describe('tier field is resolved', () => {
-        it('returns the owners tier', async () => {
+      describe('isTeamPlan field is resolved', () => {
+        it('returns the isTeamPlan value', async () => {
           setup({})
           const { result } = renderHook(
             () =>
-              useTier({
+              useIsTeamPlan({
                 provider: 'gh',
                 owner: 'codecov',
               }),
@@ -79,7 +79,7 @@ describe('useTier', () => {
           )
 
           await waitFor(() => result.current.isSuccess)
-          await waitFor(() => expect(result.current.data).toEqual('pro'))
+          await waitFor(() => expect(result.current.data).toEqual(true))
         })
       })
 
@@ -89,7 +89,7 @@ describe('useTier', () => {
 
           const { result } = renderHook(
             () =>
-              useTier({
+              useIsTeamPlan({
                 provider: 'gh',
                 owner: 'codecov',
               }),
@@ -114,7 +114,7 @@ describe('useTier', () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
-            useTier({
+            useIsTeamPlan({
               provider: 'gh',
               owner: 'codecov',
             }),

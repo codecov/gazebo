@@ -11,7 +11,7 @@ import { Suspense } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { MemoryRouter, Route } from 'react-router'
 
-import { TierNames, TTierNames } from 'services/tier'
+import { TierNames, TierNamesType } from 'services/useIsTeamPlan'
 
 import ConfigurationManager from './ConfigurationManager'
 import { RepositoryConfiguration } from './hooks/useRepoConfigurationStatus/RepoConfigurationStatusQueryOpts'
@@ -25,7 +25,7 @@ vi.mock('shared/featureFlags', () => ({
 }))
 
 interface mockRepoConfigArgs {
-  tierName?: TTierNames
+  tierName?: TierNamesType
   flags?: boolean
   components?: boolean
   coverage?: boolean

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router'
 
 import { ConfigureCachedBundleModal } from 'pages/RepoPage/shared/ConfigureCachedBundleModal/ConfigureCachedBundleModal'
-import { TierNames } from 'services/tier'
+import { TierNames } from 'services/useIsTeamPlan'
 import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 

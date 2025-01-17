@@ -123,7 +123,7 @@ describe('CommitDetailFileViewer', () => {
           data: { owner: { repository: mockCoverage } },
         })
       }),
-      graphql.query('OwnerTier', () => {
+      graphql.query('OwnerPlan', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
       graphql.query('BackfillFlagMemberships', () => {

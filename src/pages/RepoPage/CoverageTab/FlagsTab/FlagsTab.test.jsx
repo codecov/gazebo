@@ -5,8 +5,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import FlagsTab from './FlagsTab'
 
 const mocks = vi.hoisted(() => ({
@@ -105,7 +103,7 @@ describe('Flags Tab', () => {
   function setup({
     data = {},
     flags = flagsData,
-    tierValue = TierNames.PRO,
+    isTeamPlan = false,
     isPrivate = false,
     isCurrentUserPartOfOrg = true,
   }) {
@@ -113,14 +111,9 @@ describe('Flags Tab', () => {
     mocks.useRepoBackfilled.mockReturnValue(data)
 
     server.use(
-      graphql.query('OwnerTier', () => {
-        if (tierValue === TierNames.TEAM) {
-          return HttpResponse.json({
-            data: { owner: { plan: { tierName: TierNames.TEAM } } },
-          })
-        }
+      graphql.query('OwnerPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: TierNames.PRO } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
       graphql.query('GetRepoSettingsTeam', () => {
@@ -131,11 +124,11 @@ describe('Flags Tab', () => {
     )
   }
 
-  describe('when user has a team tier', () => {
+  describe('when user has a team plan', () => {
     describe('the repo is public', () => {
       it('renders the flags tab', async () => {
         setup({
-          tierValue: TierNames.TEAM,
+          isTeamPlan: true,
           isPrivate: false,
           data: {
             data: {
@@ -154,7 +147,7 @@ describe('Flags Tab', () => {
 
     describe('the repo is private', () => {
       it('redirects to the coverage tab', async () => {
-        setup({ tierValue: TierNames.TEAM, isPrivate: true })
+        setup({ isTeamPlan: true, isPrivate: true })
         render(<FlagsTab />, { wrapper })
 
         await waitFor(() =>

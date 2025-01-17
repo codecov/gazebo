@@ -217,7 +217,7 @@ describe('App', () => {
       graphql.query('GetPlanData', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('OwnerTier', () => {
+      graphql.query('OwnerPlan', () => {
         return HttpResponse.json({ data: {} })
       }),
       graphql.query('Seats', () => {

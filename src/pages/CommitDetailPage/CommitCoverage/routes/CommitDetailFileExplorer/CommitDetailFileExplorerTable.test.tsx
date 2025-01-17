@@ -159,14 +159,6 @@ const mockOverview = {
   },
 }
 
-const mockOwnerTier = {
-  owner: {
-    plan: {
-      tierName: 'pro',
-    },
-  },
-}
-
 const mockFlagsResponse = {
   owner: {
     repository: {
@@ -263,8 +255,16 @@ describe('CommitDetailFileExplorerTable', () => {
       graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       }),
-      graphql.query('OwnerTier', () => {
-        return HttpResponse.json({ data: mockOwnerTier })
+      graphql.query('OwnerPlan', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              plan: {
+                isTeamPlan: false,
+              },
+            },
+          },
+        })
       }),
       graphql.query('FlagsSelect', () => {
         return HttpResponse.json({ data: mockFlagsResponse })

@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
-import { TierNames } from 'services/tier'
+import { TierNames } from 'services/useIsTeamPlan'
 import BenefitList from 'shared/plan/BenefitList'
 import { findTeamPlans } from 'shared/utils/billing'
 import Button from 'ui/Button'

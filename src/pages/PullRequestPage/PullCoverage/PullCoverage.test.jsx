@@ -9,7 +9,6 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
 import { ComparisonReturnType } from 'shared/utils/comparison'
 
 import PullRequestPageContent from './PullCoverage'
@@ -218,13 +217,13 @@ describe('PullRequestPageContent', () => {
   function setup(
     {
       resultType = ComparisonReturnType.SUCCESSFUL_COMPARISON,
-      tierValue = TierNames.BASIC,
+      isTeamPlan = false,
       bundleAnalysisEnabled = false,
       coverageEnabled = false,
       isGithubRateLimited = false,
     } = {
       resultType: ComparisonReturnType.SUCCESSFUL_COMPARISON,
-      tierValue: TierNames.BASIC,
+      isTeamPlan: false,
       bundleAnalysisEnabled: false,
       coverageEnabled: false,
       isGithubRateLimited: false,
@@ -245,10 +244,10 @@ describe('PullRequestPageContent', () => {
           }),
         })
       }),
-      graphql.query('OwnerTier', () => {
+      graphql.query('OwnerPlan', () => {
         return HttpResponse.json({
           data: {
-            owner: { plan: { tierName: tierValue } },
+            owner: { plan: { isTeamPlan } },
           },
         })
       }),
@@ -410,7 +409,7 @@ describe('PullRequestPageContent', () => {
     it('returns a valid response', async () => {
       setup({
         resultType: ComparisonReturnType.SUCCESSFUL_COMPARISON,
-        tierValue: TierNames.TEAM,
+        isTeamPlan: true,
       })
       render(<PullRequestPageContent />, {
         wrapper: wrapper(),

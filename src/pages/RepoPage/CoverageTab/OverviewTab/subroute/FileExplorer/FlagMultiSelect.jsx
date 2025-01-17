@@ -10,7 +10,7 @@ import {
   useRepoFlagsSelect,
   useRepoSettingsTeam,
 } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 
@@ -26,7 +26,7 @@ function FlagMultiSelect() {
   const [selectedFlags, setSelectedFlags] = useState(params?.flags)
   const [flagSearch, setFlagSearch] = useState(null)
 
-  const { data: tierName } = useTier({ provider, owner })
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
   const { data: repoData } = useRepoSettingsTeam()
   const { data: repoBackfilledData } = useRepoBackfilled()
 
@@ -34,8 +34,7 @@ function FlagMultiSelect() {
   const flagsMeasurementsActive = !!repoBackfilledData?.flagsMeasurementsActive
   const noFlagsPresent = eq(repoBackfilledData?.flagsCount, 0)
 
-  const hideFlagMultiSelect =
-    tierName === TierNames.TEAM && repoData?.repository?.private
+  const hideFlagMultiSelect = isTeamPlan && repoData?.repository?.private
 
   const {
     data: flagsData,

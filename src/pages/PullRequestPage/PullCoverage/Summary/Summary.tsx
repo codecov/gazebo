@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useRepoSettingsTeam } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import Spinner from 'ui/Spinner'
 
 import CompareSummary from './CompareSummary'
@@ -14,13 +14,13 @@ interface Params {
 function Summary() {
   const { provider, owner } = useParams<Params>()
   const { data: settings, isLoading: settingsLoading } = useRepoSettingsTeam()
-  const { data: tierData, isLoading } = useTier({ provider, owner })
+  const { data: isTeamPlan, isLoading } = useIsTeamPlan({ provider, owner })
 
   if (isLoading || settingsLoading) {
     return <Spinner />
   }
 
-  if (tierData === TierNames.TEAM && settings?.repository?.private) {
+  if (isTeamPlan && settings?.repository?.private) {
     return null
   } else {
     return <CompareSummary />
