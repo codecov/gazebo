@@ -29,7 +29,9 @@ interface ThemeContextProviderProps {
 export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
   children,
 }) => {
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  const prefersDark =
+    typeof window !== 'undefined' &&
+    (window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ?? false)
 
   let systemTheme = Theme.LIGHT
   if (prefersDark) {

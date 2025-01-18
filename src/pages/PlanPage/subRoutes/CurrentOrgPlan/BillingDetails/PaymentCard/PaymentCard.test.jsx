@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -6,16 +7,36 @@ import { Plans } from 'shared/utils/billing'
 
 import PaymentCard from './PaymentCard'
 
+const queryClient = new QueryClient()
+
 const mocks = vi.hoisted(() => ({
-  useUpdateCard: vi.fn(),
+  useUpdatePaymentMethod: vi.fn(),
+  useCreateStripeSetupIntent: vi.fn(),
 }))
 
-vi.mock('services/account', async () => {
-  const actual = await vi.importActual('services/account')
+vi.mock('services/account/useUpdatePaymentMethod', async () => {
+  const actual = await vi.importActual(
+    'services/account/useUpdatePaymentMethod'
+  )
   return {
     ...actual,
-    useUpdateCard: mocks.useUpdateCard,
+    useUpdatePaymentMethod: mocks.useUpdatePaymentMethod,
   }
+})
+
+vi.mock('services/account/useCreateStripeSetupIntent', async () => {
+  const actual = await vi.importActual(
+    'services/account/useCreateStripeSetupIntent'
+  )
+  return {
+    ...actual,
+    useCreateStripeSetupIntent: mocks.useCreateStripeSetupIntent,
+  }
+})
+
+afterEach(() => {
+  queryClient.clear()
+  vi.clearAllMocks()
 })
 
 const subscriptionDetail = {
@@ -34,8 +55,24 @@ const subscriptionDetail = {
   cancelAtPeriodEnd: false,
 }
 
+const usBankSubscriptionDetail = {
+  defaultPaymentMethod: {
+    usBankAccount: {
+      bankName: 'STRIPE TEST BANK',
+      last4: '6789',
+    },
+  },
+  plan: {
+    value: Plans.USERS_PR_INAPPY,
+  },
+  currentPeriodEnd: 1606851492,
+  cancelAtPeriodEnd: false,
+}
+
 const wrapper = ({ children }) => (
-  <ThemeContextProvider>{children}</ThemeContextProvider>
+  <QueryClientProvider client={queryClient}>
+    <ThemeContextProvider>{children}</ThemeContextProvider>
+  </QueryClientProvider>
 )
 
 // mocking all the stripe components; and trusting the library :)
@@ -48,9 +85,11 @@ vi.mock('@stripe/react-stripe-js', () => {
   return {
     useElements: () => ({
       getElement: vi.fn(),
+      submit: vi.fn(),
     }),
     useStripe: () => ({}),
-    CardElement: makeFakeComponent('CardElement'),
+    PaymentElement: makeFakeComponent('PaymentElement'),
+    Elements: makeFakeComponent('Elements'),
   }
 })
 
@@ -64,20 +103,20 @@ describe('PaymentCard', () => {
   describe(`when the user doesn't have any subscriptionDetail`, () => {
     // NOTE: This test is misleading because we hide this component from a higher level in
     // BillingDetails.tsx if there is no subscriptionDetail
-    it('renders the set card message', () => {
+    it('renders the set payment method message', () => {
       render(
         <PaymentCard subscriptionDetail={null} provider="gh" owner="codecov" />
       )
 
       expect(
         screen.getByText(
-          /No credit card set. Please contact support if you think it’s an error or set it yourself./
+          /No payment method set. Please contact support if you think it's an error or set it yourself./
         )
       ).toBeInTheDocument()
     })
   })
 
-  describe(`when the user doesn't have any card`, () => {
+  describe(`when the user doesn't have any payment method`, () => {
     it('renders an error message', () => {
       render(
         <PaymentCard
@@ -93,7 +132,7 @@ describe('PaymentCard', () => {
 
       expect(
         screen.getByText(
-          /No credit card set. Please contact support if you think it’s an error or set it yourself./
+          /No payment method set. Please contact support if you think it's an error or set it yourself./
         )
       ).toBeInTheDocument()
     })
@@ -113,7 +152,7 @@ describe('PaymentCard', () => {
           { wrapper }
         )
 
-        mocks.useUpdateCard.mockReturnValue({
+        mocks.useUpdatePaymentMethod.mockReturnValue({
           mutate: () => null,
           isLoading: false,
         })
@@ -136,15 +175,13 @@ describe('PaymentCard', () => {
           { wrapper }
         )
 
-        mocks.useUpdateCard.mockReturnValue({
+        mocks.useUpdatePaymentMethod.mockReturnValue({
           mutate: () => null,
           isLoading: false,
         })
         await user.click(screen.getByTestId('open-modal'))
 
-        expect(
-          screen.getByRole('button', { name: /update/i })
-        ).toBeInTheDocument()
+        expect(screen.getByTestId('save-payment-method')).toBeInTheDocument()
       })
     })
   })
@@ -178,6 +215,22 @@ describe('PaymentCard', () => {
     })
   })
 
+  describe('when the user has a US bank account', () => {
+    it('renders the bank account details', () => {
+      render(
+        <PaymentCard
+          subscriptionDetail={usBankSubscriptionDetail}
+          provider="gh"
+          owner="codecov"
+        />,
+        { wrapper }
+      )
+
+      expect(screen.getByText(/STRIPE TEST BANK/)).toBeInTheDocument()
+      expect(screen.getByText(/•••• 6789/)).toBeInTheDocument()
+    })
+  })
+
   describe('when the subscription is set to expire', () => {
     it(`doesn't render the next billing`, () => {
       render(
@@ -199,9 +252,9 @@ describe('PaymentCard', () => {
   describe('when the user clicks on Edit card', () => {
     it(`doesn't render the card anymore`, async () => {
       const { user } = setup()
-      const updateCard = vi.fn()
-      mocks.useUpdateCard.mockReturnValue({
-        mutate: updateCard,
+      const updatePaymentMethod = vi.fn()
+      mocks.useUpdatePaymentMethod.mockReturnValue({
+        mutate: updatePaymentMethod,
         isLoading: false,
       })
 
@@ -213,16 +266,16 @@ describe('PaymentCard', () => {
         />,
         { wrapper }
       )
-      await user.click(screen.getByTestId('edit-card'))
+      await user.click(screen.getByTestId('edit-payment-method'))
 
       expect(screen.queryByText(/Visa/)).not.toBeInTheDocument()
     })
 
     it('renders the form', async () => {
       const { user } = setup()
-      const updateCard = vi.fn()
-      mocks.useUpdateCard.mockReturnValue({
-        mutate: updateCard,
+      const updatePaymentMethod = vi.fn()
+      mocks.useUpdatePaymentMethod.mockReturnValue({
+        mutate: updatePaymentMethod,
         isLoading: false,
       })
       render(
@@ -233,21 +286,23 @@ describe('PaymentCard', () => {
         />,
         { wrapper }
       )
-      await user.click(screen.getByTestId('edit-card'))
+      await user.click(screen.getByTestId('edit-payment-method'))
 
-      expect(
-        screen.getByRole('button', { name: /update/i })
-      ).toBeInTheDocument()
+      expect(screen.getByTestId('save-payment-method')).toBeInTheDocument()
     })
 
     describe('when submitting', () => {
       it('calls the service to update the card', async () => {
         const { user } = setup()
-        const updateCard = vi.fn()
-        mocks.useUpdateCard.mockReturnValue({
-          mutate: updateCard,
+        const updatePaymentMethod = vi.fn()
+        mocks.useUpdatePaymentMethod.mockReturnValue({
+          mutate: updatePaymentMethod,
           isLoading: false,
         })
+        mocks.useCreateStripeSetupIntent.mockReturnValue({
+          data: { clientSecret: 'test-secret' },
+        })
+
         render(
           <PaymentCard
             subscriptionDetail={subscriptionDetail}
@@ -256,17 +311,17 @@ describe('PaymentCard', () => {
           />,
           { wrapper }
         )
-        await user.click(screen.getByTestId('edit-card'))
-        await user.click(screen.queryByRole('button', { name: /update/i }))
+        await user.click(screen.getByTestId('edit-payment-method'))
+        await user.click(screen.getByTestId('save-payment-method'))
 
-        expect(updateCard).toHaveBeenCalled()
+        expect(updatePaymentMethod).toHaveBeenCalled()
       })
     })
 
     describe('when the user clicks on cancel', () => {
       it(`doesn't render the form anymore`, async () => {
         const { user } = setup()
-        mocks.useUpdateCard.mockReturnValue({
+        mocks.useUpdatePaymentMethod.mockReturnValue({
           mutate: vi.fn(),
           isLoading: false,
         })
@@ -279,11 +334,11 @@ describe('PaymentCard', () => {
           { wrapper }
         )
 
-        await user.click(screen.getByTestId('edit-card'))
-        await user.click(screen.getByRole('button', { name: /Cancel/ }))
+        await user.click(screen.getByTestId('edit-payment-method'))
+        await user.click(screen.getByTestId('cancel-payment'))
 
         expect(
-          screen.queryByRole('button', { name: /save/i })
+          screen.queryByTestId('update-payment-method')
         ).not.toBeInTheDocument()
       })
     })
@@ -293,7 +348,7 @@ describe('PaymentCard', () => {
     it('renders the error', async () => {
       const { user } = setup()
       const randomError = 'not rich enough'
-      mocks.useUpdateCard.mockReturnValue({
+      mocks.useUpdatePaymentMethod.mockReturnValue({
         mutate: vi.fn(),
         error: { message: randomError },
       })
@@ -306,7 +361,7 @@ describe('PaymentCard', () => {
         { wrapper }
       )
 
-      await user.click(screen.getByTestId('edit-card'))
+      await user.click(screen.getByTestId('edit-payment-method'))
 
       expect(screen.getByText(randomError)).toBeInTheDocument()
     })
@@ -315,7 +370,7 @@ describe('PaymentCard', () => {
   describe('when the form is loading', () => {
     it('has the error and save button disabled', async () => {
       const { user } = setup()
-      mocks.useUpdateCard.mockReturnValue({
+      mocks.useUpdatePaymentMethod.mockReturnValue({
         mutate: vi.fn(),
         isLoading: true,
       })
@@ -327,10 +382,10 @@ describe('PaymentCard', () => {
         />,
         { wrapper }
       )
-      await user.click(screen.getByTestId('edit-card'))
+      await user.click(screen.getByTestId('edit-payment-method'))
 
-      expect(screen.queryByRole('button', { name: /update/i })).toBeDisabled()
-      expect(screen.queryByRole('button', { name: /cancel/i })).toBeDisabled()
+      expect(screen.getByTestId('save-payment-method')).toBeDisabled()
+      expect(screen.getByTestId('cancel-payment')).toBeDisabled()
     })
   })
 })
