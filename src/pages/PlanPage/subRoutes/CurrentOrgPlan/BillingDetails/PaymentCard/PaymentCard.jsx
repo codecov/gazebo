@@ -38,7 +38,7 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
       ) : card ? (
         <CardInformation card={card} subscriptionDetail={subscriptionDetail} />
       ) : usBankAccount ? (
-        <BankInformation subscriptionDetail={subscriptionDetail} />
+        <BankInformation usBankAccount={usBankAccount} />
       ) : (
         <div className="flex flex-col gap-4 text-ds-gray-quinary">
           <p className="mt-4">

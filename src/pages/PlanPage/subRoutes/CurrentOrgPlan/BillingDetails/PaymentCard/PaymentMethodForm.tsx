@@ -3,7 +3,10 @@ import { StripePaymentElement } from '@stripe/stripe-js'
 import cs from 'classnames'
 import { z } from 'zod'
 
-import { stripeAddress, SubscriptionDetailSchema } from 'services/account'
+import {
+  BillingDetailsSchema,
+  SubscriptionDetailSchema,
+} from 'services/account'
 import { useUpdatePaymentMethod } from 'services/account/useUpdatePaymentMethod'
 import { Provider } from 'shared/api/helpers'
 import Button from 'ui/Button'
@@ -23,6 +26,9 @@ const PaymentMethodForm = ({
 }: PaymentMethodFormProps) => {
   const elements = useElements()
 
+  const billingDetails =
+    subscriptionDetail?.defaultPaymentMethod?.billingDetails
+
   const {
     mutate: updatePaymentMethod,
     isLoading,
@@ -31,15 +37,9 @@ const PaymentMethodForm = ({
   } = useUpdatePaymentMethod({
     provider,
     owner,
-    name:
-      subscriptionDetail?.defaultPaymentMethod?.billingDetails?.name ||
-      undefined,
-    email:
-      subscriptionDetail?.defaultPaymentMethod?.billingDetails?.email ||
-      undefined,
-    address:
-      stripeAddress(subscriptionDetail?.defaultPaymentMethod?.billingDetails) ||
-      undefined,
+    name: billingDetails?.name || undefined,
+    email: billingDetails?.email || undefined,
+    address: stripeAddress(billingDetails) || undefined,
   })
 
   async function submit(e: React.FormEvent) {
@@ -105,6 +105,23 @@ const PaymentMethodForm = ({
       </div>
     </form>
   )
+}
+
+export const stripeAddress = (
+  billingDetails: z.infer<typeof BillingDetailsSchema> | null | undefined
+) => {
+  const address = billingDetails?.address
+  if (!address) return undefined
+
+  return {
+    line1: address.line1 || null,
+    line2: address.line2 || null,
+    city: address.city || null,
+    state: address.state || null,
+    // eslint-disable-next-line camelcase
+    postal_code: address.postalCode || null,
+    country: address.country || null,
+  }
 }
 
 export default PaymentMethodForm

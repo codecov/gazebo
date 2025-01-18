@@ -1,21 +1,22 @@
 import { z } from 'zod'
 
 import bankLogo from 'assets/billing/bank.svg'
-import { SubscriptionDetailSchema } from 'services/account'
+import { USBankAccountSchema } from 'services/account'
 
 interface BankInformationProps {
-  subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
+  usBankAccount: z.infer<typeof USBankAccountSchema>
 }
-function BankInformation({ subscriptionDetail }: BankInformationProps) {
+
+function BankInformation({ usBankAccount }: BankInformationProps) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex gap-1">
         <img src={bankLogo} alt="bank logo" />
         <div className="ml-1 flex flex-col self-center">
           <b>
-            {subscriptionDetail?.defaultPaymentMethod?.usBankAccount?.bankName}
+            {usBankAccount?.bankName}
             &nbsp;••••&nbsp;
-            {subscriptionDetail?.defaultPaymentMethod?.usBankAccount?.last4}
+            {usBankAccount?.last4}
           </b>
         </div>
       </div>

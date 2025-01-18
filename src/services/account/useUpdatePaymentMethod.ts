@@ -66,11 +66,7 @@ export function useUpdatePaymentMethod({
             // eslint-disable-next-line camelcase
             payment_method_data: {
               // eslint-disable-next-line camelcase
-              billing_details: {
-                name: name,
-                email: email,
-                address: address,
-              },
+              billing_details: { name, email, address },
             },
             // eslint-disable-next-line camelcase
             return_url: `${config.BASE_URL}/plan/${provider}/${owner}`,

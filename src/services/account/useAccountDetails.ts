@@ -65,6 +65,11 @@ export const BillingDetailsSchema = z
   })
   .nullable()
 
+export const USBankAccountSchema = z.object({
+  bankName: z.string(),
+  last4: z.string(),
+})
+
 export const PaymentMethodSchema = z
   .object({
     card: z
@@ -75,12 +80,7 @@ export const PaymentMethodSchema = z
         last4: z.string(),
       })
       .nullish(),
-    usBankAccount: z
-      .object({
-        bankName: z.string(),
-        last4: z.string(),
-      })
-      .nullish(),
+    usBankAccount: USBankAccountSchema.nullish(),
     billingDetails: BillingDetailsSchema.nullable(),
   })
   .nullable()
@@ -212,21 +212,4 @@ export function useAccountDetails({
       }),
     ...opts,
   })
-}
-
-export const stripeAddress = (
-  billingDetails: z.infer<typeof BillingDetailsSchema> | null | undefined
-) => {
-  const address = billingDetails?.address
-  if (!address) return undefined
-
-  return {
-    line1: address.line1 || null,
-    line2: address.line2 || null,
-    city: address.city || null,
-    state: address.state || null,
-    // eslint-disable-next-line camelcase
-    postal_code: address.postalCode || null,
-    country: address.country || null,
-  }
 }
