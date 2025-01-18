@@ -1,6 +1,8 @@
 import React, { ReactElement } from 'react'
 import ReactModal from 'react-modal'
 
+import { cn } from 'shared/utils/cn'
+
 import BaseModal from './BaseModal'
 
 const modalSizes = Object.freeze({
@@ -16,6 +18,7 @@ export interface ModalProps {
   hasCloseButton?: boolean
   onClose: () => void
   size?: 'medium' | 'small'
+  sizeClassname?: string
   subtitle?: ReactElement | string
   title: ReactElement | string
 }
@@ -28,6 +31,7 @@ const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   size = 'medium',
+  sizeClassname,
   subtitle,
   title,
   ...rest
@@ -42,7 +46,7 @@ const Modal: React.FC<ModalProps> = ({
       overlayClassName="fixed inset-0 bg-gray-900 bg-opacity-75 z-30"
       {...rest}
     >
-      <div className={modalSizes[size]}>
+      <div className={cn(modalSizes[size], sizeClassname)}>
         <BaseModal
           body={body}
           customHeaderClassname={customHeaderClassname}
