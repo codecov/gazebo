@@ -1,9 +1,13 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useRepoForTokensTeam } from './useRepoForTokensTeam'
+import { RepoForTokensTeamQueryOpts } from './RepoForTokensTeamQueryOpts'
 
 const mockRepoData = {
   owner: {
@@ -39,13 +43,15 @@ const mockNullOwner = {
 
 const mockUnsuccessfulParseError = {}
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -53,7 +59,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -68,7 +74,7 @@ interface SetupArgs {
   isNullOwner?: boolean
 }
 
-describe('useRepoForTokensTeam', () => {
+describe('RepoForTokensTeamQueryOpts', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
@@ -100,16 +106,17 @@ describe('useRepoForTokensTeam', () => {
 
           const { result } = renderHook(
             () =>
-              useRepoForTokensTeam({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-              }),
+              useQueryV5(
+                RepoForTokensTeamQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'cool-repo',
+                })
+              ),
             { wrapper }
           )
 
-          await waitFor(() => result.current.isLoading)
-          await waitFor(() => !result.current.isLoading)
+          await waitFor(() => result.current.isSuccess)
 
           const expectedResult = {
             __typename: 'Repository',
@@ -128,16 +135,17 @@ describe('useRepoForTokensTeam', () => {
 
           const { result } = renderHook(
             () =>
-              useRepoForTokensTeam({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-              }),
+              useQueryV5(
+                RepoForTokensTeamQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'cool-repo',
+                })
+              ),
             { wrapper }
           )
 
-          await waitFor(() => result.current.isLoading)
-          await waitFor(() => !result.current.isLoading)
+          await waitFor(() => result.current.isSuccess)
 
           await waitFor(() => expect(result.current.data).toStrictEqual(null))
         })
@@ -160,11 +168,13 @@ describe('useRepoForTokensTeam', () => {
 
         const { result } = renderHook(
           () =>
-            useRepoForTokensTeam({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-            }),
+            useQueryV5(
+              RepoForTokensTeamQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+              })
+            ),
           { wrapper }
         )
 
@@ -195,11 +205,13 @@ describe('useRepoForTokensTeam', () => {
 
         const { result } = renderHook(
           () =>
-            useRepoForTokensTeam({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-            }),
+            useQueryV5(
+              RepoForTokensTeamQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+              })
+            ),
           { wrapper }
         )
 
@@ -230,11 +242,13 @@ describe('useRepoForTokensTeam', () => {
 
         const { result } = renderHook(
           () =>
-            useRepoForTokensTeam({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-            }),
+            useQueryV5(
+              RepoForTokensTeamQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+              })
+            ),
           { wrapper }
         )
 

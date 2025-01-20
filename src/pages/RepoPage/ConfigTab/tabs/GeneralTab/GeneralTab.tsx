@@ -1,20 +1,30 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
 
 import DangerZone from './DangerZone'
 import DefaultBranch from './DefaultBranch'
-import { useRepoForTokensTeam } from './hooks'
+import { RepoForTokensTeamQueryOpts } from './queries/RepoForTokensTeamQueryOpts'
 import { Tokens, TokensTeam } from './Tokens'
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
 function GeneralTab() {
-  const { provider, owner, repo } = useParams()
-  const { data: repoData } = useRepoForTokensTeam({
-    provider,
-    owner,
-    repo,
-  })
+  const { provider, owner, repo } = useParams<URLParams>()
   const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
+  const { data: repoData } = useSuspenseQueryV5(
+    RepoForTokensTeamQueryOpts({
+      provider,
+      owner,
+      repo,
+    })
+  )
+
   const defaultBranch = repoData?.defaultBranch
   const isPrivate = repoData?.private
   const showTokensTeam = isPrivate && isTeamPlan
