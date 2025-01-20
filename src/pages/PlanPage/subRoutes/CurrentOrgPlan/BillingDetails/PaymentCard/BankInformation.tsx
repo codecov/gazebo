@@ -5,12 +5,16 @@ import { USBankAccountSchema } from 'services/account'
 
 interface BankInformationProps {
   usBankAccount: z.infer<typeof USBankAccountSchema>
+  nextBillingDisplayDate: string | null
 }
 
-function BankInformation({ usBankAccount }: BankInformationProps) {
+function BankInformation({
+  usBankAccount,
+  nextBillingDisplayDate,
+}: BankInformationProps) {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-1">
+    <div className="flex flex-col gap-3">
+      <div className="flex gap-2">
         <img src={bankLogo} alt="bank logo" />
         <div className="ml-1 flex flex-col self-center">
           <b>
@@ -20,6 +24,15 @@ function BankInformation({ usBankAccount }: BankInformationProps) {
           </b>
         </div>
       </div>
+      {nextBillingDisplayDate && (
+        <p className="text-sm text-ds-gray-quinary">
+          Your next billing date is{' '}
+          <span className="text-ds-gray-octonary">
+            {nextBillingDisplayDate}
+          </span>
+          .
+        </p>
+      )}
     </div>
   )
 }
