@@ -1,17 +1,18 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { lazy, Suspense } from 'react'
 import { Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
-import { useRepo } from 'services/repo'
+import { useRepo, useRepoOverview } from 'services/repo'
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { cn } from 'shared/utils/cn'
 import Spinner from 'ui/Spinner'
 import { ToggleElement } from 'ui/ToggleElement'
 
 import FirstPullRequestBanner from './FirstPullRequestBanner'
-import { useCoverageTabData } from './hooks/useCoverageTabData'
+import { CoverageTabDataQueryOpts } from './queries/CoverageTabDataQueryOpts'
 import Summary from './Summary'
 import SummaryTeamPlan from './SummaryTeamPlan'
 
@@ -45,12 +46,25 @@ function CoverageOverviewTab() {
 
   const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
-  const { data } = useCoverageTabData({
+  const { data: repoOverview } = useRepoOverview({
     provider,
-    owner,
     repo,
-    branch: branch,
+    owner,
+    opts: {
+      enabled: !branch,
+    },
   })
+
+  const branchName = branch ?? repoOverview?.defaultBranch
+
+  const { data } = useSuspenseQueryV5(
+    CoverageTabDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch: branchName,
+    })
+  )
 
   const fileCount = data?.branch?.head?.coverageAnalytics?.totals?.fileCount
   const withinFileCount =
