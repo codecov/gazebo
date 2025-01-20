@@ -4,8 +4,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import FilesChangedTab from './FilesChangedTab'
 
 const mocks = vi.hoisted(() => {
@@ -20,22 +18,6 @@ vi.mock('./FilesChangedTable', () => ({
 vi.mock('./FilesChangedTableTeam', () => ({
   default: () => 'FilesChangedTableTeam',
 }))
-
-const mockTeamTier = {
-  owner: {
-    plan: {
-      tierName: TierNames.TEAM,
-    },
-  },
-}
-
-const mockProTier = {
-  owner: {
-    plan: {
-      tierName: TierNames.PRO,
-    },
-  },
-}
 
 const mockRepoSettings = (isPrivate: boolean) => ({
   owner: {
@@ -80,19 +62,23 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  planValue: 'team' | 'pro'
+  isTeamPlan: boolean
   isPrivate?: boolean
 }
 
 describe('FilesChangedTab', () => {
-  function setup({ planValue, isPrivate = false }: SetupArgs) {
+  function setup({ isTeamPlan, isPrivate = false }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', () => {
-        if (planValue === 'team') {
-          return HttpResponse.json({ data: mockTeamTier })
-        }
-
-        return HttpResponse.json({ data: mockProTier })
+      graphql.query('IsTeamPlan', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              plan: {
+                isTeamPlan,
+              },
+            },
+          },
+        })
       }),
       graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
@@ -104,9 +90,9 @@ describe('FilesChangedTab', () => {
     mocks.filesChangedTable.mockImplementation(() => 'FilesChangedTable')
   })
 
-  describe('user has pro tier', () => {
+  describe('user has pro plan', () => {
     it('renders files changed table', async () => {
-      setup({ planValue: TierNames.PRO })
+      setup({ isTeamPlan: false })
       render(<FilesChangedTab />, { wrapper })
 
       const table = await screen.findByText('FilesChangedTable')
@@ -114,10 +100,10 @@ describe('FilesChangedTab', () => {
     })
   })
 
-  describe('user has team tier', () => {
+  describe('user has team plan', () => {
     describe('repo is private', () => {
       it('renders team files changed table', async () => {
-        setup({ planValue: TierNames.TEAM, isPrivate: true })
+        setup({ isTeamPlan: true, isPrivate: true })
 
         render(<FilesChangedTab />, { wrapper })
 
@@ -128,7 +114,7 @@ describe('FilesChangedTab', () => {
 
     describe('repo is public', () => {
       it('renders files changed table', async () => {
-        setup({ planValue: TierNames.TEAM, isPrivate: false })
+        setup({ isTeamPlan: true, isPrivate: false })
         render(<FilesChangedTab />, { wrapper })
 
         const table = await screen.findByText('FilesChangedTable')

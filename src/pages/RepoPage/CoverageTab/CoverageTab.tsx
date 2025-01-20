@@ -4,7 +4,7 @@ import { Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useRepoSettingsTeam } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { CoverageTabNavigator } from './CoverageTabNavigator'
@@ -28,14 +28,13 @@ interface URLParams {
 
 function CoverageTab() {
   const { provider, owner } = useParams<URLParams>()
-  const { data: tierData } = useTier({
+  const { data: isTeamPlan } = useIsTeamPlan({
     owner,
     provider,
   })
   const { data: repoSettings } = useRepoSettingsTeam()
 
-  const hideNavigator =
-    tierData === TierNames.TEAM && repoSettings?.repository?.private
+  const hideNavigator = isTeamPlan && repoSettings?.repository?.private
 
   return (
     <div className="flex flex-col gap-2 divide-y">

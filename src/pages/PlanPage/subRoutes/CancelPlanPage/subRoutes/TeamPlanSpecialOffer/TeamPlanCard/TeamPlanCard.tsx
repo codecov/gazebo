@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
-import { TierNames } from 'services/tier'
 import BenefitList from 'shared/plan/BenefitList'
 import { findTeamPlans } from 'shared/utils/billing'
 import Button from 'ui/Button'
@@ -25,7 +24,7 @@ const TeamPlanCard: React.FC = () => {
           <Button
             to={{
               pageName: 'upgradeOrgPlan',
-              options: { params: { plan: TierNames.TEAM } },
+              options: { params: { plan: 'team' } },
             }}
             variant="primary"
             disabled={undefined}

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
 import { useRepoSettingsTeam } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import Spinner from 'ui/Spinner'
 
 const FilesChangedTable = lazy(() => import('./FilesChanged'))
@@ -24,13 +24,13 @@ function FilesChangedTab() {
   const { provider, owner } = useParams<URLParams>()
 
   const { data: repoSettingsTeam } = useRepoSettingsTeam()
-  const { data: tierData, isLoading } = useTier({ provider, owner })
+  const { data: isTeamPlan, isLoading } = useIsTeamPlan({ provider, owner })
 
   if (isLoading) {
     return <Loader />
   }
 
-  if (tierData === TierNames.TEAM && repoSettingsTeam?.repository?.private) {
+  if (isTeamPlan && repoSettingsTeam?.repository?.private) {
     return (
       <Suspense fallback={<Loader />}>
         <ToggleHeader />

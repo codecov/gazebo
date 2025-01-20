@@ -10,7 +10,6 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
-import { TierNames, TTierNames } from 'services/tier'
 
 import PullRequestPage from './PullRequestPage'
 
@@ -187,7 +186,7 @@ afterAll(() => {
 
 interface SetupArgs {
   pullData?: typeof mockPullPageData | null
-  tierValue?: TTierNames
+  isTeamPlan?: boolean
   privateRepo?: boolean
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
@@ -196,7 +195,7 @@ interface SetupArgs {
 describe('PullRequestPage', () => {
   function setup({
     pullData = mockPullPageData,
-    tierValue = TierNames.BASIC,
+    isTeamPlan = false,
     privateRepo = false,
     coverageEnabled = true,
     bundleAnalysisEnabled = false,
@@ -237,10 +236,10 @@ describe('PullRequestPage', () => {
       graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(privateRepo) })
       }),
-      graphql.query('OwnerTier', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: {
-            owner: { plan: { tierName: tierValue } },
+            owner: { plan: { isTeamPlan } },
           },
         })
       }),

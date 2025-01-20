@@ -4,8 +4,6 @@ import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames, TTierNames } from 'services/tier'
-
 import CoverageOverviewTab from './OverviewTab'
 
 declare global {
@@ -329,7 +327,7 @@ afterAll(() => {
 interface SetupArgs {
   isFirstPullRequest?: boolean
   isPrivate?: boolean
-  tierValue?: TTierNames
+  isTeamPlan?: boolean
   fileCount?: number
 }
 
@@ -337,7 +335,7 @@ describe('Coverage overview tab', () => {
   function setup({
     isFirstPullRequest = false,
     isPrivate = false,
-    tierValue = TierNames.PRO,
+    isTeamPlan = false,
     fileCount = 10,
   }: SetupArgs) {
     server.use(
@@ -374,9 +372,9 @@ describe('Coverage overview tab', () => {
       graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillFlag })
       }),
-      graphql.query('OwnerTier', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: tierValue } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
       graphql.query('GetRepoSettingsTeam', () => {
@@ -459,7 +457,7 @@ describe('Coverage overview tab', () => {
 
   describe('when the repo is private and org is on team plan', () => {
     it('renders team summary', async () => {
-      setup({ isPrivate: true, tierValue: TierNames.TEAM })
+      setup({ isPrivate: true, isTeamPlan: true })
 
       render(<CoverageOverviewTab />, {
         wrapper: wrapper(['/gh/test-org/repoName']),
@@ -470,7 +468,7 @@ describe('Coverage overview tab', () => {
     })
 
     it('does not render coverage chart', async () => {
-      setup({ isPrivate: true, tierValue: TierNames.TEAM })
+      setup({ isPrivate: true, isTeamPlan: true })
 
       render(<CoverageOverviewTab />, {
         wrapper: wrapper(['/gh/test-org/repoName']),

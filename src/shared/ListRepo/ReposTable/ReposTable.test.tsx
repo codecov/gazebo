@@ -16,7 +16,6 @@ import { setupServer } from 'msw/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
 import { ActiveContext } from 'shared/context'
 
 import ReposTable from './ReposTable'
@@ -193,14 +192,14 @@ interface SetupArgs {
   edges?: any[]
   isCurrentUserPartOfOrg?: boolean
   privateAccess?: boolean
-  tierValue?: string
+  isTeamPlan?: boolean
 }
 
 describe('ReposTable', () => {
   function setup({
     edges = [],
     isCurrentUserPartOfOrg = true,
-    tierValue = TierNames.PRO,
+    isTeamPlan = false,
   }: SetupArgs) {
     const reposForOwnerMock = vi.fn()
     const myReposMock = vi.fn()
@@ -271,9 +270,9 @@ describe('ReposTable', () => {
           },
         })
       }),
-      graphql.query('OwnerTier', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: tierValue } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
       graphql.query('RepoConfig', () => {
@@ -588,10 +587,10 @@ describe('ReposTable', () => {
     })
   })
 
-  describe('when user is in team tier', () => {
+  describe('when user is in team plan', () => {
     beforeEach(() => {
       setup({
-        tierValue: TierNames.TEAM,
+        isTeamPlan: true,
         edges: mockRepositories(),
       })
     })

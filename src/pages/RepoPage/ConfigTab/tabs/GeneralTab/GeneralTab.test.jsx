@@ -4,8 +4,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import GeneralTab from './GeneralTab'
 
 vi.mock('./Tokens/TokensTeam', () => ({
@@ -46,13 +44,10 @@ afterAll(() => server.close())
 
 describe('GeneralTab', () => {
   function setup(
-    {
-      hasDefaultBranch = false,
-      tierValue = TierNames.PRO,
-      isPrivate = false,
-    } = {
+    { hasDefaultBranch = false, isTeamPlan = false, isPrivate = false } = {
       hasDefaultBranch: false,
-      tierValue: TierNames.PRO,
+      isTeamPlan: false,
+      isPrivate: false,
     }
   ) {
     server.use(
@@ -82,14 +77,9 @@ describe('GeneralTab', () => {
           },
         })
       }),
-      graphql.query('OwnerTier', () => {
-        if (tierValue === TierNames.TEAM) {
-          return HttpResponse.json({
-            data: { owner: { plan: { tierName: TierNames.TEAM } } },
-          })
-        }
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: TierNames.PRO } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       })
     )
@@ -123,7 +113,7 @@ describe('GeneralTab', () => {
     })
 
     it('render tokens component', () => {
-      setup({ tierValue: TierNames.TEAM })
+      setup({ isTeamPlan: true })
       render(<GeneralTab />, { wrapper })
 
       const tokensComponent = screen.getByText(/Tokens Component/)
@@ -131,7 +121,7 @@ describe('GeneralTab', () => {
     })
 
     it('render danger zone component', () => {
-      setup({ tierValue: TierNames.TEAM })
+      setup({ isTeamPlan: true })
       render(<GeneralTab />, { wrapper })
 
       const tokensComponent = screen.getByText(/DangerZone Component/)
@@ -139,10 +129,10 @@ describe('GeneralTab', () => {
     })
   })
 
-  describe('when rendered with team tier', () => {
+  describe('when rendered with team plan', () => {
     describe('when the repository is private', () => {
       beforeEach(() => {
-        setup({ tierValue: TierNames.TEAM, isPrivate: true })
+        setup({ isTeamPlan: true, isPrivate: true })
       })
 
       it('render tokens team component', async () => {
@@ -162,7 +152,7 @@ describe('GeneralTab', () => {
 
     describe('when the repository is public', () => {
       beforeEach(() => {
-        setup({ tierValue: TierNames.TEAM, isPrivate: false })
+        setup({ isTeamPlan: true, isPrivate: false })
       })
 
       it('render tokens component', () => {

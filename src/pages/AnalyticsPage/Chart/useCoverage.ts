@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useReposCoverageMeasurements } from 'services/charts/useReposCoverageMeasurements'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { analyticsQuery } from 'shared/utils/timeseriesCharts'
 
 interface URLParams {
@@ -28,9 +28,7 @@ export const useCoverage = ({
 }: UseCoverageArgs) => {
   const { provider, owner } = useParams<URLParams>()
 
-  const { data: tierName } = useTier({ provider, owner })
-  const shouldDisplayPublicReposOnly =
-    tierName === TierNames.TEAM ? true : undefined
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
   const queryVars = analyticsQuery({ startDate, endDate, repositories })
 
@@ -41,7 +39,7 @@ export const useCoverage = ({
     repos: queryVars?.repositories,
     before: queryVars?.endDate,
     after: queryVars?.startDate,
-    isPublic: shouldDisplayPublicReposOnly,
+    isPublic: isTeamPlan ?? false,
     opts: {
       staleTime: 30000,
       keepPreviousData: false,

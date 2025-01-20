@@ -7,7 +7,6 @@ import {
   usePlanData,
 } from 'services/account'
 import { useLocationParams } from 'services/navigation'
-import { TierNames } from 'services/tier'
 import {
   BillingRate,
   canApplySentryUpgrade,
@@ -15,6 +14,7 @@ import {
   findSentryPlans,
   findTeamPlans,
   shouldDisplayTeamCard,
+  TierNames,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
