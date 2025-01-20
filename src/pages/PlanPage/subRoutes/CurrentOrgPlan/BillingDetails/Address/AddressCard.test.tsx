@@ -224,7 +224,7 @@ describe('AddressCard', () => {
         { wrapper }
       )
 
-      expect(screen.getByText('Cardholder name')).toBeInTheDocument()
+      expect(screen.getByText('Full name')).toBeInTheDocument()
       expect(screen.getByText('N/A')).toBeInTheDocument()
       expect(screen.getByText('Billing address')).toBeInTheDocument()
       expect(screen.queryByText(/null/)).not.toBeInTheDocument()
@@ -241,7 +241,7 @@ describe('AddressCard', () => {
         { wrapper }
       )
 
-      expect(screen.getByText(/Cardholder name/)).toBeInTheDocument()
+      expect(screen.getByText(/Full name/)).toBeInTheDocument()
       expect(screen.getByText(/Bob Smith/)).toBeInTheDocument()
     })
   })
