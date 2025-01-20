@@ -84,7 +84,6 @@ describe('Summary', () => {
     isTeamPlan | privateRepo
     ${false}   | ${true}
     ${false}   | ${false}
-    ${false}   | ${false}
   `('renders the normal summary', ({ isTeamPlan, privateRepo }) => {
     it(`isTeamPlan: ${isTeamPlan}, privateRepo: ${privateRepo}`, async () => {
       setup({ isTeamPlan, privateRepo })

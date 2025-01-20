@@ -24,6 +24,13 @@ export const Plans = {
 
 export type PlanName = (typeof Plans)[keyof typeof Plans]
 
+export const TierNames = {
+  BASIC: 'basic',
+  TEAM: 'team',
+  PRO: 'pro',
+  ENTERPRISE: 'enterprise',
+} as const
+
 export const BillingRate = {
   MONTHLY: 'monthly',
   ANNUALLY: 'annually',
@@ -149,10 +156,3 @@ export function lastTwoDigits(value: number | string) {
   }
   return null
 }
-
-export const TierNames = {
-  BASIC: 'basic',
-  TEAM: 'team',
-  PRO: 'pro',
-  ENTERPRISE: 'enterprise',
-} as const
