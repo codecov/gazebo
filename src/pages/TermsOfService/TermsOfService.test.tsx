@@ -248,9 +248,6 @@ describe('TermsOfService', () => {
         /I agree to the TOS and privacy policy/i
       )
 
-      const customerIntent = screen.getByRole('radio', { name: /Personal use/ })
-      await user.click(customerIntent)
-
       await user.click(selectedTos)
 
       const submit = await screen.findByRole('button', { name: /Continue/ })
@@ -263,7 +260,7 @@ describe('TermsOfService', () => {
             businessEmail: 'personal@cr.com',
             termsAgreement: true,
             marketingConsent: false,
-            customerIntent: 'PERSONAL',
+            name: 'Chetney',
           },
         })
       )
@@ -298,7 +295,7 @@ describe('TermsOfService', () => {
       'case #1',
       {
         validationDescription:
-          'user has email, signs TOS, submit is now enabled',
+          'user has email and name, signs TOS, submit is now enabled',
         internalUserData: {
           email: 'personal@cr.com',
           termsAgreement: false,
@@ -309,15 +306,15 @@ describe('TermsOfService', () => {
       },
       [expectPageIsReady],
       [expectSubmitIsDisabled],
+      [expectPrepopulatedFields, { email: 'personal@cr.com', name: 'Chetney' }],
       [expectUserSignsTOS],
-      [expectUserToChooseCustomerIntent],
       [expectSubmitIsEnabled],
     ],
     [
       'case #2',
       {
         validationDescription:
-          'user wants to receive emails, signs TOS, submit is now enabled',
+          'user has email and name, user wants to receive emails, signs TOS, submit is now enabled',
         internalUserData: {
           email: 'chetney@cr.com',
           termsAgreement: false,
@@ -327,9 +324,10 @@ describe('TermsOfService', () => {
         },
       },
       [expectPageIsReady],
-      [expectUserSelectsMarketingWithFoundEmail, { email: 'chetney@cr.com' }],
+      [expectPrepopulatedFields, { email: 'chetney@cr.com', name: 'Chetney' }],
       [expectSubmitIsDisabled],
-      [expectUserToChooseCustomerIntent],
+      [expectUserSelectsMarketing],
+      [expectSubmitIsDisabled],
       [expectUserSignsTOS],
       [expectSubmitIsEnabled],
     ],
@@ -337,7 +335,7 @@ describe('TermsOfService', () => {
       'case #3',
       {
         validationDescription:
-          'user has email, user wants to receive emails, signs TOS, submit is now enabled',
+          'has prefilled email and name, signs TOS, decides not to, is warned they must sign and cannot submit',
         internalUserData: {
           email: 'chetney@cr.com',
           termsAgreement: false,
@@ -348,28 +346,7 @@ describe('TermsOfService', () => {
       },
       [expectPageIsReady],
       [expectSubmitIsDisabled],
-      [expectUserSelectsMarketingWithFoundEmail, { email: 'chetney@cr.com' }],
-      [expectSubmitIsDisabled],
-      [expectUserSignsTOS],
-      [expectUserToChooseCustomerIntent],
-      [expectSubmitIsEnabled],
-    ],
-    [
-      'case #4',
-      {
-        validationDescription:
-          'signs TOS, decides not to, is warned they must sign and cannot submit',
-        internalUserData: {
-          email: 'chetney@cr.com',
-          termsAgreement: false,
-          name: 'Chetney',
-          externalId: '1234',
-          owners: null,
-        },
-      },
-      [expectPageIsReady],
-      [expectSubmitIsDisabled],
-      [expectUserToChooseCustomerIntent],
+      [expectPrepopulatedFields, { email: 'chetney@cr.com', name: 'Chetney' }],
       [expectUserSignsTOS],
       [expectSubmitIsEnabled],
       [expectUserSignsTOS],
@@ -377,10 +354,10 @@ describe('TermsOfService', () => {
       [expectUserIsWarnedTOS],
     ],
     [
-      'case #5',
+      'case #4',
       {
         validationDescription:
-          'user checks marketing consent and is required to provide an email, sign TOS (check email validation messages)',
+          'user checks marketing consent and is required to provide an email, provide a name, sign TOS (check email validation messages)',
         internalUserData: {
           termsAgreement: false,
           name: 'Chetney',
@@ -391,21 +368,20 @@ describe('TermsOfService', () => {
       },
       [expectPageIsReady],
       [expectSubmitIsDisabled],
-      [expectEmailRequired],
       [expectUserTextEntryEmailField, { email: 'chetney' }],
       [expectUserIsWarnedForValidEmail],
       [expectSubmitIsDisabled],
-      [expectUserTextEntryEmailField, { email: '@cr.com' }],
+      [expectUserTextEntryEmailField, { email: '@hello.com' }],
       [expectUserIsNotWarnedForValidEmail],
       [expectSubmitIsDisabled],
+      [expectUserTextEntryNameField],
       [expectUserSelectsMarketing],
       [expectSubmitIsDisabled],
-      [expectUserToChooseCustomerIntent],
       [expectUserSignsTOS],
       [expectSubmitIsEnabled],
     ],
     [
-      'case #6',
+      'case #5',
       {
         validationDescription:
           'user checks marketing consent and does not provide an email, sign TOS (check email validation messages)',
@@ -418,29 +394,28 @@ describe('TermsOfService', () => {
         },
       },
       [expectPageIsReady],
-      [expectEmailRequired],
       [expectSubmitIsDisabled],
       [expectUserSignsTOS],
       [expectSubmitIsDisabled],
-      [expectUserToChooseCustomerIntent],
     ],
     [
-      'case #7',
+      'case #6',
       {
         validationDescription: 'server unknown error notification',
         isUnknownError: true,
         internalUserData: {
           termsAgreement: false,
-          email: 'personal@cr.com',
-          name: 'Chetney',
+          email: '',
+          name: '',
           externalId: '1234',
           owners: null,
         },
       },
       [expectPageIsReady],
+      [expectUserTextEntryEmailField, { email: 'personal@cr.com' }],
+      [expectUserTextEntryNameField],
       [expectUserSignsTOS],
       [expectClickSubmit],
-      [expectUserToChooseCustomerIntent],
       [
         expectRendersServerFailureResult,
         {
@@ -456,22 +431,23 @@ describe('TermsOfService', () => {
       ],
     ],
     [
-      'case #8',
+      'case #7',
       {
         validationDescription: 'server failure error notification',
         isUnAuthError: true,
         internalUserData: {
           termsAgreement: false,
-          email: 'personal@cr.com',
-          name: 'Chetney',
+          email: '',
+          name: '',
           externalId: '1234',
           owners: null,
         },
       },
       [expectPageIsReady],
+      [expectUserTextEntryEmailField, { email: 'personal@cr.com' }],
+      [expectUserTextEntryNameField],
       [expectUserSignsTOS],
       [expectClickSubmit],
-      [expectUserToChooseCustomerIntent],
       [
         expectRendersServerFailureResult,
         {
@@ -481,27 +457,28 @@ describe('TermsOfService', () => {
       ],
     ],
     [
-      'case #9',
+      'case #8',
       {
         validationDescription:
           'server validation error notification (saveTerms)',
         isValidationError: true,
         internalUserData: {
           termsAgreement: false,
-          email: 'personal@cr.com',
-          name: 'Chetney',
+          email: '',
+          name: '',
           externalId: '1234',
           owners: null,
         },
       },
       [expectPageIsReady],
+      [expectUserTextEntryEmailField, { email: 'personal@cr.com' }],
+      [expectUserTextEntryNameField],
       [expectUserSignsTOS],
       [expectClickSubmit],
-      [expectUserToChooseCustomerIntent],
       [expectRendersServerFailureResult, 'validation error'],
     ],
     [
-      'case #10',
+      'case #9',
       {
         validationDescription:
           'redirects to main root if user has already synced a provider',
@@ -525,33 +502,6 @@ describe('TermsOfService', () => {
         },
       },
       [expectRedirectTo, '/gh/codecov/cool-repo'],
-    ],
-    [
-      'case #11',
-      {
-        validationDescription: 'provide no customer intent, does not submit',
-        internalUserData: {
-          termsAgreement: true,
-          name: 'Chetney',
-          externalId: '1234',
-          email: '',
-          owners: [
-            {
-              avatarUrl: 'http://roland.com/avatar-url',
-              integrationId: null,
-              name: null,
-              ownerid: 2,
-              stats: null,
-              service: 'github',
-              username: 'roland',
-            },
-          ],
-        },
-      },
-      [expectPageIsReady],
-      [expectSubmitIsDisabled],
-      [expectUserSignsTOS],
-      [expectSubmitIsDisabled],
     ],
   ])(
     'form validation, %s',
@@ -693,10 +643,35 @@ async function expectPageIsReady() {
   expect(welcome).toBeInTheDocument()
 }
 
-async function expectUserToChooseCustomerIntent(user: UserEvent) {
-  const customerIntent = screen.getByRole('radio', { name: /Personal use/ })
+async function expectPrepopulatedFields(
+  user: UserEvent,
+  args: { email: string; name: string }
+) {
+  await waitFor(() => {
+    const emailInput = screen.getByLabelText(
+      /Enter your email/i
+    ) as HTMLInputElement
+    expect(emailInput).toHaveValue(args.email)
+  })
+  await waitFor(() => {
+    const nameInput = screen.getByLabelText(
+      /Enter your name/i
+    ) as HTMLInputElement
+    expect(nameInput).toHaveValue(args.name)
+  })
+}
 
-  await user.click(customerIntent)
+async function expectUserTextEntryNameField(user: UserEvent) {
+  const nameInput = screen.getByLabelText(/Enter your name/i)
+  await user.type(nameInput, 'My name')
+}
+
+async function expectUserTextEntryEmailField(
+  user: UserEvent,
+  args: { email: string }
+) {
+  const emailInput = screen.getByLabelText(/Enter your email/i)
+  await user.type(emailInput, args.email)
 }
 
 async function expectUserSignsTOS(user: UserEvent) {
@@ -707,36 +682,12 @@ async function expectUserSignsTOS(user: UserEvent) {
   await user.click(selectedTos)
 }
 
-async function expectUserSelectsMarketingWithFoundEmail(
-  user: UserEvent,
-  args: { email: string }
-) {
-  const selectedMarketing = screen.getByLabelText(
-    /I would like to receive updates via email/i
-  )
-  const emailIsInTheLabelOfSelectedMarketing = screen.getByText(
-    new RegExp(args.email, 'i')
-  )
-  expect(emailIsInTheLabelOfSelectedMarketing).toBeInTheDocument()
-
-  await user.click(selectedMarketing)
-}
-
 async function expectUserSelectsMarketing(user: UserEvent) {
   const selectedMarketing = screen.getByLabelText(
     /I would like to receive updates via email/i
   )
 
   await user.click(selectedMarketing)
-}
-
-async function expectUserTextEntryEmailField(
-  user: UserEvent,
-  args: { email: string }
-) {
-  const emailInput = screen.getByLabelText(/Contact email/i)
-
-  await user.type(emailInput, args.email)
 }
 
 async function expectSubmitIsDisabled() {
@@ -768,17 +719,6 @@ async function expectClickSubmit(user: UserEvent) {
   const submit = screen.getByRole('button', { name: /Continue/ })
 
   await user.click(submit)
-}
-
-async function expectEmailRequired(user: UserEvent) {
-  const selectedMarketing = screen.getByLabelText(
-    /I would like to receive updates via email/i
-  )
-
-  await user.click(selectedMarketing)
-
-  const emailRequired = screen.getByText(/Contact email/i)
-  expect(emailRequired).toBeInTheDocument()
 }
 
 async function expectRendersServerFailureResult(
