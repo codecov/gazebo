@@ -99,6 +99,7 @@ export const OwnerContextQueryOpts = ({
             status: 404,
             data: {},
             dev: 'OwnerContextQueryOpts - 404 Failed to parse data',
+            error: parsedRes.error,
           })
         }
 
@@ -180,6 +181,7 @@ export const RepoContextQueryOpts = ({
             status: 404,
             data: {},
             dev: 'RepoContextQueryOpts - 404 Failed to parse data',
+            error: parsedRes.error,
           })
         }
 
