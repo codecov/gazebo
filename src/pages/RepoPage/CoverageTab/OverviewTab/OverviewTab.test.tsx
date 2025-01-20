@@ -1,7 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CoverageOverviewTab from './OverviewTab'
@@ -267,25 +272,30 @@ const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: (
   initialEnties?: string[]
 ) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/gh/codecov/cool-repo/tree/main']) =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/blob/:ref/:path+',
-            '/:provider/:owner/:repo',
-          ]}
-          exact={true}
-        >
-          {children}
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/blob/:ref/:path+',
+              '/:provider/:owner/:repo',
+            ]}
+            exact={true}
+          >
+            <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -317,6 +327,7 @@ beforeEach(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -411,7 +422,7 @@ describe('Coverage overview tab', () => {
       wrapper: wrapper(['/gh/test-org/repoName']),
     })
 
-    const summary = screen.getByText(/Summary/)
+    const summary = await screen.findByText(/Summary/)
     expect(summary).toBeInTheDocument()
   })
 
@@ -432,7 +443,7 @@ describe('Coverage overview tab', () => {
 
   describe('file count is above 200_000', () => {
     it('does not render the sunburst chart', async () => {
-      setup({ fileCount: 200_000 })
+      setup({ fileCount: 500_000 })
       render(<CoverageOverviewTab />, {
         wrapper: wrapper(['/gh/test-org/repoName']),
       })
@@ -441,7 +452,7 @@ describe('Coverage overview tab', () => {
       expect(hideChart).toBeInTheDocument()
 
       const sunburst = screen.queryByText('Sunburst')
-      expect(sunburst).not.toBeInTheDocument()
+      await waitFor(() => expect(sunburst).not.toBeInTheDocument())
     })
   })
 

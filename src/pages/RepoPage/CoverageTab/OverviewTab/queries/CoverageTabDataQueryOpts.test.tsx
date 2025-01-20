@@ -1,26 +1,14 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCoverageTabData } from './useCoverageTabData'
-
-const mockOverview = {
-  owner: {
-    isCurrentUserActivated: true,
-    repository: {
-      __typename: 'Repository',
-      private: false,
-      defaultBranch: 'main',
-      oldestCommitAt: '2022-10-10T11:59:59',
-      coverageEnabled: true,
-      bundleAnalysisEnabled: true,
-      languages: ['JavaScript'],
-      testAnalyticsEnabled: true,
-    },
-  },
-}
+import { CoverageTabDataQueryOpts } from './CoverageTabDataQueryOpts'
 
 const mockCoverageTabData = {
   owner: {
@@ -66,7 +54,7 @@ const mockNullOwner = {
 const mockUnsuccessfulParseError = {}
 
 const server = setupServer()
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 
@@ -75,7 +63,7 @@ const wrapper =
     initialEntries = '/gh/codecov/cool-repo'
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProviderV5 client={queryClientV5}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <Route
           path={[
@@ -86,7 +74,7 @@ const wrapper =
           {children}
         </Route>
       </MemoryRouter>
-    </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -94,7 +82,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -109,7 +97,7 @@ interface SetupArgs {
   isNullOwner?: boolean
 }
 
-describe('useCoverageTabData', () => {
+describe('CoverageTabDataQueryOpts', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
@@ -129,73 +117,40 @@ describe('useCoverageTabData', () => {
         } else {
           return HttpResponse.json({ data: mockCoverageTabData })
         }
-      }),
-      graphql.query('GetRepoOverview', () => {
-        return HttpResponse.json({ data: mockOverview })
       })
     )
   }
 
   describe('valid data response', () => {
-    describe('branch is passed', () => {
-      it('returns the data for the passed branch', async () => {
-        setup({})
-        const { result } = renderHook(
-          () =>
-            useCoverageTabData({
+    it('returns the data for the passed branch', async () => {
+      setup({})
+      const { result } = renderHook(
+        () =>
+          useQueryV5(
+            CoverageTabDataQueryOpts({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
               branch: 'main',
-            }),
-          { wrapper: wrapper() }
-        )
+            })
+          ),
+        { wrapper: wrapper() }
+      )
 
-        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
-        await waitFor(() =>
-          expect(result.current.data).toEqual({
-            branch: {
-              head: {
-                coverageAnalytics: {
-                  totals: {
-                    fileCount: 10,
-                  },
+      await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          branch: {
+            head: {
+              coverageAnalytics: {
+                totals: {
+                  fileCount: 10,
                 },
               },
             },
-          })
-        )
-      })
-    })
-
-    describe('branch is not passed', () => {
-      it('returns the data for the default branch', async () => {
-        setup({})
-        const { result } = renderHook(
-          () =>
-            useCoverageTabData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-            }),
-          { wrapper: wrapper() }
-        )
-
-        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
-        await waitFor(() =>
-          expect(result.current.data).toEqual({
-            branch: {
-              head: {
-                coverageAnalytics: {
-                  totals: {
-                    fileCount: 10,
-                  },
-                },
-              },
-            },
-          })
-        )
-      })
+          },
+        })
+      )
     })
   })
 
@@ -214,12 +169,14 @@ describe('useCoverageTabData', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useCoverageTabData({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'cool-repo',
-            branch: 'main',
-          }),
+          useQueryV5(
+            CoverageTabDataQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+              branch: 'main',
+            })
+          ),
         { wrapper: wrapper() }
       )
 
@@ -250,12 +207,14 @@ describe('useCoverageTabData', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useCoverageTabData({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'cool-repo',
-            branch: 'main',
-          }),
+          useQueryV5(
+            CoverageTabDataQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+              branch: 'main',
+            })
+          ),
         { wrapper: wrapper() }
       )
 
@@ -286,12 +245,14 @@ describe('useCoverageTabData', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useCoverageTabData({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'cool-repo',
-            branch: 'main',
-          }),
+          useQueryV5(
+            CoverageTabDataQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+              branch: 'main',
+            })
+          ),
         { wrapper: wrapper() }
       )
 
