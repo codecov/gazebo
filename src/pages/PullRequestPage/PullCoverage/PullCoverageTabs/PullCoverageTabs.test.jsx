@@ -8,8 +8,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import PullCoverageTabs from './PullCoverageTabs'
 
 const mockOverview = (privateRepo = false) => ({
@@ -195,8 +193,8 @@ afterAll(() => {
 
 describe('PullCoverageTabs', () => {
   function setup(
-    { tierValue = TierNames.BASIC, privateRepo = false } = {
-      tierValue: TierNames.BASIC,
+    { isTeamPlan = false, privateRepo = false } = {
+      isTeamPlan: false,
       privateRepo: false,
     }
   ) {
@@ -207,10 +205,10 @@ describe('PullCoverageTabs', () => {
       graphql.query('GetCommits', () => {
         return HttpResponse.json({ data: mockCommits })
       }),
-      graphql.query('OwnerTier', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: {
-            owner: { plan: { tierName: tierValue.toLowerCase() } },
+            owner: { plan: { isTeamPlan } },
           },
         })
       }),
@@ -414,7 +412,7 @@ describe('PullCoverageTabs', () => {
     describe('is a team plan on a public repo', () => {
       beforeEach(() =>
         setup({
-          tierValue: TierNames.TEAM,
+          isTeamPlan: true,
           privateRepo: false,
         })
       )
@@ -445,7 +443,7 @@ describe('PullCoverageTabs', () => {
     describe('is a team plan on a private repo', () => {
       beforeEach(() =>
         setup({
-          tierValue: TierNames.TEAM,
+          isTeamPlan: true,
           privateRepo: true,
         })
       )
@@ -483,7 +481,7 @@ describe('PullCoverageTabs', () => {
     describe('is a pro plan on a public repo', () => {
       beforeEach(() =>
         setup({
-          tierValue: TierNames.PRO,
+          isTeamPlan: false,
           privateRepo: false,
         })
       )
@@ -514,7 +512,7 @@ describe('PullCoverageTabs', () => {
     describe('is a pro plan on a private repo', () => {
       beforeEach(() =>
         setup({
-          tierValue: TierNames.PRO,
+          isTeamPlan: false,
           privateRepo: true,
         })
       )

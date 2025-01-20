@@ -11,8 +11,6 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames, TTierNames } from 'services/tier'
-
 import RepoPageTabs, { useRepoTabs } from './RepoPageTabs'
 
 const mockRepoOverview = ({
@@ -121,7 +119,7 @@ interface SetupArgs {
   isRepoPrivate?: boolean
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
-  tierName?: TTierNames
+  isTeamPlan?: boolean
   isCurrentUserPartOfOrg?: boolean
   testAnalyticsEnabled?: boolean
 }
@@ -132,7 +130,7 @@ describe('RepoPageTabs', () => {
     bundleAnalysisEnabled,
     coverageEnabled,
     isRepoPrivate,
-    tierName = TierNames.PRO,
+    isTeamPlan = false,
     isCurrentUserPartOfOrg = true,
     testAnalyticsEnabled = false,
   }: SetupArgs) {
@@ -149,8 +147,8 @@ describe('RepoPageTabs', () => {
         })
       }),
 
-      graphql.query('OwnerTier', () => {
-        return HttpResponse.json({ data: { owner: { plan: { tierName } } } })
+      graphql.query('IsTeamPlan', () => {
+        return HttpResponse.json({ data: { owner: { plan: { isTeamPlan } } } })
       }),
       graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockRepo({ isCurrentUserPartOfOrg }) })
@@ -440,7 +438,7 @@ describe('useRepoTabs', () => {
     coverageEnabled,
     testAnalyticsEnabled = false,
     isRepoPrivate,
-    tierName = TierNames.PRO,
+    isTeamPlan = false,
     isCurrentUserPartOfOrg = true,
   }: SetupArgs) {
     server.use(
@@ -455,8 +453,8 @@ describe('useRepoTabs', () => {
           }),
         })
       }),
-      graphql.query('OwnerTier', () => {
-        return HttpResponse.json({ data: { owner: { plan: { tierName } } } })
+      graphql.query('IsTeamPlan', () => {
+        return HttpResponse.json({ data: { owner: { plan: { isTeamPlan } } } })
       }),
       graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockRepo({ isCurrentUserPartOfOrg }) })

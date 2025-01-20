@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { useParams } from 'react-router'
 
 import { ConfigureCachedBundleModal } from 'pages/RepoPage/shared/ConfigureCachedBundleModal/ConfigureCachedBundleModal'
-import { TierNames } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 
@@ -48,7 +47,7 @@ interface ConfigurationGroupProps {
 
 function CoverageConfiguration({ repoConfiguration }: ConfigurationGroupProps) {
   const coverageEnabled = !!repoConfiguration?.repository?.coverageEnabled
-  const isTeamPlan = repoConfiguration?.plan?.tierName === TierNames.TEAM
+  const isTeamPlan = repoConfiguration?.plan?.isTeamPlan
   const yaml = repoConfiguration?.repository?.yaml
   const hasProjectStatus = !!yaml && yaml.includes('project:')
   const hasFlags =

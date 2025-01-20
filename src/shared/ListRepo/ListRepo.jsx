@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos/orderingOptions'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import { Alert } from 'ui/Alert'
@@ -31,14 +31,12 @@ export const repoDisplayOptions = Object.freeze({
 function ListRepo({ canRefetch }) {
   const { provider, owner } = useParams()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
-  const { data: tierData } = useTier({ provider, owner })
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
   const { data: currentUser } = useUser({
     options: {
       suspense: false,
     },
   })
-
-  const showTeamRepos = tierData === TierNames.TEAM
 
   const repoDisplay = useContext(ActiveContext)
 
@@ -87,7 +85,7 @@ function ListRepo({ canRefetch }) {
       ) : null}
 
       <Suspense fallback={loadingState}>
-        {showTeamRepos ? (
+        {isTeamPlan ? (
           <ReposTableTeam searchValue={params.search} />
         ) : (
           <ReposTable

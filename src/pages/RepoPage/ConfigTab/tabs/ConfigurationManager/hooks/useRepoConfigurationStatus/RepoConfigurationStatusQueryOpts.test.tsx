@@ -36,7 +36,7 @@ const mockNullOwner = {
 const mockGoodResponse = {
   owner: {
     plan: {
-      tierName: 'pro',
+      isTeamPlan: false,
     },
     repository: {
       __typename: 'Repository',
@@ -226,7 +226,7 @@ describe('RepoConfigurationStatusQueryOpts', () => {
     await waitFor(() =>
       expect(result.current.data).toMatchObject({
         plan: {
-          tierName: 'pro',
+          isTeamPlan: false,
         },
         repository: {
           __typename: 'Repository',

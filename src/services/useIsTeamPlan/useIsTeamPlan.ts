@@ -3,22 +3,13 @@ import { z } from 'zod'
 
 import Api from 'shared/api'
 
-export const TierNames = {
-  BASIC: 'basic',
-  TEAM: 'team',
-  PRO: 'pro',
-  ENTERPRISE: 'enterprise',
-} as const
-
-export type TTierNames = (typeof TierNames)[keyof typeof TierNames]
-
-export const TierSchema = z
+export const PlanSchema = z
   .object({
     owner: z
       .object({
         plan: z
           .object({
-            tierName: z.nativeEnum(TierNames),
+            isTeamPlan: z.boolean(),
           })
           .nullable(),
       })
@@ -26,24 +17,24 @@ export const TierSchema = z
   })
   .nullable()
 
-export interface UseTierArgs {
+export interface UseIsTeamPlanArgs {
   provider: string
   owner: string
 }
 
 const query = `
-  query OwnerTier($owner: String!) {
+  query IsTeamPlan($owner: String!) {
     owner(username:$owner){
       plan {
-        tierName
+        isTeamPlan
       }
     }
   }
 `
 
-export const useTier = ({ provider, owner }: UseTierArgs) =>
+export const useIsTeamPlan = ({ provider, owner }: UseIsTeamPlanArgs) =>
   useQuery({
-    queryKey: ['OwnerTier', provider, owner, query],
+    queryKey: ['IsTeamPlan', provider, owner, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -53,7 +44,7 @@ export const useTier = ({ provider, owner }: UseTierArgs) =>
           owner,
         },
       }).then((res) => {
-        const parsedRes = TierSchema.safeParse(res?.data)
+        const parsedRes = PlanSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return Promise.reject({
@@ -62,6 +53,6 @@ export const useTier = ({ provider, owner }: UseTierArgs) =>
           })
         }
 
-        return parsedRes.data?.owner?.plan?.tierName ?? null
+        return parsedRes.data?.owner?.plan?.isTeamPlan ?? null
       }),
   })

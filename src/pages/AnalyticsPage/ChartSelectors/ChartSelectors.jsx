@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { ReposQueryOpts } from 'services/repos/ReposQueryOpts'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import A from 'ui/A'
 import DateRangePicker from 'ui/DateRangePicker'
 import MultiSelect from 'ui/MultiSelect'
@@ -53,8 +53,7 @@ function RepoSelector({
     updateParams({ repositories: item })
   }
 
-  const { data: tierName } = useTier({ provider, owner })
-  const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
   const {
     data: reposData,
@@ -69,7 +68,7 @@ function RepoSelector({
       activated: active,
       term: search,
       first: Infinity,
-      isPublic: shouldDisplayPublicReposOnly,
+      isPublic: isTeamPlan === true ? true : null,
     })
   )
 
@@ -114,7 +113,7 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
   const { repositories, startDate, endDate } = params
   const [selectedRepos, setSelectedRepos] = useState(repositories)
 
-  const { data: tierData } = useTier({ provider, owner })
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
   if (selectedRepos.length > 0 && repositories.length === 0) {
     setSelectedRepos([])
@@ -151,7 +150,7 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
       >
         Clear filters
       </button>
-      {tierData === TierNames.TEAM ? (
+      {isTeamPlan ? (
         <p className="self-end">
           Public repos only. <A to={{ pageName: 'upgradeOrgPlan' }}>Upgrade</A>{' '}
           to Pro to include private repos.

@@ -18,7 +18,7 @@ import {
   OrderingDirection,
   ReposQueryOpts,
 } from 'services/repos/ReposQueryOpts'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import { DEMO_REPO, formatDemoRepos, isNotNull } from 'shared/utils/demo'
@@ -117,11 +117,10 @@ const ReposTable = ({
   })
   const isCurrentUserPartOfOrg = ownerData?.isCurrentUserPartOfOrg
 
-  const { data: tierName } = useTier({
+  const { data: isTeamPlan } = useIsTeamPlan({
     provider,
     owner,
   })
-  const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
   const repoDisplay = useContext(ActiveContext)
   const activated =
@@ -146,7 +145,7 @@ const ReposTable = ({
       sortItem: getOrderingDirection(sorting),
       term: searchValue,
       repoNames: filterValues,
-      isPublic: shouldDisplayPublicReposOnly,
+      isPublic: isTeamPlan === true ? true : null,
     })
   )
 

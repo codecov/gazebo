@@ -5,7 +5,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
 import { ActiveContext } from 'shared/context'
 
 import ListRepo from './ListRepo'
@@ -88,15 +87,15 @@ const mockUser = {
 
 describe('ListRepo', () => {
   function setup(
-    { tierValue = TierNames.PRO } = { tierValue: TierNames.PRO },
+    { isTeamPlan = false } = { isTeamPlan: false },
     me = mockUser
   ) {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('OwnerTier', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: tierValue } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
       graphql.query('CurrentUser', () => {
@@ -226,9 +225,9 @@ describe('ListRepo', () => {
     })
   })
 
-  describe('when rendered for team tier', () => {
+  describe('when rendered for team plan', () => {
     it('renders the team table', async () => {
-      setup({ tierValue: TierNames.TEAM })
+      setup({ isTeamPlan: true })
       render(<ListRepo canRefetch />, {
         wrapper: wrapper(),
       })
