@@ -7,7 +7,8 @@ import {
   usePlanData,
 } from 'services/account'
 import { useLocationParams } from 'services/navigation'
-import { BillingRate ,
+import {
+  BillingRate,
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
