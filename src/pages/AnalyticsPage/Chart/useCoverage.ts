@@ -39,7 +39,7 @@ export const useCoverage = ({
     repos: queryVars?.repositories,
     before: queryVars?.endDate,
     after: queryVars?.startDate,
-    isPublic: isTeamPlan ?? false,
+    isPublic: isTeamPlan === true ? true : undefined,
     opts: {
       staleTime: 30000,
       keepPreviousData: false,

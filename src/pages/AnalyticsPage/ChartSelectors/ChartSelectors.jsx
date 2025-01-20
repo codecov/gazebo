@@ -68,7 +68,7 @@ function RepoSelector({
       activated: active,
       term: search,
       first: Infinity,
-      isPublic: isTeamPlan,
+      isPublic: isTeamPlan === true ? true : null,
     })
   )
 
