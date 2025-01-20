@@ -145,7 +145,7 @@ const ReposTable = ({
       sortItem: getOrderingDirection(sorting),
       term: searchValue,
       repoNames: filterValues,
-      isPublic: isTeamPlan,
+      isPublic: isTeamPlan === true ? true : null,
     })
   )
 
