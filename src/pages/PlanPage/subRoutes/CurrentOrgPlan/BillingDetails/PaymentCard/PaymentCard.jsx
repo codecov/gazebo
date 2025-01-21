@@ -62,7 +62,7 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
               variant="primary"
               onClick={() => setIsFormOpen(true)}
             >
-              Set card
+              Set payment method
             </Button>
           </div>
         </div>
