@@ -54,6 +54,7 @@ export type EventContext = {
     id: number
     isPrivate?: boolean
   }
+  path?: string
 }
 
 export abstract class EventTracker {

@@ -120,7 +120,7 @@ describe('useEventContext', () => {
   }
 
   describe('when called on owner page', () => {
-    it('sets event context with ownerid and no repoid', async () => {
+    it('sets event context with path, ownerid, and no repoid', async () => {
       setup({})
       renderHook(() => useEventContext(), {
         wrapper: ownerWrapper,
@@ -128,6 +128,7 @@ describe('useEventContext', () => {
 
       await waitFor(() => {
         expect(mockedSetContext).toHaveBeenCalledWith({
+          path: '/:provider/:owner',
           owner: {
             id: mockOwnerContext.owner.ownerid,
           },
@@ -138,7 +139,7 @@ describe('useEventContext', () => {
   })
 
   describe('when called on repo page', () => {
-    it('sets event context with ownerid and repoid', async () => {
+    it('sets event context with path, ownerid, and repoid', async () => {
       setup({})
       renderHook(useEventContext, {
         wrapper: repoWrapper,
@@ -146,6 +147,7 @@ describe('useEventContext', () => {
 
       await waitFor(() => {
         expect(mockedSetContext).toHaveBeenCalledWith({
+          path: '/:provider/:owner/:repo',
           owner: {
             id: mockOwnerContext.owner.ownerid,
           },
@@ -167,6 +169,7 @@ describe('useEventContext', () => {
 
       await waitFor(() => {
         expect(mockedSetContext).toHaveBeenCalledWith({
+          path: '/:provider/:owner',
           owner: undefined,
           repo: undefined,
         })

@@ -3,7 +3,7 @@ import {
   useQuery as useQueryV5,
 } from '@tanstack/react-queryV5'
 import { useRef } from 'react'
-import { useParams } from 'react-router'
+import { useParams, useRouteMatch } from 'react-router'
 import { z } from 'zod'
 
 import {
@@ -26,6 +26,7 @@ export function useEventContext() {
   }>()
   const context = useRef<EventContext>({})
 
+  const { path } = useRouteMatch()
   const { data: ownerData } = useQueryV5(
     OwnerContextQueryOpts({ provider, owner })
   )
@@ -34,11 +35,13 @@ export function useEventContext() {
   )
 
   if (
+    path !== context.current.path ||
     ownerData?.ownerid !== context.current.owner?.id ||
     repoData?.repoid !== context.current.repo?.id
   ) {
     // only update if this is a new owner or repo
     const newContext: EventContext = {
+      path,
       owner: ownerData?.ownerid
         ? {
             id: ownerData?.ownerid,
