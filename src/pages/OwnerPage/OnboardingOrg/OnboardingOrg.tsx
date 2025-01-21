@@ -4,8 +4,6 @@ import orgListInstallApp from 'assets/onboarding/org_list_install_app.png'
 import AppInstallModal from 'shared/AppInstallModal'
 import Button from 'ui/Button'
 
-import { LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER } from './constants'
-
 import { useOnboardingContainer } from '../OnboardingContainerContext/context'
 
 function OnboardingOrg() {
@@ -14,10 +12,6 @@ function OnboardingOrg() {
 
   const dismiss = () => {
     setShowOnboardingContainer(!showOnboardingContainer)
-    localStorage.setItem(
-      LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER,
-      !showOnboardingContainer ? 'false' : 'true'
-    )
   }
 
   const [showModal, setShowModal] = useState(false)
