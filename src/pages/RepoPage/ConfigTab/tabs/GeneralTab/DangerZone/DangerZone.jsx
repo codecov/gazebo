@@ -7,7 +7,7 @@ function DangerZone() {
   return (
     <SettingsDescriptor
       title="Danger Zone"
-      description="Erase repsitory or pause upload ability"
+      description="Erase repository or pause upload ability"
       content={
         <>
           <EraseRepo />
