@@ -5,8 +5,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import FileExplorer from './FileExplorer'
 
 const queryClient = new QueryClient({
@@ -301,9 +299,9 @@ describe('FileExplorer', () => {
       graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillData })
       }),
-      graphql.query('OwnerTier', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: TierNames.PRO } } },
+          data: { owner: { plan: { isTeamPlan: false } } },
         })
       }),
       graphql.query('GetRepoSettingsTeam', () => {

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import ComponentsSelector from 'pages/CommitDetailPage/CommitCoverage/routes/ComponentsSelector'
 import { useRepoOverview } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { LINE_STATE } from 'shared/utils/fileviewer'
 import {
   TitleCoverage,
@@ -22,8 +22,8 @@ function ToggleHeader({ showHitCount = true, noBottomBorder = false }) {
 
   const { data: overview } = useRepoOverview({ provider, owner, repo })
 
-  const { data: tierData } = useTier({ provider, owner })
-  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
+  const showTeamPlan = isTeamPlan && overview?.private
 
   const containerClasses = cs(
     'flex w-full flex-1 flex-wrap items-start gap-2 bg-ds-container sm:flex-row sm:items-center md:mb-1 lg:w-auto lg:flex-none',
@@ -43,7 +43,7 @@ function ToggleHeader({ showHitCount = true, noBottomBorder = false }) {
         <TitleCoverage coverage={LINE_STATE.COVERED} />
       </div>
       <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-2 md:mt-2 md:w-auto">
-        {!isTeamPlan && (
+        {!showTeamPlan && (
           <>
             <TitleFlags commitDetailView={true} />
             <ComponentsSelector />

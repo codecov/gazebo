@@ -8,7 +8,7 @@ import { SentryRoute } from 'sentry'
 import { useCommit } from 'services/commit'
 import { useCommitErrors } from 'services/commitErrors'
 import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { useOwner } from 'services/user'
 import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
@@ -44,7 +44,7 @@ const Loader = () => (
 
 function CommitRoutes() {
   const { provider, owner, repo, commit: commitSha } = useParams()
-  const { data: tierName } = useTier({ owner, provider })
+  const { data: isTeamPlan } = useIsTeamPlan({ owner, provider })
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: commitPageData } = useSuspenseQueryV5(
     CommitPageDataQueryOpts({
@@ -74,7 +74,7 @@ function CommitRoutes() {
   // is still useful info to the user
   const isMissingBaseCommit = compareTypeName === 'MissingBaseCommit'
 
-  const showIndirectChanges = !(overview.private && tierName === TierNames.TEAM)
+  const showIndirectChanges = !(overview.private && isTeamPlan)
 
   return (
     <Suspense fallback={<Loader />}>
@@ -174,7 +174,7 @@ function CommitCoverageRoutes() {
 
 function CommitCoverage() {
   const { provider, owner, repo, commit: commitSha } = useParams()
-  const { data: tierName } = useTier({ owner, provider })
+  const { data: isTeamPlan } = useIsTeamPlan({ owner, provider })
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
   const { data: commitPageData } = useSuspenseQueryV5(
@@ -186,7 +186,7 @@ function CommitCoverage() {
     })
   )
 
-  const showCommitSummary = !(overview.private && tierName === TierNames.TEAM)
+  const showCommitSummary = !(overview.private && isTeamPlan)
   const showFirstPullBanner =
     commitPageData?.commit?.compareWithParent?.__typename === 'FirstPullRequest'
   return (

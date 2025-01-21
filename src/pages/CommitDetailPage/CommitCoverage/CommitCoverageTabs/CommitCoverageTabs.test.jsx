@@ -6,8 +6,6 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import CommitCoverageTabs from './CommitCoverageTabs'
 
 const mockRepoSettings = (isPrivate) => ({
@@ -110,12 +108,7 @@ afterAll(() => {
 })
 
 describe('CommitCoverageTabs', () => {
-  function setup(
-    { tierValue = TierNames.PRO, isPrivate = false } = {
-      tierValue: TierNames.PRO,
-      isPrivate: false,
-    }
-  ) {
+  function setup({ isTeamPlan = false, isPrivate = false } = {}) {
     server.use(
       graphql.query('FlagsSelect', () => {
         return HttpResponse.json({ data: mockFlagsResponse })
@@ -123,9 +116,9 @@ describe('CommitCoverageTabs', () => {
       graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillResponse })
       }),
-      graphql.query('OwnerTier', () => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: tierValue } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
       graphql.query('GetRepoSettingsTeam', () => {
@@ -137,7 +130,7 @@ describe('CommitCoverageTabs', () => {
   describe('user is on a team plan', () => {
     describe('repo is public', () => {
       it('does not render the indirect changes tab', async () => {
-        setup({ tierValue: TierNames.TEAM, isPrivate: false })
+        setup({ isTeamPlan: true, isPrivate: false })
         render(<CommitCoverageTabs commitSha="sha256" />, {
           wrapper: wrapper(),
         })
@@ -154,7 +147,7 @@ describe('CommitCoverageTabs', () => {
     })
     describe('repo is private', () => {
       it('does not render the indirect changes tab', async () => {
-        setup({ tierValue: TierNames.TEAM, isPrivate: true })
+        setup({ isTeamPlan: true, isPrivate: true })
         render(<CommitCoverageTabs commitSha="sha256" />, {
           wrapper: wrapper(),
         })

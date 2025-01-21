@@ -6,7 +6,7 @@ import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
 import { ComparisonReturnType, ReportUploadType } from 'shared/utils/comparison'
@@ -37,9 +37,7 @@ const Loader = () => (
 function PullCoverageContent() {
   const { owner, repo, pullId, provider } = useParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { data: tierData } = useTier({ provider, owner })
-
-  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
   const { data } = useSuspenseQueryV5(
     PullPageDataQueryOpts({
@@ -47,7 +45,7 @@ function PullCoverageContent() {
       owner,
       repo,
       pullId,
-      isTeamPlan,
+      isTeamPlan: (isTeamPlan && overview?.private) ?? false,
     })
   )
 
@@ -127,10 +125,8 @@ function PullCoverageContent() {
 function PullCoverage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { data: tierData } = useTier({ provider, owner })
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
   const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
-
-  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
 
   const { data } = useSuspenseQueryV5(
     PullPageDataQueryOpts({
@@ -138,7 +134,7 @@ function PullCoverage() {
       owner,
       repo,
       pullId,
-      isTeamPlan,
+      isTeamPlan: isTeamPlan && overview?.private,
     })
   )
 

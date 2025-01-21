@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import ComponentsMultiSelect from 'pages/PullRequestPage/PullCoverage/routes/ComponentsSelector'
 import { useRepoOverview } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { LINE_STATE } from 'shared/utils/fileviewer'
 import {
   TitleCoverage,
@@ -24,8 +24,8 @@ function ToggleHeader({ showHitCount = false, noBottomBorder = false }) {
 
   const { data: overview } = useRepoOverview({ provider, owner, repo })
 
-  const { data: tierData } = useTier({ provider, owner })
-  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
+  const showTeamPlan = isTeamPlan && overview?.private
 
   return (
     <div
@@ -38,8 +38,8 @@ function ToggleHeader({ showHitCount = false, noBottomBorder = false }) {
         <TitleCoverage coverage={LINE_STATE.COVERED} />
       </div>
       <div className="ml-auto flex w-full flex-wrap items-center justify-between gap-2 md:mt-2 md:w-auto">
-        {!isTeamPlan ? <TitleFlags /> : null}
-        {!isTeamPlan ? <ComponentsMultiSelect /> : null}
+        {!showTeamPlan ? <TitleFlags /> : null}
+        {!showTeamPlan ? <ComponentsMultiSelect /> : null}
       </div>
     </div>
   )

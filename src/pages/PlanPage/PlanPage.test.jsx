@@ -11,6 +11,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { ThemeContextProvider } from 'shared/ThemeContext'
+
 import PlanPage from './PlanPage'
 
 vi.mock('config')
@@ -44,18 +46,20 @@ const wrapper =
   ({ children }) => (
     <QueryClientProviderV5 client={queryClientV5}>
       <QueryClientProvider client={queryClient}>
-        <Suspense fallback={null}>
-          <MemoryRouter initialEntries={[initialEntries]}>
-            <Route path="/plan/:provider/:owner">{children}</Route>
-            <Route
-              path="*"
-              render={({ location }) => {
-                testLocation = location
-                return null
-              }}
-            />
-          </MemoryRouter>
-        </Suspense>
+        <ThemeContextProvider>
+          <Suspense fallback={null}>
+            <MemoryRouter initialEntries={[initialEntries]}>
+              <Route path="/plan/:provider/:owner">{children}</Route>
+              <Route
+                path="*"
+                render={({ location }) => {
+                  testLocation = location
+                  return null
+                }}
+              />
+            </MemoryRouter>
+          </Suspense>
+        </ThemeContextProvider>
       </QueryClientProvider>
     </QueryClientProviderV5>
   )

@@ -8,7 +8,7 @@ import {
   commitTreeviewString,
 } from 'pages/RepoPage/utils'
 import { useRepoSettingsTeam } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import TabNavigation from 'ui/TabNavigation'
 
 function CommitCoverageTabs({
@@ -18,12 +18,10 @@ function CommitCoverageTabs({
 }) {
   const { provider, owner, repo } = useParams()
   const location = useLocation()
-  const { data: tierName } = useTier({ owner, provider })
+  const { data: isTeamPlan } = useIsTeamPlan({ owner, provider })
   const { data: repoData } = useRepoSettingsTeam()
 
-  const showIndirectChanges = !(
-    repoData?.repository?.private && tierName === TierNames.TEAM
-  )
+  const showIndirectChanges = !(repoData?.repository?.private && isTeamPlan)
 
   const params = qs.parse(location.search, {
     ignoreQueryPrefix: true,

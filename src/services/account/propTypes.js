@@ -20,11 +20,15 @@ export const subscriptionDetailType = PropType.shape({
   latestInvoice: invoicePropType,
   defaultPaymentMethod: PropType.shape({
     card: PropType.shape({
-      brand: PropType.string.isRequired,
-      expMonth: PropType.number.isRequired,
-      expYear: PropType.number.isRequired,
-      last4: PropType.string.isRequired,
-    }).isRequired,
+      brand: PropType.string,
+      expMonth: PropType.number,
+      expYear: PropType.number,
+      last4: PropType.string,
+    }),
+    usBankAccount: PropType.shape({
+      bankName: PropType.string,
+      last4: PropType.string,
+    }),
   }),
   trialEnd: PropType.number,
 })

@@ -76,7 +76,6 @@ CardInformation.propTypes = {
     expMonth: PropTypes.number.isRequired,
     expYear: PropTypes.number.isRequired,
   }).isRequired,
-  openForm: PropTypes.func.isRequired,
 }
 
 export default CardInformation
