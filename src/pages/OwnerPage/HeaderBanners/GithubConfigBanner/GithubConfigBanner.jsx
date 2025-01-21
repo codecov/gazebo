@@ -26,7 +26,7 @@ const GithubConfigBanner = () => {
                 eventTracker().track({
                   type: 'Button Clicked',
                   properties: {
-                    buttonType: 'Install GitHub App',
+                    buttonName: 'Install GitHub App',
                     buttonLocation: 'Configure GitHub app banner',
                   },
                 })

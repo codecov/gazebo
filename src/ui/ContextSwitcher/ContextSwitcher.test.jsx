@@ -768,7 +768,7 @@ describe('ContextSwitcher', () => {
       expect(eventTracker().track).toHaveBeenCalledWith({
         type: 'Button Clicked',
         properties: {
-          buttonType: 'Install GitHub App',
+          buttonName: 'Install GitHub App',
           buttonLocation: 'Org selector',
         },
       })

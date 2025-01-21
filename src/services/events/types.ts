@@ -5,7 +5,7 @@ import { Provider } from 'shared/api/helpers'
 //
 // Adding event types in this way provides type safety for names and event
 // properties.
-// E.g., every 'Button Clicked' event must have the buttonType property.
+// E.g., every 'Button Clicked' event must have the buttonName property.
 //
 // Guidelines:
 //  - Event names should:
@@ -27,7 +27,7 @@ export type Event =
   | {
       type: 'Button Clicked'
       properties: {
-        buttonType: ButtonType
+        buttonName: ButtonName
         buttonLocation?: string
       }
     }
@@ -85,5 +85,5 @@ export abstract class EventTracker {
 // Extend as needed.
 //
 
-type ButtonType = 'Install GitHub App' | 'Configure Repo'
+type ButtonName = 'Install GitHub App' | 'Configure Repo'
 type PageName = 'Owner Page'

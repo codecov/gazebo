@@ -31,7 +31,7 @@ function InactiveRepo({
         eventTracker().track({
           type: 'Button Clicked',
           properties: {
-            buttonType: 'Configure Repo',
+            buttonName: 'Configure Repo',
             buttonLocation: 'Repo list',
           },
         })

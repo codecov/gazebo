@@ -69,7 +69,7 @@ describe('InactiveRepo', () => {
     expect(eventTracker().track).toHaveBeenCalledWith({
       type: 'Button Clicked',
       properties: {
-        buttonType: 'Configure Repo',
+        buttonName: 'Configure Repo',
         buttonLocation: 'Repo list',
       },
     })

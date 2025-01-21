@@ -104,14 +104,14 @@ describe('AmplitudeEventTracker', () => {
         tracker.track({
           type: 'Button Clicked',
           properties: {
-            buttonType: 'Configure Repo',
+            buttonName: 'Configure Repo',
           },
         })
 
         expect(mockAmplitude.track).toHaveBeenCalledWith({
           event_type: 'Button Clicked',
           event_properties: {
-            buttonType: 'Configure Repo',
+            buttonName: 'Configure Repo',
           },
         })
       })
@@ -133,14 +133,14 @@ describe('AmplitudeEventTracker', () => {
         tracker.track({
           type: 'Button Clicked',
           properties: {
-            buttonType: 'Configure Repo',
+            buttonName: 'Configure Repo',
           },
         })
 
         expect(mockAmplitude.track).toHaveBeenCalledWith({
           event_type: 'Button Clicked',
           event_properties: {
-            buttonType: 'Configure Repo',
+            buttonName: 'Configure Repo',
             owner: {
               id: 123,
             },

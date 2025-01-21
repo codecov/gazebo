@@ -32,7 +32,7 @@ describe('EventTracker', () => {
       stubbedEventTracker.track({
         type: 'Button Clicked',
         properties: {
-          buttonType: 'Install GitHub App',
+          buttonName: 'Install GitHub App',
           buttonLocation: 'test',
         },
       })
@@ -70,7 +70,7 @@ describe('EventTracker', () => {
         tracker.track({
           type: 'Button Clicked',
           properties: {
-            buttonType: 'Install GitHub App',
+            buttonName: 'Install GitHub App',
             buttonLocation: 'test',
           },
         })
