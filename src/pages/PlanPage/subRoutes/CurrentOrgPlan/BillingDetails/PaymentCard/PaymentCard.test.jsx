@@ -105,8 +105,6 @@ describe('PaymentCard', () => {
   }
 
   describe(`when the user doesn't have any accountDetails`, () => {
-    // NOTE: This test is misleading because we hide this component from a higher level in
-    // BillingDetails.tsx if there is no accountDetails
     it('renders the set payment method message', () => {
       render(
         <PaymentCard accountDetails={null} provider="gh" owner="codecov" />
