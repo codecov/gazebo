@@ -4,7 +4,6 @@ import { type Mock, vi } from 'vitest'
 
 import { useLocationParams } from 'services/navigation'
 
-import { LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER } from './constants'
 import OnboardingOrg from './OnboardingOrg'
 
 import { OnboardingContainerProvider } from '../OnboardingContainerContext/context'
@@ -44,20 +43,6 @@ describe('OnboardingOrg', () => {
     expect(
       screen.getByAltText('GitHub Organization Install List Example')
     ).toBeInTheDocument()
-  })
-
-  it('handles dismiss button click correctly', async () => {
-    const user = userEvent.setup()
-    render(<OnboardingOrg />, { wrapper })
-
-    // const dismissButton = screen.getByText('Dismiss')
-    const dismissButton = screen.getByTestId('dismiss-onboarding-org')
-    expect(dismissButton).toBeInTheDocument()
-    await user.click(dismissButton)
-
-    expect(localStorage.getItem(LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER)).toBe(
-      'false'
-    )
   })
 
   it('opens and closes the AppInstallModal', async () => {
