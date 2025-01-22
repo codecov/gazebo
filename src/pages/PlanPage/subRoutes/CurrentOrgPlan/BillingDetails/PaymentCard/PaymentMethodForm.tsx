@@ -146,7 +146,6 @@ export const getName = (
       ?.name ||
     accountDetails?.subscriptionDetail?.latestInvoice?.customerName ||
     accountDetails?.name ||
-    getEmail(accountDetails) ||
     undefined
   )
 }

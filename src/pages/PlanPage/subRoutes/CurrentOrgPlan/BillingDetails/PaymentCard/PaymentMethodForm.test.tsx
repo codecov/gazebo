@@ -295,26 +295,5 @@ describe('PaymentMethodForm', () => {
 
       expect(name).toBe('Account Name')
     })
-
-    it('uses email when all other name fields are missing', () => {
-      const accountDetailsWithoutBillingName = {
-        name: undefined,
-        email: 'customer@email.com',
-        subscriptionDetail: {
-          defaultPaymentMethod: {
-            billingDetails: {
-              name: undefined,
-            },
-          },
-          latestInvoice: {
-            customerName: undefined,
-          },
-        },
-      } as unknown as z.infer<typeof AccountDetailsSchema>
-
-      const name = getName(accountDetailsWithoutBillingName)
-
-      expect(name).toBe('customer@email.com')
-    })
   })
 })
