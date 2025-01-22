@@ -3,6 +3,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import config from 'config'
 
 import { eventTracker } from 'services/events/events'
+import { useOnboardingContainer } from 'pages/OwnerPage/OnboardingContainerContext/context'
 import { useUser } from 'services/user'
 import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
@@ -36,24 +37,35 @@ function UserDropdown() {
   const { provider } = useParams<URLParams>()
   const isGh = providerToName(provider) === 'GitHub'
   const history = useHistory()
+  const { showOnboardingContainer, setShowOnboardingContainer } =
+    useOnboardingContainer()
 
-  const items =
-    !config.IS_SELF_HOSTED && isGh
-      ? [
-          {
-            to: { pageName: 'codecovAppInstallation' },
-            children: 'Install Codecov app',
-            onClick: () =>
-              eventTracker().track({
-                type: 'Button Clicked',
-                properties: {
-                  buttonName: 'Install GitHub App',
-                  buttonLocation: 'User dropdown',
-                },
-              }),
-          } as DropdownItem,
-        ]
-      : []
+  const items: DropdownItem[] = [
+    {
+      onClick: () => {
+        setShowOnboardingContainer(!showOnboardingContainer)
+      },
+      hook: 'toggle-onboarding-container',
+      children: showOnboardingContainer
+        ? 'Hide getting started'
+        : 'Show getting started',
+    },
+  ]
+
+  if (!config.IS_SELF_HOSTED && isGh) {
+    items.push({
+      to: { pageName: 'codecovAppInstallation' },
+      children: 'Install Codecov app',
+      onClick: () =>
+        eventTracker().track({
+          type: 'Button Clicked',
+          properties: {
+            buttonName: 'Install GitHub App',
+            buttonLocation: 'User dropdown',
+          },
+        }),
+    } as DropdownItem)
+  }
 
   const handleSignOut = async () => {
     await fetch(`${config.API_URL}/logout`, {

@@ -767,7 +767,9 @@ describe('ContextSwitcher', () => {
       const button = await screen.findByRole('button', { expanded: false })
       await user.click(button)
 
-      const appButton = await screen.findByText('Install Codecov GitHub app')
+      const appButton = await screen.findByText(
+        'To add another organization, install Codecov GitHub App'
+      )
       await user.click(appButton)
 
       expect(eventTracker().track).toHaveBeenCalledWith({

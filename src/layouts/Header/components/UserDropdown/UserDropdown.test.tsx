@@ -8,6 +8,11 @@ import { type Mock } from 'vitest'
 
 import config from 'config'
 
+import {
+  OnboardingContainerProvider,
+  useOnboardingContainer,
+} from 'pages/OwnerPage/OnboardingContainerContext/context'
+import { LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER } from 'pages/OwnerPage/OnboardingOrg/constants'
 import { eventTracker } from 'services/events/events'
 import { useImage } from 'services/image'
 import { Plans } from 'shared/utils/billing'
@@ -32,7 +37,6 @@ const mockUser = {
       student: false,
       studentCreatedAt: null,
       studentUpdatedAt: null,
-      customerIntent: 'PERSONAL',
     },
     trackingMetadata: {
       service: 'github',
@@ -74,18 +78,20 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
-        <Switch>
-          <Route path="/:provider" exact>
-            {children}
-            <Route
-              path="*"
-              render={({ location }) => {
-                testLocation = location
-                return null
-              }}
-            />
-          </Route>
-        </Switch>
+        <OnboardingContainerProvider>
+          <Switch>
+            <Route path="/:provider" exact>
+              {children}
+              <Route
+                path="*"
+                render={({ location }) => {
+                  testLocation = location
+                  return null
+                }}
+              />
+            </Route>
+          </Switch>
+        </OnboardingContainerProvider>
       </MemoryRouter>
     </QueryClientProvider>
   )
@@ -318,6 +324,55 @@ describe('UserDropdown', () => {
         expect(
           screen.queryByText('Install Codecov app')
         ).not.toBeInTheDocument()
+      })
+    })
+  })
+  describe('toggle onboarding container', () => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+      localStorage.clear()
+    })
+
+    it('changes onboarding container visibility when clicking the toggle button', async () => {
+      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
+
+      const TestComponent = () => {
+        const { showOnboardingContainer } = useOnboardingContainer()
+        return (
+          <div data-testid="context-value">
+            {String(showOnboardingContainer)}
+          </div>
+        )
+      }
+
+      const { user } = setup()
+      render(
+        <>
+          <UserDropdown />
+          <TestComponent />
+        </>,
+        { wrapper: wrapper() }
+      )
+
+      // Check initial state
+      expect(screen.getByTestId('context-value')).toHaveTextContent('false')
+
+      // Open the dropdown
+      const trigger = screen.getByTestId('user-dropdown-trigger')
+      await user.click(trigger)
+
+      // Click the toggle button
+      const toggleButton = screen.getByText('Show getting started')
+      await user.click(toggleButton)
+
+      // Verify localStorage was called with the correct value
+      expect(setItemSpy).toHaveBeenCalledWith(
+        LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER,
+        'true'
+      )
+
+      await waitFor(() => {
+        expect(screen.getByTestId('context-value')).toHaveTextContent('true')
       })
     })
   })
