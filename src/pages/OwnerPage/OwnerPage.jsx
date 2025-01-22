@@ -11,6 +11,8 @@ import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
 
 import HeaderBanners from './HeaderBanners'
+import { useOnboardingContainer } from './OnboardingContainerContext/context'
+import OnboardingOrg from './OnboardingOrg'
 import Tabs from './Tabs'
 
 export const LOCAL_STORAGE_USER_STARTED_TRIAL_KEY = 'user-started-trial'
@@ -47,6 +49,8 @@ function OwnerPage() {
     LOCAL_STORAGE_USER_STARTED_TRIAL_KEY
   )
 
+  const { showOnboardingContainer } = useOnboardingContainer()
+
   useEffect(() => {
     if (userStartedTrial) {
       renderToast({
@@ -74,6 +78,7 @@ function OwnerPage() {
         </SilentNetworkErrorWrapper>
       </Suspense>
       <div>
+        {showOnboardingContainer ? <OnboardingOrg /> : null}
         {ownerData?.isCurrentUserPartOfOrg && (
           <Tabs owner={ownerData} provider={provider} />
         )}

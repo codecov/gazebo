@@ -4,6 +4,7 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { OnboardingContainerProvider } from './OnboardingContainerContext/context'
 import OwnerPage from './OwnerPage'
 
 const mocks = vi.hoisted(() => ({
@@ -31,14 +32,16 @@ let testLocation
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov']}>
-      <Route path="/:provider/:owner">{children}</Route>
-      <Route
-        path="*"
-        render={({ location }) => {
-          testLocation = location
-          return null
-        }}
-      />
+      <OnboardingContainerProvider>
+        <Route path="/:provider/:owner">{children}</Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
+      </OnboardingContainerProvider>
     </MemoryRouter>
   </QueryClientProvider>
 )
