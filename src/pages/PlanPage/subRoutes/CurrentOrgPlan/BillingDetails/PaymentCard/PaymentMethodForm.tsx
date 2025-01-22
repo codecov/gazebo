@@ -3,10 +3,7 @@ import { StripePaymentElement } from '@stripe/stripe-js'
 import cs from 'classnames'
 import { z } from 'zod'
 
-import {
-  BillingDetailsSchema,
-  SubscriptionDetailSchema,
-} from 'services/account'
+import { AccountDetailsSchema, BillingDetailsSchema } from 'services/account'
 import { useUpdatePaymentMethod } from 'services/account/useUpdatePaymentMethod'
 import { Provider } from 'shared/api/helpers'
 import Button from 'ui/Button'
@@ -15,19 +12,34 @@ interface PaymentMethodFormProps {
   closeForm: () => void
   provider: Provider
   owner: string
-  subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
+  accountDetails: z.infer<typeof AccountDetailsSchema>
 }
 
 const PaymentMethodForm = ({
   closeForm,
   provider,
   owner,
-  subscriptionDetail,
+  accountDetails,
 }: PaymentMethodFormProps) => {
   const elements = useElements()
+  const subscriptionDetail = accountDetails?.subscriptionDetail
 
   const billingDetails =
     subscriptionDetail?.defaultPaymentMethod?.billingDetails
+
+  const email =
+    billingDetails?.email ||
+    subscriptionDetail?.customer?.email ||
+    subscriptionDetail?.latestInvoice?.customerEmail ||
+    accountDetails?.email ||
+    undefined
+
+  const name =
+    billingDetails?.name ||
+    subscriptionDetail?.latestInvoice?.customerName ||
+    accountDetails?.name ||
+    email ||
+    undefined
 
   const {
     mutate: updatePaymentMethod,
@@ -37,8 +49,8 @@ const PaymentMethodForm = ({
   } = useUpdatePaymentMethod({
     provider,
     owner,
-    name: billingDetails?.name || undefined,
-    email: billingDetails?.email || undefined,
+    name,
+    email,
     address: stripeAddress(billingDetails) || undefined,
   })
 

@@ -90,7 +90,7 @@ describe('PaymentMethodForm', () => {
 
       render(
         <PaymentMethodForm
-          subscriptionDetail={subscriptionDetail}
+          accountDetails={subscriptionDetail}
           provider="gh"
           owner="codecov"
           closeForm={() => {}}
@@ -111,7 +111,7 @@ describe('PaymentMethodForm', () => {
       })
       render(
         <PaymentMethodForm
-          subscriptionDetail={subscriptionDetail}
+          accountDetails={subscriptionDetail}
           provider="gh"
           owner="codecov"
           closeForm={() => {}}
@@ -133,7 +133,7 @@ describe('PaymentMethodForm', () => {
         })
         render(
           <PaymentMethodForm
-            subscriptionDetail={subscriptionDetail}
+            accountDetails={subscriptionDetail}
             provider="gh"
             owner="codecov"
             closeForm={() => {}}
@@ -155,7 +155,7 @@ describe('PaymentMethodForm', () => {
         })
         render(
           <PaymentMethodForm
-            subscriptionDetail={subscriptionDetail}
+            accountDetails={subscriptionDetail}
             provider="gh"
             owner="codecov"
             closeForm={closeForm}
@@ -181,7 +181,7 @@ describe('PaymentMethodForm', () => {
       })
       render(
         <PaymentMethodForm
-          subscriptionDetail={subscriptionDetail}
+          accountDetails={subscriptionDetail}
           provider="gh"
           owner="codecov"
           closeForm={() => {}}
@@ -203,7 +203,7 @@ describe('PaymentMethodForm', () => {
       })
       render(
         <PaymentMethodForm
-          subscriptionDetail={subscriptionDetail}
+          accountDetails={subscriptionDetail}
           provider="gh"
           owner="codecov"
           closeForm={() => {}}
