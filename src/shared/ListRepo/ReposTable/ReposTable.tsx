@@ -198,7 +198,7 @@ const ReposTable = ({
   const table = useReactTable({
     columns: getReposColumnsHelper({
       inactive: repoDisplay === repoDisplayOptions.NOT_CONFIGURED.text,
-      isCurrentUserPartOfOrg: isCurrentUserPartOfOrg,
+      isCurrentUserPartOfOrg: !!isCurrentUserPartOfOrg,
       owner,
     }),
     getCoreRowModel: getCoreRowModel(),

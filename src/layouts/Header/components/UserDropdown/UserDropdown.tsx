@@ -2,6 +2,7 @@ import { useHistory, useParams } from 'react-router-dom'
 
 import config from 'config'
 
+import { eventTracker } from 'services/events/events'
 import { useUser } from 'services/user'
 import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
@@ -42,6 +43,14 @@ function UserDropdown() {
           {
             to: { pageName: 'codecovAppInstallation' },
             children: 'Install Codecov app',
+            onClick: () =>
+              eventTracker().track({
+                type: 'Button Clicked',
+                properties: {
+                  buttonName: 'Install GitHub App',
+                  buttonLocation: 'User dropdown',
+                },
+              }),
           } as DropdownItem,
         ]
       : []
