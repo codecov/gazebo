@@ -27,19 +27,8 @@ const PaymentMethodForm = ({
   const billingDetails =
     subscriptionDetail?.defaultPaymentMethod?.billingDetails
 
-  const email =
-    billingDetails?.email ||
-    subscriptionDetail?.customer?.email ||
-    subscriptionDetail?.latestInvoice?.customerEmail ||
-    accountDetails?.email ||
-    undefined
-
-  const name =
-    billingDetails?.name ||
-    subscriptionDetail?.latestInvoice?.customerName ||
-    accountDetails?.name ||
-    email ||
-    undefined
+  const email = getEmail(accountDetails)
+  const name = getName(accountDetails)
 
   const {
     mutate: updatePaymentMethod,
@@ -134,6 +123,32 @@ export const stripeAddress = (
     postal_code: address.postalCode || null,
     country: address.country || null,
   }
+}
+
+export const getEmail = (
+  accountDetails: z.infer<typeof AccountDetailsSchema>
+) => {
+  return (
+    accountDetails?.subscriptionDetail?.defaultPaymentMethod?.billingDetails
+      ?.email ||
+    accountDetails?.subscriptionDetail?.latestInvoice?.customerEmail ||
+    accountDetails?.subscriptionDetail?.customer?.email ||
+    accountDetails?.email ||
+    undefined
+  )
+}
+
+export const getName = (
+  accountDetails: z.infer<typeof AccountDetailsSchema>
+) => {
+  return (
+    accountDetails?.subscriptionDetail?.defaultPaymentMethod?.billingDetails
+      ?.name ||
+    accountDetails?.subscriptionDetail?.latestInvoice?.customerName ||
+    accountDetails?.name ||
+    getEmail(accountDetails) ||
+    undefined
+  )
 }
 
 export default PaymentMethodForm

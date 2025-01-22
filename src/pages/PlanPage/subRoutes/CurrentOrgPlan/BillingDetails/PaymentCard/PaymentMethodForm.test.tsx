@@ -6,9 +6,12 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { vi } from 'vitest'
 import { z } from 'zod'
 
-import { SubscriptionDetailSchema } from 'services/account/useAccountDetails'
+import {
+  AccountDetailsSchema,
+  SubscriptionDetailSchema,
+} from 'services/account/useAccountDetails'
 
-import PaymentMethodForm from './PaymentMethodForm'
+import PaymentMethodForm, { getEmail, getName } from './PaymentMethodForm'
 
 const queryClient = new QueryClient()
 
@@ -66,6 +69,26 @@ const subscriptionDetail: z.infer<typeof SubscriptionDetailSchema> = {
   trialEnd: null,
 }
 
+const accountDetails: z.infer<typeof AccountDetailsSchema> = {
+  name: 'John Doe',
+  email: 'test@example.com',
+  subscriptionDetail: subscriptionDetail,
+  activatedStudentCount: 0,
+  activatedUserCount: 0,
+  checkoutSessionId: null,
+  delinquent: null,
+  inactiveUserCount: 0,
+  integrationId: null,
+  nbActivePrivateRepos: null,
+  planAutoActivate: null,
+  planProvider: null,
+  repoTotalCredits: 0,
+  rootOrganization: null,
+  scheduleDetail: null,
+  studentCount: 0,
+  usesInvoice: false,
+}
+
 const mocks = {
   useUpdatePaymentMethod: vi.fn(),
 }
@@ -90,7 +113,7 @@ describe('PaymentMethodForm', () => {
 
       render(
         <PaymentMethodForm
-          accountDetails={subscriptionDetail}
+          accountDetails={accountDetails}
           provider="gh"
           owner="codecov"
           closeForm={() => {}}
@@ -111,7 +134,7 @@ describe('PaymentMethodForm', () => {
       })
       render(
         <PaymentMethodForm
-          accountDetails={subscriptionDetail}
+          accountDetails={accountDetails}
           provider="gh"
           owner="codecov"
           closeForm={() => {}}
@@ -133,7 +156,7 @@ describe('PaymentMethodForm', () => {
         })
         render(
           <PaymentMethodForm
-            accountDetails={subscriptionDetail}
+            accountDetails={accountDetails}
             provider="gh"
             owner="codecov"
             closeForm={() => {}}
@@ -155,7 +178,7 @@ describe('PaymentMethodForm', () => {
         })
         render(
           <PaymentMethodForm
-            accountDetails={subscriptionDetail}
+            accountDetails={accountDetails}
             provider="gh"
             owner="codecov"
             closeForm={closeForm}
@@ -181,7 +204,7 @@ describe('PaymentMethodForm', () => {
       })
       render(
         <PaymentMethodForm
-          accountDetails={subscriptionDetail}
+          accountDetails={accountDetails}
           provider="gh"
           owner="codecov"
           closeForm={() => {}}
@@ -203,7 +226,7 @@ describe('PaymentMethodForm', () => {
       })
       render(
         <PaymentMethodForm
-          accountDetails={subscriptionDetail}
+          accountDetails={accountDetails}
           provider="gh"
           owner="codecov"
           closeForm={() => {}}
@@ -213,6 +236,85 @@ describe('PaymentMethodForm', () => {
 
       expect(screen.queryByRole('button', { name: /Save/i })).toBeDisabled()
       expect(screen.queryByRole('button', { name: /Cancel/i })).toBeDisabled()
+    })
+  })
+
+  describe('when the email is missing from billing details', () => {
+    it('infers one from the rest of the data', () => {
+      const accountDetailsWithoutBillingEmail = {
+        email: 'customer@email.com',
+        subscriptionDetail: {
+          defaultPaymentMethod: {
+            billingDetails: {
+              email: null,
+            },
+          },
+        },
+      } as z.infer<typeof AccountDetailsSchema>
+
+      const email = getEmail(accountDetailsWithoutBillingEmail)
+      expect(email).toBe('customer@email.com')
+    })
+  })
+
+  describe('when the name is missing from billing details', () => {
+    it('uses latestInvoice customerName when billing name is missing', () => {
+      const accountDetailsWithoutBillingName = {
+        subscriptionDetail: {
+          defaultPaymentMethod: {
+            billingDetails: {
+              name: undefined,
+            },
+          },
+          latestInvoice: {
+            customerName: 'Customer Name',
+          },
+        },
+      } as unknown as z.infer<typeof AccountDetailsSchema>
+
+      const name = getName(accountDetailsWithoutBillingName)
+      expect(name).toBe('Customer Name')
+    })
+
+    it('uses account name when billing name and invoice name are missing', () => {
+      const accountDetailsWithoutBillingName = {
+        name: 'Account Name',
+        subscriptionDetail: {
+          defaultPaymentMethod: {
+            billingDetails: {
+              name: undefined,
+            },
+          },
+          latestInvoice: {
+            customerName: undefined,
+          },
+        },
+      } as unknown as z.infer<typeof AccountDetailsSchema>
+
+      const name = getName(accountDetailsWithoutBillingName)
+
+      expect(name).toBe('Account Name')
+    })
+
+    it('uses email when all other name fields are missing', () => {
+      const accountDetailsWithoutBillingName = {
+        name: undefined,
+        email: 'customer@email.com',
+        subscriptionDetail: {
+          defaultPaymentMethod: {
+            billingDetails: {
+              name: undefined,
+            },
+          },
+          latestInvoice: {
+            customerName: undefined,
+          },
+        },
+      } as unknown as z.infer<typeof AccountDetailsSchema>
+
+      const name = getName(accountDetailsWithoutBillingName)
+
+      expect(name).toBe('customer@email.com')
     })
   })
 })
