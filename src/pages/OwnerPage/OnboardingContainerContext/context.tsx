@@ -1,8 +1,11 @@
 import { createContext, useContext, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 import { LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER } from 'pages/OwnerPage/OnboardingOrg/constants'
 import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
 import { useLocationParams } from 'services/navigation'
+import { Provider } from 'shared/api/helpers'
+import { providerToName } from 'shared/utils/provider'
 
 type OnboardingContainerContextValue = {
   showOnboardingContainer: boolean
@@ -12,6 +15,10 @@ type OnboardingContainerContextValue = {
 export const OnboardingContainerContext =
   createContext<OnboardingContainerContextValue | null>(null)
 
+interface URLParams {
+  provider: Provider
+}
+
 export const OnboardingContainerProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
@@ -20,9 +27,11 @@ export const OnboardingContainerProvider: React.FC<React.PropsWithChildren> = ({
   }: {
     params: { source?: string }
   } = useLocationParams()
-
+  const { provider } = useParams<URLParams>()
+  const isGh = providerToName(provider) === 'GitHub'
   if (
-    // this should only show for newly onboarded users
+    // this should only show for newly onboarded GH users
+    isGh &&
     params['source'] === ONBOARDING_SOURCE &&
     localStorage.getItem(LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER) === null
   ) {
@@ -37,11 +46,13 @@ export const OnboardingContainerProvider: React.FC<React.PropsWithChildren> = ({
   )
 
   const setShowOnboardingContainer = (showOnboardingContainer: boolean) => {
-    setShowFunction(showOnboardingContainer)
-    localStorage.setItem(
-      LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER,
-      showOnboardingContainer ? 'true' : 'false'
-    )
+    if (isGh) {
+      setShowFunction(showOnboardingContainer)
+      localStorage.setItem(
+        LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER,
+        showOnboardingContainer ? 'true' : 'false'
+      )
+    }
   }
 
   return (

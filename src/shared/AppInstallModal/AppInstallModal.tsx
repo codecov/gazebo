@@ -1,4 +1,5 @@
 import clickHereToInstall from 'assets/onboarding/org_list_install_app.png'
+import { eventTracker } from 'services/events/events'
 import Button from 'ui/Button'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import Modal from 'ui/Modal'
@@ -56,11 +57,20 @@ function AppInstallModal({
             Cancel
           </Button>
           <Button
-            to={undefined}
-            hook="install-link"
+            to={{ pageName: 'codecovAppInstallation' }}
+            onClick={() => {
+              onComplete()
+              eventTracker().track({
+                type: 'Button Clicked',
+                properties: {
+                  buttonName: 'Install GitHub App',
+                  buttonLocation: 'Install modal',
+                },
+              })
+            }}
+            hook="modal-gh-install-link"
             disabled={false}
             variant="primary"
-            onClick={onComplete}
           >
             Install Codecov app via GitHub
           </Button>

@@ -20,7 +20,6 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import AccountSettings from './pages/AccountSettings'
 import AdminSettings from './pages/AdminSettings'
-import { OnboardingContainerProvider } from './pages/OwnerPage/OnboardingContainerContext/context'
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CodecovAIPage = lazy(() => import('./pages/CodecovAIPage'))
 const CommitDetailPage = lazy(() => import('./pages/CommitDetailPage'))
@@ -198,10 +197,8 @@ function App() {
     <>
       <ThemeContextProvider>
         <ToastNotificationProvider>
-          <OnboardingContainerProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-            <MainAppRoutes />
-          </OnboardingContainerProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+          <MainAppRoutes />
         </ToastNotificationProvider>
         <Toaster />
       </ThemeContextProvider>

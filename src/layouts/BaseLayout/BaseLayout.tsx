@@ -9,6 +9,7 @@ import { EmptyErrorComponent } from 'layouts/shared/ErrorBoundary/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import ToastNotifications from 'layouts/ToastNotifications'
+import { OnboardingContainerProvider } from 'pages/OwnerPage/OnboardingContainerContext/context'
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
 import { useEventContext } from 'services/events/hooks'
 import { useImpersonate } from 'services/impersonate'
@@ -94,47 +95,49 @@ function BaseLayout({ children }: React.PropsWithChildren) {
 
   return (
     <>
-      <RepoBreadcrumbProvider>
-        {/* Header */}
-        <Suspense>
-          <ErrorBoundary errorComponent={<EmptyErrorComponent />}>
-            <SilentNetworkErrorWrapper>
-              {isFullExperience || isImpersonating ? (
-                <>
-                  <GlobalTopBanners />
-                  <Header hasRepoAccess={data?.hasRepoAccess} />
-                </>
-              ) : null}
-            </SilentNetworkErrorWrapper>
-          </ErrorBoundary>
-        </Suspense>
+      <OnboardingContainerProvider>
+        <RepoBreadcrumbProvider>
+          {/* Header */}
+          <Suspense>
+            <ErrorBoundary errorComponent={<EmptyErrorComponent />}>
+              <SilentNetworkErrorWrapper>
+                {isFullExperience || isImpersonating ? (
+                  <>
+                    <GlobalTopBanners />
+                    <Header hasRepoAccess={data?.hasRepoAccess} />
+                  </>
+                ) : null}
+              </SilentNetworkErrorWrapper>
+            </ErrorBoundary>
+          </Suspense>
 
-        {/* Main Page Contents */}
-        <Suspense fallback={<FullPageLoader />}>
-          <ErrorBoundary sentryScopes={[['layout', 'base']]}>
-            <NetworkErrorBoundary>
-              <main className="container mb-8 flex grow flex-col gap-2 md:p-0">
-                <GlobalBanners />
-                <OnboardingOrChildren
-                  isFullExperience={isFullExperience}
-                  showAgreeToTerms={showAgreeToTerms}
-                  redirectToSyncPage={redirectToSyncPage}
-                >
-                  {children}
-                </OnboardingOrChildren>
-              </main>
-            </NetworkErrorBoundary>
-          </ErrorBoundary>
-        </Suspense>
+          {/* Main Page Contents */}
+          <Suspense fallback={<FullPageLoader />}>
+            <ErrorBoundary sentryScopes={[['layout', 'base']]}>
+              <NetworkErrorBoundary>
+                <main className="container mb-8 flex grow flex-col gap-2 md:p-0">
+                  <GlobalBanners />
+                  <OnboardingOrChildren
+                    isFullExperience={isFullExperience}
+                    showAgreeToTerms={showAgreeToTerms}
+                    redirectToSyncPage={redirectToSyncPage}
+                  >
+                    {children}
+                  </OnboardingOrChildren>
+                </main>
+              </NetworkErrorBoundary>
+            </ErrorBoundary>
+          </Suspense>
 
-        {/* Footer */}
-        {isFullExperience ? (
-          <>
-            <Footer />
-            <ToastNotifications />
-          </>
-        ) : null}
-      </RepoBreadcrumbProvider>
+          {/* Footer */}
+          {isFullExperience ? (
+            <>
+              <Footer />
+              <ToastNotifications />
+            </>
+          ) : null}
+        </RepoBreadcrumbProvider>
+      </OnboardingContainerProvider>
     </>
   )
 }

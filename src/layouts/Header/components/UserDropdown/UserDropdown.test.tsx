@@ -78,9 +78,9 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
-        <OnboardingContainerProvider>
-          <Switch>
-            <Route path="/:provider" exact>
+        <Switch>
+          <Route path="/:provider" exact>
+            <OnboardingContainerProvider>
               {children}
               <Route
                 path="*"
@@ -89,9 +89,9 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
                   return null
                 }}
               />
-            </Route>
-          </Switch>
-        </OnboardingContainerProvider>
+            </OnboardingContainerProvider>
+          </Route>
+        </Switch>
       </MemoryRouter>
     </QueryClientProvider>
   )
@@ -351,7 +351,7 @@ describe('UserDropdown', () => {
           <UserDropdown />
           <TestComponent />
         </>,
-        { wrapper: wrapper() }
+        { wrapper: wrapper(`/gh`) }
       )
 
       // Check initial state

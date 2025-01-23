@@ -1,11 +1,29 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import AppInstallModal from './AppInstallModal'
 
 afterEach(() => {
   vi.resetAllMocks()
 })
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false, suspense: false },
+  },
+})
+
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh']}>
+      <Route path={'/:provider'} exact>
+        {children}
+      </Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 describe('AppInstallModal', () => {
   const onClose = vi.fn()
@@ -18,7 +36,8 @@ describe('AppInstallModal', () => {
           isOpen={false}
           onClose={onClose}
           onComplete={onComplete}
-        />
+        />,
+        { wrapper }
       )
 
       const copy = screen.queryByText(/Copy the link below/)
@@ -33,7 +52,8 @@ describe('AppInstallModal', () => {
           isOpen={true}
           onClose={onClose}
           onComplete={onComplete}
-        />
+        />,
+        { wrapper }
       )
 
       expect(screen.getByText('Install Codecov app')).toBeInTheDocument()
@@ -55,7 +75,8 @@ describe('AppInstallModal', () => {
           isOpen={true}
           onClose={onClose}
           onComplete={onComplete}
-        />
+        />,
+        { wrapper }
       )
 
       await userEvent.click(screen.getByText('Cancel'))
@@ -68,7 +89,8 @@ describe('AppInstallModal', () => {
           isOpen={true}
           onClose={onClose}
           onComplete={onComplete}
-        />
+        />,
+        { wrapper }
       )
 
       await userEvent.click(screen.getByText('Install Codecov app via GitHub'))
@@ -84,7 +106,8 @@ describe('AppInstallModal', () => {
           isOpen={true}
           onClose={onClose}
           onComplete={onComplete}
-        />
+        />,
+        { wrapper }
       )
 
       const closeButton = await screen.findByTestId('modal-close-icon')
@@ -106,7 +129,8 @@ describe('AppInstallModal', () => {
           isOpen={true}
           onClose={onClose}
           onComplete={onComplete}
-        />
+        />,
+        { wrapper }
       )
 
       const installButton = await screen.findByTestId('close-modal')
@@ -128,10 +152,13 @@ describe('AppInstallModal', () => {
           isOpen={true}
           onClose={onClose}
           onComplete={onComplete}
-        />
+        />,
+        { wrapper }
       )
 
-      const installButton = await screen.findByTestId('install-link')
+      const installButton = await screen.findByText(
+        'Install Codecov app via GitHub'
+      )
       expect(installButton).toBeInTheDocument()
 
       expect(onComplete).not.toHaveBeenCalled()
@@ -139,6 +166,23 @@ describe('AppInstallModal', () => {
       await user.click(installButton)
 
       expect(onComplete).toHaveBeenCalled()
+    })
+
+    it('renders install button as link with correct href', () => {
+      render(
+        <AppInstallModal
+          isOpen={true}
+          onClose={onClose}
+          onComplete={onComplete}
+        />,
+        { wrapper }
+      )
+
+      const link = screen.getByText('Install Codecov app via GitHub')
+      expect(link).toHaveAttribute(
+        'href',
+        'https://github.com/apps/codecov/installations/new'
+      )
     })
   })
 })

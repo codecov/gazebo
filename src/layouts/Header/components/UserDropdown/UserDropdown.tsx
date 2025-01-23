@@ -2,8 +2,8 @@ import { useHistory, useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { eventTracker } from 'services/events/events'
 import { useOnboardingContainer } from 'pages/OwnerPage/OnboardingContainerContext/context'
+import { eventTracker } from 'services/events/events'
 import { useUser } from 'services/user'
 import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
@@ -40,17 +40,19 @@ function UserDropdown() {
   const { showOnboardingContainer, setShowOnboardingContainer } =
     useOnboardingContainer()
 
-  const items: DropdownItem[] = [
-    {
-      onClick: () => {
-        setShowOnboardingContainer(!showOnboardingContainer)
-      },
-      hook: 'toggle-onboarding-container',
-      children: showOnboardingContainer
-        ? 'Hide getting started'
-        : 'Show getting started',
-    },
-  ]
+  const items: DropdownItem[] = isGh
+    ? [
+        {
+          onClick: () => {
+            setShowOnboardingContainer(!showOnboardingContainer)
+          },
+          hook: 'toggle-onboarding-container',
+          children: showOnboardingContainer
+            ? 'Hide getting started'
+            : 'Show getting started',
+        },
+      ]
+    : []
 
   if (!config.IS_SELF_HOSTED && isGh) {
     items.push({

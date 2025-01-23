@@ -1,5 +1,7 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock, vi } from 'vitest'
 
 import { useLocationParams } from 'services/navigation'
@@ -19,8 +21,20 @@ vi.mock('services/navigation', async () => {
 
 const mockedUseLocationParams = useLocationParams as Mock
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <OnboardingContainerProvider>{children}</OnboardingContainerProvider>
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false, suspense: false },
+  },
+})
+
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
+      <Route path={'/:provider/:owner/:repo'} exact>
+        <OnboardingContainerProvider>{children}</OnboardingContainerProvider>
+      </Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 describe('OnboardingOrg', () => {
