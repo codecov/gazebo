@@ -14,6 +14,7 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const card = subscriptionDetail?.defaultPaymentMethod?.card
   const usBankAccount = subscriptionDetail?.defaultPaymentMethod?.usBankAccount
+  // const isAwaitingDelayedPaymentMethodVerification = true
 
   let nextBillingDisplayDate = null
   if (!subscriptionDetail?.cancelAtPeriodEnd) {

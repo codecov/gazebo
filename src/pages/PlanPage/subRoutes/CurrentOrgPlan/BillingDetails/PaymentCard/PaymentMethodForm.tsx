@@ -7,8 +7,14 @@ import {
   BillingDetailsSchema,
   SubscriptionDetailSchema,
 } from 'services/account'
-import { useUpdatePaymentMethod } from 'services/account/useUpdatePaymentMethod'
+import {
+  MissingAddressError,
+  MissingEmailError,
+  MissingNameError,
+  useUpdatePaymentMethod,
+} from 'services/account/useUpdatePaymentMethod'
 import { Provider } from 'shared/api/helpers'
+import A from 'ui/A'
 import Button from 'ui/Button'
 
 interface PaymentMethodFormProps {
@@ -33,7 +39,6 @@ const PaymentMethodForm = ({
     mutate: updatePaymentMethod,
     isLoading,
     error,
-    reset,
   } = useUpdatePaymentMethod({
     provider,
     owner,
@@ -41,7 +46,6 @@ const PaymentMethodForm = ({
     email: billingDetails?.email || undefined,
     address: stripeAddress(billingDetails) || undefined,
   })
-
   async function submit(e: React.FormEvent) {
     e.preventDefault()
 
@@ -62,8 +66,6 @@ const PaymentMethodForm = ({
     })
   }
 
-  const showError = error && !reset
-
   return (
     <form onSubmit={submit} aria-label="form">
       <div className={cs('flex flex-col gap-3')}>
@@ -80,7 +82,7 @@ const PaymentMethodForm = ({
             }}
           />
           <p className="mt-1 text-ds-primary-red">
-            {showError && error?.message}
+            {error ? getErrorMessage(error) : null}
           </p>
           <div className="mb-8 mt-4 flex gap-1">
             <Button
@@ -121,6 +123,29 @@ export const stripeAddress = (
     // eslint-disable-next-line camelcase
     postal_code: address.postalCode || null,
     country: address.country || null,
+  }
+}
+
+export const getErrorMessage = (error: Error): JSX.Element => {
+  switch (error.message) {
+    case MissingNameError:
+      return <span>Missing name, please edit Full Name</span>
+    case MissingEmailError:
+      return <span>Missing email, please edit Email</span>
+    case MissingAddressError:
+      return <span>Missing address, please edit Address</span>
+    default:
+      return (
+        <span>
+          There&apos;s been an error. Please try refreshing your browser, if
+          this error persists please{' '}
+          {/* @ts-expect-error ignore until we can convert A component to ts */}
+          <A to={{ pageName: 'support' }} variant="link">
+            contact support
+          </A>
+          .
+        </span>
+      )
   }
 }
 

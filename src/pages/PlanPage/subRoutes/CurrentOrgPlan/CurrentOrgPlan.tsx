@@ -40,29 +40,51 @@ function CurrentOrgPlan() {
     })
   )
 
+  const isAwaitingFirstPaymentMethodVerification = false
+  const isAwaitingVerification =
+    accountDetails?.unverifiedPaymentMethods?.length
+
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
-  const isDelinquent = accountDetails?.delinquent
+  // customer is delinquent until their first payment method is verified
+  const isDelinquent =
+    accountDetails?.delinquent && !isAwaitingFirstPaymentMethodVerification
   const scheduleStart = scheduledPhase
     ? getScheduleStart(scheduledPhase)
     : undefined
 
   const shouldRenderBillingDetails =
-    (accountDetails?.planProvider !== 'github' &&
+    !isAwaitingFirstPaymentMethodVerification &&
+    ((accountDetails?.planProvider !== 'github' &&
       !accountDetails?.rootOrganization) ||
-    accountDetails?.usesInvoice
+      accountDetails?.usesInvoice)
 
   const planUpdatedNotification = usePlanUpdatedNotification()
 
   const account = enterpriseDetails?.owner?.account
 
+  const hasSuccessfulDefaultPaymentMethod =
+    accountDetails?.subscriptionDetail?.defaultPaymentMethod
+
+  const hideSuccessBanner = isAwaitingVerification
+    ? hasSuccessfulDefaultPaymentMethod
+    : true
+
   return (
     <div className="w-full lg:w-4/5">
+      {isAwaitingVerification ? (
+        <UnverifiedPaymentMethodAlert
+          url={
+            accountDetails?.unverifiedPaymentMethods?.[0]
+              ?.hostedVerificationLink
+          }
+        />
+      ) : null}
       {planUpdatedNotification.isCancellation ? (
         <InfoAlertCancellation
           subscriptionDetail={accountDetails?.subscriptionDetail}
         />
       ) : null}
-      <InfoMessageStripeCallback />
+      {hideSuccessBanner ? <InfoMessageStripeCallback /> : null}
       {isDelinquent ? <DelinquentAlert /> : null}
       {planData?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
@@ -147,7 +169,31 @@ const DelinquentAlert = () => {
       <Alert variant={'error'}>
         <Alert.Title>Your most recent payment failed</Alert.Title>
         <Alert.Description>
-          Please try a different card or contact support at support@codecov.io.
+          Please try a different payment method or contact support at
+          support@codecov.io.
+        </Alert.Description>
+      </Alert>
+      <br />
+    </>
+  )
+}
+
+const UnverifiedPaymentMethodAlert = ({ url }: { url: string | undefined }) => {
+  return (
+    <>
+      <Alert variant={'warning'}>
+        <Alert.Title>New Payment Method Awaiting Verification</Alert.Title>
+        <Alert.Description>
+          Your new payment method requires verification. Click{' '}
+          <A
+            href={url}
+            isExternal={true}
+            hook="stripe-payment-method-verification"
+            to={undefined}
+          >
+            here
+          </A>{' '}
+          to complete the verification process.
         </Alert.Description>
       </Alert>
       <br />
