@@ -14,6 +14,16 @@ const renderWithTheme = (ui: React.ReactElement, theme: Theme) => {
   )
 }
 
+const wrapper = (theme: Theme) => {
+  return ({ children }: { children: React.ReactNode }) => {
+    return (
+      <ThemeContext.Provider value={{ theme, setTheme: vi.fn() }}>
+        {children}
+      </ThemeContext.Provider>
+    )
+  }
+}
+
 describe('LightDarkImg', () => {
   const mockProps = {
     src: '/light-image.png',
@@ -22,7 +32,7 @@ describe('LightDarkImg', () => {
   }
 
   it('renders with light source in light mode', () => {
-    renderWithTheme(<LightDarkImg {...mockProps} />, Theme.LIGHT)
+    render(<LightDarkImg {...mockProps} />, { wrapper: wrapper(Theme.LIGHT) })
 
     const img = screen.getByAltText('Test image')
     expect(img).toBeInTheDocument()
@@ -43,7 +53,9 @@ describe('LightDarkImg', () => {
       alt: 'Test image',
     }
 
-    renderWithTheme(<LightDarkImg {...propsWithoutDark} />, Theme.DARK)
+    render(<LightDarkImg {...propsWithoutDark} />, {
+      wrapper: wrapper(Theme.DARK),
+    })
 
     const img = screen.getByAltText('Test image')
     expect(img).toBeInTheDocument()
@@ -51,18 +63,13 @@ describe('LightDarkImg', () => {
   })
 
   it('passes through additional props to img element', () => {
-    renderWithTheme(
-      <LightDarkImg
-        {...mockProps}
-        // eslint-disable-next-line tailwindcss/no-custom-classname
-        className="test-class"
-        data-testid="test-img"
-      />,
-      Theme.LIGHT
+    render(
+      <LightDarkImg {...mockProps} className="w-10" data-testid="test-img" />,
+      { wrapper: wrapper(Theme.LIGHT) }
     )
 
     const img = screen.getByAltText('Test image')
-    expect(img).toHaveClass('test-class')
+    expect(img).toHaveClass('w-10')
     expect(img).toHaveAttribute('data-testid', 'test-img')
   })
 })
