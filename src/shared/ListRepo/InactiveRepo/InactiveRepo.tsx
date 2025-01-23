@@ -1,3 +1,4 @@
+import { eventTracker } from 'services/events/events'
 import A from 'ui/A'
 
 function InactiveRepo({
@@ -26,6 +27,15 @@ function InactiveRepo({
           repo: repoName,
         },
       }}
+      onClick={() =>
+        eventTracker().track({
+          type: 'Button Clicked',
+          properties: {
+            buttonName: 'Configure Repo',
+            buttonLocation: 'Repo list',
+          },
+        })
+      }
     >
       Configure
     </A>

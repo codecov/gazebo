@@ -55,6 +55,10 @@ const subscriptionDetail = {
   cancelAtPeriodEnd: false,
 }
 
+const accountDetails = {
+  subscriptionDetail,
+}
+
 const usBankSubscriptionDetail = {
   defaultPaymentMethod: {
     usBankAccount: {
@@ -100,12 +104,10 @@ describe('PaymentCard', () => {
     return { user }
   }
 
-  describe(`when the user doesn't have any subscriptionDetail`, () => {
-    // NOTE: This test is misleading because we hide this component from a higher level in
-    // BillingDetails.tsx if there is no subscriptionDetail
+  describe(`when the user doesn't have any accountDetails`, () => {
     it('renders the set payment method message', () => {
       render(
-        <PaymentCard subscriptionDetail={null} provider="gh" owner="codecov" />
+        <PaymentCard accountDetails={null} provider="gh" owner="codecov" />
       )
 
       expect(
@@ -120,9 +122,12 @@ describe('PaymentCard', () => {
     it('renders an error message', () => {
       render(
         <PaymentCard
-          subscriptionDetail={{
-            ...subscriptionDetail,
-            defaultPaymentMethod: null,
+          accountDetails={{
+            ...accountDetails,
+            subscriptionDetail: {
+              ...accountDetails.subscriptionDetail,
+              defaultPaymentMethod: null,
+            },
           }}
           provider="gh"
           owner="codecov"
@@ -142,9 +147,12 @@ describe('PaymentCard', () => {
         const { user } = setup()
         render(
           <PaymentCard
-            subscriptionDetail={{
-              ...subscriptionDetail,
-              defaultPaymentMethod: null,
+            accountDetails={{
+              ...accountDetails,
+              subscriptionDetail: {
+                ...accountDetails.subscriptionDetail,
+                defaultPaymentMethod: null,
+              },
             }}
             provider="gh"
             owner="codecov"
@@ -165,9 +173,12 @@ describe('PaymentCard', () => {
         const { user } = setup()
         render(
           <PaymentCard
-            subscriptionDetail={{
-              ...subscriptionDetail,
-              defaultPaymentMethod: null,
+            accountDetails={{
+              ...accountDetails,
+              subscriptionDetail: {
+                ...accountDetails.subscriptionDetail,
+                defaultPaymentMethod: null,
+              },
             }}
             provider="gh"
             owner="codecov"
@@ -190,7 +201,7 @@ describe('PaymentCard', () => {
     it('renders the card', () => {
       render(
         <PaymentCard
-          subscriptionDetail={subscriptionDetail}
+          accountDetails={accountDetails}
           provider="gh"
           owner="codecov"
         />,
@@ -204,7 +215,7 @@ describe('PaymentCard', () => {
     it('renders the next billing', () => {
       render(
         <PaymentCard
-          subscriptionDetail={subscriptionDetail}
+          accountDetails={accountDetails}
           provider="gh"
           owner="codecov"
         />,
@@ -217,9 +228,15 @@ describe('PaymentCard', () => {
 
   describe('when the user has a US bank account', () => {
     it('renders the bank account details', () => {
+      const testAccountDetails = {
+        ...accountDetails,
+        subscriptionDetail: {
+          ...usBankSubscriptionDetail,
+        },
+      }
       render(
         <PaymentCard
-          subscriptionDetail={usBankSubscriptionDetail}
+          accountDetails={testAccountDetails}
           provider="gh"
           owner="codecov"
         />,
@@ -235,9 +252,12 @@ describe('PaymentCard', () => {
     it(`doesn't render the next billing`, () => {
       render(
         <PaymentCard
-          subscriptionDetail={{
-            ...subscriptionDetail,
-            cancelAtPeriodEnd: true,
+          accountDetails={{
+            ...accountDetails,
+            subscriptionDetail: {
+              ...accountDetails.subscriptionDetail,
+              cancelAtPeriodEnd: true,
+            },
           }}
           provider="gh"
           owner="codecov"
@@ -260,7 +280,7 @@ describe('PaymentCard', () => {
 
       render(
         <PaymentCard
-          subscriptionDetail={subscriptionDetail}
+          accountDetails={accountDetails}
           provider="gh"
           owner="codecov"
         />,
@@ -280,7 +300,7 @@ describe('PaymentCard', () => {
       })
       render(
         <PaymentCard
-          subscriptionDetail={subscriptionDetail}
+          accountDetails={accountDetails}
           provider="gh"
           owner="codecov"
         />,
@@ -305,7 +325,7 @@ describe('PaymentCard', () => {
 
         render(
           <PaymentCard
-            subscriptionDetail={subscriptionDetail}
+            accountDetails={accountDetails}
             provider="gh"
             owner="codecov"
           />,
@@ -327,7 +347,7 @@ describe('PaymentCard', () => {
         })
         render(
           <PaymentCard
-            subscriptionDetail={subscriptionDetail}
+            accountDetails={accountDetails}
             provider="gh"
             owner="codecov"
           />,
@@ -354,7 +374,7 @@ describe('PaymentCard', () => {
       })
       render(
         <PaymentCard
-          subscriptionDetail={subscriptionDetail}
+          accountDetails={accountDetails}
           provider="gh"
           owner="codecov"
         />,
@@ -376,7 +396,7 @@ describe('PaymentCard', () => {
       })
       render(
         <PaymentCard
-          subscriptionDetail={subscriptionDetail}
+          accountDetails={accountDetails}
           provider="gh"
           owner="codecov"
         />,

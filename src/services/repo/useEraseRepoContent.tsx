@@ -28,7 +28,7 @@ interface URLParams {
   repo: string
 }
 
-export const useEraseRepoContent = () => {
+export const useEraseRepo = () => {
   const { provider, owner, repo } = useParams<URLParams>()
   const queryClient = useQueryClient()
   const addToast = useAddNotification()
@@ -49,12 +49,12 @@ export const useEraseRepoContent = () => {
       if (error) {
         addToast({
           type: 'error',
-          text: "We were unable to erase this repo's content",
+          text: 'We were unable to erase this repository',
         })
       } else {
         addToast({
           type: 'success',
-          text: 'Repo coverage content erased successfully',
+          text: 'Repository erased successfully',
         })
       }
       queryClient.invalidateQueries(['GetRepo'])
@@ -63,7 +63,7 @@ export const useEraseRepoContent = () => {
     onError: () => {
       addToast({
         type: 'error',
-        text: "We were unable to erase this repo's content",
+        text: 'We were unable to erase this repository',
       })
     },
     retry: false,
