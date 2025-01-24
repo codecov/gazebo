@@ -40,22 +40,22 @@ function CurrentOrgPlan() {
     })
   )
 
-  const isAwaitingVerification =
-    accountDetails?.unverifiedPaymentMethods?.length
-  const isAwaitingFirstPaymentMethodVerification =
+  // awaitingInitialPaymentMethodVerification is true if the
+  // customer needs to verify a delayed notification payment method
+  // like ACH for their first subscription
+  const awaitingInitialPaymentMethodVerification =
     !accountDetails?.subscriptionDetail?.defaultPaymentMethod &&
-    isAwaitingVerification
+    accountDetails?.unverifiedPaymentMethods?.length
 
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
-  // customer is delinquent until their first payment method is verified
   const isDelinquent =
-    accountDetails?.delinquent && !isAwaitingFirstPaymentMethodVerification
+    accountDetails?.delinquent && !awaitingInitialPaymentMethodVerification
   const scheduleStart = scheduledPhase
     ? getScheduleStart(scheduledPhase)
     : undefined
 
   const shouldRenderBillingDetails =
-    !isAwaitingFirstPaymentMethodVerification &&
+    !awaitingInitialPaymentMethodVerification &&
     ((accountDetails?.planProvider !== 'github' &&
       !accountDetails?.rootOrganization) ||
       accountDetails?.usesInvoice)
@@ -64,13 +64,6 @@ function CurrentOrgPlan() {
 
   const account = enterpriseDetails?.owner?.account
 
-  const hasSuccessfulDefaultPaymentMethod =
-    accountDetails?.subscriptionDetail?.defaultPaymentMethod
-
-  const hideSuccessBanner = isAwaitingVerification
-    ? hasSuccessfulDefaultPaymentMethod
-    : true
-
   return (
     <div className="w-full lg:w-4/5">
       {planUpdatedNotification.isCancellation ? (
@@ -78,7 +71,7 @@ function CurrentOrgPlan() {
           subscriptionDetail={accountDetails?.subscriptionDetail}
         />
       ) : null}
-      {hideSuccessBanner ? <InfoMessageStripeCallback /> : null}
+      <InfoMessageStripeCallback accountDetails={accountDetails} />
       {isDelinquent ? <DelinquentAlert /> : null}
       {planData?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">

@@ -9,6 +9,7 @@ import config from 'config'
 import { SentryRoute } from 'sentry'
 
 import { useAccountDetails } from 'services/account'
+import { Provider } from 'shared/api/helpers'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
 import A from 'ui/A'
 import { Alert } from 'ui/Alert'
@@ -19,9 +20,7 @@ import PlanBreadcrumb from './PlanBreadcrumb'
 import { PlanPageDataQueryOpts } from './queries/PlanPageDataQueryOpts'
 import Tabs from './Tabs'
 
-
 import { StripeAppearance } from '../../stripe'
-
 
 const CancelPlanPage = lazy(() => import('./subRoutes/CancelPlanPage'))
 const CurrentOrgPlan = lazy(() => import('./subRoutes/CurrentOrgPlan'))
@@ -40,8 +39,13 @@ const Loader = () => (
   </div>
 )
 
+interface URLParams {
+  owner: string
+  provider: Provider
+}
+
 function PlanPage() {
-  const { owner, provider } = useParams()
+  const { owner, provider } = useParams<URLParams>()
   const { data: ownerData } = useSuspenseQueryV5(
     PlanPageDataQueryOpts({ owner, provider })
   )
@@ -56,15 +60,8 @@ function PlanPage() {
   if (config.IS_SELF_HOSTED || !ownerData?.isCurrentUserPartOfOrg) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
-
-  const isAwaitingVerification =
+  const hasUnverifiedPaymentMethods =
     accountDetails?.unverifiedPaymentMethods?.length
-  // const isAwaitingFirstPaymentMethodVerification =
-  //   !accountDetails?.subscriptionDetail?.defaultPaymentMethod &&
-  //   isAwaitingVerification
-
-  // const hasSuccessfulDefaultPaymentMethod =
-  //   accountDetails?.subscriptionDetail?.defaultPaymentMethod
 
   return (
     <div className="flex flex-col gap-4">
@@ -80,7 +77,7 @@ function PlanPage() {
       >
         <PlanProvider>
           <PlanBreadcrumb />
-          {isAwaitingVerification ? (
+          {hasUnverifiedPaymentMethods ? (
             <UnverifiedPaymentMethodAlert
               url={
                 accountDetails?.unverifiedPaymentMethods?.[0]
@@ -117,10 +114,7 @@ function PlanPage() {
   )
 }
 
-export default PlanPage
-
-// eslint-disable-next-line react/prop-types
-const UnverifiedPaymentMethodAlert = ({ url }) => {
+const UnverifiedPaymentMethodAlert = ({ url }: { url?: string }) => {
   return (
     <>
       <Alert variant={'warning'}>
@@ -142,3 +136,5 @@ const UnverifiedPaymentMethodAlert = ({ url }) => {
     </>
   )
 }
+
+export default PlanPage

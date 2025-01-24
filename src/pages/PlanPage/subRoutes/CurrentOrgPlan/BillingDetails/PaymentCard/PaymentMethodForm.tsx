@@ -40,6 +40,7 @@ const PaymentMethodForm = ({
     mutate: updatePaymentMethod,
     isLoading,
     error,
+    reset,
   } = useUpdatePaymentMethod({
     provider,
     owner,
@@ -47,6 +48,7 @@ const PaymentMethodForm = ({
     email,
     address: stripeAddress(billingDetails) || undefined,
   })
+
   async function submit(e: React.FormEvent) {
     e.preventDefault()
 
@@ -67,6 +69,8 @@ const PaymentMethodForm = ({
     })
   }
 
+  const showError = error && !reset
+
   return (
     <form onSubmit={submit} aria-label="form">
       <div className={cs('flex flex-col gap-3')}>
@@ -83,7 +87,7 @@ const PaymentMethodForm = ({
             }}
           />
           <p className="mt-1 text-ds-primary-red">
-            {error ? getErrorMessage(error) : null}
+            {showError ? getErrorMessage(error) : null}
           </p>
           <div className="mb-8 mt-4 flex gap-1">
             <Button
