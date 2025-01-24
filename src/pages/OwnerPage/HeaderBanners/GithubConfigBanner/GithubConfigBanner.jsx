@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { eventTracker } from 'services/events/events'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
@@ -21,6 +22,15 @@ const GithubConfigBanner = () => {
             <A
               data-testid="codecovGithubApp-link"
               to={{ pageName: 'codecovGithubAppSelectTarget' }}
+              onClick={() =>
+                eventTracker().track({
+                  type: 'Button Clicked',
+                  properties: {
+                    buttonName: 'Install GitHub App',
+                    buttonLocation: 'Configure GitHub app banner',
+                  },
+                })
+              }
             >
               Codecov&apos;s GitHub app
             </A>

@@ -30,7 +30,7 @@ function BillingDetails() {
       <EmailAddress />
       <PaymentCard
         // @ts-expect-error - TODO fix this once we update PaymentCard to TS
-        subscriptionDetail={subscriptionDetail}
+        accountDetails={accountDetails}
         provider={provider}
         owner={owner}
       />

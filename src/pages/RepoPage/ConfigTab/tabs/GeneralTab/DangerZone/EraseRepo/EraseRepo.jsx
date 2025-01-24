@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import { useEraseRepoContent } from 'services/repo'
+import { useEraseRepo } from 'services/repo'
 import Button from 'ui/Button'
 
-import EraseRepoContentModal from './EraseRepoContentModal'
+import EraseRepoModal from './EraseRepoModal'
 
 function EraseRepoButton({ isLoading, setShowModal }) {
   if (isLoading) {
@@ -21,7 +21,7 @@ function EraseRepoButton({ isLoading, setShowModal }) {
       hook="show-modal"
       onClick={() => setShowModal(true)}
     >
-      Erase Content
+      Erase Repository
     </Button>
   )
 }
@@ -31,26 +31,26 @@ EraseRepoButton.propTypes = {
   isLoading: PropTypes.bool.isRequired,
 }
 
-function EraseRepoContent() {
+function EraseRepo() {
   const [showModal, setShowModal] = useState(false)
-  const { mutate: eraseRepoContent, isLoading } = useEraseRepoContent()
+  const { mutate: eraseRepo, isLoading } = useEraseRepo()
 
   return (
     <div className="flex flex-col sm:flex-row">
       <div className="flex flex-1 flex-col gap-1">
-        <h2 className="font-semibold">Erase repo coverage content</h2>
+        <h2 className="font-semibold">Erase repository</h2>
         <p className="max-w-md">
-          This will remove all coverage reporting from the repo. For larger
-          repositories, this process may not be able to complete automatically.
-          In that case, please reach out to support for help.
+          This will erase the repository, including all of its contents. The
+          repository itself will be re-created when resync-ing the organization
+          contents.
         </p>
       </div>
       <div>
         <EraseRepoButton isLoading={isLoading} setShowModal={setShowModal} />
-        <EraseRepoContentModal
+        <EraseRepoModal
           showModal={showModal}
           closeModal={() => setShowModal(false)}
-          eraseRepoContent={eraseRepoContent}
+          eraseRepo={eraseRepo}
           isLoading={isLoading}
         />
       </div>
@@ -58,4 +58,4 @@ function EraseRepoContent() {
   )
 }
 
-export default EraseRepoContent
+export default EraseRepo

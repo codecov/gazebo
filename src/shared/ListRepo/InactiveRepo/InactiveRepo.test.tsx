@@ -1,7 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { eventTracker } from 'services/events/events'
 
 import InactiveRepo from './InactiveRepo'
 
@@ -13,6 +15,8 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
     </MemoryRouter>
   </QueryClientProvider>
 )
+
+vi.mock('services/events/events')
 
 describe('InactiveRepo', () => {
   it('renders "Deactivated" Text when not active', async () => {
@@ -43,5 +47,31 @@ describe('InactiveRepo', () => {
     const ctaText = await screen.findByText(/Configure/)
     expect(ctaText).toBeInTheDocument()
     expect(ctaText).toHaveAttribute('href', '/gh/bob/coolguy/new')
+  })
+
+  it('tracks a Button Clicked event when Configure is clicked', async () => {
+    render(
+      <InactiveRepo
+        isActive={false}
+        isCurrentUserPartOfOrg
+        repoName="coolguy"
+        owner="bob"
+      />,
+      { wrapper }
+    )
+
+    const ctaText = await screen.findByText(/Configure/)
+    expect(ctaText).toBeInTheDocument()
+    expect(ctaText).toHaveAttribute('href', '/gh/bob/coolguy/new')
+
+    act(() => ctaText.click())
+
+    expect(eventTracker().track).toHaveBeenCalledWith({
+      type: 'Button Clicked',
+      properties: {
+        buttonName: 'Configure Repo',
+        buttonLocation: 'Repo list',
+      },
+    })
   })
 })
