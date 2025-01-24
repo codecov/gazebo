@@ -155,7 +155,7 @@ describe('TokenlessBanner', () => {
     })
   })
 
-  it.only('renders TokenNotRequiredBanner when uploadTokenRequired is false', async () => {
+  it('renders TokenNotRequiredBanner when uploadTokenRequired is false', async () => {
     setup({ uploadTokenRequired: false, currentUser: mockSignedInUser })
     render(<TokenlessBanner />, { wrapper: wrapper() })
 
@@ -165,7 +165,7 @@ describe('TokenlessBanner', () => {
     })
   })
 
-  it.only('renders nothing when currentUser is not provided', () => {
+  it('renders nothing when currentUser is not provided', () => {
     setup({ uploadTokenRequired: false, currentUser: mockSignedInUser })
     const { container } = render(<TokenlessBanner />, { wrapper: wrapper() })
     expect(container).toBeEmptyDOMElement()
