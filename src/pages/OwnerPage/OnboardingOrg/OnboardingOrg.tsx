@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import orgListInstallApp from 'assets/onboarding/org_list_install_app.png'
+import { eventTracker } from 'services/events/events'
 import AppInstallModal from 'shared/AppInstallModal'
 import Button from 'ui/Button'
 
@@ -46,7 +47,16 @@ function OnboardingOrg() {
             <div className="mt-2">
               <Button
                 variant="primary"
-                onClick={() => setShowModal(true)}
+                onClick={() => {
+                  setShowModal(true)
+                  eventTracker().track({
+                    type: 'Button Clicked',
+                    properties: {
+                      buttonName: 'Open App Install Modal',
+                      buttonLocation: 'Onboarding Container',
+                    },
+                  })
+                }}
                 hook="install-codecov-link"
               >
                 <span>Install Codecov</span>
