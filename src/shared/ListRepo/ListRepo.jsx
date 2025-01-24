@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import { Suspense, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 
-import GithubConfigBanner from 'pages/OwnerPage/HeaderBanners/GithubConfigBanner'
-import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos/orderingOptions'
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
@@ -30,7 +28,7 @@ export const repoDisplayOptions = Object.freeze({
   ALL: { text: 'All', status: undefined },
 })
 
-function ListRepo({ canRefetch, hasGhApp }) {
+function ListRepo({ canRefetch }) {
   const { provider, owner } = useParams()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
@@ -54,14 +52,12 @@ function ListRepo({ canRefetch, hasGhApp }) {
     </div>
   )
 
-  const cameFromOnboarding = params['source'] === ONBOARDING_SOURCE
+  const cameFromOnboarding = params['source'] === 'onboarding'
   const isMyOwnerPage = currentUser?.user?.username === owner
   const showDemoAlert = cameFromOnboarding && isMyOwnerPage
 
   return (
     <>
-      {/* we only want one of these two banners to show at a time */}
-      {!hasGhApp && !showDemoAlert && <GithubConfigBanner />}
       <OrgControlTable
         searchValue={params.search}
         repoDisplay={repoDisplay}
@@ -106,7 +102,6 @@ function ListRepo({ canRefetch, hasGhApp }) {
 
 ListRepo.propTypes = {
   canRefetch: PropTypes.bool.isRequired,
-  hasGhApp: PropTypes.bool,
 }
 
 export default ListRepo
