@@ -93,7 +93,19 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   return (
     <form
       className="flex flex-col gap-6 border p-4 text-ds-gray-default md:w-2/3"
-      onSubmit={handleSubmit(upgradePlan)}
+      onSubmit={handleSubmit((data) => {
+        if (accountDetails?.unverifiedPaymentMethods?.length) {
+          if (
+            window.confirm(
+              'You have a payment method awaiting verification. Are you sure you want to proceed with upgrading your plan? This will cancel the existing action.'
+            )
+          ) {
+            upgradePlan(data)
+          }
+        } else {
+          upgradePlan(data)
+        }
+      })}
     >
       <div className="flex flex-col gap-1">
         <h3 className="font-semibold">Organization</h3>

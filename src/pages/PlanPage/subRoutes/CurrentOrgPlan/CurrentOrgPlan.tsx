@@ -40,9 +40,11 @@ function CurrentOrgPlan() {
     })
   )
 
-  const isAwaitingFirstPaymentMethodVerification = false
   const isAwaitingVerification =
     accountDetails?.unverifiedPaymentMethods?.length
+  const isAwaitingFirstPaymentMethodVerification =
+    !accountDetails?.subscriptionDetail?.defaultPaymentMethod &&
+    isAwaitingVerification
 
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   // customer is delinquent until their first payment method is verified
@@ -71,14 +73,6 @@ function CurrentOrgPlan() {
 
   return (
     <div className="w-full lg:w-4/5">
-      {isAwaitingVerification ? (
-        <UnverifiedPaymentMethodAlert
-          url={
-            accountDetails?.unverifiedPaymentMethods?.[0]
-              ?.hostedVerificationLink
-          }
-        />
-      ) : null}
       {planUpdatedNotification.isCancellation ? (
         <InfoAlertCancellation
           subscriptionDetail={accountDetails?.subscriptionDetail}
@@ -171,29 +165,6 @@ const DelinquentAlert = () => {
         <Alert.Description>
           Please try a different payment method or contact support at
           support@codecov.io.
-        </Alert.Description>
-      </Alert>
-      <br />
-    </>
-  )
-}
-
-const UnverifiedPaymentMethodAlert = ({ url }: { url: string | undefined }) => {
-  return (
-    <>
-      <Alert variant={'warning'}>
-        <Alert.Title>New Payment Method Awaiting Verification</Alert.Title>
-        <Alert.Description>
-          Your new payment method requires verification. Click{' '}
-          <A
-            href={url}
-            isExternal={true}
-            hook="stripe-payment-method-verification"
-            to={undefined}
-          >
-            here
-          </A>{' '}
-          to complete the verification process.
         </Alert.Description>
       </Alert>
       <br />

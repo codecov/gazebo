@@ -8,7 +8,10 @@ import config from 'config'
 
 import { SentryRoute } from 'sentry'
 
+import { useAccountDetails } from 'services/account'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
+import A from 'ui/A'
+import { Alert } from 'ui/Alert'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { PlanProvider } from './context'
@@ -16,7 +19,9 @@ import PlanBreadcrumb from './PlanBreadcrumb'
 import { PlanPageDataQueryOpts } from './queries/PlanPageDataQueryOpts'
 import Tabs from './Tabs'
 
+
 import { StripeAppearance } from '../../stripe'
+
 
 const CancelPlanPage = lazy(() => import('./subRoutes/CancelPlanPage'))
 const CurrentOrgPlan = lazy(() => import('./subRoutes/CurrentOrgPlan'))
@@ -40,12 +45,26 @@ function PlanPage() {
   const { data: ownerData } = useSuspenseQueryV5(
     PlanPageDataQueryOpts({ owner, provider })
   )
+  const { data: accountDetails } = useAccountDetails({
+    provider,
+    owner,
+  })
+
   const { theme } = useThemeContext()
   const isDarkMode = theme !== Theme.LIGHT
 
   if (config.IS_SELF_HOSTED || !ownerData?.isCurrentUserPartOfOrg) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
+
+  const isAwaitingVerification =
+    accountDetails?.unverifiedPaymentMethods?.length
+  // const isAwaitingFirstPaymentMethodVerification =
+  //   !accountDetails?.subscriptionDetail?.defaultPaymentMethod &&
+  //   isAwaitingVerification
+
+  // const hasSuccessfulDefaultPaymentMethod =
+  //   accountDetails?.subscriptionDetail?.defaultPaymentMethod
 
   return (
     <div className="flex flex-col gap-4">
@@ -61,6 +80,14 @@ function PlanPage() {
       >
         <PlanProvider>
           <PlanBreadcrumb />
+          {isAwaitingVerification ? (
+            <UnverifiedPaymentMethodAlert
+              url={
+                accountDetails?.unverifiedPaymentMethods?.[0]
+                  ?.hostedVerificationLink
+              }
+            />
+          ) : null}
           <Suspense fallback={<Loader />}>
             <Switch>
               <SentryRoute path={path} exact>
@@ -91,3 +118,27 @@ function PlanPage() {
 }
 
 export default PlanPage
+
+// eslint-disable-next-line react/prop-types
+const UnverifiedPaymentMethodAlert = ({ url }) => {
+  return (
+    <>
+      <Alert variant={'warning'}>
+        <Alert.Title>New Payment Method Awaiting Verification</Alert.Title>
+        <Alert.Description>
+          Your new payment method requires verification.{' '}
+          <A
+            href={url}
+            isExternal={true}
+            hook="stripe-payment-method-verification"
+            to={undefined}
+          >
+            Click here
+          </A>{' '}
+          to complete the verification process.
+        </Alert.Description>
+      </Alert>
+      <br />
+    </>
+  )
+}
