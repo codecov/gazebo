@@ -60,8 +60,7 @@ function ListRepo({ canRefetch, hasGhApp }) {
 
   return (
     <>
-      {/* we only want one of these two banners to show at a time */}
-      {!hasGhApp && !showDemoAlert && <GithubConfigBanner />}
+      {!hasGhApp && <GithubConfigBanner />}
       <OrgControlTable
         searchValue={params.search}
         repoDisplay={repoDisplay}
