@@ -34,8 +34,15 @@ const Loader = () => (
   </div>
 )
 
+interface URLParams {
+  owner: string
+  repo: string
+  pullId: string
+  provider: string
+}
+
 function PullCoverageContent() {
-  const { owner, repo, pullId, provider } = useParams()
+  const { owner, repo, pullId, provider } = useParams<URLParams>()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
@@ -123,7 +130,7 @@ function PullCoverageContent() {
 }
 
 function PullCoverage() {
-  const { owner, repo, pullId, provider } = useParams()
+  const { owner, repo, pullId, provider } = useParams<URLParams>()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
   const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
@@ -134,7 +141,7 @@ function PullCoverage() {
       owner,
       repo,
       pullId,
-      isTeamPlan: isTeamPlan && overview?.private,
+      isTeamPlan: (isTeamPlan && overview?.private) ?? false,
     })
   )
 
