@@ -40,16 +40,25 @@ function CurrentOrgPlan() {
     })
   )
 
+  // awaitingInitialPaymentMethodVerification is true if the
+  // customer needs to verify a delayed notification payment method
+  // like ACH for their first subscription
+  const awaitingInitialPaymentMethodVerification =
+    !accountDetails?.subscriptionDetail?.defaultPaymentMethod &&
+    accountDetails?.unverifiedPaymentMethods?.length
+
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
-  const isDelinquent = accountDetails?.delinquent
+  const isDelinquent =
+    accountDetails?.delinquent && !awaitingInitialPaymentMethodVerification
   const scheduleStart = scheduledPhase
     ? getScheduleStart(scheduledPhase)
     : undefined
 
   const shouldRenderBillingDetails =
-    (accountDetails?.planProvider !== 'github' &&
+    !awaitingInitialPaymentMethodVerification &&
+    ((accountDetails?.planProvider !== 'github' &&
       !accountDetails?.rootOrganization) ||
-    accountDetails?.usesInvoice
+      accountDetails?.usesInvoice)
 
   const planUpdatedNotification = usePlanUpdatedNotification()
 
@@ -62,7 +71,7 @@ function CurrentOrgPlan() {
           subscriptionDetail={accountDetails?.subscriptionDetail}
         />
       ) : null}
-      <InfoMessageStripeCallback />
+      <InfoMessageStripeCallback accountDetails={accountDetails} />
       {isDelinquent ? <DelinquentAlert /> : null}
       {planData?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
@@ -147,7 +156,8 @@ const DelinquentAlert = () => {
       <Alert variant={'error'}>
         <Alert.Title>Your most recent payment failed</Alert.Title>
         <Alert.Description>
-          Please try a different card or contact support at support@codecov.io.
+          Please try a different payment method or contact support at
+          support@codecov.io.
         </Alert.Description>
       </Alert>
       <br />

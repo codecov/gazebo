@@ -4,8 +4,14 @@ import cs from 'classnames'
 import { z } from 'zod'
 
 import { AccountDetailsSchema, BillingDetailsSchema } from 'services/account'
-import { useUpdatePaymentMethod } from 'services/account/useUpdatePaymentMethod'
+import {
+  MissingAddressError,
+  MissingEmailError,
+  MissingNameError,
+  useUpdatePaymentMethod,
+} from 'services/account/useUpdatePaymentMethod'
 import { Provider } from 'shared/api/helpers'
+import A from 'ui/A'
 import Button from 'ui/Button'
 
 interface PaymentMethodFormProps {
@@ -81,7 +87,7 @@ const PaymentMethodForm = ({
             }}
           />
           <p className="mt-1 text-ds-primary-red">
-            {showError && error?.message}
+            {showError ? getErrorMessage(error) : null}
           </p>
           <div className="mb-8 mt-4 flex gap-1">
             <Button
@@ -148,6 +154,29 @@ export const getName = (
     accountDetails?.name ||
     undefined
   )
+}
+
+export const getErrorMessage = (error: Error): JSX.Element => {
+  switch (error.message) {
+    case MissingNameError:
+      return <span>Missing name, please edit Full Name</span>
+    case MissingEmailError:
+      return <span>Missing email, please edit Email</span>
+    case MissingAddressError:
+      return <span>Missing address, please edit Address</span>
+    default:
+      return (
+        <span>
+          There&apos;s been an error. Please try refreshing your browser, if
+          this error persists please{' '}
+          {/* @ts-expect-error ignore until we can convert A component to ts */}
+          <A to={{ pageName: 'support' }} variant="link">
+            contact support
+          </A>
+          .
+        </span>
+      )
+  }
 }
 
 export default PaymentMethodForm

@@ -373,7 +373,7 @@ describe('CurrentOrgPlan', () => {
       )
       expect(paymentFailed).toBeInTheDocument()
       const contactSupport = await screen.findByText(
-        'Please try a different card or contact support at support@codecov.io.'
+        'Please try a different payment method or contact support at support@codecov.io.'
       )
       expect(contactSupport).toBeInTheDocument()
     })
