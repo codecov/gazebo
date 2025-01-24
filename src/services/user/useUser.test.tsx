@@ -25,6 +25,7 @@ const user = {
       student: false,
       studentCreatedAt: null,
       studentUpdatedAt: null,
+      customerIntent: 'PERSONAL',
     },
     trackingMetadata: {
       service: 'github',

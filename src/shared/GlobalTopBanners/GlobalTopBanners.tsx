@@ -3,6 +3,7 @@ import { lazy } from 'react'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 
 const BundleFeedbackBanner = lazy(() => import('./BundleFeedbackBanner'))
+const RequestInstallBanner = lazy(() => import('./RequestInstallBanner'))
 const TrialBanner = lazy(() => import('./TrialBanner'))
 const TeamPlanFeedbackBanner = lazy(() => import('./TeamPlanFeedbackBanner'))
 const ProPlanFeedbackBanner = lazy(() => import('./ProPlanFeedbackBanner'))
@@ -15,6 +16,10 @@ const GlobalTopBanners: React.FC = () => {
       <div className="[&>*:last-child]:block">
         <SilentNetworkErrorWrapper>
           <OktaBanners />
+        </SilentNetworkErrorWrapper>
+
+        <SilentNetworkErrorWrapper>
+          <RequestInstallBanner />
         </SilentNetworkErrorWrapper>
 
         <SilentNetworkErrorWrapper>

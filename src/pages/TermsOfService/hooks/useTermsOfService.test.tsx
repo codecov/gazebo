@@ -94,7 +94,7 @@ describe('useSaveTermsAgreement', () => {
         result.current.mutate({
           businessEmail: 'test@test.com',
           termsAgreement: true,
-          name: 'Test Name',
+          customerIntent: 'PERSONAL',
         })
 
         await waitFor(() => expect(successFn).toHaveBeenCalledWith('completed'))
@@ -113,7 +113,7 @@ describe('useSaveTermsAgreement', () => {
         result.current.mutate({
           businessEmail: 'test@test.com',
           termsAgreement: true,
-          name: 'Test Name',
+          customerIntent: 'PERSONAL',
         })
 
         await waitFor(() => expect(testLocation.pathname).toEqual('/'))
@@ -140,7 +140,7 @@ describe('useSaveTermsAgreement', () => {
         result.current.mutate({
           businessEmail: 'test@test.com',
           termsAgreement: true,
-          name: 'Test Name',
+          customerIntent: 'PERSONAL',
         })
 
         await waitFor(() => expect(successFn).toHaveBeenCalledWith('completed'))
@@ -159,10 +159,39 @@ describe('useSaveTermsAgreement', () => {
         result.current.mutate({
           businessEmail: 'test@test.com',
           termsAgreement: true,
-          name: 'Test Name',
+          customerIntent: 'PERSONAL',
         })
 
         await waitFor(() => expect(testLocation.pathname).toEqual('/'))
+      })
+    })
+
+    it('proceeds with mutation on missing email', async () => {
+      setup()
+      const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries')
+      const successFn = vi.fn()
+      const { result } = renderHook(
+        () =>
+          useSaveTermsAgreement({
+            onSuccess: () => {
+              successFn('completed')
+            },
+          }),
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      result.current.mutate({
+        businessEmail: null,
+        termsAgreement: true,
+        customerIntent: 'PERSONAL',
+      })
+
+      await waitFor(() => expect(successFn).toHaveBeenCalledWith('completed'))
+
+      expect(invalidateQueries).toHaveBeenCalledWith({
+        queryKey: ['InternalUser'],
       })
     })
 
@@ -186,7 +215,7 @@ describe('useSaveTermsAgreement', () => {
         result.current.mutate({
           businessEmail: 'test@test.com',
           termsAgreement: true,
-          name: 'Test Name',
+          customerIntent: 'PERSONAL',
         })
 
         await waitFor(() =>
@@ -220,7 +249,7 @@ describe('useSaveTermsAgreement', () => {
         result.current.mutate({
           businessEmail: 'test@test.com',
           termsAgreement: true,
-          name: 'Test Name',
+          customerIntent: 'PERSONAL',
         })
 
         await waitFor(() => expect(testLocation.pathname).toEqual('/gh'))

@@ -1,10 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, http, HttpResponse } from 'msw'
+import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { OnboardingContainerProvider } from './OnboardingContainerContext/context'
 import OwnerPage from './OwnerPage'
 
 const mocks = vi.hoisted(() => ({
@@ -32,16 +31,14 @@ let testLocation
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov']}>
-      <OnboardingContainerProvider>
-        <Route path="/:provider/:owner">{children}</Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </OnboardingContainerProvider>
+      <Route path="/:provider/:owner">{children}</Route>
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation = location
+          return null
+        }}
+      />
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -59,10 +56,9 @@ afterAll(() => {
 
 describe('OwnerPage', () => {
   function setup(
-    { owner, successfulMutation = true, integrationId = 9 } = {
+    { owner, successfulMutation = true } = {
       owner: null,
       successfulMutation: true,
-      integrationId: 9,
     }
   ) {
     server.use(
@@ -86,9 +82,6 @@ describe('OwnerPage', () => {
         return HttpResponse.json({
           data: { saveSentryState: null },
         })
-      }),
-      http.get('/internal/gh/codecov/account-details/', () => {
-        return HttpResponse.json({ integrationId })
       })
     )
   }

@@ -6,7 +6,6 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { ActiveContext } from 'shared/context'
-import { Plans } from 'shared/utils/billing'
 
 import ListRepo from './ListRepo'
 
@@ -28,59 +27,7 @@ vi.mock('./OrgControlTable/RepoOrgNotFound', () => ({
 vi.mock('./ReposTable', () => ({ default: () => 'ReposTable' }))
 vi.mock('./ReposTableTeam', () => ({ default: () => 'ReposTableTeam.tsx' }))
 
-const mockUser = {
-  me: {
-    owner: {
-      defaultOrgUsername: 'codecov',
-    },
-    email: 'jane.doe@codecov.io',
-    privateAccess: true,
-    onboardingCompleted: true,
-    businessEmail: 'jane.doe@codecov.io',
-    termsAgreement: true,
-    user: {
-      name: 'Jane Doe',
-      username: 'janedoe',
-      avatarUrl: 'http://127.0.0.1/avatar-url',
-      avatar: 'http://127.0.0.1/avatar-url',
-      student: false,
-      studentCreatedAt: null,
-      studentUpdatedAt: null,
-    },
-    trackingMetadata: {
-      service: 'github',
-      ownerid: 123,
-      serviceId: '123',
-      plan: Plans.USERS_BASIC,
-      staff: false,
-      hasYaml: false,
-      bot: null,
-      delinquent: null,
-      didTrial: null,
-      planProvider: null,
-      planUserCount: 1,
-      createdAt: 'timestamp',
-      updatedAt: 'timestamp',
-      profile: {
-        createdAt: 'timestamp',
-        otherGoal: null,
-        typeProjects: [],
-        goals: [],
-      },
-    },
-  },
-}
-
 const server = setupServer()
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      suspense: false,
-    },
-  },
-})
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
@@ -96,23 +43,23 @@ afterAll(() => {
   server.close()
 })
 
-let testLocation: any
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
+
+let testLocation
 
 const wrapper =
-  ({
-    url = '',
-    path = '',
-    repoDisplay = '',
-  }: {
-    url?: string
-    path?: string
-    repoDisplay?: string
-  }): React.FC<React.PropsWithChildren> =>
+  ({ url = '', path = '', repoDisplay = '' } = {}) =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[url]}>
         <ActiveContext.Provider value={repoDisplay}>
-          <Route path={path}>{children}</Route>
+          {children}
           <Route
             path={path}
             render={({ location }) => {
@@ -125,9 +72,22 @@ const wrapper =
     </QueryClientProvider>
   )
 
+const mockUser = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    user: {
+      username: 'janedoe',
+    },
+    trackingMetadata: {},
+  },
+}
+
 describe('ListRepo', () => {
   function setup(
-    { isTeamPlan = false }: { isTeamPlan?: boolean },
+    { isTeamPlan = false } = { isTeamPlan: false },
     me = mockUser
   ) {
     const user = userEvent.setup()
@@ -148,18 +108,18 @@ describe('ListRepo', () => {
 
   describe('renders', () => {
     it('renders the children', () => {
-      setup({})
+      setup()
       render(<ListRepo canRefetch />, {
-        wrapper: wrapper({}),
+        wrapper: wrapper(),
       })
 
       expect(screen.getByText(/Not Configured/)).toBeInTheDocument()
     })
 
     it('renders the repo table', () => {
-      setup({})
+      setup()
       render(<ListRepo canRefetch />, {
-        wrapper: wrapper({}),
+        wrapper: wrapper(),
       })
 
       expect(screen.getByText(/ReposTable/)).toBeInTheDocument()
@@ -168,7 +128,7 @@ describe('ListRepo', () => {
 
   describe('reads URL parameters', () => {
     it('reads search parameter from URL', () => {
-      setup({})
+      setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({ url: '?search=thisisaquery' }),
       })
@@ -180,13 +140,14 @@ describe('ListRepo', () => {
 
   describe('switches Configured/Not Configured/All repos', () => {
     it('switches to active repos', async () => {
-      const { user } = setup({})
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({ url: '/gh', path: '/:provider' }),
       })
 
       const button = screen.getByRole('button', {
         name: 'Configured',
+        exact: true,
       })
       await user.click(button)
       expect(testLocation.state.repoDisplay).toEqual(
@@ -195,7 +156,7 @@ describe('ListRepo', () => {
     })
 
     it('switches to Not Configured repos', async () => {
-      const { user } = setup({})
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({ url: '/gh', path: '/:provider' }),
       })
@@ -210,7 +171,7 @@ describe('ListRepo', () => {
     })
 
     it('switches to Configured repos owner page', async () => {
-      const { user } = setup({})
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh/hola',
@@ -219,6 +180,7 @@ describe('ListRepo', () => {
       })
       const button = screen.getByRole('button', {
         name: 'Configured',
+        exact: true,
       })
       await user.click(button)
       expect(testLocation.state.repoDisplay).toEqual(
@@ -227,7 +189,7 @@ describe('ListRepo', () => {
     })
 
     it('switches to all repos owner page', async () => {
-      const { user } = setup({})
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh/hola',
@@ -247,9 +209,9 @@ describe('ListRepo', () => {
 
   describe('update params after typing', () => {
     it('calls setSearchValue', async () => {
-      const { user } = setup({})
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
-        wrapper: wrapper({}),
+        wrapper: wrapper(),
       })
 
       const searchInput = screen.getByRole('textbox', {
@@ -267,7 +229,7 @@ describe('ListRepo', () => {
     it('renders the team table', async () => {
       setup({ isTeamPlan: true })
       render(<ListRepo canRefetch />, {
-        wrapper: wrapper({}),
+        wrapper: wrapper(),
       })
       const table = await screen.findByText(/ReposTableTeam/)
       expect(table).toBeInTheDocument()
@@ -276,7 +238,7 @@ describe('ListRepo', () => {
 
   describe('welcome demo alert banner', () => {
     it('shows alert banner if it is my owner page and I came from onboarding', async () => {
-      const { me } = setup({})
+      const { me } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh/janedoe?source=onboarding',
@@ -284,12 +246,12 @@ describe('ListRepo', () => {
         }),
       })
       expect(me.me.user.username).toEqual('janedoe')
-      const alert = await screen.findByRole('alert')
+      const alert = screen.queryByRole('alert')
       expect(alert).toBeInTheDocument()
     })
 
     it('does not show alert banner if I did not come from onboarding', async () => {
-      const { me } = setup({})
+      const { me } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh/janedoe',
@@ -299,23 +261,6 @@ describe('ListRepo', () => {
       expect(me.me.user.username).toEqual('janedoe')
       const alert = screen.queryByRole('alert')
       expect(alert).not.toBeInTheDocument()
-    })
-  })
-
-  describe('user does not have gh app installed', () => {
-    it('displays github app config banner', async () => {
-      setup({})
-      render(<ListRepo canRefetch hasGhApp={false} />, {
-        wrapper: wrapper({
-          url: '/gh/janedoe',
-          path: '/:provider/:owner',
-        }),
-      })
-
-      await waitFor(() => {
-        const banner = screen.getByText("Codecov's GitHub app")
-        return expect(banner).toBeInTheDocument()
-      })
     })
   })
 })

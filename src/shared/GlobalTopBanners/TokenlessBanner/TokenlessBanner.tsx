@@ -1,8 +1,6 @@
 import React, { lazy } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
-import { useLocationParams } from 'services/navigation'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import { useFlags } from 'shared/featureFlags'
 
@@ -20,11 +18,8 @@ const TokenlessBanner: React.FC = () => {
   })
   const { provider, owner } = useParams<UseParams>()
   const { data } = useUploadTokenRequired({ provider, owner, enabled: !!owner })
-  const { params } = useLocationParams()
-  // @ts-expect-error useLocationParams needs to be typed
-  const cameFromOnboarding = params['source'] === ONBOARDING_SOURCE
 
-  if (!tokenlessSection || !owner || !data || cameFromOnboarding) return null
+  if (!tokenlessSection || !owner || !data) return null
 
   return data?.uploadTokenRequired ? (
     <TokenRequiredBanner />

@@ -4,9 +4,10 @@ import { useParams } from 'react-router-dom'
 import config from 'config'
 
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
-import { usePlanData } from 'services/account'
+import { useAccountDetails, usePlanData } from 'services/account'
 
 import ExceededUploadsAlert from './ExceededUploadsAlert'
+import GithubConfigBanner from './GithubConfigBanner'
 import ReachingUploadLimitAlert from './ReachingUploadLimitAlert'
 
 const useUploadsInfo = () => {
@@ -30,9 +31,14 @@ const useUploadsInfo = () => {
   return { isUploadLimitExceeded, isApproachingUploadLimit }
 }
 
-const AlertBanners = ({ isUploadLimitExceeded, isApproachingUploadLimit }) => {
+const AlertBanners = ({
+  isUploadLimitExceeded,
+  isApproachingUploadLimit,
+  hasGhApp,
+}) => {
   return (
     <>
+      {!hasGhApp && <GithubConfigBanner />}
       {isUploadLimitExceeded ? (
         <ExceededUploadsAlert />
       ) : isApproachingUploadLimit ? (
@@ -49,7 +55,16 @@ AlertBanners.propTypes = {
 }
 
 export default function HeaderBanners() {
+  const { owner, provider } = useParams()
+  // TODO: refactor this to add a gql field for the integration id used to determine if the org has a GH app
+  const { data: accountDetails } = useAccountDetails({
+    provider,
+    owner,
+  })
+
   const { isUploadLimitExceeded, isApproachingUploadLimit } = useUploadsInfo()
+
+  const hasGhApp = !!accountDetails?.integrationId
 
   if (config.IS_SELF_HOSTED) {
     return null
@@ -60,6 +75,7 @@ export default function HeaderBanners() {
       <AlertBanners
         isUploadLimitExceeded={isUploadLimitExceeded}
         isApproachingUploadLimit={isApproachingUploadLimit}
+        hasGhApp={hasGhApp}
       />
     </>
   )
