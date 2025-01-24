@@ -44,7 +44,7 @@ vi.mock('./routes/ComponentsTab', () => ({
   default: () => <div>ComponentsTab</div>,
 }))
 
-const mockPullData = (resultType) => {
+const mockPullData = (resultType: string) => {
   if (resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON) {
     return {
       owner: {
@@ -181,7 +181,9 @@ const queryClientV5 = new QueryClientV5({
 })
 
 const wrapper =
-  (initialEntries = '/gh/codecov/test-repo/pull/1') =>
+  (
+    initialEntries = '/gh/codecov/test-repo/pull/1'
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
     <QueryClientProviderV5 client={queryClientV5}>
       <QueryClientProvider client={queryClient}>
@@ -213,6 +215,14 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  resultType?: string
+  isTeamPlan?: boolean
+  bundleAnalysisEnabled?: boolean
+  coverageEnabled?: boolean
+  isGithubRateLimited?: boolean
+}
+
 describe('PullRequestPageContent', () => {
   function setup(
     {
@@ -221,7 +231,7 @@ describe('PullRequestPageContent', () => {
       bundleAnalysisEnabled = false,
       coverageEnabled = false,
       isGithubRateLimited = false,
-    } = {
+    }: SetupArgs = {
       resultType: ComparisonReturnType.SUCCESSFUL_COMPARISON,
       isTeamPlan: false,
       bundleAnalysisEnabled: false,
