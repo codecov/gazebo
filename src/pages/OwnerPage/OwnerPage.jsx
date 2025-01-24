@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
-import { useSentryToken } from 'services/account'
+import { useAccountDetails, useSentryToken } from 'services/account'
 import { useLocationParams } from 'services/navigation'
 import { renderToast } from 'services/toast'
 import { ActiveContext } from 'shared/context'
@@ -38,7 +38,7 @@ const useSentryTokenRedirect = ({ ownerData }) => {
 }
 
 function OwnerPage() {
-  const { provider } = useParams()
+  const { owner, provider } = useParams()
   const { data: ownerData } = useOwnerPageData()
   const { params } = useLocationParams({
     repoDisplay: 'All',
@@ -66,6 +66,14 @@ function OwnerPage() {
     }
   }, [userStartedTrial])
 
+  // TODO: refactor this to add a gql field for the integration id used to determine if the org has a GH app
+  const { data: accountDetails } = useAccountDetails({
+    provider,
+    owner,
+  })
+
+  const hasGhApp = !!accountDetails?.integrationId
+
   if (!ownerData) {
     return <NotFound />
   }
@@ -83,7 +91,10 @@ function OwnerPage() {
           <Tabs owner={ownerData} provider={provider} />
         )}
         <ActiveContext.Provider value={params?.repoDisplay}>
-          <ListRepo canRefetch={ownerData?.isCurrentUserPartOfOrg} />
+          <ListRepo
+            canRefetch={ownerData?.isCurrentUserPartOfOrg}
+            hasGhApp={hasGhApp}
+          />
         </ActiveContext.Provider>
       </div>
     </div>

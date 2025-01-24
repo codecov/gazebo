@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Suspense, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 
+import GithubConfigBanner from 'pages/OwnerPage/HeaderBanners/GithubConfigBanner'
 import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos/orderingOptions'
@@ -29,7 +30,7 @@ export const repoDisplayOptions = Object.freeze({
   ALL: { text: 'All', status: undefined },
 })
 
-function ListRepo({ canRefetch }) {
+function ListRepo({ canRefetch, hasGhApp }) {
   const { provider, owner } = useParams()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
@@ -59,6 +60,7 @@ function ListRepo({ canRefetch }) {
 
   return (
     <>
+      {!hasGhApp && <GithubConfigBanner />}
       <OrgControlTable
         searchValue={params.search}
         repoDisplay={repoDisplay}
@@ -103,6 +105,7 @@ function ListRepo({ canRefetch }) {
 
 ListRepo.propTypes = {
   canRefetch: PropTypes.bool.isRequired,
+  hasGhApp: PropTypes.bool,
 }
 
 export default ListRepo
