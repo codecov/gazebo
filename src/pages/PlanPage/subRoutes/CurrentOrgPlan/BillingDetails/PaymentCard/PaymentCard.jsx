@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import { subscriptionDetailType } from 'services/account'
+import { accountDetailsPropType } from 'services/account'
 import { formatTimestampToCalendarDate } from 'shared/utils/billing'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -10,8 +10,9 @@ import Icon from 'ui/Icon'
 import BankInformation from './BankInformation'
 import CardInformation from './CardInformation'
 import PaymentMethodForm from './PaymentMethodForm'
-function PaymentCard({ subscriptionDetail, provider, owner }) {
+function PaymentCard({ accountDetails, provider, owner }) {
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const subscriptionDetail = accountDetails?.subscriptionDetail
   const card = subscriptionDetail?.defaultPaymentMethod?.card
   const usBankAccount = subscriptionDetail?.defaultPaymentMethod?.usBankAccount
   // const isAwaitingDelayedPaymentMethodVerification = true
@@ -42,7 +43,7 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
           provider={provider}
           owner={owner}
           closeForm={() => setIsFormOpen(false)}
-          subscriptionDetail={subscriptionDetail}
+          accountDetails={accountDetails}
         />
       ) : card ? (
         <CardInformation card={card} subscriptionDetail={subscriptionDetail} />
@@ -73,7 +74,7 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
 }
 
 PaymentCard.propTypes = {
-  subscriptionDetail: subscriptionDetailType,
+  accountDetails: accountDetailsPropType,
   provider: PropTypes.string.isRequired,
   owner: PropTypes.string.isRequired,
 }

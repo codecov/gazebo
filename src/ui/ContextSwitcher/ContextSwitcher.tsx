@@ -7,6 +7,8 @@ import useClickAway from 'react-use/lib/useClickAway'
 import config, { DEFAULT_GH_APP } from 'config'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
+import { eventTracker } from 'services/events/events'
+import { useOwner } from 'services/user'
 import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
@@ -39,17 +41,16 @@ function LoadMoreTrigger({
 }
 
 interface ContextItemProps {
-  context: {
-    owner: { username: string | null } | null
-    pageName: string
-  }
+  context: Context
+  currentUserUsername: string | null
   defaultOrgUsername: string | null
   setToggle: (arg: boolean) => void
-  owner?: string
+  owner?: string | null
 }
 
 function ContextItem({
   context,
+  currentUserUsername,
   defaultOrgUsername,
   setToggle,
   owner,
@@ -77,7 +78,9 @@ function ContextItem({
       >
         <Avatar user={contextOwner} />
         <div className={cs('mx-1', { 'font-semibold': owner === orgUsername })}>
-          {orgUsername}
+          {!!orgUsername && orgUsername === currentUserUsername
+            ? `${orgUsername}'s personal organization`
+            : orgUsername || ''}
         </div>
       </Button>
     </li>
@@ -142,11 +145,10 @@ export interface Props {
   contexts: Context[]
   currentUser: {
     defaultOrgUsername: string | null
-  }
-  activeContext: {
+    username: string | null
     avatarUrl: string
-    username: string
   }
+  activeContext: ReturnType<typeof useOwner>['data']
   onLoadMore?: () => void
   isLoading: boolean
 }
@@ -169,6 +171,7 @@ function ContextSwitcher({
   const wrapperRef = useCloseOnLooseFocus({ setToggle })
   const intersectionRef = useLoadMore({ onLoadMore })
   const defaultOrgUsername = currentUser?.defaultOrgUsername
+  const currentUserUsername = currentUser?.username
 
   const isGh = providerToName(provider) === 'GitHub'
   const isSelfHosted = config.IS_SELF_HOSTED
@@ -177,6 +180,7 @@ function ContextSwitcher({
   // self-hosted cannot use default "codecov" app (must set up custom one)
   const shouldShowGitHubInstallLink =
     isGh && (isSelfHosted ? isCustomGitHubApp : true)
+  const displayUsername = activeContext?.username ?? owner
 
   return (
     <div id="context-switcher" className="relative text-sm" ref={wrapperRef}>
@@ -193,7 +197,12 @@ function ContextSwitcher({
         onClick={() => setToggle((toggle) => !toggle)}
       >
         <Avatar user={activeContext} />
-        <p className="ml-1">{activeContext?.username ?? owner}</p>
+        <p className="ml-1">
+          {displayUsername}
+          {displayUsername === currentUserUsername
+            ? "'s personal organization"
+            : ''}
+        </p>
         <span
           aria-hidden="true"
           className={cs('transition-transform', {
@@ -217,16 +226,26 @@ function ContextSwitcher({
           <li className="flex justify-between border-b border-ds-border-line px-4 py-3">
             <A
               to={{ pageName: 'codecovAppInstallation' }}
+              onClick={() =>
+                eventTracker().track({
+                  type: 'Button Clicked',
+                  properties: {
+                    buttonName: 'Install GitHub App',
+                    buttonLocation: 'Org selector',
+                  },
+                })
+              }
               isExternal
               hook="context-switcher-gh-install-link"
             >
               <Icon name="plusCircle" />
-              Install Codecov GitHub app
+              To add another organization, install Codecov GitHub App
             </A>
           </li>
         ) : null}
         {contexts.map((context) => (
           <ContextItem
+            currentUserUsername={currentUserUsername}
             defaultOrgUsername={defaultOrgUsername}
             context={context}
             key={context?.owner?.username}

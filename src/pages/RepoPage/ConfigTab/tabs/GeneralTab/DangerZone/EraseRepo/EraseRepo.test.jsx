@@ -6,7 +6,7 @@ import { delay, graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import EraseRepoContent from './EraseRepoContent'
+import EraseRepo from './EraseRepo'
 
 const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
@@ -70,7 +70,7 @@ const mockResponse = {
   },
 }
 
-describe('EraseRepoContent', () => {
+describe('EraseRepository', () => {
   function setup(
     { failedMutation = false, isLoading = false, unauthorized = false } = {
       failedMutation: false,
@@ -103,45 +103,45 @@ describe('EraseRepoContent', () => {
     return { user, mutate, addNotification }
   }
 
-  describe('renders EraseRepoContent component', () => {
+  describe('renders EraseRepo component', () => {
     beforeEach(() => setup())
 
     it('renders title', async () => {
-      render(<EraseRepoContent />, { wrapper })
+      render(<EraseRepo />, { wrapper })
 
-      const title = await screen.findByText(/Erase repo coverage content/)
+      const title = await screen.findByText(/Erase repository/)
       expect(title).toBeInTheDocument()
     })
 
     it('renders body', async () => {
-      render(<EraseRepoContent />, { wrapper })
+      render(<EraseRepo />, { wrapper })
 
       const firstBlock = await screen.findByText(
-        /This will remove all coverage reporting from the repo./
+        /This will erase the repository, including all of its contents./
       )
       expect(firstBlock).toBeInTheDocument()
     })
 
     it('renders erase button', async () => {
-      render(<EraseRepoContent />, { wrapper })
+      render(<EraseRepo />, { wrapper })
 
       const eraseButton = await screen.findByRole('button', {
-        name: /Erase Content/,
+        name: /Erase Repository/,
       })
       expect(eraseButton).toBeInTheDocument()
     })
 
     it('renders processing copy when isLoading is true', async () => {
       const { user } = setup({ isLoading: true })
-      render(<EraseRepoContent />, { wrapper })
+      render(<EraseRepo />, { wrapper })
 
       const eraseButton = await screen.findByRole('button', {
-        name: /Erase Content/,
+        name: /Erase Repository/,
       })
       await user.click(eraseButton)
 
       const modalCancelButton = await screen.findByRole('button', {
-        name: /Erase Content/,
+        name: /Erase Repository/,
       })
       await user.click(modalCancelButton)
 
@@ -152,56 +152,56 @@ describe('EraseRepoContent', () => {
     })
   })
 
-  describe('when the user clicks on erase content button', () => {
-    describe('displays Erase Content Modal', () => {
+  describe('when the user clicks on erase repository button', () => {
+    describe('displays Erase Repository Modal', () => {
       beforeEach(() => setup())
 
-      it('displays erase content button', async () => {
+      it('displays erase repository button', async () => {
         const { user } = setup()
-        render(<EraseRepoContent />, { wrapper })
+        render(<EraseRepo />, { wrapper })
 
         const eraseButton = await screen.findByRole('button', {
-          name: /Erase Content/,
+          name: /Erase Repository/,
         })
         user.click(eraseButton)
 
         const modalEraseButton = await screen.findByRole('button', {
-          name: /Erase Content/,
+          name: /Erase Repository/,
         })
         expect(modalEraseButton).toBeInTheDocument()
       })
 
       it('displays modal body', async () => {
         const { user } = setup()
-        render(<EraseRepoContent />, { wrapper })
+        render(<EraseRepo />, { wrapper })
 
         const eraseButton = await screen.findByRole('button', {
-          name: /Erase Content/,
+          name: /Erase Repository/,
         })
         user.click(eraseButton)
 
         const p1 = await screen.findByText(
-          /Are you sure you want to erase the repo coverage content?/
+          /Are you sure you want to erase the repository?/
         )
         expect(p1).toBeInTheDocument()
 
         const p2 = await screen.findByText(
-          /This will erase repo coverage content should erase all coverage data contained in the repo. This action is irreversible and if you proceed, you will permanently erase any historical code coverage in Codecov for this repository./
+          /This will erase the repository, including all of its contents. This action is irreversible/
         )
         expect(p2).toBeInTheDocument()
       })
 
       it('displays modal buttons', async () => {
         const { user } = setup()
-        render(<EraseRepoContent />, { wrapper })
+        render(<EraseRepo />, { wrapper })
 
         const eraseButton = await screen.findByRole('button', {
-          name: /Erase Content/,
+          name: /Erase Repository/,
         })
         user.click(eraseButton)
 
         const modalEraseButton = await screen.findByRole('button', {
-          name: /Erase Content/,
+          name: /Erase Repository/,
         })
         expect(modalEraseButton).toBeInTheDocument()
 
@@ -215,10 +215,10 @@ describe('EraseRepoContent', () => {
     describe('when user clicks on Cancel button', () => {
       it('does not call the mutation', async () => {
         const { user, mutate } = setup()
-        render(<EraseRepoContent />, { wrapper })
+        render(<EraseRepo />, { wrapper })
 
         const eraseButton = await screen.findByRole('button', {
-          name: /Erase Content/,
+          name: /Erase Repository/,
         })
         await user.click(eraseButton)
 
@@ -232,18 +232,18 @@ describe('EraseRepoContent', () => {
     })
   })
 
-  describe('when user clicks on Erase Content button', () => {
+  describe('when user clicks on Erase Repository button', () => {
     it('calls the mutation', async () => {
       const { user, mutate } = setup()
-      render(<EraseRepoContent />, { wrapper })
+      render(<EraseRepo />, { wrapper })
 
       const eraseButton = await screen.findByRole('button', {
-        name: /Erase Content/,
+        name: /Erase Repository/,
       })
       await user.click(eraseButton)
 
       const modalEraseButton = await screen.findByRole('button', {
-        name: /Erase Content/,
+        name: /Erase Repository/,
       })
       await user.click(modalEraseButton)
 
@@ -254,15 +254,15 @@ describe('EraseRepoContent', () => {
   describe('when mutation is successful', () => {
     it('adds a success notification', async () => {
       const { user, mutate, addNotification } = setup()
-      render(<EraseRepoContent />, { wrapper })
+      render(<EraseRepo />, { wrapper })
 
       const eraseButton = await screen.findByRole('button', {
-        name: /Erase Content/,
+        name: /Erase Repository/,
       })
       await user.click(eraseButton)
 
       const modalEraseButton = await screen.findByRole('button', {
-        name: /Erase Content/,
+        name: /Erase Repository/,
       })
       await user.click(modalEraseButton)
 
@@ -270,7 +270,7 @@ describe('EraseRepoContent', () => {
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({
           type: 'success',
-          text: 'Repo coverage content erased successfully',
+          text: 'Repository erased successfully',
         })
       )
     })
@@ -279,15 +279,15 @@ describe('EraseRepoContent', () => {
   describe('when mutation is not successful', () => {
     it('adds an error notification', async () => {
       const { user, mutate, addNotification } = setup({ failedMutation: true })
-      render(<EraseRepoContent />, { wrapper })
+      render(<EraseRepo />, { wrapper })
 
       const eraseButton = await screen.findByRole('button', {
-        name: /Erase Content/,
+        name: /Erase Repository/,
       })
       await user.click(eraseButton)
 
       const modalEraseButton = await screen.findByRole('button', {
-        name: /Erase Content/,
+        name: /Erase Repository/,
       })
       await user.click(modalEraseButton)
 
@@ -295,7 +295,7 @@ describe('EraseRepoContent', () => {
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({
           type: 'error',
-          text: "We were unable to erase this repo's content",
+          text: 'We were unable to erase this repository',
         })
       )
     })
@@ -304,15 +304,15 @@ describe('EraseRepoContent', () => {
   describe('when user is unauthorized', () => {
     it('adds an error notification', async () => {
       const { user, mutate, addNotification } = setup({ unauthorized: true })
-      render(<EraseRepoContent />, { wrapper })
+      render(<EraseRepo />, { wrapper })
 
       const eraseButton = await screen.findByRole('button', {
-        name: /Erase Content/,
+        name: /Erase Repository/,
       })
       await user.click(eraseButton)
 
       const modalEraseButton = await screen.findByRole('button', {
-        name: /Erase Content/,
+        name: /Erase Repository/,
       })
       await user.click(modalEraseButton)
 
@@ -320,7 +320,7 @@ describe('EraseRepoContent', () => {
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({
           type: 'error',
-          text: "We were unable to erase this repo's content",
+          text: 'We were unable to erase this repository',
         })
       )
     })

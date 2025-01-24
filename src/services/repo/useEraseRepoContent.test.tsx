@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useEraseRepoContent } from './useEraseRepoContent'
+import { useEraseRepo } from './useEraseRepoContent'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -52,7 +52,7 @@ describe('useEraseRepoContent', () => {
     describe('When success', () => {
       it('returns isSuccess true', async () => {
         setup()
-        const { result } = renderHook(() => useEraseRepoContent(), {
+        const { result } = renderHook(() => useEraseRepo(), {
           wrapper: wrapper(),
         })
 

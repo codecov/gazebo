@@ -3,10 +3,7 @@ import { StripePaymentElement } from '@stripe/stripe-js'
 import cs from 'classnames'
 import { z } from 'zod'
 
-import {
-  BillingDetailsSchema,
-  SubscriptionDetailSchema,
-} from 'services/account'
+import { AccountDetailsSchema, BillingDetailsSchema } from 'services/account'
 import {
   MissingAddressError,
   MissingEmailError,
@@ -21,19 +18,23 @@ interface PaymentMethodFormProps {
   closeForm: () => void
   provider: Provider
   owner: string
-  subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
+  accountDetails: z.infer<typeof AccountDetailsSchema>
 }
 
 const PaymentMethodForm = ({
   closeForm,
   provider,
   owner,
-  subscriptionDetail,
+  accountDetails,
 }: PaymentMethodFormProps) => {
   const elements = useElements()
+  const subscriptionDetail = accountDetails?.subscriptionDetail
 
   const billingDetails =
     subscriptionDetail?.defaultPaymentMethod?.billingDetails
+
+  const email = getEmail(accountDetails)
+  const name = getName(accountDetails)
 
   const {
     mutate: updatePaymentMethod,
@@ -42,8 +43,8 @@ const PaymentMethodForm = ({
   } = useUpdatePaymentMethod({
     provider,
     owner,
-    name: billingDetails?.name || undefined,
-    email: billingDetails?.email || undefined,
+    name,
+    email,
     address: stripeAddress(billingDetails) || undefined,
   })
   async function submit(e: React.FormEvent) {
@@ -124,6 +125,31 @@ export const stripeAddress = (
     postal_code: address.postalCode || null,
     country: address.country || null,
   }
+}
+
+export const getEmail = (
+  accountDetails: z.infer<typeof AccountDetailsSchema>
+) => {
+  return (
+    accountDetails?.subscriptionDetail?.defaultPaymentMethod?.billingDetails
+      ?.email ||
+    accountDetails?.subscriptionDetail?.latestInvoice?.customerEmail ||
+    accountDetails?.subscriptionDetail?.customer?.email ||
+    accountDetails?.email ||
+    undefined
+  )
+}
+
+export const getName = (
+  accountDetails: z.infer<typeof AccountDetailsSchema>
+) => {
+  return (
+    accountDetails?.subscriptionDetail?.defaultPaymentMethod?.billingDetails
+      ?.name ||
+    accountDetails?.subscriptionDetail?.latestInvoice?.customerName ||
+    accountDetails?.name ||
+    undefined
+  )
 }
 
 export const getErrorMessage = (error: Error): JSX.Element => {
