@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { useParams } from 'react-router'
 
 import { ConfigureCachedBundleModal } from 'pages/RepoPage/shared/ConfigureCachedBundleModal/ConfigureCachedBundleModal'
-import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 
 import FeatureGroup from './components/FeatureGroup'
@@ -144,10 +143,6 @@ function TestAnalyticsConfiguration({
 function BundleAnalysisConfiguration({
   repoConfiguration,
 }: ConfigurationGroupProps) {
-  const { displayBundleCachingModal } = useFlags({
-    displayBundleCachingModal: false,
-  })
-
   const [showBundleCachingModal, setShowBundleCachingModal] = useState(false)
   const jsOrTsPresent = !!repoConfiguration?.repository?.languages?.some(
     (lang) =>
@@ -177,21 +172,19 @@ function BundleAnalysisConfiguration({
         >
           Track, monitor, and manage your bundle
         </FeatureItem>
-        {displayBundleCachingModal ? (
-          <div>
-            <button
-              onClick={() => setShowBundleCachingModal(true)}
-              className="flex items-center gap-0.5 text-xs font-semibold text-ds-blue-darker hover:cursor-pointer hover:underline"
-            >
-              <Icon name="cog" size="sm" variant="outline" />
-              Configure data caching
-            </button>
-            <ConfigureCachedBundleModal
-              isOpen={showBundleCachingModal}
-              setIsOpen={setShowBundleCachingModal}
-            />
-          </div>
-        ) : null}
+        <div>
+          <button
+            onClick={() => setShowBundleCachingModal(true)}
+            className="flex items-center gap-0.5 text-xs font-semibold text-ds-blue-darker hover:cursor-pointer hover:underline"
+          >
+            <Icon name="cog" size="sm" variant="outline" />
+            Configure data caching
+          </button>
+          <ConfigureCachedBundleModal
+            isOpen={showBundleCachingModal}
+            setIsOpen={setShowBundleCachingModal}
+          />
+        </div>
       </FeatureGroup.UniversalItems>
     </FeatureGroup>
   )
