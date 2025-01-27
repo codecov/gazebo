@@ -1,11 +1,11 @@
 import testsPRComment from 'assets/svg/onboardingTests/testsPRComment.svg'
 import testsPRCommentDark from 'assets/svg/onboardingTests/testsPRCommentDark.svg'
 import testsRunning from 'assets/svg/onboardingTests/testsRunning.svg'
-import { Theme, useThemeContext } from 'shared/ThemeContext'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import { ExpandableSection } from 'ui/ExpandableSection/ExpandableSection'
+import LightDarkImg from 'ui/LightDarkImg'
 
 import { FrameworkTabsCard } from '../FrameworkTabsCard'
 
@@ -110,11 +110,6 @@ function Step4() {
 }
 
 function Step5() {
-  const { theme } = useThemeContext()
-
-  const testPRsImageSource =
-    theme === Theme.LIGHT ? testsPRComment : testsPRCommentDark
-
   return (
     <div>
       <Card>
@@ -141,10 +136,11 @@ function Step5() {
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content>
-          <img
-            src={testPRsImageSource.toString()}
+          <LightDarkImg
+            src={testsPRComment.toString()}
             alt="Tests in PR comment"
             className="w-full"
+            darkSrc={testsPRCommentDark.toString()}
           />
         </ExpandableSection.Content>
       </ExpandableSection>

@@ -1,13 +1,10 @@
 import darkModeImage from 'assets/codecovAI/pr-review-example-dark-mode.png'
 import lightModeImage from 'assets/codecovAI/pr-review-example-light-mode.png'
-import { Theme, useThemeContext } from 'shared/ThemeContext'
 import { Card } from 'ui/Card'
 import { ExpandableSection } from 'ui/ExpandableSection'
+import LightDarkImg from 'ui/LightDarkImg'
 
 const CodecovAICommands: React.FC = () => {
-  const { theme } = useThemeContext()
-  const prReviewExampleSource =
-    theme === Theme.DARK ? darkModeImage : lightModeImage
   return (
     <div>
       <Card>
@@ -34,10 +31,11 @@ const CodecovAICommands: React.FC = () => {
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content className="m-0 p-0">
-          <img
+          <LightDarkImg
             className="size-full object-cover"
+            src={lightModeImage}
+            darkSrc={darkModeImage}
             alt="codecov pr review example"
-            src={prReviewExampleSource}
           />
         </ExpandableSection.Content>
       </ExpandableSection>
