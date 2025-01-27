@@ -135,6 +135,14 @@ const mockNavigatorData = {
   },
 }
 
+const mockOwnerContext = { owner: { ownerid: 123 } }
+
+const mockRepoContext = {
+  owner: {
+    repository: { __typename: 'Repository', repoid: 321, private: false },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -249,6 +257,12 @@ describe('App', () => {
       }),
       graphql.query('NavigatorData', () => {
         return HttpResponse.json({ data: mockNavigatorData })
+      }),
+      graphql.query('OwnerContext', () => {
+        return HttpResponse.json({ data: mockOwnerContext })
+      }),
+      graphql.query('RepoContext', () => {
+        return HttpResponse.json({ data: mockRepoContext })
       })
     )
   }
