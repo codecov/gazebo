@@ -45,7 +45,6 @@ const AlertBanners = ({ isUploadLimitExceeded, isApproachingUploadLimit }) => {
 AlertBanners.propTypes = {
   isUploadLimitExceeded: PropTypes.bool.isRequired,
   isApproachingUploadLimit: PropTypes.bool.isRequired,
-  hasGhApp: PropTypes.bool.isRequired,
 }
 
 export default function HeaderBanners() {

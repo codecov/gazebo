@@ -70,6 +70,9 @@ function OwnerPage() {
   const { data: accountDetails } = useAccountDetails({
     provider,
     owner,
+    opts: {
+      enabled: !!ownerData?.isCurrentUserPartOfOrg,
+    },
   })
 
   const hasGhApp = !!accountDetails?.integrationId
