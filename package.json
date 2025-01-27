@@ -104,7 +104,7 @@
     "@storybook/node-logger": "^8.3.7",
     "@storybook/react": "^8.3.7",
     "@storybook/react-vite": "^8.3.7",
-    "@storybook/theming": "^8.3.7",
+    "@storybook/theming": "^8.5.2",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tanstack/eslint-plugin-query": "^4.38.0",
     "@tanstack/react-query-devtools": "^4.29.6",
