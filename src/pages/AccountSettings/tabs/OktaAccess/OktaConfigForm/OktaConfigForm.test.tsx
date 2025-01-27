@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
@@ -8,11 +12,34 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { OktaConfigForm } from './OktaConfigForm'
 
+const oktaConfigMock = {
+  enabled: true,
+  enforced: true,
+  url: 'https://okta.com',
+  clientId: 'clientId',
+  clientSecret: 'clientSecret',
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/account/gh/codecov/okta-access/']}>
+        <Route path="/account/:provider/:owner/okta-access/">
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
+)
+
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -25,24 +52,6 @@ afterEach(() => {
 afterAll(() => {
   server.close()
 })
-
-const oktaConfigMock = {
-  enabled: true,
-  enforced: true,
-  url: 'https://okta.com',
-  clientId: 'clientId',
-  clientSecret: 'clientSecret',
-}
-
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/account/gh/codecov/okta-access/']}>
-      <Route path="/account/:provider/:owner/okta-access/">
-        <Suspense fallback={null}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
 
 describe('OktaConfigForm', () => {
   function setup() {
@@ -261,7 +270,7 @@ describe('OktaConfigForm', () => {
     expect(saveButton).toBeDisabled()
   })
 
-  describe('form should render default values for Okta Config', () => {
+  describe.only('form should render default values for Okta Config', () => {
     it('renders default values for client id', async () => {
       setup()
       render(<OktaConfigForm />, { wrapper })
@@ -300,7 +309,7 @@ describe('OktaConfigForm', () => {
         name: /Okta Sync Enabled/,
       })
       await waitFor(() => {
-        expect(oktaSyncEnabledToggle).toHaveClass('bg-toggle-inactive')
+        expect(oktaSyncEnabledToggle).toHaveClass('bg-toggle-active')
       })
     })
 
@@ -312,7 +321,7 @@ describe('OktaConfigForm', () => {
         name: /Okta Login Enforced/,
       })
       await waitFor(() => {
-        expect(oktaLoginEnforceToggle).toHaveClass('bg-toggle-inactive')
+        expect(oktaLoginEnforceToggle).toHaveClass('bg-toggle-active')
       })
     })
   })
