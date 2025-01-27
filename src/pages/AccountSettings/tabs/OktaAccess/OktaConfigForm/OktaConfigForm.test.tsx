@@ -270,7 +270,7 @@ describe('OktaConfigForm', () => {
     expect(saveButton).toBeDisabled()
   })
 
-  describe.only('form should render default values for Okta Config', () => {
+  describe('form should render default values for Okta Config', () => {
     it('renders default values for client id', async () => {
       setup()
       render(<OktaConfigForm />, { wrapper })
