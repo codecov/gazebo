@@ -1,7 +1,8 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { lazy } from 'react'
 import { useParams } from 'react-router'
 
-import { useOktaConfig } from 'pages/AccountSettings/tabs/OktaAccess/hooks'
+import { OktaConfigQueryOpts } from 'pages/AccountSettings/tabs/OktaAccess/queries/OktaConfigQueryOpts'
 
 interface URLParams {
   provider: string
@@ -15,16 +16,18 @@ const OktaErrorBanners = lazy(() => import('../OktaErrorBanners'))
 function OktaBanners() {
   const { provider, owner } = useParams<URLParams>()
 
-  const { data } = useOktaConfig({
-    provider,
-    username: owner || '',
-    opts: { enabled: !!owner },
-  })
+  const { data } = useSuspenseQueryV5(
+    OktaConfigQueryOpts({
+      provider,
+      username: owner || '',
+    })
+  )
 
   const oktaConfig = data?.owner?.account?.oktaConfig
 
-  if (!owner || !oktaConfig?.enabled || data?.owner?.isUserOktaAuthenticated)
+  if (!owner || !oktaConfig?.enabled || data?.owner?.isUserOktaAuthenticated) {
     return null
+  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -34,4 +37,13 @@ function OktaBanners() {
   )
 }
 
-export default OktaBanners
+function OktaBannersWrapper() {
+  const { owner } = useParams<URLParams>()
+  if (!owner) {
+    return null
+  }
+
+  return <OktaBanners />
+}
+
+export default OktaBannersWrapper

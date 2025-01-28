@@ -1,4 +1,4 @@
-import { useQuery, type UseQueryOptions } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -26,30 +26,32 @@ const OktaConfigRequestSchema = z.object({
 })
 
 const oktaConfigQuery = `
-  query GetOktaConfig($username: String!) {
-    owner(username: $username) {
-      isUserOktaAuthenticated
-      account {
-        oktaConfig {
-          enabled
-          enforced
-          url
-          clientId
-          clientSecret
-        }
+query GetOktaConfig($username: String!) {
+  owner(username: $username) {
+    isUserOktaAuthenticated
+    account {
+      oktaConfig {
+        enabled
+        enforced
+        url
+        clientId
+        clientSecret
       }
     }
   }
+}
 `
 
-interface UseOktaConfigArgs {
+interface OktaConfigQueryArgs {
   provider: string
   username: string
-  opts?: UseQueryOptions<z.infer<typeof OktaConfigRequestSchema>>
 }
 
-export function useOktaConfig({ provider, username, opts }: UseOktaConfigArgs) {
-  return useQuery({
+export function OktaConfigQueryOpts({
+  provider,
+  username,
+}: OktaConfigQueryArgs) {
+  return queryOptionsV5({
     queryKey: ['GetOktaConfig', provider, username, oktaConfigQuery],
     queryFn: ({ signal }) => {
       return Api.graphql({
@@ -73,6 +75,5 @@ export function useOktaConfig({ provider, username, opts }: UseOktaConfigArgs) {
         return parsedRes.data
       })
     },
-    ...(!!opts && opts),
   })
 }

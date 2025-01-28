@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
@@ -12,7 +13,8 @@ import Icon from 'ui/Icon'
 import TextInput from 'ui/TextInput'
 import Toggle from 'ui/Toggle'
 
-import { useOktaConfig, useUpdateOktaConfig } from '../hooks'
+import { useUpdateOktaConfig } from '../hooks'
+import { OktaConfigQueryOpts } from '../queries/OktaConfigQueryOpts'
 
 const FormSchema = z.object({
   clientId: z.string().min(1, 'Client ID is required'),
@@ -29,10 +31,12 @@ interface URLParams {
 export function OktaConfigForm() {
   const { provider, owner } = useParams<URLParams>()
 
-  const { data } = useOktaConfig({
-    provider,
-    username: owner,
-  })
+  const { data } = useSuspenseQueryV5(
+    OktaConfigQueryOpts({
+      provider,
+      username: owner,
+    })
+  )
   const oktaConfig = data?.owner?.account?.oktaConfig
 
   const { register, handleSubmit, formState, reset } = useForm<FormValues>({
@@ -44,9 +48,8 @@ export function OktaConfigForm() {
       redirectUri: oktaConfig?.url,
     },
   })
-  const { isDirty, isValid } = formState
-  const { mutate } = useUpdateOktaConfig({ provider, owner })
 
+  const { mutate } = useUpdateOktaConfig({ provider, owner })
   const [oktaEnabled, setOktaEnabled] = useState(oktaConfig?.enabled)
   const [oktaLoginEnforce, setOktaLoginEnforce] = useState(oktaConfig?.enforced)
   const [showPassword, setShowPassword] = useState(false)
@@ -158,7 +161,9 @@ export function OktaConfigForm() {
             <div>
               <Button
                 type="submit"
-                disabled={!isValid || !isDirty || isSubmitting}
+                disabled={
+                  !formState.isValid || !formState.isDirty || isSubmitting
+                }
                 to={undefined}
                 hook="save okta form changes"
               >
