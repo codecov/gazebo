@@ -1,10 +1,13 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
+import { useQueryClient as useQueryClientV5 } from '@tanstack/react-queryV5'
 import z from 'zod'
 
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
+
+import { OktaConfigQueryOpts } from '../queries/OktaConfigQueryOpts'
 
 const TOAST_DURATION = 10000
 
@@ -78,7 +81,7 @@ type MutationFnParams = {
 
 export const useUpdateOktaConfig = ({ provider, owner }: URLParams) => {
   const addToast = useAddNotification()
-  const queryClient = useQueryClient()
+  const queryClientV5 = useQueryClientV5()
 
   return useMutation({
     mutationFn: ({
@@ -143,7 +146,9 @@ export const useUpdateOktaConfig = ({ provider, owner }: URLParams) => {
       })
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['GetOktaConfig'])
+      queryClientV5.invalidateQueries(
+        OktaConfigQueryOpts({ provider, username: owner })
+      )
     },
     retry: false,
   })

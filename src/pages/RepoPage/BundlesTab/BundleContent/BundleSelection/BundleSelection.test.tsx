@@ -13,14 +13,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import BundleSelection from './BundleSelection'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn().mockReturnValue({ displayBundleCachingModal: true }),
-}))
-
-vi.mock('shared/featureFlags', () => ({
-  useFlags: mocks.useFlags,
-}))
-
 const mockRepoOverview = {
   __typename: 'Repository',
   private: false,
