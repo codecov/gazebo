@@ -26,8 +26,9 @@ function LoginButton({ provider }) {
         eventTracker().track({
           type: 'Button Clicked',
           properties: {
-            buttonName: `Login with ${providerName}`,
+            buttonName: 'Login',
             buttonLocation: 'Login Page',
+            loginProvider: providerName,
           },
         })
       }}

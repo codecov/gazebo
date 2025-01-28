@@ -22,8 +22,9 @@ const SyncButton: React.FC<SyncButtonProps> = ({ provider }) => {
           eventTracker().track({
             type: 'Button Clicked',
             properties: {
-              buttonName: `Sync with ${providerName}`,
+              buttonName: 'Sync',
               buttonLocation: 'Sync Provider Page',
+              loginProvider: providerName,
             },
           })
         }}
