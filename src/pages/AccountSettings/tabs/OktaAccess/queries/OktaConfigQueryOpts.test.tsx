@@ -108,11 +108,13 @@ describe('useOktaConfig', () => {
         )
 
         await waitFor(() =>
-          expect(result.current.error).toStrictEqual({
-            status: 404,
-            data: {},
-            dev: 'useOktaConfig - 404 failed to parse',
-          })
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+              data: {},
+              dev: 'OktaConfigQueryOpts - 404 failed to parse',
+            })
+          )
         )
       })
     })
