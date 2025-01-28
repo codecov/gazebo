@@ -1,9 +1,12 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { eventTracker } from 'services/events/events'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import LoginButton from './LoginButton'
+
+vi.mock('services/events/events')
 
 const wrapper =
   ({ initialEntries, path }) =>
@@ -71,6 +74,29 @@ describe('LoginButton', () => {
 
       const sentry = screen.getByText(/Login with Sentry/i)
       expect(sentry).toBeInTheDocument()
+    })
+  })
+
+  it('emits event on click', () => {
+    render(<LoginButton provider="gh" />, {
+      wrapper: wrapper({
+        initialEntries: '/login/gh',
+        path: '/login/:provider',
+      }),
+    })
+
+    const github = screen.getByText(/Login with GitHub/i)
+    expect(github).toBeInTheDocument()
+
+    act(() => github.click())
+
+    expect(eventTracker().track).toHaveBeenCalledWith({
+      type: 'Button Clicked',
+      properties: {
+        buttonName: 'Login',
+        buttonLocation: 'Login Page',
+        loginProvider: 'GitHub',
+      },
     })
   })
 })

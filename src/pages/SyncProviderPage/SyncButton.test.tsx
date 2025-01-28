@@ -1,7 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { eventTracker } from 'services/events/events'
+
 import SyncButton from './SyncButton'
+
+vi.mock('services/events/events')
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/sync']}>
@@ -85,6 +89,24 @@ describe('SyncButton', () => {
       const expectedRedirect = encodeURIComponent('http://localhost:3000/bbs')
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', `/login/bbs?to=${expectedRedirect}`)
+    })
+  })
+
+  it('emits event on click', () => {
+    console.error = () => {} // silence error about navigation on click
+    render(<SyncButton provider="gh" />, { wrapper })
+
+    const link = screen.getByRole('link', { name: /Sync with GitHub/ })
+
+    act(() => link.click())
+
+    expect(eventTracker().track).toHaveBeenCalledWith({
+      type: 'Button Clicked',
+      properties: {
+        buttonName: 'Sync',
+        buttonLocation: 'Sync Provider Page',
+        loginProvider: 'GitHub',
+      },
     })
   })
 })
