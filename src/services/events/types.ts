@@ -1,4 +1,5 @@
 import { Provider } from 'shared/api/helpers'
+import { providerToName } from 'shared/utils/provider'
 
 //
 // Add new events to the the Event union type below!
@@ -85,8 +86,16 @@ export abstract class EventTracker {
 // Extend as needed.
 //
 
+type ProviderName = ReturnType<typeof providerToName>
+type SyncButtonName = `Sync with ${ProviderName}`
+type LoginButtonName = `Login with ${ProviderName}`
+
 type ButtonName =
   | 'Install GitHub App'
   | 'Configure Repo'
   | 'Open App Install Modal'
+  | 'Continue'
+  | SyncButtonName
+  | LoginButtonName
+
 type PageName = 'Owner Page'

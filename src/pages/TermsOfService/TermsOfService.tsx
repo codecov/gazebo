@@ -8,6 +8,7 @@ import config from 'config'
 import { SentryBugReporter } from 'sentry'
 
 import umbrellaSvg from 'assets/svg/umbrella.svg'
+import { eventTracker } from 'services/events/events'
 import { useInternalUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -275,6 +276,15 @@ export default function TermsOfService() {
             })}
             type="submit"
             hook="user signed tos"
+            onClick={() => {
+              eventTracker().track({
+                type: 'Button Clicked',
+                properties: {
+                  buttonName: 'Continue',
+                  buttonLocation: 'Terms of Service',
+                },
+              })
+            }}
             to={undefined}
           >
             Continue

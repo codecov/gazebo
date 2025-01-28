@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 
+import { eventTracker } from 'services/events/events'
 import { useNavLinks } from 'services/navigation'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
 import {
@@ -21,6 +22,15 @@ function LoginButton({ provider }) {
       className="flex h-14 items-center rounded-sm border border-ds-gray-quaternary bg-ds-gray-primary font-semibold shadow hover:bg-ds-gray-secondary"
       href={signIn.path({ to, provider })}
       data-cy={'login-button'}
+      onClick={() => {
+        eventTracker().track({
+          type: 'Button Clicked',
+          properties: {
+            buttonName: `Login with ${providerName}`,
+            buttonLocation: 'Login Page',
+          },
+        })
+      }}
     >
       <img
         alt={`${providerName} logo`}
