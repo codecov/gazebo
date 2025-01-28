@@ -42,7 +42,9 @@ export const OnboardingContainerProvider: React.FC<React.PropsWithChildren> = ({
   )
 
   const [showOnboardingContainer, setShowFunction] = useState<boolean>(
-    localStorageValue === 'true' ? true : false
+    // we are checking isGh here too because the localStorage value could be already set to true
+    // if the user previously onboarded on GH previously (edge-case)
+    localStorageValue === 'true' && isGh ? true : false
   )
 
   const setShowOnboardingContainer = (showOnboardingContainer: boolean) => {
