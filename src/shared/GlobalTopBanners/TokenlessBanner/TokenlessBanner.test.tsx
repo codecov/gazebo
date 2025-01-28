@@ -80,21 +80,23 @@ describe('TokenlessBanner', () => {
 
   it('renders nothing when tokenlessSection flag is false', () => {
     setup({ tokenlessSection: false })
-    const { container } = render(<TokenlessBanner />, { wrapper: wrapper() })
+    const { container } = render(<TokenlessBanner />, {
+      wrapper: wrapper(['/gh/codecov']),
+    })
     expect(container).toBeEmptyDOMElement()
   })
 
   it('renders nothing when owner is not provided', () => {
     setup()
     const { container } = render(<TokenlessBanner />, {
-      wrapper: wrapper(['/gh/']),
+      wrapper: wrapper(['/gh/codecov']),
     })
     expect(container).toBeEmptyDOMElement()
   })
 
   it('renders TokenRequiredBanner when uploadTokenRequired is true', async () => {
     setup({ uploadTokenRequired: true })
-    render(<TokenlessBanner />, { wrapper: wrapper() })
+    render(<TokenlessBanner />, { wrapper: wrapper(['/gh/codecov']) })
 
     await waitFor(() => {
       const banner = screen.getByText('TokenRequiredBanner')
@@ -104,11 +106,26 @@ describe('TokenlessBanner', () => {
 
   it('renders TokenNotRequiredBanner when uploadTokenRequired is false', async () => {
     setup({ uploadTokenRequired: false })
-    render(<TokenlessBanner />, { wrapper: wrapper() })
+    render(<TokenlessBanner />, { wrapper: wrapper(['/gh/codecov']) })
 
     await waitFor(() => {
       const banner = screen.getByText('TokenNotRequiredBanner')
       expect(banner).toBeInTheDocument()
+    })
+  })
+
+  it('renders nothing if coming from onboarding', async () => {
+    setup({ uploadTokenRequired: true })
+    render(<TokenlessBanner />, {
+      wrapper: wrapper(['/gh/codecov?source=onboarding']),
+    })
+    await waitFor(() => {
+      expect(screen.queryByText('TokenRequiredBanner')).not.toBeInTheDocument()
+    })
+    await waitFor(() => {
+      expect(
+        screen.queryByText('TokenNotRequiredBanner')
+      ).not.toBeInTheDocument()
     })
   })
 })

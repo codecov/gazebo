@@ -27,13 +27,7 @@ const mockedUseImpersonate = useImpersonate as Mock
 vi.mock('shared/GlobalTopBanners', () => ({
   default: () => 'GlobalTopBanners',
 }))
-vi.mock('./InstallationHelpBanner', () => ({
-  default: () => 'InstallationHelpBanner',
-}))
 vi.mock('pages/TermsOfService', () => ({ default: () => 'TermsOfService' }))
-vi.mock('pages/DefaultOrgSelector', () => ({
-  default: () => 'DefaultOrgSelector',
-}))
 vi.mock('layouts/Header', () => ({ default: () => 'Header' }))
 vi.mock('layouts/Footer', () => ({ default: () => 'Footer' }))
 
@@ -53,7 +47,6 @@ const mockUser = {
   student: false,
   studentCreatedAt: null,
   studentUpdatedAt: null,
-  customerIntent: 'BUSINESS',
   externalId: 'asdf',
   owners: [
     {
@@ -330,9 +323,6 @@ describe('BaseLayout', () => {
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
 
-        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrg).not.toBeInTheDocument()
-
         const termsOfService = screen.queryByText(/TermsOfService/)
         expect(termsOfService).not.toBeInTheDocument()
       })
@@ -351,9 +341,6 @@ describe('BaseLayout', () => {
         expect(await screen.findByText('hello')).toBeTruthy()
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
-
-        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrg).not.toBeInTheDocument()
 
         const termsOfService = screen.queryByText(/TermsOfService/)
         expect(termsOfService).not.toBeInTheDocument()
@@ -385,60 +372,11 @@ describe('BaseLayout', () => {
         const header = screen.queryByText(/Header/)
         expect(header).not.toBeInTheDocument()
       })
-
-      it('renders help banner', async () => {
-        setup({
-          currentUser: userNoTermsAgreement,
-          internalUser: mockUserNoTermsAgreement,
-        })
-
-        render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
-        const helpBanner = await screen.findByText(/InstallationHelpBanner/)
-        expect(helpBanner).toBeInTheDocument()
-      })
     })
 
-    describe('when no default org selected', () => {
-      it('renders the default org selector', async () => {
-        setup({
-          currentUser: loggedInUser,
-          internalUser: mockUser,
-        })
-        render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
-
-        const defaultOrgSelector = await screen.findByText(/DefaultOrgSelector/)
-        expect(defaultOrgSelector).toBeInTheDocument()
-      })
-
-      it('does not render the header', async () => {
-        setup({
-          currentUser: loggedInUser,
-          internalUser: mockUser,
-        })
-        render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
-
-        const defaultOrgSelector = await screen.findByText(/DefaultOrgSelector/)
-        expect(defaultOrgSelector).toBeInTheDocument()
-
-        const header = screen.queryByText(/Header/)
-        expect(header).not.toBeInTheDocument()
-      })
-
-      it('renders help banner', async () => {
-        setup({
-          currentUser: loggedInUser,
-          internalUser: mockUser,
-        })
-
-        render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
-        const helpBanner = await screen.findByText(/InstallationHelpBanner/)
-        expect(helpBanner).toBeInTheDocument()
-      })
-    })
-
-    describe('when agreed to TOS and default org selected', () => {
+    describe('when agreed to TOS', () => {
       it('renders children', async () => {
-        setup({ currentUser: userHasDefaultOrg })
+        setup({ currentUser: loggedInUser })
         render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
 
         const children = await screen.findByText(/hello/)
@@ -446,7 +384,7 @@ describe('BaseLayout', () => {
       })
 
       it('renders header', async () => {
-        setup({ currentUser: userHasDefaultOrg })
+        setup({ currentUser: loggedInUser })
         render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
 
         const header = await screen.findByText(/Header/)
@@ -488,9 +426,6 @@ describe('BaseLayout', () => {
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
 
-        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrg).not.toBeInTheDocument()
-
         const termsOfService = screen.queryByText(/TermsOfService/)
         expect(termsOfService).not.toBeInTheDocument()
       })
@@ -509,9 +444,6 @@ describe('BaseLayout', () => {
         expect(await screen.findByText('hello')).toBeTruthy()
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
-
-        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrg).not.toBeInTheDocument()
 
         const termsOfService = screen.queryByText(/TermsOfService/)
         expect(termsOfService).not.toBeInTheDocument()
@@ -550,15 +482,12 @@ describe('BaseLayout', () => {
 
         const header = await screen.findByText(/Header/)
         expect(header).toBeInTheDocument()
-
-        const defaultOrgSelector = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrgSelector).not.toBeInTheDocument()
       })
     })
 
     describe('when agreed to TOS and default org selected', () => {
       it('renders children', async () => {
-        setup({ currentUser: userHasDefaultOrg })
+        setup({ currentUser: loggedInUser })
         render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
 
         const children = await screen.findByText(/hello/)
@@ -566,7 +495,7 @@ describe('BaseLayout', () => {
       })
 
       it('renders header', async () => {
-        setup({ currentUser: userHasDefaultOrg })
+        setup({ currentUser: loggedInUser })
         render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
 
         const header = await screen.findByText(/Header/)

@@ -85,5 +85,8 @@ export abstract class EventTracker {
 // Extend as needed.
 //
 
-type ButtonName = 'Install GitHub App' | 'Configure Repo'
+type ButtonName =
+  | 'Install GitHub App'
+  | 'Configure Repo'
+  | 'Open App Install Modal'
 type PageName = 'Owner Page'

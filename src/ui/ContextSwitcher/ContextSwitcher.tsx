@@ -42,6 +42,7 @@ function LoadMoreTrigger({
 
 interface ContextItemProps {
   context: Context
+  currentUserUsername: string | null
   defaultOrgUsername: string | null
   setToggle: (arg: boolean) => void
   owner?: string | null
@@ -49,6 +50,7 @@ interface ContextItemProps {
 
 function ContextItem({
   context,
+  currentUserUsername,
   defaultOrgUsername,
   setToggle,
   owner,
@@ -76,7 +78,9 @@ function ContextItem({
       >
         <Avatar user={contextOwner} />
         <div className={cs('mx-1', { 'font-semibold': owner === orgUsername })}>
-          {orgUsername}
+          {!!orgUsername && orgUsername === currentUserUsername
+            ? `${orgUsername}'s personal organization`
+            : orgUsername || ''}
         </div>
       </Button>
     </li>
@@ -141,6 +145,8 @@ export interface Props {
   contexts: Context[]
   currentUser: {
     defaultOrgUsername: string | null
+    username: string | null
+    avatarUrl: string
   }
   activeContext: ReturnType<typeof useOwner>['data']
   onLoadMore?: () => void
@@ -165,6 +171,7 @@ function ContextSwitcher({
   const wrapperRef = useCloseOnLooseFocus({ setToggle })
   const intersectionRef = useLoadMore({ onLoadMore })
   const defaultOrgUsername = currentUser?.defaultOrgUsername
+  const currentUserUsername = currentUser?.username
 
   const isGh = providerToName(provider) === 'GitHub'
   const isSelfHosted = config.IS_SELF_HOSTED
@@ -173,6 +180,7 @@ function ContextSwitcher({
   // self-hosted cannot use default "codecov" app (must set up custom one)
   const shouldShowGitHubInstallLink =
     isGh && (isSelfHosted ? isCustomGitHubApp : true)
+  const displayUsername = activeContext?.username ?? owner
 
   return (
     <div id="context-switcher" className="relative text-sm" ref={wrapperRef}>
@@ -189,7 +197,12 @@ function ContextSwitcher({
         onClick={() => setToggle((toggle) => !toggle)}
       >
         <Avatar user={activeContext} />
-        <p className="ml-1">{activeContext?.username ?? owner}</p>
+        <p className="ml-1">
+          {displayUsername}
+          {displayUsername === currentUserUsername
+            ? "'s personal organization"
+            : ''}
+        </p>
         <span
           aria-hidden="true"
           className={cs('transition-transform', {
@@ -226,12 +239,13 @@ function ContextSwitcher({
               hook="context-switcher-gh-install-link"
             >
               <Icon name="plusCircle" />
-              Install Codecov GitHub app
+              To add another organization, install Codecov GitHub App
             </A>
           </li>
         ) : null}
         {contexts.map((context) => (
           <ContextItem
+            currentUserUsername={currentUserUsername}
             defaultOrgUsername={defaultOrgUsername}
             context={context}
             key={context?.owner?.username}

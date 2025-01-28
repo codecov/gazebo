@@ -42,7 +42,6 @@ const MeSchema = z.object({
     student: z.boolean(),
     studentCreatedAt: z.string().nullable(),
     studentUpdatedAt: z.string().nullable(),
-    customerIntent: z.string().nullable(),
   }),
   trackingMetadata: z.object({
     service: z.string(),
@@ -95,7 +94,6 @@ fragment CurrentUserFragment on Me {
     student
     studentCreatedAt
     studentUpdatedAt
-    customerIntent
   }
   trackingMetadata {
     service
