@@ -52,7 +52,7 @@ export const PlanDataSchema = z
   .object({
     owner: z
       .object({
-        hasPrivateRepos: z.boolean(),
+        hasPrivateRepos: z.boolean().nullish(),
         plan: PlanSchema.nullish(),
         pretrialPlan: PretrialPlanSchema.nullish(),
       })
@@ -118,7 +118,6 @@ export const usePlanData = ({ provider, owner, opts }: UsePlanDataArgs) =>
         },
       }).then((res) => {
         const parsedRes = PlanDataSchema.safeParse(res?.data)
-
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
