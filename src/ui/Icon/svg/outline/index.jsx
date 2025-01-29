@@ -185,7 +185,7 @@ import search from './search.svg?react'
 // import shoppingCart from './shopping-cart.svg?react'
 // import sortAscending from './sort-ascending.svg?react'
 // import sortDescending from './sort-descending.svg?react'
-// import sparkles from './sparkles.svg?react'
+import sparkles from './sparkles.svg?react'
 import speakerphone from './speakerphone.svg?react'
 // import star from './star.svg?react'
 // import statusOffline from './status-offline.svg?react'
@@ -266,6 +266,7 @@ export {
   questionMarkCircle,
   refresh,
   search,
+  sparkles,
   speakerphone,
   sun,
   trash,
