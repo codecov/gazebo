@@ -49,13 +49,9 @@ export type Identity = {
 // arise in the future.
 export type EventContext = {
   // owner the event is being performed ON, not BY.
-  owner?: {
-    id: number
-  }
-  repo?: {
-    id: number
-    isPrivate?: boolean
-  }
+  ownerid?: number
+  repoid?: number
+  repoIsPrivate?: boolean
   path?: string
 }
 
