@@ -260,7 +260,7 @@ describe('Members Activation', () => {
           })
         })
 
-        describe.only('and they are an admin', () => {
+        describe('and they are an admin', () => {
           it('renders auto activate component', async () => {
             setup(
               { ...mockedAccountDetails, planAutoActivate: true },
