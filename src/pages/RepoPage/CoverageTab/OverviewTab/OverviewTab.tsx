@@ -2,6 +2,8 @@ import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { lazy, Suspense } from 'react'
 import { Switch, useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
@@ -71,7 +73,8 @@ function CoverageOverviewTab() {
     typeof fileCount === 'number' && fileCount <= MAX_FILE_COUNT
 
   let displaySunburst = false
-  if (withinFileCount) {
+  // only enable sunburst when both cases are met
+  if (withinFileCount && config.SUNBURST_ENABLED) {
     displaySunburst = true
   }
 
