@@ -1,5 +1,3 @@
-/* */
-import PropTypes from 'prop-types'
 import { Suspense, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -8,7 +6,8 @@ import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos/orderingOptions'
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
-import { useUser } from 'services/user'
+import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
+import { Provider } from 'shared/api/helpers'
 import { ActiveContext } from 'shared/context'
 import { Alert } from 'ui/Alert'
 import Spinner from 'ui/Spinner'
@@ -30,23 +29,30 @@ export const repoDisplayOptions = Object.freeze({
   ALL: { text: 'All', status: undefined },
 })
 
-function ListRepo({ canRefetch, hasGhApp }) {
-  const { provider, owner } = useParams()
+interface ListRepoProps {
+  canRefetch: boolean
+  hasGhApp?: boolean
+}
+
+interface URLParams {
+  provider: Provider
+  owner: string
+}
+
+function ListRepo({ canRefetch, hasGhApp }: ListRepoProps) {
+  const { provider, owner } = useParams<URLParams>()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
+  // @ts-expect-error useLocationParams needs to be typed
+  const { search, source } = params
   const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
   const { data: currentUser } = useUser({
     options: {
       suspense: false,
     },
   })
+  const isAdmin = useIsCurrentUserAnAdmin({ owner })
 
   const repoDisplay = useContext(ActiveContext)
-
-  const sortItem = orderingOptions.find(
-    (option) =>
-      option.ordering === params.ordering &&
-      option.direction === params.direction
-  )
 
   const loadingState = (
     <div className="flex justify-center py-8">
@@ -54,16 +60,16 @@ function ListRepo({ canRefetch, hasGhApp }) {
     </div>
   )
 
-  const cameFromOnboarding = params['source'] === ONBOARDING_SOURCE
+  const cameFromOnboarding = source === ONBOARDING_SOURCE
   const isMyOwnerPage = currentUser?.user?.username === owner
   const showDemoAlert = cameFromOnboarding && isMyOwnerPage
 
   return (
     <>
-      {/* we only want one of these two banners to show at a time */}
-      {!hasGhApp && !showDemoAlert && <GithubConfigBanner />}
+      {/* we only want one of this or DemoAlert banners to show at a time */}
+      {isAdmin && !hasGhApp && !showDemoAlert ? <GithubConfigBanner /> : null}
       <OrgControlTable
-        searchValue={params.search}
+        searchValue={search}
         repoDisplay={repoDisplay}
         setRepoDisplay={(repoDisplay) =>
           updateParams({
@@ -90,23 +96,13 @@ function ListRepo({ canRefetch, hasGhApp }) {
 
       <Suspense fallback={loadingState}>
         {isTeamPlan ? (
-          <ReposTableTeam searchValue={params.search} />
+          <ReposTableTeam searchValue={search} />
         ) : (
-          <ReposTable
-            sortItem={sortItem}
-            owner={owner}
-            searchValue={params.search}
-            mayIncludeDemo
-          />
+          <ReposTable owner={owner} searchValue={search} mayIncludeDemo />
         )}
       </Suspense>
     </>
   )
-}
-
-ListRepo.propTypes = {
-  canRefetch: PropTypes.bool.isRequired,
-  hasGhApp: PropTypes.bool,
 }
 
 export default ListRepo
