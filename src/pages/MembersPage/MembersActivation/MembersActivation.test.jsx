@@ -238,6 +238,48 @@ describe('Members Activation', () => {
           })
         })
       })
+
+      describe('user is not in an enterprise org', () => {
+        describe('and they are not an admin', () => {
+          it('renders auto activate component', async () => {
+            setup(
+              { ...mockedAccountDetails, planAutoActivate: true },
+              TrialStatuses.NOT_STARTED,
+              Plans.USERS_PR_INAPPM,
+              false,
+              false
+            )
+
+            render(<MembersActivation />, { wrapper })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const AutoActivate = await screen.findByText(/AutoActivate/)
+            expect(AutoActivate).toBeInTheDocument()
+          })
+        })
+
+        describe.only('and they are an admin', () => {
+          it('renders auto activate component', async () => {
+            setup(
+              { ...mockedAccountDetails, planAutoActivate: true },
+              TrialStatuses.NOT_STARTED,
+              Plans.USERS_PR_INAPPM,
+              false,
+              true
+            )
+
+            render(<MembersActivation />, { wrapper })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const AutoActivate = await screen.findByText(/AutoActivate/)
+            expect(AutoActivate).toBeInTheDocument()
+          })
+        })
+      })
     })
   })
 })
