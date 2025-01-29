@@ -84,7 +84,6 @@ const user = {
       student: false,
       studentCreatedAt: null,
       studentUpdatedAt: null,
-      customerIntent: 'PERSONAL',
     },
     trackingMetadata: {
       service: 'github',
@@ -132,6 +131,14 @@ const mockNavigatorData = {
       __typename: 'Repository',
       name: 'test-repo',
     },
+  },
+}
+
+const mockOwnerContext = { owner: { ownerid: 123 } }
+
+const mockRepoContext = {
+  owner: {
+    repository: { __typename: 'Repository', repoid: 321, private: false },
   },
 }
 
@@ -249,6 +256,12 @@ describe('App', () => {
       }),
       graphql.query('NavigatorData', () => {
         return HttpResponse.json({ data: mockNavigatorData })
+      }),
+      graphql.query('OwnerContext', () => {
+        return HttpResponse.json({ data: mockOwnerContext })
+      }),
+      graphql.query('RepoContext', () => {
+        return HttpResponse.json({ data: mockRepoContext })
       })
     )
   }

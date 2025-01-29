@@ -1,8 +1,8 @@
-import { useQuery, type UseQueryOptions } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 
 export const OktaConfigSchema = z.object({
   enabled: z.boolean(),
@@ -26,30 +26,32 @@ const OktaConfigRequestSchema = z.object({
 })
 
 const oktaConfigQuery = `
-  query GetOktaConfig($username: String!) {
-    owner(username: $username) {
-      isUserOktaAuthenticated
-      account {
-        oktaConfig {
-          enabled
-          enforced
-          url
-          clientId
-          clientSecret
-        }
+query GetOktaConfig($username: String!) {
+  owner(username: $username) {
+    isUserOktaAuthenticated
+    account {
+      oktaConfig {
+        enabled
+        enforced
+        url
+        clientId
+        clientSecret
       }
     }
   }
+}
 `
 
-interface UseOktaConfigArgs {
+interface OktaConfigQueryArgs {
   provider: string
   username: string
-  opts?: UseQueryOptions<z.infer<typeof OktaConfigRequestSchema>>
 }
 
-export function useOktaConfig({ provider, username, opts }: UseOktaConfigArgs) {
-  return useQuery({
+export function OktaConfigQueryOpts({
+  provider,
+  username,
+}: OktaConfigQueryArgs) {
+  return queryOptionsV5({
     queryKey: ['GetOktaConfig', provider, username, oktaConfigQuery],
     queryFn: ({ signal }) => {
       return Api.graphql({
@@ -63,16 +65,16 @@ export function useOktaConfig({ provider, username, opts }: UseOktaConfigArgs) {
         const parsedRes = OktaConfigRequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useOktaConfig - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+            dev: 'OktaConfigQueryOpts - 404 failed to parse',
+            error: parsedRes.error,
+          })
         }
 
         return parsedRes.data
       })
     },
-    ...(!!opts && opts),
   })
 }

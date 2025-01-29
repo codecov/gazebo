@@ -78,11 +78,26 @@ describe('Members Activation', () => {
   function setup(
     accountDetails = mockedAccountDetails,
     trialStatus = TrialStatuses.NOT_STARTED,
-    planValue = mockedAccountDetails.plan.value
+    planValue = mockedAccountDetails.plan.value,
+    isEnterprisePlan = false,
+    isAdmin = true
   ) {
     server.use(
       http.get('/internal/:provider/:owner/account-details/', () => {
         return HttpResponse.json(accountDetails)
+      }),
+      graphql.query('DetailOwner', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              ownerid: 123,
+              username: 'codecov',
+              avatarUrl: null,
+              isCurrentUserPartOfOrg: true,
+              isAdmin,
+            },
+          },
+        })
       }),
       graphql.query('GetPlanData', () => {
         return HttpResponse.json({
@@ -93,6 +108,7 @@ describe('Members Activation', () => {
                 ...mockPlanData,
                 trialStatus,
                 value: planValue,
+                isEnterprisePlan,
               },
             },
           },
@@ -178,6 +194,90 @@ describe('Members Activation', () => {
 
           const AutoActivate = screen.queryByText(/AutoActivate/)
           expect(AutoActivate).not.toBeInTheDocument()
+        })
+      })
+
+      describe('user is in an enterprise org', () => {
+        describe('and they are not an admin', () => {
+          it('does not render auto activate component', async () => {
+            setup(
+              { ...mockedAccountDetails, planAutoActivate: true },
+              TrialStatuses.NOT_STARTED,
+              Plans.USERS_ENTERPRISEY,
+              true,
+              false
+            )
+
+            render(<MembersActivation />, { wrapper })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const AutoActivate = screen.queryByText(/AutoActivate/)
+            expect(AutoActivate).not.toBeInTheDocument()
+          })
+        })
+
+        describe('and they are an admin', () => {
+          it('renders auto activate component', async () => {
+            setup(
+              { ...mockedAccountDetails, planAutoActivate: true },
+              TrialStatuses.NOT_STARTED,
+              Plans.USERS_ENTERPRISEY,
+              true,
+              true
+            )
+
+            render(<MembersActivation />, { wrapper })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const AutoActivate = await screen.findByText(/AutoActivate/)
+            expect(AutoActivate).toBeInTheDocument()
+          })
+        })
+      })
+
+      describe('user is not in an enterprise org', () => {
+        describe('and they are not an admin', () => {
+          it('renders auto activate component', async () => {
+            setup(
+              { ...mockedAccountDetails, planAutoActivate: true },
+              TrialStatuses.NOT_STARTED,
+              Plans.USERS_PR_INAPPM,
+              false,
+              false
+            )
+
+            render(<MembersActivation />, { wrapper })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const AutoActivate = await screen.findByText(/AutoActivate/)
+            expect(AutoActivate).toBeInTheDocument()
+          })
+        })
+
+        describe('and they are an admin', () => {
+          it('renders auto activate component', async () => {
+            setup(
+              { ...mockedAccountDetails, planAutoActivate: true },
+              TrialStatuses.NOT_STARTED,
+              Plans.USERS_PR_INAPPM,
+              false,
+              true
+            )
+
+            render(<MembersActivation />, { wrapper })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const AutoActivate = await screen.findByText(/AutoActivate/)
+            expect(AutoActivate).toBeInTheDocument()
+          })
         })
       })
     })

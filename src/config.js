@@ -12,6 +12,7 @@ const defaultConfig = {
   SENTRY_ERROR_SAMPLE_RATE: 1.0,
   GH_APP: DEFAULT_GH_APP,
   GH_APP_AI: 'codecov-ai',
+  SUNBURST_ENABLED: true,
 }
 
 export function removeReactAppPrefix(obj) {
@@ -31,6 +32,10 @@ export function removeReactAppPrefix(obj) {
 
   if ('HIDE_ACCESS_TAB' in keys) {
     keys['HIDE_ACCESS_TAB'] = keys['HIDE_ACCESS_TAB'].toLowerCase() === 'true'
+  }
+
+  if ('SUNBURST_ENABLED' in keys) {
+    keys['SUNBURST_ENABLED'] = keys['SUNBURST_ENABLED'].toLowerCase() === 'true'
   }
 
   if ('SENTRY_TRACING_SAMPLE_RATE' in keys) {
