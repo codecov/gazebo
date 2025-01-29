@@ -1,4 +1,5 @@
 import { Provider } from 'shared/api/helpers'
+import { loginProviderToName } from 'shared/utils/loginProviders'
 
 //
 // Add new events to the the Event union type below!
@@ -29,6 +30,7 @@ export type Event =
       properties: {
         buttonName: ButtonName
         buttonLocation?: string
+        loginProvider?: ReturnType<typeof loginProviderToName> // for login buttons only
       }
     }
   | {
@@ -81,5 +83,12 @@ export abstract class EventTracker {
 // Extend as needed.
 //
 
-type ButtonName = 'Install GitHub App' | 'Configure Repo'
+type ButtonName =
+  | 'Install GitHub App'
+  | 'Configure Repo'
+  | 'Open App Install Modal'
+  | 'Continue'
+  | 'Login'
+  | 'Sync'
+
 type PageName = 'Owner Page'
