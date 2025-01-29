@@ -18,13 +18,18 @@ function MemberActivation() {
     owner,
   })
 
-  const planAutoActivate = accountDetails?.planAutoActivate
+  const planAutoActivateIsDefined = !isUndefined(
+    accountDetails?.planAutoActivate
+  )
+  const isNotTrialing =
+    !planData?.plan?.isTrialPlan &&
+    planData?.plan?.trialStatus !== TrialStatuses.ONGOING
+  const isNotAnEnterpriseDeveloper = !(
+    planData?.plan?.isEnterprisePlan && !ownerData.isAdmin
+  ) // only show for admins on enterprise cloud plans
 
   const showAutoActivate =
-    !isUndefined(planAutoActivate) &&
-    !planData?.plan?.isTrialPlan &&
-    planData?.plan?.trialStatus !== TrialStatuses.ONGOING &&
-    !(planData?.plan?.isEnterprisePlan && !ownerData.isAdmin) // only show for admins on enterprise cloud plans
+    planAutoActivateIsDefined && isNotTrialing && isNotAnEnterpriseDeveloper
 
   return (
     <div className="border-2 border-ds-gray-primary">
@@ -33,7 +38,7 @@ function MemberActivation() {
         <>
           {/* TODO: have this be created dynamically w/ a better parent component */}
           <hr className="mx-4" />
-          <AutoActivate planAutoActivate={planAutoActivate} />
+          <AutoActivate planAutoActivate={accountDetails?.planAutoActivate} />
         </>
       )}
     </div>
