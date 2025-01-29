@@ -3,18 +3,14 @@ import { removeReactAppPrefix } from 'config'
 describe('config', () => {
   describe('removeReactAppPrefix', () => {
     it('removes REACT_APP prefix', () => {
-      const obj = {
-        REACT_APP_TEST_ENV: 'test env',
-      }
+      const obj = { REACT_APP_TEST_ENV: 'test env' }
 
       expect(removeReactAppPrefix(obj)).toEqual({ TEST_ENV: 'test env' })
     })
 
     describe('sets IS_SELF_HOSTED to boolean', () => {
       it('sets to true', () => {
-        const obj = {
-          ENV: 'enterprise',
-        }
+        const obj = { ENV: 'enterprise' }
 
         expect(removeReactAppPrefix(obj)).toEqual({
           ENV: 'enterprise',
@@ -23,9 +19,7 @@ describe('config', () => {
       })
 
       it('sets to false', () => {
-        const obj = {
-          ENV: 'production',
-        }
+        const obj = { ENV: 'production' }
 
         expect(removeReactAppPrefix(obj)).toEqual({
           ENV: 'production',
@@ -65,6 +59,14 @@ describe('config', () => {
         const obj = {}
 
         expect(removeReactAppPrefix(obj)).toEqual({})
+      })
+    })
+
+    describe('sets SUNBURST_ENABLED to boolean', () => {
+      it('sets to true', () => {
+        const obj = { SUNBURST_ENABLED: 'true' }
+
+        expect(removeReactAppPrefix(obj)).toEqual({ SUNBURST_ENABLED: true })
       })
     })
 
