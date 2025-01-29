@@ -16,12 +16,12 @@ import { useRepo } from 'services/repo'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import { useIsCurrentUserAnAdmin } from 'services/user'
 import { Provider } from 'shared/api/helpers'
-import { Theme, useThemeContext } from 'shared/ThemeContext'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import { ExpandableSection } from 'ui/ExpandableSection'
+import LightDarkImg from 'ui/LightDarkImg'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 
 export const TOKEN_OPTIONS = {
@@ -53,11 +53,6 @@ function GitHubOrgSecretExample({
   uploadToken,
   owner,
 }: SecretGHExampleProps) {
-  const { theme } = useThemeContext()
-  const isDarkMode = theme === Theme.DARK
-  const orgSecretImg = isDarkMode ? orgSecretDark : orgSecretLight
-  const repoSecretImg = isDarkMode ? repoSecretDark : repoSecretLight
-
   return (
     <>
       <p>
@@ -94,7 +89,7 @@ function GitHubOrgSecretExample({
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content>
-          <img
+          {/* <img
             className="size-full object-cover"
             alt={
               isUsingGlobalToken
@@ -102,6 +97,16 @@ function GitHubOrgSecretExample({
                 : 'repo settings secret example'
             }
             src={isUsingGlobalToken ? orgSecretImg : repoSecretImg}
+          /> */}
+          <LightDarkImg
+            alt={
+              isUsingGlobalToken
+                ? 'org settings secret example'
+                : 'repo settings secret example'
+            }
+            className="size-full object-cover"
+            src={isUsingGlobalToken ? orgSecretLight : repoSecretLight}
+            darkSrc={isUsingGlobalToken ? orgSecretDark : repoSecretDark}
           />
         </ExpandableSection.Content>
       </ExpandableSection>
