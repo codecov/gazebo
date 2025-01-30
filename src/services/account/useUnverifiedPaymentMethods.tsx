@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-queryV5'
-import { Provider } from 'shared/api/types'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { Provider, rejectNetworkError } from 'shared/api/helpers'
 
 const query = `
 query UnverifiedPaymentMethods($owner: String!) {
