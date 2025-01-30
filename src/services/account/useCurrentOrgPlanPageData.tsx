@@ -13,7 +13,7 @@ const UnverifiedPaymentMethodSchema = z.object({
   hostedVerificationUrl: z.string(),
 })
 
-export const CurrentOrgPlanPageDataSchema = z
+const CurrentOrgPlanPageDataSchema = z
   .object({
     owner: z
       .object({
@@ -28,7 +28,7 @@ export const CurrentOrgPlanPageDataSchema = z
   })
   .nullish()
 
-export interface UseCurrentOrgPlanPageDataArgs {
+interface UseCurrentOrgPlanPageDataArgs {
   provider: string
   owner: string
   opts?: {
@@ -36,8 +36,8 @@ export interface UseCurrentOrgPlanPageDataArgs {
   }
 }
 
-export const query = `
-  query GetCurrentOrgPlanPageData($owner: String!) {
+const query = `
+  query CurrentOrgPlanPageData($owner: String!) {
     owner(username: $owner) {
       plan {
         value
@@ -58,7 +58,7 @@ export const useCurrentOrgPlanPageData = ({
   opts,
 }: UseCurrentOrgPlanPageDataArgs) =>
   useQuery({
-    queryKey: ['GetCurrentOrgPlanPageData', provider, owner, query],
+    queryKey: ['CurrentOrgPlanPageData', provider, owner, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,

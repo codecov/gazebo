@@ -8,6 +8,7 @@ import config from 'config'
 
 import { SentryRoute } from 'sentry'
 
+import { useUnverifiedPaymentMethods } from 'services/account/useUnverifiedPaymentMethods'
 import { Provider } from 'shared/api/helpers'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
 import A from 'ui/A'
@@ -19,7 +20,6 @@ import PlanBreadcrumb from './PlanBreadcrumb'
 import { PlanPageDataQueryOpts } from './queries/PlanPageDataQueryOpts'
 import Tabs from './Tabs'
 
-import { useUnverifiedPaymentMethods } from 'services/account/useUnverifiedPaymentMethods'
 import { StripeAppearance } from '../../stripe'
 
 const CancelPlanPage = lazy(() => import('./subRoutes/CancelPlanPage'))

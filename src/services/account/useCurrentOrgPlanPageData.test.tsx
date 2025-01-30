@@ -27,7 +27,7 @@ afterAll(() => server.close())
 describe('useCurrentOrgPlanPageData', () => {
   function setup(mockData = {}) {
     server.use(
-      graphql.query('GetCurrentOrgPlanPageData', () => {
+      graphql.query('CurrentOrgPlanPageData', () => {
         return HttpResponse.json({ data: mockData })
       })
     )
