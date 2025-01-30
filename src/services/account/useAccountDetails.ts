@@ -150,6 +150,14 @@ export const AccountDetailsSchema = z.object({
   studentCount: z.number(),
   subscriptionDetail: SubscriptionDetailSchema,
   usesInvoice: z.boolean(),
+  unverifiedPaymentMethods: z
+    .array(
+      z.object({
+        paymentMethodId: z.string(),
+        hostedVerificationLink: z.string(),
+      })
+    )
+    .nullable(),
 })
 
 export interface UseAccountDetailsArgs {
