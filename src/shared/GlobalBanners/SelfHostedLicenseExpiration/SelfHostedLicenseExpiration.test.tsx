@@ -165,6 +165,21 @@ describe('SelfHostedLicenseExpiration', () => {
       expect(resolveIssueButton).not.toBeInTheDocument()
     })
 
+    it('does not render the banner when disabled', async () => {
+      config.IS_SELF_HOSTED = true
+      config.IS_DEDICATED_NAMESPACE = true
+      config.DISPLAY_SELF_HOSTED_EXPIRATION_BANNER = false
+      setup({
+        seatsUsed: 5,
+        seatsLimit: 10,
+        expirationDate: null,
+      })
+      render(<SelfHostedLicenseExpiration />, { wrapper: wrapper(['']) })
+
+      const resolveIssueButton = screen.queryByText(/Resolve issue/)
+      expect(resolveIssueButton).not.toBeInTheDocument()
+    })
+
     it('does not render the banner when there are no seats used', async () => {
       config.IS_SELF_HOSTED = true
       config.IS_DEDICATED_NAMESPACE = true

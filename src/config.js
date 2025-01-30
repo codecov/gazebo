@@ -13,6 +13,7 @@ const defaultConfig = {
   GH_APP: DEFAULT_GH_APP,
   GH_APP_AI: 'codecov-ai',
   SUNBURST_ENABLED: true,
+  DISPLAY_SELF_HOSTED_EXPIRATION_BANNER: true,
 }
 
 export function removeReactAppPrefix(obj) {
@@ -36,6 +37,10 @@ export function removeReactAppPrefix(obj) {
 
   if ('SUNBURST_ENABLED' in keys) {
     keys['SUNBURST_ENABLED'] = keys['SUNBURST_ENABLED'].toLowerCase() === 'true'
+  }
+
+  if ('DISPLAY_SELF_HOSTED_EXPIRATION_BANNER' in keys) {
+    keys['DISPLAY_SELF_HOSTED_EXPIRATION_BANNER'] = keys['DISPLAY_SELF_HOSTED_EXPIRATION_BANNER'].toLowerCase() === 'true'
   }
 
   if ('SENTRY_TRACING_SAMPLE_RATE' in keys) {
