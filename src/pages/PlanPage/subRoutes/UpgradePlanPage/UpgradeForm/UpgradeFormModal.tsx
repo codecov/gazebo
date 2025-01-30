@@ -34,8 +34,8 @@ const UpgradeFormModal = ({
     body={
       <div className="flex flex-col gap-4">
         <div>
-          You have an incomplete plan upgrade that is awaiting payment
-          verification{' '}
+          You have a pending plan upgrade awaiting payment verification. Verify
+          payment{' '}
           <A
             href={url}
             isExternal
@@ -47,8 +47,8 @@ const UpgradeFormModal = ({
           .
         </div>
         <p>
-          Are you sure you wish to abandon the pending upgrade and start a new
-          one?
+          Are you sure you want to abandon this upgrade and start a new one?
+          This action cannot be undone.
         </p>
       </div>
     }

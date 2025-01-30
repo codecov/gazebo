@@ -113,9 +113,9 @@ const UnverifiedPaymentMethodAlert = ({ url }: { url?: string | null }) => {
   return (
     <>
       <Alert variant="warning">
-        <Alert.Title>New Payment Method Awaiting Verification</Alert.Title>
+        <Alert.Title>Verify Your New Payment Method</Alert.Title>
         <Alert.Description>
-          Your new payment method requires verification.{' '}
+          Your new payment method needs to be verified.{' '}
           <A
             href={url}
             isExternal
@@ -124,7 +124,8 @@ const UnverifiedPaymentMethodAlert = ({ url }: { url?: string | null }) => {
           >
             Click here
           </A>{' '}
-          to complete the verification process.
+          to complete the process. The verification code may take around 2 days
+          to appear on your bank statement.
         </Alert.Description>
       </Alert>
       <br />
