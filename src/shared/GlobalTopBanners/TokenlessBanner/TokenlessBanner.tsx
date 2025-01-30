@@ -26,7 +26,14 @@ const TokenlessBanner: React.FC = () => {
   // @ts-expect-error useLocationParams needs to be typed
   const cameFromOnboarding = params['source'] === ONBOARDING_SOURCE
 
-  if (!tokenlessSection || !owner || !data || !currentUser?.user || cameFromOnboarding) return null
+  if (
+    !tokenlessSection ||
+    !owner ||
+    !data ||
+    !currentUser?.user ||
+    cameFromOnboarding
+  )
+    return null
 
   return data?.uploadTokenRequired ? (
     <TokenRequiredBanner />

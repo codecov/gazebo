@@ -133,7 +133,9 @@ describe('TokenlessBanner', () => {
 
   it('renders nothing when tokenlessSection flag is false', () => {
     setup({ tokenlessSection: false, currentUser: mockSignedInUser })
-    const { container } = render(<TokenlessBanner />, { wrapper: wrapper(['/gh/codecov']) })
+    const { container } = render(<TokenlessBanner />, {
+      wrapper: wrapper(['/gh/codecov']),
+    })
     expect(container).toBeEmptyDOMElement()
   })
 
