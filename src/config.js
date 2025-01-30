@@ -40,7 +40,8 @@ export function removeReactAppPrefix(obj) {
   }
 
   if ('DISPLAY_SELF_HOSTED_EXPIRATION_BANNER' in keys) {
-    keys['DISPLAY_SELF_HOSTED_EXPIRATION_BANNER'] = keys['DISPLAY_SELF_HOSTED_EXPIRATION_BANNER'].toLowerCase() === 'true'
+    keys['DISPLAY_SELF_HOSTED_EXPIRATION_BANNER'] =
+      keys['DISPLAY_SELF_HOSTED_EXPIRATION_BANNER'].toLowerCase() === 'true'
   }
 
   if ('SENTRY_TRACING_SAMPLE_RATE' in keys) {

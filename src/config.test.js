@@ -74,7 +74,9 @@ describe('config', () => {
       it('sets to true', () => {
         const obj = { DISPLAY_SELF_HOSTED_EXPIRATION_BANNER: 'true' }
 
-        expect(removeReactAppPrefix(obj)).toEqual({ DISPLAY_SELF_HOSTED_EXPIRATION_BANNER: true })
+        expect(removeReactAppPrefix(obj)).toEqual({
+          DISPLAY_SELF_HOSTED_EXPIRATION_BANNER: true,
+        })
       })
     })
 

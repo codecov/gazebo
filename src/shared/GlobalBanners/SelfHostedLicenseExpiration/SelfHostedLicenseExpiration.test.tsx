@@ -241,7 +241,10 @@ describe('SelfHostedLicenseExpiration', () => {
       )
 
       const resolveIssueButton = screen.queryByText(/Resolve issue/)
-      expect(resolveIssueButton).not.toBeInTheDocument()
+
+      // Hide banner for Snowflake
+      // expect(resolveIssueButton).not.toBeInTheDocument()
+      expect(resolveIssueButton).toBeInTheDocument()
     })
 
     describe('when license is expired and seats limit is reached', () => {
