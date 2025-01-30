@@ -8,7 +8,10 @@ import config from 'config'
 
 import { SentryRoute } from 'sentry'
 
+import { Provider } from 'shared/api/helpers'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
+import A from 'ui/A'
+import { Alert } from 'ui/Alert'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { PlanProvider } from './context'
@@ -16,6 +19,7 @@ import PlanBreadcrumb from './PlanBreadcrumb'
 import { PlanPageDataQueryOpts } from './queries/PlanPageDataQueryOpts'
 import Tabs from './Tabs'
 
+import { useUnverifiedPaymentMethods } from 'services/account/useUnverifiedPaymentMethods'
 import { StripeAppearance } from '../../stripe'
 
 const CancelPlanPage = lazy(() => import('./subRoutes/CancelPlanPage'))
@@ -35,11 +39,21 @@ const Loader = () => (
   </div>
 )
 
+interface URLParams {
+  owner: string
+  provider: Provider
+}
+
 function PlanPage() {
-  const { owner, provider } = useParams()
+  const { owner, provider } = useParams<URLParams>()
   const { data: ownerData } = useSuspenseQueryV5(
     PlanPageDataQueryOpts({ owner, provider })
   )
+  const { data: unverifiedPaymentMethods } = useUnverifiedPaymentMethods({
+    provider,
+    owner,
+  })
+
   const { theme } = useThemeContext()
   const isDarkMode = theme !== Theme.LIGHT
 
@@ -61,6 +75,11 @@ function PlanPage() {
       >
         <PlanProvider>
           <PlanBreadcrumb />
+          {unverifiedPaymentMethods?.length ? (
+            <UnverifiedPaymentMethodAlert
+              url={unverifiedPaymentMethods?.[0]?.hostedVerificationUrl}
+            />
+          ) : null}
           <Suspense fallback={<Loader />}>
             <Switch>
               <SentryRoute path={path} exact>
@@ -87,6 +106,29 @@ function PlanPage() {
         </PlanProvider>
       </Elements>
     </div>
+  )
+}
+
+const UnverifiedPaymentMethodAlert = ({ url }: { url?: string | null }) => {
+  return (
+    <>
+      <Alert variant="warning">
+        <Alert.Title>New Payment Method Awaiting Verification</Alert.Title>
+        <Alert.Description>
+          Your new payment method requires verification.{' '}
+          <A
+            href={url}
+            isExternal
+            hook="stripe-payment-method-verification"
+            to={undefined}
+          >
+            Click here
+          </A>{' '}
+          to complete the verification process.
+        </Alert.Description>
+      </Alert>
+      <br />
+    </>
   )
 }
 
