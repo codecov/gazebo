@@ -215,6 +215,7 @@ describe('SelfHostedLicenseExpiration', () => {
       vi.setSystemTime(new Date('2023-08-01'))
       config.IS_SELF_HOSTED = true
       config.IS_DEDICATED_NAMESPACE = true
+      config.DISPLAY_SELF_HOSTED_EXPIRATION_BANNER = true
     })
 
     afterEach(() => {
@@ -241,7 +242,6 @@ describe('SelfHostedLicenseExpiration', () => {
       )
 
       const resolveIssueButton = screen.queryByText(/Resolve issue/)
-
       expect(resolveIssueButton).not.toBeInTheDocument()
     })
 
