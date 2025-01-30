@@ -90,12 +90,12 @@ function OwnerPage() {
       </Suspense>
       <div>
         {showOnboardingContainer ? <OnboardingOrg /> : null}
-        {ownerData?.isCurrentUserPartOfOrg && (
+        {ownerData?.isCurrentUserPartOfOrg ? (
           <Tabs owner={ownerData} provider={provider} />
-        )}
+        ) : null}
         <ActiveContext.Provider value={params?.repoDisplay}>
           <ListRepo
-            canRefetch={ownerData?.isCurrentUserPartOfOrg}
+            canRefetch={!!ownerData?.isCurrentUserPartOfOrg}
             hasGhApp={hasGhApp}
           />
         </ActiveContext.Provider>
