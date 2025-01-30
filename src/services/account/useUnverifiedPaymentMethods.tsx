@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-queryV5'
+import { Provider } from 'shared/api/types'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -37,7 +38,7 @@ const UnverifiedPaymentMethodsSchema = z.object({
 })
 
 interface UseUnverifiedPaymentMethodsArgs {
-  provider: string
+  provider: Provider
   owner: string
 }
 

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
 import { Plans } from 'shared/utils/billing'
 
 const PlanSchema = z.object({
@@ -10,7 +11,7 @@ const PlanSchema = z.object({
 
 const UnverifiedPaymentMethodSchema = z.object({
   paymentMethodId: z.string(),
-  hostedVerificationUrl: z.string(),
+  hostedVerificationUrl: z.string().nullish(),
 })
 
 const CurrentOrgPlanPageDataSchema = z
@@ -70,10 +71,12 @@ export const useCurrentOrgPlanPageData = ({
       }).then((res) => {
         const parsedRes = CurrentOrgPlanPageDataSchema.safeParse(res?.data)
         if (!parsedRes.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
-            data: null,
-          })
+            error: parsedRes.error,
+            data: {},
+            dev: 'useCurrentOrgPlanPageData - 404 failed to parse',
+          } satisfies NetworkErrorObject)
         }
 
         return parsedRes.data?.owner ?? null

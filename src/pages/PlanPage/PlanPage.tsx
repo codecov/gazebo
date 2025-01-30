@@ -75,9 +75,9 @@ function PlanPage() {
       >
         <PlanProvider>
           <PlanBreadcrumb />
-          {unverifiedPaymentMethods?.length ? (
+          {unverifiedPaymentMethods && unverifiedPaymentMethods.length > 0 ? (
             <UnverifiedPaymentMethodAlert
-              url={unverifiedPaymentMethods?.[0]?.hostedVerificationUrl}
+              url={unverifiedPaymentMethods[0]?.hostedVerificationUrl}
             />
           ) : null}
           <Suspense fallback={<Loader />}>

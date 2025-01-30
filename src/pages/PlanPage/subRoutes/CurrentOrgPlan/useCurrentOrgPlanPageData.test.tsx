@@ -11,7 +11,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
@@ -53,7 +53,7 @@ describe('useCurrentOrgPlanPageData', () => {
     setup({
       owner: {
         plan: {
-          value: Plans.USERS_INAPP,
+          value: Plans.USERS_PR_INAPPY,
         },
         billing: {
           unverifiedPaymentMethods: [
@@ -78,7 +78,7 @@ describe('useCurrentOrgPlanPageData', () => {
     await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
     expect(result.current.data).toEqual({
       plan: {
-        value: Plans.USERS_INAPP,
+        value: Plans.USERS_PR_INAPPY,
       },
       billing: {
         unverifiedPaymentMethods: [

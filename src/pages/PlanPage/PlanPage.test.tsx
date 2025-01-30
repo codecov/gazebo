@@ -45,8 +45,8 @@ const queryClientV5 = new QueryClientV5({
 
 let testLocation: Location<unknown>
 const wrapper =
-  (initialEntries = '') =>
-  ({ children }: { children: React.ReactNode }) => (
+  (initialEntries = ''): React.FC<React.PropsWithChildren> =>
+  ({ children }) => (
     <QueryClientProviderV5 client={queryClientV5}>
       <QueryClientProvider client={queryClient}>
         <ThemeContextProvider>

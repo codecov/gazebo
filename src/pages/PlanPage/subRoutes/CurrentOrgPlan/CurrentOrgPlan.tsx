@@ -28,7 +28,7 @@ function CurrentOrgPlan() {
     owner,
   })
 
-  const { data: pageData } = useCurrentOrgPlanPageData({
+  const { data } = useCurrentOrgPlanPageData({
     provider,
     owner,
   })
@@ -40,12 +40,15 @@ function CurrentOrgPlan() {
     })
   )
 
+  const hasUnverifiedPaymentMethods =
+    !!data?.billing?.unverifiedPaymentMethods?.length
+
   // awaitingInitialPaymentMethodVerification is true if the
   // customer needs to verify a delayed notification payment method
   // like ACH for their first subscription
   const awaitingInitialPaymentMethodVerification =
     !accountDetails?.subscriptionDetail?.defaultPaymentMethod &&
-    pageData?.billing?.unverifiedPaymentMethods?.length
+    hasUnverifiedPaymentMethods
 
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   const isDelinquent =
@@ -72,12 +75,10 @@ function CurrentOrgPlan() {
         />
       ) : null}
       <InfoMessageStripeCallback
-        hasUnverifiedPaymentMethods={
-          !!pageData?.billing?.unverifiedPaymentMethods?.length
-        }
+        hasUnverifiedPaymentMethods={hasUnverifiedPaymentMethods}
       />
       {isDelinquent ? <DelinquentAlert /> : null}
-      {pageData?.plan ? (
+      {data?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
           {planUpdatedNotification.alertOption &&
           !planUpdatedNotification.isCancellation ? (
