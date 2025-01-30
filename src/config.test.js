@@ -70,6 +70,16 @@ describe('config', () => {
       })
     })
 
+    describe('sets DISPLAY_SELF_HOSTED_EXPIRATION_BANNER to boolean', () => {
+      it('sets to true', () => {
+        const obj = { DISPLAY_SELF_HOSTED_EXPIRATION_BANNER: 'true' }
+
+        expect(removeReactAppPrefix(obj)).toEqual({
+          DISPLAY_SELF_HOSTED_EXPIRATION_BANNER: true,
+        })
+      })
+    })
+
     describe('sets IS_DEDICATED_NAMESPACE to boolean', () => {
       it('sets to true', () => {
         const obj = {
