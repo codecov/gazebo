@@ -81,9 +81,12 @@ const SelfHostedLicenseExpiration = () => {
   const isLicenseExpiringWithin30Days = dateDiff < 31 && dateDiff >= 0
 
   const shouldDisplayBanner =
-    isSeatsLimitReached || isLicenseExpired || isLicenseExpiringWithin30Days
+    (isSeatsLimitReached ||
+      isLicenseExpired ||
+      isLicenseExpiringWithin30Days) &&
+    config.DISPLAY_SELF_HOSTED_EXPIRATION_BANNER
 
-  if (!shouldDisplayBanner && config.DISPLAY_SELF_HOSTED_EXPIRATION_BANNER) {
+  if (!shouldDisplayBanner) {
     return null
   }
 
