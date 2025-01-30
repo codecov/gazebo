@@ -36,23 +36,16 @@ export function useEventContext() {
 
   if (
     path !== context.current.path ||
-    ownerData?.ownerid !== context.current.owner?.id ||
-    repoData?.repoid !== context.current.repo?.id
+    ownerData?.ownerid !== context.current.ownerid ||
+    repoData?.repoid !== context.current.repoid
   ) {
     // only update if this is a new owner or repo
     const newContext: EventContext = {
       path,
-      owner: ownerData?.ownerid
-        ? {
-            id: ownerData?.ownerid,
-          }
-        : undefined,
-      repo: repoData?.repoid
-        ? {
-            id: repoData.repoid,
-            isPrivate: repoData.private === null ? undefined : repoData.private,
-          }
-        : undefined,
+      ownerid: ownerData?.ownerid || undefined,
+      repoid: repoData?.repoid || undefined,
+      repoIsPrivate:
+        typeof repoData?.private === 'boolean' ? repoData?.private : undefined,
     }
     eventTracker().setContext(newContext)
     context.current = newContext

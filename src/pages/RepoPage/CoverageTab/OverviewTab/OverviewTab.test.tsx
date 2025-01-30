@@ -9,6 +9,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import CoverageOverviewTab from './OverviewTab'
 
 declare global {
@@ -16,6 +18,8 @@ declare global {
     ResizeObserver: unknown
   }
 }
+
+vi.mock('config')
 
 vi.mock('recharts', async () => {
   const OriginalModule = await vi.importActual('recharts')
@@ -34,22 +38,6 @@ vi.mock('./Summary', () => ({ default: () => 'Summary' }))
 vi.mock('./SummaryTeamPlan', () => ({ default: () => 'SummaryTeamPlan' }))
 vi.mock('./subroute/Sunburst', () => ({ default: () => 'Sunburst' }))
 vi.mock('./subroute/Fileviewer', () => ({ default: () => 'FileViewer' }))
-
-const mockRepoSettings = (isPrivate = false) => ({
-  owner: {
-    isCurrentUserPartOfOrg: true,
-    repository: {
-      defaultBranch: 'master',
-      private: isPrivate,
-      uploadToken: 'token',
-      graphToken: 'token',
-      yaml: 'yaml',
-      bot: {
-        username: 'test',
-      },
-    },
-  },
-})
 
 const mockRepo = (isPrivate = false, isFirstPullRequest = false) => ({
   owner: {
@@ -268,6 +256,24 @@ const mockBackfillFlag = {
   },
 }
 
+const mockRepoSettingsTeamData = (isPrivate = false) => ({
+  owner: {
+    isCurrentUserPartOfOrg: null,
+    repository: {
+      __typename: 'Repository',
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+      activated: true,
+    },
+  },
+})
+
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -326,6 +332,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  vi.clearAllMocks()
   queryClient.clear()
   queryClientV5.clear()
   server.resetHandlers()
@@ -340,6 +347,7 @@ interface SetupArgs {
   isPrivate?: boolean
   isTeamPlan?: boolean
   fileCount?: number
+  sunburstEnabled?: boolean
 }
 
 describe('Coverage overview tab', () => {
@@ -348,7 +356,10 @@ describe('Coverage overview tab', () => {
     isPrivate = false,
     isTeamPlan = false,
     fileCount = 10,
+    sunburstEnabled = true,
   }: SetupArgs) {
+    config.SUNBURST_ENABLED = sunburstEnabled
+
     server.use(
       graphql.query('GetRepo', () => {
         return HttpResponse.json({
@@ -389,7 +400,7 @@ describe('Coverage overview tab', () => {
         })
       }),
       graphql.query('GetRepoSettingsTeam', () => {
-        return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
+        return HttpResponse.json({ data: mockRepoSettingsTeamData(isPrivate) })
       }),
       graphql.query('CoverageTabData', () => {
         return HttpResponse.json({ data: mockCoverageTabData(fileCount) })
@@ -426,33 +437,69 @@ describe('Coverage overview tab', () => {
     expect(summary).toBeInTheDocument()
   })
 
-  describe('file count is under 200_000', () => {
-    it('renders the sunburst chart', async () => {
-      setup({ fileCount: 100 })
-      render(<CoverageOverviewTab />, {
-        wrapper: wrapper(['/gh/test-org/repoName']),
+  describe('rendering sunburst', () => {
+    describe('file count is under 200_000', () => {
+      describe('sunburst is enabled', () => {
+        it('renders the sunburst chart', async () => {
+          setup({ fileCount: 100, sunburstEnabled: true })
+          render(<CoverageOverviewTab />, {
+            wrapper: wrapper(['/gh/test-org/repoName']),
+          })
+
+          const hideChart = await screen.findByText(/Hide charts/)
+          expect(hideChart).toBeInTheDocument()
+
+          const sunburst = await screen.findByText('Sunburst')
+          expect(sunburst).toBeInTheDocument()
+        })
       })
 
-      const hideChart = await screen.findByText(/Hide charts/)
-      expect(hideChart).toBeInTheDocument()
+      describe('sunburst is disabled', () => {
+        it('does not render the sunburst chart', async () => {
+          setup({ fileCount: 100, sunburstEnabled: false })
+          render(<CoverageOverviewTab />, {
+            wrapper: wrapper(['/gh/test-org/repoName']),
+          })
 
-      const sunburst = await screen.findByText('Sunburst')
-      expect(sunburst).toBeInTheDocument()
+          const hideChart = await screen.findByText(/Hide charts/)
+          expect(hideChart).toBeInTheDocument()
+
+          const sunburst = screen.queryByText('Sunburst')
+          await waitFor(() => expect(sunburst).not.toBeInTheDocument())
+        })
+      })
     })
-  })
 
-  describe('file count is above 200_000', () => {
-    it('does not render the sunburst chart', async () => {
-      setup({ fileCount: 500_000 })
-      render(<CoverageOverviewTab />, {
-        wrapper: wrapper(['/gh/test-org/repoName']),
+    describe('file count is above 200_000', () => {
+      describe('sunburst is enabled', () => {
+        it('does not render the sunburst chart', async () => {
+          setup({ fileCount: 500_000, sunburstEnabled: true })
+          render(<CoverageOverviewTab />, {
+            wrapper: wrapper(['/gh/test-org/repoName']),
+          })
+
+          const hideChart = await screen.findByText(/Hide charts/)
+          expect(hideChart).toBeInTheDocument()
+
+          const sunburst = screen.queryByText('Sunburst')
+          await waitFor(() => expect(sunburst).not.toBeInTheDocument())
+        })
       })
 
-      const hideChart = await screen.findByText(/Hide charts/)
-      expect(hideChart).toBeInTheDocument()
+      describe('sunburst is disabled', () => {
+        it('does not render the sunburst chart', async () => {
+          setup({ fileCount: 500_000, sunburstEnabled: false })
+          render(<CoverageOverviewTab />, {
+            wrapper: wrapper(['/gh/test-org/repoName']),
+          })
 
-      const sunburst = screen.queryByText('Sunburst')
-      await waitFor(() => expect(sunburst).not.toBeInTheDocument())
+          const hideChart = await screen.findByText(/Hide charts/)
+          expect(hideChart).toBeInTheDocument()
+
+          const sunburst = screen.queryByText('Sunburst')
+          await waitFor(() => expect(sunburst).not.toBeInTheDocument())
+        })
+      })
     })
   })
 

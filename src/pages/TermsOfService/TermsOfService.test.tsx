@@ -11,11 +11,13 @@ import config from 'config'
 
 import { SentryBugReporter } from 'sentry'
 
+import { eventTracker } from 'services/events/events'
 import { InternalUserData } from 'services/user/useInternalUser'
 
 import TermsOfService from './TermsOfService'
 
 vi.mock('config')
+vi.mock('services/events/events')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -228,7 +230,7 @@ describe('TermsOfService', () => {
 
     // Into the realm of testing implementation details, but I want to make sure
     // that the correct inputs are being sent to the server.
-    it('Sign TOS, sends the correct inputs to the server', async () => {
+    it('Sign TOS, sends the correct inputs to the server, emits event', async () => {
       const { user, mockMutationVariables } = setup({
         internalUserData: {
           email: 'personal@cr.com',
@@ -264,6 +266,14 @@ describe('TermsOfService', () => {
           },
         })
       )
+
+      expect(eventTracker().track).toHaveBeenCalledWith({
+        type: 'Button Clicked',
+        properties: {
+          buttonName: 'Continue',
+          buttonLocation: 'Terms of Service',
+        },
+      })
     })
   })
 

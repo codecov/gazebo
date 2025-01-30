@@ -129,10 +129,7 @@ describe('useEventContext', () => {
       await waitFor(() => {
         expect(mockedSetContext).toHaveBeenCalledWith({
           path: '/:provider/:owner',
-          owner: {
-            id: mockOwnerContext.owner.ownerid,
-          },
-          repo: undefined,
+          ownerid: mockOwnerContext.owner.ownerid,
         })
       })
     })
@@ -148,13 +145,9 @@ describe('useEventContext', () => {
       await waitFor(() => {
         expect(mockedSetContext).toHaveBeenCalledWith({
           path: '/:provider/:owner/:repo',
-          owner: {
-            id: mockOwnerContext.owner.ownerid,
-          },
-          repo: {
-            id: mockRepoContext.owner.repository.repoid,
-            isPrivate: mockRepoContext.owner.repository.private,
-          },
+          ownerid: mockOwnerContext.owner.ownerid,
+          repoid: mockRepoContext.owner.repository.repoid,
+          repoIsPrivate: mockRepoContext.owner.repository.private,
         })
       })
     })
@@ -170,8 +163,6 @@ describe('useEventContext', () => {
       await waitFor(() => {
         expect(mockedSetContext).toHaveBeenCalledWith({
           path: '/:provider/:owner',
-          owner: undefined,
-          repo: undefined,
         })
       })
     })

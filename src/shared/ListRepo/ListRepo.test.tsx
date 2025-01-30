@@ -127,7 +127,10 @@ const wrapper =
 
 describe('ListRepo', () => {
   function setup(
-    { isTeamPlan = false }: { isTeamPlan?: boolean },
+    {
+      isTeamPlan = false,
+      isAdmin = true,
+    }: { isTeamPlan?: boolean; isAdmin?: boolean },
     me = mockUser
   ) {
     const user = userEvent.setup()
@@ -140,6 +143,11 @@ describe('ListRepo', () => {
       }),
       graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: me })
+      }),
+      graphql.query('DetailOwner', () => {
+        return HttpResponse.json({
+          data: { owner: { username: 'janedoe', isAdmin } },
+        })
       })
     )
 
@@ -303,7 +311,7 @@ describe('ListRepo', () => {
   })
 
   describe('user does not have gh app installed', () => {
-    it('displays github app config banner', async () => {
+    it('displays github app config banner if showDemoAlert is false', async () => {
       setup({})
       render(<ListRepo canRefetch hasGhApp={false} />, {
         wrapper: wrapper({
@@ -312,9 +320,43 @@ describe('ListRepo', () => {
         }),
       })
 
+      const banner = await screen.findByText("Codecov's GitHub app")
+      return expect(banner).toBeInTheDocument()
+    })
+    it('does not display github app config banner if showDemoAlert is true', async () => {
+      setup({})
+      render(<ListRepo canRefetch hasGhApp={false} />, {
+        wrapper: wrapper({
+          url: '/gh/janedoe?source=onboarding',
+          path: '/:provider/:owner',
+        }),
+      })
+
       await waitFor(() => {
-        const banner = screen.getByText("Codecov's GitHub app")
-        return expect(banner).toBeInTheDocument()
+        const banner = screen.queryByText("Codecov's GitHub app")
+        expect(banner).not.toBeInTheDocument()
+      })
+    })
+    it('does not display github app config banner if isAdmin is false', async () => {
+      setup({ isAdmin: false })
+      render(<ListRepo canRefetch hasGhApp={false} />, {
+        wrapper: wrapper({
+          url: '/gh/janedoe',
+          path: '/:provider/:owner',
+        }),
+      })
+      const banner = screen.queryByText("Codecov's GitHub app")
+      expect(banner).not.toBeInTheDocument()
+    })
+  })
+  describe('user has gh app installed', () => {
+    it('does not display github app config banner if hasGhApp is true', async () => {
+      setup({})
+      render(<ListRepo canRefetch hasGhApp={true} />, {
+        wrapper: wrapper({
+          url: '/gh/janedoe',
+          path: '/:provider/:owner',
+        }),
       })
     })
   })

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock, vi } from 'vitest'
 
+import { eventTracker } from 'services/events/events'
 import { useLocationParams } from 'services/navigation'
 
 import OnboardingOrg from './OnboardingOrg'
@@ -18,6 +19,7 @@ vi.mock('services/navigation', async () => {
     useLocationParams: vi.fn(),
   }
 })
+vi.mock('services/events/events')
 
 const mockedUseLocationParams = useLocationParams as Mock
 
@@ -78,5 +80,25 @@ describe('OnboardingOrg', () => {
 
     // Modal should be closed
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('emits an event on clicking Install Codecov', async () => {
+    const user = userEvent.setup()
+    render(<OnboardingOrg />, { wrapper })
+
+    // Modal should be closed initially
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    // Click install button to open the modal
+    const installButton = screen.getByText('Install Codecov')
+    await user.click(installButton)
+
+    expect(eventTracker().track).toHaveBeenCalledWith({
+      type: 'Button Clicked',
+      properties: {
+        buttonName: 'Open App Install Modal',
+        buttonLocation: 'Onboarding Container',
+      },
+    })
   })
 })

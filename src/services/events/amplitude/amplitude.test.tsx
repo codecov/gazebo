@@ -121,13 +121,10 @@ describe('AmplitudeEventTracker', () => {
       it('populates context as event properties', () => {
         const tracker = new AmplitudeEventTracker()
         tracker.setContext({
-          owner: {
-            id: 123,
-          },
-          repo: {
-            id: 321,
-            isPrivate: false,
-          },
+          ownerid: 123,
+          repoid: 321,
+          repoIsPrivate: false,
+          path: '/:provider/:owner',
         })
 
         tracker.track({
@@ -141,13 +138,10 @@ describe('AmplitudeEventTracker', () => {
           event_type: 'Button Clicked',
           event_properties: {
             buttonName: 'Configure Repo',
-            owner: {
-              id: 123,
-            },
-            repo: {
-              id: 321,
-              isPrivate: false,
-            },
+            ownerid: 123,
+            repoid: 321,
+            repoIsPrivate: false,
+            path: '/:provider/:owner',
           },
           groups: {
             org: 123,

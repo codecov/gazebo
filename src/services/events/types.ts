@@ -1,4 +1,5 @@
 import { Provider } from 'shared/api/helpers'
+import { loginProviderToName } from 'shared/utils/loginProviders'
 
 //
 // Add new events to the the Event union type below!
@@ -29,6 +30,7 @@ export type Event =
       properties: {
         buttonName: ButtonName
         buttonLocation?: string
+        loginProvider?: ReturnType<typeof loginProviderToName> // for login buttons only
       }
     }
   | {
@@ -47,13 +49,9 @@ export type Identity = {
 // arise in the future.
 export type EventContext = {
   // owner the event is being performed ON, not BY.
-  owner?: {
-    id: number
-  }
-  repo?: {
-    id: number
-    isPrivate?: boolean
-  }
+  ownerid?: number
+  repoid?: number
+  repoIsPrivate?: boolean
   path?: string
 }
 
@@ -89,4 +87,8 @@ type ButtonName =
   | 'Install GitHub App'
   | 'Configure Repo'
   | 'Open App Install Modal'
+  | 'Continue'
+  | 'Login'
+  | 'Sync'
+
 type PageName = 'Owner Page'

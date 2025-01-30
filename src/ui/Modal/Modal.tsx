@@ -4,8 +4,8 @@ import ReactModal from 'react-modal'
 import BaseModal from './BaseModal'
 
 const modalSizes = Object.freeze({
-  medium: 'w-11/12 md:w-3/4 xl:w-1/2',
-  small: 'w-3/4 md:w-2/4 xl:w-2/4 2xl:w-1/4',
+  medium: 'w-11/12 md:w-3/4 xl:w-1/2 4xl:w-[1000px]',
+  small: 'w-3/4 md:w-2/4 xl:w-2/4 2xl:w-1/4 3xl:w-[448px]',
 })
 
 export interface ModalProps {
