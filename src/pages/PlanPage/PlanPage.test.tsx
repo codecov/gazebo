@@ -13,6 +13,9 @@ import config from 'config'
 
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
+import { Location } from 'history'
+import { UnverifiedPaymentMethodSchema } from 'services/account'
+import { z } from 'zod'
 import PlanPage from './PlanPage'
 
 vi.mock('config')
@@ -40,10 +43,10 @@ const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 
-let testLocation
+let testLocation: Location<unknown>
 const wrapper =
   (initialEntries = '') =>
-  ({ children }) => (
+  ({ children }: { children: React.ReactNode }) => (
     <QueryClientProviderV5 client={queryClientV5}>
       <QueryClientProvider client={queryClient}>
         <ThemeContextProvider>
@@ -79,7 +82,13 @@ afterAll(() => {
 
 describe('PlanPage', () => {
   function setup(
-    { owner, isSelfHosted = false } = {
+    {
+      owner,
+      isSelfHosted = false,
+      unverifiedPaymentMethods = [] as z.infer<
+        typeof UnverifiedPaymentMethodSchema
+      >[],
+    } = {
       owner: {
         username: 'codecov',
         isCurrentUserPartOfOrg: true,
@@ -92,6 +101,17 @@ describe('PlanPage', () => {
     server.use(
       graphql.query('PlanPageData', () => {
         return HttpResponse.json({ data: { owner } })
+      }),
+      graphql.query('UnverifiedPaymentMethods', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              billing: {
+                unverifiedPaymentMethods,
+              },
+            },
+          },
+        })
       })
     )
   }
@@ -102,7 +122,7 @@ describe('PlanPage', () => {
         owner: {
           username: 'codecov',
           isCurrentUserPartOfOrg: false,
-          numberOfUploads: null,
+          numberOfUploads: 0,
         },
       })
     })
@@ -120,7 +140,7 @@ describe('PlanPage', () => {
         owner: {
           username: 'codecov',
           isCurrentUserPartOfOrg: false,
-          numberOfUploads: null,
+          numberOfUploads: 0,
         },
       })
     })
@@ -148,6 +168,34 @@ describe('PlanPage', () => {
 
       const tabs = await screen.findByText(/Tabs/)
       expect(tabs).toBeInTheDocument()
+    })
+
+    describe('when there are unverified payment methods', () => {
+      beforeEach(() => {
+        setup({
+          owner: {
+            username: 'codecov',
+            isCurrentUserPartOfOrg: true,
+            numberOfUploads: 30,
+          },
+          unverifiedPaymentMethods: [
+            {
+              paymentMethodId: 'pm_123',
+              hostedVerificationUrl: 'https://verify.stripe.com',
+            },
+          ],
+        })
+      })
+
+      it('renders unverified payment method alert', async () => {
+        render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
+
+        const alert = await screen.findByText(/Verify Your New Payment Method/)
+        expect(alert).toBeInTheDocument()
+
+        const link = screen.getByText('Click here')
+        expect(link).toHaveAttribute('href', 'https://verify.stripe.com')
+      })
     })
   })
 

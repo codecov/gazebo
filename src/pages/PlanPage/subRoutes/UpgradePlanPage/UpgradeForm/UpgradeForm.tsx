@@ -8,6 +8,7 @@ import {
   useAccountDetails,
   useAvailablePlans,
   usePlanData,
+  useUnverifiedPaymentMethods,
 } from 'services/account'
 import { Provider } from 'shared/api/helpers'
 import { canApplySentryUpgrade, getNextBillingDate } from 'shared/utils/billing'
@@ -45,6 +46,10 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
+  const { data: unverifiedPaymentMethods } = useUnverifiedPaymentMethods({
+    provider,
+    owner,
+  })
   const { upgradePlan } = useUpgradeControls()
   const [showModal, setShowModal] = useState(false)
   const [formData, setFormData] = useState<UpgradeFormFields>()
@@ -95,7 +100,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   }, [newPlan, trigger])
 
   const onSubmit = handleSubmit((data) => {
-    if (accountDetails?.unverifiedPaymentMethods?.length) {
+    if (unverifiedPaymentMethods?.length) {
       setFormData(data)
       setShowModal(true)
     } else {
@@ -141,10 +146,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
             setIsUpgrading(true)
             upgradePlan(formData)
           }}
-          url={
-            accountDetails?.unverifiedPaymentMethods?.[0]
-              ?.hostedVerificationLink || ''
-          }
+          url={unverifiedPaymentMethods?.[0]?.hostedVerificationUrl || ''}
           isUpgrading={isUpgrading}
         />
       )}
