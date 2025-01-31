@@ -5,12 +5,16 @@ import Message from 'old_ui/Message'
 
 // Stripe redirects to this page with ?success or ?cancel in the URL
 // this component takes care of rendering a message if it is successful
-function InfoMessageStripeCallback() {
+function InfoMessageStripeCallback({
+  hasUnverifiedPaymentMethods,
+}: {
+  hasUnverifiedPaymentMethods: boolean
+}) {
   const urlParams = qs.parse(useLocation().search, {
     ignoreQueryPrefix: true,
   })
 
-  if ('success' in urlParams)
+  if ('success' in urlParams && !hasUnverifiedPaymentMethods)
     return (
       <div className="col-start-1 col-end-13 mb-4">
         <Message variant="success">

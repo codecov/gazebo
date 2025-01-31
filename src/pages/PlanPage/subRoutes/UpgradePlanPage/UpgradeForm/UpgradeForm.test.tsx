@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, http, HttpResponse } from 'msw'
@@ -233,6 +237,15 @@ const queryClient = new QueryClient({
     },
   },
 })
+
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
+
 const server = setupServer()
 
 beforeAll(() => {
@@ -241,6 +254,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
   vi.clearAllMocks()
 })
@@ -256,20 +270,22 @@ const wrapper: (
 ) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/gh/codecov']) =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner">
-          <Suspense fallback={null}>{children}</Suspense>
-        </Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner">
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 type SetupArgs = {
@@ -281,6 +297,7 @@ type SetupArgs = {
   hasSentryPlans?: boolean
   monthlyPlan?: boolean
   planUserCount?: number
+  hasUnverifiedPaymentMethod?: boolean
 }
 
 describe('UpgradeForm', () => {
@@ -293,6 +310,7 @@ describe('UpgradeForm', () => {
     hasSentryPlans = false,
     monthlyPlan = true,
     planUserCount = 1,
+    hasUnverifiedPaymentMethod = false,
   }: SetupArgs) {
     const addNotification = vi.fn()
     const user = userEvent.setup()
@@ -384,6 +402,24 @@ describe('UpgradeForm', () => {
             },
           },
         })
+      }),
+      graphql.query('UnverifiedPaymentMethods', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              billing: {
+                unverifiedPaymentMethods: hasUnverifiedPaymentMethod
+                  ? [
+                      {
+                        paymentMethodId: 'asdf',
+                        hostedVerficationUrl: 'https://stripe.com',
+                      },
+                    ]
+                  : null,
+              },
+            },
+          },
+        })
       })
     )
 
@@ -391,6 +427,59 @@ describe('UpgradeForm', () => {
   }
 
   describe('when rendered', () => {
+    describe('when user has unverified payment methods', () => {
+      const props = {
+        setSelectedPlan: vi.fn(),
+        selectedPlan: proPlanYear,
+      }
+
+      it('shows modal when form is submitted', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_BASIC,
+          hasUnverifiedPaymentMethod: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const proceedToCheckoutButton = await screen.findByRole('button', {
+          name: /Proceed to checkout/,
+        })
+        await user.click(proceedToCheckoutButton)
+
+        const modal = await screen.findByText(
+          /Are you sure you want to abandon this upgrade and start a new one/,
+          {
+            exact: false,
+          }
+        )
+        expect(modal).toBeInTheDocument()
+      })
+
+      it('does not show modal when no unverified payment methods', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_BASIC,
+          hasUnverifiedPaymentMethod: false,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '20')
+
+        const proceedToCheckoutButton = await screen.findByRole('button', {
+          name: /Proceed to checkout/,
+        })
+        await user.click(proceedToCheckoutButton)
+
+        const modal = screen.queryByText(
+          /Are you sure you want to abandon this upgrade and start a new one/,
+          {
+            exact: false,
+          }
+        )
+        expect(modal).not.toBeInTheDocument()
+      })
+    })
+
     describe('when the user has a basic plan', () => {
       const props = {
         setSelectedPlan: vi.fn(),
