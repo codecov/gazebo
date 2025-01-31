@@ -97,6 +97,9 @@ export const useSetUploadTokenRequired = ({
           text: 'Upload token requirement updated successfully',
           disappearAfter: TOAST_DURATION,
         })
+
+        // only want to invalidate the query if the mutation was successful
+        // otherwise we're just going to re-fetch the same data
         queryClient.invalidateQueries(['GetUploadTokenRequired'])
       }
     },
