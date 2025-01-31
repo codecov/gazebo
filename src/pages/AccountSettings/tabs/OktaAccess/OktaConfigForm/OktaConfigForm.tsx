@@ -5,6 +5,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import { Provider } from 'shared/api/helpers'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import Button from 'ui/Button'
@@ -24,7 +25,7 @@ const FormSchema = z.object({
 
 type FormValues = z.infer<typeof FormSchema>
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 
