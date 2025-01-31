@@ -1,41 +1,65 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
+import { useMutation as useMutationV5 } from '@tanstack/react-queryV5'
+import { z } from 'zod'
 
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
+import { Provider, rejectNetworkError } from 'shared/api/helpers'
 
 const TOAST_DURATION = 10000
 
 const query = `
-  mutation SetUploadTokenRequired($input: SetUploadTokenRequiredInput!) {
-    setUploadTokenRequired(input: $input) {
-      error {
-        __typename
-        ... on ValidationError {
-          message
-        }
-        ... on UnauthorizedError {
-          message
-        }
-        ... on UnauthenticatedError {
-          message
-        }
+mutation SetUploadTokenRequired($input: SetUploadTokenRequiredInput!) {
+  setUploadTokenRequired(input: $input) {
+    error {
+      __typename
+      ... on ValidationError {
+        message
+      }
+      ... on UnauthorizedError {
+        message
+      }
+      ... on UnauthenticatedError {
+        message
       }
     }
   }
-`
+}`
 
-interface URLParams {
-  provider: string
+const ErrorUnionSchema = z.discriminatedUnion('__typename', [
+  z.object({
+    __typename: z.literal('UnauthorizedError'),
+    message: z.string(),
+  }),
+  z.object({
+    __typename: z.literal('ValidationError'),
+    message: z.string(),
+  }),
+  z.object({
+    __typename: z.literal('UnauthenticatedError'),
+    message: z.string(),
+  }),
+])
+
+const ResponseSchema = z.object({
+  setUploadTokenRequired: z
+    .object({ error: ErrorUnionSchema.nullable() })
+    .nullable(),
+})
+
+interface UseSetUploadTokenRequiredArgs {
+  provider: Provider
   owner: string
 }
 
-export const useSetUploadTokenRequired = () => {
-  const { provider, owner } = useParams<URLParams>()
+export const useSetUploadTokenRequired = ({
+  provider,
+  owner,
+}: UseSetUploadTokenRequiredArgs) => {
   const addToast = useAddNotification()
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useMutationV5({
     mutationFn: (uploadTokenRequired: boolean) => {
       return Api.graphqlMutation({
         provider,
@@ -50,8 +74,17 @@ export const useSetUploadTokenRequired = () => {
       })
     },
     onSuccess: ({ data }) => {
-      queryClient.invalidateQueries(['GetUploadTokenRequired'])
-      const error = data?.setUploadTokenRequired?.error
+      const parsedData = ResponseSchema.safeParse(data)
+      if (!parsedData.success) {
+        return rejectNetworkError({
+          status: 404,
+          data: {},
+          dev: 'useSetUploadTokenRequired - 404 failed to parse',
+          error: parsedData.error,
+        })
+      }
+
+      const error = parsedData?.data?.setUploadTokenRequired?.error
       if (error) {
         addToast({
           type: 'error',
@@ -64,6 +97,7 @@ export const useSetUploadTokenRequired = () => {
           text: 'Upload token requirement updated successfully',
           disappearAfter: TOAST_DURATION,
         })
+        queryClient.invalidateQueries(['GetUploadTokenRequired'])
       }
     },
     onError: () => {

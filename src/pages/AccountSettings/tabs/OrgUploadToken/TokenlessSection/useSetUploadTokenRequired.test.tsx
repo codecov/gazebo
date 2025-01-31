@@ -1,8 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useSetUploadTokenRequired } from './useSetUploadTokenRequired'
 
@@ -18,31 +21,33 @@ vi.mock('services/toastNotification', async () => {
   }
 })
 
-const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  </QueryClientProviderV5>
+)
+
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
 
 afterEach(() => {
+  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
 afterAll(() => {
   server.close()
 })
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov']}>
-    <Route path="/:provider/:owner">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
 
 describe('useSetUploadTokenRequired', () => {
   function setup({ isErrorResponse = false }) {
@@ -85,14 +90,19 @@ describe('useSetUploadTokenRequired', () => {
     describe('when calling the mutation', () => {
       describe('when successful', () => {
         it('returns isSuccess true', async () => {
-          const { result } = renderHook(() => useSetUploadTokenRequired(), {
-            wrapper,
-          })
+          const { result } = renderHook(
+            () =>
+              useSetUploadTokenRequired({
+                provider: 'gh',
+                owner: 'codecov',
+              }),
+            { wrapper }
+          )
 
           result.current.mutate(true)
 
-          await waitFor(() => result.current.isLoading)
-          await waitFor(() => !result.current.isLoading)
+          await waitFor(() => result.current.isPending)
+          await waitFor(() => !result.current.isPending)
 
           await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
           const data = result.current.data
@@ -110,14 +120,19 @@ describe('useSetUploadTokenRequired', () => {
         it('fires a success toast', async () => {
           const { mockAddToast } = setup({})
 
-          const { result } = renderHook(() => useSetUploadTokenRequired(), {
-            wrapper,
-          })
+          const { result } = renderHook(
+            () =>
+              useSetUploadTokenRequired({
+                provider: 'gh',
+                owner: 'codecov',
+              }),
+            { wrapper }
+          )
 
           result.current.mutate(true)
 
-          await waitFor(() => result.current.isLoading)
-          await waitFor(() => !result.current.isLoading)
+          await waitFor(() => result.current.isPending)
+          await waitFor(() => !result.current.isPending)
 
           await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
           await waitFor(() =>
@@ -134,14 +149,19 @@ describe('useSetUploadTokenRequired', () => {
         it('fires an error toast', async () => {
           const { mockAddToast } = setup({ isErrorResponse: true })
 
-          const { result } = renderHook(() => useSetUploadTokenRequired(), {
-            wrapper,
-          })
+          const { result } = renderHook(
+            () =>
+              useSetUploadTokenRequired({
+                provider: 'gh',
+                owner: 'codecov',
+              }),
+            { wrapper }
+          )
 
           result.current.mutate(true)
 
-          await waitFor(() => result.current.isLoading)
-          await waitFor(() => !result.current.isLoading)
+          await waitFor(() => result.current.isPending)
+          await waitFor(() => !result.current.isPending)
 
           await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
           await waitFor(() =>
@@ -157,9 +177,14 @@ describe('useSetUploadTokenRequired', () => {
       it('does not fire a success toast when isSuccess is falsy', async () => {
         const { mockAddToast } = setup({})
 
-        const { result } = renderHook(() => useSetUploadTokenRequired(), {
-          wrapper,
-        })
+        const { result } = renderHook(
+          () =>
+            useSetUploadTokenRequired({
+              provider: 'gh',
+              owner: 'codecov',
+            }),
+          { wrapper }
+        )
 
         result.current.mutate(false)
         await waitFor(() => expect(result.current.isSuccess).toBeFalsy())
