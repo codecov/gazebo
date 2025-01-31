@@ -75,7 +75,9 @@ function CurrentOrgPlan() {
         />
       ) : null}
       <InfoMessageStripeCallback
-        hasUnverifiedPaymentMethods={hasUnverifiedPaymentMethods}
+        awaitingInitialPaymentMethodVerification={
+          awaitingInitialPaymentMethodVerification
+        }
       />
       {isDelinquent ? <DelinquentAlert /> : null}
       {data?.plan ? (
