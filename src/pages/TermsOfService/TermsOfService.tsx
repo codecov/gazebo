@@ -137,7 +137,12 @@ export default function TermsOfService() {
       if (data?.saveTermsAgreement?.error) {
         setError('apiError', data?.saveTermsAgreement?.error)
         console.error('validation error')
+        return
       }
+
+      const url = new URL(window.location.href)
+      url.searchParams.set('source', ONBOARDING_SOURCE)
+      window.location.href = url.toString()
     },
     onError: (error) => setError('apiError', error),
   })
@@ -159,10 +164,6 @@ export default function TermsOfService() {
       name: data.marketingName,
       termsAgreement: true,
     })
-
-    const url = new URL(window.location.href)
-    url.searchParams.set('source', ONBOARDING_SOURCE)
-    window.location.href = url.toString()
   }
 
   useEffect(() => {
