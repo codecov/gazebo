@@ -14,7 +14,7 @@ import Icon from 'ui/Icon'
 import TextInput from 'ui/TextInput'
 import Toggle from 'ui/Toggle'
 
-import { useUpdateOktaConfig } from '../hooks'
+import { useUpdateOktaConfig } from '../hooks/useUpdateOktaConfig'
 import { OktaConfigQueryOpts } from '../queries/OktaConfigQueryOpts'
 
 const FormSchema = z.object({
