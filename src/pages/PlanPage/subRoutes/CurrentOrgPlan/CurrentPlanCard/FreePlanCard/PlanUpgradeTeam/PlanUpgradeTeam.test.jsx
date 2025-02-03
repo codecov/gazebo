@@ -22,9 +22,9 @@ const mockPlanBasic = {
   baseUnitPrice: 0,
   benefits: ['Up to # user', 'Unlimited public repositories'],
   billingRate: BillingRate.MONTHLY,
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -81,7 +81,7 @@ const mockPlanTrialing = {
 const mockAvailablePlans = [
   {
     marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -179,9 +179,9 @@ const mockPreTrialPlanInfo = {
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', 'Pre Trial benefits'],
   billingRate: BillingRate.MONTHLY,
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
 }
 
 const server = setupServer()
@@ -235,7 +235,7 @@ describe('PlanUpgradeTeam', () => {
     )
   }
 
-  describe('when rendered with basic plan', () => {
+  describe('when rendered with developers plan', () => {
     it('shows the monthly marketing name', async () => {
       setup({ plan: mockPlanBasic })
       render(<PlanUpgradeTeam />, {
@@ -323,7 +323,7 @@ describe('PlanUpgradeTeam', () => {
     })
   })
 
-  describe('when rendered with non-basic plan', () => {
+  describe('when rendered with non-developers plan', () => {
     beforeEach(() => {
       setup({ plan: mockPlanPro })
     })

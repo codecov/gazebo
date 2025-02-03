@@ -72,7 +72,7 @@ function SpecialOffer() {
           Yes, I&apos;d like 6 months with 30% discount
         </Button>
         <A variant="black" to={{ pageName: 'downgradePlanPage' }}>
-          No thanks, I&apos;ll proceed to the basic plan
+          No thanks, I&apos;ll proceed to the developers plan
           <Icon name="chevronRight" variant="solid" size="sm" />
         </A>
       </div>

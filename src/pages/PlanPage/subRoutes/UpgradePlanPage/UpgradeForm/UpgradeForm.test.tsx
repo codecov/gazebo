@@ -33,7 +33,7 @@ vi.mock('@sentry/react')
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -302,7 +302,7 @@ type SetupArgs = {
 
 describe('UpgradeForm', () => {
   function setup({
-    planValue = Plans.USERS_BASIC,
+    planValue = Plans.USERS_DEVELOPER,
     successfulPatchRequest = true,
     errorDetails = undefined,
     trialStatus = TrialStatuses.NOT_STARTED,
@@ -319,7 +319,7 @@ describe('UpgradeForm', () => {
 
     server.use(
       http.get(`/internal/:provider/:owner/account-details/`, () => {
-        if (planValue === Plans.USERS_BASIC) {
+        if (planValue === Plans.USERS_DEVELOPER) {
           return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_PR_INAPPM) {
           return HttpResponse.json(mockAccountDetailsProMonthly)
@@ -379,12 +379,12 @@ describe('UpgradeForm', () => {
                 ...mockPlanDataResponse,
                 trialStatus,
                 billingRate:
-                  planValue === Plans.USERS_BASIC
+                  planValue === Plans.USERS_DEVELOPER
                     ? null
                     : monthlyPlan
                       ? BillingRate.MONTHLY
                       : BillingRate.ANNUALLY,
-                isFreePlan: planValue === Plans.USERS_BASIC,
+                isFreePlan: planValue === Plans.USERS_DEVELOPER,
                 isEnterprisePlan: false,
                 isProPlan:
                   planValue === Plans.USERS_PR_INAPPM ||
@@ -435,7 +435,7 @@ describe('UpgradeForm', () => {
 
       it('shows modal when form is submitted', async () => {
         const { user } = setup({
-          planValue: Plans.USERS_BASIC,
+          planValue: Plans.USERS_DEVELOPER,
           hasUnverifiedPaymentMethod: true,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -456,7 +456,7 @@ describe('UpgradeForm', () => {
 
       it('does not show modal when no unverified payment methods', async () => {
         const { user } = setup({
-          planValue: Plans.USERS_BASIC,
+          planValue: Plans.USERS_DEVELOPER,
           hasUnverifiedPaymentMethod: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -480,13 +480,13 @@ describe('UpgradeForm', () => {
       })
     })
 
-    describe('when the user has a basic plan', () => {
+    describe('when the user has a developers plan', () => {
       const props = {
         setSelectedPlan: vi.fn(),
         selectedPlan: proPlanYear,
       }
       it('renders the organization and owner titles', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
+        setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const organizationTitle = await screen.findByText(/Organization/)
@@ -496,7 +496,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders monthly option button', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
+        setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
@@ -504,7 +504,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders annual option button', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
+        setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -512,7 +512,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders annual option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_BASIC, monthlyPlan: false })
+        setup({ planValue: Plans.USERS_DEVELOPER, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -521,7 +521,7 @@ describe('UpgradeForm', () => {
       })
 
       it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
+        setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$240/)
@@ -529,7 +529,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders minimum seat number of 2', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
+        setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const minimumSeat = await screen.findByRole('spinbutton')
@@ -537,7 +537,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders validation error when the user selects less than 2 seats', async () => {
-        const { user } = setup({ planValue: Plans.USERS_BASIC })
+        const { user } = setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
@@ -556,7 +556,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders the proceed to checkout for the update button', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
+        setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const proceedToCheckoutButton = await screen.findByRole('button', {
@@ -568,7 +568,7 @@ describe('UpgradeForm', () => {
       describe('when the user has team plans available', () => {
         it('renders the Pro button as "selected"', async () => {
           setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             hasTeamPlans: true,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -580,7 +580,7 @@ describe('UpgradeForm', () => {
 
         it('renders team option button', async () => {
           setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             hasTeamPlans: true,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -594,7 +594,7 @@ describe('UpgradeForm', () => {
         describe('when updating to a team plan', () => {
           it('renders up to 10 seats text', async () => {
             const { user } = setup({
-              planValue: Plans.USERS_BASIC,
+              planValue: Plans.USERS_DEVELOPER,
               hasTeamPlans: true,
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -610,7 +610,7 @@ describe('UpgradeForm', () => {
 
           it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
             const { user } = setup({
-              planValue: Plans.USERS_BASIC,
+              planValue: Plans.USERS_DEVELOPER,
               hasTeamPlans: true,
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -626,7 +626,7 @@ describe('UpgradeForm', () => {
 
       describe('when updating to a month plan', () => {
         it('has the price for the month', async () => {
-          const { user } = setup({ planValue: Plans.USERS_BASIC })
+          const { user } = setup({ planValue: Plans.USERS_DEVELOPER })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
           const monthOption = await screen.findByRole('button', {
@@ -643,7 +643,7 @@ describe('UpgradeForm', () => {
         it('renders success notification when upgrading seats with yearly plan', async () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -669,7 +669,7 @@ describe('UpgradeForm', () => {
         it('renders success notification when upgrading seats with monthly plan', async () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -700,7 +700,7 @@ describe('UpgradeForm', () => {
         it('redirects the user to the plan page', async () => {
           const { user } = setup({
             successfulPatchRequest: true,
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -727,7 +727,7 @@ describe('UpgradeForm', () => {
           const { addNotification, user } = setup({
             successfulPatchRequest: false,
             errorDetails: 'Insufficient funds.',
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
           })
 
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -757,7 +757,7 @@ describe('UpgradeForm', () => {
         it('adds an error notification with a default message', async () => {
           const { addNotification, user } = setup({
             successfulPatchRequest: false,
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
           })
 
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -953,7 +953,7 @@ describe('UpgradeForm', () => {
 
           it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
             const { user } = setup({
-              planValue: Plans.USERS_BASIC,
+              planValue: Plans.USERS_DEVELOPER,
               hasTeamPlans: true,
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -1275,7 +1275,7 @@ describe('UpgradeForm', () => {
 
           it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
             const { user } = setup({
-              planValue: Plans.USERS_BASIC,
+              planValue: Plans.USERS_DEVELOPER,
               hasTeamPlans: true,
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })

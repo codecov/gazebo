@@ -26,7 +26,7 @@ vi.mock('services/toastNotification', async () => {
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -223,7 +223,7 @@ describe('ProPlanController', () => {
 
     server.use(
       http.get(`/internal/gh/codecov/account-details/`, () => {
-        if (planValue.value === Plans.USERS_BASIC) {
+        if (planValue.value === Plans.USERS_DEVELOPER) {
           return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue.value === Plans.USERS_PR_INAPPM) {
           return HttpResponse.json(mockAccountDetailsProMonthly)

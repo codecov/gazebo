@@ -14,7 +14,7 @@ import ErrorBanner from './ErrorBanner'
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -108,8 +108,8 @@ interface SetupArgs {
 
 describe('ErrorBanner', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC }: SetupArgs = {
-      planValue: Plans.USERS_BASIC,
+    { planValue = Plans.USERS_DEVELOPER }: SetupArgs = {
+      planValue: Plans.USERS_DEVELOPER,
     }
   ) {
     const user = userEvent.setup()
@@ -147,7 +147,7 @@ describe('ErrorBanner', () => {
           isTeamPlan: false,
           isTrialPlan: false,
         }
-        if (planValue === Plans.USERS_BASIC) {
+        if (planValue === Plans.USERS_DEVELOPER) {
           return HttpResponse.json({
             data: {
               owner: {

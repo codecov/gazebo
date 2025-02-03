@@ -19,7 +19,7 @@ vi.mock('./PlanUpgradeTeam', () => ({ default: () => 'PlanUpgradeTeam' }))
 const allPlans = [
   {
     marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -138,7 +138,7 @@ const sentryPlans = [
 
 const freePlan = {
   marketingName: 'Free',
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', '250 free uploads'],
@@ -161,9 +161,9 @@ const mockPlanData = {
   baseUnitPrice: 10,
   benefits: ['Up to # user', 'Unlimited public repositories'],
   billingRate: BillingRate.MONTHLY,
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -181,9 +181,9 @@ const mockPreTrialPlanInfo = {
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', 'Pre Trial benefits'],
   billingRate: BillingRate.MONTHLY,
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
 }
 
 const server = setupServer()
@@ -231,7 +231,7 @@ describe('FreePlanCard', () => {
     },
     plans = allPlans,
     trialStatus = TrialStatuses.CANNOT_TRIAL,
-    planValue = Plans.USERS_BASIC,
+    planValue = Plans.USERS_DEVELOPER,
     planUserCount = 1,
   }) {
     server.use(
@@ -248,7 +248,7 @@ describe('FreePlanCard', () => {
                 trialStatus,
                 value: planValue,
                 planUserCount,
-                isFreePlan: planValue === Plans.USERS_BASIC,
+                isFreePlan: planValue === Plans.USERS_DEVELOPER,
                 isTeamPlan:
                   planValue === Plans.USERS_TEAMM ||
                   planValue === Plans.USERS_TEAMY,

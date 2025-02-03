@@ -53,9 +53,9 @@ const mockTrialData = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: BillingRate.MONTHLY,
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: 'ONGOING',
   trialStartDate: '2023-01-01T08:55:25',
   trialEndDate: '2023-01-10T08:55:25',
@@ -72,7 +72,7 @@ const mockTrialData = {
 describe('ActivationAlert', () => {
   function setup(
     privateRepos = true,
-    value: PlanName = Plans.USERS_BASIC,
+    value: PlanName = Plans.USERS_DEVELOPER,
     hasSeatsLeft = true,
     isSelfHosted = false
   ) {
@@ -88,7 +88,7 @@ describe('ActivationAlert', () => {
                 ...mockTrialData,
                 value,
                 hasSeatsLeft,
-                isFreePlan: value === Plans.USERS_BASIC,
+                isFreePlan: value === Plans.USERS_DEVELOPER,
                 isTeamPlan:
                   value === Plans.USERS_TEAMM || value === Plans.USERS_TEAMY,
               },
@@ -96,9 +96,9 @@ describe('ActivationAlert', () => {
                 baseUnitPrice: 10,
                 benefits: [],
                 billingRate: BillingRate.MONTHLY,
-                marketingName: 'Users Basic',
+                marketingName: 'Users Developer',
                 monthlyUploadLimit: 250,
-                value: Plans.USERS_BASIC,
+                value: Plans.USERS_DEVELOPER,
               },
             },
           },
@@ -118,7 +118,7 @@ describe('ActivationAlert', () => {
   })
 
   it('renders FreePlanSeatsTakenAlert when on free plan and no seats left', async () => {
-    setup(false, Plans.USERS_BASIC, false)
+    setup(false, Plans.USERS_DEVELOPER, false)
     render(<ActivationAlert />, { wrapper })
 
     const freePlanSeatsTakenAlert = await screen.findByText(
@@ -148,7 +148,7 @@ describe('ActivationAlert', () => {
   })
 
   it('renders ActivationRequiredSelfHosted when user is self hosted', async () => {
-    setup(false, Plans.USERS_BASIC, true, true)
+    setup(false, Plans.USERS_DEVELOPER, true, true)
     render(<ActivationAlert />, { wrapper })
 
     const activationRequiredSelfHostedBanner = await screen.findByText(

@@ -26,7 +26,7 @@ vi.mock('@stripe/react-stripe-js')
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -196,8 +196,8 @@ interface SetupArgs {
 
 describe('SentryPlanController', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC, monthlyPlan = true }: SetupArgs = {
-      planValue: Plans.USERS_BASIC,
+    { planValue = Plans.USERS_DEVELOPER, monthlyPlan = true }: SetupArgs = {
+      planValue: Plans.USERS_DEVELOPER,
       monthlyPlan: true,
     }
   ) {
@@ -207,7 +207,7 @@ describe('SentryPlanController', () => {
 
     server.use(
       http.get(`/internal/gh/codecov/account-details/`, () => {
-        if (planValue === Plans.USERS_BASIC) {
+        if (planValue === Plans.USERS_DEVELOPER) {
           return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_SENTRYM) {
           return HttpResponse.json(mockAccountDetailsSentryMonthly)

@@ -25,7 +25,7 @@ vi.mock('shared/useRedirect', async () => {
 const allPlans = [
   {
     marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -118,7 +118,7 @@ const mockedFreeAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
@@ -165,9 +165,9 @@ const mockTrialData = {
     baseUnitPrice: 10,
     benefits: [],
     billingRate: BillingRate.MONTHLY,
-    marketingName: 'Users Basic',
+    marketingName: 'Users Developer',
     monthlyUploadLimit: 250,
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
     trialStatus: 'ONGOING',
     trialStartDate: '2023-01-01T08:55:25',
     trialEndDate: '2023-01-10T08:55:25',
@@ -245,7 +245,7 @@ describe('Actions Billing', () => {
               plan: {
                 ...trialPlanData.plan,
                 value: accountDetails.plan.value,
-                isFreePlan: accountDetails.plan.value === Plans.USERS_BASIC,
+                isFreePlan: accountDetails.plan.value === Plans.USERS_DEVELOPER,
                 isTeamPlan:
                   accountDetails.plan.value === Plans.USERS_TEAMM ||
                   accountDetails.plan.value === Plans.USERS_TEAMY,

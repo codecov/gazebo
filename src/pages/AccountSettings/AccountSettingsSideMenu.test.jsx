@@ -19,7 +19,7 @@ const mockPlanData = {
   billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: 'NOT_STARTED',
   trialStartDate: '',
   trialEndDate: '',
@@ -52,7 +52,7 @@ const mockCurrentUser = (username) => ({
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: Plans.USERS_BASIC,
+      plan: Plans.USERS_DEVELOPER,
       staff: false,
       hasYaml: false,
       bot: null,
@@ -118,14 +118,14 @@ describe('AccountSettingsSideMenu', () => {
       owner = 'codecov',
       isSelfHosted = false,
       hideAccessTab = false,
-      planValue = Plans.USERS_BASIC,
+      planValue = Plans.USERS_DEVELOPER,
     } = {
       isAdmin: false,
       username: 'codecov',
       isSelfHosted: false,
       owner: 'codecov',
       hideAccessTab: false,
-      planValue: Plans.USERS_BASIC,
+      planValue: Plans.USERS_DEVELOPER,
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
@@ -149,11 +149,14 @@ describe('AccountSettingsSideMenu', () => {
                 ...mockPlanData,
                 value: planValue,
                 isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
-                isFreePlan: planValue === Plans.USERS_BASIC,
+                isFreePlan:
+                  planValue === Plans.USERS_DEVELOPER ||
+                  planValue === Plans.USERS_BASIC,
                 isProPlan: false,
                 isTeamPlan:
                   planValue === Plans.USERS_TEAMM ||
-                  planValue === Plans.USERS_TEAMY,
+                  planValue === Plans.USERS_TEAMY ||
+                  planValue === Plans.USERS_DEVELOPER,
                 isTrialPlan: false,
                 isSentryPlan: false,
               },

@@ -13,7 +13,7 @@ import UpdateButton from './UpdateButton'
 
 const freePlan = {
   marketingName: 'Basic',
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -87,7 +87,7 @@ afterAll(() => {
 })
 
 const mockPlanBasic = {
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   baseUnitPrice: 4,
   benefits: ['Up to 10 users'],
   billingRate: 'annually',
@@ -148,7 +148,7 @@ describe('UpdateButton', () => {
           isSentryPlan: false,
           isTrialPlan: false,
         }
-        if (planValue.value === Plans.USERS_BASIC) {
+        if (planValue.value === Plans.USERS_DEVELOPER) {
           return HttpResponse.json({
             data: {
               owner: {
@@ -189,7 +189,7 @@ describe('UpdateButton', () => {
   }
 
   describe('when rendered', () => {
-    describe('when there is a valid basic plan', () => {
+    describe('when there is a valid developers plan', () => {
       it('renders a valid Proceed to checkout button', async () => {
         setup({ planValue: freePlan })
 

@@ -43,7 +43,7 @@ graphql.query('CurrentUser', () => {
           service: 'github',
           ownerid: 3456556,
           serviceId: '87824812',
-          plan: Plans.USERS_BASIC,
+          plan: Plans.USERS_DEVELOPER,
           staff: true,
           hasYaml: false,
           bot: null,

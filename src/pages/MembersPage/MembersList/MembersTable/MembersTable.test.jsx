@@ -97,7 +97,7 @@ const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
@@ -132,7 +132,7 @@ describe('MembersTable', () => {
   function setup({
     mockUserRequest = mockBaseUserRequest(false),
     usePaginatedRequest = false,
-    planName = Plans.USERS_BASIC,
+    planName = Plans.USERS_DEVELOPER,
     planUserCount = 0,
     hasSeatsLeft = false,
   }) {
@@ -160,10 +160,13 @@ describe('MembersTable', () => {
               plan: {
                 ...mockPlanData,
                 value: planName,
-                isFreePlan: planName === Plans.USERS_BASIC,
+                isFreePlan:
+                  planName === Plans.USERS_DEVELOPER ||
+                  planName === Plans.USERS_BASIC,
                 isTeamPlan:
                   planName === Plans.USERS_TEAMM ||
-                  planName === Plans.USERS_TEAMY,
+                  planName === Plans.USERS_TEAMY ||
+                  planName === Plans.USERS_DEVELOPER,
                 planUserCount,
                 hasSeatsLeft,
               },
@@ -319,7 +322,7 @@ describe('MembersTable', () => {
             describe('there are no open seats', () => {
               beforeEach(() =>
                 setup({
-                  planName: Plans.USERS_BASIC,
+                  planName: Plans.USERS_DEVELOPER,
                   hasSeatsLeft: false,
                   planUserCount: 1,
                 })
@@ -337,7 +340,7 @@ describe('MembersTable', () => {
           describe('there are open seats', () => {
             beforeEach(() =>
               setup({
-                planName: Plans.USERS_BASIC,
+                planName: Plans.USERS_DEVELOPER,
                 hasSeatsLeft: true,
                 planUserCount: 1,
               })
@@ -378,7 +381,7 @@ describe('MembersTable', () => {
       it('calls handleActivate', async () => {
         const { user } = setup({
           mockUserRequest: mockBaseUserRequest({ student: true }),
-          planName: Plans.USERS_BASIC,
+          planName: Plans.USERS_DEVELOPER,
           planUserCount: 1,
           hasSeatsLeft: false,
         })

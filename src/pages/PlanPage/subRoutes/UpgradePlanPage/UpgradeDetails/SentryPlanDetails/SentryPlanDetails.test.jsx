@@ -130,9 +130,9 @@ const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: BillingRate.MONTHLY,
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -205,7 +205,7 @@ describe('SentryPlanDetails', () => {
                   ? Plans.USERS_TRIAL
                   : isProPlan
                     ? Plans.USERS_PR_INAPPM
-                    : Plans.USERS_BASIC,
+                    : Plans.USERS_DEVELOPER,
               },
             },
           },
@@ -307,7 +307,7 @@ describe('SentryPlanDetails', () => {
       expect(link).not.toBeInTheDocument()
     })
 
-    it('should not render cancellation link when user is on basic plan', () => {
+    it('should not render cancellation link when user is on developers plan', () => {
       setup({
         isSentryPlan: false,
         isOngoingTrial: false,

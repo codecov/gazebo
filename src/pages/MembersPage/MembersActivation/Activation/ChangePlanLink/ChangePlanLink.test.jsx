@@ -20,7 +20,7 @@ describe('Members ChangePlanLink', () => {
     it('Renders change plan link', async () => {
       const mockedAccountDetailsNonEnterprise = {
         plan: {
-          value: Plans.USERS_BASIC,
+          value: Plans.USERS_DEVELOPER,
         },
         subscriptionDetail: {
           collectionMethod: 'paid',
@@ -46,7 +46,7 @@ describe('Members ChangePlanLink', () => {
     it('Does not render change plan link', async () => {
       const mockedAccountDetailsNonEnterprise = {
         plan: {
-          value: Plans.USERS_BASIC,
+          value: Plans.USERS_DEVELOPER,
         },
         subscriptionDetail: {
           collectionMethod: 'paid',

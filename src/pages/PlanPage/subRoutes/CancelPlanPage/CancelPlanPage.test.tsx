@@ -42,7 +42,7 @@ const teamPlans = [
 const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
   {
     marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -76,9 +76,9 @@ const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: BillingRate.MONTHLY,
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -169,7 +169,7 @@ describe('CancelPlanPage', () => {
                 trialStatus,
                 value: planValue,
                 isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
-                isFreePlan: planValue === Plans.USERS_BASIC,
+                isFreePlan: planValue === Plans.USERS_DEVELOPER,
                 isProPlan: planValue === Plans.USERS_PR_INAPPM,
                 isTeamPlan:
                   planValue === Plans.USERS_TEAMM ||

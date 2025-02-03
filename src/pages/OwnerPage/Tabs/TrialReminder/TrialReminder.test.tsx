@@ -29,9 +29,9 @@ const mockResponse = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: BillingRate.MONTHLY,
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -83,7 +83,7 @@ interface SetupArgs {
 
 describe('TrialReminder', () => {
   function setup({
-    planValue = Plans.USERS_BASIC,
+    planValue = Plans.USERS_DEVELOPER,
     trialStatus = TrialStatuses.CANNOT_TRIAL,
     trialStartDate = '2023-01-01T08:55:25',
     trialEndDate = '2023-01-01T08:55:25',
@@ -105,7 +105,7 @@ describe('TrialReminder', () => {
                 trialStartDate,
                 trialEndDate,
                 value: planValue,
-                isFreePlan: planValue === Plans.USERS_BASIC,
+                isFreePlan: planValue === Plans.USERS_DEVELOPER,
                 isTeamPlan:
                   planValue === Plans.USERS_TEAMM ||
                   planValue === Plans.USERS_TEAMY,
@@ -135,7 +135,7 @@ describe('TrialReminder', () => {
       describe('user is part of org', () => {
         it('displays trial upgrade link', async () => {
           setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             trialStatus: TrialStatuses.NOT_STARTED,
             trialStartDate: undefined,
             trialEndDate: undefined,
@@ -156,7 +156,7 @@ describe('TrialReminder', () => {
       describe('user is not part of org', () => {
         it('does not display trial upgrade link', async () => {
           setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             trialStatus: TrialStatuses.NOT_STARTED,
             trialStartDate: undefined,
             trialEndDate: undefined,
@@ -256,7 +256,7 @@ describe('TrialReminder', () => {
 
       it('does not display the trial upgrade link', async () => {
         setup({
-          planValue: Plans.USERS_BASIC,
+          planValue: Plans.USERS_DEVELOPER,
           trialStatus: TrialStatuses.ONGOING,
           trialStartDate: '2023-01-01T08:55:25',
           trialEndDate: '2023-01-02T08:55:25',
@@ -285,7 +285,7 @@ describe('TrialReminder', () => {
       describe('user is part of the org', () => {
         it('displays the upgrade link', async () => {
           setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             trialStatus: TrialStatuses.EXPIRED,
             trialStartDate: '2023-01-01T08:55:25',
             trialEndDate: '2023-01-02T08:55:25',
@@ -305,7 +305,7 @@ describe('TrialReminder', () => {
       describe('user is not part of org', () => {
         it('does not display trial upgrade link', async () => {
           setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             trialStatus: TrialStatuses.EXPIRED,
             trialStartDate: '2023-01-01T08:55:25',
             trialEndDate: '2023-01-02T08:55:25',
@@ -399,7 +399,7 @@ describe('TrialReminder', () => {
 
     it('returns nothing', async () => {
       setup({
-        planValue: Plans.USERS_BASIC,
+        planValue: Plans.USERS_DEVELOPER,
         trialStartDate: null,
         trialEndDate: null,
       })
@@ -424,7 +424,7 @@ describe('TrialReminder', () => {
 
     it('renders nothing', async () => {
       setup({
-        planValue: Plans.USERS_BASIC,
+        planValue: Plans.USERS_DEVELOPER,
         trialStatus: TrialStatuses.NOT_STARTED,
         trialStartDate: undefined,
         trialEndDate: undefined,
