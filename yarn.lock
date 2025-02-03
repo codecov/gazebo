@@ -4847,23 +4847,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stripe/react-stripe-js@npm:^2.7.1":
-  version: 2.7.3
-  resolution: "@stripe/react-stripe-js@npm:2.7.3"
+"@stripe/react-stripe-js@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@stripe/react-stripe-js@npm:3.1.1"
   dependencies:
     prop-types: "npm:^15.7.2"
   peerDependencies:
-    "@stripe/stripe-js": ^1.44.1 || ^2.0.0 || ^3.0.0 || ^4.0.0
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/820923a3abfae68fbe8145efa0f35317634d44f7ada4b8d57f928f10dfa32e768252939ea75f2e166c55aa9035ecaa2d686423216d0bbfb06ba22c3c70fc7771
+    "@stripe/stripe-js": ^1.44.1 || ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
+    react: ">=16.8.0 <20.0.0"
+    react-dom: ">=16.8.0 <20.0.0"
+  checksum: 10c0/d8f877e956f711acb96248ab6b183d330c6b194884aeeb82e96bc05dab08020a2c53f0c13359e893ac22bc7e15facc720877cfb04d999b1f3050bb58aca5124f
   languageName: node
   linkType: hard
 
-"@stripe/stripe-js@npm:^3.4.0":
-  version: 3.5.0
-  resolution: "@stripe/stripe-js@npm:3.5.0"
-  checksum: 10c0/df874448bd0c879c624f38ea286f9b662ead71fb08a95eb787b7fb6d46a89f414dc987094f5fe22001f65cf3063c14913c36b8d8c88b16847dd137f8298648c0
+"@stripe/stripe-js@npm:^5.6.0":
+  version: 5.6.0
+  resolution: "@stripe/stripe-js@npm:5.6.0"
+  checksum: 10c0/56aa804ed2946aae4622b56c1736b7fa69e640d293d1ba6d465732851f313234c00d29006e2270bbdceee93222b5c62d8aa92791373ec56bfc4bd214a0b950c3
   languageName: node
   linkType: hard
 
@@ -9090,8 +9090,8 @@ __metadata:
     "@storybook/react": "npm:^8.3.7"
     "@storybook/react-vite": "npm:^8.3.7"
     "@storybook/theming": "npm:^8.3.7"
-    "@stripe/react-stripe-js": "npm:^2.7.1"
-    "@stripe/stripe-js": "npm:^3.4.0"
+    "@stripe/react-stripe-js": "npm:^3.1.1"
+    "@stripe/stripe-js": "npm:^5.6.0"
     "@tailwindcss/container-queries": "npm:^0.1.1"
     "@tanstack/eslint-plugin-query": "npm:^4.38.0"
     "@tanstack/react-query": "npm:^4.29.5"
