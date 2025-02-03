@@ -20,6 +20,7 @@ export const Plans = {
   USERS_TEAMY: 'users-teamy',
   USERS_ENTERPRISEM: 'users-enterprisem',
   USERS_ENTERPRISEY: 'users-enterprisey',
+  USERS_DEVELOPER: 'users-developer',
 } as const
 
 export type PlanName = (typeof Plans)[keyof typeof Plans]

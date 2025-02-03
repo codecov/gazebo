@@ -2,7 +2,7 @@ import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
 import { usePlanUpdatedNotification } from 'pages/PlanPage/context'
-import { useAccountDetails, usePlanData } from 'services/account'
+import { useAccountDetails, useCurrentOrgPlanPageData } from 'services/account'
 import { Provider } from 'shared/api/helpers'
 import { getScheduleStart } from 'shared/plan/ScheduledPlanDetails/ScheduledPlanDetails'
 import A from 'ui/A'
@@ -28,7 +28,7 @@ function CurrentOrgPlan() {
     owner,
   })
 
-  const { data: planData } = usePlanData({
+  const { data } = useCurrentOrgPlanPageData({
     provider,
     owner,
   })
@@ -40,16 +40,28 @@ function CurrentOrgPlan() {
     })
   )
 
+  const hasUnverifiedPaymentMethods =
+    !!data?.billing?.unverifiedPaymentMethods?.length
+
+  // awaitingInitialPaymentMethodVerification is true if the
+  // customer needs to verify a delayed notification payment method
+  // like ACH for their first subscription
+  const awaitingInitialPaymentMethodVerification =
+    !accountDetails?.subscriptionDetail?.defaultPaymentMethod &&
+    hasUnverifiedPaymentMethods
+
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
-  const isDelinquent = accountDetails?.delinquent
+  const isDelinquent =
+    accountDetails?.delinquent && !awaitingInitialPaymentMethodVerification
   const scheduleStart = scheduledPhase
     ? getScheduleStart(scheduledPhase)
     : undefined
 
   const shouldRenderBillingDetails =
-    (accountDetails?.planProvider !== 'github' &&
+    !awaitingInitialPaymentMethodVerification &&
+    ((accountDetails?.planProvider !== 'github' &&
       !accountDetails?.rootOrganization) ||
-    accountDetails?.usesInvoice
+      accountDetails?.usesInvoice)
 
   const planUpdatedNotification = usePlanUpdatedNotification()
 
@@ -62,9 +74,11 @@ function CurrentOrgPlan() {
           subscriptionDetail={accountDetails?.subscriptionDetail}
         />
       ) : null}
-      <InfoMessageStripeCallback />
+      <InfoMessageStripeCallback
+        hasUnverifiedPaymentMethods={hasUnverifiedPaymentMethods}
+      />
       {isDelinquent ? <DelinquentAlert /> : null}
-      {planData?.plan ? (
+      {data?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
           {planUpdatedNotification.alertOption &&
           !planUpdatedNotification.isCancellation ? (
