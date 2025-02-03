@@ -93,9 +93,15 @@ const mocks = {
   useUpdatePaymentMethod: vi.fn(),
 }
 
-vi.mock('services/account/useUpdatePaymentMethod', () => ({
-  useUpdatePaymentMethod: () => mocks.useUpdatePaymentMethod(),
-}))
+vi.mock('services/account/useUpdatePaymentMethod', async () => {
+  const original = await vi.importActual(
+    'services/account/useUpdatePaymentMethod'
+  )
+  return {
+    ...original,
+    useUpdatePaymentMethod: () => mocks.useUpdatePaymentMethod(),
+  }
+})
 
 afterEach(() => {
   vi.clearAllMocks()
@@ -214,7 +220,13 @@ describe('PaymentMethodForm', () => {
 
       await user.click(screen.getByTestId('save-payment-method'))
 
-      expect(screen.getByText(randomError)).toBeInTheDocument()
+      expect(
+        screen.getByText((content) =>
+          content.includes(
+            "There's been an error. Please try refreshing your browser"
+          )
+        )
+      ).toBeInTheDocument()
     })
   })
 

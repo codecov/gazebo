@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 
 import { ThemeContextProvider } from 'shared/ThemeContext'
 import { Plans } from 'shared/utils/billing'
@@ -57,6 +58,7 @@ const subscriptionDetail = {
 
 const accountDetails = {
   subscriptionDetail,
+  activatedUserCount: 1,
 }
 
 const usBankSubscriptionDetail = {
@@ -75,7 +77,9 @@ const usBankSubscriptionDetail = {
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <ThemeContextProvider>{children}</ThemeContextProvider>
+    <MemoryRouter>
+      <ThemeContextProvider>{children}</ThemeContextProvider>
+    </MemoryRouter>
   </QueryClientProvider>
 )
 
@@ -383,7 +387,13 @@ describe('PaymentCard', () => {
 
       await user.click(screen.getByTestId('edit-payment-method'))
 
-      expect(screen.getByText(randomError)).toBeInTheDocument()
+      expect(
+        screen.getByText((content) =>
+          content.includes(
+            "There's been an error. Please try refreshing your browser"
+          )
+        )
+      ).toBeInTheDocument()
     })
   })
 
