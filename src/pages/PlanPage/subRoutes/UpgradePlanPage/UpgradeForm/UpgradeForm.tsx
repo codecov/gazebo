@@ -94,13 +94,17 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const newPlan = watch('newPlan')
   const seats = watch('seats')
 
+  const awaitingInitialPaymentMethodVerification =
+    !!unverifiedPaymentMethods?.length &&
+    !accountDetails?.subscriptionDetail?.defaultPaymentMethod
+
   useEffect(() => {
     // This is necessary because the validity of seats depends on the value of newPlan
     trigger('seats')
   }, [newPlan, trigger])
 
   const onSubmit = handleSubmit((data) => {
-    if (unverifiedPaymentMethods?.length) {
+    if (awaitingInitialPaymentMethodVerification) {
       setFormData(data)
       setShowModal(true)
     } else {

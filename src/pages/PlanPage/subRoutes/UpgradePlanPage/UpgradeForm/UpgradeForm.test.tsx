@@ -297,7 +297,8 @@ type SetupArgs = {
   hasSentryPlans?: boolean
   monthlyPlan?: boolean
   planUserCount?: number
-  hasUnverifiedPaymentMethod?: boolean
+  hasUnverifiedPaymentMethods?: boolean
+  subscriptionHasDefaultPaymentMethod?: boolean
 }
 
 describe('UpgradeForm', () => {
@@ -310,7 +311,8 @@ describe('UpgradeForm', () => {
     hasSentryPlans = false,
     monthlyPlan = true,
     planUserCount = 1,
-    hasUnverifiedPaymentMethod = false,
+    hasUnverifiedPaymentMethods = false,
+    subscriptionHasDefaultPaymentMethod = true,
   }: SetupArgs) {
     const addNotification = vi.fn()
     const user = userEvent.setup()
@@ -319,6 +321,16 @@ describe('UpgradeForm', () => {
 
     server.use(
       http.get(`/internal/:provider/:owner/account-details/`, () => {
+        if (!subscriptionHasDefaultPaymentMethod) {
+          return HttpResponse.json({
+            ...mockAccountDetailsBasic,
+            subscriptionDetail: {
+              ...mockAccountDetailsBasic.subscriptionDetail,
+              defaultPaymentMethod: null,
+            },
+          })
+        }
+
         if (planValue === Plans.USERS_BASIC) {
           return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_PR_INAPPM) {
@@ -408,7 +420,7 @@ describe('UpgradeForm', () => {
           data: {
             owner: {
               billing: {
-                unverifiedPaymentMethods: hasUnverifiedPaymentMethod
+                unverifiedPaymentMethods: hasUnverifiedPaymentMethods
                   ? [
                       {
                         paymentMethodId: 'asdf',
@@ -436,7 +448,8 @@ describe('UpgradeForm', () => {
       it('shows modal when form is submitted', async () => {
         const { user } = setup({
           planValue: Plans.USERS_BASIC,
-          hasUnverifiedPaymentMethod: true,
+          hasUnverifiedPaymentMethods: true,
+          subscriptionHasDefaultPaymentMethod: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -457,7 +470,7 @@ describe('UpgradeForm', () => {
       it('does not show modal when no unverified payment methods', async () => {
         const { user } = setup({
           planValue: Plans.USERS_BASIC,
-          hasUnverifiedPaymentMethod: false,
+          hasUnverifiedPaymentMethods: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
