@@ -1,14 +1,10 @@
-import {
-  queryOptions as queryOptionsV5,
-  useSuspenseQuery as useSuspenseQueryV5,
-} from '@tanstack/react-queryV5'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
-  useRepoOverview,
 } from 'services/repo'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/helpers'
@@ -62,7 +58,12 @@ const RepositorySchema = z.object({
     .nullable(),
 })
 
+const ConfigSchema = z.object({
+  isTimescaleEnabled: z.boolean(),
+})
+
 const BranchBundleSummaryDataSchema = z.object({
+  config: ConfigSchema,
   owner: z
     .object({
       repository: z
@@ -81,6 +82,9 @@ const query = `query BranchBundleSummaryData(
   $repo: String!
   $branch: String!
 ) {
+  config {
+    isTimescaleEnabled
+  }
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
@@ -195,38 +199,8 @@ export const BranchBundleSummaryQueryOpts = ({
         }
 
         const branch = data?.owner?.repository?.branch ?? null
+        const config = data?.config ?? { isTimescaleEnabled: false }
 
-        return { branch }
+        return { config, branch }
       }),
   })
-
-export interface UseBranchBundleSummaryArgs {
-  provider: string
-  owner: string
-  repo: string
-  branch?: string
-}
-
-export const useBranchBundleSummary = ({
-  provider,
-  owner,
-  repo,
-  branch: branchArg,
-}: UseBranchBundleSummaryArgs) => {
-  const { data: repoOverview } = useRepoOverview({
-    provider,
-    repo,
-    owner,
-  })
-
-  const branch = branchArg ?? repoOverview?.defaultBranch
-
-  return useSuspenseQueryV5(
-    BranchBundleSummaryQueryOpts({
-      provider,
-      owner,
-      repo,
-      branch,
-    })
-  )
-}
