@@ -9186,7 +9186,7 @@ __metadata:
     eslint-plugin-testing-library: "npm:^6.4.0"
     http-proxy-middleware: "npm:^2.0.7"
     husky: "npm:^9.1.4"
-    js-cookie: "npm:^2.1.9"
+    js-cookie: "npm:^3.0.5"
     jsdom: "npm:^25.0.1"
     launchdarkly-react-client-sdk: "npm:^3.0.9"
     lint-staged: "npm:^15.2.8"
@@ -10240,10 +10240,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-cookie@npm:^2.1.9, js-cookie@npm:^2.2.1":
+"js-cookie@npm:^2.2.1":
   version: 2.2.1
   resolution: "js-cookie@npm:2.2.1"
   checksum: 10c0/ee67fc0f8495d0800b851910b5eb5bf49d3033adff6493d55b5c097ca6da46f7fe666b10e2ecb13cfcaf5b88d71c205ce00a7e646de791689bfd053bbb36a376
+  languageName: node
+  linkType: hard
+
+"js-cookie@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "js-cookie@npm:3.0.5"
+  checksum: 10c0/04a0e560407b4489daac3a63e231d35f4e86f78bff9d792011391b49c59f721b513411cd75714c418049c8dc9750b20fcddad1ca5a2ca616c3aca4874cce5b3a
   languageName: node
   linkType: hard
 
