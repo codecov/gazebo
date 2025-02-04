@@ -75,7 +75,9 @@ function CurrentOrgPlan() {
         />
       ) : null}
       <InfoMessageStripeCallback
-        hasUnverifiedPaymentMethods={hasUnverifiedPaymentMethods}
+        awaitingInitialPaymentMethodVerification={
+          awaitingInitialPaymentMethodVerification
+        }
       />
       {isDelinquent ? <DelinquentAlert /> : null}
       {data?.plan ? (
@@ -161,7 +163,8 @@ const DelinquentAlert = () => {
       <Alert variant={'error'}>
         <Alert.Title>Your most recent payment failed</Alert.Title>
         <Alert.Description>
-          Please try a different card or contact support at support@codecov.io.
+          Please try a different payment method or contact support at
+          support@codecov.io.
         </Alert.Description>
       </Alert>
       <br />

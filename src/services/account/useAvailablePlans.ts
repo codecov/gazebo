@@ -65,7 +65,6 @@ export const useAvailablePlans = ({
         },
       }).then((res) => {
         const parsedRes = PlansSchema.safeParse(res?.data)
-        console.log('parsedRes', parsedRes.error)
 
         if (!parsedRes.success) {
           return Promise.reject({

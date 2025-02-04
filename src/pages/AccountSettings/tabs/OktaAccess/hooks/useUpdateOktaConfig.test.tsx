@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   QueryClientProvider as QueryClientProviderV5,
   QueryClient as QueryClientV5,
@@ -19,9 +18,6 @@ import {
 vi.mock('services/toastNotification')
 const mockedToastNotification = useAddNotification as Mock
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
 const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
@@ -30,11 +26,9 @@ const wrapper =
   (initialEntries = '/gh/codecov'): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
     <QueryClientProviderV5 client={queryClientV5}>
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider/:owner">{children}</Route>
+      </MemoryRouter>
     </QueryClientProviderV5>
   )
 
@@ -57,7 +51,6 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
   queryClientV5.clear()
   server.resetHandlers()
 })
