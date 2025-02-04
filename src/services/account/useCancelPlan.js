@@ -20,7 +20,7 @@ function cancelPlan({ provider, owner, planType }) {
 
 export function useCancelPlan({ provider, owner }) {
   const queryClient = useQueryClient()
-  const planType = Plans.USERS_BASIC
+  const planType = Plans.USERS_DEVELOPER
   const setPlanUpdatedNotification = useSetPlanUpdatedNotification()
 
   return useMutation({

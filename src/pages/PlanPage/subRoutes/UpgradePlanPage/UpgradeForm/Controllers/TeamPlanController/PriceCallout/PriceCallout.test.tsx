@@ -12,7 +12,7 @@ import PriceCallout from './PriceCallout'
 
 const freePlan = {
   marketingName: 'Basic',
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [

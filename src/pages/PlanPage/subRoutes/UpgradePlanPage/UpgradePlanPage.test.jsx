@@ -154,9 +154,9 @@ const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: BillingRate.MONTHLY,
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -231,7 +231,7 @@ describe('UpgradePlanPage', () => {
                 isTeamPlan:
                   planValue === Plans.USERS_TEAMM ||
                   planValue === Plans.USERS_TEAMY,
-                isFreePlan: planValue === Plans.USERS_BASIC,
+                isFreePlan: planValue === Plans.USERS_DEVELOPER,
                 isProPlan: planValue === Plans.USERS_PR_INAPPY,
                 isTrialPlan: planValue === Plans.USERS_TRIAL,
                 isSentryPlan:
@@ -301,7 +301,7 @@ describe('UpgradePlanPage', () => {
       setup()
     })
 
-    it('renders the basic plan title', async () => {
+    it('renders the developers plan title', async () => {
       render(<UpgradePlanPage />, { wrapper: wrapper() })
 
       const title = await screen.findByText(/Pro Team/)
@@ -326,8 +326,8 @@ describe('UpgradePlanPage', () => {
   })
 
   describe('when rendered with a free plan', () => {
-    it('renders the basic plan title', async () => {
-      setup({ planValue: Plans.USERS_BASIC })
+    it('renders the developers plan title', async () => {
+      setup({ planValue: Plans.USERS_DEVELOPER })
 
       render(<UpgradePlanPage />, { wrapper: wrapper() })
 
@@ -336,7 +336,7 @@ describe('UpgradePlanPage', () => {
     })
 
     it('does not render a cancel plan link', async () => {
-      setup({ planValue: Plans.USERS_BASIC })
+      setup({ planValue: Plans.USERS_DEVELOPER })
 
       render(<UpgradePlanPage />, { wrapper: wrapper() })
 
@@ -347,7 +347,7 @@ describe('UpgradePlanPage', () => {
     })
 
     it('does not render upgrade banner', async () => {
-      setup({ planValue: Plans.USERS_BASIC })
+      setup({ planValue: Plans.USERS_DEVELOPER })
 
       render(<UpgradePlanPage />, { wrapper: wrapper() })
 
@@ -359,7 +359,7 @@ describe('UpgradePlanPage', () => {
 
     describe('when rendered with a team plan search param', () => {
       it('renders the team plan title', async () => {
-        setup({ planValue: Plans.USERS_BASIC, includeTeamPlans: true })
+        setup({ planValue: Plans.USERS_DEVELOPER, includeTeamPlans: true })
         render(<UpgradePlanPage />, {
           wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
         })
@@ -369,7 +369,7 @@ describe('UpgradePlanPage', () => {
       })
 
       it('renders the team plan price', async () => {
-        setup({ planValue: Plans.USERS_BASIC, includeTeamPlans: true })
+        setup({ planValue: Plans.USERS_DEVELOPER, includeTeamPlans: true })
         render(<UpgradePlanPage />, {
           wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
         })
@@ -382,7 +382,7 @@ describe('UpgradePlanPage', () => {
       })
 
       it('renders the team plan benefits', async () => {
-        setup({ planValue: Plans.USERS_BASIC, includeTeamPlans: true })
+        setup({ planValue: Plans.USERS_DEVELOPER, includeTeamPlans: true })
         render(<UpgradePlanPage />, {
           wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
         })

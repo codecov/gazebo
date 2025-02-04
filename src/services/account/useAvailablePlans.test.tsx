@@ -10,7 +10,7 @@ import { useAvailablePlans } from './useAvailablePlans'
 const mockAvailablePlans = [
   {
     marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [

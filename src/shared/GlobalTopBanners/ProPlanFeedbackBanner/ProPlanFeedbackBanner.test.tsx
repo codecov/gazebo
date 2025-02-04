@@ -23,7 +23,7 @@ const mockTrialData = {
     baseUnitPrice: 10,
     benefits: [],
     billingRate: BillingRate.MONTHLY,
-    marketingName: 'Users Basic',
+    marketingName: 'Users Developer',
     monthlyUploadLimit: 250,
     value: Plans.USERS_PR_INAPPM,
     trialStatus: TrialStatuses.EXPIRED,
@@ -38,9 +38,9 @@ const mockTrialData = {
     baseUnitPrice: 10,
     benefits: [],
     billingRate: BillingRate.MONTHLY,
-    marketingName: 'Users Basic',
+    marketingName: 'Users Developer',
     monthlyUploadLimit: 250,
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
   },
 }
 

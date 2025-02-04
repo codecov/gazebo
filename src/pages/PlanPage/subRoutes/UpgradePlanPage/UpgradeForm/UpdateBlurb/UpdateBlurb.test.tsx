@@ -69,7 +69,7 @@ const freePlan = {
   billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   isProPlan: false,
   isTeamPlan: false,
   isSentryPlan: false,

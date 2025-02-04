@@ -73,7 +73,7 @@ const mockUser = {
     service: 'github',
     ownerid: 123,
     serviceId: '123',
-    plan: Plans.USERS_BASIC,
+    plan: Plans.USERS_DEVELOPER,
     staff: false,
     hasYaml: false,
     bot: null,

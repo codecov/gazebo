@@ -58,7 +58,7 @@ const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
@@ -102,7 +102,7 @@ describe('MembersList', () => {
   )
 
   function setup({
-    planName = Plans.USERS_BASIC,
+    planName = Plans.USERS_DEVELOPER,
     planUserCount = 0,
     hasSeatsLeft = true,
   }) {
@@ -132,7 +132,7 @@ describe('MembersList', () => {
               plan: {
                 ...mockPlanData,
                 value: planName,
-                isFreePlan: planName === Plans.USERS_BASIC,
+                isFreePlan: planName === Plans.USERS_DEVELOPER,
                 isTeamPlan:
                   planName === Plans.USERS_TEAMM ||
                   planName === Plans.USERS_TEAMY,
@@ -347,7 +347,7 @@ describe('MembersList', () => {
           const { user } = setup({
             hasSeatsLeft: false,
             planUserCount: 1,
-            planName: Plans.USERS_BASIC,
+            planName: Plans.USERS_DEVELOPER,
           })
 
           render(<MembersList />, { wrapper })
@@ -373,7 +373,7 @@ describe('MembersList', () => {
           const { user } = setup({
             hasSeatsLeft: true,
             planUserCount: 1,
-            planName: Plans.USERS_BASIC,
+            planName: Plans.USERS_DEVELOPER,
           })
           render(<MembersList />, { wrapper })
 

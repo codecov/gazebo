@@ -43,7 +43,7 @@ const mockNotFoundError = {
       message: 'repo not found',
     },
     plan: {
-      value: Plans.USERS_BASIC,
+      value: Plans.USERS_DEVELOPER,
     },
   },
 }
@@ -54,7 +54,7 @@ const mockIncorrectResponse = {
       invalid: 'invalid',
     },
     plan: {
-      value: Plans.USERS_BASIC,
+      value: Plans.USERS_DEVELOPER,
       isFreePlan: true,
       isTeamPlan: false,
     },
@@ -64,7 +64,7 @@ const mockIncorrectResponse = {
 const mockResponse = {
   owner: {
     plan: {
-      value: Plans.USERS_BASIC,
+      value: Plans.USERS_DEVELOPER,
       isFreePlan: true,
       isTeamPlan: false,
     },
@@ -132,7 +132,7 @@ describe('useTestResultsAggregates', () => {
               totalSkips: 20,
               totalSkipsPercentChange: 0,
             },
-            planName: 'users-basic',
+            planName: Plans.USERS_DEVELOPER,
             isFreePlan: true,
             isTeamPlan: false,
             private: true,

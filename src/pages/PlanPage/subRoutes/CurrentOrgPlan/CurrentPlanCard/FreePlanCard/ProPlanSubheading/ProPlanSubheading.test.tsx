@@ -13,9 +13,9 @@ const mockResponse = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: BillingRate.MONTHLY,
-  marketingName: 'Users Basic',
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -65,7 +65,7 @@ interface SetupArgs {
 describe('ProPlanSubheading', () => {
   function setup({
     trialStatus = TrialStatuses.NOT_STARTED,
-    planValue = Plans.USERS_BASIC,
+    planValue = Plans.USERS_DEVELOPER,
     hasPrivateRepos = true,
   }: SetupArgs) {
     server.use(

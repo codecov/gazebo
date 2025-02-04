@@ -14,7 +14,7 @@ import PlanTypeOptions from './PlanTypeOptions'
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -171,11 +171,11 @@ type SetupArgs = {
 describe('PlanTypeOptions', () => {
   function setup(
     {
-      planValue = Plans.USERS_BASIC,
+      planValue = Plans.USERS_DEVELOPER,
       hasSentryPlans = false,
       hasTeamPlans = true,
     }: SetupArgs = {
-      planValue: Plans.USERS_BASIC,
+      planValue: Plans.USERS_DEVELOPER,
       hasTeamPlans: true,
       hasSentryPlans: false,
     }
@@ -210,7 +210,7 @@ describe('PlanTypeOptions', () => {
           isTeamPlan: false,
           isTrialPlan: false,
         }
-        if (planValue === Plans.USERS_BASIC) {
+        if (planValue === Plans.USERS_DEVELOPER) {
           return HttpResponse.json({
             data: { plan: { ...basicPlan, ...planChunk } },
           })
@@ -251,7 +251,7 @@ describe('PlanTypeOptions', () => {
     describe('when plan is basic', () => {
       it('renders Pro button as "selected"', async () => {
         const { mockSetFormValue, mockSetSelectedPlan } = setup({
-          planValue: Plans.USERS_BASIC,
+          planValue: Plans.USERS_DEVELOPER,
           hasSentryPlans: false,
           hasTeamPlans: true,
         })
@@ -283,7 +283,7 @@ describe('PlanTypeOptions', () => {
       describe('plan param is set to team', () => {
         it('renders Team button as "selected"', async () => {
           const { mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             hasSentryPlans: false,
             hasTeamPlans: true,
           })
@@ -316,7 +316,7 @@ describe('PlanTypeOptions', () => {
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             hasSentryPlans: true,
             hasTeamPlans: true,
           })
@@ -351,7 +351,7 @@ describe('PlanTypeOptions', () => {
 
         it('sets plan query param to team', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             hasSentryPlans: true,
             hasTeamPlans: true,
           })
@@ -384,7 +384,7 @@ describe('PlanTypeOptions', () => {
       describe('user clicks Pro button', () => {
         it('calls setValue and setSelectedPlan', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             hasSentryPlans: true,
             hasTeamPlans: true,
           })
@@ -419,7 +419,7 @@ describe('PlanTypeOptions', () => {
 
         it('sets plan query param to pro', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             hasSentryPlans: true,
             hasTeamPlans: true,
           })
@@ -995,7 +995,7 @@ describe('PlanTypeOptions', () => {
     describe('when plan is basic', () => {
       it('renders Pro button as "selected"', async () => {
         const { mockSetFormValue, mockSetSelectedPlan } = setup({
-          planValue: Plans.USERS_BASIC,
+          planValue: Plans.USERS_DEVELOPER,
           hasSentryPlans: false,
           hasTeamPlans: true,
         })
@@ -1027,7 +1027,7 @@ describe('PlanTypeOptions', () => {
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             hasSentryPlans: false,
             hasTeamPlans: true,
           })
@@ -1062,7 +1062,7 @@ describe('PlanTypeOptions', () => {
 
         it('sets plan query param to team', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             hasSentryPlans: false,
             hasTeamPlans: true,
           })
@@ -1095,7 +1095,7 @@ describe('PlanTypeOptions', () => {
       describe('user clicks Pro button', () => {
         it('calls setValue and setSelectedPlan', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             hasSentryPlans: false,
             hasTeamPlans: true,
           })
@@ -1130,7 +1130,7 @@ describe('PlanTypeOptions', () => {
 
         it('sets plan query param to pro', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             hasSentryPlans: false,
             hasTeamPlans: true,
           })

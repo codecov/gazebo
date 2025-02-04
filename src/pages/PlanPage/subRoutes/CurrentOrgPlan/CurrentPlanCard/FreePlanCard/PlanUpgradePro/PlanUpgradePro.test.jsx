@@ -16,7 +16,7 @@ vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
 const plansWithoutSentryOptions = [
   {
     marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -57,7 +57,7 @@ const plansWithoutSentryOptions = [
 const plansWithSentryOptions = [
   {
     marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
