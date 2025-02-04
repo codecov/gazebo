@@ -62,7 +62,7 @@
     "date-fns-tz": "^3.1.3",
     "dompurify": "^2.3.8",
     "downshift": "^7.6.0",
-    "js-cookie": "^3.0.5",
+    "js-cookie": "^2.1.9",
     "launchdarkly-react-client-sdk": "^3.0.9",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
@@ -134,9 +134,9 @@
     "@typescript-eslint/utils": "^8.19.1",
     "@vitejs/plugin-legacy": "^6.0.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "@vitest/coverage-istanbul": "^3.0.5",
+    "@vitest/coverage-istanbul": "^2.1.9",
     "@vitest/eslint-plugin": "^1.1.25",
-    "@vitest/ui": "^3.0.5",
+    "@vitest/ui": "^2.1.9",
     "autoprefixer": "^10.4.14",
     "babel-preset-react-app": "^10.0.1",
     "confusing-browser-globals": "^1.0.11",
@@ -168,7 +168,7 @@
     "vite-plugin-ejs": "^1.7.0",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.0.5"
+    "vitest": "^2.1.9"
   },
   "engines": {
     "node": ">=22.11.0"
