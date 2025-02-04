@@ -13,7 +13,9 @@ const wrapper =
 describe('InfoMessageStripeCallback', () => {
   describe('when rendering without success or cancel in the url', () => {
     const { container } = render(
-      <InfoMessageStripeCallback hasUnverifiedPaymentMethods={false} />,
+      <InfoMessageStripeCallback
+        awaitingInitialPaymentMethodVerification={false}
+      />,
       {
         wrapper: wrapper('/account/gh/codecov'),
       }
@@ -27,7 +29,9 @@ describe('InfoMessageStripeCallback', () => {
   describe('when rendering with success in the url', () => {
     it('renders a success message', async () => {
       render(
-        <InfoMessageStripeCallback hasUnverifiedPaymentMethods={false} />,
+        <InfoMessageStripeCallback
+          awaitingInitialPaymentMethodVerification={false}
+        />,
         {
           wrapper: wrapper('/account/gh/codecov?success'),
         }
@@ -39,10 +43,12 @@ describe('InfoMessageStripeCallback', () => {
     })
   })
 
-  describe('when hasUnverifiedPaymentMethods is true', () => {
+  describe('when awaitingInitialPaymentMethodVerification is true', () => {
     it('does not enders a success message even at ?success', async () => {
       const { container } = render(
-        <InfoMessageStripeCallback hasUnverifiedPaymentMethods={true} />,
+        <InfoMessageStripeCallback
+          awaitingInitialPaymentMethodVerification={true}
+        />,
         {
           wrapper: wrapper('/account/gh/codecov?success'),
         }

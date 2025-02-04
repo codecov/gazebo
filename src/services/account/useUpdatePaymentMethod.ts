@@ -94,3 +94,8 @@ export function useUpdatePaymentMethod({
     },
   })
 }
+
+// Errors from Stripe api confirmSetup() - unfortunately seems to just be by text, no error codes
+export const MissingNameError = `You specified "never" for fields.billing_details.name when creating the payment Element, but did not pass confirmParams.payment_method_data.billing_details.name when calling stripe.confirmSetup(). If you opt out of collecting data via the payment Element using the fields option, the data must be passed in when calling stripe.confirmSetup().`
+export const MissingEmailError = `You specified "never" for fields.billing_details.email when creating the payment Element, but did not pass confirmParams.payment_method_data.billing_details.email when calling stripe.confirmSetup(). If you opt out of collecting data via the payment Element using the fields option, the data must be passed in when calling stripe.confirmSetup().`
+export const MissingAddressError = `You specified "never" for fields.billing_details.address when creating the payment Element, but did not pass confirmParams.payment_method_data.billing_details.address when calling stripe.confirmSetup(). If you opt out of collecting data via the payment Element using the fields option, the data must be passed in when calling stripe.confirmSetup().`
