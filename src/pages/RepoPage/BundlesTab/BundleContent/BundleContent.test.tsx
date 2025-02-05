@@ -18,13 +18,13 @@ vi.mock('./BundleSelection', () => ({
   default: () => <div>BundleSelection</div>,
 }))
 
-const mockRepoOverview = {
+const mockRepoOverview = (hasDefaultBranch: boolean) => ({
   owner: {
     isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,
-      defaultBranch: 'main',
+      defaultBranch: hasDefaultBranch ? 'main' : null,
       oldestCommitAt: '2022-10-10T11:59:59',
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
@@ -32,9 +32,10 @@ const mockRepoOverview = {
       testAnalyticsEnabled: true,
     },
   },
-}
+})
 
-const mockBranchBundles = {
+const mockBranchBundles = (isTimescaleEnabled: boolean) => ({
+  config: { isTimescaleEnabled },
   owner: {
     repository: {
       __typename: 'Repository',
@@ -63,9 +64,10 @@ const mockBranchBundles = {
       },
     },
   },
-}
+})
 
 const mockBranchBundlesError = {
+  config: { isTimescaleEnabled: false },
   owner: {
     repository: {
       __typename: 'Repository',
@@ -85,6 +87,7 @@ const mockBranchBundlesError = {
 }
 
 const mockEmptyBundleSelection = {
+  config: { isTimescaleEnabled: false },
   owner: {
     repository: {
       __typename: 'Repository',
@@ -113,14 +116,8 @@ const mockAssets = {
                         routes: ['/'],
                         extension: 'js',
                         bundleData: {
-                          loadTime: {
-                            threeG: 2000,
-                            highSpeed: 2000,
-                          },
-                          size: {
-                            uncompress: 3000,
-                            gzip: 4000,
-                          },
+                          loadTime: { threeG: 2000, highSpeed: 2000 },
+                          size: { uncompress: 3000, gzip: 4000 },
                         },
                         measurements: {
                           change: { size: { uncompress: 5 } },
@@ -217,14 +214,8 @@ const mockBundleSummary = {
                 name: 'bundle1',
                 moduleCount: 10,
                 bundleData: {
-                  loadTime: {
-                    threeG: 1000,
-                    highSpeed: 500,
-                  },
-                  size: {
-                    gzip: 1000,
-                    uncompress: 2000,
-                  },
+                  loadTime: { threeG: 1000, highSpeed: 500 },
+                  size: { gzip: 1000, uncompress: 2000 },
                 },
               },
             },
@@ -282,12 +273,16 @@ afterAll(() => {
 interface SetupArgs {
   isBundleError?: boolean
   isEmptyBundleSelection?: boolean
+  isTimescaleEnabled?: boolean
+  hasDefaultBranch?: boolean
 }
 
 describe('BundleContent', () => {
   function setup({
     isBundleError = false,
     isEmptyBundleSelection = false,
+    isTimescaleEnabled = true,
+    hasDefaultBranch = true,
   }: SetupArgs) {
     server.use(
       graphql.query('BranchBundleSummaryData', () => {
@@ -296,10 +291,12 @@ describe('BundleContent', () => {
         } else if (isEmptyBundleSelection) {
           return HttpResponse.json({ data: mockEmptyBundleSelection })
         }
-        return HttpResponse.json({ data: mockBranchBundles })
+        return HttpResponse.json({
+          data: mockBranchBundles(isTimescaleEnabled),
+        })
       }),
       graphql.query('GetRepoOverview', () => {
-        return HttpResponse.json({ data: mockRepoOverview })
+        return HttpResponse.json({ data: mockRepoOverview(hasDefaultBranch) })
       }),
       graphql.query('BundleAssets', () => {
         if (isBundleError) {
@@ -398,6 +395,39 @@ describe('BundleContent', () => {
             expect(moduleCount).toBeInTheDocument()
           })
         })
+
+        describe('rendering the trend chart', () => {
+          describe('when timescale is enabled', () => {
+            it('renders the trend chart', async () => {
+              setup({ isTimescaleEnabled: true })
+              render(<BundleContent />, {
+                wrapper: wrapper(
+                  '/gh/codecov/test-repo/bundles/main/test-bundle'
+                ),
+              })
+
+              const chart = await screen.findByText('Hide chart')
+              expect(chart).toBeInTheDocument()
+            })
+          })
+
+          describe('when timescale is disabled', () => {
+            it('renders the trend chart', async () => {
+              setup({ isTimescaleEnabled: false })
+              render(<BundleContent />, {
+                wrapper: wrapper(
+                  '/gh/codecov/test-repo/bundles/main/test-bundle'
+                ),
+              })
+
+              const bundleName = await screen.findByText('asset-1')
+              expect(bundleName).toBeInTheDocument()
+
+              const chart = screen.queryByText('Hide chart')
+              expect(chart).not.toBeInTheDocument()
+            })
+          })
+        })
       })
 
       describe('when only the branch is set', () => {
@@ -418,7 +448,7 @@ describe('BundleContent', () => {
 
       describe('when bundle and branch are not set', () => {
         it('renders no branch selected banner and empty table', async () => {
-          setup({})
+          setup({ hasDefaultBranch: false })
           render(<BundleContent />, {
             wrapper: wrapper('/gh/codecov/test-repo/bundles'),
           })
@@ -463,7 +493,7 @@ describe('BundleContent', () => {
     describe('when the bundle type is not BundleAnalysisReport', () => {
       describe('there is no branch data and no branch set', () => {
         it('renders the info banner', async () => {
-          setup({ isEmptyBundleSelection: true })
+          setup({ isEmptyBundleSelection: true, hasDefaultBranch: false })
           render(<BundleContent />, {
             wrapper: wrapper('/gh/codecov/test-repo/bundles'),
           })

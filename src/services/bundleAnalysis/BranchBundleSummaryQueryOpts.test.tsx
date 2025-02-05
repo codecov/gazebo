@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   QueryClientProvider as QueryClientProviderV5,
   QueryClient as QueryClientV5,
@@ -10,28 +9,12 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { type MockInstance } from 'vitest'
 
-import {
-  BranchBundleSummaryQueryOpts,
-  useBranchBundleSummary,
-} from './useBranchBundleSummary'
-
-const mockRepoOverview = {
-  owner: {
-    isCurrentUserActivated: true,
-    repository: {
-      __typename: 'Repository',
-      private: false,
-      defaultBranch: 'main',
-      oldestCommitAt: '2022-10-10T11:59:59',
-      coverageEnabled: false,
-      bundleAnalysisEnabled: false,
-      languages: ['javascript'],
-      testAnalyticsEnabled: true,
-    },
-  },
-}
+import { BranchBundleSummaryQueryOpts } from './BranchBundleSummaryQueryOpts'
 
 const mockBranchBundleSummary = {
+  config: {
+    isTimescaleEnabled: true,
+  },
   owner: {
     repository: {
       __typename: 'Repository',
@@ -64,9 +47,10 @@ const mockBranchBundleSummary = {
 
 const mockUnsuccessfulParseError = {}
 
-const mockNullOwner = { owner: null }
+const mockNullOwner = { config: { isTimescaleEnabled: false }, owner: null }
 
 const mockRepoNotFound = {
+  config: { isTimescaleEnabled: false },
   owner: {
     repository: {
       __typename: 'NotFoundError',
@@ -76,6 +60,7 @@ const mockRepoNotFound = {
 }
 
 const mockOwnerNotActivated = {
+  config: { isTimescaleEnabled: false },
   owner: {
     repository: {
       __typename: 'OwnerNotActivatedError',
@@ -85,18 +70,14 @@ const mockOwnerNotActivated = {
 }
 
 const server = setupServer()
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false, suspense: true } },
-})
+
 const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProviderV5 client={queryClientV5}>
-    <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-    </QueryClientProvider>
+    <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
   </QueryClientProviderV5>
 )
 
@@ -106,7 +87,6 @@ beforeAll(() => {
 
 afterEach(() => {
   vi.resetAllMocks()
-  queryClient.clear()
   queryClientV5.clear()
   server.resetHandlers()
 })
@@ -148,53 +128,11 @@ describe('useBranchBundleSummary', () => {
         }
 
         return HttpResponse.json({ data: mockBranchBundleSummary })
-      }),
-      graphql.query('GetRepoOverview', () => {
-        return HttpResponse.json({ data: mockRepoOverview })
       })
     )
 
     return { passedBranch }
   }
-
-  describe('passing branch name', () => {
-    it('uses the branch name passed in', async () => {
-      const { passedBranch } = setup({})
-      renderHook(
-        () =>
-          useBranchBundleSummary({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'cool-branch',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(passedBranch).toHaveBeenCalledWith('cool-branch')
-      )
-    })
-  })
-
-  describe('no branch name passed', () => {
-    it('uses the default branch', async () => {
-      const { passedBranch } = setup({})
-      renderHook(
-        () =>
-          useBranchBundleSummary({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
-    })
-  })
 
   describe('returns repository typename of repository', () => {
     describe('there is valid data', () => {
@@ -202,15 +140,19 @@ describe('useBranchBundleSummary', () => {
         setup({})
         const { result } = renderHook(
           () =>
-            useBranchBundleSummary({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'codecov',
-            }),
+            useQueryV5(
+              BranchBundleSummaryQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                branch: 'main',
+              })
+            ),
           { wrapper }
         )
 
         const expectedResponse = {
+          config: { isTimescaleEnabled: true },
           branch: {
             head: {
               commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
@@ -247,15 +189,19 @@ describe('useBranchBundleSummary', () => {
         setup({ isNullOwner: true })
         const { result } = renderHook(
           () =>
-            useBranchBundleSummary({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'codecov',
-            }),
+            useQueryV5(
+              BranchBundleSummaryQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                branch: 'main',
+              })
+            ),
           { wrapper }
         )
 
         const expectedResponse = {
+          config: { isTimescaleEnabled: false },
           branch: null,
         }
 
@@ -333,6 +279,7 @@ describe('useBranchBundleSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'BranchBundleSummaryQueryOpts - 403 Owner not activated',
             status: 403,
           })
         )
