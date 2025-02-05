@@ -71,20 +71,22 @@ export const useSetUploadTokenRequired = ({
           },
         },
         mutationPath: 'setUploadTokenRequired',
+      }).then((res) => {
+        const parsedData = ResponseSchema.safeParse(res.data)
+        if (!parsedData.success) {
+          return rejectNetworkError({
+            status: 404,
+            data: {},
+            dev: 'useSetUploadTokenRequired - 404 failed to parse',
+            error: parsedData.error,
+          })
+        }
+
+        return parsedData.data
       })
     },
-    onSuccess: ({ data }) => {
-      const parsedData = ResponseSchema.safeParse(data)
-      if (!parsedData.success) {
-        return rejectNetworkError({
-          status: 404,
-          data: {},
-          dev: 'useSetUploadTokenRequired - 404 failed to parse',
-          error: parsedData.error,
-        })
-      }
-
-      const error = parsedData?.data?.setUploadTokenRequired?.error
+    onSuccess: (data) => {
+      const error = data?.setUploadTokenRequired?.error
       if (error) {
         addToast({
           type: 'error',
