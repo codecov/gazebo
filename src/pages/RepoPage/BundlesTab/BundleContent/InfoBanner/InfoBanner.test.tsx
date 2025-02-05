@@ -29,7 +29,7 @@ describe('InfoBanner', () => {
 
   describe('branch and bundle are not defined', () => {
     it('renders NoSelectedBranchContent', () => {
-      render(<InfoBanner />)
+      render(<InfoBanner branch={null} />)
 
       const header = screen.getByText('No Branch Selected')
       expect(header).toBeInTheDocument()
