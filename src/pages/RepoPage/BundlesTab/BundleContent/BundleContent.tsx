@@ -48,7 +48,7 @@ const BundleContent: React.FC = () => {
     owner,
   })
 
-  const branch = branchParam ?? repoOverview?.defaultBranch
+  const branch = branchParam ?? repoOverview?.defaultBranch ?? null
 
   const { data } = useSuspenseQueryV5(
     BranchBundleSummaryQueryOpts({
@@ -92,13 +92,13 @@ const BundleContent: React.FC = () => {
                 '/:provider/:owner/:repo/bundles/',
               ]}
             >
-              <InfoBanner branch={branchParam} bundle={bundle} />
+              <InfoBanner branch={branch} bundle={bundle} />
               <AssetEmptyTable />
             </SentryRoute>
           </Switch>
-        ) : bundleType === undefined && !branchParam ? (
+        ) : bundleType === undefined && !branch ? (
           <>
-            <InfoBanner branch={branchParam} bundle={bundle} />
+            <InfoBanner branch={branch} bundle={bundle} />
             <AssetEmptyTable />
           </>
         ) : (

@@ -18,13 +18,13 @@ vi.mock('./BundleSelection', () => ({
   default: () => <div>BundleSelection</div>,
 }))
 
-const mockRepoOverview = {
+const mockRepoOverview = (hasDefaultBranch: boolean) => ({
   owner: {
     isCurrentUserActivated: true,
     repository: {
       __typename: 'Repository',
       private: false,
-      defaultBranch: 'main',
+      defaultBranch: hasDefaultBranch ? 'main' : null,
       oldestCommitAt: '2022-10-10T11:59:59',
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
@@ -32,7 +32,7 @@ const mockRepoOverview = {
       testAnalyticsEnabled: true,
     },
   },
-}
+})
 
 const mockBranchBundles = (isTimescaleEnabled: boolean) => ({
   config: { isTimescaleEnabled },
@@ -274,6 +274,7 @@ interface SetupArgs {
   isBundleError?: boolean
   isEmptyBundleSelection?: boolean
   isTimescaleEnabled?: boolean
+  hasDefaultBranch?: boolean
 }
 
 describe('BundleContent', () => {
@@ -281,6 +282,7 @@ describe('BundleContent', () => {
     isBundleError = false,
     isEmptyBundleSelection = false,
     isTimescaleEnabled = true,
+    hasDefaultBranch = true,
   }: SetupArgs) {
     server.use(
       graphql.query('BranchBundleSummaryData', () => {
@@ -294,7 +296,7 @@ describe('BundleContent', () => {
         })
       }),
       graphql.query('GetRepoOverview', () => {
-        return HttpResponse.json({ data: mockRepoOverview })
+        return HttpResponse.json({ data: mockRepoOverview(hasDefaultBranch) })
       }),
       graphql.query('BundleAssets', () => {
         if (isBundleError) {
@@ -446,7 +448,7 @@ describe('BundleContent', () => {
 
       describe('when bundle and branch are not set', () => {
         it('renders no branch selected banner and empty table', async () => {
-          setup({})
+          setup({ hasDefaultBranch: false })
           render(<BundleContent />, {
             wrapper: wrapper('/gh/codecov/test-repo/bundles'),
           })
@@ -491,7 +493,7 @@ describe('BundleContent', () => {
     describe('when the bundle type is not BundleAnalysisReport', () => {
       describe('there is no branch data and no branch set', () => {
         it('renders the info banner', async () => {
-          setup({ isEmptyBundleSelection: true })
+          setup({ isEmptyBundleSelection: true, hasDefaultBranch: false })
           render(<BundleContent />, {
             wrapper: wrapper('/gh/codecov/test-repo/bundles'),
           })
