@@ -21,6 +21,16 @@ vi.mock('services/toastNotification', async () => {
   }
 })
 
+const mockSuccessResponse = { setUploadTokenRequired: { error: null } }
+
+const mockErrorResponse = {
+  setUploadTokenRequired: {
+    error: {
+      __typename: 'ValidationError',
+      message: 'Failed to set upload token requirement',
+    },
+  },
+}
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -49,33 +59,28 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  isErrorResponse?: boolean
+  isParsingError?: boolean
+}
+
 describe('useSetUploadTokenRequired', () => {
-  function setup({ isErrorResponse = false }) {
+  function setup({
+    isErrorResponse = false,
+    isParsingError = false,
+  }: SetupArgs) {
     const mockAddToast = vi.fn()
     mocks.useAddNotification.mockReturnValue(mockAddToast)
 
     server.use(
       graphql.mutation('SetUploadTokenRequired', () => {
         if (isErrorResponse) {
-          return HttpResponse.json({
-            data: {
-              setUploadTokenRequired: {
-                error: {
-                  __typename: 'ValidationError',
-                  message: 'Failed to set upload token requirement',
-                },
-              },
-            },
-          })
+          return HttpResponse.json({ data: mockErrorResponse })
+        } else if (isParsingError) {
+          return HttpResponse.json({ data: { owner: '' } })
         }
 
-        return HttpResponse.json({
-          data: {
-            setUploadTokenRequired: {
-              error: null,
-            },
-          },
-        })
+        return HttpResponse.json({ data: mockSuccessResponse })
       })
     )
 
@@ -83,119 +88,115 @@ describe('useSetUploadTokenRequired', () => {
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     describe('when calling the mutation', () => {
-      describe('when successful', () => {
-        it('returns isSuccess true', async () => {
+      describe('parsing error occurs', () => {
+        it('rejects the promise', async () => {
+          setup({ isParsingError: true })
           const { result } = renderHook(
             () =>
-              useSetUploadTokenRequired({
-                provider: 'gh',
-                owner: 'codecov',
-              }),
+              useSetUploadTokenRequired({ provider: 'gh', owner: 'codecov' }),
             { wrapper }
           )
 
-          result.current.mutate(true)
+          let error: any
+          try {
+            await result.current.mutateAsync(true)
+          } catch (e) {
+            error = e
+          }
 
-          await waitFor(() => result.current.isPending)
-          await waitFor(() => !result.current.isPending)
-
-          await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
-          const data = result.current.data
-          await waitFor(() =>
-            expect(data).toEqual({
-              data: {
-                setUploadTokenRequired: {
-                  error: null,
-                },
-              },
-            })
-          )
-        })
-
-        it('fires a success toast', async () => {
-          const { mockAddToast } = setup({})
-
-          const { result } = renderHook(
-            () =>
-              useSetUploadTokenRequired({
-                provider: 'gh',
-                owner: 'codecov',
-              }),
-            { wrapper }
-          )
-
-          result.current.mutate(true)
-
-          await waitFor(() => result.current.isPending)
-          await waitFor(() => !result.current.isPending)
-
-          await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
-          await waitFor(() =>
-            expect(mockAddToast).toHaveBeenCalledWith({
-              type: 'success',
-              text: 'Upload token requirement updated successfully',
-              disappearAfter: 10000,
-            })
-          )
-        })
-      })
-
-      describe('on error', () => {
-        it('fires an error toast', async () => {
-          const { mockAddToast } = setup({ isErrorResponse: true })
-
-          const { result } = renderHook(
-            () =>
-              useSetUploadTokenRequired({
-                provider: 'gh',
-                owner: 'codecov',
-              }),
-            { wrapper }
-          )
-
-          result.current.mutate(true)
-
-          await waitFor(() => result.current.isPending)
-          await waitFor(() => !result.current.isPending)
-
-          await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
-          await waitFor(() =>
-            expect(mockAddToast).toHaveBeenCalledWith({
-              type: 'error',
-              text: 'Failed to set upload token requirement',
-              disappearAfter: 10000,
-            })
-          )
-        })
-      })
-
-      it('does not fire a success toast when isSuccess is falsy', async () => {
-        const { mockAddToast } = setup({})
-
-        const { result } = renderHook(
-          () =>
-            useSetUploadTokenRequired({
-              provider: 'gh',
-              owner: 'codecov',
-            }),
-          { wrapper }
-        )
-
-        result.current.mutate(false)
-        await waitFor(() => expect(result.current.isSuccess).toBeFalsy())
-
-        await waitFor(() =>
-          expect(mockAddToast).not.toHaveBeenCalledWith({
-            type: 'error',
-            text: 'An error occurred while updating upload token requirement',
-            disappearAfter: 10000,
+          expect(error).toBeDefined()
+          expect(error).toEqual({
+            status: 404,
+            data: {},
+            dev: 'useSetUploadTokenRequired - 404 failed to parse',
           })
-        )
+        })
+      })
+
+      describe('onSuccess', () => {
+        describe('when the mutation is successful', () => {
+          it('returns isSuccess true', async () => {
+            setup({})
+            const { result } = renderHook(
+              () =>
+                useSetUploadTokenRequired({ provider: 'gh', owner: 'codecov' }),
+              { wrapper }
+            )
+
+            await result.current.mutateAsync(true)
+
+            await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+            const data = result.current.data
+            await waitFor(() =>
+              expect(data).toEqual({ setUploadTokenRequired: { error: null } })
+            )
+          })
+
+          it('fires a success toast', async () => {
+            const { mockAddToast } = setup({})
+            const { result } = renderHook(
+              () =>
+                useSetUploadTokenRequired({ provider: 'gh', owner: 'codecov' }),
+              { wrapper }
+            )
+
+            await result.current.mutateAsync(true)
+
+            await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+            await waitFor(() =>
+              expect(mockAddToast).toHaveBeenCalledWith({
+                type: 'success',
+                text: 'Upload token requirement updated successfully',
+                disappearAfter: 10000,
+              })
+            )
+          })
+        })
+
+        describe('when the mutation is not successful', () => {
+          it('fires an error toast', async () => {
+            const { mockAddToast } = setup({ isErrorResponse: true })
+            const { result } = renderHook(
+              () =>
+                useSetUploadTokenRequired({ provider: 'gh', owner: 'codecov' }),
+              { wrapper }
+            )
+
+            await result.current.mutateAsync(true)
+
+            await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+            await waitFor(() =>
+              expect(mockAddToast).toHaveBeenCalledWith({
+                type: 'error',
+                text: 'Failed to set upload token requirement',
+                disappearAfter: 10000,
+              })
+            )
+          })
+        })
+      })
+
+      describe('onError', () => {
+        it('fires an error toast', async () => {
+          const { mockAddToast } = setup({})
+          const { result } = renderHook(
+            () =>
+              useSetUploadTokenRequired({ provider: 'gh', owner: 'codecov' }),
+            { wrapper }
+          )
+
+          result.current.mutate(false)
+
+          await waitFor(() => expect(result.current.isSuccess).toBeFalsy())
+          await waitFor(() =>
+            expect(mockAddToast).not.toHaveBeenCalledWith({
+              type: 'error',
+              text: 'An error occurred while updating upload token requirement',
+              disappearAfter: 10000,
+            })
+          )
+        })
       })
     })
   })
