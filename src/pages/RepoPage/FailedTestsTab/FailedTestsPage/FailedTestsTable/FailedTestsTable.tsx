@@ -8,7 +8,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import isEmpty from 'lodash/isEmpty'
 import qs from 'qs'
 import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
@@ -298,7 +297,7 @@ const FailedTestsTable = () => {
     }
   }, [fetchNextPage, inView, hasNextPage])
 
-  if (testData?.isFirstPullRequest) {
+  if (testData?.isFirstPullRequest && testData.totalCount === 0) {
     return (
       <div className="flex flex-col gap-2">
         <TableHeader
@@ -316,7 +315,7 @@ const FailedTestsTable = () => {
     )
   }
 
-  if (isEmpty(testData?.testResults) && !isLoading && !!branch) {
+  if (testData.totalCount === 0 && !isLoading && !!branch) {
     return (
       <div className="flex flex-col gap-2">
         <TableHeader
