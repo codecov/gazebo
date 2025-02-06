@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -58,14 +62,20 @@ const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
 const wrapper =
   (searchParams = ''): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[`/gh/caleb/mighty-nein${searchParams}`]}>
-        <Route path="/:provider/:owner/:repo">{children}</Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[`/gh/caleb/mighty-nein${searchParams}`]}>
+          <Route path="/:provider/:owner/:repo">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -74,6 +84,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -89,7 +100,9 @@ describe('useRepoCoverageTimeseries', () => {
   const config = vi.fn()
 
   function setup(
-    { noCoverageData = false }: SetupArgs = { noCoverageData: false }
+    { noCoverageData = false }: SetupArgs = {
+      noCoverageData: false,
+    }
   ) {
     server.use(
       graphql.query('GetRepoOverview', () => {
@@ -147,18 +160,8 @@ describe('useRepoCoverageTimeseries', () => {
     })
   })
 
-  describe('with no coverage data', () => {
-    it('returns an empty array', async () => {
-      setup({ noCoverageData: true })
-      const { result } = renderHook(
-        () => useRepoCoverageTimeseries({ branch: 'c3' }),
-        { wrapper: wrapper('') }
-      )
-
-      await waitFor(() => expect(result.current.data?.measurements).toEqual([]))
-    })
-
-    it('returns 0 for coverage change', async () => {
+  describe('with null coverage data', () => {
+    it('returns measurements with 0 for coverage', async () => {
       setup({ noCoverageData: true })
       const { result } = renderHook(
         () => useRepoCoverageTimeseries({ branch: 'c3' }),
@@ -166,7 +169,10 @@ describe('useRepoCoverageTimeseries', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.data?.coverageChange).toEqual(0)
+        expect(result.current.data?.measurements).toEqual([
+          { coverage: 0, date: new Date('2023-01-01T00:00:00.000Z') },
+          { coverage: 0, date: new Date('2023-01-02T00:00:00.000Z') },
+        ])
       )
     })
   })
