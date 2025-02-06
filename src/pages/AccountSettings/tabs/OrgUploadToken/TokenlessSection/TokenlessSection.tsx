@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
+import { Provider } from 'shared/api/helpers'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
@@ -15,7 +16,7 @@ const AUTHENTICATION_OPTIONS = {
 } as const
 
 interface UseParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 
@@ -25,8 +26,8 @@ const TokenlessSection: React.FC = () => {
     data: uploadTokenRequiredData,
     isLoading: isUploadTokenRequiredLoading,
   } = useUploadTokenRequired({ provider, owner })
-  const { mutate, isLoading: isSetUploadTokenRequiredLoading } =
-    useSetUploadTokenRequired()
+  const { mutate, isPending: isSetUploadTokenRequiredPending } =
+    useSetUploadTokenRequired({ provider, owner })
 
   const [showModal, setShowModal] = useState<boolean>(false)
   const [tokenRequired, setTokenRequiredState] = useState<boolean>(true)
@@ -108,7 +109,7 @@ const TokenlessSection: React.FC = () => {
               setTokenRequiredState(value)
               mutate(true)
             }}
-            isLoading={isSetUploadTokenRequiredLoading}
+            isLoading={isSetUploadTokenRequiredPending}
           />
         )}
       </Card.Content>
