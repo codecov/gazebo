@@ -1,10 +1,14 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { type MockInstance } from 'vitest'
 
-import { useReposCoverageMeasurements } from './useReposCoverageMeasurements'
+import { ReposCoverageMeasurementsQueryOpts } from './ReposCoverageMeasurementsQueryOpts'
 
 const mockReposMeasurements = {
   owner: {
@@ -18,14 +22,16 @@ const mockReposMeasurements = {
 }
 
 const server = setupServer()
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper =
   (): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      {children}
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -33,7 +39,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -67,11 +73,13 @@ describe('useReposCoverageMeasurements', () => {
 
       const { result } = renderHook(
         () =>
-          useReposCoverageMeasurements({
-            provider: 'gh',
-            owner: 'codecov',
-            interval: 'INTERVAL_7_DAY',
-          }),
+          useQueryV5(
+            ReposCoverageMeasurementsQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              interval: 'INTERVAL_7_DAY',
+            })
+          ),
         { wrapper: wrapper() }
       )
 
@@ -90,22 +98,24 @@ describe('useReposCoverageMeasurements', () => {
     })
 
     describe('no data is returned from the API', () => {
-      it('returns an empty object', async () => {
+      it('returns an empty array', async () => {
         setup({ hasNoData: true })
 
         const { result } = renderHook(
           () =>
-            useReposCoverageMeasurements({
-              provider: 'gh',
-              owner: 'codecov',
-              interval: 'INTERVAL_7_DAY',
-            }),
+            useQueryV5(
+              ReposCoverageMeasurementsQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                interval: 'INTERVAL_7_DAY',
+              })
+            ),
           { wrapper: wrapper() }
         )
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            measurements: null,
+            measurements: [],
           })
         )
       })
@@ -122,16 +132,18 @@ describe('useReposCoverageMeasurements', () => {
         consoleSpy.mockRestore()
       })
 
-      it('returns an empty object', async () => {
+      it('rejects the promise', async () => {
         setup({ hasParsingError: true })
 
         const { result } = renderHook(
           () =>
-            useReposCoverageMeasurements({
-              provider: 'gh',
-              owner: 'codecov',
-              interval: 'INTERVAL_7_DAY',
-            }),
+            useQueryV5(
+              ReposCoverageMeasurementsQueryOpts({
+                provider: 'gh',
+                owner: 'codecov',
+                interval: 'INTERVAL_7_DAY',
+              })
+            ),
           { wrapper: wrapper() }
         )
 
