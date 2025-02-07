@@ -1,7 +1,8 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
-import { useSessions } from 'services/access'
+import { SessionsQueryOpts } from 'services/access/SessionsQueryOpts'
 import { useUser } from 'services/user'
 import Button from 'ui/Button'
 
@@ -18,9 +19,9 @@ function Access() {
   const { provider, owner } = useParams<URLParams>()
   const [showModal, setShowModal] = useState(false)
 
-  const { data: sessionData } = useSessions({
-    provider,
-  })
+  const { data: sessionData } = useSuspenseQueryV5(
+    SessionsQueryOpts({ provider })
+  )
 
   const { data: currentUser } = useUser()
 
