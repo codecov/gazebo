@@ -33,13 +33,12 @@ export const StripeAppearance = (isDarkMode: boolean) => {
           color: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
         },
         '.PickerItem': {
-          backgroundColor: isDarkMode ? 'rgb(22,24,29)' : 'rgb(255,255,255)', // Same values as --color-app-container.
+          backgroundColor: isDarkMode ? 'rgb(145 152 168)' : 'rgb(255,255,255)', // Custom dark mode color for bank name buttons
           borderColor: isDarkMode ? 'rgb(47,51,60)' : 'rgb(216,220,226)', // Same values as --color-ds-gray-tertiary.
-          color: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
         },
         '.PickerItem:hover': {
-          backgroundColor: isDarkMode ? 'rgb(22,24,29)' : 'rgb(255,255,255)', // Same values as --color-app-container.
-          borderColor: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.          color: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
+          backgroundColor: isDarkMode ? 'rgb(145 152 168)' : 'rgb(255,255,255)', // Custom dark mode color for bank name buttons
+          borderColor: isDarkMode ? 'rgb(210,212,215)' : 'rgb(14,27,41)', // Same values as --color-app-text-primary.
         },
         '.PickerItem--selected': {
           backgroundColor: isDarkMode ? 'rgb(22,24,29)' : 'rgb(255,255,255)', // Same values as --color-app-container.
