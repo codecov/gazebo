@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -47,42 +47,40 @@ const RequestSchema = z.object({
     .nullable(),
 })
 
-interface UseSessionsArgs {
-  provider: string
-}
-
-export function useSessions({ provider }: UseSessionsArgs) {
-  const query = `
-    query MySessions {
-      me {
-        sessions {
-          edges {
-            node{
-              sessionid
-              name
-              ip
-              lastseen
-              useragent
-              type
-              lastFour
-            }
-          }
-        }
-        tokens {
-          edges {
-            node {
-              type
-              name
-              lastFour
-              id
-            }
-          }
+const query = `query MySessions {
+  me {
+    sessions {
+      edges {
+        node{
+          sessionid
+          name
+          ip
+          lastseen
+          useragent
+          type
+          lastFour
         }
       }
     }
-  `
+    tokens {
+      edges {
+        node {
+          type
+          name
+          lastFour
+          id
+        }
+      }
+    }
+  }
+}`
 
-  return useQuery({
+interface SessionsQueryArgs {
+  provider: string
+}
+
+export function SessionsQueryOpts({ provider }: SessionsQueryArgs) {
+  return queryOptionsV5({
     queryKey: ['sessions', provider, query],
     queryFn: ({ signal }) =>
       Api.graphql({
