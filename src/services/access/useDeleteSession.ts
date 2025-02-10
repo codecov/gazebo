@@ -1,24 +1,28 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation as useMutationV5,
+  useQueryClient as useQueryClientV5,
+} from '@tanstack/react-queryV5'
 
 import Api from 'shared/api'
+
+import { SessionsQueryOpts } from './SessionsQueryOpts'
+
+const query = `mutation DeleteSession($input: DeleteSessionInput!) {
+  deleteSession(input: $input) {
+    error {
+      __typename
+    }
+  }
+}`
 
 interface UseDeleteSessionArgs {
   provider: string
 }
 
 export function useDeleteSession({ provider }: UseDeleteSessionArgs) {
-  const queryClient = useQueryClient()
-  return useMutation({
+  const queryClient = useQueryClientV5()
+  return useMutationV5({
     mutationFn: ({ sessionid }: { sessionid: number }) => {
-      const query = `
-      mutation DeleteSession($input: DeleteSessionInput!) {
-        deleteSession(input: $input) {
-          error {
-            __typename
-          }
-        }
-      }
-    `
       const variables = { input: { sessionid } }
 
       return Api.graphqlMutation({
@@ -26,10 +30,13 @@ export function useDeleteSession({ provider }: UseDeleteSessionArgs) {
         query,
         variables,
         mutationPath: 'deleteSession',
-      }).then(() => {
-        queryClient.invalidateQueries(['sessions'])
       })
     },
-    useErrorBoundary: true,
+    throwOnError: true,
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: SessionsQueryOpts({ provider }).queryKey,
+      })
+    },
   })
 }
