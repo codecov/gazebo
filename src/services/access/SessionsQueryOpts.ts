@@ -51,7 +51,7 @@ const query = `query MySessions {
   me {
     sessions {
       edges {
-        node{
+        node {
           sessionid
           name
           ip
