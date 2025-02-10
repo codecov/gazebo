@@ -39,7 +39,6 @@ interface SunburstCoverageArgs {
     flags?: string[]
     components?: string[]
   }
-  signal?: AbortSignal
 }
 
 export function SunburstCoverageQueryOpts({
@@ -56,7 +55,6 @@ export function SunburstCoverageQueryOpts({
         const parsedRes = ResponseSchema.safeParse(res)
 
         if (!parsedRes.success) {
-          console.error(parsedRes.error)
           return rejectNetworkError({
             status: 404,
             data: {},
