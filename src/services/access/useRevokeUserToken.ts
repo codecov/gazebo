@@ -26,12 +26,13 @@ export function useRevokeUserToken({ provider }: { provider: string }) {
           input: { tokenid },
         },
         mutationPath: 'revokeUserToken',
-      }).then(() => {
-        queryClient.invalidateQueries({
-          queryKey: SessionsQueryOpts({ provider }).queryKey,
-        })
       })
     },
     throwOnError: true,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: SessionsQueryOpts({ provider }).queryKey,
+      })
+    },
   })
 }
