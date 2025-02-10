@@ -66,8 +66,8 @@ const mockCachedBundles = {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
               bundles: [
-                { name: 'bundle1', isCached: true },
-                { name: 'bundle2', isCached: false },
+                { name: 'bundle1', cacheConfig: true },
+                { name: 'bundle2', cacheConfig: false },
               ],
             },
           },
