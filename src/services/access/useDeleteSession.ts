@@ -33,7 +33,7 @@ export function useDeleteSession({ provider }: UseDeleteSessionArgs) {
       })
     },
     throwOnError: true,
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: SessionsQueryOpts({ provider }).queryKey,
       })
