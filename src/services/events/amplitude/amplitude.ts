@@ -17,6 +17,7 @@ export function initAmplitude() {
     // Disable all autocapture - may change this in the future
     autocapture: false,
     minIdLength: 1, // Necessary to accommodate our owner ids
+    serverUrl: 'https://amplitude.codecov.io/2/httpapi',
   })
 }
 
