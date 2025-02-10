@@ -1,56 +1,64 @@
 import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
+import { RepoNotFoundErrorSchema } from 'services/repo'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/helpers'
 import { ErrorCodeEnum } from 'shared/utils/commit'
 import { mapEdges } from 'shared/utils/graphql'
 
-const UploadErrorCodeEnumSchema = z.nativeEnum(ErrorCodeEnum)
-
-const UploadErrorSchema = z.object({
-  errorCode: UploadErrorCodeEnumSchema.nullable(),
-})
-
-const ErrorsSchema = z.object({
-  edges: z.array(z.object({ node: UploadErrorSchema }).nullable()),
-})
-
-const UploadSchema = z.object({
-  errors: ErrorsSchema.nullable(),
-})
-
 const UploadsSchema = z.object({
-  edges: z.array(z.object({ node: UploadSchema }).nullable()),
-})
-
-const HeadSchema = z.object({
-  uploads: UploadsSchema.nullable(),
-})
-
-const BranchSchema = z.object({
-  head: HeadSchema.nullable(),
+  edges: z.array(
+    z
+      .object({
+        node: z.object({
+          errors: z
+            .object({
+              edges: z.array(
+                z
+                  .object({
+                    node: z.object({
+                      errorCode: z.nativeEnum(ErrorCodeEnum).nullable(),
+                    }),
+                  })
+                  .nullable()
+              ),
+            })
+            .nullable(),
+        }),
+      })
+      .nullable()
+  ),
 })
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  branch: BranchSchema.nullable(),
+  branch: z
+    .object({
+      head: z
+        .object({
+          uploads: UploadsSchema.nullable(),
+        })
+        .nullable(),
+    })
+    .nullable(),
 })
 
-const OwnerSchema = z.object({
-  repository: RepositorySchema.nullable(),
+export const CommitUploadsErrorsQueryOptsSchema = z.object({
+  owner: z
+    .object({
+      repository: z
+        .discriminatedUnion('__typename', [
+          RepositorySchema,
+          RepoNotFoundErrorSchema,
+        ])
+        .nullable(),
+    })
+    .nullable(),
 })
-
-export const CommitUploadsQueryOptsSchema = z.object({
-  owner: OwnerSchema.nullable(),
-})
-
-export type CommitUploadsQueryOptsType = z.infer<
-  typeof CommitUploadsQueryOptsSchema
->
 
 const query = `
-query CommitUploads($owner: String!, $repo: String!, $branch: String!) {
+query CommitUploadsErrors($owner: String!, $repo: String!, $branch: String!) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
@@ -76,9 +84,6 @@ query CommitUploads($owner: String!, $repo: String!, $branch: String!) {
       ... on NotFoundError {
         message
       }
-      ... on OwnerNotActivatedError {
-        message
-      }
     }
   }
 }
@@ -91,14 +96,14 @@ interface CommitUploadsQueryArgs {
   branch: string
 }
 
-export const CommitUploadsQueryOpts = ({
+export const CommitUploadsErrorsQueryOpts = ({
   provider,
   owner,
   repo,
   branch,
 }: CommitUploadsQueryArgs) =>
   queryOptionsV5({
-    queryKey: ['CommitUploads', provider, owner, repo, branch, query],
+    queryKey: ['CommitUploadsErrors', provider, owner, repo, branch, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -106,28 +111,30 @@ export const CommitUploadsQueryOpts = ({
         signal,
         variables: { owner, repo, branch },
       }).then((res) => {
-        const parsedRes = CommitUploadsQueryOptsSchema.safeParse(res?.data)
+        const parsedRes = CommitUploadsErrorsQueryOptsSchema.safeParse(
+          res?.data
+        )
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'CommitUploadsQueryOpts - 404 Failed to parse schema',
+            dev: 'CommitUploadsErrorsQueryOpts - 404 Failed to parse schema',
             error: parsedRes.error,
           })
         }
 
         const data = parsedRes.data
-        if (data?.owner?.repository?.__typename !== 'Repository') {
+        if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'CommitUploadsQueryOpts - 404 Repository not found',
+            dev: 'CommitUploadsErrorsQueryOpts - 404 Repository not found',
           })
         }
 
-        const uploads = mapEdges(data?.owner?.repository?.branch?.head?.uploads)
-
-        return { uploads }
+        return {
+          uploads: mapEdges(data?.owner?.repository?.branch?.head?.uploads),
+        }
       }),
   })

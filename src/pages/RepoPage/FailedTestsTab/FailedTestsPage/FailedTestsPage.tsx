@@ -1,7 +1,10 @@
-import FailedTestsErrorBanner from './FailedTestsErrorBanner'
+import { lazy } from 'react'
+
 import FailedTestsTable from './FailedTestsTable'
 import { MetricsSection } from './MetricsSection'
 import { SelectorSection } from './SelectorSection'
+
+const FailedTestsErrorBanner = lazy(() => import('./FailedTestsErrorBanner'))
 
 function FailedTestsPage() {
   return (
