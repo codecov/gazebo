@@ -1,23 +1,27 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useSunburstCoverage } from './index'
+import { SunburstCoverageQueryOpts } from './SunburstCoverageQueryOpts'
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper =
   (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProviderV5 client={queryClientV5}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <Route path="/:provider">{children}</Route>
       </MemoryRouter>
-    </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 const server = setupServer()
@@ -27,7 +31,7 @@ beforeAll(() => {
 
 afterEach(() => {
   server.resetHandlers()
-  queryClient.clear()
+  queryClientV5.clear()
 })
 
 afterAll(() => {
@@ -110,15 +114,15 @@ describe('useSunburstCoverage', () => {
     it('returns chart data', async () => {
       const { result } = renderHook(
         () =>
-          useSunburstCoverage({
-            provider: 'github',
-            owner: 'critical role',
-            repo: 'c3',
-            query: {},
-          }),
-        {
-          wrapper: wrapper(),
-        }
+          useQueryV5(
+            SunburstCoverageQueryOpts({
+              provider: 'github',
+              owner: 'critical role',
+              repo: 'c3',
+              query: {},
+            })
+          ),
+        { wrapper: wrapper() }
       )
 
       await waitFor(() => !result.current.isFetching)
@@ -163,18 +167,18 @@ describe('useSunburstCoverage', () => {
     it('returns filtered data', async () => {
       const { result } = renderHook(
         () =>
-          useSunburstCoverage({
-            provider: 'github',
-            owner: 'critical role',
-            repo: 'c3',
-            query: {
-              flags: ['flag1', 'flag2'],
-              components: ['c1'],
-            },
-          }),
-        {
-          wrapper: wrapper(),
-        }
+          useQueryV5(
+            SunburstCoverageQueryOpts({
+              provider: 'github',
+              owner: 'critical role',
+              repo: 'c3',
+              query: {
+                flags: ['flag1', 'flag2'],
+                components: ['c1'],
+              },
+            })
+          ),
+        { wrapper: wrapper() }
       )
 
       await waitFor(() => !result.current.isFetching)
