@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock } from 'vitest'
 
-import { Session } from 'services/access'
+import { Session } from 'services/access/SessionsQueryOpts'
 import { formatTimeToNow } from 'shared/utils/dates'
 
 import SessionsTable from './SessionsTable'
