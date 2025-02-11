@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import {
@@ -6,7 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/helpers'
 import A from 'ui/A'
 
 type MeasurementIntervals =
@@ -75,7 +75,7 @@ query GetBranchCoverageMeasurements(
   }
 }`
 
-interface UseBranchCoverageMeasurementsArgs {
+interface BranchCoverageMeasurementsQueryArgs {
   provider: string
   owner: string
   repo: string
@@ -83,15 +83,9 @@ interface UseBranchCoverageMeasurementsArgs {
   before: Date | null
   after: Date | null
   branch: string
-  opts?: {
-    enabled?: boolean
-    suspense?: boolean
-    keepPreviousData?: boolean
-    staleTime?: number
-  }
 }
 
-export const useBranchCoverageMeasurements = ({
+export const BranchCoverageMeasurementsQueryOpts = ({
   provider,
   owner,
   repo,
@@ -99,9 +93,8 @@ export const useBranchCoverageMeasurements = ({
   before,
   after,
   branch,
-  opts = {},
-}: UseBranchCoverageMeasurementsArgs) =>
-  useQuery({
+}: BranchCoverageMeasurementsQueryArgs) =>
+  queryOptionsV5({
     queryKey: [
       'GetBranchCoverageMeasurements',
       provider,
@@ -133,25 +126,26 @@ export const useBranchCoverageMeasurements = ({
         )
 
         if (!parsedData.success) {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useBranchCoverageMeasurements - 404 Failed to parse data',
-          } satisfies NetworkErrorObject)
+            dev: 'BranchCoverageMeasurementsQueryOpts - 404 Failed to parse data',
+            error: parsedData.error,
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useBranchCoverageMeasurements - 404 Not found error',
-          } satisfies NetworkErrorObject)
+            dev: 'BranchCoverageMeasurementsQueryOpts - 404 Not found error',
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
+          return rejectNetworkError({
             status: 403,
             data: {
               detail: (
@@ -163,8 +157,8 @@ export const useBranchCoverageMeasurements = ({
                 </p>
               ),
             },
-            dev: 'useBranchCoverageMeasurements - 403 Owner not activated',
-          } satisfies NetworkErrorObject)
+            dev: 'BranchCoverageMeasurementsQueryOpts - 403 Owner not activated',
+          })
         }
 
         return {
@@ -172,5 +166,4 @@ export const useBranchCoverageMeasurements = ({
             data?.owner?.repository?.coverageAnalytics?.measurements ?? [],
         }
       }),
-    ...opts,
   })

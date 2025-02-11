@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -19,56 +19,48 @@ const RequestSchema = z.object({
     .nullable(),
 })
 
-export interface UseReposCoverageMeasurementsArgs {
+const query = `query GetReposCoverageMeasurements(
+  $owner: String!
+  $before: DateTime
+  $after: DateTime
+  $interval: MeasurementInterval!
+  $repos: [String!]
+  $isPublic: Boolean
+) {
+  owner(username: $owner) {
+    measurements(
+      after: $after
+      before: $before
+      interval: $interval
+      repos: $repos
+      isPublic: $isPublic
+    ) {
+      timestamp
+      avg
+    }
+  }
+}`
+
+export interface ReposCoverageMeasurementsQueryArgs {
   provider: string
   owner: string
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
   before?: string | Date
   after?: string | Date
   repos?: string[]
-  opts?: {
-    suspense?: boolean
-    keepPreviousData?: boolean
-    staleTime?: number
-  }
   isPublic?: boolean // by default, get both public and private repos
 }
 
-const query = `
-  query GetReposCoverageMeasurements(
-    $owner: String!
-    $before: DateTime
-    $after: DateTime
-    $interval: MeasurementInterval!
-    $repos: [String!]
-    $isPublic: Boolean
-  ) {
-    owner(username: $owner) {
-      measurements(
-        after: $after
-        before: $before
-        interval: $interval
-        repos: $repos
-        isPublic: $isPublic
-      ) {
-        timestamp
-        avg
-      }
-    }
-  }
-`
-
-export const useReposCoverageMeasurements = ({
+export const ReposCoverageMeasurementsQueryOpts = ({
   provider,
   owner,
   interval,
   before,
   after,
   repos,
-  opts,
   isPublic, // by default, get both public and private repos
-}: UseReposCoverageMeasurementsArgs) => {
-  return useQuery({
+}: ReposCoverageMeasurementsQueryArgs) => {
+  return queryOptionsV5({
     queryKey: [
       'GetReposCoverageMeasurements',
       provider,
@@ -100,15 +92,14 @@ export const useReposCoverageMeasurements = ({
           return rejectNetworkError({
             status: 404,
             data: {},
-            dev: 'useReposCoverageMeasurements - 404 schema parsing failed',
+            dev: 'ReposCoverageMeasurementsQueryOpts - 404 schema parsing failed',
             error: parsedData.error,
           })
         }
 
         return {
-          measurements: parsedData.data?.owner?.measurements ?? null,
+          measurements: parsedData.data?.owner?.measurements ?? [],
         }
       }),
-    ...(opts ? opts : {}),
   })
 }

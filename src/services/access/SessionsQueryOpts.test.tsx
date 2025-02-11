@@ -1,4 +1,8 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -7,18 +11,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { mapEdges } from 'shared/utils/graphql'
 
-import { Session, UserToken, useSessions } from './useSessions'
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh']}>
-    <Route path="/:provider">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
+import { Session, SessionsQueryOpts, UserToken } from './SessionsQueryOpts'
 
 const provider = 'gh'
 
@@ -71,6 +64,17 @@ const tokens: { edges: { node: UserToken }[] } = {
   ],
 }
 
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProviderV5 client={queryClientV5}>
+    <MemoryRouter initialEntries={['/gh']}>
+      <Route path="/:provider">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProviderV5>
+)
+
 const server = setupServer()
 beforeAll(() => {
   server.listen()
@@ -78,7 +82,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   server.resetHandlers()
-  queryClient.clear()
+  queryClientV5.clear()
 })
 
 afterAll(() => {
@@ -119,14 +123,12 @@ describe('useSessions', () => {
   }
 
   describe('when called and response parsing fails', () => {
-    beforeEach(() => {
-      setup({ isUnsuccessfulParseError: true })
-    })
-
     it('throws a 404', async () => {
-      const { result } = renderHook(() => useSessions({ provider }), {
-        wrapper,
-      })
+      setup({ isUnsuccessfulParseError: true })
+      const { result } = renderHook(
+        () => useQueryV5(SessionsQueryOpts({ provider })),
+        { wrapper }
+      )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
@@ -141,43 +143,32 @@ describe('useSessions', () => {
   })
 
   describe('when called and user is unauthenticated', () => {
-    beforeEach(() => {
-      setup({
-        dataReturned: {
-          me: null,
-        },
-      })
-    })
-
     it('returns null', async () => {
-      const { result } = renderHook(() => useSessions({ provider }), {
-        wrapper,
-      })
+      setup({ dataReturned: { me: null } })
+      const { result } = renderHook(
+        () => useQueryV5(SessionsQueryOpts({ provider })),
+        { wrapper }
+      )
 
       await waitFor(() => expect(result.current.data).toEqual(null))
     })
   })
 
   describe('when called and user is authenticated', () => {
-    beforeEach(() => {
+    it('returns sessions', async () => {
       setup({
         dataReturned: {
           me: {
-            sessions: {
-              edges: [...sessions.edges],
-            },
-            tokens: {
-              edges: [...tokens.edges],
-            },
+            sessions: { edges: [...sessions.edges] },
+            tokens: { edges: [...tokens.edges] },
           },
         },
       })
-    })
 
-    it('returns sessions', async () => {
-      const { result } = renderHook(() => useSessions({ provider }), {
-        wrapper,
-      })
+      const { result } = renderHook(
+        () => useQueryV5(SessionsQueryOpts({ provider })),
+        { wrapper }
+      )
 
       await waitFor(() =>
         expect(result.current.data).toEqual({

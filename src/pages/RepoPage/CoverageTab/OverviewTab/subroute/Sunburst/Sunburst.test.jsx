@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -9,34 +13,50 @@ import Sunburst, { getPathsToDisplay } from './Sunburst'
 vi.mock('ui/SunburstChart', () => ({ default: () => 'Chart Mocked' }))
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/tree/main']}>
-      <Route path="/:provider/:owner/:repo/tree/:branch">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov/cool-repo/tree/main']}>
+        <Route path="/:provider/:owner/:repo/tree/:branch">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
+
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
 
-const treeMock = { name: 'repoName', children: [] }
+const treeMock = [
+  {
+    name: 'repoName',
+    fullPath: 'repoName',
+    coverage: 100,
+    lines: 100,
+    hits: 100,
+    partials: 0,
+    misses: 0,
+    children: [],
+  },
+]
+
 const overviewMock = {
   owner: {
     isCurrentUserActivated: true,
@@ -52,6 +72,7 @@ const overviewMock = {
     },
   },
 }
+
 const repoConfigMock = {
   owner: {
     repository: {
@@ -64,37 +85,25 @@ const repoConfigMock = {
 }
 
 describe('Sunburst', () => {
-  function setup({
-    repoOverviewData,
-    coverageTreeRes,
-    coverageTreeStatus = 200,
-  }) {
+  function setup({ coverageTreeStatus = 200 }) {
     server.use(
       graphql.query('GetRepoOverview', () => {
-        return HttpResponse.json({ data: repoOverviewData })
+        return HttpResponse.json({ data: overviewMock })
       }),
       graphql.query('RepoConfig', () => {
         return HttpResponse.json({ data: repoConfigMock })
       }),
       http.get('/internal/:provider/:owner/:repo/coverage/tree', () => {
-        return HttpResponse.json(
-          { data: coverageTreeRes },
-          { status: coverageTreeStatus }
-        )
+        return HttpResponse.json(treeMock, {
+          status: coverageTreeStatus,
+        })
       })
     )
   }
 
   describe('successful call', () => {
-    beforeEach(() => {
-      setup({
-        repoOverviewData: overviewMock,
-        coverageTreeRes: treeMock,
-        coverageTreeStatus: 200,
-      })
-    })
-
     it('renders something', async () => {
+      setup({ coverageTreeStatus: 200 })
       render(<Sunburst />, { wrapper })
 
       const chart = await screen.findByText('Chart Mocked')
@@ -107,14 +116,10 @@ describe('Sunburst', () => {
     beforeEach(() => {
       // disable intentional error in vi log
       vi.spyOn(console, 'error').mockImplementation(() => {})
-
-      setup({
-        repoOverviewData: overviewMock,
-        coverageTreeStatus: 500,
-      })
     })
 
     it('renders something', async () => {
+      setup({ repoOverviewData: overviewMock, coverageTreeStatus: 500 })
       render(<Sunburst />, { wrapper })
 
       const chart = await screen.findByText(
