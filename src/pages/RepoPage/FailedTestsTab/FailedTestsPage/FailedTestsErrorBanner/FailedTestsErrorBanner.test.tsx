@@ -1,7 +1,4 @@
-import {
-  QueryClientProvider as QueryClientProviderV5,
-  QueryClient as QueryClientV5,
-} from '@tanstack/react-queryV5'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -14,71 +11,82 @@ import FailedTestsErrorBanner from '../FailedTestsErrorBanner'
 
 const server = setupServer()
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
 beforeAll(() => {
   server.listen()
 })
 
 afterEach(() => {
   vi.clearAllMocks()
-  queryClientV5.clear()
+  queryClient.clear()
   server.resetHandlers()
 })
 
 afterAll(() => {
   server.close()
 })
-const mockCommitUploadsErrors = (errorCode: string) => ({
+
+const mockRepoOverview = {
+  owner: {
+    isCurrentUserActivated: true,
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
+      testAnalyticsEnabled: false,
+      languages: ['javascript'],
+    },
+  },
+}
+
+const mockTestResultsTestSuites = (errorCode: string) => ({
   owner: {
     repository: {
       __typename: 'Repository',
+      testAnalytics: {
+        testSuites: ['java', 'script'],
+      },
       branch: {
         head: {
-          uploads: {
-            edges: [
-              {
-                node: {
-                  errors: {
-                    edges: [
-                      {
-                        node: {
-                          errorCode,
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-            ],
-          },
+          latestUploadError: { errorCode, errorMessage: 'File not found' },
         },
       },
     },
   },
 })
 
-const queryClientV5 = new QueryClientV5({
-  defaultOptions: { queries: { retry: false } },
-})
-
 const wrapper =
   (
-    initialEntries = ['/repo/codecov/gazebo/branch/main']
+    initialEntries = ['/repo/codecov/gazebo/branch/test']
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={initialEntries}>
         <Route path="/repo/:owner/:repo/branch/:branch">
           <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
         </Route>
       </MemoryRouter>
-    </QueryClientProviderV5>
+    </QueryClientProvider>
   )
 
 describe('FailedTestsErrorBanner', () => {
   function setup({ errorCode }: { errorCode: string }) {
     server.use(
-      graphql.query('CommitUploadsErrors', () => {
-        return HttpResponse.json({ data: mockCommitUploadsErrors(errorCode) })
+      graphql.query('GetRepoOverview', () => {
+        return HttpResponse.json({
+          data: mockRepoOverview,
+        })
+      }),
+      graphql.query('GetTestResultsTestSuites', () => {
+        return HttpResponse.json({
+          data: mockTestResultsTestSuites(errorCode),
+        })
       })
     )
   }
@@ -89,8 +97,8 @@ describe('FailedTestsErrorBanner', () => {
       wrapper: wrapper(),
     })
 
-    await waitFor(() => queryClientV5.isFetching)
-    await waitFor(() => !queryClientV5.isFetching)
+    await waitFor(() => queryClient.isFetching)
+    await waitFor(() => !queryClient.isFetching)
 
     expect(container).toBeEmptyDOMElement()
   })
@@ -126,11 +134,25 @@ describe('FailedTestsErrorBanner', () => {
     it('renders nothing', async () => {
       setup({ errorCode: ErrorCodeEnum.fileNotFoundInStorage })
 
-      await waitFor(() => queryClientV5.isFetching)
-      await waitFor(() => !queryClientV5.isFetching)
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
       const { container } = render(<FailedTestsErrorBanner />, {
         wrapper: wrapper(['/repo/owner/repo/']),
+      })
+      expect(container).toBeEmptyDOMElement()
+    })
+  })
+
+  describe('when branch is the default branch', () => {
+    it('renders nothing', async () => {
+      setup({ errorCode: ErrorCodeEnum.fileNotFoundInStorage })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const { container } = render(<FailedTestsErrorBanner />, {
+        wrapper: wrapper(['/repo/owner/repo/main']),
       })
       expect(container).toBeEmptyDOMElement()
     })

@@ -1,6 +1,6 @@
-import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
+import { useRepoOverview } from 'services/repo'
 import { ErrorCodeEnum } from 'shared/utils/commit'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
@@ -8,9 +8,9 @@ import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 import Icon from 'ui/Icon'
 
-import { CommitUploadsErrorsQueryOpts } from '../queries/CommitUploadsErrorsQueryOpts'
+import { useTestResultsTestSuites } from '../hooks/useTestResultsTestSuites/useTestResultsTestSuites'
 
-const CodeSnippet = ({ children }: { children: React.ReactNode }) => (
+const CodeSnippet: React.FC<React.PropsWithChildren> = ({ children }) => (
   <code className="rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-1 text-xs text-ds-primary-red">
     {children}
   </code>
@@ -51,7 +51,11 @@ const ProcessingTimeoutBanner = () => (
   </Banner>
 )
 
-const UnsupportedFormatBanner = () => (
+const UnsupportedFormatBanner = ({
+  errorMessage,
+}: {
+  errorMessage: string
+}) => (
   <Banner variant="warning">
     <BannerHeading>
       <div className="flex items-center gap-2">
@@ -60,9 +64,17 @@ const UnsupportedFormatBanner = () => (
       </div>
     </BannerHeading>
     <BannerContent>
-      Upload processing failed due to unusable file format. Please review the
-      parser error message: <CodeSnippet>No time/duration found</CodeSnippet>{' '}
-      <br /> For more help, visit our{' '}
+      Upload processing failed due to unusable file format.
+      {errorMessage ? (
+        <>
+          {' '}
+          Please review the parser error message:{' '}
+          <CodeSnippet>{errorMessage}</CodeSnippet> <br />{' '}
+        </>
+      ) : (
+        ' '
+      )}
+      For more help, visit our{' '}
       <A
         to={{
           pageName: 'testAnalyticsTroubleshooting',
@@ -86,23 +98,20 @@ interface URLParams {
 
 function FailedTestsErrorBanner() {
   const { provider, owner, repo, branch } = useParams<URLParams>()
+  const { data: overview } = useRepoOverview({
+    provider,
+    owner,
+    repo,
+  })
 
-  const { data: commitUploadsErrors } = useSuspenseQueryV5(
-    CommitUploadsErrorsQueryOpts({
-      provider,
-      owner,
-      repo,
-      branch: branch ?? '',
-    })
-  )
+  const { data } = useTestResultsTestSuites({ branch })
+  const latestUploadError = data?.latestUploadError
 
-  const latestCommitUpload =
-    commitUploadsErrors?.uploads[commitUploadsErrors.uploads.length - 1]
-  const errorCode = latestCommitUpload?.errors?.edges[0]?.node?.errorCode
-
-  if (!latestCommitUpload || !errorCode) {
+  if (!latestUploadError || branch === overview?.defaultBranch) {
     return null
   }
+
+  const errorCode = latestUploadError.errorCode
 
   if (errorCode === ErrorCodeEnum.fileNotFoundInStorage) {
     return <FileNotFoundBanner />
@@ -113,7 +122,9 @@ function FailedTestsErrorBanner() {
   }
 
   if (errorCode === ErrorCodeEnum.unsupportedFileFormat) {
-    return <UnsupportedFormatBanner />
+    return (
+      <UnsupportedFormatBanner errorMessage={latestUploadError.errorMessage} />
+    )
   }
 
   return null
