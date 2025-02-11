@@ -1,10 +1,14 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { type MockInstance } from 'vitest'
 
-import { useBranchCoverageMeasurements } from './useBranchCoverageMeasurements'
+import { BranchCoverageMeasurementsQueryOpts } from './BranchCoverageMeasurementsQueryOpts'
 
 const mockBranchMeasurements = {
   owner: {
@@ -12,22 +16,10 @@ const mockBranchMeasurements = {
       __typename: 'Repository',
       coverageAnalytics: {
         measurements: [
-          {
-            timestamp: '2023-01-01T00:00:00+00:00',
-            max: 85,
-          },
-          {
-            timestamp: '2023-01-02T00:00:00+00:00',
-            max: 80,
-          },
-          {
-            timestamp: '2023-01-03T00:00:00+00:00',
-            max: 90,
-          },
-          {
-            timestamp: '2023-01-04T00:00:00+00:00',
-            max: 100,
-          },
+          { timestamp: '2023-01-01T00:00:00+00:00', max: 85 },
+          { timestamp: '2023-01-02T00:00:00+00:00', max: 80 },
+          { timestamp: '2023-01-03T00:00:00+00:00', max: 90 },
+          { timestamp: '2023-01-04T00:00:00+00:00', max: 100 },
         ],
       },
     },
@@ -60,13 +52,15 @@ const mockNullOwner = {
 
 const mockUnsuccessfulParseError = {}
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -74,7 +68,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -120,36 +114,26 @@ describe('useBranchCoverageMeasurements', () => {
           setup({})
           const { result } = renderHook(
             () =>
-              useBranchCoverageMeasurements({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                interval: 'INTERVAL_7_DAY',
-                before: new Date('2023/03/02'),
-                after: new Date('2022/03/02'),
-                branch: 'main',
-              }),
+              useQueryV5(
+                BranchCoverageMeasurementsQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'cool-repo',
+                  interval: 'INTERVAL_7_DAY',
+                  before: new Date('2023/03/02'),
+                  after: new Date('2022/03/02'),
+                  branch: 'main',
+                })
+              ),
             { wrapper }
           )
 
           const expectedData = {
             measurements: [
-              {
-                timestamp: '2023-01-01T00:00:00+00:00',
-                max: 85,
-              },
-              {
-                timestamp: '2023-01-02T00:00:00+00:00',
-                max: 80,
-              },
-              {
-                timestamp: '2023-01-03T00:00:00+00:00',
-                max: 90,
-              },
-              {
-                timestamp: '2023-01-04T00:00:00+00:00',
-                max: 100,
-              },
+              { timestamp: '2023-01-01T00:00:00+00:00', max: 85 },
+              { timestamp: '2023-01-02T00:00:00+00:00', max: 80 },
+              { timestamp: '2023-01-03T00:00:00+00:00', max: 90 },
+              { timestamp: '2023-01-04T00:00:00+00:00', max: 100 },
             ],
           }
 
@@ -164,15 +148,17 @@ describe('useBranchCoverageMeasurements', () => {
           setup({ isNullOwner: true })
           const { result } = renderHook(
             () =>
-              useBranchCoverageMeasurements({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                interval: 'INTERVAL_7_DAY',
-                before: new Date('2023/03/02'),
-                after: new Date('2022/03/02'),
-                branch: 'main',
-              }),
+              useQueryV5(
+                BranchCoverageMeasurementsQueryOpts({
+                  provider: 'gh',
+                  owner: 'codecov',
+                  repo: 'cool-repo',
+                  interval: 'INTERVAL_7_DAY',
+                  before: new Date('2023/03/02'),
+                  after: new Date('2022/03/02'),
+                  branch: 'main',
+                })
+              ),
             { wrapper }
           )
 
@@ -199,15 +185,17 @@ describe('useBranchCoverageMeasurements', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useBranchCoverageMeasurements({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'cool-repo',
-            interval: 'INTERVAL_7_DAY',
-            before: new Date('2023/03/02'),
-            after: new Date('2022/03/02'),
-            branch: 'main',
-          }),
+          useQueryV5(
+            BranchCoverageMeasurementsQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+              interval: 'INTERVAL_7_DAY',
+              before: new Date('2023/03/02'),
+              after: new Date('2022/03/02'),
+              branch: 'main',
+            })
+          ),
         { wrapper }
       )
 
@@ -237,15 +225,17 @@ describe('useBranchCoverageMeasurements', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useBranchCoverageMeasurements({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'cool-repo',
-            interval: 'INTERVAL_7_DAY',
-            before: new Date('2023/03/02'),
-            after: new Date('2022/03/02'),
-            branch: 'main',
-          }),
+          useQueryV5(
+            BranchCoverageMeasurementsQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+              interval: 'INTERVAL_7_DAY',
+              before: new Date('2023/03/02'),
+              after: new Date('2022/03/02'),
+              branch: 'main',
+            })
+          ),
         { wrapper }
       )
 
@@ -275,15 +265,17 @@ describe('useBranchCoverageMeasurements', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useBranchCoverageMeasurements({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'cool-repo',
-            interval: 'INTERVAL_7_DAY',
-            before: new Date('2023/03/02'),
-            after: new Date('2022/03/02'),
-            branch: 'main',
-          }),
+          useQueryV5(
+            BranchCoverageMeasurementsQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+              interval: 'INTERVAL_7_DAY',
+              before: new Date('2023/03/02'),
+              after: new Date('2022/03/02'),
+              branch: 'main',
+            })
+          ),
         { wrapper }
       )
 

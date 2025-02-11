@@ -27,20 +27,19 @@ interface ChartProps {
 function Chart({ startDate, endDate, repositories }: ChartProps) {
   const {
     data: coverage,
-    isPreviousData,
-    isLoading,
+    isPlaceholderData,
+    isPending,
     isError,
   } = useCoverage({
     startDate,
     endDate,
     repositories,
-    options: {
-      suspense: false,
-      keepPreviousData: true,
+    opts: {
+      keepPrevious: true,
     },
   })
 
-  if (!isPreviousData && isLoading) {
+  if (!isPlaceholderData && isPending) {
     return (
       <div className="flex h-64 items-center justify-center">
         <LoadingLogo />
@@ -56,7 +55,7 @@ function Chart({ startDate, endDate, repositories }: ChartProps) {
     )
   }
 
-  if (coverage.length < 1) {
+  if (!isPending && coverage.length < 1) {
     return (
       <div className="flex max-h-[260px] min-h-[200px] w-full items-center justify-center">
         <p>Not enough coverage data to display chart.</p>

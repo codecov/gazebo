@@ -92,7 +92,7 @@
     "@babel/eslint-parser": "^7.25.9",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@chromatic-com/storybook": "^1",
-    "@codecov/vite-plugin": "^1.8.0",
+    "@codecov/vite-plugin": "^1.9.0",
     "@sentry/vite-plugin": "^2.22.7",
     "@storybook/addon-a11y": "^8.3.7",
     "@storybook/addon-actions": "^8.3.7",
