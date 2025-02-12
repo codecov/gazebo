@@ -143,12 +143,12 @@ export default defineConfig((config) => {
         REACT_APP_PENDO_KEY: process.env.REACT_APP_PENDO_KEY,
       }),
       tsconfigPaths(),
-      // legacy({
-      //   // which legacy browsers to support
-      //   targets: ['>0.2%', 'not dead', 'not op_mini all'],
-      //   // which polyfills to include in the modern build
-      //   modernPolyfills: ['es.promise.all-settled'],
-      // }),
+      legacy({
+        // which legacy browsers to support
+        targets: ['>0.2%', 'not dead', 'not op_mini all'],
+        // which polyfills to include in the modern build
+        modernPolyfills: ['es.promise.all-settled'],
+      }),
       react(),
       svgr(),
       ...plugins,
