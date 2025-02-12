@@ -31,7 +31,7 @@ function InvoiceHeader({ invoice, accountDetails }: InvoiceHeaderProps) {
           <LightDarkImg
             alt="Codecov Logo"
             src="/logo.svg"
-            darkSrc="/logo-dark.svg"
+            darkSrc="/logo_dark.svg"
             width={200}
           />
         </div>
