@@ -101,7 +101,6 @@ export const useTestResultsTestSuites = ({
         },
       }).then((res) => {
         const parsedData = TestResultsTestSuitesSchema.safeParse(res?.data)
-        console.log('parsedData', parsedData.error)
 
         if (!parsedData.success) {
           return rejectNetworkError({

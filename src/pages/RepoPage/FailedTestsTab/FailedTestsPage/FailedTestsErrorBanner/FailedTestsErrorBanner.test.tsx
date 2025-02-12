@@ -45,7 +45,13 @@ const mockRepoOverview = {
   },
 }
 
-const mockTestResultsTestSuites = (errorCode: string) => ({
+const mockTestResultsTestSuites = ({
+  errorCode,
+  errorMessage,
+}: {
+  errorCode: string
+  errorMessage: string
+}) => ({
   owner: {
     repository: {
       __typename: 'Repository',
@@ -54,7 +60,7 @@ const mockTestResultsTestSuites = (errorCode: string) => ({
       },
       branch: {
         head: {
-          latestUploadError: { errorCode, errorMessage: 'File not found' },
+          latestUploadError: { errorCode, errorMessage },
         },
       },
     },
@@ -76,7 +82,13 @@ const wrapper =
   )
 
 describe('FailedTestsErrorBanner', () => {
-  function setup({ errorCode }: { errorCode: string }) {
+  function setup({
+    errorCode,
+    errorMessage = 'File not found',
+  }: {
+    errorCode: string
+    errorMessage?: string
+  }) {
     server.use(
       graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
@@ -85,7 +97,7 @@ describe('FailedTestsErrorBanner', () => {
       }),
       graphql.query('GetTestResultsTestSuites', () => {
         return HttpResponse.json({
-          data: mockTestResultsTestSuites(errorCode),
+          data: mockTestResultsTestSuites({ errorCode, errorMessage }),
         })
       })
     )
@@ -127,7 +139,38 @@ describe('FailedTestsErrorBanner', () => {
     const banner = await screen.findByRole('heading', {
       name: 'Unsupported file format',
     })
+    const content = await screen.findByText(
+      /Please review the parser error message:/
+    )
+    const troubleshootingLink = await screen.findByRole('link', {
+      name: 'troubleshooting guide',
+    })
+
     expect(banner).toBeInTheDocument()
+    expect(content).toBeInTheDocument()
+    expect(troubleshootingLink).toBeInTheDocument()
+    expect(troubleshootingLink).toHaveAttribute(
+      'href',
+      'https://docs.codecov.com/docs/test-analytics-beta#troubleshooting'
+    )
+  })
+
+  describe('when error message is not provided for unsupported file format', () => {
+    it('hides the review parser error message', async () => {
+      setup({
+        errorCode: ErrorCodeEnum.unsupportedFileFormat,
+        errorMessage: '',
+      })
+      render(<FailedTestsErrorBanner />, { wrapper: wrapper() })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const banner = screen.queryByText(
+        'Please review the parser error message:'
+      )
+      expect(banner).not.toBeInTheDocument()
+    })
   })
 
   describe('when no branch is provided', () => {
