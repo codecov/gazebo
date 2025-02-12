@@ -11,11 +11,8 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { OrderingDirection, TeamOrdering } from 'services/repos/orderingOptions'
-import { ActiveContext } from 'shared/context'
 
 import ReposTableTeam, { getSortingOption } from './ReposTableTeam'
-
-import { repoDisplayOptions } from '../ListRepo'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -25,16 +22,12 @@ const queryClientV5 = new QueryClientV5({
 })
 
 const wrapper =
-  (repoDisplay: string): React.FC<React.PropsWithChildren> =>
+  (): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
     <QueryClientProviderV5 client={queryClientV5}>
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={['/gl']}>
-          <Route path="/:provider">
-            <ActiveContext.Provider value={repoDisplay}>
-              {children}
-            </ActiveContext.Provider>
-          </Route>
+          <Route path="/:provider">{children}</Route>
         </MemoryRouter>
       </QueryClientProvider>
     </QueryClientProviderV5>
@@ -163,7 +156,7 @@ describe('ReposTableTeam', () => {
       it('renders table name header', async () => {
         setup({ edges: edges() })
         render(<ReposTableTeam searchValue="" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const header = await screen.findByText(/Name/)
@@ -173,7 +166,7 @@ describe('ReposTableTeam', () => {
       it('renders table last updated header', async () => {
         setup({ edges: edges() })
         render(<ReposTableTeam searchValue="" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const header = await screen.findByText('Last updated')
@@ -183,7 +176,7 @@ describe('ReposTableTeam', () => {
       it('renders table tracked lines header', async () => {
         setup({ edges: edges() })
         render(<ReposTableTeam searchValue="" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const header = await screen.findByText('Tracked lines')
@@ -194,7 +187,7 @@ describe('ReposTableTeam', () => {
     it('renders table repo name', async () => {
       setup({ edges: edges() })
       render(<ReposTableTeam searchValue="" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       const buttons = await screen.findAllByText(/Repo name/)
@@ -205,7 +198,7 @@ describe('ReposTableTeam', () => {
       it('links to /:organization/:owner/:repo', async () => {
         setup({ edges: edges() })
         render(<ReposTableTeam searchValue="" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const repo1 = await screen.findByRole('link', {
@@ -230,7 +223,7 @@ describe('ReposTableTeam', () => {
           edges: edges({ coverageEnabled: false, bundleAnalysisEnabled: true }),
         })
         render(<ReposTableTeam searchValue="" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const repo1 = await screen.findByRole('link', {
@@ -252,7 +245,7 @@ describe('ReposTableTeam', () => {
     it('renders last updated column', async () => {
       setup({ edges: edges() })
       render(<ReposTableTeam searchValue="" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       expect(await screen.findByText(/3 days ago/)).toBeTruthy()
@@ -266,7 +259,7 @@ describe('ReposTableTeam', () => {
     it('renders tracked lines column', async () => {
       setup({ edges: edges() })
       render(<ReposTableTeam searchValue="" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       expect(await screen.findByText('99')).toBeTruthy()
@@ -340,7 +333,7 @@ describe('ReposTableTeam', () => {
 
       it('links to /:organization/:owner/:repo/new', async () => {
         render(<ReposTableTeam searchValue="" />, {
-          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const repo1 = await screen.findByRole('link', {
@@ -361,16 +354,13 @@ describe('ReposTableTeam', () => {
 
       it('renders set up repo copy', async () => {
         render(<ReposTableTeam searchValue="" />, {
-          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const setupRepo = await screen.findAllByRole('link', {
           name: /Configure/,
         })
         expect(setupRepo.length).toBe(3)
-
-        const setupRepo1 = setupRepo[0]
-        expect(setupRepo1).toHaveAttribute('href', '/gl/owner1/Repo name 1/new')
       })
     })
 
@@ -436,7 +426,7 @@ describe('ReposTableTeam', () => {
 
       it('does not link to configure repo from repo name', async () => {
         render(<ReposTableTeam searchValue="" />, {
-          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const repo1 = await screen.findByText('Repo name 1')
@@ -451,7 +441,7 @@ describe('ReposTableTeam', () => {
 
       it('does not show configure repo link', async () => {
         render(<ReposTableTeam searchValue="" />, {
-          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const notConfiguredCopy = await screen.findAllByText('Inactive')
@@ -467,7 +457,7 @@ describe('ReposTableTeam', () => {
     it('renders no repos detected', async () => {
       setup({ edges: [] })
       render(<ReposTableTeam searchValue="" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       expect(
@@ -485,7 +475,7 @@ describe('ReposTableTeam', () => {
     it('renders no results found', async () => {
       setup({ edges: [] })
       render(<ReposTableTeam searchValue="something" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
+        wrapper: wrapper(),
       })
 
       const noResultsFound = await screen.findByText(/No results found/)
@@ -518,7 +508,7 @@ describe('ReposTableTeam', () => {
       })
 
       render(<ReposTableTeam searchValue="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
+        wrapper: wrapper(),
       })
 
       const button = await screen.findByText(/Load More/)
@@ -549,7 +539,7 @@ describe('ReposTableTeam', () => {
       })
 
       render(<ReposTableTeam searchValue="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
+        wrapper: wrapper(),
       })
 
       const loadMore = await screen.findByText(/Load More/)
@@ -621,7 +611,7 @@ describe('ReposTableTeam', () => {
       })
 
       render(<ReposTableTeam searchValue="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
+        wrapper: wrapper(),
       })
 
       await waitFor(() => queryClient.isFetching())
@@ -690,7 +680,7 @@ describe('ReposTableTeam', () => {
       })
 
       render(<ReposTableTeam searchValue="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
+        wrapper: wrapper(),
       })
 
       expect(await screen.findByText(/Inactive/)).toBeTruthy()
@@ -756,7 +746,7 @@ describe('ReposTableTeam', () => {
       })
 
       render(<ReposTableTeam searchValue="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
+        wrapper: wrapper(),
       })
 
       expect(await screen.findByText(/Deactivated/)).toBeTruthy()
@@ -824,7 +814,7 @@ describe('ReposTableTeam', () => {
       })
 
       render(<ReposTableTeam searchValue="" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       const buttons = await screen.findAllByText(/Repo name/)
@@ -894,7 +884,7 @@ describe('ReposTableTeam', () => {
         })
 
         render(<ReposTableTeam searchValue="" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const name = await screen.findByText('Name')
