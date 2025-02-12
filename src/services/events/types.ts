@@ -56,6 +56,8 @@ export type EventContext = {
 }
 
 export abstract class EventTracker {
+  context: EventContext = {}
+
   // Identifies the user this session belongs to.
   identify(_identity: Identity): void {
     throw new Error(
