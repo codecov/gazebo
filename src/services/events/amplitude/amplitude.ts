@@ -14,17 +14,15 @@ const pageViewTrackingSanitization = (): EnrichmentPlugin => {
     type: 'enrichment',
     setup: async () => undefined,
     execute: async (event) => {
-      if (event.event_type !== '[Amplitude] Page Viewed') {
-        return event
-      }
-
-      /* eslint-disable camelcase */
-      event.event_properties = {
-        '[Amplitude] Page Counter':
-          event.event_properties?.['[Amplitude] Page Counter'],
-        '[Amplitude] Page Domain':
-          event.event_properties?.['[Amplitude] Page Domain'],
-        path: eventTracker().context.path,
+      if (event.event_type === '[Amplitude] Page Viewed') {
+        /* eslint-disable camelcase */
+        event.event_properties = {
+          '[Amplitude] Page Counter':
+            event.event_properties?.['[Amplitude] Page Counter'],
+          '[Amplitude] Page Domain':
+            event.event_properties?.['[Amplitude] Page Domain'],
+          path: eventTracker().context.path,
+        }
       }
 
       return event
