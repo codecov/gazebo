@@ -8,7 +8,7 @@ import { providerToInternalProvider } from 'shared/utils/provider'
 import { eventTracker } from '../events'
 import { Event, EventContext, EventTracker, Identity } from '../types'
 
-const pageViewTrackingSanitization = (): EnrichmentPlugin => {
+export const pageViewTrackingSanitization = (): EnrichmentPlugin => {
   return {
     name: 'page-view-tracking-sanitization',
     type: 'enrichment',
