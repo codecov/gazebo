@@ -1,10 +1,34 @@
 import * as amplitude from '@amplitude/analytics-browser'
+import { EnrichmentPlugin } from '@amplitude/analytics-types'
 
 import config from 'config'
 
 import { providerToInternalProvider } from 'shared/utils/provider'
 
+import { eventTracker } from '../events'
 import { Event, EventContext, EventTracker, Identity } from '../types'
+
+export const pageViewTrackingSanitization = (): EnrichmentPlugin => {
+  return {
+    name: 'page-view-tracking-sanitization',
+    type: 'enrichment',
+    setup: async () => undefined,
+    execute: async (event) => {
+      if (event.event_type === '[Amplitude] Page Viewed') {
+        /* eslint-disable camelcase */
+        event.event_properties = {
+          '[Amplitude] Page Counter':
+            event.event_properties?.['[Amplitude] Page Counter'],
+          '[Amplitude] Page Domain':
+            event.event_properties?.['[Amplitude] Page Domain'],
+          path: eventTracker().context.path,
+        }
+      }
+
+      return event
+    },
+  }
+}
 
 export function initAmplitude() {
   const apiKey = config.AMPLITUDE_API_KEY
@@ -13,9 +37,17 @@ export function initAmplitude() {
       'AMPLITUDE_API_KEY is not defined. Amplitude events will not be tracked.'
     )
   }
+  amplitude.add(pageViewTrackingSanitization())
   amplitude.init(apiKey, {
     // Disable all autocapture - may change this in the future
-    autocapture: false,
+    autocapture: {
+      attribution: true,
+      pageViews: true,
+      sessions: true,
+      formInteractions: false,
+      fileDownloads: false,
+      elementInteractions: false,
+    },
     minIdLength: 1, // Necessary to accommodate our owner ids
     serverUrl: 'https://amplitude.codecov.io/2/httpapi',
   })

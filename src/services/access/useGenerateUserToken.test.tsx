@@ -1,21 +1,24 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useGenerateUserToken } from './index'
+import { useGenerateUserToken } from './useGenerateUserToken'
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh']}>
-    <Route path="/:provider">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <MemoryRouter initialEntries={['/gh']}>
+      <Route path="/:provider">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProviderV5>
 )
 
 const provider = 'gh'
@@ -27,7 +30,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   server.resetHandlers()
-  queryClient.clear()
+  queryClientV5.clear()
 })
 
 afterAll(() => {

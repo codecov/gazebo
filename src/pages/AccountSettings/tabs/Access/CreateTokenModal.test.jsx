@@ -1,32 +1,55 @@
-import { render, screen, waitFor } from 'custom-testing-library'
-
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { useGenerateUserToken } from 'services/access'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 
 import CreateTokenModal from './CreateTokenModal'
 
-vi.mock('services/access')
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const wrapper = ({ children }) => (
+  <QueryClientProviderV5 client={queryClientV5}>
+    {children}
+  </QueryClientProviderV5>
+)
+
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen()
+})
+
+beforeEach(() => {
+  queryClientV5.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 describe('CreateTokenModal', () => {
   function setup() {
     const user = userEvent.setup()
     const closeModal = vi.fn()
-    const success = {
-      data: {
-        createUserToken: {
-          fullToken: '111-222-333',
-        },
-      },
-    }
-    const mutate = vi.fn((_, { onSuccess }) => {
-      return onSuccess(success)
-    })
-    useGenerateUserToken.mockReturnValue({
-      mutate,
-    })
+    const mutateMock = vi.fn()
 
-    return { mutate, closeModal, user }
+    server.use(
+      graphql.mutation('CreateUserToken', (info) => {
+        mutateMock(info.variables)
+        return HttpResponse.json({
+          data: { createUserToken: { fullToken: '111-222-333', error: null } },
+        })
+      })
+    )
+
+    return { mutateMock, closeModal, user }
   }
 
   describe('renders initial CreateTokenModal', () => {
@@ -38,7 +61,8 @@ describe('CreateTokenModal', () => {
           provider="gh"
           showModal={true}
           closeModal={closeModal}
-        />
+        />,
+        { wrapper }
       )
 
       const title = screen.getByText(/Generate new API access token/)
@@ -52,7 +76,8 @@ describe('CreateTokenModal', () => {
           provider="gh"
           showModal={true}
           closeModal={closeModal}
-        />
+        />,
+        { wrapper }
       )
 
       const label = screen.getByText(/Token Name/)
@@ -68,7 +93,8 @@ describe('CreateTokenModal', () => {
           provider="gh"
           showModal={true}
           closeModal={closeModal}
-        />
+        />,
+        { wrapper }
       )
 
       const buttons = screen.getAllByRole('button')
@@ -78,13 +104,14 @@ describe('CreateTokenModal', () => {
 
   describe('when the user types a token name and submits', () => {
     it('calls the mutation', async () => {
-      const { mutate, closeModal, user } = setup()
+      const { mutateMock, closeModal, user } = setup()
       render(
         <CreateTokenModal
           provider="gh"
           showModal={true}
           closeModal={closeModal}
-        />
+        />,
+        { wrapper }
       )
 
       const input = screen.getByRole('textbox')
@@ -92,7 +119,10 @@ describe('CreateTokenModal', () => {
       const generateToken = screen.getByText('Generate Token')
       await user.click(generateToken)
 
-      expect(mutate).toHaveBeenCalled()
+      await waitFor(() => expect(mutateMock).toHaveBeenCalled())
+      expect(mutateMock).toHaveBeenCalledWith({
+        input: { name: '2333', tokenType: 'api' },
+      })
     })
 
     describe('when mutation is successful', () => {
@@ -103,7 +133,8 @@ describe('CreateTokenModal', () => {
             provider="gh"
             showModal={true}
             closeModal={closeModal}
-          />
+          />,
+          { wrapper }
         )
 
         const title = await screen.findByText(/API access token/)
@@ -117,7 +148,8 @@ describe('CreateTokenModal', () => {
             provider="gh"
             showModal={true}
             closeModal={closeModal}
-          />
+          />,
+          { wrapper }
         )
 
         const input = screen.getByRole('textbox')
@@ -136,6 +168,7 @@ describe('CreateTokenModal', () => {
         const warning = screen.getByText(/Make sure to copy your token now/)
         expect(warning).toBeInTheDocument()
       })
+
       it('renders footer', async () => {
         const { closeModal, user } = setup()
         render(
@@ -143,19 +176,22 @@ describe('CreateTokenModal', () => {
             provider="gh"
             showModal={true}
             closeModal={closeModal}
-          />
+          />,
+          { wrapper }
         )
 
         const input = screen.getByRole('textbox')
         await user.type(input, '2333')
+
         const generateToken = screen.getByText('Generate Token')
         await user.click(generateToken)
 
-        const button = screen.getByRole('button', {
+        const button = await screen.findByRole('button', {
           name: /done/i,
         })
         expect(button).toBeInTheDocument()
       })
+
       it('close modals', async () => {
         const { closeModal, user } = setup()
         render(
@@ -163,14 +199,17 @@ describe('CreateTokenModal', () => {
             provider="gh"
             showModal={true}
             closeModal={closeModal}
-          />
+          />,
+          { wrapper }
         )
 
         const input = screen.getByRole('textbox')
         await user.type(input, '2333')
+
         const generateToken = screen.getByText('Generate Token')
         await user.click(generateToken)
-        const done = screen.getByText('Done')
+
+        const done = await screen.findByText('Done')
         await user.click(done)
 
         await waitFor(() => {

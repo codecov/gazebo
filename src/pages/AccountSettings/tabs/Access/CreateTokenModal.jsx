@@ -2,29 +2,25 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { useGenerateUserToken } from 'services/access'
+import { useGenerateUserToken } from 'services/access/useGenerateUserToken'
 import Button from 'ui/Button'
 import { CopyClipboard } from 'ui/CopyClipboard'
 import Modal from 'ui/Modal'
 import TextInput from 'ui/TextInput/TextInput'
 
 function CreateTokenModal({ closeModal, provider }) {
+  const [token, setToken] = useState(null)
   const { register, handleSubmit, watch } = useForm({
-    defaultValues: {
-      name: '',
-    },
+    defaultValues: { name: '' },
   })
   const nameValue = watch('name', '')
-
-  const [token, setToken] = useState(null)
-
   const { mutate, isLoading } = useGenerateUserToken({ provider })
 
   const submit = ({ name }) => {
     mutate(
       { name },
       {
-        onSuccess: ({ data }) => {
+        onSuccess: (data) => {
           setToken(data?.createUserToken?.fullToken)
         },
       }

@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import { z } from 'zod'
 
 import { InvoiceSchema } from 'services/account'
+import { ThemeContextProvider } from 'shared/ThemeContext/ThemeContext'
 import { Plans } from 'shared/utils/billing'
 
 import InvoiceHeader from './InvoiceHeader'
@@ -114,9 +115,11 @@ const accountDetails = ({ collectionMethod = '' } = {}) => {
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/plan/gh/invoices/9']}>
     <Switch>
-      <Route path="/plan/:provider/invoices/:id" exact>
-        {children}
-      </Route>
+      <ThemeContextProvider>
+        <Route path="/plan/:provider/invoices/:id" exact>
+          {children}
+        </Route>
+      </ThemeContextProvider>
     </Switch>
   </MemoryRouter>
 )
