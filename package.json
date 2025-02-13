@@ -83,7 +83,6 @@
     "react-router-dom-v5-compat": "^6.15.0",
     "react-use": "^17.2.4",
     "recharts": "^2.12.7",
-    "semver": "7.5.2",
     "tailwind-merge": "^2.3.0",
     "zod": "^3.21.4"
   },
