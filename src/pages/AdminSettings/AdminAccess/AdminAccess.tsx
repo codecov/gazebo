@@ -1,9 +1,9 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 
 import A from 'ui/A'
 import Spinner from 'ui/Spinner'
 
-const AdminAccessTable = lazy(() => import('./AdminAccessTable'))
+import AdminAccessTable from './AdminAccessTable'
 
 const Loader = () => (
   <div className="flex justify-center py-8">
