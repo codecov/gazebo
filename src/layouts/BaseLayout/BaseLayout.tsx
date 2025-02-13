@@ -1,5 +1,5 @@
 import { useQuery as useQueryV5 } from '@tanstack/react-queryV5'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
 import Footer from 'layouts/Footer'
@@ -11,6 +11,7 @@ import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import ToastNotifications from 'layouts/ToastNotifications'
 import { OnboardingContainerProvider } from 'pages/OwnerPage/OnboardingContainerContext/context'
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
+import TermsOfService from 'pages/TermsOfService'
 import { useEventContext } from 'services/events/hooks'
 import { useImpersonate } from 'services/impersonate'
 import { useTracking } from 'services/tracking'
@@ -20,8 +21,6 @@ import LoadingLogo from 'ui/LoadingLogo'
 
 import { NavigatorDataQueryOpts } from './hooks/NavigatorDataQueryOpts'
 import { useUserAccessGate } from './hooks/useUserAccessGate'
-
-const TermsOfService = lazy(() => import('pages/TermsOfService'))
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
