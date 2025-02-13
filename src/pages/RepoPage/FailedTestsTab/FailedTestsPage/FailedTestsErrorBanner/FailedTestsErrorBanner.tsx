@@ -105,7 +105,10 @@ function FailedTestsErrorBanner() {
   })
 
   const { data } = useTestResultsTestSuites({ branch })
-  const latestUploadError = data?.latestUploadError
+  const latestUploadError = data?.latestUploadError ?? {
+    errorCode: ErrorCodeEnum.fileNotFoundInStorage,
+    errorMessage: 'File not found',
+  }
 
   if (!latestUploadError || branch === overview?.defaultBranch) {
     return null

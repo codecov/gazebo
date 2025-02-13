@@ -16,7 +16,7 @@ vi.mock('./MetricsSection/MetricsSection', () => ({
 vi.mock('./FailedTestsTable/FailedTestsTable', () => ({
   default: () => 'Failed Tests Table',
 }))
-vi.mock('./FailedTestsErrorBanner', () => ({
+vi.mock('./FailedTestsErrorBanner/FailedTestsErrorBanner', () => ({
   default: () => 'Failed Tests Error Banner',
 }))
 
@@ -72,14 +72,14 @@ describe('FailedTestsPage', () => {
     )
   }
 
-  it('renders sub-components', async () => {
+  it('renders sub-components', () => {
     setup()
     render(<FailedTestsPage />, { wrapper: wrapper() })
 
-    const selectorSection = await screen.findByText(/Selector Section/)
-    const metricSection = await screen.findByText(/Metrics Section/)
-    const table = await screen.findByText(/Failed Tests Table/)
-    const errorBanner = await screen.findByText(/Failed Tests Error Banner/)
+    const selectorSection = screen.getByText(/Selector Section/)
+    const metricSection = screen.getByText(/Metrics Section/)
+    const table = screen.getByText(/Failed Tests Table/)
+    const errorBanner = screen.getByText(/Failed Tests Error Banner/)
 
     expect(selectorSection).toBeInTheDocument()
     expect(metricSection).toBeInTheDocument()

@@ -7,7 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { ErrorCodeEnum } from 'shared/utils/commit'
 
-import FailedTestsErrorBanner from '../FailedTestsErrorBanner'
+import { FailedTestsErrorBanner } from '../FailedTestsErrorBanner'
 
 const server = setupServer()
 
@@ -151,7 +151,7 @@ describe('FailedTestsErrorBanner', () => {
     expect(troubleshootingLink).toBeInTheDocument()
     expect(troubleshootingLink).toHaveAttribute(
       'href',
-      'https://docs.codecov.com/docs/test-analytics-beta#troubleshooting'
+      'https://docs.codecov.com/docs/test-analytics#troubleshooting'
     )
   })
 

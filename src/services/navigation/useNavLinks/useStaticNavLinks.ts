@@ -545,7 +545,7 @@ export function useStaticNavLinks() {
     testAnalyticsTroubleshooting: {
       text: 'Test Analytics Troubleshooting',
       path: () =>
-        'https://docs.codecov.com/docs/test-analytics-beta#troubleshooting',
+        'https://docs.codecov.com/docs/test-analytics#troubleshooting',
       isExternalLink: true,
       openNewTab: true,
     },

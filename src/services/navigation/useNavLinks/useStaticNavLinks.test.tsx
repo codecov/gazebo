@@ -100,7 +100,7 @@ describe('useStaticNavLinks', () => {
       ${links.tokenlessDocs}                 | ${'https://docs.codecov.com/docs/codecov-tokens#uploading-without-a-token'}
       ${links.requireCIPassDocs}             | ${'https://docs.codecov.com/docs/codecovyml-reference#codecovrequire_ci_to_pass'}
       ${links.circleCIEnvVars}               | ${'https://circleci.com/docs/set-environment-variable/#set-an-environment-variable-in-a-project'}
-      ${links.testAnalyticsTroubleshooting}  | ${'https://docs.codecov.com/docs/test-analytics-beta#troubleshooting'}
+      ${links.testAnalyticsTroubleshooting}  | ${'https://docs.codecov.com/docs/test-analytics#troubleshooting'}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)

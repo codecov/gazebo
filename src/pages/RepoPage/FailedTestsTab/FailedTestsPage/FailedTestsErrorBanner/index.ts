@@ -1,1 +1,1 @@
-export { default } from './FailedTestsErrorBanner'
+export { default as FailedTestsErrorBanner } from './FailedTestsErrorBanner'
