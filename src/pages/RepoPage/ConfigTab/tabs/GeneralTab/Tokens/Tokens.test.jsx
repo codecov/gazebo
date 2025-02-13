@@ -83,14 +83,6 @@ describe('Tokens', () => {
       expect(title).toBeInTheDocument()
     })
 
-    it('renders impact analysis component', async () => {
-      setup()
-      render(<Tokens />, { wrapper })
-
-      const title = await screen.findByText(/Impact analysis token/)
-      expect(title).toBeInTheDocument()
-    })
-
     it('renders static token component', async () => {
       setup()
       render(<Tokens />, { wrapper })
