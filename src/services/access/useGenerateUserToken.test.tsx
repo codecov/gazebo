@@ -8,7 +8,7 @@ import { setupServer } from 'msw/node'
 import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useGenerateUserToken } from './index'
+import { useGenerateUserToken } from './useGenerateUserToken'
 
 const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
