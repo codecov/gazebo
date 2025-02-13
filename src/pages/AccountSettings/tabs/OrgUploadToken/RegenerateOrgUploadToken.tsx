@@ -17,7 +17,7 @@ const TokenFormatEnum = Object.freeze({
 const UploadToken = ({ token, format }: { token: string; format: string }) => {
   const [hideClipboard, setHideClipboard] = useState(true)
   const encodedToken = hideClipboard
-    ? format + token.replace(/[^w-]|/g, 'x')
+    ? format + token.replace(/[^w-]/g, 'x')
     : undefined
 
   return (
