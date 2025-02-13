@@ -22,7 +22,7 @@ const mockBranchBundles = {
           bundleAnalysis: {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
-              bundles: [{ name: 'bundle1', isCached: true }],
+              bundles: [{ name: 'bundle1', cacheConfig: true }],
             },
           },
         },
@@ -141,7 +141,7 @@ describe('CachedBundlesQueryOpts', () => {
         )
 
         const expectedResponse = {
-          bundles: [{ bundleName: 'bundle1', isCached: true }],
+          bundles: [{ bundleName: 'bundle1', cacheConfig: true }],
         }
 
         await waitFor(() =>

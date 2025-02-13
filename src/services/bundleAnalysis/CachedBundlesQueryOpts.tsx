@@ -12,7 +12,7 @@ import A from 'ui/A'
 
 const BundleSchema = z.object({
   name: z.string(),
-  isCached: z.boolean(),
+  cacheConfig: z.boolean(),
 })
 
 const BundleAnalysisReportSchema = z.object({
@@ -73,7 +73,7 @@ const query = `query CachedBundleList(
                 ... on BundleAnalysisReport {
                   bundles {
                     name
-                    isCached
+                    cacheConfig
                   }
                 }
                 ... on MissingHeadReport {
@@ -156,14 +156,14 @@ export const CachedBundlesQueryOpts = ({
           })
         }
 
-        let bundles: Array<{ bundleName: string; isCached: boolean }> = []
+        let bundles: Array<{ bundleName: string; cacheConfig: boolean }> = []
         if (
           data?.owner?.repository?.branch?.head?.bundleAnalysis
             ?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport'
         ) {
           bundles =
             data.owner.repository.branch.head.bundleAnalysis?.bundleAnalysisReport?.bundles?.map(
-              ({ name, isCached }) => ({ bundleName: name, isCached })
+              ({ name, cacheConfig }) => ({ bundleName: name, cacheConfig })
             )
         }
 
