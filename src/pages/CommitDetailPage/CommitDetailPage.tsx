@@ -3,7 +3,7 @@ import {
   useSuspenseQuery as useSuspenseQueryV5,
 } from '@tanstack/react-queryV5'
 import qs from 'qs'
-import { lazy, Suspense, useLayoutEffect } from 'react'
+import { Suspense, useLayoutEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
@@ -12,14 +12,13 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import SummaryDropdown from 'ui/SummaryDropdown'
 
+import CommitBundleAnalysis from './CommitBundleAnalysis'
+import CommitCoverage from './CommitCoverage'
 import CommitBundleDropdown from './Dropdowns/CommitBundleDropdown'
 import CommitCoverageDropdown from './Dropdowns/CommitCoverageDropdown'
 import Header from './Header'
 import { CommitPageDataQueryOpts } from './queries/CommitPageDataQueryOpts'
 import { IgnoredIdsQueryOptions } from './queries/IgnoredIdsQueryOptions'
-
-const CommitCoverage = lazy(() => import('./CommitCoverage'))
-const CommitBundleAnalysis = lazy(() => import('./CommitBundleAnalysis'))
 
 const DISPLAY_MODE = {
   COVERAGE: 'coverage',
