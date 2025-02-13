@@ -217,7 +217,7 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
       .filter(isNotNull)
 
     const filteredRecentlyVisitedRepo = getFilteredRecentlyVisitedRepo(
-      recentlyVisitedRepoData,
+      recentlyVisitedRepoData?.pages[0]?.repos,
       searchValue,
       owner
     )

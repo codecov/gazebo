@@ -3,131 +3,107 @@ import { vi } from 'vitest'
 import { getFilteredRecentlyVisitedRepo } from './getFilteredRecentlyVisitedRepo'
 import { transformStringToLocalStorageKey } from './transformStringToLocalStorageKey'
 
-const mockDataSingleRepo = {
-  pageParams: [''],
-  pages: [
-    {
-      pageInfo: { hasNextPage: false, endCursor: 'sample_string' },
-      repos: [
-        {
-          name: 'repo1',
-          active: false,
-          activated: false,
-          private: false,
-          coverageAnalytics: {
-            percentCovered: null,
-            lines: null,
-          },
-          latestCommitAt: null,
-          author: {
-            username: 'codecov',
-          },
-          repositoryConfig: {
-            indicationRange: {
-              lowerRange: 60,
-              upperRange: 80,
-            },
-          },
-          updatedAt: null,
-          coverageEnabled: null,
-          bundleAnalysisEnabled: false,
-        },
-      ],
+const mockDataSingleRepo = [
+  {
+    name: 'repo1',
+    active: false,
+    activated: false,
+    private: false,
+    coverageAnalytics: {
+      percentCovered: null,
+      lines: null,
     },
-  ],
-}
+    latestCommitAt: null,
+    author: {
+      username: 'codecov',
+    },
+    repositoryConfig: {
+      indicationRange: {
+        lowerRange: 60,
+        upperRange: 80,
+      },
+    },
+    updatedAt: null,
+    coverageEnabled: null,
+    bundleAnalysisEnabled: false,
+  },
+]
 
-const mockDataMultipleRepos = {
-  pageParams: [''],
-  pages: [
-    {
-      pageInfo: { hasNextPage: false, endCursor: 'sample_string' },
-      repos: [
-        {
-          name: 'repo1',
-          active: false,
-          activated: false,
-          private: false,
-          coverageAnalytics: {
-            percentCovered: null,
-            lines: null,
-          },
-          latestCommitAt: null,
-          author: {
-            username: 'codecov',
-          },
-          repositoryConfig: {
-            indicationRange: {
-              lowerRange: 60,
-              upperRange: 80,
-            },
-          },
-          updatedAt: null,
-          coverageEnabled: null,
-          bundleAnalysisEnabled: false,
-        },
-        {
-          name: 'repo2',
-          active: false,
-          activated: false,
-          private: false,
-          coverageAnalytics: {
-            percentCovered: null,
-            lines: null,
-          },
-          latestCommitAt: null,
-          author: {
-            username: 'codecov',
-          },
-          repositoryConfig: {
-            indicationRange: {
-              lowerRange: 40,
-              upperRange: 70,
-            },
-          },
-          updatedAt: null,
-          coverageEnabled: null,
-          bundleAnalysisEnabled: false,
-        },
-      ],
+const mockDataMultipleRepos = [
+  {
+    name: 'repo1',
+    active: false,
+    activated: false,
+    private: false,
+    coverageAnalytics: {
+      percentCovered: null,
+      lines: null,
     },
-  ],
-}
+    latestCommitAt: null,
+    author: {
+      username: 'codecov',
+    },
+    repositoryConfig: {
+      indicationRange: {
+        lowerRange: 60,
+        upperRange: 80,
+      },
+    },
+    updatedAt: null,
+    coverageEnabled: null,
+    bundleAnalysisEnabled: false,
+  },
+  {
+    name: 'repo2',
+    active: false,
+    activated: false,
+    private: false,
+    coverageAnalytics: {
+      percentCovered: null,
+      lines: null,
+    },
+    latestCommitAt: null,
+    author: {
+      username: 'codecov',
+    },
+    repositoryConfig: {
+      indicationRange: {
+        lowerRange: 40,
+        upperRange: 70,
+      },
+    },
+    updatedAt: null,
+    coverageEnabled: null,
+    bundleAnalysisEnabled: false,
+  },
+]
 
-const mockDataWithNullRepos = {
-  pageParams: [''],
-  pages: [
-    {
-      pageInfo: { hasNextPage: false, endCursor: 'sample_string' },
-      repos: [
-        null,
-        {
-          name: 'repo2',
-          active: false,
-          activated: false,
-          private: false,
-          coverageAnalytics: {
-            percentCovered: null,
-            lines: null,
-          },
-          latestCommitAt: null,
-          author: {
-            username: 'codecov',
-          },
-          repositoryConfig: {
-            indicationRange: {
-              lowerRange: 40,
-              upperRange: 70,
-            },
-          },
-          updatedAt: null,
-          coverageEnabled: null,
-          bundleAnalysisEnabled: false,
-        },
-      ],
+const mockDataWithNullRepos = [
+  null,
+  {
+    name: 'repo2',
+    active: false,
+    activated: false,
+    private: false,
+    coverageAnalytics: {
+      percentCovered: null,
+      lines: null,
     },
-  ],
-}
+    latestCommitAt: null,
+    author: {
+      username: 'codecov',
+    },
+    repositoryConfig: {
+      indicationRange: {
+        lowerRange: 40,
+        upperRange: 70,
+      },
+    },
+    updatedAt: null,
+    coverageEnabled: null,
+    bundleAnalysisEnabled: false,
+  },
+]
 
 const expectedRepo1 = {
   name: 'repo1',
