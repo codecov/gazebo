@@ -1,5 +1,5 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -9,10 +9,9 @@ import { SelfHostedCurrentUserQueryOpts } from 'services/selfHosted/SelfHostedCu
 import LoadingLogo from 'ui/LoadingLogo'
 import Spinner from 'ui/Spinner'
 
+import AdminAccess from './AdminAccess'
+import AdminMembers from './AdminMembers'
 import AdminSettingsSidebar from './AdminSettingsSidebar'
-
-const AdminAccess = lazy(() => import('./AdminAccess'))
-const AdminMembers = lazy(() => import('./AdminMembers'))
 
 const Loader = (
   <div className="mt-16 flex flex-1 items-center justify-center">

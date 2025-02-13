@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useLayoutEffect, useState } from 'react'
+import { Suspense, useCallback, useLayoutEffect, useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
 import MultiSelect from 'ui/MultiSelect'
@@ -13,10 +13,9 @@ import {
   stateEnum,
   stateNames,
 } from './enums'
+import PullsTable from './PullsTable'
 
 import { useCrumbs } from '../context'
-
-const PullsTable = lazy(() => import('./PullsTable'))
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">

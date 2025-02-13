@@ -12,7 +12,7 @@ import isArray from 'lodash/isArray'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import qs from 'qs'
-import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
+import { Fragment, Suspense, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
@@ -21,7 +21,7 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-const CommitFileDiff = lazy(() => import('./CommitFileDiff'))
+import CommitFileDiff from './CommitFileDiff'
 
 const columnHelper = createColumnHelper<ImpactedFileType>()
 

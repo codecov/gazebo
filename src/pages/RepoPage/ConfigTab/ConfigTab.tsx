@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -8,12 +8,12 @@ import { useOwner } from 'services/user'
 import LoadingLogo from 'ui/LoadingLogo'
 import Sidemenu from 'ui/Sidemenu'
 
+import BadgesAndGraphsTab from './tabs/BadgesAndGraphsTab'
 import ConfigurationManager from './tabs/ConfigurationManager'
+import GeneralTab from './tabs/GeneralTab'
+import YamlTab from './tabs/YamlTab'
 
-const NotFound = lazy(() => import('../../NotFound'))
-const GeneralTab = lazy(() => import('./tabs/GeneralTab'))
-const YamlTab = lazy(() => import('./tabs/YamlTab'))
-const BadgesAndGraphsTab = lazy(() => import('./tabs/BadgesAndGraphsTab'))
+import NotFound from '../../NotFound'
 
 const tabLoading = (
   <div className="flex size-full items-center justify-center">

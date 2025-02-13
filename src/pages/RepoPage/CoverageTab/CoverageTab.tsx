@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -7,11 +7,10 @@ import { useRepoSettingsTeam } from 'services/repo'
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import LoadingLogo from 'ui/LoadingLogo'
 
+import ComponentsTab from './ComponentsTab'
 import { CoverageTabNavigator } from './CoverageTabNavigator'
+import FlagsTab from './FlagsTab'
 import OverviewTab from './OverviewTab'
-
-const FlagsTab = lazy(() => import('./FlagsTab'))
-const ComponentsTab = lazy(() => import('./ComponentsTab'))
 
 const path = '/:provider/:owner/:repo'
 

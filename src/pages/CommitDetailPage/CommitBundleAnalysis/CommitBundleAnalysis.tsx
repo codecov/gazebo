@@ -1,5 +1,5 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { CachedBundleContentBanner } from 'shared/CachedBundleContentBanner/CachedBundleContentBanner'
@@ -8,6 +8,7 @@ import { ReportUploadType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
 
 import BundleMessage from './BundleMessage'
+import CommitBundleAnalysisTable from './CommitBundleAnalysisTable'
 import EmptyTable from './EmptyTable'
 import FirstPullBanner from './FirstPullBanner'
 
@@ -15,10 +16,6 @@ import {
   CommitPageDataQueryOpts,
   TBundleAnalysisComparisonResult,
 } from '../queries/CommitPageDataQueryOpts'
-
-const CommitBundleAnalysisTable = lazy(
-  () => import('./CommitBundleAnalysisTable')
-)
 
 interface URLParams {
   provider: string

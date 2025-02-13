@@ -1,5 +1,5 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -14,10 +14,9 @@ import { EmptyTable as AssetEmptyTable } from './AssetsTable/EmptyTable'
 import { BundleChart } from './BundleChart'
 import { BundleDetails, NoDetails } from './BundleDetails'
 import BundleSelection from './BundleSelection'
+import ErrorBanner from './ErrorBanner'
 import InfoBanner from './InfoBanner'
 import { TrendDropdown } from './TrendDropdown'
-
-const ErrorBanner = lazy(() => import('./ErrorBanner'))
 
 interface URLParams {
   provider: string

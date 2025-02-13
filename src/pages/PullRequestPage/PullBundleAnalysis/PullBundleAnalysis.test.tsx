@@ -3,12 +3,7 @@ import {
   QueryClientProvider as QueryClientProviderV5,
   QueryClient as QueryClientV5,
 } from '@tanstack/react-queryV5'
-import {
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -189,9 +184,6 @@ describe('PullBundleAnalysis', () => {
       it('does not render bundle summary', async () => {
         setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
         render(<PullBundleAnalysis />, { wrapper })
-
-        const loader = await screen.findByText('Loading')
-        await waitForElementToBeRemoved(loader)
 
         const message = screen.queryByText(/Bundle report:/)
         expect(message).not.toBeInTheDocument()
