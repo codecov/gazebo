@@ -1,5 +1,5 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Switch, useParams } from 'react-router-dom'
 
 import config from 'config'
@@ -15,13 +15,12 @@ import { ToggleElement } from 'ui/ToggleElement'
 
 import FirstPullRequestBanner from './FirstPullRequestBanner'
 import { CoverageTabDataQueryOpts } from './queries/CoverageTabDataQueryOpts'
+import CoverageChart from './subroute/CoverageChart'
+import FileExplorer from './subroute/FileExplorer'
+import FileViewer from './subroute/Fileviewer'
+import Sunburst from './subroute/Sunburst'
 import Summary from './Summary'
 import SummaryTeamPlan from './SummaryTeamPlan'
-
-const FileViewer = lazy(() => import('./subroute/Fileviewer'))
-const FileExplorer = lazy(() => import('./subroute/FileExplorer'))
-const CoverageChart = lazy(() => import('./subroute/CoverageChart'))
-const Sunburst = lazy(() => import('./subroute/Sunburst'))
 
 const MAX_FILE_COUNT = 200_000
 
