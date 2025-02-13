@@ -21,6 +21,8 @@ import {
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { useOwner, useUser } from 'services/user'
 import { DEMO_REPO, formatDemoRepos, isNotNull } from 'shared/utils/demo'
+import { getFilteredRecentlyVisitedRepo } from 'shared/utils/getFilteredRecentlyVisitedRepo'
+import { transformStringToLocalStorageKey } from 'shared/utils/transformStringToLocalStorageKey'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
@@ -147,6 +149,18 @@ const ReposTable = ({
     })
   )
 
+  const recentlyVisitedRepoName = localStorage.getItem(
+    `${transformStringToLocalStorageKey(owner)}_recently_visited`
+  )
+
+  const { data: recentlyVisitedRepoData } = useInfiniteQueryV5(
+    ReposQueryOpts({
+      provider,
+      owner,
+      repoNames: recentlyVisitedRepoName ? [recentlyVisitedRepoName] : [],
+    })
+  )
+
   const isMyOwnerPage = currentUser?.user?.username === owner
 
   const tableData = useMemo(() => {
@@ -168,13 +182,30 @@ const ReposTable = ({
       ? formatDemoRepos(demoReposData, searchValue)
       : []
 
-    return [...demoRepos, ...repos]
+    const filteredRecentlyVisitedRepo = getFilteredRecentlyVisitedRepo(
+      recentlyVisitedRepoData,
+      searchValue,
+      owner
+    )
+    // only filter out the recently visited repo from the repos list if we are including it
+    const filteredRepos = filteredRecentlyVisitedRepo
+      ? repos.filter((repo) => recentlyVisitedRepoName !== repo.name)
+      : repos
+
+    return [
+      ...demoRepos,
+      ...(filteredRecentlyVisitedRepo ? [filteredRecentlyVisitedRepo] : []),
+      ...filteredRepos,
+    ]
   }, [
     reposData?.pages,
     demoReposData,
     searchValue,
     isMyOwnerPage,
     mayIncludeDemo,
+    recentlyVisitedRepoData,
+    recentlyVisitedRepoName,
+    owner,
   ])
 
   useEffect(() => {
@@ -189,6 +220,7 @@ const ReposTable = ({
       owner,
     }),
     getCoreRowModel: getCoreRowModel(),
+    // @ts-expect-error taking in both ReposQueryData and ReposTeamQueryData
     data: tableData,
     state: {
       sorting,

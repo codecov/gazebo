@@ -2,6 +2,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 
 import { RepositoryResult } from 'services/repos/ReposQueryOpts'
 import { formatTimeToNow } from 'shared/utils/dates'
+import { transformStringToLocalStorageKey } from 'shared/utils/transformStringToLocalStorageKey'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import NoRepoCoverage from './NoRepoCoverage'
@@ -18,6 +19,9 @@ export const getReposColumnsHelper = ({
   const columnHelper = createColumnHelper<
     RepositoryResult & { isDemo?: boolean }
   >()
+  const recentlyVisitedRepoName = localStorage.getItem(
+    `${transformStringToLocalStorageKey(owner)}_recently_visited`
+  )
   const nameColumn = columnHelper.accessor('name', {
     header: 'Name',
     id: 'name',
@@ -39,6 +43,9 @@ export const getReposColumnsHelper = ({
           showRepoOwner={!owner}
           pageName={pageName}
           disabledLink={!isCurrentUserPartOfOrg && !repo?.active}
+          isRecentlyVisited={
+            !!recentlyVisitedRepoName && recentlyVisitedRepoName === repo?.name
+          }
         />
       )
     },

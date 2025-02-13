@@ -1,13 +1,20 @@
 import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
+import { transformStringToLocalStorageKey } from 'shared/utils/transformStringToLocalStorageKey'
 import Icon from 'ui/Icon'
 import Label from 'ui/Label'
 
 const getRepoIconName = ({ activated, isRepoPrivate, active }) =>
   !activated && active ? 'ban' : isRepoPrivate ? 'lock-closed' : 'globe-alt'
 
-function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
+function RepoTitleLink({
+  repo,
+  showRepoOwner,
+  pageName,
+  disabledLink,
+  isRecentlyVisited,
+}) {
   const options = {
     owner: repo.author.username,
     repo: repo.name,
@@ -49,6 +56,12 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
         pageName={pageName}
         options={options}
         className="flex items-center text-ds-gray-quinary hover:underline"
+        onClick={() => {
+          if (repo?.name && repo?.author?.username && repo?.active) {
+            const key = transformStringToLocalStorageKey(repo.author.username)
+            localStorage.setItem(`${key}_recently_visited`, repo.name)
+          }
+        }}
       >
         <Icon
           size="sm"
@@ -75,6 +88,11 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
           System generated
         </Label>
       )}
+      {isRecentlyVisited && (
+        <Label variant="plain" className="ml-2">
+          recently visited
+        </Label>
+      )}
     </div>
   )
 }
@@ -93,6 +111,7 @@ RepoTitleLink.propTypes = {
   showRepoOwner: PropTypes.bool.isRequired,
   pageName: PropTypes.string.isRequired,
   disabledLink: PropTypes.bool.isRequired,
+  isRecentlyVisited: PropTypes.bool,
 }
 
 export default RepoTitleLink

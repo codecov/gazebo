@@ -16,6 +16,8 @@ import { setupServer } from 'msw/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { transformStringToLocalStorageKey } from 'shared/utils/transformStringToLocalStorageKey'
+
 import ReposTable from './ReposTable'
 
 const mockRepositories = (
@@ -1210,6 +1212,98 @@ describe('ReposTable', () => {
       expect(links.length).toBe(2)
       const demoLink = screen.queryAllByText(/Codecov demo/)
       expect(demoLink.length).toBe(0)
+    })
+  })
+
+  describe('handles recently visited repo', () => {
+    beforeEach(() => {
+      setup({})
+      localStorage.clear()
+      localStorage.setItem(
+        `${transformStringToLocalStorageKey('owner1')}_recently_visited`,
+        'gazebo'
+      )
+      server.use(
+        graphql.query('ReposForOwner', async (info) => {
+          const recentlyVisitedRepo = [
+            {
+              node: {
+                private: false,
+                activated: true,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'gazebo',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: 0,
+                  lines: 123,
+                },
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+              },
+            },
+          ]
+
+          const myRepos = [
+            {
+              node: {
+                private: false,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 1',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: 10,
+                  lines: 123,
+                },
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: false,
+              },
+            },
+          ]
+
+          let reposToReturn = myRepos.filter(
+            (repo) =>
+              !info.variables.filters.term ||
+              repo.node.name.includes(info.variables.filters.term)
+          )
+
+          if (info.variables.filters.repoNames) {
+            reposToReturn = recentlyVisitedRepo
+          }
+
+          return HttpResponse.json({
+            data: {
+              owner: {
+                repositories: {
+                  edges: reposToReturn,
+                  pageInfo: {
+                    hasNextPage: false,
+                    endCursor: '3',
+                  },
+                },
+              },
+            },
+          })
+        })
+      )
+    })
+
+    it('shows recently visited repo', async () => {
+      render(<ReposTable searchValue="" owner="owner1" />, {
+        wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
+      })
+      const recentlyVisitedRepo = await screen.findByText(/recently visited/)
+      expect(recentlyVisitedRepo).toBeInTheDocument()
     })
   })
 })
