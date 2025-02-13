@@ -21,6 +21,9 @@ import {
 import { Provider } from 'shared/api/helpers'
 import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
+import { isNotNull } from 'shared/utils/demo'
+import { getFilteredRecentlyVisitedRepo } from 'shared/utils/getFilteredRecentlyVisitedRepo'
+import { transformStringToLocalStorageKey } from 'shared/utils/transformStringToLocalStorageKey'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
@@ -63,10 +66,16 @@ interface ReposTableTeamProps {
 const getColumns = ({
   inactive,
   isCurrentUserPartOfOrg,
+  owner,
 }: {
   inactive: boolean
   isCurrentUserPartOfOrg: boolean
+  owner: string
 }) => {
+  const recentlyVisitedRepoName = localStorage.getItem(
+    `${transformStringToLocalStorageKey(owner)}_recently_visited`
+  )
+
   const nameColumn = columnHelper.accessor('name', {
     header: 'Name',
     id: 'name',
@@ -85,6 +94,9 @@ const getColumns = ({
           showRepoOwner={!!repo?.author?.username}
           pageName={pageName}
           disabledLink={!isCurrentUserPartOfOrg && !repo?.active}
+          isRecentlyVisited={
+            !!recentlyVisitedRepoName && recentlyVisitedRepoName === repo?.name
+          }
         />
       )
     },
@@ -184,16 +196,54 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
     })
   )
 
+  const recentlyVisitedRepoName = localStorage.getItem(
+    `${transformStringToLocalStorageKey(owner)}_recently_visited`
+  )
+
+  const { data: recentlyVisitedRepoData } = useInfiniteQueryV5(
+    ReposTeamQueryOpts({
+      provider,
+      owner,
+      repoNames: recentlyVisitedRepoName ? [recentlyVisitedRepoName] : [],
+    })
+  )
+
   const isCurrentUserPartOfOrg = !!reposData?.pages?.[0]?.isCurrentUserPartOfOrg
 
   const tableData = useMemo(() => {
-    const data = reposData?.pages?.map((page) => page?.repos).flat()
-    return data ?? []
-  }, [reposData?.pages])
+    const data = reposData?.pages
+      ?.map((page) => page?.repos)
+      .flat()
+      .filter(isNotNull)
+
+    const filteredRecentlyVisitedRepo = getFilteredRecentlyVisitedRepo(
+      recentlyVisitedRepoData,
+      searchValue,
+      owner
+    )
+
+    // only filter out the recently visited repo from the repos list if we are including it
+    const filteredRepos =
+      filteredRecentlyVisitedRepo && Array.isArray(data)
+        ? data.filter((repo) => recentlyVisitedRepoName !== repo.name)
+        : data
+
+    return [
+      ...(filteredRecentlyVisitedRepo ? [filteredRecentlyVisitedRepo] : []),
+      ...(filteredRepos ?? []),
+    ]
+  }, [
+    reposData?.pages,
+    owner,
+    recentlyVisitedRepoData,
+    recentlyVisitedRepoName,
+    searchValue,
+  ])
   const table = useReactTable({
     columns: getColumns({
       inactive: repoDisplay === repoDisplayOptions.NOT_CONFIGURED.text,
       isCurrentUserPartOfOrg: isCurrentUserPartOfOrg,
+      owner,
     }),
     getCoreRowModel: getCoreRowModel(),
     data: tableData,
