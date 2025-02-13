@@ -16,6 +16,7 @@ import config from 'config'
 
 import {
   OrderingDirection,
+  RepositoryResult,
   ReposQueryOpts,
 } from 'services/repos/ReposQueryOpts'
 import { Repository } from 'services/repos/ReposTeamQueryOpts'
