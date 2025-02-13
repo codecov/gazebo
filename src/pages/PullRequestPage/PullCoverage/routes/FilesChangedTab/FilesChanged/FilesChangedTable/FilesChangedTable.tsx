@@ -13,7 +13,7 @@ import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import qs from 'qs'
-import { Fragment, lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { Fragment, Suspense, useEffect, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -26,7 +26,7 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-const PullFileDiff = lazy(() => import('../PullFileDiff'))
+import PullFileDiff from '../PullFileDiff'
 
 const columnHelper = createColumnHelper<ImpactedFile>()
 
