@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Switch, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -21,8 +21,7 @@ import Spinner from 'ui/Spinner'
 import ActivationBanner from './ActivationBanner'
 import CircleCI from './CircleCI'
 import GitHubActions from './GitHubActions'
-
-const OtherCI = lazy(() => import('./OtherCI'))
+import OtherCI from './OtherCI'
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
