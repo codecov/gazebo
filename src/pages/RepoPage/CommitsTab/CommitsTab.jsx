@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { useBranchHasCommits } from 'services/branches'
@@ -14,10 +14,9 @@ import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
 
+import CommitsTable from './CommitsTable'
 import { filterItems, statusEnum } from './enums'
 import { useCommitsTabBranchSelector } from './hooks'
-
-const CommitsTable = lazy(() => import('./CommitsTable'))
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">
