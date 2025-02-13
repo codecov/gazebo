@@ -62,7 +62,7 @@ export default defineConfig((config) => {
     },
     build: {
       outDir: 'build',
-      sourcemap: true,
+      sourcemap: runSentryPlugin,
       rollupOptions: {
         output: {
           entryFileNames: 'assets/[name].[hash:21].js',
