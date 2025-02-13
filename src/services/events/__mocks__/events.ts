@@ -8,6 +8,7 @@ import { EventTracker } from '../types'
 //
 
 const MOCK_EVENT_TRACKER: EventTracker = {
+  context: {},
   identify: vi.fn(),
   track: vi.fn(),
   setContext: vi.fn(),

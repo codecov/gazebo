@@ -14,6 +14,7 @@ const mockAmplitude = vi.hoisted(() => {
     }
   }
   return {
+    add: vi.fn(),
     init: vi.fn(),
     track: vi.fn(),
     identify: vi.fn(),
