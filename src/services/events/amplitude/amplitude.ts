@@ -14,14 +14,14 @@ export const pageViewTrackingSanitization = (): EnrichmentPlugin => {
     type: 'enrichment',
     setup: async () => undefined,
     execute: async (event) => {
+      /* eslint-disable camelcase */
       if (event.event_type === '[Amplitude] Page Viewed') {
-        /* eslint-disable camelcase */
-        event.event_properties = {
-          '[Amplitude] Page Counter':
-            event.event_properties?.['[Amplitude] Page Counter'],
-          '[Amplitude] Page Domain':
-            event.event_properties?.['[Amplitude] Page Domain'],
-          path: eventTracker().context.path,
+        if (event.event_properties) {
+          delete event.event_properties?.['[Amplitude] Page Location']
+          delete event.event_properties?.['[Amplitude] Page Path']
+          delete event.event_properties?.['[Amplitude] Page URL']
+          delete event.event_properties?.['referrer']
+          event.event_properties.path = eventTracker().context.path
         }
       }
 
