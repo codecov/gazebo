@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
+import { ThemeContextProvider } from 'shared/ThemeContext/ThemeContext'
 import { Plans } from 'shared/utils/billing'
 
 import InvoiceDetail from './InvoiceDetail'
@@ -117,7 +118,9 @@ describe('InvoiceDetail', () => {
     })
     render(
       <MemoryRouter initialEntries={[url]}>
-        <InvoiceDetail />
+        <ThemeContextProvider>
+          <InvoiceDetail />
+        </ThemeContextProvider>
       </MemoryRouter>
     )
   }
