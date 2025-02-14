@@ -1302,7 +1302,7 @@ describe('ReposTable', () => {
       render(<ReposTable searchValue="" owner="owner1" />, {
         wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
       })
-      const recentlyVisitedRepo = await screen.findByText(/recently visited/)
+      const recentlyVisitedRepo = await screen.findByText(/Recently visited/)
       expect(recentlyVisitedRepo).toBeInTheDocument()
     })
   })
