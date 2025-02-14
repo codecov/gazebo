@@ -5,8 +5,8 @@ import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
 
 const query = `
-  mutation EraseRepository($repoName: String!) {
-    eraseRepository(input: { repoName: $repoName }) {
+  mutation EraseRepository($owner: String!, $repoName: String!) {
+    eraseRepository(input: { owner: $owner, repoName: $repoName }) {
       error {
         ... on UnauthorizedError {
           message
