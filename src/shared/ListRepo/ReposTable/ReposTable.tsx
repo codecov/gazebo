@@ -16,10 +16,8 @@ import config from 'config'
 
 import {
   OrderingDirection,
-  RepositoryResult,
   ReposQueryOpts,
 } from 'services/repos/ReposQueryOpts'
-import { Repository } from 'services/repos/ReposTeamQueryOpts'
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { useOwner, useUser } from 'services/user'
 import { DEMO_REPO, formatDemoRepos, isNotNull } from 'shared/utils/demo'
@@ -165,17 +163,7 @@ const ReposTable = ({
 
   const isMyOwnerPage = currentUser?.user?.username === owner
 
-  type tableDataType = Pick<
-    Repository & RepositoryResult,
-    keyof Repository & keyof RepositoryResult
-  > &
-    Partial<
-      Pick<Repository, Exclude<keyof Repository, keyof RepositoryResult>>
-    > &
-    Partial<
-      Pick<RepositoryResult, Exclude<keyof RepositoryResult, keyof Repository>>
-    >
-  const tableData: tableDataType = useMemo(() => {
+  const tableData = useMemo(() => {
     const repos =
       reposData?.pages.flatMap((page) => page?.repos).filter(isNotNull) ?? []
 
@@ -232,7 +220,6 @@ const ReposTable = ({
       owner,
     }),
     getCoreRowModel: getCoreRowModel(),
-    // @ts-expect-error taking in both ReposQueryData and ReposTeamQueryData
     data: tableData,
     state: {
       sorting,
