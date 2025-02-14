@@ -73,13 +73,16 @@ describe('pageViewTrackingSanitization', () => {
         event_properties: {
           '[Amplitude] Page Counter': 1,
           '[Amplitude] Page Domain': 'app.codecov.io',
+          '[Amplitude] Page Title': 'Codecov',
           '[Amplitude] Page Path': '/sensitive/info',
           '[Amplitude] Page Location': 'https://app.codecov.io/sensitive/info',
+          '[Amplitude] Page URL': 'https://app.codecov.io/sensitive/info',
         },
       } as Event)
       expect(event?.event_properties).toMatchObject({
         '[Amplitude] Page Counter': 1,
         '[Amplitude] Page Domain': 'app.codecov.io',
+        '[Amplitude] Page Title': 'Codecov',
         path: undefined,
       })
     }

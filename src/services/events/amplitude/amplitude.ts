@@ -14,14 +14,16 @@ export const pageViewTrackingSanitization = (): EnrichmentPlugin => {
     type: 'enrichment',
     setup: async () => undefined,
     execute: async (event) => {
+      /* eslint-disable camelcase */
       if (event.event_type === '[Amplitude] Page Viewed') {
-        /* eslint-disable camelcase */
-        event.event_properties = {
-          '[Amplitude] Page Counter':
-            event.event_properties?.['[Amplitude] Page Counter'],
-          '[Amplitude] Page Domain':
-            event.event_properties?.['[Amplitude] Page Domain'],
-          path: eventTracker().context.path,
+        if (event.event_properties) {
+          // Remove any information containing names and/or ids.
+          delete event.event_properties['[Amplitude] Page Location'] // location.href
+          delete event.event_properties['[Amplitude] Page Path'] // Full path of current page
+          delete event.event_properties['[Amplitude] Page URL'] // Full URL of current page
+          delete event.event_properties.referrer // Full URL of previous page
+
+          event.event_properties.path = eventTracker().context.path // Add the React path match
         }
       }
 
