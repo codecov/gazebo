@@ -14,6 +14,12 @@ import upsideDownUmbrella from './assets/error-upsidedown-umbrella.svg'
 import styles from './NetworkErrorBoundary.module.css'
 
 const errorToUI = {
+  400: {
+    illustration: upsideDownUmbrella,
+    title: 'Bad Request',
+    description: null,
+    showDocs: true,
+  },
   401: {
     illustration: openUmbrella,
     title: <a href="/login">Please log in.</a>,
