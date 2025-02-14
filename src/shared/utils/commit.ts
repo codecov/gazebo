@@ -20,6 +20,7 @@ export const ErrorCodeEnum = {
   reportExpired: 'REPORT_EXPIRED',
   reportEmpty: 'REPORT_EMPTY',
   processingTimeout: 'PROCESSING_TIMEOUT',
+  unsupportedFileFormat: 'UNSUPPORTED_FILE_FORMAT',
 
   unknownProcessing: 'UNKNOWN_PROCESSING',
   unknownStorage: 'UNKNOWN_STORAGE',

@@ -542,5 +542,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    testAnalyticsTroubleshooting: {
+      text: 'Test Analytics Troubleshooting',
+      path: () =>
+        'https://docs.codecov.com/docs/test-analytics#troubleshooting',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }

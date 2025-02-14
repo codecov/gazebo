@@ -5,6 +5,8 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { MockInstance } from 'vitest'
 
+import { ErrorCodeEnum } from 'shared/utils/commit'
+
 import { useTestResultsTestSuites } from './useTestResultsTestSuites'
 
 const queryClient = new QueryClient({
@@ -58,6 +60,14 @@ const mockResponse = {
       testAnalytics: {
         testSuites: ['java', 'script', 'javascript'],
       },
+      branch: {
+        head: {
+          latestUploadError: {
+            errorCode: ErrorCodeEnum.fileNotFoundInStorage,
+            errorMessage: 'File not found',
+          },
+        },
+      },
     },
   },
 }
@@ -92,6 +102,10 @@ describe('useTestResultsTestSuites', () => {
       await waitFor(() =>
         expect(result.current.data).toEqual({
           testSuites: ['java', 'script', 'javascript'],
+          latestUploadError: {
+            errorCode: ErrorCodeEnum.fileNotFoundInStorage,
+            errorMessage: 'File not found',
+          },
         })
       )
     })
