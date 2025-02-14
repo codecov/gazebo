@@ -90,7 +90,7 @@ function RepoTitleLink({
       )}
       {isRecentlyVisited && (
         <Label variant="plain" className="ml-2">
-          recently visited
+          Recently visited
         </Label>
       )}
     </div>
