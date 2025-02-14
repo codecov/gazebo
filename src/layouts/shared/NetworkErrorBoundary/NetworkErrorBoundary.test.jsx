@@ -225,6 +225,64 @@ describe('NetworkErrorBoundary', () => {
     })
   })
 
+  describe('when the children component has a 400 error', () => {
+    describe('when not running in self-hosted mode', () => {
+      it('renders a Bad Request', async () => {
+        const { user } = setup()
+        render(<App status={400} />, {
+          wrapper: wrapper(),
+        })
+
+        const textBox = await screen.findByRole('textbox')
+        await user.type(textBox, 'fail')
+
+        const badRequest = await screen.findByText(/Bad Request/)
+        expect(badRequest).toBeInTheDocument()
+      })
+
+      it('renders return to previous page button', async () => {
+        const { user } = setup()
+        render(<App status={400} />, {
+          wrapper: wrapper(),
+        })
+
+        const textBox = await screen.findByRole('textbox')
+        await user.type(textBox, 'fail')
+
+        const button = await screen.findByText('Return to previous page')
+        expect(button).toBeInTheDocument()
+      })
+    })
+
+    describe('when running in self hosted mode', () => {
+      it('renders a Bad Request', async () => {
+        const { user } = setup({ isSelfHosted: true })
+        render(<App status={400} />, {
+          wrapper: wrapper(),
+        })
+
+        const textBox = await screen.findByRole('textbox')
+        await user.type(textBox, 'fail')
+
+        const badRequest = await screen.findByText(/Bad Request/)
+        expect(badRequest).toBeInTheDocument()
+      })
+
+      it('renders return to previous page button', async () => {
+        const { user } = setup({ isSelfHosted: true })
+        render(<App status={400} />, {
+          wrapper: wrapper(),
+        })
+
+        const textBox = await screen.findByRole('textbox')
+        await user.type(textBox, 'fail')
+
+        const button = await screen.findByText('Return to previous page')
+        expect(button).toBeInTheDocument()
+      })
+    })
+  })
+
   describe('when the children component has a 404 error', () => {
     describe('when not running in self-hosted mode', () => {
       it('renders a Not found', async () => {
