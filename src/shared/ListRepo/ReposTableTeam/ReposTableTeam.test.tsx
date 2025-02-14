@@ -1040,8 +1040,7 @@ describe('ReposTableTeam', () => {
 
       await waitFor(async () => {
         const isFetching = !!queryClient.isFetching()
-        const recentlyVisitedRepo = screen.queryByText(/recently visited/)
-
+        const recentlyVisitedRepo = screen.queryByText(/Recently visited/)
         expect([isFetching, Boolean(recentlyVisitedRepo)]).toEqual([
           false,
           true,
