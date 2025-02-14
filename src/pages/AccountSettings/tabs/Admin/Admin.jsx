@@ -2,11 +2,12 @@ import { useParams } from 'react-router-dom'
 
 import { useUser } from 'services/user'
 
-import DeletionCard from './DeletionCard'
 import DetailsSection from './DetailsSection'
 import GithubIntegrationSection from './GithubIntegrationSection'
 import ManageAdminCard from './ManageAdminCard'
 import StudentSection from './StudentSection'
+
+import DeletionCard from '../DeletionCard'
 
 function Admin() {
   const { owner } = useParams()
