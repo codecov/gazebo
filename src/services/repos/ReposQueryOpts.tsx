@@ -110,7 +110,6 @@ const query = `query ReposForOwner(
 interface ReposQueryArgs {
   provider: string
   owner: string
-  activated?: boolean
   term?: string
   sortItem?: {
     ordering?: string
@@ -124,7 +123,6 @@ interface ReposQueryArgs {
 function ReposQueryOpts({
   provider,
   owner,
-  activated,
   term,
   sortItem = orderingOptions[0],
   first = 20,
@@ -132,7 +130,7 @@ function ReposQueryOpts({
   isPublic = null, // by default, get both public and private repos
 }: ReposQueryArgs) {
   const variables = {
-    filters: { activated, term, repoNames, isPublic },
+    filters: { term, repoNames, isPublic },
     ordering: sortItem?.ordering,
     direction: sortItem?.direction,
     first,
