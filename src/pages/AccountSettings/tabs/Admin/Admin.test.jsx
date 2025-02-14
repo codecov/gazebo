@@ -14,7 +14,7 @@ vi.mock('./GithubIntegrationSection', () => ({
   default: () => 'GithubIntegrationSection',
 }))
 vi.mock('./ManageAdminCard', () => ({ default: () => 'ManageAdminCard' }))
-vi.mock('./DeletionCard', () => ({ default: () => 'DeletionCard' }))
+vi.mock('../DeletionCard', () => ({ default: () => 'DeletionCard' }))
 
 const user = {
   me: {

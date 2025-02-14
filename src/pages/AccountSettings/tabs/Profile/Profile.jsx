@@ -6,8 +6,9 @@ import { SelfHostedCurrentUserQueryOpts } from 'services/selfHosted/SelfHostedCu
 
 import ActivationBanner from './ActivationBanner'
 import AdminBanner from './AdminBanner'
-import DeletionCard from './DeletionCard'
 import NameEmailCard from './NameEmailCard'
+
+import DeletionCard from '../DeletionCard'
 
 function Profile({ provider, owner }) {
   const yamlTab = `/account/${provider}/${owner}/yaml/`
@@ -27,7 +28,7 @@ function Profile({ provider, owner }) {
       {currentUser?.isAdmin && <AdminBanner />}
       <ActivationBanner />
       <NameEmailCard currentUser={currentUser} provider={provider} />
-      <DeletionCard />
+      <DeletionCard isPersonalSettings={isPersonalSettings} />
     </div>
   )
 }
