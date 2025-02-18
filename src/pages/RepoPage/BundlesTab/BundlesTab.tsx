@@ -1,10 +1,10 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 
-const BundleContent = lazy(() => import('./BundleContent'))
+import BundleContent from './BundleContent'
 
 interface URLParams {
   provider: string

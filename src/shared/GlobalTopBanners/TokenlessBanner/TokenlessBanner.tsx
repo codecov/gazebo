@@ -1,4 +1,3 @@
-import React, { lazy } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
@@ -7,8 +6,8 @@ import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import { useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
 
-const TokenRequiredBanner = lazy(() => import('./TokenRequiredBanner'))
-const TokenNotRequiredBanner = lazy(() => import('./TokenNotRequiredBanner'))
+import TokenNotRequiredBanner from './TokenNotRequiredBanner'
+import TokenRequiredBanner from './TokenRequiredBanner'
 
 type UseParams = {
   provider: string

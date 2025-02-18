@@ -1,17 +1,16 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
-import { lazy } from 'react'
 import { useParams } from 'react-router'
 
 import { OktaConfigQueryOpts } from 'pages/AccountSettings/tabs/OktaAccess/queries/OktaConfigQueryOpts'
+
+import OktaEnabledBanner from '../OktaEnabledBanner'
+import OktaEnforcedBanner from '../OktaEnforcedBanner'
+import OktaErrorBanners from '../OktaErrorBanners'
 
 interface URLParams {
   provider: string
   owner?: string
 }
-
-const OktaEnabledBanner = lazy(() => import('../OktaEnabledBanner'))
-const OktaEnforcedBanner = lazy(() => import('../OktaEnforcedBanner'))
-const OktaErrorBanners = lazy(() => import('../OktaErrorBanners'))
 
 function OktaBanners() {
   const { provider, owner } = useParams<URLParams>()
