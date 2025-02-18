@@ -41,8 +41,8 @@ const mockBundles = {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
               bundles: [
-                { name: 'bundle1', isCached: true },
-                { name: 'bundle2', isCached: false },
+                { name: 'bundle1', cacheConfig: true },
+                { name: 'bundle2', cacheConfig: false },
               ],
             },
           },
@@ -140,7 +140,7 @@ describe('ConfigureCachedBundleModal', () => {
               results: info.variables.bundles.map(
                 (bundle: { bundleName: string; toggleCaching: boolean }) => ({
                   bundleName: bundle.bundleName,
-                  isCached: bundle.toggleCaching,
+                  cacheConfig: bundle.toggleCaching,
                 })
               ),
               error: null,
@@ -430,8 +430,8 @@ describe('ConfigureCachedBundleModal', () => {
           const unmodifiedCache = queryClientV5.getQueryData(cacheQueryKey)
           expect(unmodifiedCache).toEqual({
             bundles: [
-              { bundleName: 'bundle1', isCached: true },
-              { bundleName: 'bundle2', isCached: false },
+              { bundleName: 'bundle1', cacheConfig: true },
+              { bundleName: 'bundle2', cacheConfig: false },
             ],
           })
 
@@ -452,8 +452,8 @@ describe('ConfigureCachedBundleModal', () => {
           const modifiedCache = queryClientV5.getQueryData(cacheQueryKey)
           expect(modifiedCache).toEqual({
             bundles: [
-              { bundleName: 'bundle1', isCached: true },
-              { bundleName: 'bundle2', isCached: true },
+              { bundleName: 'bundle1', cacheConfig: true },
+              { bundleName: 'bundle2', cacheConfig: true },
             ],
           })
         })
