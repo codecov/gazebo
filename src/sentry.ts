@@ -153,6 +153,9 @@ export const setupSentry = ({
         filterKeys: ['gazebo'],
         behaviour: 'apply-tag-if-contains-third-party-frames',
       }),
+
+      // Adds LaunchDarkly integration for feature flag tracking/errors
+      Sentry.launchDarklyIntegration(),
     ],
     tracePropagationTargets,
     tracesSampleRate: config?.SENTRY_TRACING_SAMPLE_RATE,

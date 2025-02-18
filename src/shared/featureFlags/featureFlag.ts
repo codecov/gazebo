@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-imports */
+import * as Sentry from '@sentry/react'
 import {
   useLDClient,
   useFlags as useLDFlags,
@@ -15,6 +16,10 @@ export const withFeatureFlagProvider = (Component: React.ComponentType) => {
       clientSideID: config.LAUNCHDARKLY,
       options: {
         bootstrap: 'localStorage',
+        inspectors: [
+          // Add in Sentry error handling for LaunchDarkly flags
+          Sentry.buildLaunchDarklyFlagUsedHandler(),
+        ],
       },
     })(Component)
   }
