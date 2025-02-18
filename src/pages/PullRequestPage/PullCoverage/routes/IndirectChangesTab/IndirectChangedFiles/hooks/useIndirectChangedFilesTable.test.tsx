@@ -16,7 +16,6 @@ const queryClient = new QueryClient({
 
 const mockImpactedFiles = [
   {
-    isCriticalFile: true,
     missesCount: 0,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
@@ -207,7 +206,7 @@ describe('useIndirectChangedFilesTable', () => {
               hasHeadOrPatchCoverage: true,
               headCoverage: 90.23,
               headName: 'flag1/mafs.js',
-              isCriticalFile: true,
+
               missesCount: 0,
               patchCoverage: 27.43,
               pullId: 14,
@@ -244,7 +243,7 @@ describe('useIndirectChangedFilesTable', () => {
               pullId: 14,
               headCoverage: 90.23,
               headName: 'flag1/mafs.js',
-              isCriticalFile: true,
+
               missesCount: 0,
               patchCoverage: 27.43,
             },

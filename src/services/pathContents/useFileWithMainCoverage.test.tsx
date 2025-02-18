@@ -16,7 +16,7 @@ const mockCommitDetails = {
     components: [{ id: 'dir_component', name: 'component' }],
     coverageFile: {
       hashedPath: 'hashedPath',
-      isCriticalFile: true,
+
       content:
         'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
       coverage: [
@@ -204,7 +204,7 @@ describe('useFileWithMainCoverage', () => {
           totals: 100,
           flagNames: ['a', 'b'],
           componentNames: ['component'],
-          isCriticalFile: true,
+
           coverage: _.chain(
             mockBranchCoverage.head.coverageAnalytics.coverageFile.coverage
           )

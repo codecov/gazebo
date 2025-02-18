@@ -29,7 +29,6 @@ interface ImpactedFile {
   hasHeadOrPatchCoverage: boolean
   headName: string | null | undefined
   fileName: string | null | undefined
-  isCriticalFile: boolean | undefined
   pullId: number | null
 }
 
@@ -49,11 +48,6 @@ function getColumns() {
             <div className="flex flex-col break-all">
               <span>{getValue()}</span>
             </div>
-            {row.original.isCriticalFile ? (
-              <span className="flex-none self-center rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
-                Critical file
-              </span>
-            ) : null}
           </div>
         )
       },

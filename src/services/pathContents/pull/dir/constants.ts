@@ -31,7 +31,6 @@ const PathContentFileSchema = z.object({
   partials: z.number(),
   lines: z.number(),
   percentCovered: z.number(),
-  isCriticalFile: z.boolean(),
 })
 
 export type PathContentFile = z.infer<typeof PathContentFileSchema>
@@ -115,9 +114,6 @@ export const query = `
                     name
                     path
                     percentCovered
-                    ... on PathContentFile {
-                      isCriticalFile
-                    }
                   }
                 }
                 ... on UnknownPath {

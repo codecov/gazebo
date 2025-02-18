@@ -19,7 +19,7 @@ const mockData = {
             isNewFile: true,
             isRenamedFile: false,
             isDeletedFile: false,
-            isCriticalFile: false,
+
             changeCoverage: null,
             baseCoverage: null,
             headCoverage: null,
@@ -45,7 +45,7 @@ const mockRenamedFile = {
             isNewFile: false,
             isRenamedFile: true,
             isDeletedFile: false,
-            isCriticalFile: false,
+
             changeCoverage: null,
             baseCoverage: null,
             headCoverage: null,
@@ -71,7 +71,7 @@ const mockDeletedFile = {
             isNewFile: false,
             isRenamedFile: false,
             isDeletedFile: true,
-            isCriticalFile: false,
+
             changeCoverage: null,
             baseCoverage: null,
             headCoverage: null,
@@ -97,7 +97,7 @@ const mockUnchangedFile = {
             isNewFile: false,
             isRenamedFile: false,
             isDeletedFile: false,
-            isCriticalFile: false,
+
             changeCoverage: null,
             baseCoverage: null,
             headCoverage: null,
@@ -253,7 +253,7 @@ describe('usePrefetchSingleFileComp', () => {
           fileLabel: 'New',
           headName: 'file A',
           hashedPath: 'hashed-path',
-          isCriticalFile: false,
+
           segments: [],
         })
       })
@@ -289,7 +289,7 @@ describe('usePrefetchSingleFileComp', () => {
           fileLabel: 'Renamed',
           headName: 'file A',
           hashedPath: 'hashed-path',
-          isCriticalFile: false,
+
           segments: [],
         })
       })
@@ -325,7 +325,7 @@ describe('usePrefetchSingleFileComp', () => {
           fileLabel: 'Deleted',
           headName: 'file A',
           hashedPath: 'hashed-path',
-          isCriticalFile: false,
+
           segments: [],
         })
       })
@@ -361,7 +361,7 @@ describe('usePrefetchSingleFileComp', () => {
           fileLabel: null,
           headName: 'file A',
           hashedPath: 'hashed-path',
-          isCriticalFile: false,
+
           segments: [],
         })
       })

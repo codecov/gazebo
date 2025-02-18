@@ -85,9 +85,6 @@ export const query = `
                   name
                   path
                   percentCovered
-                  ... on PathContentFile {
-                    isCriticalFile
-                  }
                 }
                 __typename
               }

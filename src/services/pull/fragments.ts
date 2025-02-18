@@ -153,7 +153,6 @@ fragment ImpactedFilesOnPull on Pull {
           results {
             fileName
             headName
-            isCriticalFile
             missesCount
             baseCoverage {
               percentCovered
@@ -204,7 +203,6 @@ fragment FileComparisonWithBase on Pull {
         isNewFile
         isRenamedFile
         isDeletedFile
-        isCriticalFile
         baseCoverage {
           percentCovered
         }
@@ -262,7 +260,6 @@ export const ImpactedFileSchema = z.object({
   isNewFile: z.boolean(),
   isRenamedFile: z.boolean(),
   isDeletedFile: z.boolean(),
-  isCriticalFile: z.boolean(),
   changeCoverage: z.number().nullable(),
   baseCoverage: z
     .object({
@@ -338,7 +335,6 @@ fragment PullCompareWithBaseFragment on Pull {
         ... on ImpactedFiles {
           results {
             fileName
-            isCriticalFile
             headName
             missesCount
             patchCoverage {

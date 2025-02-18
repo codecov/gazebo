@@ -8,7 +8,7 @@ describe('transformImpactedPullFileToDiff', () => {
       isRenamedFile: false,
       isNewFile: false,
       isDeletedFile: false,
-      isCriticalFile: false,
+
       baseCoverage: {
         percentCovered: 23,
       },
@@ -42,7 +42,7 @@ describe('transformImpactedPullFileToDiff', () => {
       fileLabel: null,
       hashedPath: 'hashedPath',
       headName: 'headName',
-      isCriticalFile: false,
+
       segments: [
         {
           hasUnintendedChanges: false,

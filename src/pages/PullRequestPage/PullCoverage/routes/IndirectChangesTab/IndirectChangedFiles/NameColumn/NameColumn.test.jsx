@@ -25,7 +25,7 @@ const mockSingularImpactedFilesData = {
             isNewFile: true,
             isRenamedFile: false,
             isDeletedFile: false,
-            isCriticalFile: false,
+
             headCoverage: {
               percentCovered: 90.23,
             },
@@ -140,7 +140,7 @@ describe('NameColumn', () => {
           fileLabel: 'New',
           headName: 'file A',
           hashedPath: 'hashed-path',
-          isCriticalFile: false,
+
           segments: [
             {
               header: '@@ -0,0 1,45 @@',

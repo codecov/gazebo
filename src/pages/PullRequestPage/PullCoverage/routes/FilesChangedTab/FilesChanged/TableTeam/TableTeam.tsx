@@ -97,11 +97,6 @@ function getColumns({ pullId }: { pullId: string }) {
             >
               {headName}
             </A>
-            {row.original?.isCriticalFile && (
-              <span className="ml-2 rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
-                Critical File
-              </span>
-            )}
           </div>
         )
       },

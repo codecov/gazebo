@@ -97,7 +97,6 @@ function transformIndirectChangesData(pull: PullSchemaType | null | undefined) {
           hasHeadOrPatchCoverage,
           headName: impactedFile?.headName,
           fileName: impactedFile?.fileName,
-          isCriticalFile: impactedFile?.isCriticalFile,
           pullId: pull?.pullId,
         }
       }

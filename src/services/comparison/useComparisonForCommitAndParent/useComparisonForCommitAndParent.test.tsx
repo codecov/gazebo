@@ -15,7 +15,7 @@ const commitid = 'sha123'
 const mockImpactedFile = {
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
-  isCriticalFile: false,
+
   isNewFile: false,
   isRenamedFile: false,
   isDeletedFile: false,
@@ -187,7 +187,7 @@ describe('useComparisonForCommitAndParent', () => {
               coverage: 100,
             },
             headName: 'flag1/file.js',
-            isCriticalFile: false,
+
             isDeletedFile: false,
             isNewFile: false,
             isRenamedFile: false,
