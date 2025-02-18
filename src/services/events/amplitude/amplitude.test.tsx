@@ -1,6 +1,12 @@
+import { Config, CoreClient, Event } from '@amplitude/analytics-types'
+
 import config from 'config'
 
-import { AmplitudeEventTracker, initAmplitude } from './amplitude'
+import {
+  AmplitudeEventTracker,
+  initAmplitude,
+  pageViewTrackingSanitization,
+} from './amplitude'
 
 const mockIdentifySet = vi.hoisted(() => vi.fn())
 const mockIdentifyConstructor = vi.hoisted(() => vi.fn())
@@ -14,6 +20,7 @@ const mockAmplitude = vi.hoisted(() => {
     }
   }
   return {
+    add: vi.fn(),
     init: vi.fn(),
     track: vi.fn(),
     identify: vi.fn(),
@@ -49,6 +56,56 @@ describe('when initAmplitude is called', () => {
       initAmplitude()
       expect(mockAmplitude.init).toHaveBeenCalled()
     })
+  })
+})
+
+describe('pageViewTrackingSanitization', () => {
+  it('removes sensitive info from Page Viewed event properties', async () => {
+    const plugin = pageViewTrackingSanitization()
+
+    if (plugin.setup) {
+      plugin?.setup({} as Config, {} as CoreClient)
+    }
+
+    if (plugin.execute) {
+      const event = await plugin.execute({
+        event_type: '[Amplitude] Page Viewed',
+        event_properties: {
+          '[Amplitude] Page Counter': 1,
+          '[Amplitude] Page Domain': 'app.codecov.io',
+          '[Amplitude] Page Title': 'Codecov',
+          '[Amplitude] Page Path': '/sensitive/info',
+          '[Amplitude] Page Location': 'https://app.codecov.io/sensitive/info',
+          '[Amplitude] Page URL': 'https://app.codecov.io/sensitive/info',
+        },
+      } as Event)
+      expect(event?.event_properties).toMatchObject({
+        '[Amplitude] Page Counter': 1,
+        '[Amplitude] Page Domain': 'app.codecov.io',
+        '[Amplitude] Page Title': 'Codecov',
+        path: undefined,
+      })
+    }
+  })
+
+  it('does not touch other event types', async () => {
+    const plugin = pageViewTrackingSanitization()
+
+    if (plugin.setup) {
+      plugin?.setup({} as Config, {} as CoreClient)
+    }
+
+    if (plugin.execute) {
+      const event = await plugin.execute({
+        event_type: 'Button Clicked',
+        event_properties: {
+          '[Amplitude] Page Path': '/sensitive/info',
+        },
+      } as Event)
+      expect(event?.event_properties).toMatchObject({
+        '[Amplitude] Page Path': '/sensitive/info',
+      })
+    }
   })
 })
 

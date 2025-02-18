@@ -42,10 +42,18 @@ const TOO_MANY_REQUESTS_ERROR_CODE = 429
 initEventTracker()
 setupSentry({ history })
 
+// setting to 2 minutes, this value will ensure that components that are mounted
+// after suspense do not trigger a new query to be fetched. By default, the
+// stale time value is 0, which means that the query will be re-fetched on every
+// mount.
+const QUERY_STALE_TIME = 2 * (1000 * 60)
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: true,
+      staleTime: QUERY_STALE_TIME,
+      refetchOnWindowFocus: false,
       retry: (failureCount, error) => {
         // Do not retry if the response status is 429
         if (
@@ -59,7 +67,6 @@ const queryClient = new QueryClient({
         // Otherwise, retry up to 3 times
         return failureCount < 3
       },
-      refetchOnWindowFocus: false,
     },
   },
 })
@@ -67,6 +74,8 @@ const queryClient = new QueryClient({
 const queryClientV5 = new QueryClientV5({
   defaultOptions: {
     queries: {
+      staleTime: QUERY_STALE_TIME,
+      refetchOnWindowFocus: false,
       retry: (failureCount, error) => {
         // Do not retry if the response status is 429
         if (
@@ -80,7 +89,6 @@ const queryClientV5 = new QueryClientV5({
         // Otherwise, retry up to 3 times
         return failureCount < 3
       },
-      refetchOnWindowFocus: false,
     },
   },
 })

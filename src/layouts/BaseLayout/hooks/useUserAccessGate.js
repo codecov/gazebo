@@ -59,14 +59,11 @@ const useUserAccessGate = () => {
   })
 
   useEffect(() => {
-    if (!userData?.owner?.defaultOrgUsername) {
+    // only update the default org if the user exists
+    if (userData && !userData?.owner?.defaultOrgUsername) {
       updateDefaultOrg({ username: userData?.user?.username })
     }
-  }, [
-    userData?.user?.username,
-    userData?.owner?.defaultOrgUsername,
-    updateDefaultOrg,
-  ])
+  }, [userData, updateDefaultOrg])
 
   useOnboardingRedirect({
     username: userData?.user?.username,

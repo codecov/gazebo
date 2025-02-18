@@ -6,6 +6,8 @@ import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
+import { ErrorCodeEnum } from 'shared/utils/commit'
+
 import SelectorSection from './SelectorSection'
 
 const mockRepoOverview = {
@@ -35,6 +37,14 @@ const mockTestSuites = {
   __typename: 'Repository',
   testAnalytics: {
     testSuites: ['java', 'script', 'ok', 'blahbloo'],
+  },
+  branch: {
+    head: {
+      latestUploadError: {
+        errorCode: ErrorCodeEnum.fileNotFoundInStorage,
+        errorMessage: 'File not found',
+      },
+    },
   },
 }
 
