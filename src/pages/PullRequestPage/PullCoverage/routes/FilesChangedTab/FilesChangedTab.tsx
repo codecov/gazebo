@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
@@ -6,8 +6,8 @@ import { useRepoSettingsTeam } from 'services/repo'
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import Spinner from 'ui/Spinner'
 
-const FilesChangedTable = lazy(() => import('./FilesChanged'))
-const TeamFilesChangedTable = lazy(() => import('./FilesChanged/TableTeam'))
+import FilesChangedTable from './FilesChanged'
+import TeamFilesChangedTable from './FilesChanged/TableTeam'
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">

@@ -14,7 +14,7 @@ const UpdateBundleCacheInputSchema = z.array(
 const UpdateBundleCacheOutputSchema = z.array(
   z.object({
     bundleName: z.string(),
-    isCached: z.boolean(),
+    cacheConfig: z.boolean(),
   })
 )
 
@@ -38,8 +38,7 @@ const MutationRequestSchema = z.object({
     .nullable(),
 })
 
-const query = `
-mutation UpdateBundleCacheConfig(
+const query = `mutation UpdateBundleCacheConfig(
   $owner: String!
   $repo: String!
   $bundles: [BundleCacheConfigInput!]!
@@ -49,7 +48,7 @@ mutation UpdateBundleCacheConfig(
   ) {
     results {
       bundleName
-      isCached
+      cacheConfig
     }
     error {
       __typename

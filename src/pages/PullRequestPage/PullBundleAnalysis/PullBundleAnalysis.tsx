@@ -1,5 +1,5 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { CachedBundleContentBanner } from 'shared/CachedBundleContentBanner/CachedBundleContentBanner'
@@ -10,16 +10,13 @@ import Spinner from 'ui/Spinner'
 import BundleMessage from './BundleMessage'
 import EmptyTable from './EmptyTable'
 import FirstPullBanner from './FirstPullBanner'
+import PullBundleComparisonTable from './PullBundleComparisonTable'
+import PullBundleHeadTable from './PullBundleHeadTable'
 
 import {
   PullPageDataQueryOpts,
   TBundleAnalysisComparisonResult,
 } from '../queries/PullPageDataQueryOpts'
-
-const PullBundleComparisonTable = lazy(
-  () => import('./PullBundleComparisonTable')
-)
-const PullBundleHeadTable = lazy(() => import('./PullBundleHeadTable'))
 
 interface URLParams {
   provider: string

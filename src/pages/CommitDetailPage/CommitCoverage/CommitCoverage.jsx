@@ -1,6 +1,6 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import isEmpty from 'lodash/isEmpty'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -17,24 +17,19 @@ import { extractUploads } from 'shared/utils/extractUploads'
 import Spinner from 'ui/Spinner'
 
 import BotErrorBanner from './BotErrorBanner'
+import CommitCoverageSummary from './CommitCoverageSummary'
 import CommitCoverageSummarySkeleton from './CommitCoverageSummary/CommitCoverageSummarySkeleton'
 import CommitCoverageTabs from './CommitCoverageTabs'
 import ErroredUploads from './ErroredUploads'
 import FirstPullBanner from './FirstPullBanner'
+import CommitDetailFileExplorer from './routes/CommitDetailFileExplorer'
+import CommitDetailFileViewer from './routes/CommitDetailFileViewer'
+import FilesChangedTab from './routes/FilesChangedTab'
+import IndirectChangesTab from './routes/IndirectChangesTab'
+import UploadsCard from './UploadsCard'
 import YamlErrorBanner from './YamlErrorBanner'
 
 import { CommitPageDataQueryOpts } from '../queries/CommitPageDataQueryOpts'
-
-const CommitDetailFileExplorer = lazy(
-  () => import('./routes/CommitDetailFileExplorer')
-)
-const CommitDetailFileViewer = lazy(
-  () => import('./routes/CommitDetailFileViewer')
-)
-const FilesChangedTab = lazy(() => import('./routes/FilesChangedTab'))
-const IndirectChangesTab = lazy(() => import('./routes/IndirectChangesTab'))
-const UploadsCard = lazy(() => import('./UploadsCard'))
-const CommitCoverageSummary = lazy(() => import('./CommitCoverageSummary'))
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">

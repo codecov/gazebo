@@ -270,7 +270,7 @@ describe('OrgUploadToken', () => {
       })
       await user.click(saveBtn)
 
-      const token = await screen.findByText('CODECOV_TOKEN=xxxxxx')
+      const token = await screen.findByText('CODECOV_TOKEN=xxxxx')
       expect(token).toBeInTheDocument()
     })
   })
@@ -296,7 +296,7 @@ describe('OrgUploadToken', () => {
 
       render(<OrgUploadToken />, { wrapper })
 
-      const token = await screen.findByText('CODECOV_TOKEN=xxxxxx')
+      const token = await screen.findByText('CODECOV_TOKEN=xxxxx')
       expect(token).toBeInTheDocument()
     })
 
@@ -315,7 +315,7 @@ describe('OrgUploadToken', () => {
       expect(hide).toBeInTheDocument()
       await user.click(hide)
 
-      const token2 = await screen.findByText('CODECOV_TOKEN=xxxxxx')
+      const token2 = await screen.findByText('CODECOV_TOKEN=xxxxx')
       expect(token2).toBeInTheDocument()
     })
   })
