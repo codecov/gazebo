@@ -6,15 +6,12 @@ import TotalsNumber from 'ui/TotalsNumber'
 
 import NoRepoCoverage from './NoRepoCoverage'
 
-import InactiveRepo from '../InactiveRepo'
 import RepoTitleLink from '../RepoTitleLink'
 
 export const getReposColumnsHelper = ({
-  inactive,
   isCurrentUserPartOfOrg,
   owner,
 }: {
-  inactive: boolean
   isCurrentUserPartOfOrg: boolean
   owner: string
 }) => {
@@ -46,27 +43,6 @@ export const getReposColumnsHelper = ({
       )
     },
   })
-
-  if (inactive) {
-    return [
-      nameColumn,
-      columnHelper.accessor('active', {
-        header: '',
-        id: 'inactiveRepo',
-        cell: (info) => {
-          const repo = info.row.original
-          return (
-            <InactiveRepo
-              owner={repo?.author?.username ?? ''}
-              repoName={repo?.name}
-              isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
-              isActive={false}
-            />
-          )
-        },
-      }),
-    ]
-  }
 
   return [
     nameColumn,

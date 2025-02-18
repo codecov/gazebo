@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import { useContext, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -19,13 +19,11 @@ import {
   TeamOrdering,
 } from 'services/repos/ReposTeamQueryOpts'
 import { Provider } from 'shared/api/helpers'
-import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
 import InactiveRepo from '../InactiveRepo'
-import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
 import RepoTitleLink from '../RepoTitleLink'
 
@@ -61,10 +59,8 @@ interface ReposTableTeamProps {
 }
 
 const getColumns = ({
-  inactive,
   isCurrentUserPartOfOrg,
 }: {
-  inactive: boolean
   isCurrentUserPartOfOrg: boolean
 }) => {
   const nameColumn = columnHelper.accessor('name', {
@@ -89,27 +85,6 @@ const getColumns = ({
       )
     },
   })
-
-  if (inactive) {
-    return [
-      nameColumn,
-      columnHelper.accessor('coverageAnalytics.lines', {
-        header: '',
-        id: 'lines',
-        cell: (info) => {
-          const repo = info.row.original
-          return (
-            <InactiveRepo
-              owner={repo?.author?.username ?? ''}
-              repoName={repo?.name}
-              isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
-              isActive={!!repo?.active}
-            />
-          )
-        },
-      }),
-    ]
-  }
 
   return [
     nameColumn,
@@ -159,15 +134,6 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
   ])
   const { owner } = useParams<{ owner: string }>()
 
-  const repoDisplay = useContext(ActiveContext)
-
-  const activated =
-    repoDisplayOptions[
-      repoDisplay
-        .replace(/\s/g, '_')
-        .toUpperCase() as keyof typeof repoDisplayOptions
-    ]?.status
-
   const {
     data: reposData,
     fetchNextPage,
@@ -177,7 +143,6 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
   } = useInfiniteQueryV5(
     ReposTeamQueryOpts({
       provider,
-      activated,
       sortItem: getSortingOption(sorting),
       term: searchValue,
       owner,
@@ -192,7 +157,6 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
   }, [reposData?.pages])
   const table = useReactTable({
     columns: getColumns({
-      inactive: repoDisplay === repoDisplayOptions.NOT_CONFIGURED.text,
       isCurrentUserPartOfOrg: isCurrentUserPartOfOrg,
     }),
     getCoreRowModel: getCoreRowModel(),
