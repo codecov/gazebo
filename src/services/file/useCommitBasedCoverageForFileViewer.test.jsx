@@ -151,7 +151,6 @@ describe('useCommitBasedCoverageForFileViewer', () => {
         },
         flagNames: [],
         hashedPath: 'hashedPath',
-
         totals: 53.43,
         isLoading: false,
       }
@@ -173,7 +172,6 @@ describe('useCommitBasedCoverageForFileViewer', () => {
           { line: 2, coverage: 'H' },
         ],
         totals: { percentCovered: 23.43 },
-
         hashedPath: 'hashedPath',
       }
 
@@ -231,7 +229,6 @@ describe('useCommitBasedCoverageForFileViewer', () => {
         totals: 13.63,
         flagNames: selectedFlags,
         componentNames: [],
-
         hashedPath: 'hashedPath',
         isLoading: false,
       }

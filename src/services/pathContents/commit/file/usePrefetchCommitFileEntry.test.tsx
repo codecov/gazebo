@@ -187,7 +187,6 @@ describe('usePrefetchCommitFileEntry', () => {
         flagNames: ['a', 'b'],
         componentNames: [],
         hashedPath: 'hashed-path',
-
         totals: 66.67,
       }
 

@@ -204,7 +204,6 @@ describe('useRepoCommitContents', () => {
             percentCovered: 50,
             __typename: 'PathContentFile',
             hits: 24,
-
             lines: 22,
             misses: 24,
             path: null,

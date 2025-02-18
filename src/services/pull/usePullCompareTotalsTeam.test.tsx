@@ -23,7 +23,6 @@ const mockCompareData = {
               {
                 headName: 'src/App.tsx',
                 missesCount: 0,
-
                 patchCoverage: { coverage: 100 },
               },
             ],
@@ -141,7 +140,6 @@ describe('usePullCompareTotalsTeam', () => {
                 {
                   headName: 'src/App.tsx',
                   missesCount: 0,
-
                   patchCoverage: {
                     coverage: 100,
                   },
