@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
-import { AccountDetailsSchema, Plan, TrialStatuses } from 'services/account'
+import { AccountDetailsSchema } from 'services/account/useAccountDetails'
+import { Plan, TrialStatuses } from 'services/account/usePlanData'
 import { BillingRate, Plans } from 'shared/utils/billing'
 
 import {

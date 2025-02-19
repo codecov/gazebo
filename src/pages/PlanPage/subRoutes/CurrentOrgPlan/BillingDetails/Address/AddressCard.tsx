@@ -4,7 +4,7 @@ import { z } from 'zod'
 import {
   BillingDetailsSchema,
   SubscriptionDetailSchema,
-} from 'services/account'
+} from 'services/account/useAccountDetails'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'

@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { usePlanData } from 'services/account'
+import { usePlanData } from 'services/account/usePlanData'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
 import Sidemenu from 'ui/Sidemenu'
 

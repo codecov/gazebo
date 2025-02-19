@@ -3,12 +3,9 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import {
-  TrialStatuses,
-  useAccountDetails,
-  useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import { Provider } from 'shared/api/helpers'
 import { BillingRate, shouldDisplayTeamCard } from 'shared/utils/billing'
 import Spinner from 'ui/Spinner'

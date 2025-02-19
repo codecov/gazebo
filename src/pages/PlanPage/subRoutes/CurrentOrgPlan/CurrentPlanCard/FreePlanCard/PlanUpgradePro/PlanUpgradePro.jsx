@@ -1,6 +1,6 @@
 import PropType from 'prop-types'
 
-import { planPropType } from 'services/account'
+import { planPropType } from 'services/account/propTypes'
 import BenefitList from 'shared/plan/BenefitList'
 import { findProPlans, findSentryPlans } from 'shared/utils/billing'
 import { SENTRY_PRICE } from 'shared/utils/upgradeForm'

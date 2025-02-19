@@ -7,7 +7,7 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
+import { TrialStatuses } from 'services/account/usePlanData'
 import { BillingRate, PlanName, Plans } from 'shared/utils/billing'
 
 import PlanTypeOptions from './PlanTypeOptions'

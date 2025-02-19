@@ -5,8 +5,8 @@ import { useParams } from 'react-router-dom'
 import {
   IndividualPlan,
   useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+} from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
 import { BillingRate, findSentryPlans } from 'shared/utils/billing'
 import OptionButton from 'ui/OptionButton'
 

@@ -3,7 +3,10 @@ import { StripePaymentElement } from '@stripe/stripe-js'
 import cs from 'classnames'
 import { z } from 'zod'
 
-import { AccountDetailsSchema, BillingDetailsSchema } from 'services/account'
+import {
+  AccountDetailsSchema,
+  BillingDetailsSchema,
+} from 'services/account/useAccountDetails'
 import {
   MissingAddressError,
   MissingEmailError,

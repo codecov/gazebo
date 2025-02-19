@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import bankLogo from 'assets/billing/bank.svg'
-import { USBankAccountSchema } from 'services/account'
+import { USBankAccountSchema } from 'services/account/useAccountDetails'
 
 interface BankInformationProps {
   usBankAccount: z.infer<typeof USBankAccountSchema>

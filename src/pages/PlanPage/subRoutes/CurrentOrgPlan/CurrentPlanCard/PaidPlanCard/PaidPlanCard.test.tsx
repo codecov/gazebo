@@ -9,7 +9,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Plan, PretrialPlan, TrialStatuses } from 'services/account'
+import { Plan, PretrialPlan, TrialStatuses } from 'services/account/usePlanData'
 import { BillingRate, Plans } from 'shared/utils/billing'
 
 import PaidPlanCard from './PaidPlanCard'

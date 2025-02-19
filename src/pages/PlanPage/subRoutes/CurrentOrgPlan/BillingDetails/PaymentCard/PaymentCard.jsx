@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import { accountDetailsPropType } from 'services/account'
+import { accountDetailsPropType } from 'services/account/propTypes'
 import { formatTimestampToCalendarDate } from 'shared/utils/billing'
 import A from 'ui/A'
 import Button from 'ui/Button'

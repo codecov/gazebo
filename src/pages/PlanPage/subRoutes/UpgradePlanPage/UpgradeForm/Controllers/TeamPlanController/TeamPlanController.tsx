@@ -1,6 +1,6 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
-import { IndividualPlan } from 'services/account'
+import { IndividualPlan } from 'services/account/useAvailablePlans'
 import {
   MIN_NB_SEATS_PRO,
   TEAM_PLAN_MAX_ACTIVE_USERS,

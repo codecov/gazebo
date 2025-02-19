@@ -6,7 +6,7 @@ import useClickAway from 'react-use/lib/useClickAway'
 
 import config, { DEFAULT_GH_APP } from 'config'
 
-import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
+import { useUpdateDefaultOrganization } from 'services/defaultOrganization/useUpdateDefaultOrganization'
 import { eventTracker } from 'services/events/events'
 import { useOwner } from 'services/user'
 import { Provider } from 'shared/api/helpers'

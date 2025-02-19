@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
 import { Provider } from 'shared/api/helpers'
 
 import AddressCard from './Address/AddressCard'

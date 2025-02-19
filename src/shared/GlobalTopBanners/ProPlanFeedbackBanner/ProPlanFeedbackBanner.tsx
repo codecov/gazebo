@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { TrialStatuses, usePlanData } from 'services/account'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import A from 'ui/A'
 import TopBanner from 'ui/TopBanner'
 

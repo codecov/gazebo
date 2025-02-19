@@ -1,4 +1,4 @@
-import { IndividualPlan } from 'services/account'
+import { IndividualPlan } from 'services/account/useAvailablePlans'
 
 import ProPlanDetails from './ProPlanDetails'
 import SentryPlanDetails from './SentryPlanDetails'

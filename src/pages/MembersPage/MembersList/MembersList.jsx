@@ -1,7 +1,7 @@
 import { Suspense, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { usePlanData } from 'services/account'
+import { usePlanData } from 'services/account/usePlanData'
 import { ApiFilterEnum, useLocationParams } from 'services/navigation'
 import { useUpdateUser } from 'services/users'
 import SearchField from 'ui/SearchField'
