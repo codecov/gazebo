@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { Branch, useBranches } from 'services/branches'
+import { Branch, useBranches } from 'services/branches/useBranches'
 import A from 'ui/A'
 import Select from 'ui/Select'
 import SettingsDescriptor from 'ui/SettingsDescriptor'

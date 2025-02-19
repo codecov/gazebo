@@ -2,7 +2,7 @@ import isUndefined from 'lodash/isUndefined'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranchComponents } from 'services/branches'
+import { useBranchComponents } from 'services/branches/useBranchComponents'
 import { useLocationParams } from 'services/navigation'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'

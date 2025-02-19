@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
+import { useBranches } from 'services/branches/useBranches'
 import { useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 import Icon from 'ui/Icon'

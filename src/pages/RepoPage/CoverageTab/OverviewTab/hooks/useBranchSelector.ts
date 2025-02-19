@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
-import { Branch, useBranch } from 'services/branches'
+import { useBranch } from 'services/branches/useBranch'
+import { Branch } from 'services/branches/useBranches'
 
 const getDecodedBranch = (branch?: string) =>
   branch ? decodeURIComponent(branch) : branch
