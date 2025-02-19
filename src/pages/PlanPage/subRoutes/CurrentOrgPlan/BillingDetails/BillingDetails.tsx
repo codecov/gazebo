@@ -29,6 +29,7 @@ function BillingDetails() {
       <h3 className="p-4 font-semibold">Billing details</h3>
       <EmailAddress />
       <PaymentCard
+        // @ts-expect-error - TODO fix this once we update PaymentCard to TS
         accountDetails={accountDetails}
         provider={provider}
         owner={owner}
