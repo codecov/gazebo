@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
+import { useAccountDetails } from 'services/account/useAccountDetails'
 import {
   IndividualPlan,
-  useAccountDetails,
   useAvailablePlans,
-  usePlanData,
-  useUnverifiedPaymentMethods,
-} from 'services/account'
+} from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
+import { useUnverifiedPaymentMethods } from 'services/account/useUnverifiedPaymentMethods'
 import { Provider } from 'shared/api/helpers'
 import { canApplySentryUpgrade, getNextBillingDate } from 'shared/utils/billing'
 import {

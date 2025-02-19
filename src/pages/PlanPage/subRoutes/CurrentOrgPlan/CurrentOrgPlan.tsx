@@ -2,7 +2,7 @@ import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
 import { usePlanUpdatedNotification } from 'pages/PlanPage/context'
-import { useAccountDetails, useCurrentOrgPlanPageData } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
 import { Provider } from 'shared/api/helpers'
 import { getScheduleStart } from 'shared/plan/ScheduledPlanDetails/ScheduledPlanDetails'
 import A from 'ui/A'
@@ -15,6 +15,7 @@ import InfoAlertCancellation from './InfoAlertCancellation'
 import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 import LatestInvoiceCard from './LatestInvoiceCard'
 import { EnterpriseAccountDetailsQueryOpts } from './queries/EnterpriseAccountDetailsQueryOpts'
+import { useCurrentOrgPlanPageData } from './useCurrentOrgPlanPageData'
 
 interface URLParams {
   provider: Provider

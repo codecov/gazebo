@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { IndividualPlan, useAvailablePlans } from 'services/account'
+import {
+  IndividualPlan,
+  useAvailablePlans,
+} from 'services/account/useAvailablePlans'
 import {
   findProPlans,
   findSentryPlans,

@@ -2,7 +2,7 @@ import { AddressElement, useElements } from '@stripe/react-stripe-js'
 import cs from 'classnames'
 import { z } from 'zod'
 
-import { AddressSchema } from 'services/account'
+import { AddressSchema } from 'services/account/useAccountDetails'
 import { useUpdateBillingAddress } from 'services/account/useUpdateBillingAddress'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
 import Button from 'ui/Button'

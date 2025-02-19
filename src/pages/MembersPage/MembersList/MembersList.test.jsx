@@ -7,7 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import 'react-intersection-observer/test-utils'
 
-import { TrialStatuses } from 'services/account'
+import { TrialStatuses } from 'services/account/usePlanData'
 import { Plans } from 'shared/utils/billing'
 
 import MembersList from './MembersList'

@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { useSetPlanUpdatedNotification } from 'pages/PlanPage/context'
-import { useUpgradePlan } from 'services/account'
+import { useUpgradePlan } from 'services/account/useUpgradePlan'
 import { useAddNotification } from 'services/toastNotification'
 import { Provider } from 'shared/api/helpers'
 

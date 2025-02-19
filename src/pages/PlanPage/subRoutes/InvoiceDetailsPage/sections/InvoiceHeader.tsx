@@ -2,7 +2,8 @@ import { fromUnixTime } from 'date-fns'
 import { format } from 'date-fns-tz'
 import { z } from 'zod'
 
-import { AccountDetailsSchema, InvoiceSchema } from 'services/account'
+import { AccountDetailsSchema } from 'services/account/useAccountDetails'
+import { InvoiceSchema } from 'services/account/useInvoices'
 import { CollectionMethods } from 'shared/utils/billing'
 import LightDarkImg from 'ui/LightDarkImg'
 

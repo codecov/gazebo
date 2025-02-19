@@ -4,12 +4,9 @@ import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { PlanPageDataQueryOpts } from 'pages/PlanPage/queries/PlanPageDataQueryOpts'
-import {
-  planPropType,
-  TrialStatuses,
-  useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+import { planPropType } from 'services/account/propTypes'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import {

@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
 import { Provider } from 'shared/api/helpers'
 
 import AddressCard from './Address/AddressCard'
@@ -29,7 +29,6 @@ function BillingDetails() {
       <h3 className="p-4 font-semibold">Billing details</h3>
       <EmailAddress />
       <PaymentCard
-        // @ts-expect-error - TODO fix this once we update PaymentCard to TS
         accountDetails={accountDetails}
         provider={provider}
         owner={owner}

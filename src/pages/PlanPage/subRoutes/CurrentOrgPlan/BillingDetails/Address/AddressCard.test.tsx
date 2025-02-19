@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { z } from 'zod'
 
-import { SubscriptionDetailSchema } from 'services/account'
+import { SubscriptionDetailSchema } from 'services/account/useAccountDetails'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import AddressCard from './AddressCard'

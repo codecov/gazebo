@@ -4,7 +4,7 @@ import amexLogo from 'assets/billing/amex.svg'
 import discoverLogo from 'assets/billing/discover.svg'
 import mastercardLogo from 'assets/billing/mastercard.svg'
 import visaLogo from 'assets/billing/visa.svg'
-import { subscriptionDetailType } from 'services/account'
+import { subscriptionDetailType } from 'services/account/propTypes'
 import {
   formatTimestampToCalendarDate,
   lastTwoDigits,

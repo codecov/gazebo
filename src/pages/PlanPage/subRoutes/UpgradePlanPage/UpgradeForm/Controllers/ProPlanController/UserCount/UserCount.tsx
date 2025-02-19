@@ -1,7 +1,7 @@
 import isNumber from 'lodash/isNumber'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
 import { Provider } from 'shared/api/helpers'
 
 interface StudentTextProps {

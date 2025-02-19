@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { usePlanData } from 'services/account'
+import { usePlanData } from 'services/account/usePlanData'
 
 import ActivationRequiredAlert from './ActivationRequiredAlert'
 import ActivationRequiredSelfHosted from './ActivationRequiredSelfHosted'

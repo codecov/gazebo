@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
 import A from 'ui/A'
 
 function GithubIntegrationCopy({ integrationId }) {

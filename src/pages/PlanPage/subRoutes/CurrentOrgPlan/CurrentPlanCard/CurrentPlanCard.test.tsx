@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
+import { TrialStatuses } from 'services/account/usePlanData'
 import { PlanName, Plans } from 'shared/utils/billing'
 
 import CurrentPlanCard from './CurrentPlanCard'

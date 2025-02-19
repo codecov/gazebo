@@ -9,9 +9,8 @@ const mocks = vi.hoisted(() => ({
   useAutoActivate: vi.fn(),
 }))
 
-vi.mock('services/account', async () => {
-  const actual = await vi.importActual('services/account')
-
+vi.mock('services/account/useAutoActivate', async () => {
+  const actual = await vi.importActual('services/account/useAutoActivate')
   return {
     ...actual,
     useAutoActivate: mocks.useAutoActivate,

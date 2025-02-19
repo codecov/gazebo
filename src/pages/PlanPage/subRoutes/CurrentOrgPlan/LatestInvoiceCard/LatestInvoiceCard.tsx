@@ -2,7 +2,7 @@ import { format, fromUnixTime } from 'date-fns'
 import { useParams } from 'react-router-dom'
 
 import invoiceImg from 'assets/svg/invoice.svg'
-import { useInvoices } from 'services/account'
+import { useInvoices } from 'services/account/useInvoices'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 

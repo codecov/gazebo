@@ -2,7 +2,7 @@ import { fromUnixTime } from 'date-fns'
 import { format, toZonedTime } from 'date-fns-tz'
 import { z } from 'zod'
 
-import { InvoiceSchema } from 'services/account'
+import { InvoiceSchema } from 'services/account/useInvoices'
 
 interface InvoiceOverviewProps {
   isPaid: boolean

@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
-import { useAvailablePlans, usePlanData } from 'services/account'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
 import BenefitList from 'shared/plan/BenefitList'
 import { findTeamPlans } from 'shared/utils/billing'
 import A from 'ui/A'

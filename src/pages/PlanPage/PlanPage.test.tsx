@@ -4,18 +4,18 @@ import {
   QueryClient as QueryClientV5,
 } from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
+import { Location } from 'history'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { z } from 'zod'
 
 import config from 'config'
 
+import { UnverifiedPaymentMethodSchema } from 'services/account/useUnverifiedPaymentMethods'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
-import { Location } from 'history'
-import { UnverifiedPaymentMethodSchema } from 'services/account'
-import { z } from 'zod'
 import PlanPage from './PlanPage'
 
 vi.mock('config')
