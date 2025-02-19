@@ -19,7 +19,7 @@ export const colorRange = interpolateHslLong(
   'rgb(33, 181, 119)'
 )
 
-// Calculate if a arc is visible
+// Calculate if an arc is visible
 export const arcVisible = (d) => {
   return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0
 }
