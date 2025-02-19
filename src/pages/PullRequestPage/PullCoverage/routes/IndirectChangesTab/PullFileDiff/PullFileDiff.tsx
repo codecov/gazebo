@@ -5,7 +5,7 @@ import { useNavLinks } from 'services/navigation/useNavLinks'
 import {
   PullImpactedFile,
   useSingularImpactedFileComparison,
-} from 'services/pull'
+} from 'services/pull/useSingularImpactedFileComparison'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
