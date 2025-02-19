@@ -10,9 +10,16 @@ export const partitionFn = (data) => {
     .sort((a, b) => b.value - a.value)
   return partition().size([2 * Math.PI, root.height + 1])(root)
 }
+
 export const formatData = format(',d')
+
 // Interpolate in between --color-ds-primary-red, --color-ds-primary-green
 export const colorRange = interpolateHslLong(
   'rgb(254, 0, 0)',
   'rgb(33, 181, 119)'
 )
+
+// Calculate if a arc is visible
+export const arcVisible = (d) => {
+  return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0
+}
