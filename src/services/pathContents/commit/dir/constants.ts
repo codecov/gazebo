@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { MissingHeadReportSchema } from 'services/comparison'
+import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
 import { UnknownFlagsSchema } from 'services/impactedFiles/schemas/UnknownFlags'
 import {
   MissingCoverageSchema,

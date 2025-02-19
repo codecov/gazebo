@@ -11,14 +11,12 @@ import A from 'ui/A'
 
 import { query } from './query'
 
-import {
-  FirstPullRequestSchema,
-  MissingBaseCommitSchema,
-  MissingBaseReportSchema,
-  MissingComparisonSchema,
-  MissingHeadCommitSchema,
-  MissingHeadReportSchema,
-} from '../schemas'
+import { FirstPullRequestSchema } from '../schemas/FirstPullRequest'
+import { MissingBaseCommitSchema } from '../schemas/MissingBaseCommit'
+import { MissingBaseReportSchema } from '../schemas/MissingBaseReport'
+import { MissingComparisonSchema } from '../schemas/MissingComparison'
+import { MissingHeadCommitSchema } from '../schemas/MissingHeadCommit'
+import { MissingHeadReportSchema } from '../schemas/MissingHeadReport'
 
 const CoverageObjSchema = z.object({
   coverage: z.number().nullish(),
