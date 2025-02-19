@@ -51,7 +51,7 @@ const determineStatusCode = (errorName: Errors) => {
   }
 }
 
-export function rejectNetworkErrorNew(error: NetworkErrorObject) {
+function _rejectNetworkError(error: NetworkErrorObject) {
   const {
     errorName,
     errorDetails: { caller },
