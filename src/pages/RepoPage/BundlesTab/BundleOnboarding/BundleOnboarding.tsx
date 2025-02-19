@@ -7,7 +7,7 @@ import NotFound from 'pages/NotFound'
 import {
   EVENT_METRICS,
   useStoreCodecovEventMetric,
-} from 'services/codecovEventMetrics'
+} from 'services/codecovEventMetrics/useStoreCodecovEventMetric'
 import { useNavLinks } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { Provider } from 'shared/api/helpers'

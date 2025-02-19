@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import { OrderingDirection } from 'types'
 
-import { MissingHeadReportSchema } from 'services/comparison'
+import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,

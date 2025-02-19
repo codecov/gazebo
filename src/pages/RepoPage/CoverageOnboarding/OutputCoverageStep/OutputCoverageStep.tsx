@@ -1,7 +1,7 @@
 import {
   EVENT_METRICS,
   useStoreCodecovEventMetric,
-} from 'services/codecovEventMetrics'
+} from 'services/codecovEventMetrics/useStoreCodecovEventMetric'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'

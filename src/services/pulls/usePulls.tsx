@@ -6,14 +6,12 @@ import { z } from 'zod'
 
 import { OrderingDirection } from 'types'
 
-import {
-  FirstPullRequestSchema,
-  MissingBaseCommitSchema,
-  MissingBaseReportSchema,
-  MissingComparisonSchema,
-  MissingHeadCommitSchema,
-  MissingHeadReportSchema,
-} from 'services/comparison'
+import { FirstPullRequestSchema } from 'services/comparison/schemas/FirstPullRequest'
+import { MissingBaseCommitSchema } from 'services/comparison/schemas/MissingBaseCommit'
+import { MissingBaseReportSchema } from 'services/comparison/schemas/MissingBaseReport'
+import { MissingComparisonSchema } from 'services/comparison/schemas/MissingComparison'
+import { MissingHeadCommitSchema } from 'services/comparison/schemas/MissingHeadCommit'
+import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
