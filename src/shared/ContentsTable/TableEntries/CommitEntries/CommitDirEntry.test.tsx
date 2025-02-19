@@ -32,7 +32,6 @@ const mockData = {
               partials: 1,
               lines: 7,
               type: 'file',
-              isCriticalFile: false,
             },
           ],
         },

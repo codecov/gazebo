@@ -22,7 +22,6 @@ describe('FileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.list}
           runPrefetch={runPrefetchMock}
         />,
@@ -42,7 +41,6 @@ describe('FileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
         />,
@@ -60,7 +58,6 @@ describe('FileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
         />,
@@ -68,26 +65,6 @@ describe('FileEntry', () => {
       )
 
       expect(screen.queryByText('dir/file.js')).not.toBeInTheDocument()
-    })
-  })
-
-  describe('file is a critical file', () => {
-    it('displays critical file label', () => {
-      const runPrefetchMock = vi.fn()
-      render(
-        <FileEntry
-          linkRef="main"
-          path="dir/file.js"
-          name="file.js"
-          urlPath="dir"
-          isCriticalFile={true}
-          displayType={displayTypeParameter.list}
-          runPrefetch={runPrefetchMock}
-        />,
-        { wrapper }
-      )
-
-      expect(screen.getByText('Critical File')).toBeInTheDocument()
     })
   })
 
@@ -100,7 +77,6 @@ describe('FileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.list}
           runPrefetch={runPrefetchMock}
         />,
@@ -121,7 +97,6 @@ describe('FileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
         />,
@@ -142,7 +117,6 @@ describe('FileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           commitSha="coolCommitSha"
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
@@ -168,7 +142,6 @@ describe('FileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.list}
           runPrefetch={runPrefetchMock}
           queryParams={{ flags: ['flag-1'] }}

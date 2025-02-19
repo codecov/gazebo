@@ -19,7 +19,6 @@ const mockData = {
           flagNames: ['a', 'b'],
           components: [],
           coverageFile: {
-            isCriticalFile: true,
             hashedPath: 'hashed-path',
             content:
               'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
@@ -98,7 +97,6 @@ describe('PullFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           commitSha="1234"
           displayType={displayTypeParameter.list}
         />,
@@ -120,7 +118,6 @@ describe('PullFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           commitSha="1234"
           displayType={displayTypeParameter.tree}
         />,
@@ -136,7 +133,6 @@ describe('PullFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           commitSha="1234"
           displayType={displayTypeParameter.tree}
         />,
@@ -144,28 +140,6 @@ describe('PullFileEntry', () => {
       )
 
       expect(screen.queryByText('dir/file.js')).not.toBeInTheDocument()
-    })
-  })
-
-  describe('file is a critical file', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('displays critical file label', () => {
-      render(
-        <PullFileEntry
-          path="dir/file.js"
-          name="file.js"
-          urlPath="dir"
-          commitSha="1234"
-          isCriticalFile={true}
-          displayType={displayTypeParameter.tree}
-        />,
-        { wrapper: wrapper() }
-      )
-
-      expect(screen.getByText('Critical File')).toBeInTheDocument()
     })
   })
 
@@ -180,7 +154,6 @@ describe('PullFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           commitSha="1234"
           displayType={displayTypeParameter.list}
         />,
@@ -203,7 +176,6 @@ describe('PullFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           commitSha="1234"
           displayType={displayTypeParameter.tree}
         />,
@@ -235,7 +207,6 @@ describe('PullFileEntry', () => {
           flagNames: ['a', 'b'],
           componentNames: [],
           hashedPath: 'hashed-path',
-          isCriticalFile: true,
           totals: 66.67,
         })
       )
@@ -247,7 +218,6 @@ describe('PullFileEntry', () => {
         path="dir/file.js"
         name="file.js"
         urlPath="dir"
-        isCriticalFile={false}
         commitSha="1234"
         displayType={displayTypeParameter.tree}
         filters={{ flags: ['a', 'b'] }}

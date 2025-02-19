@@ -27,7 +27,6 @@ const BasePathContentSchema = z.object({
 
 const PathContentFileSchema = BasePathContentSchema.extend({
   __typename: z.literal('PathContentFile'),
-  isCriticalFile: z.boolean(),
 })
 
 const PathContentDirSchema = BasePathContentSchema.extend({

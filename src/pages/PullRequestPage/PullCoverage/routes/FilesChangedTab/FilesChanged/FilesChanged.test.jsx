@@ -14,7 +14,6 @@ vi.mock('./FilesChangedTable', () => ({ default: () => 'Files Changed Table' }))
 
 const mockImpactedFiles = [
   {
-    isCriticalFile: true,
     missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
@@ -31,7 +30,7 @@ const mockImpactedFiles = [
   },
   {
     missesCount: 0,
-    isCriticalFile: true,
+
     fileName: 'quarg.js',
     headName: 'flag2/quarg.js',
     baseCoverage: {

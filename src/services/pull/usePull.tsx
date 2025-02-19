@@ -47,7 +47,6 @@ const ImpactedFileSchema = z
     fileName: z.string().nullable(),
     headName: z.string().nullable(),
     missesCount: z.number(),
-    isCriticalFile: z.boolean(),
     patchCoverage: percentCoveredSchema.nullable(),
     baseCoverage: percentCoveredSchema.nullable(),
     headCoverage: percentCoveredSchema.nullable(),

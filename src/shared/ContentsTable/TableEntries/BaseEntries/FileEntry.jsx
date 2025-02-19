@@ -23,7 +23,6 @@ FileHeader.propTypes = {
 function FileEntry({
   linkRef,
   path,
-  isCriticalFile,
   name,
   urlPath,
   displayType,
@@ -51,11 +50,6 @@ function FileEntry({
       >
         <FileHeader displayAsList={displayAsList} path={path} name={name} />
       </A>
-      {isCriticalFile && (
-        <span className="ml-2 rounded border border-ds-gray-tertiary px-1 py-0.5 text-xs text-ds-gray-senary">
-          Critical File
-        </span>
-      )}
     </div>
   )
 }
@@ -63,7 +57,6 @@ function FileEntry({
 FileEntry.propTypes = {
   linkRef: PropTypes.string,
   path: PropTypes.string,
-  isCriticalFile: PropTypes.bool,
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
   urlPath: PropTypes.string.isRequired,

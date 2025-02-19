@@ -151,7 +151,6 @@ export function useRepoBranchContentsTable(sortItem?: {
             branch={branch}
             path={result.path}
             displayType={selectedDisplayType}
-            isCriticalFile={result.isCriticalFile}
           />
         )
       }

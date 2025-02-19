@@ -28,7 +28,7 @@ const mockComparisonTeamData = {
               {
                 headName: 'src/App.tsx',
                 missesCount: 0,
-                isCriticalFile: false,
+
                 patchCoverage: { coverage: 100 },
               },
             ],
@@ -58,7 +58,7 @@ const mockPullTeamData = {
               {
                 headName: 'src/App.jsx',
                 missesCount: 0,
-                isCriticalFile: false,
+
                 patchCoverage: {
                   coverage: 100,
                 },
@@ -66,7 +66,7 @@ const mockPullTeamData = {
               {
                 headName: 'src/File.jsx',
                 missesCount: 5,
-                isCriticalFile: false,
+
                 patchCoverage: {
                   coverage: null,
                 },
@@ -158,36 +158,6 @@ const mockEmptyFilesComparison = {
   },
 }
 
-const mockPullCriticalFileData = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      pull: {
-        pullId: 10,
-        state: 'completed',
-        compareWithBase: {
-          __typename: 'Comparison',
-          state: 'processed',
-          patchTotals: {
-            coverage: 100,
-          },
-          impactedFiles: {
-            __typename: 'ImpactedFiles',
-            results: [
-              {
-                headName: 'src/App.tsx',
-                missesCount: 0,
-                isCriticalFile: true,
-                patchCoverage: { coverage: 100 },
-              },
-            ],
-          },
-        },
-      },
-    },
-  },
-}
-
 const mockNoChangeFileData = {
   owner: {
     repository: {
@@ -207,7 +177,7 @@ const mockNoChangeFileData = {
               {
                 headName: 'src/App.tsx',
                 missesCount: 0,
-                isCriticalFile: false,
+
                 patchCoverage: { coverage: null },
               },
             ],
@@ -252,7 +222,6 @@ afterAll(() => {
 interface SetupArgs {
   pendingPull?: boolean
   noCoveredFiles?: boolean
-  criticalFile?: boolean
   noChange?: boolean
 }
 
@@ -261,12 +230,10 @@ describe('TableTeam', () => {
     {
       pendingPull = false,
       noCoveredFiles = false,
-      criticalFile = false,
       noChange = false,
     }: SetupArgs = {
       pendingPull: false,
       noCoveredFiles: false,
-      criticalFile: false,
       noChange: false,
     }
   ) {
@@ -289,8 +256,6 @@ describe('TableTeam', () => {
           return HttpResponse.json({ data: mockPendingPull })
         } else if (noCoveredFiles) {
           return HttpResponse.json({ data: mockEmptyFilesPull })
-        } else if (criticalFile) {
-          return HttpResponse.json({ data: mockPullCriticalFileData })
         } else if (noChange) {
           return HttpResponse.json({ data: mockNoChangeFileData })
         }
@@ -304,8 +269,6 @@ describe('TableTeam', () => {
           return HttpResponse.json({ data: mockPendingComparison })
         } else if (noCoveredFiles) {
           return HttpResponse.json({ data: mockEmptyFilesComparison })
-        } else if (criticalFile) {
-          return HttpResponse.json({ data: mockPullCriticalFileData })
         } else if (noChange) {
           return HttpResponse.json({ data: mockNoChangeFileData })
         }
@@ -429,29 +392,8 @@ describe('TableTeam', () => {
     })
   })
 
-  describe('highlights critical files', () => {
-    it('renders critical file', async () => {
-      const { queryClient } = setup({ criticalFile: true })
-      render(<TableTeam />, { wrapper: wrapper(queryClient) })
-
-      const criticalFile = await screen.findByText('Critical File')
-      expect(criticalFile).toBeInTheDocument()
-    })
-
-    it('renders non-critical file', async () => {
-      const { queryClient } = setup({ criticalFile: false })
-      render(<TableTeam />, { wrapper: wrapper(queryClient) })
-
-      const file = await screen.findByText('src/App.tsx')
-      expect(file).toBeInTheDocument()
-
-      const nonCriticalFile = screen.queryByText('Critical File')
-      expect(nonCriticalFile).not.toBeInTheDocument()
-    })
-  })
-
   describe('patch coverage renderer', () => {
-    it('renders critical file', async () => {
+    it('renders no change', async () => {
       const { queryClient } = setup({ noChange: true })
       render(<TableTeam />, { wrapper: wrapper(queryClient) })
 

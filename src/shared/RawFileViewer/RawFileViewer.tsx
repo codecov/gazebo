@@ -11,7 +11,6 @@ import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsM
 import { getFilenameFromFilePath } from 'shared/utils/url'
 import A from 'ui/A'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
-import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Title from 'ui/FileViewer/ToggleHeader/Title'
 import { VirtualFileRenderer } from 'ui/VirtualRenderers'
@@ -147,7 +146,6 @@ function RawFileViewer({
     content,
     totals: fileCoverage,
     coverage: coverageData,
-    isCriticalFile,
   } = useCommitBasedCoverageForFileViewer({
     owner,
     repo,
@@ -176,7 +174,6 @@ function RawFileViewer({
       />
       <div id={path} className="target:ring">
         <CodeRendererProgressHeader path={path} fileCoverage={fileCoverage} />
-        {!!isCriticalFile && <CriticalFileLabel variant="borderTop" />}
         <CodeRendererContent
           isUnsupportedFileType={isUnsupportedFileType}
           content={content}

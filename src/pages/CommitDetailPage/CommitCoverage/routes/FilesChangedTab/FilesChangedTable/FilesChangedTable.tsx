@@ -90,11 +90,6 @@ function getColumns() {
               />
             ) : null}
             <span>{headName}</span>
-            {row.original?.isCriticalFile ? (
-              <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
-                Critical file
-              </span>
-            ) : null}
             {isDeletedFile ? (
               <div className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Deleted file

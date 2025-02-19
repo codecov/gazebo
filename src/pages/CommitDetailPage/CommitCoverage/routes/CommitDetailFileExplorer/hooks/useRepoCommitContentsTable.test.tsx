@@ -42,7 +42,6 @@ const mockCommitContentData = {
               lines: 22,
 
               type: 'file',
-              isCriticalFile: false,
               __typename: 'PathContentFile',
             },
           ],
