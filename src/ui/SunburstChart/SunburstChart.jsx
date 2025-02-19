@@ -25,19 +25,28 @@ function SunburstChart({
   const clickHandler = useRef(onClick)
   const hoverHandler = useRef(onHover)
 
+  // this state stores the root node of the sunburst chart
   const [root] = useState(() => {
+    // go through the data and add `value` to each node
     const stack = [data]
-    const result = { ...data, value: selectorHandler.current(data) }
     const nodeMap = new Map()
+
+    // create a new root node with the value of the root node
+    const result = { ...data, value: selectorHandler.current(data) }
+    // add the root node to the node map
     nodeMap.set(data, result)
 
+    // while there are nodes to process, pop the last node from the stack
     while (stack.length > 0) {
       const node = stack.pop()
       const currentNode = nodeMap.get(node)
 
+      // if the node has children, process them
       if (Array.isArray(node.children)) {
         currentNode.children = node.children.map((child) => {
-          const newChild = { ...child, value: selectorHandler.current(child) }
+          const newChild = structuredClone(child)
+          Object.assign(newChild, { value: selectorHandler.current(child) })
+
           nodeMap.set(child, newChild)
           stack.push(child)
           return newChild
@@ -45,6 +54,7 @@ function SunburstChart({
       }
     }
 
+    // partition the data and add the `current` property to each node
     return partitionFn(result).each((d) => (d.current = d))
   })
 
