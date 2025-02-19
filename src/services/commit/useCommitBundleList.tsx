@@ -1,13 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
-import {
-  FirstPullRequestSchema,
-  MissingBaseCommitSchema,
-  MissingBaseReportSchema,
-  MissingHeadCommitSchema,
-  MissingHeadReportSchema,
-} from 'services/comparison/schemas'
+import { FirstPullRequestSchema } from 'services/comparison/schemas/FirstPullRequest'
+import { MissingBaseCommitSchema } from 'services/comparison/schemas/MissingBaseCommit'
+import { MissingBaseReportSchema } from 'services/comparison/schemas/MissingBaseReport'
+import { MissingHeadCommitSchema } from 'services/comparison/schemas/MissingHeadCommit'
+import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
