@@ -5,7 +5,7 @@ import {
   UploadErrorCodeEnumSchema,
   UploadStateEnumSchema,
   UploadTypeEnumSchema,
-} from 'services/commit'
+} from 'services/commit/useCommit'
 import {
   UploadErrorStates,
   UploadStateEnum,

@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import { useCommit } from './index'
+import { useCommit } from './useCommit'
 
 const compareDoneData = {
   owner: {

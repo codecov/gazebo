@@ -17,7 +17,7 @@ import qs from 'qs'
 import { Fragment, Suspense, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { ImpactedFileType, useCommit } from 'services/commit'
+import { ImpactedFileType, useCommit } from 'services/commit/useCommit'
 import { OrderingDirection, OrderingParameter } from 'services/pull/usePull'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
