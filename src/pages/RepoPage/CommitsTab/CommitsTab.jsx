@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import { useBranchHasCommits } from 'services/branches'
+import { useBranchHasCommits } from 'services/branches/useBranchHasCommits'
 import {
   ALL_BRANCHES,
   useLocationParams,

@@ -7,7 +7,6 @@ import FileEntry from '../BaseEntries/FileEntry'
 interface CommitFileEntryProps {
   commitSha: string
   path: string
-  isCriticalFile: boolean
   name: string
   displayType: DisplayType
   urlPath: string
@@ -17,7 +16,6 @@ interface CommitFileEntryProps {
 function CommitFileEntry({
   commitSha,
   path,
-  isCriticalFile,
   name,
   urlPath,
   displayType,
@@ -41,7 +39,6 @@ function CommitFileEntry({
     <FileEntry
       commitSha={commitSha}
       urlPath={urlPath}
-      isCriticalFile={isCriticalFile}
       name={name}
       displayType={displayType}
       path={path}

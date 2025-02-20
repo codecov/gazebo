@@ -64,7 +64,6 @@ describe('Tokens', () => {
                 bot: {
                   username: 'test',
                 },
-                profilingToken: 'profiling token',
                 staticAnalysisToken: 'static analysis token',
               },
             },

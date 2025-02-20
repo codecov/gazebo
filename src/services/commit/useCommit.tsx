@@ -12,7 +12,7 @@ import {
   MissingHeadCommitSchema,
   MissingHeadReportSchema,
 } from 'services/comparison/schemas'
-import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
+import { UnknownFlagsSchema } from 'services/impactedFiles/schemas/UnknownFlags'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -71,7 +71,6 @@ const UploadsSchema = z.object({
 const ImpactedFileSchema = z
   .object({
     headName: z.string().nullable(),
-    isCriticalFile: z.boolean(),
     patchCoverage: CoverageObjSchema.nullable(),
     baseCoverage: CoverageObjSchema.nullable(),
     headCoverage: CoverageObjSchema.nullable(),
@@ -238,7 +237,6 @@ query Commit(
                 __typename
                 ... on ImpactedFiles {
                   results {
-                    isCriticalFile
                     patchCoverage {
                       coverage: percentCovered
                     }

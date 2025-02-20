@@ -11,7 +11,7 @@ import {
   StoreEventMetricMutationArgs,
   useStoreCodecovEventMetric,
 } from 'services/codecovEventMetrics'
-import { useOrgUploadToken } from 'services/orgUploadToken'
+import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { useRepo } from 'services/repo'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import { useIsCurrentUserAnAdmin } from 'services/user'

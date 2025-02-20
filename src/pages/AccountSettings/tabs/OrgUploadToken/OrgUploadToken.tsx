@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useOrgUploadToken } from 'services/orgUploadToken'
+import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import Banner from 'ui/Banner'

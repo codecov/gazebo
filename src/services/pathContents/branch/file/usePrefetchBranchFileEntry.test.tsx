@@ -54,7 +54,6 @@ const mockData = {
         coverageAnalytics: {
           flagNames: ['a', 'b'],
           coverageFile: {
-            isCriticalFile: true,
             content:
               'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
             coverage: [
@@ -143,7 +142,6 @@ describe('usePrefetchBranchFileEntry', () => {
       8: 1,
     })
     expect(data.flagNames).toStrictEqual(['a', 'b'])
-    expect(data.isCriticalFile).toBe(true)
     expect(data.totals).toBe(0)
   })
 })

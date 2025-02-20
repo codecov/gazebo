@@ -45,7 +45,6 @@ const ImpactedFileSchema = z
   .object({
     headName: z.string().nullable(),
     missesCount: z.number(),
-    isCriticalFile: z.boolean(),
     patchCoverage: CoverageObjSchema,
   })
   .nullable()
@@ -126,7 +125,6 @@ const query = `query GetPullTeam(
                 __typename
                 ... on ImpactedFiles {
                   results {
-                    isCriticalFile
                     headName
                     missesCount
                     patchCoverage {

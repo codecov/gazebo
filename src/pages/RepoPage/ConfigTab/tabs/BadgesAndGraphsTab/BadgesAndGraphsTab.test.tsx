@@ -62,7 +62,6 @@ describe('BadgesAndGraphsTab', () => {
                 bot: {
                   username: 'test',
                 },
-                profilingToken: null,
                 staticAnalysisToken: null,
               },
             },

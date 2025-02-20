@@ -65,7 +65,6 @@ const CoverageForFileSchema = z.object({
       coverageFile: z
         .object({
           hashedPath: z.string(),
-          isCriticalFile: z.boolean().nullish(),
           content: z.string().nullish(),
           coverage: CoverageSchema.nullish(),
           totals: z
@@ -149,7 +148,6 @@ fragment CoverageForFile on Commit {
     }
     coverageFile(path: $path, flags: $flags, components: $components) {
       hashedPath
-      isCriticalFile
       content
       coverage {
         line

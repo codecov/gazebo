@@ -9,7 +9,6 @@ fragment ComparisonFragment on Comparison {
       isNewFile
       isRenamedFile
       isDeletedFile
-      isCriticalFile
       baseCoverage {
         percentCovered
       }

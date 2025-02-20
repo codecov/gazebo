@@ -17,7 +17,6 @@ const mockData = {
         coverageAnalytics: {
           flagNames: ['a', 'b'],
           coverageFile: {
-            isCriticalFile: true,
             content:
               'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
             coverage: [
@@ -107,7 +106,6 @@ describe('BranchFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.list}
         />,
         { wrapper: wrapper() }
@@ -128,7 +126,6 @@ describe('BranchFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
         />,
         { wrapper: wrapper() }
@@ -147,7 +144,6 @@ describe('BranchFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
         />,
         { wrapper: wrapper() }
@@ -161,27 +157,6 @@ describe('BranchFileEntry', () => {
     })
   })
 
-  describe('file is a critical file', () => {
-    it('displays critical file label', async () => {
-      setup()
-
-      render(
-        <BranchFileEntry
-          branch="main"
-          path="dir/file.js"
-          name="file.js"
-          urlPath="dir"
-          isCriticalFile={true}
-          displayType={displayTypeParameter.list}
-        />,
-        { wrapper: wrapper() }
-      )
-
-      const file = await screen.findByText('Critical File')
-      expect(file).toBeInTheDocument()
-    })
-  })
-
   describe('is displaying a list', () => {
     it('displays the file path label', async () => {
       setup()
@@ -192,7 +167,6 @@ describe('BranchFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.list}
         />,
         { wrapper: wrapper() }
@@ -212,7 +186,6 @@ describe('BranchFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
         />,
         {
@@ -239,7 +212,6 @@ describe('BranchFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
         />,
         {
@@ -267,7 +239,6 @@ describe('BranchFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
         />,
         { wrapper: wrapper() }
@@ -302,9 +273,6 @@ describe('BranchFileEntry', () => {
         ])
       )
       await waitFor(() =>
-        expect(queryClient.getQueryState().data.isCriticalFile).toBe(true)
-      )
-      await waitFor(() =>
         expect(queryClient.getQueryState().data.totals).toBe(0)
       )
     })
@@ -320,7 +288,6 @@ describe('BranchFileEntry', () => {
               path="dir/file.js"
               name="file.js"
               urlPath="dir"
-              isCriticalFile={false}
               displayType={displayTypeParameter.tree}
             />,
             {
@@ -355,7 +322,6 @@ describe('BranchFileEntry', () => {
               path="dir/file.js"
               name="file.js"
               urlPath="dir"
-              isCriticalFile={false}
               displayType={displayTypeParameter.tree}
               filters={{ flags: [] }}
             />,

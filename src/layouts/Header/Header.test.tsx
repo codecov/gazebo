@@ -7,7 +7,7 @@ import { type Mock, vi } from 'vitest'
 
 import config from 'config'
 
-import { useImpersonate } from 'services/impersonate'
+import { useImpersonate } from 'services/impersonate/useImpersonate'
 import { User } from 'services/user'
 import { Plans } from 'shared/utils/billing'
 
@@ -32,7 +32,7 @@ vi.mock('src/layouts/Header/components/ThemeToggle', () => ({
   default: () => 'Theme Toggle',
 }))
 
-vi.mock('services/impersonate')
+vi.mock('services/impersonate/useImpersonate')
 const mockedUseImpersonate = useImpersonate as Mock
 
 const mockUser = {

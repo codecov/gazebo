@@ -15,7 +15,6 @@ import {
 
 const mockImpactedFiles = [
   {
-    isCriticalFile: true,
     missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
@@ -31,7 +30,6 @@ const mockImpactedFiles = [
     changeCoverage: 41,
   },
   {
-    isCriticalFile: true,
     fileName: 'quarg.js',
     headName: 'flag2/quarg.js',
     baseCoverage: {
@@ -244,7 +242,7 @@ describe('useImpactedFilesTable', () => {
                 hasHeadOrPatchCoverage: true,
                 headCoverage: 90.23,
                 headName: 'flag1/mafs.js',
-                isCriticalFile: true,
+
                 patchCoverage: 27.43,
                 missesCount: 3,
                 pullId: 14,
@@ -255,7 +253,7 @@ describe('useImpactedFilesTable', () => {
                 hasHeadOrPatchCoverage: true,
                 headCoverage: 80,
                 headName: 'flag2/quarg.js',
-                isCriticalFile: true,
+
                 patchCoverage: 48.23,
                 missesCount: 7,
                 pullId: 14,
@@ -291,7 +289,6 @@ describe('useImpactedFilesTable', () => {
             __typename: 'ImpactedFiles',
             results: [
               {
-                isCriticalFile: true,
                 missesCount: 0,
                 fileName: 'mafs.js',
                 headName: 'flag1/mafs.js',
@@ -330,7 +327,7 @@ describe('useImpactedFilesTable', () => {
               hasHeadOrPatchCoverage: true,
               headCoverage: undefined,
               headName: 'flag1/mafs.js',
-              isCriticalFile: true,
+
               patchCoverage: 27.43,
               pullId: 14,
               missesCount: 0,

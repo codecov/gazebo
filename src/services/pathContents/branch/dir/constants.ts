@@ -33,9 +33,6 @@ query BranchContents(
                     name
                     path
                     percentCovered
-                    ... on PathContentFile {
-                      isCriticalFile
-                    }
                   }
                 }
                 pageInfo {

@@ -2,7 +2,7 @@ import isNumber from 'lodash/isNumber'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useCommit } from 'services/commit'
+import { useCommit } from 'services/commit/useCommit'
 
 export function getCommitDataForSummary({
   compareWithParent,

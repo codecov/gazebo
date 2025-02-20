@@ -2,7 +2,7 @@ import cs from 'classnames'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 import { useParams } from 'react-router-dom'
 
-import { useCommitYaml } from 'services/commit'
+import { useCommitYaml } from 'services/commit/useCommitYaml'
 import 'shared/utils/prism/prismTheme.css'
 
 import './YAMLViewer.css'

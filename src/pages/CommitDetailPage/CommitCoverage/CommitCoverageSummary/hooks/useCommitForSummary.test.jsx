@@ -99,7 +99,6 @@ const data = {
         results: [
           {
             headName: 'flag1/mafs.js',
-            isCriticalFile: false,
             patchCoverage: { coverage: 75 },
             baseCoverage: { coverage: 100 },
             headCoverage: { coverage: 90.9090909090909 },

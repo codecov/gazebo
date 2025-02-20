@@ -4,7 +4,7 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCommitYaml } from './index'
+import { useCommitYaml } from './useCommitYaml'
 
 const mockCommitYaml = (yaml: string) => ({
   owner: {

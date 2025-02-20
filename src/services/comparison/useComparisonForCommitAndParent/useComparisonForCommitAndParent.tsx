@@ -30,7 +30,6 @@ export const ImpactedFileSchema = z.object({
   isNewFile: z.boolean(),
   isRenamedFile: z.boolean(),
   isDeletedFile: z.boolean(),
-  isCriticalFile: z.boolean(),
   baseCoverage: CoverageObjSchema.nullable(),
   headCoverage: CoverageObjSchema.nullable(),
   patchCoverage: CoverageObjSchema.nullable(),

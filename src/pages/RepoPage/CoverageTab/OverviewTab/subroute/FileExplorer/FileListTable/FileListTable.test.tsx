@@ -100,7 +100,6 @@ const node1 = {
   name: 'file1.js',
   path: 'a/b/c/file.js',
   percentCovered: 100.0,
-  isCriticalFile: false,
 }
 
 const node2 = {
@@ -112,7 +111,6 @@ const node2 = {
   name: 'file2.js',
   path: 'a/b/c/test.js',
   percentCovered: 62.5,
-  isCriticalFile: false,
 }
 
 const node3 = {
@@ -124,7 +122,6 @@ const node3 = {
   name: 'file3.js',
   path: 'a/b/c/index.js',
   percentCovered: 75.0,
-  isCriticalFile: true,
 }
 
 const mockListData = (after = false) => ({

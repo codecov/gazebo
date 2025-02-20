@@ -3,7 +3,7 @@ import { useRouteMatch } from 'react-router-dom'
 
 import config from 'config'
 
-import { useImpersonate } from 'services/impersonate'
+import { useImpersonate } from 'services/impersonate/useImpersonate'
 import { useUser } from 'services/user'
 
 import AdminLink from './components/AdminLink'

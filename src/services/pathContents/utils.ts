@@ -26,7 +26,6 @@ export function extractCoverageFromResponse(
         : coverageTotal,
     flagNames: coverageSource?.flagNames ?? [],
     componentNames: coverageSource?.components?.map(({ name }) => name) ?? [],
-    isCriticalFile: !!coverageFile?.isCriticalFile,
     ...(hashedPath && { hashedPath }),
   }
 }

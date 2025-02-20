@@ -7,8 +7,8 @@ const mocks = vi.hoisted(() => ({
   useCommitYaml: vi.fn(),
 }))
 
-vi.mock('services/commit', async () => {
-  const actual = await vi.importActual('services/commit')
+vi.mock('services/commit/useCommitYaml', async () => {
+  const actual = await vi.importActual('services/commit/useCommitYaml')
   return {
     ...actual,
     useCommitYaml: mocks.useCommitYaml,

@@ -135,7 +135,6 @@ export function useRepoCommitContentsTable() {
                   ? displayTypeParameter.list
                   : displayTypeParameter.tree
               }
-              isCriticalFile={file.isCriticalFile}
               filters={filters}
             />
           ),

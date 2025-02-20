@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useOrgUploadToken } from 'services/orgUploadToken'
+import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { useRepo } from 'services/repo'
 import A from 'ui/A'
 import { Card } from 'ui/Card'

@@ -43,7 +43,6 @@ describe('TokensTeam', () => {
                 defaultBranch: 'master',
                 private: true,
                 uploadToken: 'upload token',
-                profilingToken: 'profiling token',
                 staticAnalysisToken: 'static analysis token',
                 graphToken: 'graph token',
                 yaml: 'yaml',

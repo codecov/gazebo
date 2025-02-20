@@ -23,7 +23,6 @@ const mockCompareData = {
               {
                 headName: 'src/App.tsx',
                 missesCount: 0,
-                isCriticalFile: false,
                 patchCoverage: { coverage: 100 },
               },
             ],
@@ -52,7 +51,6 @@ const mockPullData = {
               {
                 headName: 'src/App.jsx',
                 missesCount: 0,
-                isCriticalFile: false,
                 patchCoverage: {
                   coverage: 100,
                 },
@@ -182,7 +180,6 @@ describe('usePullTeam', () => {
                   {
                     headName: 'src/App.tsx',
                     missesCount: 0,
-                    isCriticalFile: false,
                     patchCoverage: {
                       coverage: 100,
                     },
@@ -406,7 +403,6 @@ describe('usePullTeam polling', () => {
                   {
                     headName: 'src/App.tsx',
                     missesCount: 0,
-                    isCriticalFile: false,
                     patchCoverage: {
                       coverage: 100,
                     },

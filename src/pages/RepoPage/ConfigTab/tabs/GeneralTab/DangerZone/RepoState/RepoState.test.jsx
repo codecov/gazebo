@@ -64,7 +64,6 @@ describe('RepoState', () => {
                 bot: {
                   username: 'test',
                 },
-                profilingToken: null,
                 staticAnalysisToken: null,
               },
             },

@@ -13,7 +13,6 @@ import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
-import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import {
   type CoverageValue,
   type LineData,
@@ -90,7 +89,6 @@ function DiffRenderer({
 
   return (
     <>
-      {fileDiff.isCriticalFile && <CriticalFileLabel variant="borderTop" />}
       {fileDiff.segments?.map((segment, segmentIndex) => {
         return (
           <Fragment key={`${fileDiff.headName}-${segmentIndex}`}>

@@ -22,7 +22,7 @@ describe('DeletionCard', () => {
       render(<DeletionCard isPersonalSettings={true} />, { wrapper })
 
       const message = screen.getByText(
-        /Erase all my personal content and projects./
+        /Erase my personal account and all my repositories./
       )
       expect(message).toBeInTheDocument()
     })
@@ -33,7 +33,7 @@ describe('DeletionCard', () => {
       render(<DeletionCard isPersonalSettings={false} />, { wrapper })
 
       const message = screen.getByText(
-        /Erase all my organization content and projects./
+        /Erase organization and all its repositories./
       )
       expect(message).toBeInTheDocument()
     })

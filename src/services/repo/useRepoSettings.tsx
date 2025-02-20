@@ -15,7 +15,6 @@ const RepositorySchema = z.object({
   activated: z.boolean().nullable(),
   uploadToken: z.string().nullable(),
   defaultBranch: z.string().nullable(),
-  profilingToken: z.string().nullable(),
   staticAnalysisToken: z.string().nullable(),
   graphToken: z.string().nullable(),
   yaml: z.string().nullable(),
@@ -57,7 +56,6 @@ query GetRepoSettings($name: String!, $repo: String!) {
         activated
         uploadToken
         defaultBranch
-        profilingToken
         staticAnalysisToken
         graphToken
         yaml

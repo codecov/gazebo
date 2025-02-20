@@ -17,7 +17,7 @@ import qs from 'qs'
 import { Fragment, Suspense, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { ImpactedFileType, useCommit } from 'services/commit'
+import { ImpactedFileType, useCommit } from 'services/commit/useCommit'
 import { OrderingDirection, OrderingParameter } from 'services/pull/usePull'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -90,11 +90,6 @@ function getColumns() {
               />
             ) : null}
             <span>{headName}</span>
-            {row.original?.isCriticalFile ? (
-              <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
-                Critical file
-              </span>
-            ) : null}
             {isDeletedFile ? (
               <div className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Deleted file
