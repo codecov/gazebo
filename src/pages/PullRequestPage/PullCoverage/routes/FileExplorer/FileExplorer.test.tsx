@@ -423,7 +423,7 @@ describe('FileExplorer', () => {
           const links = await within(table).findAllByRole('link')
           expect(links[1]).toHaveAttribute(
             'href',
-            '/gh/codecov/cool-repo/pull/123/tree/a/b/c/src'
+            '/gh/codecov/cool-repo/pull/123/tree/a/b/c/src?dropdown=coverage'
           )
         })
       })
@@ -440,7 +440,7 @@ describe('FileExplorer', () => {
           const links = await within(table).findAllByRole('link')
           expect(links[2]).toHaveAttribute(
             'href',
-            '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js'
+            '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js?dropdown=coverage'
           )
         })
       })
@@ -504,7 +504,7 @@ describe('FileExplorer', () => {
           const links = await within(table).findAllByRole('link')
           expect(links[0]).toHaveAttribute(
             'href',
-            '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js'
+            '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js?dropdown=coverage'
           )
         })
       })

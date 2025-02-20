@@ -20,7 +20,7 @@ function DirEntry({
           options: {
             ref: linkRef,
             commit: commitSha,
-            tree: `${urlPath ? `${urlPath}/${name}` : name}?dropdown=coverage`,
+            tree: urlPath ? `${urlPath}/${name}` : name,
             queryParams,
           },
         }}

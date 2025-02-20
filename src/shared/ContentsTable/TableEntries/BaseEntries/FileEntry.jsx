@@ -43,7 +43,7 @@ function FileEntry({
           options: {
             ref: linkRef,
             commit: commitSha,
-            tree: `${displayAsList ? path : urlPath ? `${urlPath}/${name}` : name}?dropdown=coverage`,
+            tree: displayAsList ? path : urlPath ? `${urlPath}/${name}` : name,
             queryParams,
           },
         }}
