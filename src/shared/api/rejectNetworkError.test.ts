@@ -1,11 +1,11 @@
 import {
-  _rejectNetworkError,
   determineSentryLevel,
   determineStatusCode,
   NetworkErrorName,
   NotFoundErrorObject,
   OwnerNotActivatedErrorObject,
   ParsingErrorObject,
+  rejectNetworkError,
 } from './rejectNetworkError'
 
 const mocks = vi.hoisted(() => ({
@@ -71,7 +71,7 @@ describe('rejectNetworkError', () => {
     'when the error is $errorObject.errorName',
     ({ errorObject, level, status }) => {
       it('adds a breadcrumb', () => {
-        _rejectNetworkError(errorObject).catch((_e) => {})
+        rejectNetworkError(errorObject).catch((_e) => {})
 
         expect(mocks.addBreadcrumb).toHaveBeenCalledWith({
           category: 'network.error',
@@ -85,7 +85,7 @@ describe('rejectNetworkError', () => {
       })
 
       it('sets the tags', () => {
-        _rejectNetworkError(errorObject).catch((_e) => {})
+        rejectNetworkError(errorObject).catch((_e) => {})
 
         expect(mocks.setTags).toHaveBeenCalledWith({
           callingFn: errorObject.errorDetails.callingFn,
@@ -94,13 +94,13 @@ describe('rejectNetworkError', () => {
       })
 
       it('sets the level', () => {
-        _rejectNetworkError(errorObject).catch((_e) => {})
+        rejectNetworkError(errorObject).catch((_e) => {})
 
         expect(mocks.setLevel).toHaveBeenCalledWith(level)
       })
 
       it('sets the fingerprint', () => {
-        _rejectNetworkError(errorObject).catch((_e) => {
+        rejectNetworkError(errorObject).catch((_e) => {
           expect(mocks.setFingerprint).toHaveBeenCalledWith([
             `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`,
           ])
@@ -108,7 +108,7 @@ describe('rejectNetworkError', () => {
       })
 
       it('captures the error with Sentry', () => {
-        _rejectNetworkError(errorObject).catch((_e) => {})
+        rejectNetworkError(errorObject).catch((_e) => {})
 
         expect(mocks.captureMessage).toHaveBeenCalledWith(
           `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`
@@ -116,7 +116,7 @@ describe('rejectNetworkError', () => {
       })
 
       it('returns a rejected promise', () => {
-        const result = _rejectNetworkError(errorObject)
+        const result = rejectNetworkError(errorObject)
 
         expect(result).rejects.toStrictEqual({
           dev: `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`,

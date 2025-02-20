@@ -62,7 +62,7 @@ export function determineStatusCode(errorName: NetworkErrorName) {
   }
 }
 
-export function _rejectNetworkError(error: NetworkErrorObject) {
+export function rejectNetworkError(error: NetworkErrorObject) {
   const {
     errorName,
     errorDetails: { callingFn },
