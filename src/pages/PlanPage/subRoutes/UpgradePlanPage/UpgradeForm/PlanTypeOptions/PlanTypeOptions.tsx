@@ -17,7 +17,7 @@ import {
   TierNames,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
-import OptionButton from 'ui/OptionButton'
+import { OptionButton } from 'ui/OptionButton/OptionButton'
 
 import { TierName } from '../constants'
 import { usePlanParams } from '../hooks/usePlanParams'
@@ -94,14 +94,16 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
                 updateParams({ plan: TierNames.TEAM })
               }
             }}
-            options={[
-              {
-                text: TierName.PRO,
-              },
-              {
-                text: TierName.TEAM,
-              },
-            ]}
+            options={
+              [
+                {
+                  text: TierName.PRO,
+                },
+                {
+                  text: TierName.TEAM,
+                },
+              ] as const
+            }
           />
           {planOption === TierName.TEAM && (
             <p>Up to {TEAM_PLAN_MAX_ACTIVE_USERS} users</p>

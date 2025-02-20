@@ -2,7 +2,7 @@ import { render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 
-import OptionButton from './OptionButton'
+import { OptionButton } from './OptionButton'
 
 const options = [{ text: 'test option 1' }, { text: 'test option 2' }]
 

@@ -1,5 +1,5 @@
 import { useLocationParams } from 'services/navigation'
-import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
+import { DisplayTypeButton } from 'shared/ContentsTable/DisplayTypeButton/DisplayTypeButton'
 import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
 import SearchField from 'ui/SearchField'
 

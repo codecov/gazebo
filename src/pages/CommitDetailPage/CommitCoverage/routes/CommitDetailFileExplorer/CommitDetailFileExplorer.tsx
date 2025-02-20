@@ -1,7 +1,7 @@
 import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import { useLocationParams } from 'services/navigation'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
-import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
+import { DisplayTypeButton } from 'shared/ContentsTable/DisplayTypeButton/DisplayTypeButton'
 import { useCommitTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 import SearchField from 'ui/SearchField'

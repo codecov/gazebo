@@ -9,8 +9,8 @@ import FileExplorer from './FileExplorer'
 
 vi.mock('./FileListTable', () => ({ default: () => 'File list table' }))
 vi.mock('./CodeTreeTable', () => ({ default: () => 'Code tree table' }))
-vi.mock('shared/ContentsTable/DisplayTypeButton', () => ({
-  default: () => 'Display type button',
+vi.mock('shared/ContentsTable/DisplayTypeButton/DisplayTypeButton', () => ({
+  DisplayTypeButton: () => 'Display type button',
 }))
 vi.mock('shared/ContentsTable/FileBreadcrumb', () => ({
   default: () => 'File breadcrumb',

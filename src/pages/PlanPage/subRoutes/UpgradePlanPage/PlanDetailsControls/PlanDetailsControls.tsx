@@ -11,7 +11,7 @@ import {
   findTeamPlans,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
-import OptionButton from 'ui/OptionButton'
+import { OptionButton } from 'ui/OptionButton/OptionButton'
 
 interface PlanDetailsControlsProps {
   setSelectedPlan: (x?: IndividualPlan) => void
@@ -52,14 +52,16 @@ const PlanDetailsControls: React.FC<PlanDetailsControlsProps> = ({
             }
             setOption(text)
           }}
-          options={[
-            {
-              text: 'Pro',
-            },
-            {
-              text: 'Team',
-            },
-          ]}
+          options={
+            [
+              {
+                text: 'Pro',
+              },
+              {
+                text: 'Team',
+              },
+            ] as const
+          }
         />
         {option === 'Team' && <p>Up to {TEAM_PLAN_MAX_ACTIVE_USERS} users</p>}
       </div>
