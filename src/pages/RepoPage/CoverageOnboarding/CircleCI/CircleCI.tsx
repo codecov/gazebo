@@ -6,7 +6,7 @@ import {
   EVENT_METRICS,
   useStoreCodecovEventMetric,
 } from 'services/codecovEventMetrics'
-import { useOrgUploadToken } from 'services/orgUploadToken'
+import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { useRepo } from 'services/repo'
 import { Provider } from 'shared/api/helpers'
 import { providerToInternalProvider } from 'shared/utils/provider'

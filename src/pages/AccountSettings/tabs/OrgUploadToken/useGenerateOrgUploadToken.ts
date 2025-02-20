@@ -1,4 +1,4 @@
-import { useRegenerateOrgUploadToken } from 'services/orgUploadToken'
+import { useRegenerateOrgUploadToken } from 'services/orgUploadToken/useRegenerateOrgUploadToken'
 import { useAddNotification } from 'services/toastNotification'
 
 export default function useGenerateOrgUploadToken() {
