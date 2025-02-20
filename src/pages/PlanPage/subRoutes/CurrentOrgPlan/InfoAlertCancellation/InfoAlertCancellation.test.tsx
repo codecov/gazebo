@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { z } from 'zod'
 
-import { SubscriptionDetailSchema } from 'services/account'
+import { SubscriptionDetailSchema } from 'services/account/useAccountDetails'
 
 import InfoAlertCancellation from './InfoAlertCancellation'
 

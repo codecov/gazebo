@@ -1,5 +1,5 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -12,21 +12,19 @@ import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitE
 import { ComparisonReturnType, ReportUploadType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
 
+import FirstPullBanner from './FirstPullBanner'
 import PullCoverageTabs from './PullCoverageTabs'
+import CommitsTab from './routes/CommitsTab'
+import ComponentsTab from './routes/ComponentsTab'
+import FileExplorer from './routes/FileExplorer'
+import FilesChangedTab from './routes/FilesChangedTab'
+import FileViewer from './routes/FileViewer'
+import FlagsTab from './routes/FlagsTab'
+import IndirectChangesTab from './routes/IndirectChangesTab'
+import CompareSummary from './Summary'
 import CompareSummarySkeleton from './Summary/CompareSummary/CompareSummarySkeleton'
 
 import { PullPageDataQueryOpts } from '../queries/PullPageDataQueryOpts'
-
-const CompareSummary = lazy(() => import('./Summary'))
-const FirstPullBanner = lazy(() => import('./FirstPullBanner'))
-
-const CommitsTab = lazy(() => import('./routes/CommitsTab'))
-const ComponentsTab = lazy(() => import('./routes/ComponentsTab'))
-const FlagsTab = lazy(() => import('./routes/FlagsTab'))
-const FilesChangedTab = lazy(() => import('./routes/FilesChangedTab'))
-const FileExplorer = lazy(() => import('./routes/FileExplorer'))
-const FileViewer = lazy(() => import('./routes/FileViewer'))
-const IndirectChangesTab = lazy(() => import('./routes/IndirectChangesTab'))
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">

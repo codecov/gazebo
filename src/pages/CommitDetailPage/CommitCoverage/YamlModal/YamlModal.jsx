@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 
 import YamlErrorBanner from 'pages/CommitDetailPage/CommitCoverage/YamlErrorBanner'
 import { useCommitErrors } from 'services/commitErrors'
@@ -7,7 +7,7 @@ import A from 'ui/A'
 import Modal from 'ui/Modal'
 import Spinner from 'ui/Spinner'
 
-const YAMLViewer = lazy(() => import('./YAMLViewer'))
+import YAMLViewer from './YAMLViewer'
 
 function YamlModal({ showYAMLModal, setShowYAMLModal }) {
   const { data } = useCommitErrors()

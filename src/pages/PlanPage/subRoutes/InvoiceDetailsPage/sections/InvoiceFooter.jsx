@@ -1,4 +1,4 @@
-import { invoicePropType } from 'services/account'
+import { invoicePropType } from 'services/account/propTypes'
 
 function InvoiceFooter({ invoice }) {
   const discount = invoice.amountDue - invoice.subtotal

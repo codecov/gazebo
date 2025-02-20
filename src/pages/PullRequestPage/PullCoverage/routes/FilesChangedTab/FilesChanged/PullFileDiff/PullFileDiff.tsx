@@ -9,7 +9,6 @@ import {
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
-import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import { VirtualDiffRenderer } from 'ui/VirtualRenderers'
 import { CoverageValue } from 'ui/VirtualRenderers/types'
 import { LineData } from 'ui/VirtualRenderers/VirtualDiffRenderer'
@@ -79,9 +78,6 @@ function DiffRenderer({
 
   return (
     <>
-      {impactedFile?.isCriticalFile && (
-        <CriticalFileLabel variant="borderTop" />
-      )}
       {fileDiff?.map((segment, segmentIndex) => {
         return (
           <Fragment key={`${impactedFile?.headName}-${segmentIndex}`}>

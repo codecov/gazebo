@@ -3,7 +3,8 @@ import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import Card from 'old_ui/Card'
-import { useAccountDetails, usePlanData } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { usePlanData } from 'services/account/usePlanData'
 import Icon from 'ui/Icon'
 
 import CancelButton from './CancelButton'

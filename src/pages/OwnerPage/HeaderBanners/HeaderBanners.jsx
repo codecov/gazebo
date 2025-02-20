@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import config from 'config'
 
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
-import { usePlanData } from 'services/account'
+import { usePlanData } from 'services/account/usePlanData'
 
 import ExceededUploadsAlert from './ExceededUploadsAlert'
 import ReachingUploadLimitAlert from './ReachingUploadLimitAlert'

@@ -1,13 +1,9 @@
 /* eslint-disable camelcase */
 import { z } from 'zod'
 
-import {
-  AccountDetailsSchema,
-  IndividualPlan,
-  Plan,
-  TrialStatus,
-  TrialStatuses,
-} from 'services/account'
+import { AccountDetailsSchema } from 'services/account/useAccountDetails'
+import { IndividualPlan } from 'services/account/useAvailablePlans'
+import { Plan, TrialStatus, TrialStatuses } from 'services/account/usePlanData'
 import {
   BillingRate,
   canApplySentryUpgrade,

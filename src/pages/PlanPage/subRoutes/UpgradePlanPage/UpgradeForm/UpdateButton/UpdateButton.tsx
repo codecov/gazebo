@@ -1,7 +1,8 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 
-import { IndividualPlan, usePlanData } from 'services/account'
+import { IndividualPlan } from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
 import Button from 'ui/Button'
 
 interface BillingControlsProps {

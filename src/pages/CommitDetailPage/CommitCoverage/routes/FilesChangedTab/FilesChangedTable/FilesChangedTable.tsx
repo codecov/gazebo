@@ -14,7 +14,7 @@ import isArray from 'lodash/isArray'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import qs from 'qs'
-import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
+import { Fragment, Suspense, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { ImpactedFileType, useCommit } from 'services/commit'
@@ -23,7 +23,7 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-const CommitFileDiff = lazy(() => import('../shared/CommitFileDiff'))
+import CommitFileDiff from '../shared/CommitFileDiff'
 
 const columnHelper = createColumnHelper<ImpactedFileType>()
 
@@ -90,11 +90,6 @@ function getColumns() {
               />
             ) : null}
             <span>{headName}</span>
-            {row.original?.isCriticalFile ? (
-              <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
-                Critical file
-              </span>
-            ) : null}
             {isDeletedFile ? (
               <div className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Deleted file

@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { TrialStatuses } from 'services/account'
+import { TrialStatuses } from 'services/account/usePlanData'
 import { BillingRate, Plans } from 'shared/utils/billing'
 
 import TrialBanner from './TrialBanner'

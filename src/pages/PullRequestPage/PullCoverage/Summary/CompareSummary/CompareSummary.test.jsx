@@ -57,7 +57,7 @@ const createPullData = ({ overrideCommits, overrideComparison } = {}) => {
                       fileName: 'usePullBundleComparisonList.tsx',
                       headName:
                         'src/services/pull/usePullBundleComparisonList.tsx',
-                      isCriticalFile: false,
+
                       missesCount: 0,
                       baseCoverage: {
                         percentCovered: 100.0,
@@ -74,7 +74,7 @@ const createPullData = ({ overrideCommits, overrideComparison } = {}) => {
                       fileName: 'PullBundleAnalysis.tsx',
                       headName:
                         'src/pages/PullRequestPage/PullBundleAnalysis/PullBundleAnalysis.tsx',
-                      isCriticalFile: false,
+
                       missesCount: 0,
                       baseCoverage: null,
                       headCoverage: {
@@ -89,7 +89,7 @@ const createPullData = ({ overrideCommits, overrideComparison } = {}) => {
                       fileName: 'PullBundleComparisonTable.tsx',
                       headName:
                         'src/pages/PullRequestPage/PullBundleAnalysis/PullBundleComparisonTable/PullBundleComparisonTable.tsx',
-                      isCriticalFile: false,
+
                       missesCount: 0,
                       baseCoverage: null,
                       headCoverage: {

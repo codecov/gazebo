@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails, usePlanData } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { usePlanData } from 'services/account/usePlanData'
 import { Provider } from 'shared/api/helpers'
 import { CollectionMethods } from 'shared/utils/billing'
 

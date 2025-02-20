@@ -157,16 +157,16 @@ describe('ListRepo', () => {
   describe('renders', () => {
     it('renders the children', () => {
       setup({})
-      render(<ListRepo canRefetch />, {
+      render(<ListRepo />, {
         wrapper: wrapper({}),
       })
 
-      expect(screen.getByText(/Not Configured/)).toBeInTheDocument()
+      expect(screen.getByText(/Search/)).toBeInTheDocument()
     })
 
     it('renders the repo table', () => {
       setup({})
-      render(<ListRepo canRefetch />, {
+      render(<ListRepo />, {
         wrapper: wrapper({}),
       })
 
@@ -177,7 +177,7 @@ describe('ListRepo', () => {
   describe('reads URL parameters', () => {
     it('reads search parameter from URL', () => {
       setup({})
-      render(<ListRepo canRefetch />, {
+      render(<ListRepo />, {
         wrapper: wrapper({ url: '?search=thisisaquery' }),
       })
 
@@ -186,77 +186,10 @@ describe('ListRepo', () => {
     })
   })
 
-  describe('switches Configured/Not Configured/All repos', () => {
-    it('switches to active repos', async () => {
-      const { user } = setup({})
-      render(<ListRepo canRefetch />, {
-        wrapper: wrapper({ url: '/gh', path: '/:provider' }),
-      })
-
-      const button = screen.getByRole('button', {
-        name: 'Configured',
-      })
-      await user.click(button)
-      expect(testLocation.state.repoDisplay).toEqual(
-        expect.stringMatching('Configured')
-      )
-    })
-
-    it('switches to Not Configured repos', async () => {
-      const { user } = setup({})
-      render(<ListRepo canRefetch />, {
-        wrapper: wrapper({ url: '/gh', path: '/:provider' }),
-      })
-
-      const button = screen.getByRole('button', {
-        name: /Not Configured/,
-      })
-      await user.click(button)
-      expect(testLocation.state.repoDisplay).toEqual(
-        expect.stringContaining('Not Configured')
-      )
-    })
-
-    it('switches to Configured repos owner page', async () => {
-      const { user } = setup({})
-      render(<ListRepo canRefetch />, {
-        wrapper: wrapper({
-          url: '/gh/hola',
-          path: '/:provider/:owner',
-        }),
-      })
-      const button = screen.getByRole('button', {
-        name: 'Configured',
-      })
-      await user.click(button)
-      expect(testLocation.state.repoDisplay).toEqual(
-        expect.stringMatching('Configured')
-      )
-    })
-
-    it('switches to all repos owner page', async () => {
-      const { user } = setup({})
-      render(<ListRepo canRefetch />, {
-        wrapper: wrapper({
-          url: '/gh/hola',
-          path: '/:provider/:owner',
-        }),
-      })
-
-      const button = screen.getByRole('button', {
-        name: /All/,
-      })
-      await user.click(button)
-      expect(testLocation.state.repoDisplay).toEqual(
-        expect.stringContaining('All')
-      )
-    })
-  })
-
   describe('update params after typing', () => {
     it('calls setSearchValue', async () => {
       const { user } = setup({})
-      render(<ListRepo canRefetch />, {
+      render(<ListRepo />, {
         wrapper: wrapper({}),
       })
 
@@ -274,7 +207,7 @@ describe('ListRepo', () => {
   describe('when rendered for team plan', () => {
     it('renders the team table', async () => {
       setup({ isTeamPlan: true })
-      render(<ListRepo canRefetch />, {
+      render(<ListRepo />, {
         wrapper: wrapper({}),
       })
       const table = await screen.findByText(/ReposTableTeam/)
@@ -285,7 +218,7 @@ describe('ListRepo', () => {
   describe('welcome demo alert banner', () => {
     it('shows alert banner if it is my owner page and I came from onboarding', async () => {
       const { me } = setup({})
-      render(<ListRepo canRefetch />, {
+      render(<ListRepo />, {
         wrapper: wrapper({
           url: '/gh/janedoe?source=onboarding',
           path: '/:provider/:owner',
@@ -298,7 +231,7 @@ describe('ListRepo', () => {
 
     it('does not show alert banner if I did not come from onboarding', async () => {
       const { me } = setup({})
-      render(<ListRepo canRefetch />, {
+      render(<ListRepo />, {
         wrapper: wrapper({
           url: '/gh/janedoe',
           path: '/:provider/:owner',
@@ -313,7 +246,7 @@ describe('ListRepo', () => {
   describe('user does not have gh app installed', () => {
     it('displays github app config banner if showDemoAlert is false', async () => {
       setup({})
-      render(<ListRepo canRefetch hasGhApp={false} />, {
+      render(<ListRepo hasGhApp={false} />, {
         wrapper: wrapper({
           url: '/gh/janedoe',
           path: '/:provider/:owner',
@@ -325,7 +258,7 @@ describe('ListRepo', () => {
     })
     it('does not display github app config banner if showDemoAlert is true', async () => {
       setup({})
-      render(<ListRepo canRefetch hasGhApp={false} />, {
+      render(<ListRepo hasGhApp={false} />, {
         wrapper: wrapper({
           url: '/gh/janedoe?source=onboarding',
           path: '/:provider/:owner',
@@ -339,7 +272,7 @@ describe('ListRepo', () => {
     })
     it('does not display github app config banner if isAdmin is false', async () => {
       setup({ isAdmin: false })
-      render(<ListRepo canRefetch hasGhApp={false} />, {
+      render(<ListRepo hasGhApp={false} />, {
         wrapper: wrapper({
           url: '/gh/janedoe',
           path: '/:provider/:owner',
@@ -352,7 +285,7 @@ describe('ListRepo', () => {
   describe('user has gh app installed', () => {
     it('does not display github app config banner if hasGhApp is true', async () => {
       setup({})
-      render(<ListRepo canRefetch hasGhApp={true} />, {
+      render(<ListRepo hasGhApp={true} />, {
         wrapper: wrapper({
           url: '/gh/janedoe',
           path: '/:provider/:owner',

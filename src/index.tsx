@@ -30,17 +30,17 @@ if (
 
 ReactModal.setAppElement('#root')
 
-// use with pattern to not block app loading.
-const FeatureFlagApp = withFeatureFlagProvider(App)
-
-const ProfiledApp = Sentry.withProfiler(FeatureFlagApp)
-
 const history = createBrowserHistory()
 
 const TOO_MANY_REQUESTS_ERROR_CODE = 429
 
 initEventTracker()
 setupSentry({ history })
+
+// use with pattern to not block app loading.
+const FeatureFlagApp = withFeatureFlagProvider(App)
+
+const ProfiledApp = Sentry.withProfiler(FeatureFlagApp)
 
 // setting to 2 minutes, this value will ensure that components that are mounted
 // after suspense do not trigger a new query to be fetched. By default, the

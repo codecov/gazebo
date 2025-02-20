@@ -1,7 +1,7 @@
-import { lazy, Suspense, useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { usePlanData } from 'services/account'
+import { usePlanData } from 'services/account/usePlanData'
 import { ApiFilterEnum, useLocationParams } from 'services/navigation'
 import { useUpdateUser } from 'services/users'
 import SearchField from 'ui/SearchField'
@@ -9,9 +9,8 @@ import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
 
 import { ActivatedItems, AdminItems } from './enums'
+import MembersTable from './MembersTable'
 import UpgradeModal from './UpgradeModal/UpgradeModal'
-
-const MembersTable = lazy(() => import('./MembersTable'))
 
 const UserManagementClasses = {
   root: 'space-y-4 col-span-2 mb-20 grow mt-4', // Select pushes page length out. For now padding

@@ -3,11 +3,11 @@ import { Fragment } from 'react'
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
+import { useAccountDetails } from 'services/account/useAccountDetails'
 import {
   IndividualPlan,
-  useAccountDetails,
   useAvailablePlans,
-} from 'services/account'
+} from 'services/account/useAvailablePlans'
 import { Provider } from 'shared/api/helpers'
 import {
   BillingRate,

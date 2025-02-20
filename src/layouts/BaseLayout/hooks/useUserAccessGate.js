@@ -5,7 +5,7 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 
 import config from 'config'
 
-import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
+import { useUpdateDefaultOrganization } from 'services/defaultOrganization/useUpdateDefaultOrganization'
 import { useLocationParams } from 'services/navigation'
 import { useInternalUser, useUser } from 'services/user'
 

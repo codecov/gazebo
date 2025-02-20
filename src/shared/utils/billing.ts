@@ -3,7 +3,8 @@ import isArray from 'lodash/isArray'
 import isUndefined from 'lodash/isUndefined'
 import { z } from 'zod'
 
-import { AccountDetailsSchema, IndividualPlan } from 'services/account'
+import { AccountDetailsSchema } from 'services/account/useAccountDetails'
+import { IndividualPlan } from 'services/account/useAvailablePlans'
 
 export const Plans = {
   USERS: 'users',

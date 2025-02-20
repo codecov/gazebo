@@ -34,7 +34,6 @@ afterAll(() => {
 
 const mockImpactedFiles = [
   {
-    isCriticalFile: true,
     missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
@@ -210,7 +209,6 @@ describe('usePull', () => {
                   __typename: 'ImpactedFiles',
                   results: [
                     {
-                      isCriticalFile: true,
                       missesCount: 3,
                       fileName: 'mafs.js',
                       headName: 'flag1/mafs.js',

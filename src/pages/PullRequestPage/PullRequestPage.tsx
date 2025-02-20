@@ -1,6 +1,6 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import qs from 'qs'
-import { lazy, Suspense, useLayoutEffect } from 'react'
+import { Suspense, useLayoutEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
@@ -14,10 +14,9 @@ import SummaryDropdown from 'ui/SummaryDropdown'
 import PullBundleDropdown from './Dropdowns/PullBundleDropdown'
 import PullCoverageDropdown from './Dropdowns/PullCoverageDropdown'
 import Header from './Header'
+import PullBundleAnalysis from './PullBundleAnalysis'
+import PullCoverage from './PullCoverage'
 import { PullPageDataQueryOpts } from './queries/PullPageDataQueryOpts'
-
-const PullCoverage = lazy(() => import('./PullCoverage'))
-const PullBundleAnalysis = lazy(() => import('./PullBundleAnalysis'))
 
 interface usePRPageBreadCrumbsArgs {
   owner: string

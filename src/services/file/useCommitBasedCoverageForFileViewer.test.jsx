@@ -88,7 +88,6 @@ describe('useCommitBasedCoverageForFileViewer', () => {
 
     beforeEach(() => {
       const mainCoverageData = {
-        isCriticalFile: false,
         hashedPath: 'hashedPath',
         content:
           'function add(a, b) {\n    return a + b;\n}\n\nfunction subtract(a, b) {\n    return a - b;\n}\n\nfunction multiply(a, b) {\n    return a * b;\n}\n\nfunction divide(a, b) {\n    if (b !== 0) {\n        return a / b;\n    } else {\n        return 0\n    }\n}\n\nmodule.exports = {add, subtract, multiply, divide};',
@@ -152,7 +151,6 @@ describe('useCommitBasedCoverageForFileViewer', () => {
         },
         flagNames: [],
         hashedPath: 'hashedPath',
-        isCriticalFile: false,
         totals: 53.43,
         isLoading: false,
       }
@@ -174,7 +172,6 @@ describe('useCommitBasedCoverageForFileViewer', () => {
           { line: 2, coverage: 'H' },
         ],
         totals: { percentCovered: 23.43 },
-        isCriticalFile: false,
         hashedPath: 'hashedPath',
       }
 
@@ -191,7 +188,7 @@ describe('useCommitBasedCoverageForFileViewer', () => {
           { line: 7, coverage: 'M' },
         ],
         totals: { percentCovered: 13.63 },
-        isCriticalFile: false,
+
         hashedPath: 'hashedPath',
       }
       setup({ mainCoverageData, coverageWithFlags, selectedFlags })
@@ -232,7 +229,6 @@ describe('useCommitBasedCoverageForFileViewer', () => {
         totals: 13.63,
         flagNames: selectedFlags,
         componentNames: [],
-        isCriticalFile: false,
         hashedPath: 'hashedPath',
         isLoading: false,
       }

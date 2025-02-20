@@ -15,7 +15,6 @@ vi.mock('../PullFileDiff', () => ({ default: () => 'PullFileDiff' }))
 
 const mockImpactedFiles = [
   {
-    isCriticalFile: true,
     missesCount: 0,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
@@ -307,7 +306,6 @@ describe('FilesChangedTable', () => {
             __typename: 'ImpactedFiles',
             results: [
               {
-                isCriticalFile: false,
                 missesCount: 0,
                 fileName: 'src/App.tsx',
                 headName: 'flag1/src/App.tsx',
@@ -427,65 +425,6 @@ describe('FilesChangedTable', () => {
     })
   })
 
-  describe('highlights critical files', () => {
-    it('renders critical file', async () => {
-      const { queryClient } = setup()
-      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
-
-      const criticalFile = await screen.findByText('Critical file')
-      expect(criticalFile).toBeInTheDocument()
-    })
-
-    it('renders non-critical file', async () => {
-      const { queryClient } = setup({
-        overrideComparison: {
-          state: 'complete',
-          __typename: 'Comparison',
-          flagComparisons: [],
-          patchTotals: {
-            percentCovered: 92.12,
-          },
-          baseTotals: {
-            percentCovered: 98.25,
-          },
-          headTotals: {
-            percentCovered: 78.33,
-          },
-          impactedFiles: {
-            __typename: 'ImpactedFiles',
-            results: [
-              {
-                isCriticalFile: false,
-                missesCount: 0,
-                fileName: 'src/App.tsx',
-                headName: 'flag1/src/App.tsx',
-                baseCoverage: {
-                  percentCovered: 45.38,
-                },
-                headCoverage: {
-                  percentCovered: 90.23,
-                },
-                patchCoverage: {
-                  percentCovered: 27.43,
-                },
-                changeCoverage: 41,
-              },
-            ],
-          },
-          changeCoverage: 38.94,
-          hasDifferentNumberOfHeadAndBaseReports: true,
-        },
-      })
-      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
-
-      const file = await screen.findByText('flag1/src/App.tsx')
-      expect(file).toBeInTheDocument()
-
-      const nonCriticalFile = screen.queryByText('Critical file')
-      expect(nonCriticalFile).not.toBeInTheDocument()
-    })
-  })
-
   describe('highlights deleted files', () => {
     it('renders non-deleted file', async () => {
       const { queryClient } = setup({})
@@ -514,7 +453,6 @@ describe('FilesChangedTable', () => {
             __typename: 'ImpactedFiles',
             results: [
               {
-                isCriticalFile: false,
                 missesCount: 0,
                 fileName: 'src/App.tsx',
                 headName: 'flag1/src/App.tsx',
@@ -559,7 +497,6 @@ describe('FilesChangedTable', () => {
             __typename: 'ImpactedFiles',
             results: [
               {
-                isCriticalFile: false,
                 missesCount: 0,
                 fileName: 'src/App.tsx',
                 headName: 'flag1/src/App.tsx',

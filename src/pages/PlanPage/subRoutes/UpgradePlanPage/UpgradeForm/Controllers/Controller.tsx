@@ -1,6 +1,6 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
-import { IndividualPlan } from 'services/account'
+import { IndividualPlan } from 'services/account/useAvailablePlans'
 
 import ProPlanController from './ProPlanController'
 import SentryPlanController from './SentryPlanController'

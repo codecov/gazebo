@@ -1,8 +1,8 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 
 import Spinner from 'ui/Spinner'
 
-const CommitsTable = lazy(() => import('./CommitsTable'))
+import CommitsTable from './CommitsTable'
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">

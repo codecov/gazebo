@@ -32,7 +32,7 @@ const mockCompareData = {
               {
                 headName: 'src/App.tsx',
                 missesCount: 0,
-                isCriticalFile: false,
+
                 patchCoverage: { coverage: 100 },
               },
             ],

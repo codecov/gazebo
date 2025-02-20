@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 
 import config from 'config'
 
@@ -7,7 +7,7 @@ import { useFlags } from 'shared/featureFlags'
 import Badge from 'ui/Badge'
 import TabNavigation from 'ui/TabNavigation'
 
-const TrialReminder = lazy(() => import('./TrialReminder'))
+import TrialReminder from './TrialReminder'
 
 function Tabs() {
   const { codecovAiFeaturesTab } = useFlags({

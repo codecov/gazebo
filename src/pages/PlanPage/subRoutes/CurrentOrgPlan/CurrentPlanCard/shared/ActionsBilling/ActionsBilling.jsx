@@ -1,12 +1,9 @@
 import { useParams } from 'react-router-dom'
 
 import githubLogo from 'assets/githublogo.png'
-import {
-  TrialStatuses,
-  useAccountDetails,
-  useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import { useStartTrial } from 'services/trial'
 import { canApplySentryUpgrade } from 'shared/utils/billing'
 import A from 'ui/A/A'

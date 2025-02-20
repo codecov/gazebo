@@ -206,7 +206,7 @@ export const ConfigureCachedBundleModal = ({
     select: (data) =>
       data.bundles.map((bundle) => ({
         bundleName: bundle.bundleName,
-        toggleCaching: bundle.isCached,
+        toggleCaching: bundle.cacheConfig,
       })),
     enabled: isOpen && !!defaultBranch,
   })

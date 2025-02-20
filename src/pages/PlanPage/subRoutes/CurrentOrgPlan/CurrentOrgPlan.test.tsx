@@ -12,7 +12,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { z } from 'zod'
 
 import { PlanUpdatedPlanNotificationContext } from 'pages/PlanPage/context'
-import { AccountDetailsSchema } from 'services/account'
+import { AccountDetailsSchema } from 'services/account/useAccountDetails'
 import { Plans } from 'shared/utils/billing'
 import { AlertOptions, type AlertOptionsType } from 'ui/Alert'
 

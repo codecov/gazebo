@@ -1,7 +1,8 @@
 import { useLayoutEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
-import { useAvailablePlans, usePlanData } from 'services/account'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
 import {
   canApplySentryUpgrade,
   findProPlans,

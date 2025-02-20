@@ -1,10 +1,8 @@
 import { useParams } from 'react-router-dom'
 
-import {
-  useAccountDetails,
-  useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
 import BenefitList from 'shared/plan/BenefitList'
 import { findSentryPlans } from 'shared/utils/billing'
 import { SENTRY_PRICE, shouldRenderCancelLink } from 'shared/utils/upgradeForm'

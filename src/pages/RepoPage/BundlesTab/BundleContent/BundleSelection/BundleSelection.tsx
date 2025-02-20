@@ -1,12 +1,12 @@
-import { lazy, useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import { ConfigureCachedBundleModal } from 'pages/RepoPage/shared/ConfigureCachedBundleModal/ConfigureCachedBundleModal'
 import Icon from 'ui/Icon'
 
 import BranchSelector from './BranchSelector'
+import BundleSelector from './BundleSelector'
 import { LoadSelector } from './LoadSelector'
 import { TypeSelector } from './TypeSelector'
-const BundleSelector = lazy(() => import('./BundleSelector'))
 
 const BundleSelection: React.FC = () => {
   const bundleSelectRef = useRef<{ resetSelected: () => void }>(null)

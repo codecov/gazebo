@@ -4,7 +4,7 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { TrialStatuses, usePlanData } from 'services/account'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import { useOwner } from 'services/user'
 
 import ExpiredBanner from './ExpiredBanner'

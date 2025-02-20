@@ -1,22 +1,18 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import {
-  TrialStatuses,
-  useAccountDetails,
-  useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import { Provider } from 'shared/api/helpers'
 import { BillingRate, shouldDisplayTeamCard } from 'shared/utils/billing'
 import Spinner from 'ui/Spinner'
 
+import DowngradePlan from './subRoutes/DowngradePlan'
 import SpecialOffer from './subRoutes/SpecialOffer'
 import TeamPlanSpecialOffer from './subRoutes/TeamPlanSpecialOffer'
-
-const DowngradePlan = lazy(() => import('./subRoutes/DowngradePlan'))
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">

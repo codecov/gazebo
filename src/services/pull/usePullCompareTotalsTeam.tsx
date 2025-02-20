@@ -29,7 +29,6 @@ const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
         z.object({
           headName: z.string().nullable(),
           missesCount: z.number(),
-          isCriticalFile: z.boolean(),
           patchCoverage: CoverageObjSchema,
         })
       )
@@ -105,7 +104,6 @@ query GetPullCompareTotalsTeam(
                   results {
                     headName
                     missesCount
-                    isCriticalFile
                     patchCoverage {
                       coverage: percentCovered
                     }

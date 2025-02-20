@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import { z } from 'zod'
 
-import { InvoiceSchema } from 'services/account'
+import { InvoiceSchema } from 'services/account/useInvoices'
 import { ThemeContextProvider } from 'shared/ThemeContext/ThemeContext'
 import { Plans } from 'shared/utils/billing'
 

@@ -6,7 +6,7 @@ import config from 'config'
 import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
-import { usePlanData } from 'services/account'
+import { usePlanData } from 'services/account/usePlanData'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
 import LoadingLogo from 'ui/LoadingLogo'
 

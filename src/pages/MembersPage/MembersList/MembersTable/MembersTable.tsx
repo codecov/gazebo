@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
-import { usePlanData } from 'services/account'
+import { usePlanData } from 'services/account/usePlanData'
 import { Member, useInfiniteUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils/ownerHelpers'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'

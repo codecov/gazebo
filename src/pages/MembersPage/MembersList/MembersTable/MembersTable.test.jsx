@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
+import { TrialStatuses } from 'services/account/usePlanData'
 import { Plans } from 'shared/utils/billing'
 
 import MembersTable from './MembersTable'

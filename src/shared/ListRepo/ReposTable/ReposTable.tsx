@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
@@ -20,14 +20,12 @@ import {
 } from 'services/repos/ReposQueryOpts'
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { useOwner, useUser } from 'services/user'
-import { ActiveContext } from 'shared/context'
 import { DEMO_REPO, formatDemoRepos, isNotNull } from 'shared/utils/demo'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
 import { getReposColumnsHelper } from './getReposColumnsHelper'
 
-import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
 
 interface URLParams {
@@ -122,14 +120,6 @@ const ReposTable = ({
     owner,
   })
 
-  const repoDisplay = useContext(ActiveContext)
-  const activated =
-    repoDisplayOptions[
-      repoDisplay
-        .replace(/\s/g, '_')
-        .toUpperCase() as keyof typeof repoDisplayOptions
-    ]?.status
-
   // fetch owner repos
   const {
     data: reposData,
@@ -141,7 +131,6 @@ const ReposTable = ({
     ReposQueryOpts({
       provider,
       owner,
-      activated,
       sortItem: getOrderingDirection(sorting),
       term: searchValue,
       repoNames: filterValues,
@@ -154,7 +143,6 @@ const ReposTable = ({
     ReposQueryOpts({
       provider: DEMO_REPO.provider,
       owner: DEMO_REPO.owner,
-      activated,
       repoNames: [DEMO_REPO.repo],
     })
   )
@@ -197,7 +185,6 @@ const ReposTable = ({
 
   const table = useReactTable({
     columns: getReposColumnsHelper({
-      inactive: repoDisplay === repoDisplayOptions.NOT_CONFIGURED.text,
       isCurrentUserPartOfOrg: !!isCurrentUserPartOfOrg,
       owner,
     }),

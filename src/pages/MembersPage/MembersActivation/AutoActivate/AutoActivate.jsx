@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { useAutoActivate } from 'services/account'
+import { useAutoActivate } from 'services/account/useAutoActivate'
 import Toggle from 'ui/Toggle'
 
 function AutoActivate({ planAutoActivate }) {

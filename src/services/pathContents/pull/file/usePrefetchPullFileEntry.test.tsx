@@ -55,7 +55,6 @@ const mockData = {
           components: [],
           coverageFile: {
             hashedPath: 'afsd',
-            isCriticalFile: true,
             content:
               'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
             coverage: [
@@ -169,7 +168,6 @@ describe('usePrefetchPullFileEntry', () => {
       },
       flagNames: ['a', 'b'],
       componentNames: [],
-      isCriticalFile: true,
       totals: 100,
     })
   })

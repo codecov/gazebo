@@ -4,8 +4,8 @@ import { useParams } from 'react-router-dom'
 import {
   IndividualPlan,
   useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+} from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
 import { useLocationParams } from 'services/navigation'
 import {
   BillingRate,
