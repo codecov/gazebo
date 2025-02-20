@@ -45,6 +45,7 @@ const TopBannerContext = createContext<TopBannerContextValue | null>(null)
 export const saveToLocalStorage = (localStorageKey: string) => {
   const currentStore = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
 
+  console.log('qwerty currentStore', currentStore)
   if (isNull(currentStore)) {
     localStorage.setItem(
       LOCAL_STORE_ROOT_KEY,
@@ -58,6 +59,15 @@ export const saveToLocalStorage = (localStorageKey: string) => {
         [localStorageKey]: 'true',
       })
     )
+  }
+}
+
+export const removeFromLocalStorage = (localStorageKey: string) => {
+  const currentStore = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
+  if (currentStore) {
+    const store = JSON.parse(currentStore)
+    delete store[localStorageKey]
+    localStorage.setItem(LOCAL_STORE_ROOT_KEY, JSON.stringify(store))
   }
 }
 

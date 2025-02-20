@@ -5,6 +5,14 @@ import { z } from 'zod'
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
 import { Provider, rejectNetworkError } from 'shared/api/helpers'
+import { removeFromLocalStorage } from 'ui/TopBanner/TopBanner'
+
+import {
+  ADMIN_TOKEN_NOT_REQUIRED_BANNER,
+  ADMIN_TOKEN_REQUIRED_BANNER,
+  MEMBER_TOKEN_NOT_REQUIRED_BANNER,
+  MEMBER_TOKEN_REQUIRED_BANNER,
+} from './constants'
 
 const TOAST_DURATION = 10000
 
@@ -99,6 +107,13 @@ export const useSetUploadTokenRequired = ({
           text: 'Upload token requirement updated successfully',
           disappearAfter: TOAST_DURATION,
         })
+
+        // we want to show the banners again when this setting is changed
+        // even if the user dismissed them in the past
+        removeFromLocalStorage(MEMBER_TOKEN_NOT_REQUIRED_BANNER)
+        removeFromLocalStorage(ADMIN_TOKEN_NOT_REQUIRED_BANNER)
+        removeFromLocalStorage(MEMBER_TOKEN_REQUIRED_BANNER)
+        removeFromLocalStorage(ADMIN_TOKEN_REQUIRED_BANNER)
 
         // only want to invalidate the query if the mutation was successful
         // otherwise we're just going to re-fetch the same data

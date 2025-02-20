@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useParams } from 'react-router'
 
+import {
+  ADMIN_TOKEN_REQUIRED_BANNER,
+  MEMBER_TOKEN_REQUIRED_BANNER,
+} from 'pages/AccountSettings/tabs/OrgUploadToken/TokenlessSection'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -79,7 +83,7 @@ const AdminTokenRequiredBanner: React.FC = () => {
   const orgUploadToken = data?.orgUploadToken
 
   return (
-    <TopBanner localStorageKey="admin-token-required-banner">
+    <TopBanner localStorageKey={ADMIN_TOKEN_REQUIRED_BANNER}>
       <TopBanner.Start>
         <p className="items-center gap-1 md:flex">
           <span className="flex items-center gap-1 font-semibold">
@@ -121,7 +125,7 @@ const MemberTokenRequiredBanner: React.FC = () => {
   const orgUploadToken = data?.orgUploadToken
 
   return (
-    <TopBanner localStorageKey="member-token-required-banner">
+    <TopBanner localStorageKey={MEMBER_TOKEN_REQUIRED_BANNER}>
       <TopBanner.Start>
         <p className="items-center gap-1 md:flex">
           <span className="flex items-center gap-1 font-semibold">
