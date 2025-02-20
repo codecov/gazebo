@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { Provider, rejectNetworkError } from 'shared/api/helpers'
+import { Provider } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const OwnerSchema = z.object({
   ownerid: z.number().nullish(),
@@ -66,10 +67,11 @@ export function useOwner({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useOwner - 404 Failed to parse data',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useOwner',
+              error: parsedRes.error,
+            },
           })
         }
 

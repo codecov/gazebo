@@ -2,11 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import {
-  NetworkErrorObject,
-  Provider,
-  rejectNetworkError,
-} from 'shared/api/helpers'
+import { Provider } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 export const CreateStripeSetupIntentSchema = z.object({
   createStripeSetupIntent: z.object({
@@ -75,11 +72,12 @@ export function useCreateStripeSetupIntent({
         const parsedRes = CreateStripeSetupIntentSchema.safeParse(res.data)
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            error: parsedRes.error,
-            data: {},
-            dev: 'useStripeSetupIntent - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useCreateStripeSetupIntent',
+              error: parsedRes.error,
+            },
+          })
         }
 
         const error = parsedRes.data.createStripeSetupIntent.error

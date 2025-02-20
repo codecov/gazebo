@@ -16,7 +16,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import {
   ErrorCodeEnum,
   UploadStateEnum,
@@ -353,10 +353,11 @@ export function useCommit({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useCommit - 404 failed to parse',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useCommit',
+              error: parsedRes.error,
+            },
           })
         }
 
@@ -364,15 +365,15 @@ export function useCommit({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useCommit - 404 not found',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'useCommit' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'useCommit' },
             data: {
               detail: (
                 <p>
@@ -383,7 +384,6 @@ export function useCommit({
                 </p>
               ),
             },
-            dev: 'useCommit - 403 owner not activated',
           })
         }
 

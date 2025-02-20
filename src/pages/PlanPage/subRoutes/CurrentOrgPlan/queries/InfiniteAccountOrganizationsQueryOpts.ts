@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { OrderingDirection } from 'types'
 
 import Api from 'shared/api/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { mapEdges } from 'shared/utils/graphql'
 
 const RequestSchema = z.object({
@@ -102,10 +102,11 @@ export function InfiniteAccountOrganizationsQueryOpts({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useInfiniteAccountOrganizations - 404 Failed to parse data',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'InfiniteAccountOrganizationsQueryOpts',
+              error: parsedRes.error,
+            },
           })
         }
 
@@ -113,9 +114,10 @@ export function InfiniteAccountOrganizationsQueryOpts({
 
         if (!account) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useInfiniteAccountOrganizations - 404 Cannot find Account for Owner',
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'InfiniteAccountOrganizationsQueryOpts',
+            },
           })
         }
 

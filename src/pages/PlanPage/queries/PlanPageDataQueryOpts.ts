@@ -2,7 +2,7 @@ import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const RequestSchema = z.object({
   owner: z
@@ -14,15 +14,13 @@ const RequestSchema = z.object({
     .nullable(),
 })
 
-const query = `
-  query PlanPageData($username: String!) {
-    owner(username: $username) {
-      username
-      isCurrentUserPartOfOrg
-      numberOfUploads
-    }
+const query = `query PlanPageData($username: String!) {
+  owner(username: $username) {
+    username
+    isCurrentUserPartOfOrg
+    numberOfUploads
   }
-`
+}`
 
 type PlanPageDataQueryArgs = {
   owner: string
@@ -50,10 +48,11 @@ export function PlanPageDataQueryOpts({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'usePlanPageData - 404 schema parsing failed',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'PlanPageDataQueryOpts',
+              error: parsedRes.error,
+            },
           })
         }
 

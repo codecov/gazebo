@@ -2,7 +2,7 @@ import { infiniteQueryOptions as infiniteQueryOptionsV5 } from '@tanstack/react-
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const OwnerSchema = z.object({
   ownerid: z.number(),
@@ -51,10 +51,11 @@ export const SelfHostedUserListQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'SelfHostedUserListQueryOpts - 404 schema parsing failed',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'SelfHostedUserListQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 

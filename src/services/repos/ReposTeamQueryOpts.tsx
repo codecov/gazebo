@@ -2,7 +2,7 @@ import { infiniteQueryOptions as infiniteQueryOptionsV5 } from '@tanstack/react-
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { mapEdges } from 'shared/utils/graphql'
 
 import {
@@ -145,10 +145,11 @@ function ReposTeamQueryOpts({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'ReposTeamQueryOpts - 404 Failed to parse schema',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'ReposTeamQueryOpts',
+              error: parsedRes.error,
+            },
           })
         }
 

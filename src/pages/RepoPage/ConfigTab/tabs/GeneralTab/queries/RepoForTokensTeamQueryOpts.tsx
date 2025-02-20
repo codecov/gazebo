@@ -6,7 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const RepositorySchema = z.object({
@@ -78,10 +78,11 @@ export const RepoForTokensTeamQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: `RepoForTokensTeamQueryOpts - 404 failed to parse schema`,
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'RepoForTokensTeamQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 
@@ -89,15 +90,15 @@ export const RepoForTokensTeamQueryOpts = ({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: `RepoForTokensTeamQueryOpts - 404 not found`,
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'RepoForTokensTeamQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'RepoForTokensTeamQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -108,7 +109,6 @@ export const RepoForTokensTeamQueryOpts = ({
                 </p>
               ),
             },
-            dev: `RepoForTokensTeamQueryOpts - 403 owner not activated`,
           })
         }
 

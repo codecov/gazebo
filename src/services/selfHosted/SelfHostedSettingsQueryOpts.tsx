@@ -2,7 +2,7 @@ import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const RequestSchema = z.object({
   config: z.object({
@@ -42,10 +42,11 @@ export const SelfHostedSettingsQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'SelfHostedSettingsQueryOpts - 404 schema parsing failed',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'SelfHostedSettingsQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 

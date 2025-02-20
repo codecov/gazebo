@@ -2,7 +2,7 @@ import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 export const OktaConfigSchema = z.object({
   enabled: z.boolean(),
@@ -66,10 +66,11 @@ export function OktaConfigQueryOpts({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'OktaConfigQueryOpts - 404 failed to parse',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'OktaConfigQueryOpts',
+              error: parsedRes.error,
+            },
           })
         }
 

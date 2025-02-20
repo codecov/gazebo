@@ -12,7 +12,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const CoverageObjSchema = z.object({
@@ -167,10 +167,11 @@ export const CommitHeaderDataTeamQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'CommitHeaderDataTeamQueryOpts - 404 Failed to parse schema',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'CommitHeaderDataTeamQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 
@@ -178,15 +179,15 @@ export const CommitHeaderDataTeamQueryOpts = ({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'CommitHeaderDataTeamQueryOpts - 404 Not Found',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'CommitHeaderDataTeamQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'CommitHeaderDataTeamQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -197,7 +198,6 @@ export const CommitHeaderDataTeamQueryOpts = ({
                 </p>
               ),
             },
-            dev: 'CommitHeaderDataTeamQueryOpts - 403 Owner Not Activated',
           })
         }
 

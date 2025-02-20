@@ -8,7 +8,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 export const BUNDLE_TREND_INTERVALS = [
@@ -194,10 +194,11 @@ export const BundleTrendDataQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'BundleTrendDataQueryOpts - 404 Failed to parse schema',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'BundleTrendDataQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 
@@ -205,15 +206,15 @@ export const BundleTrendDataQueryOpts = ({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'BundleTrendDataQueryOpts - 404 Not found error',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'BundleTrendDataQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'BundleTrendDataQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -224,7 +225,6 @@ export const BundleTrendDataQueryOpts = ({
                 </p>
               ),
             },
-            dev: 'BundleTrendDataQueryOpts - 403 Owner not activated',
           })
         }
 

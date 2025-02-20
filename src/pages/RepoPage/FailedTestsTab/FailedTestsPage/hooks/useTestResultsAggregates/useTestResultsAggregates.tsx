@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
 import { RepoNotFoundErrorSchema } from 'services/repo'
 import Api from 'shared/api'
-import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { Plans } from 'shared/utils/billing'
 
 const TestResultsAggregatesSchema = z.object({
@@ -119,21 +119,21 @@ export const useTestResultsAggregates = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useTestResultsAggregates - 404 Failed to parse data',
-            error: parsedData.error,
-          } satisfies NetworkErrorObject)
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useTestResultsAggregates',
+              error: parsedData.error,
+            },
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useTestResultsAggregates - 404 Not found error',
-          } satisfies NetworkErrorObject)
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'useTestResultsAggregates' },
+          })
         }
 
         return {

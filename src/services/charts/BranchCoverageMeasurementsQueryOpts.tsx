@@ -6,7 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 type MeasurementIntervals =
@@ -127,10 +127,11 @@ export const BranchCoverageMeasurementsQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'BranchCoverageMeasurementsQueryOpts - 404 Failed to parse data',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'BranchCoverageMeasurementsQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 
@@ -138,15 +139,15 @@ export const BranchCoverageMeasurementsQueryOpts = ({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'BranchCoverageMeasurementsQueryOpts - 404 Not found error',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'BranchCoverageMeasurementsQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'BranchCoverageMeasurementsQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -157,7 +158,6 @@ export const BranchCoverageMeasurementsQueryOpts = ({
                 </p>
               ),
             },
-            dev: 'BranchCoverageMeasurementsQueryOpts - 403 Owner not activated',
           })
         }
 

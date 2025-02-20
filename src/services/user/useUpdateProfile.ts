@@ -4,7 +4,7 @@ import { z } from 'zod'
 import config from 'config'
 
 import Api from 'shared/api'
-import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 import { GoalsSchema, TypeProjectsSchema } from './useUser'
 
@@ -135,10 +135,12 @@ export function useUpdateProfile({ provider }: { provider: string }) {
         const parsedData = UpdateProfileResponseSchema.safeParse(res.data)
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useUpdateProfile - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useUpdateProfile',
+              error: parsedData.error,
+            },
+          })
         }
         return parsedData.data.updateProfile?.me
       })
