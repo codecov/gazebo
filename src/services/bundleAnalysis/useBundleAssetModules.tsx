@@ -4,7 +4,7 @@ import {
 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
-import { MissingHeadReportSchema } from 'services/comparison'
+import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,

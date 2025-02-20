@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
 import { useBranch, query as useBranchQuery } from 'services/branches/useBranch'
+import { useBranches } from 'services/branches/useBranches'
 
 interface URLParams {
   repo: string

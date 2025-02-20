@@ -1,4 +1,4 @@
-import { useDeleteComponentMeasurements } from 'services/deleteComponentMeasurements'
+import { useDeleteComponentMeasurements } from 'services/deleteComponentMeasurements/useDeleteComponentMeasurements'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 

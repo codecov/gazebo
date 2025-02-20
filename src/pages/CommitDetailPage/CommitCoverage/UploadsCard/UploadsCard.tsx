@@ -3,7 +3,7 @@ import flatMap from 'lodash/flatMap'
 import { Fragment, useState } from 'react'
 
 import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
-import { useCommitErrors } from 'services/commitErrors'
+import { useCommitErrors } from 'services/commitErrors/useCommitErrors'
 import { cn } from 'shared/utils/cn'
 import { NONE } from 'shared/utils/extractUploads'
 import A from 'ui/A'

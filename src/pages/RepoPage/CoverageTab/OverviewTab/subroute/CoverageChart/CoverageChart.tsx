@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import { useParams } from 'react-router-dom'
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
-import { useBranches } from 'services/branches'
+import { useBranches } from 'services/branches/useBranches'
 import { useRepoOverview } from 'services/repo'
 import {
   ChartConfig,

@@ -9,7 +9,7 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 import TokenStepSection from './TokenStep'
 
 vi.mock('services/uploadTokenRequired')
-vi.mock('services/orgUploadToken')
+vi.mock('services/orgUploadToken/useOrgUploadToken')
 vi.mock('services/repo')
 vi.mock('shared/featureFlags')
 vi.mock('services/user')
@@ -30,8 +30,10 @@ vi.mock('services/uploadTokenRequired', async () => {
   }
 })
 
-vi.mock('services/orgUploadToken', async () => {
-  const original = await vi.importActual('services/orgUploadToken')
+vi.mock('services/orgUploadToken/useOrgUploadToken', async () => {
+  const original = await vi.importActual(
+    'services/orgUploadToken/useOrgUploadToken'
+  )
   return {
     ...original,
     useOrgUploadToken: mocks.useOrgUploadToken,

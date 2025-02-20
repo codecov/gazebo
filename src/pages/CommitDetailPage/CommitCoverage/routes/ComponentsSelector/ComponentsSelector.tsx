@@ -1,7 +1,7 @@
 import isUndefined from 'lodash/isUndefined'
 import { useMemo, useState } from 'react'
 
-import { useCommitComponents } from 'services/commit'
+import { useCommitComponents } from 'services/commit/useCommitComponents'
 import { useLocationParams } from 'services/navigation'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'

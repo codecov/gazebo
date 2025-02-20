@@ -12,7 +12,7 @@ import { type Mock } from 'vitest'
 import config from 'config'
 
 import { useImage } from 'services/image'
-import { useImpersonate } from 'services/impersonate'
+import { useImpersonate } from 'services/impersonate/useImpersonate'
 import { useInternalUser, useUser } from 'services/user'
 import { Plans } from 'shared/utils/billing'
 
@@ -21,7 +21,7 @@ import BaseLayout from './BaseLayout'
 vi.mock('services/image')
 const mockedUseImage = useImage as Mock
 
-vi.mock('services/impersonate')
+vi.mock('services/impersonate/useImpersonate')
 const mockedUseImpersonate = useImpersonate as Mock
 
 vi.mock('shared/GlobalTopBanners', () => ({

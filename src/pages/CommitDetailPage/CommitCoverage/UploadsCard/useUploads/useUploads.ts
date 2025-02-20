@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useCommit } from 'services/commit'
+import { useCommit } from 'services/commit/useCommit'
 import { useRepoOverview } from 'services/repo'
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { extractUploads } from 'shared/utils/extractUploads'

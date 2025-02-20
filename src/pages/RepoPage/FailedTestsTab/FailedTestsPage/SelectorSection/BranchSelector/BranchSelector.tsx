@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import { Branch, useBranch, useBranches } from 'services/branches'
+import { useBranch } from 'services/branches/useBranch'
+import { Branch, useBranches } from 'services/branches/useBranches'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import Icon from 'ui/Icon'

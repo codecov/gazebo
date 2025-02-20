@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom'
 import {
   EVENT_METRICS,
   useStoreCodecovEventMetric,
-} from 'services/codecovEventMetrics'
-import { useOrgUploadToken } from 'services/orgUploadToken'
+} from 'services/codecovEventMetrics/useStoreCodecovEventMetric'
+import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { Provider } from 'shared/api/helpers'
 import A from 'ui/A'
 import { Card } from 'ui/Card'

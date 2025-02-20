@@ -25,7 +25,7 @@ const mocks = vi.hoisted(() => ({
 }))
 
 vi.mock('./useUploads', async () => mocks)
-vi.mock('services/commitErrors', async () => mocks)
+vi.mock('services/commitErrors/useCommitErrors', async () => mocks)
 
 const server = setupServer()
 const queryClient = new QueryClient({
