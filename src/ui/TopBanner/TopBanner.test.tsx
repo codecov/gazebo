@@ -2,7 +2,12 @@ import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { type Mock } from 'vitest'
 
-import { TopBanner, useTopBannerContext } from './TopBanner'
+import {
+  removeFromLocalStorage,
+  saveToLocalStorage,
+  TopBanner,
+  useTopBannerContext,
+} from './TopBanner'
 
 describe('TopBanner', () => {
   function setup() {
@@ -220,6 +225,82 @@ describe('useTopBannerContext', () => {
       expect(error?.message).toBe(
         'useTopBannerContext has to be used within `<TopBannerContext.Provider>`'
       )
+    })
+  })
+})
+
+describe('TopBanner localStorage functions', () => {
+  const LOCAL_STORE_ROOT_KEY = 'dismissed-top-banners'
+
+  beforeEach(() => {
+    vi.restoreAllMocks()
+    localStorage.clear()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    localStorage.clear()
+  })
+
+  describe('saveToLocalStorage', () => {
+    it('should save new key when localStorage is empty', () => {
+      saveToLocalStorage('test-banner')
+
+      const stored = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
+      console.log('After:', stored)
+      expect(stored).not.toBeNull()
+      expect(JSON.parse(stored!)).toEqual({ 'test-banner': 'true' })
+    })
+
+    it('should add new key to existing localStorage data', () => {
+      localStorage.setItem(
+        LOCAL_STORE_ROOT_KEY,
+        JSON.stringify({ 'existing-banner': 'true' })
+      )
+
+      saveToLocalStorage('new-banner')
+
+      const stored = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
+      expect(JSON.parse(stored!)).toEqual({
+        'existing-banner': 'true',
+        'new-banner': 'true',
+      })
+    })
+  })
+
+  describe('removeFromLocalStorage', () => {
+    it('should remove specified key from localStorage', () => {
+      localStorage.setItem(
+        LOCAL_STORE_ROOT_KEY,
+        JSON.stringify({
+          'banner-1': 'true',
+          'banner-2': 'true',
+        })
+      )
+
+      removeFromLocalStorage('banner-1')
+
+      const stored = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
+      expect(JSON.parse(stored!)).toEqual({ 'banner-2': 'true' })
+    })
+
+    it('should handle removing non-existent key', () => {
+      localStorage.setItem(
+        LOCAL_STORE_ROOT_KEY,
+        JSON.stringify({ 'banner-1': 'true' })
+      )
+
+      removeFromLocalStorage('non-existent')
+
+      const stored = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
+      expect(JSON.parse(stored!)).toEqual({ 'banner-1': 'true' })
+    })
+
+    it('should handle empty localStorage', () => {
+      removeFromLocalStorage('test-banner')
+
+      const stored = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
+      expect(stored).toBeNull()
     })
   })
 })

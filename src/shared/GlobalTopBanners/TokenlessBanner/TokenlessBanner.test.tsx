@@ -106,10 +106,14 @@ describe('TokenlessBanner', () => {
     tokenlessSection = true,
     uploadTokenRequired = false,
     currentUser,
+    hasActiveRepos = true,
+    hasPublicRepos = true,
   }: {
     tokenlessSection?: boolean
     uploadTokenRequired?: boolean
     currentUser?: any
+    hasActiveRepos?: boolean
+    hasPublicRepos?: boolean
   } = {}) {
     mocks.useFlags.mockReturnValue({ tokenlessSection })
 
@@ -127,6 +131,16 @@ describe('TokenlessBanner', () => {
       }),
       graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: currentUser })
+      }),
+      graphql.query('DetailOwner', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              hasActiveRepos,
+              hasPublicRepos,
+            },
+          },
+        })
       })
     )
   }
@@ -150,7 +164,6 @@ describe('TokenlessBanner', () => {
   it('renders TokenRequiredBanner when uploadTokenRequired is true', async () => {
     setup({ uploadTokenRequired: true, currentUser: mockSignedInUser })
     render(<TokenlessBanner />, { wrapper: wrapper(['/gh/codecov']) })
-
     await waitFor(() => {
       const banner = screen.getByText('TokenRequiredBanner')
       expect(banner).toBeInTheDocument()
@@ -184,6 +197,26 @@ describe('TokenlessBanner', () => {
 
   it('renders nothing when currentUser is not provided', () => {
     setup({ uploadTokenRequired: false, currentUser: mockSignedInUser })
+    const { container } = render(<TokenlessBanner />, { wrapper: wrapper() })
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('renders nothing when owner has no active repos', () => {
+    setup({
+      uploadTokenRequired: false,
+      currentUser: mockSignedInUser,
+      hasActiveRepos: false,
+    })
+    const { container } = render(<TokenlessBanner />, { wrapper: wrapper() })
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('renders nothing when owner has no public repos', () => {
+    setup({
+      uploadTokenRequired: false,
+      currentUser: mockSignedInUser,
+      hasPublicRepos: false,
+    })
     const { container } = render(<TokenlessBanner />, { wrapper: wrapper() })
     expect(container).toBeEmptyDOMElement()
   })
