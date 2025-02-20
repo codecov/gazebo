@@ -41,14 +41,14 @@ const parsingError: ParsingErrorObject = {
   errorName: 'Parsing Error',
   errorDetails: {
     error: Error('bad parsing'),
-    caller: 'TestQueryOpts',
+    callingFn: 'TestQueryOpts',
   },
 }
 
 const notFoundError: NotFoundErrorObject = {
   errorName: 'Not Found Error',
   errorDetails: {
-    caller: 'TestQueryOpts',
+    callingFn: 'TestQueryOpts',
   },
 }
 
@@ -56,7 +56,7 @@ const ownerNotActivatedError: OwnerNotActivatedErrorObject = {
   errorName: 'Owner Not Activated',
   data: { detail: 'test' },
   errorDetails: {
-    caller: 'TestQueryOpts',
+    callingFn: 'TestQueryOpts',
   },
 }
 
@@ -76,7 +76,7 @@ describe('rejectNetworkError', () => {
         expect(mocks.addBreadcrumb).toHaveBeenCalledWith({
           category: 'network.error',
           level,
-          message: `${errorObject.errorDetails.caller} - ${errorObject.errorName}`,
+          message: `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`,
           data:
             'error' in errorObject.errorDetails
               ? errorObject.errorDetails.error
@@ -88,7 +88,7 @@ describe('rejectNetworkError', () => {
         _rejectNetworkError(errorObject).catch((_e) => {})
 
         expect(mocks.setTags).toHaveBeenCalledWith({
-          caller: errorObject.errorDetails.caller,
+          callingFn: errorObject.errorDetails.callingFn,
           errorName: errorObject.errorName,
         })
       })
@@ -102,7 +102,7 @@ describe('rejectNetworkError', () => {
       it('sets the fingerprint', () => {
         _rejectNetworkError(errorObject).catch((_e) => {
           expect(mocks.setFingerprint).toHaveBeenCalledWith([
-            `${errorObject.errorDetails.caller} - ${errorObject.errorName}`,
+            `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`,
           ])
         })
       })
@@ -111,7 +111,7 @@ describe('rejectNetworkError', () => {
         _rejectNetworkError(errorObject).catch((_e) => {})
 
         expect(mocks.captureMessage).toHaveBeenCalledWith(
-          `${errorObject.errorDetails.caller} - ${errorObject.errorName}`
+          `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`
         )
       })
 
@@ -119,7 +119,7 @@ describe('rejectNetworkError', () => {
         const result = _rejectNetworkError(errorObject)
 
         expect(result).rejects.toStrictEqual({
-          dev: `${errorObject.errorDetails.caller} - ${errorObject.errorName}`,
+          dev: `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`,
           data: 'data' in errorObject ? errorObject.data : undefined,
           status,
         })
