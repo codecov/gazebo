@@ -42,8 +42,10 @@ function DisplayTypeButton({ dataLength, isLoading }) {
         onChange={(option) => handleOnChange(option)}
       />
       {!isLoading &&
-        active?.displayType === displayTypeParameter.list &&
-        !!dataLength && <span>{dataLength} total files</span>}
+      active?.displayType === displayTypeParameter.list &&
+      !!dataLength ? (
+        <span>{dataLength} total files</span>
+      ) : null}
     </div>
   )
 }
