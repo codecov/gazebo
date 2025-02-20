@@ -5,7 +5,7 @@ import envVarScreenshot from 'assets/onboarding/env_variable_screenshot.png'
 import {
   EVENT_METRICS,
   useStoreCodecovEventMetric,
-} from 'services/codecovEventMetrics'
+} from 'services/codecovEventMetrics/useStoreCodecovEventMetric'
 import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { useRepo } from 'services/repo'
 import { Provider } from 'shared/api/helpers'

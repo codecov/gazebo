@@ -10,7 +10,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import { ImpactedFileType } from 'services/comparison'
+import { ImpactedFileType } from 'services/comparison/useComparisonForCommitAndParent'
 
 import CommitFileDiff from './CommitFileDiff'
 

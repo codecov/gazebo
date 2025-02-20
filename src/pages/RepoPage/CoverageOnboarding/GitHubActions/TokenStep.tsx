@@ -10,7 +10,7 @@ import {
   EVENT_METRICS,
   StoreEventMetricMutationArgs,
   useStoreCodecovEventMetric,
-} from 'services/codecovEventMetrics'
+} from 'services/codecovEventMetrics/useStoreCodecovEventMetric'
 import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { useRepo } from 'services/repo'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'

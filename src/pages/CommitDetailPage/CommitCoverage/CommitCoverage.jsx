@@ -6,7 +6,7 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useCommit } from 'services/commit/useCommit'
-import { useCommitErrors } from 'services/commitErrors'
+import { useCommitErrors } from 'services/commitErrors/useCommitErrors'
 import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { useOwner } from 'services/user'
