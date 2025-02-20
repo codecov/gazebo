@@ -28,4 +28,13 @@ describe('whitespace to underscore regex', () => {
   it('handles empty strings', () => {
     expect(transformStringToLocalStorageKey('')).toBe('')
   })
+
+  it('handles non-string inputs', () => {
+    // @ts-expect-error Testing null input
+    expect(transformStringToLocalStorageKey(null)).toBe('')
+    // @ts-expect-error Testing undefined input
+    expect(transformStringToLocalStorageKey(undefined)).toBe('')
+    // @ts-expect-error Testing number input
+    expect(transformStringToLocalStorageKey(123)).toBe('')
+  })
 })

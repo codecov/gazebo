@@ -27,8 +27,8 @@ const wrapper =
   ({ children }) => (
     <QueryClientProviderV5 client={queryClientV5}>
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gl']}>
-          <Route path="/:provider">{children}</Route>
+        <MemoryRouter initialEntries={['/gl/owner1']}>
+          <Route path="/:provider/:owner">{children}</Route>
         </MemoryRouter>
       </QueryClientProvider>
     </QueryClientProviderV5>
