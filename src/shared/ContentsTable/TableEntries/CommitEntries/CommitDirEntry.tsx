@@ -37,7 +37,7 @@ function CommitDirEntry({
       runPrefetch={runPrefetch}
       pageName="commitTreeView"
       commitSha={commitSha}
-      queryParams={{ flags, components }}
+      queryParams={{ flags, components, dropdown: 'coverage' }}
     />
   )
 }
