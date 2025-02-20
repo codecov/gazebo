@@ -26,7 +26,7 @@ const FileNotFoundBanner = () => (
     </BannerHeading>
     <BannerContent>
       <p>
-        No result to display due to Test Analytics couldn&apos;t locate a JUnit
+        No result to display because Test Analytics couldn&apos;t locate a JUnit
         XML file. Please rename the file to include{' '}
         <CodeSnippet>junit</CodeSnippet>, ensure CLI file search is enabled, or
         use the <CodeSnippet>file</CodeSnippet> or{' '}
