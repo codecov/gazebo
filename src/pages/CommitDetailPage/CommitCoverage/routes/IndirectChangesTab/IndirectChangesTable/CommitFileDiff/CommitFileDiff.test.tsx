@@ -11,7 +11,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
 import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
-import { ImpactedFileType } from 'services/commit'
+import { ImpactedFileType } from 'services/commit/useCommit'
 
 import CommitFileDiff from './CommitFileDiff'
 

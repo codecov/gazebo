@@ -7,7 +7,7 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { ImpactedFileType } from 'services/commit'
+import { ImpactedFileType } from 'services/commit/useCommit'
 
 import FilesChangedTable from './FilesChangedTable'
 
