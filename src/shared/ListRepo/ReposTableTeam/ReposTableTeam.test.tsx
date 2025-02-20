@@ -11,6 +11,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { OrderingDirection, TeamOrdering } from 'services/repos/orderingOptions'
+import { transformStringToLocalStorageKey } from 'shared/utils/transformStringToLocalStorageKey'
 
 import ReposTableTeam, { getSortingOption } from './ReposTableTeam'
 
@@ -26,8 +27,8 @@ const wrapper =
   ({ children }) => (
     <QueryClientProviderV5 client={queryClientV5}>
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gl']}>
-          <Route path="/:provider">{children}</Route>
+        <MemoryRouter initialEntries={['/gl/owner1']}>
+          <Route path="/:provider/:owner">{children}</Route>
         </MemoryRouter>
       </QueryClientProvider>
     </QueryClientProviderV5>
@@ -903,6 +904,137 @@ describe('ReposTableTeam', () => {
         expect(buttonsInDescendingOrder[0]).toHaveTextContent('Repo name 3')
         expect(buttonsInDescendingOrder[1]).toHaveTextContent('Repo name 2')
         expect(buttonsInDescendingOrder[2]).toHaveTextContent('Repo name 1')
+      })
+    })
+  })
+
+  describe('handles recently visited repo', () => {
+    beforeEach(() => {
+      localStorage.clear()
+      localStorage.setItem(
+        `${transformStringToLocalStorageKey('owner1')}_recently_visited`,
+        'gazebo'
+      )
+
+      server.use(
+        graphql.query('GetReposTeam', (info) => {
+          const recentlyVisitedRepo = [
+            {
+              node: {
+                private: false,
+                activated: true,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'gazebo',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: 0,
+                  lines: 123,
+                },
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+              },
+            },
+          ]
+
+          const myRepos = [
+            {
+              node: {
+                private: false,
+                activated: true,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 1',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                active: true,
+                coverageAnalytics: {
+                  lines: 0,
+                },
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+              },
+            },
+            {
+              node: {
+                private: true,
+                activated: true,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 2',
+                latestCommitAt: subDays(new Date(), 2).toISOString(),
+                active: true,
+                coverageAnalytics: {
+                  lines: 0,
+                },
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+              },
+            },
+            {
+              node: {
+                private: true,
+                activated: true,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'gazebo',
+                latestCommitAt: subDays(new Date(), 5).toISOString(),
+                active: true,
+                coverageAnalytics: {
+                  lines: 0,
+                },
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+              },
+            },
+          ]
+
+          let reposToReturn = myRepos.filter(
+            (repo) =>
+              !info.variables.filters.term ||
+              repo.node.name.includes(info.variables.filters.term)
+          )
+
+          if (info.variables.filters.repoNames) {
+            reposToReturn = recentlyVisitedRepo
+          }
+
+          return HttpResponse.json({
+            data: {
+              owner: {
+                isCurrentUserPartOfOrg: true,
+                repositories: {
+                  edges: reposToReturn,
+                  pageInfo: {
+                    hasNextPage: false,
+                    endCursor: '3',
+                  },
+                },
+              },
+            },
+          })
+        })
+      )
+    })
+
+    it('shows recently visited repo', async () => {
+      render(<ReposTableTeam searchValue="" />, {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(async () => {
+        const isFetching = !!queryClient.isFetching()
+        const recentlyVisitedRepo = screen.queryByText(/Recently visited/)
+        expect([isFetching, Boolean(recentlyVisitedRepo)]).toEqual([
+          false,
+          true,
+        ])
       })
     })
   })
