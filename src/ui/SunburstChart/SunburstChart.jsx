@@ -4,10 +4,11 @@ import { select } from 'd3-selection'
 import { arc } from 'd3-shape'
 import { transition } from 'd3-transition' // Kinda odd d3 behavior seems to need to imported but not directly referenced.
 import PropTypes from 'prop-types'
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 // Modification of https://observablehq.com/@d3/zoomable-sunburst
-import { colorRange, formatData, partitionFn } from './utils'
+import { arcVisible, colorRange, formatData, partitionFn } from './utils'
+
 function SunburstChart({
   data,
   onClick = () => {},
@@ -24,13 +25,51 @@ function SunburstChart({
   const clickHandler = useRef(onClick)
   const hoverHandler = useRef(onHover)
 
+  // this state stores the root node of the sunburst chart
+  const [root] = useState(() => {
+    // go through the data and add `value` to each node
+    const stack = [data]
+    const nodeMap = new Map()
+
+    // create a new root node with the value of the root node
+    const result = { ...data, value: selectorHandler.current(data) }
+    // add the root node to the node map
+    nodeMap.set(data, result)
+
+    // while there are nodes to process, pop the last node from the stack
+    while (stack.length > 0) {
+      const node = stack.pop()
+      const currentNode = nodeMap.get(node)
+
+      // if the node has children, process them
+      if (Array.isArray(node.children)) {
+        currentNode.children = node.children.map((child) => {
+          const newChild = structuredClone(child)
+          Object.assign(newChild, { value: selectorHandler.current(child) })
+
+          nodeMap.set(child, newChild)
+          stack.push(child)
+          return newChild
+        })
+      }
+    }
+
+    // partition the data and add the `current` property to each node
+    return partitionFn(result).each((d) => (d.current = d))
+  })
+
   // In this case D3 is handling rendering not React, so useLayoutEffect is used to handle rendering
   // and changes outside of the React lifecycle.
   useLayoutEffect(() => {
+    // early return if the ref is not found
+    if (!ref.current) return
+
     // The svg render size. This is *not* equivalent to normal rendering.
     const width = svgRenderSize
+
     // Overall graph size
     const radius = width / 6
+
     // Creates a function for creating arcs representing files and folders.
     const drawArc = arc()
       .startAngle((d) => d.x0)
@@ -39,55 +78,16 @@ function SunburstChart({
       .padRadius(radius * 1.5)
       .innerRadius((d) => d.y0 * radius)
       .outerRadius((d) => Math.max(d.y0 * radius, d.y1 * radius - 1))
+
     // A color function you can pass a number from 0-100 to and get a color back from the specified color range
     // Ex color(10.4)
     const color = scaleSequential()
       .domain([colorDomainMin, colorDomainMax])
       .interpolator(colorRange)
       .clamp(true)
+
     // Tracks previous location for rendering .. in the breadcrumb.
     let previous
-
-    // const selectorMutate = (node) => {
-    //   if (Array.isArray(node.children)) {
-    //     return {
-    //       ...node,
-    //       value: selectorHandler.current(node),
-    //       children: node.children.map((child) => selectorMutate(child)),
-    //     }
-    //   }
-
-    //   return { ...node, value: selectorHandler.current(node) }
-    // }
-
-    const selectorMutate = (rootNode) => {
-      const stack = [rootNode]
-      const result = { ...rootNode, value: selectorHandler.current(rootNode) }
-      const nodeMap = new Map()
-      nodeMap.set(rootNode, result)
-
-      while (stack.length > 0) {
-        const node = stack.pop()
-        const currentNode = nodeMap.get(node)
-
-        if (Array.isArray(node.children)) {
-          currentNode.children = node.children.map((child) => {
-            const newChild = { ...child, value: selectorHandler.current(child) }
-            nodeMap.set(child, newChild)
-            stack.push(child)
-            return newChild
-          })
-        }
-      }
-
-      return result
-    }
-
-    // Process data for use in D3
-    const formatted = selectorMutate(data)
-    const root = partitionFn(formatted)
-
-    root.each((d) => (d.current = d))
 
     // Bind D3 to a DOM element
     const svg = select(ref.current)
@@ -224,47 +224,36 @@ function SunburstChart({
     function changeLocation(p) {
       // Because you can move two layers at a time previous !== parent
       previous = p
-
+      const selected = p.parent || root
       const t = transition(g).duration(750)
 
-      handleArcsUpdate({
-        current: p,
-        selected: p.parent || root,
-        transition: t,
-      })
-
-      handleTextUpdate({
-        current: p,
-        selected: p.parent || root,
-        transition: t,
-      })
+      handleArcsUpdate({ current: p, selected, transition: t })
+      handleTextUpdate({ current: p, selected, transition: t })
     }
 
     function handleArcsUpdate({ current, selected, transition }) {
       parent.datum(selected)
 
       // Handle animating in/out of a folder
-      root.each(
-        (d) =>
-          (d.target = {
-            x0:
-              Math.max(
-                0,
-                Math.min(1, (d.x0 - current.x0) / (current.x1 - current.x0))
-              ) *
-              2 *
-              Math.PI,
-            x1:
-              Math.max(
-                0,
-                Math.min(1, (d.x1 - current.x0) / (current.x1 - current.x0))
-              ) *
-              2 *
-              Math.PI,
-            y0: Math.max(0, d.y0 - current.depth),
-            y1: Math.max(0, d.y1 - current.depth),
-          })
-      )
+      root.each((d) => {
+        // determine x0 and y0
+        const x0Min = Math.min(
+          1,
+          (d.x0 - current.x0) / (current.x1 - current.x0)
+        )
+        const x0 = Math.max(0, x0Min) * 2 * Math.PI
+        const y0 = Math.max(0, d.y0 - current.depth)
+
+        // determine x1 and y1
+        const x1Min = Math.min(
+          1,
+          (d.x1 - current.x0) / (current.x1 - current.x0)
+        )
+        const x1 = Math.max(0, x1Min) * 2 * Math.PI
+        const y1 = Math.max(0, d.y1 - current.depth)
+
+        d.target = { x0, y0, x1, y1 }
+      })
 
       // Transition the data on all arcs, even the ones that aren’t visible,
       // so that if this transition is interrupted, entering arcs will start
@@ -297,20 +286,15 @@ function SunburstChart({
       }
     }
 
-    // Calculate if a arc is visible
-    function arcVisible(d) {
-      return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0
-    }
-
     // On cleanup remove the root DOM generated by D3
     return () => g.remove()
-  }, [colorDomainMax, colorDomainMin, data, svgFontSize, svgRenderSize])
+  }, [colorDomainMax, colorDomainMin, data, root, svgFontSize, svgRenderSize])
 
   return (
     <svg
+      ref={ref}
       data-testid="sunburst"
       viewBox={[0, 0, svgRenderSize, svgRenderSize]}
-      ref={ref}
     />
   )
 }
