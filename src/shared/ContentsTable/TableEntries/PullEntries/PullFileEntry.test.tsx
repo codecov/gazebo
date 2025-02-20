@@ -232,7 +232,7 @@ describe('PullFileEntry', () => {
     const a = screen.getByRole('link')
     expect(a).toHaveAttribute(
       'href',
-      '/gh/codecov/test-repo/pull/undefined/blob/dir/file.js?flags%5B0%5D=a&flags%5B1%5D=b'
+      '/gh/codecov/test-repo/pull/undefined/blob/dir/file.js?flags%5B0%5D=a&flags%5B1%5D=b&dropdown=coverage'
     )
   })
 })

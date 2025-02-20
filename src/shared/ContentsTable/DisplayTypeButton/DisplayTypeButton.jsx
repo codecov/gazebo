@@ -43,7 +43,7 @@ function DisplayTypeButton({ dataLength, isLoading }) {
       />
       {!isLoading &&
         active?.displayType === displayTypeParameter.list &&
-        dataLength && <span>{dataLength} total files</span>}
+        !!dataLength && <span>{dataLength} total files</span>}
     </div>
   )
 }

@@ -103,7 +103,7 @@ describe('CommitFileEntry', () => {
       expect(path).toBeInTheDocument()
       expect(path).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/commit/1234/blob/dir/file.js'
+        '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?dropdown=coverage'
       )
     })
 
@@ -126,7 +126,7 @@ describe('CommitFileEntry', () => {
         expect(path).toBeInTheDocument()
         expect(path).toHaveAttribute(
           'href',
-          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1'
+          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1&dropdown=coverage'
         )
       })
     })
@@ -150,7 +150,7 @@ describe('CommitFileEntry', () => {
         expect(path).toBeInTheDocument()
         expect(path).toHaveAttribute(
           'href',
-          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1&components%5B0%5D=component-test'
+          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1&components%5B0%5D=component-test&dropdown=coverage'
         )
       })
     })
@@ -174,7 +174,7 @@ describe('CommitFileEntry', () => {
       expect(path).toBeInTheDocument()
       expect(path).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/commit/1234/blob/dir/file.js'
+        '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?dropdown=coverage'
       )
     })
 
@@ -214,7 +214,7 @@ describe('CommitFileEntry', () => {
         expect(path).toBeInTheDocument()
         expect(path).toHaveAttribute(
           'href',
-          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1'
+          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1&dropdown=coverage'
         )
       })
     })

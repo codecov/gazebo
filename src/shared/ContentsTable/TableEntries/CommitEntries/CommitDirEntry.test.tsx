@@ -108,7 +108,7 @@ describe('CommitDirEntry', () => {
       const a = screen.getByRole('link')
       expect(a).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/commit/1234/tree/path/to/directory/dir'
+        '/gh/codecov/test-repo/commit/1234/tree/path/to/directory/dir?dropdown=coverage'
       )
     })
 
@@ -128,7 +128,11 @@ describe('CommitDirEntry', () => {
         expect(a).toHaveAttribute(
           'href',
           `/gh/codecov/test-repo/commit/1234/tree/path/to/directory/dir${qs.stringify(
-            { flags: ['flag-1'], components: ['component-1'] },
+            {
+              flags: ['flag-1'],
+              components: ['component-1'],
+              dropdown: 'coverage',
+            },
             { addQueryPrefix: true }
           )}`
         )
@@ -143,7 +147,7 @@ describe('CommitDirEntry', () => {
       const a = screen.getByRole('link')
       expect(a).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/commit/1234/tree/dir'
+        '/gh/codecov/test-repo/commit/1234/tree/dir?dropdown=coverage'
       )
     })
 
@@ -162,7 +166,7 @@ describe('CommitDirEntry', () => {
         expect(a).toHaveAttribute(
           'href',
           `/gh/codecov/test-repo/commit/1234/tree/dir${qs.stringify(
-            { flags: ['flag-1'] },
+            { flags: ['flag-1'], dropdown: 'coverage' },
             { addQueryPrefix: true }
           )}`
         )

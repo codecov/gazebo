@@ -48,7 +48,7 @@ const RepoContentsResult: React.FC<RepoContentsProps> = ({
         Once merged to your default branch, Codecov will show your report
         results on this dashboard.{' '}
         <A
-          to={{ pageName: 'configuration' }}
+          to={{ pageName: 'configGeneral' }}
           hook={'repo-to-edit-branch'}
           variant="semibold"
           isExternal={false}

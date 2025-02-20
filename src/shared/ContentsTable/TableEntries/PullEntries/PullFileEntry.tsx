@@ -37,7 +37,7 @@ function PullFileEntry({
       path={path}
       runPrefetch={runPrefetch}
       pageName="pullFileView"
-      queryParams={{ flags }}
+      queryParams={{ flags, dropdown: 'coverage' }}
     />
   )
 }
