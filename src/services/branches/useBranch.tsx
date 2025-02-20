@@ -20,7 +20,7 @@ export const BranchSchema = z
   })
   .nullable()
 
-type BranchData = z.infer<typeof BranchSchema>
+export type Branch = z.infer<typeof BranchSchema>
 
 const GetBranchSchema = z.object({
   owner: z
@@ -44,7 +44,7 @@ export interface UseBranchArgs {
   owner: string
   repo: string
   branch: string
-  opts?: UseQueryOptions<{ branch: BranchData }>
+  opts?: UseQueryOptions<{ branch: Branch }>
 }
 
 export const query = `

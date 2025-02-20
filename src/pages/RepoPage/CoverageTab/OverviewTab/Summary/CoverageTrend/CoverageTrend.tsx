@@ -1,7 +1,7 @@
 import { keepPreviousData } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
+import { useBranches } from 'services/branches/useBranches'
 import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 import { SummaryField } from 'ui/Summary'
