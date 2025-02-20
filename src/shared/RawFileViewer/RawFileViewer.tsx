@@ -5,7 +5,7 @@ import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
-import { useCommitBasedCoverageForFileViewer } from 'services/file'
+import { useCommitBasedCoverageForFileViewer } from 'services/file/useCommitBasedCoverageForFileViewer'
 import { useOwner } from 'services/user'
 import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsMapper'
 import { getFilenameFromFilePath } from 'shared/utils/url'

@@ -1,4 +1,4 @@
-import { useDeleteFlag } from 'services/deleteFlag'
+import { useDeleteFlag } from 'services/deleteFlag/useDeleteFlag'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 

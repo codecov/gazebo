@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
-import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
+import { UnknownFlagsSchema } from 'services/impactedFiles/schemas/UnknownFlags'
 
 const MissingCoverageSchema = z.object({
   __typename: z.literal('MissingCoverage'),

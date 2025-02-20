@@ -12,7 +12,7 @@ import {
   MissingHeadCommitSchema,
   MissingHeadReportSchema,
 } from 'services/comparison/schemas'
-import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
+import { UnknownFlagsSchema } from 'services/impactedFiles/schemas/UnknownFlags'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,

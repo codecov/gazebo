@@ -13,7 +13,7 @@ import { OnboardingContainerProvider } from 'pages/OwnerPage/OnboardingContainer
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
 import TermsOfService from 'pages/TermsOfService'
 import { useEventContext } from 'services/events/hooks'
-import { useImpersonate } from 'services/impersonate'
+import { useImpersonate } from 'services/impersonate/useImpersonate'
 import { useTracking } from 'services/tracking'
 import GlobalBanners from 'shared/GlobalBanners'
 import GlobalTopBanners from 'shared/GlobalTopBanners'

@@ -1,7 +1,7 @@
 import cs from 'classnames'
 
 import { CodecovIcon } from 'assets/svg/codecov'
-import { useImpersonate } from 'services/impersonate'
+import { useImpersonate } from 'services/impersonate/useImpersonate'
 import A from 'ui/A'
 
 function Header() {
