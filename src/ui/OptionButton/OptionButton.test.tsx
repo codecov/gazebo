@@ -34,6 +34,15 @@ describe('OptionButton', () => {
     expect(onChange).toHaveBeenCalled()
   })
 
+  it('accepts no onChange prop', async () => {
+    const user = userEvent.setup()
+
+    render(<OptionButton options={options} active="active" />)
+
+    const optionTwo = screen.getByRole('button', { name: 'test option 2' })
+    await user.click(optionTwo)
+  })
+
   describe('when disable prop is true', () => {
     it('sets buttons as disabled', () => {
       const onChange = vi.fn()
