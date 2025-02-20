@@ -44,7 +44,7 @@ function CommitFileEntry({
       path={path}
       runPrefetch={runPrefetch}
       pageName="commitFileDiff"
-      queryParams={{ flags, components }}
+      queryParams={{ flags, components, dropdown: 'coverage' }}
     />
   )
 }
