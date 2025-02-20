@@ -4,19 +4,19 @@ import * as Sentry from '@sentry/react'
 type ParsingError = 'Parsing Error'
 type NotFoundError = 'Not Found Error'
 type OwnerNotActivatedError = 'Owner Not Activated'
-type Errors = ParsingError | NotFoundError | OwnerNotActivatedError
+type NetworkErrorName = ParsingError | NotFoundError | OwnerNotActivatedError
 
-type ParsingErrorObject = {
+export type ParsingErrorObject = {
   errorName: ParsingError
   errorDetails: { error: Error; caller: string }
 }
 
-type NotFoundErrorObject = {
+export type NotFoundErrorObject = {
   errorName: NotFoundError
   errorDetails: { caller: string }
 }
 
-type OwnerNotActivatedErrorObject = {
+export type OwnerNotActivatedErrorObject = {
   errorName: OwnerNotActivatedError
   data: { detail?: React.ReactNode }
   errorDetails: { caller: string }
@@ -27,7 +27,7 @@ type NetworkErrorObject =
   | NotFoundErrorObject
   | OwnerNotActivatedErrorObject
 
-const determineSentryLevel = (errorName: Errors) => {
+const determineSentryLevel = (errorName: NetworkErrorName) => {
   switch (errorName) {
     case 'Parsing Error':
       return 'error'
@@ -40,7 +40,7 @@ const determineSentryLevel = (errorName: Errors) => {
   }
 }
 
-const determineStatusCode = (errorName: Errors) => {
+const determineStatusCode = (errorName: NetworkErrorName) => {
   switch (errorName) {
     case 'Parsing Error':
       return 400
@@ -51,7 +51,7 @@ const determineStatusCode = (errorName: Errors) => {
   }
 }
 
-function _rejectNetworkError(error: NetworkErrorObject) {
+export function _rejectNetworkError(error: NetworkErrorObject) {
   const {
     errorName,
     errorDetails: { caller },
