@@ -5,21 +5,21 @@ import { OptionButton } from 'ui/OptionButton/OptionButton'
 
 import { displayTypeParameter } from '../constants'
 
-const treeView = {
-  text: 'Code tree',
-  displayType: displayTypeParameter.tree,
-} as const
-
-const listView = {
-  text: 'File list',
-  displayType: displayTypeParameter.list,
-} as const
-
-const options = [treeView, listView]
+const options = [
+  {
+    text: 'Code tree',
+    displayType: displayTypeParameter.tree,
+  },
+  {
+    text: 'File list',
+    displayType: displayTypeParameter.list,
+  },
+] as const
 type Options = (typeof options)[number]
 
 // useLocationParams is pain
 function initialState(urlParams: any): Options {
+  const [treeView, listView] = options
   return urlParams?.displayType ===
     displayTypeParameter.list.toLocaleLowerCase()
     ? listView
