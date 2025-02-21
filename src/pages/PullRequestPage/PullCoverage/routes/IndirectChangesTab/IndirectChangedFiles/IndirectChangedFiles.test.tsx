@@ -5,7 +5,7 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { PullComparison } from 'services/pull'
+import { PullComparison } from 'services/pull/usePull'
 import { UploadTypeEnum } from 'shared/utils/commit'
 
 import IndirectChangedFiles from './IndirectChangedFiles'

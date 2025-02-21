@@ -2,7 +2,7 @@ import isNumber from 'lodash/isNumber'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { usePull } from 'services/pull'
+import { usePull } from 'services/pull/usePull'
 import { mapEdges } from 'shared/utils/graphql'
 
 export function getPullDataForCompareSummary({
