@@ -105,4 +105,26 @@ describe('useAccountDetails', () => {
       )
     })
   })
+
+  describe('when the data is not valid', () => {
+    it('returns an error', async () => {
+      // @ts-expect-error - testing parsing error
+      setup({ badData: true })
+
+      const { result } = renderHook(
+        () => useAccountDetails({ provider, owner }),
+        { wrapper: wrapper() }
+      )
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useAccountDetails - Parsing Error',
+            status: 400,
+          })
+        )
+      )
+    })
+  })
 })
