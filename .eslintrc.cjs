@@ -18,7 +18,6 @@ module.exports = {
     'plugin:import/recommended',
     'prettier',
     'plugin:storybook/recommended',
-    'plugin:tailwindcss/recommended',
   ],
   plugins: ['@vitest', 'jsx-a11y', 'import'],
   globals: {
@@ -279,6 +278,20 @@ module.exports = {
         'react-hooks/rules-of-hooks': 'off',
       },
     },
+    // Custom casing rules
+    {
+      files: ['src/**/*.{js,jsx,ts,tsx}'],
+      rules: {
+        'no-restricted-syntax': [
+          'warn',
+          {
+            selector:
+              'Literal[value=/\\bGithub\\b|\\bGitlab\\b|\\bBitBucket\\b/], JSXText[value=/\\bGithub\\b|\\bGitlab\\b|\\bBitBucket\\b/]',
+            message: 'Use correct casing (GitHub, GitLab, Bitbucket)',
+          },
+        ],
+      },
+    },
   ],
   env: {
     browser: true,
@@ -500,13 +513,5 @@ module.exports = {
     // https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
-
-    'no-restricted-syntax': [
-      'warn',
-      {
-        selector: "JSXText[value=/\\bGithub\\b|\\bGitlab\\b|\\bBitBucket\\b/]",
-        message: "Use correct casing (GitHub, GitLab, Bitbucket)"
-      }
-    ]
   },
 }
