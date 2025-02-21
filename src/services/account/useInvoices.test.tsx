@@ -86,6 +86,14 @@ describe('useInvoices', () => {
         })
 
         await waitFor(() => expect(result.current.error).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              dev: 'useInvoices - Parsing Error',
+              status: 400,
+            })
+          )
+        )
       })
     })
   })
