@@ -2,7 +2,7 @@ import { render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 
-import OptionButton from './OptionButton'
+import { OptionButton } from './OptionButton'
 
 const options = [{ text: 'test option 1' }, { text: 'test option 2' }]
 
@@ -32,6 +32,15 @@ describe('OptionButton', () => {
     const optionTwo = screen.getByRole('button', { name: 'test option 2' })
     await user.click(optionTwo)
     expect(onChange).toHaveBeenCalled()
+  })
+
+  it('accepts no onChange prop', async () => {
+    const user = userEvent.setup()
+
+    render(<OptionButton options={options} active="active" />)
+
+    const optionTwo = screen.getByRole('button', { name: 'test option 2' })
+    await user.click(optionTwo)
   })
 
   describe('when disable prop is true', () => {

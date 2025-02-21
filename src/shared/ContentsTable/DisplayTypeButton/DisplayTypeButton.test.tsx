@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { Mock } from 'vitest'
 
 import { useLocationParams } from 'services/navigation'
 
-import DisplayTypeButton from './DisplayTypeButton'
+import { DisplayTypeButton } from './DisplayTypeButton'
 
 vi.mock('services/navigation', () => {
   const originalModule = vi.importActual('services/navigation')
@@ -13,6 +14,8 @@ vi.mock('services/navigation', () => {
     useLocationParams: vi.fn(),
   }
 })
+
+const mockedUseLocationParams = useLocationParams as Mock
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,7 +57,7 @@ const mockUrlParams = {
 describe('Coverage Tab', () => {
   function setup(urlParams = mockUrlParams) {
     const user = userEvent.setup()
-    useLocationParams.mockReturnValue({
+    mockedUseLocationParams.mockReturnValue({
       updateParams: vi.fn(),
       params: urlParams,
     })

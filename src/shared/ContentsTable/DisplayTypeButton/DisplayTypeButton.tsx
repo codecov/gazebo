@@ -1,8 +1,7 @@
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
-import OptionButton from 'ui/OptionButton'
+import { OptionButton } from 'ui/OptionButton/OptionButton'
 
 import { displayTypeParameter } from '../constants'
 
@@ -15,9 +14,11 @@ const options = [
     text: 'File list',
     displayType: displayTypeParameter.list,
   },
-]
+] as const
+type Options = (typeof options)[number]
 
-function initialState(urlParams) {
+// useLocationParams is pain
+function initialState(urlParams: any): Options {
   const [treeView, listView] = options
   return urlParams?.displayType ===
     displayTypeParameter.list.toLocaleLowerCase()
@@ -25,11 +26,19 @@ function initialState(urlParams) {
     : treeView
 }
 
-function DisplayTypeButton({ dataLength, isLoading }) {
-  const { params, updateParams } = useLocationParams()
-  const [active, setActive] = useState(() => initialState(params))
+interface DisplayTypeButtonProps {
+  dataLength?: number
+  isLoading?: boolean
+}
 
-  function handleOnChange(option) {
+export function DisplayTypeButton({
+  dataLength,
+  isLoading,
+}: DisplayTypeButtonProps) {
+  const { params, updateParams } = useLocationParams()
+  const [active, setActive] = useState<Options>(() => initialState(params))
+
+  function handleOnChange(option: Options) {
     updateParams({ displayType: option.displayType.toLowerCase() })
     setActive(option)
   }
@@ -49,10 +58,3 @@ function DisplayTypeButton({ dataLength, isLoading }) {
     </div>
   )
 }
-
-DisplayTypeButton.propTypes = {
-  dataLength: PropTypes.number,
-  isLoading: PropTypes.bool,
-}
-
-export default DisplayTypeButton

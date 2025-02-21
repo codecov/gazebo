@@ -8,7 +8,7 @@ import {
 } from 'services/account/useAvailablePlans'
 import { usePlanData } from 'services/account/usePlanData'
 import { BillingRate, findProPlans } from 'shared/utils/billing'
-import OptionButton from 'ui/OptionButton'
+import { OptionButton } from 'ui/OptionButton/OptionButton'
 
 import { OptionPeriod, TimePeriods } from '../../../constants'
 import { UpgradeFormFields } from '../../../UpgradeForm'
@@ -78,14 +78,16 @@ const BillingControls: React.FC<BillingControlsProps> = ({
 
             setOption(text)
           }}
-          options={[
-            {
-              text: TimePeriods.ANNUAL,
-            },
-            {
-              text: TimePeriods.MONTHLY,
-            },
-          ]}
+          options={
+            [
+              {
+                text: TimePeriods.ANNUAL,
+              },
+              {
+                text: TimePeriods.MONTHLY,
+              },
+            ] as const
+          }
         />
         <p>
           <span className="font-semibold">${baseUnitPrice}</span> per
