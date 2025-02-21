@@ -3,7 +3,7 @@ import { useLayoutEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { useSetCrumbs } from 'pages/PlanPage/context'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
 import A from 'ui/A'

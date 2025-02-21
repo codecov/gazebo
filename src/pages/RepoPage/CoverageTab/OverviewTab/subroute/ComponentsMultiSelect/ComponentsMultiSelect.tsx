@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useBranchComponents } from 'services/branches/useBranchComponents'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 

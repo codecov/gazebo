@@ -2,7 +2,7 @@ import { OnChangeFn, SortingState } from '@tanstack/react-table'
 import isEqual from 'lodash/isEqual'
 import { useState } from 'react'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 
 import { displayTypeParameter } from '../constants'
 

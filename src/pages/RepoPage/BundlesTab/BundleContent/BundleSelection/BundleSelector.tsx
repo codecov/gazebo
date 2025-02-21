@@ -4,7 +4,7 @@ import { forwardRef, useMemo, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { BranchBundlesNamesQueryOpts } from 'services/bundleAnalysis/BranchBundlesNamesQueryOpts'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepoOverview } from 'services/repo'
 import Select from 'ui/Select'
 

@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { OrderingDirection } from 'types'
 
 import { BundleAssetsQueryOpts } from 'services/bundleAnalysis/BundleAssetsQueryOpts'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoOverview } from 'services/repo'
 import { createTimeSeriesQueryVars, Trend } from 'shared/utils/timeseriesCharts'
 

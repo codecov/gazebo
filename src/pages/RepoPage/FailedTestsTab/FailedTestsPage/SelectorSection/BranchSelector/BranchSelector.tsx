@@ -3,7 +3,7 @@ import { useHistory, useParams } from 'react-router-dom'
 
 import { useBranch } from 'services/branches/useBranch'
 import { Branch, useBranches } from 'services/branches/useBranches'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepoOverview } from 'services/repo'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'

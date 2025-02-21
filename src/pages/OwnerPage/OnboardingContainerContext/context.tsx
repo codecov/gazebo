@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER } from 'pages/OwnerPage/OnboardingOrg/constants'
 import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { Provider } from 'shared/api/helpers'
 import { providerToName } from 'shared/utils/provider'
 

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
 import { eventTracker } from 'services/events/events'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
 import {
   loginProviderImage,

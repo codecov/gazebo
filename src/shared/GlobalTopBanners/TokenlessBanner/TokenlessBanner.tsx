@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import { useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'

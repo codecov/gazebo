@@ -6,7 +6,7 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account/useAccountDetails'
 import { useInvoice } from 'services/account/useInvoice'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 

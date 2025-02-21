@@ -7,7 +7,7 @@ import {
   TIME_OPTION_KEY,
   TIME_OPTION_VALUES,
 } from 'pages/RepoPage/shared/constants'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepo, useRepoComponents } from 'services/repo'
 
 const getSortByDirection = (isDesc: boolean) => (isDesc ? 'DESC' : 'ASC')

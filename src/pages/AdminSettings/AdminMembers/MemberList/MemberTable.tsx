@@ -19,7 +19,7 @@ import { useEffect, useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { SelfHostedSettingsQueryOpts } from 'services/selfHosted/SelfHostedSettingsQueryOpts'
 import {
   SelfHostedUserListQueryOpts,

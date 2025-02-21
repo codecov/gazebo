@@ -2,7 +2,8 @@ import defaultTo from 'lodash/defaultTo'
 import { forwardRef } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 
-import { useNavLinks, useStaticNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
+import { useStaticNavLinks } from 'services/navigation/useStaticNavLinks'
 import Icon from 'ui/Icon'
 
 function useLinkConfig<T extends string>(pageName: T): LinkConfig | null {
