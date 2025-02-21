@@ -149,7 +149,7 @@ describe('usePlanData', () => {
   })
 
   describe('when the data is not valid', () => {
-    it('returns an error', async () => {
+    it('throws a 400', async () => {
       setup({ trialData: { hasPrivateRepos: 'string' } })
       const { result } = renderHook(
         () =>

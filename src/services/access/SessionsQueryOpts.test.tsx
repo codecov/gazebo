@@ -109,7 +109,7 @@ describe('useSessions', () => {
   }
 
   describe('when called and response parsing fails', () => {
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () => useQueryV5(SessionsQueryOpts({ provider })),

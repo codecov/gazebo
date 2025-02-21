@@ -214,7 +214,7 @@ describe('useAvailablePlans', () => {
         vi.restoreAllMocks()
       })
 
-      it('throws a 404', async () => {
+      it('throws a 400', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>

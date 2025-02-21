@@ -79,7 +79,7 @@ describe('useInvoices', () => {
         vi.restoreAllMocks()
       })
 
-      it('fails to parse if bad data', async () => {
+      it('throws a 400', async () => {
         setup(true)
         const { result } = renderHook(() => useInvoices({ provider, owner }), {
           wrapper: wrapper(),

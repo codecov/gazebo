@@ -107,7 +107,7 @@ describe('useAccountDetails', () => {
   })
 
   describe('when the data is not valid', () => {
-    it('returns an error', async () => {
+    it('throws a 400', async () => {
       // @ts-expect-error - testing parsing error
       setup({ badData: true })
 

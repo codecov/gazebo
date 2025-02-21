@@ -227,7 +227,7 @@ describe('RepoATSInfo', () => {
         console.error = oldConsoleError
       })
 
-      it('throws an error', async () => {
+      it('throws a 400', async () => {
         setup({ isUnsuccessfulParseError: true })
 
         const { result } = renderHook(

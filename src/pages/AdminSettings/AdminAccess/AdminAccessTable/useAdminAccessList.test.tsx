@@ -157,7 +157,7 @@ describe('useAdminAccessList', () => {
       consoleSpy.mockRestore()
     })
 
-    it('rejects with 404', async () => {
+    it('rejects with 400', async () => {
       setup({ invalidResponse: true })
       const { result } = renderHook(() => useAdminAccessList(), {
         wrapper: wrapper(),
