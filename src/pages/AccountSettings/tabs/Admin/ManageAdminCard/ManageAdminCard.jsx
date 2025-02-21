@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { ApiFilterEnum } from 'services/navigation'
+import { ApiFilterEnum } from 'services/navigation/normalize'
 import { useUpdateUser } from 'services/users'
 
 import AddAdmins from './AddAdmins'

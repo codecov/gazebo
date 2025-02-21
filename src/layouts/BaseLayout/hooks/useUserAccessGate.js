@@ -6,7 +6,7 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import config from 'config'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization/useUpdateDefaultOrganization'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useInternalUser, useUser } from 'services/user'
 
 const SetUpActions = Object.freeze({

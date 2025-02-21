@@ -28,7 +28,7 @@ vi.mock('services/repo/useRepoFlags', async () => {
   }
 })
 
-vi.mock('services/navigation', async () => {
+vi.mock('services/navigation/useLocationParams', async () => {
   const actual = await vi.importActual('services/navigation')
   return {
     ...actual,

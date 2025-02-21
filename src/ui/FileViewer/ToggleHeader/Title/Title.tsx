@@ -2,7 +2,7 @@ import eq from 'lodash/eq'
 import isUndefined from 'lodash/isUndefined'
 import { useState } from 'react'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
 import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'

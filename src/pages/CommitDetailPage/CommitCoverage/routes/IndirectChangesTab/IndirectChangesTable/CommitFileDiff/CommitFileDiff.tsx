@@ -9,7 +9,7 @@ import {
   useComparisonForCommitAndParent,
 } from 'services/comparison/useComparisonForCommitAndParent'
 import { transformImpactedFileToDiff } from 'services/comparison/utils'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'

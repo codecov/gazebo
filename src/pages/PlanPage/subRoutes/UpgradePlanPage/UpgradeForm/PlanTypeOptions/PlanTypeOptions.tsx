@@ -6,7 +6,7 @@ import {
   useAvailablePlans,
 } from 'services/account/useAvailablePlans'
 import { usePlanData } from 'services/account/usePlanData'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import {
   BillingRate,
   canApplySentryUpgrade,

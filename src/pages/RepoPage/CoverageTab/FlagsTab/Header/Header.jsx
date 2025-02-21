@@ -5,7 +5,7 @@ import {
   TIME_OPTION_VALUES,
   TimeOptions,
 } from 'pages/RepoPage/shared/constants'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
 import A from 'ui/A'
 import Icon from 'ui/Icon'

@@ -2,7 +2,7 @@ import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { cn } from 'shared/utils/cn'
 import { formatTimeFromSeconds } from 'shared/utils/dates'
 import Badge from 'ui/Badge'

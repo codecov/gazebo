@@ -3,7 +3,7 @@ import { forwardRef, useState } from 'react'
 import { useParams } from 'react-router'
 
 import { BranchBundlesNamesQueryOpts } from 'services/bundleAnalysis/BranchBundlesNamesQueryOpts'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoOverview } from 'services/repo'
 import MultiSelect from 'ui/MultiSelect'
 

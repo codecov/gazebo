@@ -2,11 +2,8 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { useBranchHasCommits } from 'services/branches/useBranchHasCommits'
-import {
-  ALL_BRANCHES,
-  useLocationParams,
-  useNavLinks,
-} from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
+import { ALL_BRANCHES, useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepoOverview } from 'services/repo'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'

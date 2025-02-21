@@ -1,7 +1,7 @@
 import capitalize from 'lodash/capitalize'
 import { useState } from 'react'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import Button from 'ui/Button'
 import SearchField from 'ui/SearchField'
 
