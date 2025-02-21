@@ -140,8 +140,7 @@ describe('useUpdateBundleCache', () => {
           await waitFor(() => expect(result.current.isError).toBe(true))
 
           expect(result.current.error).toEqual({
-            data: {},
-            dev: 'useUpdateBundleCache - 400 failed to parse input',
+            dev: 'useUpdateBundleCache - Parsing Error',
             status: 400,
           })
         })
@@ -168,8 +167,7 @@ describe('useUpdateBundleCache', () => {
           await waitFor(() => expect(result.current.isError).toBe(true))
 
           expect(result.current.error).toEqual({
-            data: {},
-            dev: 'useUpdateBundleCache - 400 failed to parse data',
+            dev: 'useUpdateBundleCache - Parsing Error',
             status: 400,
           })
         })

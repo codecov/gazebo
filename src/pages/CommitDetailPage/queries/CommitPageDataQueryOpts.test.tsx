@@ -308,7 +308,8 @@ describe('CommitPageData', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'CommitPageDataQueryOpts - Parsing Error',
+              status: 400,
             })
           )
         )

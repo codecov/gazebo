@@ -111,9 +111,8 @@ describe('useCurrentOrgPlanPageData', () => {
 
     await waitFor(() => expect(result.current.isError).toBeTruthy())
     expect(result.current.error).toEqual({
-      status: 404,
-      data: {},
-      dev: 'useCurrentOrgPlanPageData - 404 failed to parse',
+      dev: 'useCurrentOrgPlanPageData - Parsing Error',
+      status: 400,
     })
   })
 })

@@ -107,9 +107,8 @@ describe('useSetUploadTokenRequired', () => {
 
           expect(error).toBeDefined()
           expect(error).toEqual({
-            status: 404,
-            data: {},
-            dev: 'useSetUploadTokenRequired - 404 failed to parse',
+            dev: 'useSetUploadTokenRequired - Parsing Error',
+            status: 400,
           })
         })
       })

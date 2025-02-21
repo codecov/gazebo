@@ -142,9 +142,8 @@ describe('useInfiniteAccountOrganizations', () => {
 
     await waitFor(() =>
       expect(result.current.failureReason).toMatchObject({
-        status: 404,
-        data: {},
-        dev: 'useInfiniteAccountOrganizations - 404 Failed to parse data',
+        dev: 'InfiniteAccountOrganizationsQueryOpts - Parsing Error',
+        status: 400,
       })
     )
   })
@@ -165,9 +164,8 @@ describe('useInfiniteAccountOrganizations', () => {
 
     await waitFor(() =>
       expect(result.current.failureReason).toMatchObject({
+        dev: 'InfiniteAccountOrganizationsQueryOpts - Not Found Error',
         status: 404,
-        data: {},
-        dev: 'useInfiniteAccountOrganizations - 404 Cannot find Account for Owner',
       })
     )
   })

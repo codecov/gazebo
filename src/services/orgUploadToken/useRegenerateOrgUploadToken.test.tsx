@@ -4,11 +4,11 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import * as apiHelpers from 'shared/api/helpers'
+import * as apiHelpers from 'shared/api/rejectNetworkError'
 
 import { useRegenerateOrgUploadToken } from './useRegenerateOrgUploadToken'
 
-vi.mock('shared/api/helpers')
+vi.mock('shared/api/rejectNetworkError')
 
 const mocks = {
   rejectNetworkError: vi.spyOn(apiHelpers, 'rejectNetworkError'),
@@ -96,11 +96,7 @@ describe('useRegenerateOrgUploadToken', () => {
           await waitFor(() => !result.current.isLoading)
 
           expect(mocks.rejectNetworkError).toHaveBeenCalledWith(
-            expect.objectContaining({
-              status: 404,
-              dev: 'useRegenerateOrgUploadToken - 404 schema parsing failed',
-              data: {},
-            })
+            expect.objectContaining({ errorName: 'Parsing Error' })
           )
         })
       })

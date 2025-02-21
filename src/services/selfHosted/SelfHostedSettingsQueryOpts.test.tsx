@@ -93,8 +93,8 @@ describe('useSelfHostedSettings', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'SelfHostedSettingsQueryOpts - 404 schema parsing failed',
+            dev: 'SelfHostedSettingsQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )

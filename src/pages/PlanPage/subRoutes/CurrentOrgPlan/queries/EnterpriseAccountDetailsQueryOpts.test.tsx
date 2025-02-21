@@ -78,9 +78,8 @@ describe('useEnterpriseAccountDetails', () => {
 
     await waitFor(() =>
       expect(result.current.failureReason).toMatchObject({
-        status: 404,
-        data: {},
-        dev: 'useEnterpriseAccountDetails - 404 Failed to parse data',
+        dev: 'EnterpriseAccountDetailsQueryOpts - Parsing Error',
+        status: 400,
       })
     )
   })

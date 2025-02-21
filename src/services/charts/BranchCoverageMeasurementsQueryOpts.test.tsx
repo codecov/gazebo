@@ -283,7 +283,8 @@ describe('useBranchCoverageMeasurements', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'BranchCoverageMeasurementsQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )

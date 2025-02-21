@@ -279,7 +279,7 @@ describe('useBranchBundleSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            dev: 'BranchBundleSummaryQueryOpts - 403 Owner not activated',
+            dev: 'BranchBundleSummaryQueryOpts - Owner Not Activated',
             status: 403,
           })
         )
@@ -317,7 +317,8 @@ describe('useBranchBundleSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'BranchBundleSummaryQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )

@@ -235,8 +235,8 @@ describe('ReposTeamQueryOpts', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'ReposTeamQueryOpts - 404 Failed to parse schema',
+            dev: 'ReposTeamQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )
