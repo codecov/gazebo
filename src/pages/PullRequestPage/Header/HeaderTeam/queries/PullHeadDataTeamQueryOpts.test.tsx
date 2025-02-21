@@ -221,6 +221,7 @@ describe('usePullHeadDataTeam', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'PullHeadDataTeamQueryOpts - Not Found Error',
               status: 404,
             })
           )
@@ -258,6 +259,7 @@ describe('usePullHeadDataTeam', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'PullHeadDataTeamQueryOpts - Owner Not Activated',
               status: 403,
             })
           )
@@ -295,7 +297,8 @@ describe('usePullHeadDataTeam', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'PullHeadDataTeamQueryOpts - Parsing Error',
+              status: 400,
             })
           )
         )
