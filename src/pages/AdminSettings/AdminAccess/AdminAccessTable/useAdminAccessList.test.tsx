@@ -166,8 +166,8 @@ describe('useAdminAccessList', () => {
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       expect(result.current.error).toEqual(
         expect.objectContaining({
-          status: 404,
-          dev: 'useAdminAccessList - 404 schema parsing failed',
+          dev: 'useAdminAccessList - Parsing Error',
+          status: 400,
         })
       )
     })
