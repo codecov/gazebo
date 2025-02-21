@@ -9,7 +9,7 @@ import {
 } from 'services/repo'
 import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
@@ -145,28 +145,34 @@ export function useRepoBranchContents({
           const parsedRes = BranchContentsSchema.safeParse(res?.data)
 
           if (!parsedRes.success) {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'useRepoBranchContents - 404 schema parsing failed',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Parsing Error',
+              errorDetails: {
+                callingFn: 'useRepoBranchContents',
+                error: parsedRes.error,
+              },
+            })
           }
 
           const data = parsedRes.data
 
           if (data?.owner?.repository?.__typename === 'NotFoundError') {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'useRepoBranchContents - 404 NotFoundError',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Not Found Error',
+              errorDetails: {
+                callingFn: 'useRepoBranchContents',
+              },
+            })
           }
 
           if (
             data?.owner?.repository?.__typename === 'OwnerNotActivatedError'
           ) {
-            return Promise.reject({
-              status: 403,
+            return rejectNetworkError({
+              errorName: 'Owner Not Activated',
+              errorDetails: {
+                callingFn: 'useRepoBranchContents',
+              },
               data: {
                 detail: (
                   <p>
@@ -177,8 +183,7 @@ export function useRepoBranchContents({
                   </p>
                 ),
               },
-              dev: 'useRepoBranchContents - 403 OwnerNotActivatedError',
-            } satisfies NetworkErrorObject)
+            })
           }
 
           let results = null
