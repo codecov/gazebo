@@ -270,7 +270,8 @@ describe('useComparisonForCommitAndParent', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'useComparisonForCommitAndParent - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -294,6 +295,7 @@ describe('useComparisonForCommitAndParent', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useComparisonForCommitAndParent - Not Found Error',
             status: 404,
           })
         )
@@ -318,6 +320,7 @@ describe('useComparisonForCommitAndParent', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useComparisonForCommitAndParent - Owner Not Activated',
             status: 403,
           })
         )

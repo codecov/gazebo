@@ -6,7 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 import { query } from './query'
@@ -155,26 +155,32 @@ export function useComparisonForCommitAndParent({
         )
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useComparisonForCommitAndParent - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useComparisonForCommitAndParent',
+              error: parsedRes.error,
+            },
+          })
         }
 
         const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useComparisonForCommitAndParent - 404 NotFoundError',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'useComparisonForCommitAndParent',
+            },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: {
+              callingFn: 'useComparisonForCommitAndParent',
+            },
             data: {
               detail: (
                 <p>
@@ -185,8 +191,7 @@ export function useComparisonForCommitAndParent({
                 </p>
               ),
             },
-            dev: 'useComparisonForCommitAndParent - 403 OwnerNotActivatedError',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         if (
