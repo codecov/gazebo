@@ -45,22 +45,8 @@ const sessions: { edges: { node: Session }[] } = {
 
 const tokens: { edges: { node: UserToken }[] } = {
   edges: [
-    {
-      node: {
-        lastFour: '1234',
-        type: 'api',
-        name: 'token1',
-        id: 'id-0',
-      },
-    },
-    {
-      node: {
-        lastFour: '4254',
-        type: 'api',
-        name: 'token2',
-        id: 'id-1',
-      },
-    },
+    { node: { lastFour: '1234', type: 'api', name: 'token1', id: 'id-0' } },
+    { node: { lastFour: '4254', type: 'api', name: 'token2', id: 'id-1' } },
   ],
 }
 
@@ -134,8 +120,8 @@ describe('useSessions', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useSessions - 404 schema parsing failed',
+            dev: 'SessionsQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )
