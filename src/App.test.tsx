@@ -38,7 +38,9 @@ vi.mock('./pages/SyncProviderPage', () => ({
 }))
 
 vi.mock('services/navigation/useLocationParams', async () => {
-  const servicesNavigation = await vi.importActual('services/navigation')
+  const servicesNavigation = await vi.importActual(
+    'services/navigation/useLocationParams'
+  )
 
   return {
     ...servicesNavigation,

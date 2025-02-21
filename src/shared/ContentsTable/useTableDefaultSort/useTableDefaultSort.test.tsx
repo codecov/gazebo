@@ -9,7 +9,9 @@ const mocks = vi.hoisted(() => ({
 }))
 
 vi.mock('services/navigation/useLocationParams', async () => {
-  const originalModule = await vi.importActual('services/navigation')
+  const originalModule = await vi.importActual(
+    'services/navigation/useLocationParams'
+  )
   return {
     ...originalModule,
     useLocationParams: mocks.useLocationParams,
