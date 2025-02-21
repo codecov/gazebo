@@ -172,6 +172,7 @@ describe('RepoATSInfo', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useRepoATS - Not Found Error',
               status: 404,
             })
           )
@@ -207,6 +208,7 @@ describe('RepoATSInfo', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useRepoATS - Owner Not Activated',
               status: 403,
             })
           )
@@ -242,7 +244,8 @@ describe('RepoATSInfo', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'useRepoATS - Parsing Error',
+              status: 400,
             })
           )
         )
