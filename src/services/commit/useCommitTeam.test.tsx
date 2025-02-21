@@ -14,9 +14,7 @@ const mockCompareData = {
         compareWithParent: {
           __typename: 'Comparison',
           state: 'processed',
-          patchTotals: {
-            coverage: 100,
-          },
+          patchTotals: { coverage: 100 },
           impactedFiles: {
             __typename: 'ImpactedFiles',
             results: [
@@ -38,9 +36,7 @@ const mockCommitData = {
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
         pullId: 10,
         createdAt: '2020-08-25T16:35:32',
-        author: {
-          username: 'febg',
-        },
+        author: { username: 'febg' },
         state: 'complete',
         uploads: {
           edges: [
@@ -89,29 +85,21 @@ const mockCommitData = {
           state: 'pending',
           indirectChangedFilesCount: 1,
           directChangedFilesCount: 1,
-          patchTotals: {
-            coverage: 100,
-          },
+          patchTotals: { coverage: 100 },
           impactedFiles: {
             __typename: 'ImpactedFiles',
             results: [
               {
                 headName: 'src/App.jsx',
                 missesCount: 0,
-                patchCoverage: {
-                  coverage: 100,
-                },
+                patchCoverage: { coverage: 100 },
               },
             ],
           },
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-          coverageAnalytics: {
-            totals: {
-              coverage: 38.30846,
-            },
-          },
+          coverageAnalytics: { totals: { coverage: 38.30846 } },
         },
       },
     },
@@ -308,9 +296,7 @@ describe('useCommitTeam', () => {
               repo: 'repo-test',
               commitid: 'a23sda3',
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         await waitFor(() =>
@@ -333,7 +319,7 @@ describe('useCommitTeam', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
@@ -343,17 +329,15 @@ describe('useCommitTeam', () => {
             repo: 'repo-test',
             commitid: 'a23sda3',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitTeam - Not Found Error',
             status: 404,
-            dev: 'useCommitTeam - 404 not found',
           })
         )
       )
@@ -381,17 +365,15 @@ describe('useCommitTeam', () => {
             repo: 'repo-test',
             commitid: 'a23sda3',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitTeam - Owner Not Activated',
             status: 403,
-            dev: 'useCommitTeam - 403 owner not activated',
           })
         )
       )
@@ -409,7 +391,7 @@ describe('useCommitTeam', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -419,17 +401,15 @@ describe('useCommitTeam', () => {
             repo: 'repo-test',
             commitid: 'a23sda3',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useCommitTeam - 404 failed to parse',
+            dev: 'useCommitTeam - Parsing Error',
+            status: 400,
           })
         )
       )
