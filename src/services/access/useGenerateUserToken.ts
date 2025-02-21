@@ -5,7 +5,7 @@ import {
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 import { USER_TOKEN_TYPE } from './constants'
 import { SessionsQueryOpts } from './SessionsQueryOpts'
@@ -53,9 +53,11 @@ export function useGenerateUserToken({ provider }: { provider: string }) {
         const parsedData = UseGenerateTokenResponseSchema.safeParse(res?.data)
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useGenerateUserToken - 404 failed to parse',
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useGenerateUserToken',
+              error: parsedData.error,
+            },
           })
         }
 

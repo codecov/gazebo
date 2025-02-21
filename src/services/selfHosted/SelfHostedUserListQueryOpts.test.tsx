@@ -266,8 +266,8 @@ describe('useSelfHostedUserList', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'SelfHostedUserListQueryOpts - 404 schema parsing failed',
+            dev: 'SelfHostedUserListQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )

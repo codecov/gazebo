@@ -549,8 +549,8 @@ describe('useCommit', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommit - Not Found Error',
             status: 404,
-            dev: 'useCommit - 404 not found',
           })
         )
       )
@@ -587,8 +587,8 @@ describe('useCommit', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommit - Owner Not Activated',
             status: 403,
-            dev: 'useCommit - 403 owner not activated',
           })
         )
       )
@@ -625,8 +625,8 @@ describe('useCommit', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useCommit - 404 failed to parse',
+            dev: 'useCommit - Parsing Error',
+            status: 400,
           })
         )
       )

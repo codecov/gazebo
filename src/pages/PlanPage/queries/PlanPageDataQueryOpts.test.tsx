@@ -110,8 +110,8 @@ describe('usePlanPageData', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'usePlanPageData - 404 schema parsing failed',
+            dev: 'PlanPageDataQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )

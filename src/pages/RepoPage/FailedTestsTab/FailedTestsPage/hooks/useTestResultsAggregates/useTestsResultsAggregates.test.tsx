@@ -162,8 +162,8 @@ describe('useTestResultsAggregates', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useTestResultsAggregates - 404 Failed to parse data',
+            dev: 'useTestResultsAggregates - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -189,8 +189,8 @@ describe('useTestResultsAggregates', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: {},
+            dev: 'useTestResultsAggregates - Parsing Error',
+            status: 400,
           })
         )
       )

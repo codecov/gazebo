@@ -13,7 +13,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const ComponentsComparisonSchema = z
@@ -176,10 +176,11 @@ export function ComponentComparisonQueryOpts({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: `ComponentComparisonQueryOpts - 404 Failed to parse`,
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'ComponentComparisonQueryOpts',
+              error: parsedRes.error,
+            },
           })
         }
 
@@ -187,15 +188,15 @@ export function ComponentComparisonQueryOpts({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: `ComponentComparisonQueryOpts - 404 Not Found`,
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'ComponentComparisonQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'ComponentComparisonQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -206,7 +207,6 @@ export function ComponentComparisonQueryOpts({
                 </p>
               ),
             },
-            dev: `ComponentComparisonQueryOpts - 403 Owner Not Activated`,
           })
         }
 

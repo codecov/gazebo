@@ -6,7 +6,8 @@ import z from 'zod'
 
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
-import { Provider, rejectNetworkError } from 'shared/api/helpers'
+import { Provider } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 import { OktaConfigQueryOpts } from '../queries/OktaConfigQueryOpts'
@@ -105,10 +106,11 @@ export const useUpdateOktaConfig = ({ provider, owner }: URLParams) => {
       const parsedData = ResponseSchema.safeParse(data)
       if (!parsedData.success) {
         return rejectNetworkError({
-          status: 404,
-          data: {},
-          dev: 'useUpdateOktaConfig - 404 failed to parse',
-          error: parsedData.error,
+          errorName: 'Parsing Error',
+          errorDetails: {
+            callingFn: 'useUpdateOktaConfig',
+            error: parsedData.error,
+          },
         })
       }
 

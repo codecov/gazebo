@@ -6,7 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
@@ -71,10 +71,11 @@ export const NavigatorDataQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'NavigatorDataQueryOpts - 404 Failed to parse data',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'NavigatorDataQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 

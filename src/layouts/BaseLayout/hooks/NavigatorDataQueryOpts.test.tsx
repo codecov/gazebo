@@ -193,8 +193,8 @@ describe('NavigatorDataQueryOpts', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'NavigatorDataQueryOpts - 404 Failed to parse data',
+            status: 400,
+            dev: 'NavigatorDataQueryOpts - Parsing Error',
           })
         )
       )

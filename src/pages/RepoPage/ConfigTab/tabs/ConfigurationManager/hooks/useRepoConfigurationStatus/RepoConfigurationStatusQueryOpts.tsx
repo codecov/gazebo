@@ -6,7 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const RepositorySchema = z.object({
@@ -106,10 +106,11 @@ export function RepoConfigurationStatusQueryOpts({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'RepoConfigurationStatusQueryOpts - 404 Failed to parse data',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'RepoConfigurationStatusQueryOpts',
+              error: parsedRes.error,
+            },
           })
         }
 
@@ -117,15 +118,15 @@ export function RepoConfigurationStatusQueryOpts({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'RepoConfigurationStatusQueryOpts - 404 Not found error',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'RepoConfigurationStatusQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'RepoConfigurationStatusQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -136,7 +137,6 @@ export function RepoConfigurationStatusQueryOpts({
                 </p>
               ),
             },
-            dev: 'RepoConfigurationStatusQueryOpts - 403 Owner not activated error',
           })
         }
 

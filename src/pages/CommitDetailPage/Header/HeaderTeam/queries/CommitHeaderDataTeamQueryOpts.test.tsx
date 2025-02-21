@@ -298,7 +298,8 @@ describe('CommitHeaderDataTeamQueryOpts', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'CommitHeaderDataTeamQueryOpts - Parsing Error',
+              status: 400,
             })
           )
         )

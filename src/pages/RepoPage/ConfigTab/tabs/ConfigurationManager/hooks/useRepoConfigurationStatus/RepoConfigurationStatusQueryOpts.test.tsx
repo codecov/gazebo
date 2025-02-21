@@ -124,9 +124,8 @@ describe('RepoConfigurationStatusQueryOpts', () => {
 
     await waitFor(() =>
       expect(result.current.failureReason).toMatchObject({
-        status: 404,
-        data: {},
-        dev: 'RepoConfigurationStatusQueryOpts - 404 Failed to parse data',
+        status: 400,
+        dev: 'RepoConfigurationStatusQueryOpts - Parsing Error',
       })
     )
   })
@@ -152,7 +151,7 @@ describe('RepoConfigurationStatusQueryOpts', () => {
       expect(result.current.failureReason).toMatchObject({
         status: 404,
         data: {},
-        dev: 'RepoConfigurationStatusQueryOpts - 404 Not found error',
+        dev: 'RepoConfigurationStatusQueryOpts - Not Found Error',
       })
     )
   })
@@ -178,7 +177,7 @@ describe('RepoConfigurationStatusQueryOpts', () => {
       expect(result.current.failureReason).toMatchObject({
         status: 403,
         data: {},
-        dev: 'RepoConfigurationStatusQueryOpts - 403 Owner not activated error',
+        dev: 'RepoConfigurationStatusQueryOpts - Owner Not Activated',
       })
     )
   })

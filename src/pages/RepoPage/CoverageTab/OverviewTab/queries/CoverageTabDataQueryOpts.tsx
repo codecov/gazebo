@@ -6,7 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BranchSchema = z
@@ -100,10 +100,11 @@ export const CoverageTabDataQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useCoverageTabData - 404 schema parsing failed',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'CoverageTabDataQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 
@@ -111,15 +112,15 @@ export const CoverageTabDataQueryOpts = ({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useCoverageTabData - 404 NotFoundError',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'CoverageTabDataQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'CoverageTabDataQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -130,7 +131,6 @@ export const CoverageTabDataQueryOpts = ({
                 </p>
               ),
             },
-            dev: 'useCoverageTabData - 403 OwnerNotActivatedError',
           })
         }
 

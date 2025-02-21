@@ -1,11 +1,11 @@
 import {
-  _rejectNetworkError,
   determineSentryLevel,
   determineStatusCode,
   NetworkErrorName,
   NotFoundErrorObject,
   OwnerNotActivatedErrorObject,
   ParsingErrorObject,
+  rejectNetworkError,
 } from './rejectNetworkError'
 
 const mocks = vi.hoisted(() => ({
@@ -41,14 +41,14 @@ const parsingError: ParsingErrorObject = {
   errorName: 'Parsing Error',
   errorDetails: {
     error: Error('bad parsing'),
-    caller: 'TestQueryOpts',
+    callingFn: 'TestQueryOpts',
   },
 }
 
 const notFoundError: NotFoundErrorObject = {
   errorName: 'Not Found Error',
   errorDetails: {
-    caller: 'TestQueryOpts',
+    callingFn: 'TestQueryOpts',
   },
 }
 
@@ -56,7 +56,7 @@ const ownerNotActivatedError: OwnerNotActivatedErrorObject = {
   errorName: 'Owner Not Activated',
   data: { detail: 'test' },
   errorDetails: {
-    caller: 'TestQueryOpts',
+    callingFn: 'TestQueryOpts',
   },
 }
 
@@ -71,12 +71,12 @@ describe('rejectNetworkError', () => {
     'when the error is $errorObject.errorName',
     ({ errorObject, level, status }) => {
       it('adds a breadcrumb', () => {
-        _rejectNetworkError(errorObject).catch((_e) => {})
+        rejectNetworkError(errorObject).catch((_e) => {})
 
         expect(mocks.addBreadcrumb).toHaveBeenCalledWith({
           category: 'network.error',
           level,
-          message: `${errorObject.errorDetails.caller} - ${errorObject.errorName}`,
+          message: `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`,
           data:
             'error' in errorObject.errorDetails
               ? errorObject.errorDetails.error
@@ -85,41 +85,41 @@ describe('rejectNetworkError', () => {
       })
 
       it('sets the tags', () => {
-        _rejectNetworkError(errorObject).catch((_e) => {})
+        rejectNetworkError(errorObject).catch((_e) => {})
 
         expect(mocks.setTags).toHaveBeenCalledWith({
-          caller: errorObject.errorDetails.caller,
+          callingFn: errorObject.errorDetails.callingFn,
           errorName: errorObject.errorName,
         })
       })
 
       it('sets the level', () => {
-        _rejectNetworkError(errorObject).catch((_e) => {})
+        rejectNetworkError(errorObject).catch((_e) => {})
 
         expect(mocks.setLevel).toHaveBeenCalledWith(level)
       })
 
       it('sets the fingerprint', () => {
-        _rejectNetworkError(errorObject).catch((_e) => {
+        rejectNetworkError(errorObject).catch((_e) => {
           expect(mocks.setFingerprint).toHaveBeenCalledWith([
-            `${errorObject.errorDetails.caller} - ${errorObject.errorName}`,
+            `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`,
           ])
         })
       })
 
       it('captures the error with Sentry', () => {
-        _rejectNetworkError(errorObject).catch((_e) => {})
+        rejectNetworkError(errorObject).catch((_e) => {})
 
         expect(mocks.captureMessage).toHaveBeenCalledWith(
-          `${errorObject.errorDetails.caller} - ${errorObject.errorName}`
+          `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`
         )
       })
 
       it('returns a rejected promise', () => {
-        const result = _rejectNetworkError(errorObject)
+        const result = rejectNetworkError(errorObject)
 
         expect(result).rejects.toStrictEqual({
-          dev: `${errorObject.errorDetails.caller} - ${errorObject.errorName}`,
+          dev: `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`,
           data: 'data' in errorObject ? errorObject.data : undefined,
           status,
         })

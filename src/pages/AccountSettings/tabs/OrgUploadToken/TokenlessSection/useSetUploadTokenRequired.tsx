@@ -4,7 +4,8 @@ import { z } from 'zod'
 
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
-import { Provider, rejectNetworkError } from 'shared/api/helpers'
+import { Provider } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const TOAST_DURATION = 10000
 
@@ -75,10 +76,11 @@ export const useSetUploadTokenRequired = ({
         const parsedData = ResponseSchema.safeParse(res.data)
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useSetUploadTokenRequired - 404 failed to parse',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useSetUploadTokenRequired',
+              error: parsedData.error,
+            },
           })
         }
 

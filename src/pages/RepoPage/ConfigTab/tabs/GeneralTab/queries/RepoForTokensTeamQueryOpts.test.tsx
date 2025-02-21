@@ -256,7 +256,8 @@ describe('RepoForTokensTeamQueryOpts', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'RepoForTokensTeamQueryOpts - Parsing Error',
+              status: 400,
             })
           )
         )

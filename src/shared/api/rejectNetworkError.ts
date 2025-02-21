@@ -11,18 +11,18 @@ export type NetworkErrorName =
 
 export type ParsingErrorObject = {
   errorName: ParsingError
-  errorDetails: { error: Error; caller: string }
+  errorDetails: { error: Error; callingFn: string }
 }
 
 export type NotFoundErrorObject = {
   errorName: NotFoundError
-  errorDetails: { caller: string }
+  errorDetails: { callingFn: string }
 }
 
 export type OwnerNotActivatedErrorObject = {
   errorName: OwnerNotActivatedError
   data: { detail?: React.ReactNode }
-  errorDetails: { caller: string }
+  errorDetails: { callingFn: string }
 }
 
 type NetworkErrorObject =
@@ -62,13 +62,13 @@ export function determineStatusCode(errorName: NetworkErrorName) {
   }
 }
 
-export function _rejectNetworkError(error: NetworkErrorObject) {
+export function rejectNetworkError(error: NetworkErrorObject) {
   const {
     errorName,
-    errorDetails: { caller },
+    errorDetails: { callingFn },
   } = error
 
-  const devMsg = `${caller} - ${errorName}`
+  const devMsg = `${callingFn} - ${errorName}`
 
   Sentry.withScope((scope) => {
     const level = determineSentryLevel(errorName)
@@ -81,7 +81,7 @@ export function _rejectNetworkError(error: NetworkErrorObject) {
     })
 
     scope.setTags({
-      caller: caller,
+      callingFn: callingFn,
       errorName: errorName,
     })
 

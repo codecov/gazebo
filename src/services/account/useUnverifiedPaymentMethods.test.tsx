@@ -124,9 +124,8 @@ describe('useUnverifiedPaymentMethods', () => {
         await waitFor(() => expect(result.current.error).toBeTruthy())
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: {},
-            dev: 'useHasUnverifiedPaymentMethods - 404 failed to parse',
+            dev: 'useUnverifiedPaymentMethods - Parsing Error',
+            status: 400,
           })
         )
       })

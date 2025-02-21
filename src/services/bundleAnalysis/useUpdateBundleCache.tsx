@@ -2,7 +2,7 @@ import { useMutation as useMutationV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const UpdateBundleCacheInputSchema = z.array(
   z.object({
@@ -79,10 +79,11 @@ export const useUpdateBundleCache = ({
       const parsedInput = UpdateBundleCacheInputSchema.safeParse(input)
       if (!parsedInput.success) {
         return rejectNetworkError({
-          status: 400,
-          error: parsedInput.error,
-          data: {},
-          dev: 'useUpdateBundleCache - 400 failed to parse input',
+          errorName: 'Parsing Error',
+          errorDetails: {
+            callingFn: 'useUpdateBundleCache',
+            error: parsedInput.error,
+          },
         })
       }
 
@@ -96,10 +97,11 @@ export const useUpdateBundleCache = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 400,
-            error: parsedData.error,
-            data: {},
-            dev: 'useUpdateBundleCache - 400 failed to parse data',
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useUpdateBundleCache',
+              error: parsedData.error,
+            },
           })
         }
 

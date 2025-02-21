@@ -10,7 +10,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BundleAssetModuleSchema = z.object({
@@ -178,10 +178,11 @@ export const BundleAssetModulesQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'BundleAssetModulesQueryOpts - 404 Failed to parse',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'BundleAssetModulesQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 
@@ -189,15 +190,15 @@ export const BundleAssetModulesQueryOpts = ({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'BundleAssetModulesQueryOpts - 404 Repository not found',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'BundleAssetModulesQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'BundleAssetModulesQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -208,7 +209,6 @@ export const BundleAssetModulesQueryOpts = ({
                 </p>
               ),
             },
-            dev: 'BundleAssetModulesQueryOpts - 403 Owner not activated',
           })
         }
 

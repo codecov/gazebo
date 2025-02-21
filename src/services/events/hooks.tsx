@@ -11,7 +11,8 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { Provider, rejectNetworkError } from 'shared/api/helpers'
+import { Provider } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 import { eventTracker } from './events'
@@ -92,10 +93,11 @@ export const OwnerContextQueryOpts = ({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'OwnerContextQueryOpts - 404 Failed to parse data',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'OwnerContextQueryOpts',
+              error: parsedRes.error,
+            },
           })
         }
 
@@ -174,18 +176,18 @@ export const RepoContextQueryOpts = ({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'RepoContextQueryOpts - 404 Failed to parse data',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'RepoContextQueryOpts',
+              error: parsedRes.error,
+            },
           })
         }
 
         if (parsedRes.data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'RepoContextQueryOpts - 404 NotFoundError',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'RepoContextQueryOpts' },
           })
         }
 
@@ -194,7 +196,8 @@ export const RepoContextQueryOpts = ({
           'OwnerNotActivatedError'
         ) {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'RepoContextQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -205,7 +208,6 @@ export const RepoContextQueryOpts = ({
                 </p>
               ),
             },
-            dev: 'RepoContextQueryOpts - 403 OwnerNotActivatedError',
           })
         }
 

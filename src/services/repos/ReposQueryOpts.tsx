@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { mapEdges } from 'shared/utils/graphql'
 
 import {
@@ -154,10 +154,11 @@ function ReposQueryOpts({
         const parsedRes = RequestSchema.safeParse(res?.data)
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'ReposQueryOpts - 404 Failed to parse schema',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'ReposQueryOpts',
+              error: parsedRes.error,
+            },
           })
         }
 

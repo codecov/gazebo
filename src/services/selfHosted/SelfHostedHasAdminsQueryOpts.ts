@@ -5,7 +5,7 @@ import {
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 export const HasAdminsSchema = z.object({
   config: z
@@ -35,10 +35,11 @@ export const SelfHostedHasAdminsQueryOpts = ({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'SelfHostedHasAdminsQueryOpts - 404 schema parsing failed',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'SelfHostedHasAdminsQueryOpts',
+              error: parsedRes.error,
+            },
           })
         }
 

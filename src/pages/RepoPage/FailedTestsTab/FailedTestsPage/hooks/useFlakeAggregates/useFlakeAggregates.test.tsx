@@ -138,8 +138,8 @@ describe('useFlakeAggregates', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useFlakeAggregates - 404 Failed to parse data',
+            dev: 'useFlakeAggregates - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -169,8 +169,8 @@ describe('useFlakeAggregates', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useFlakeAggregates - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )

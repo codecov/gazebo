@@ -12,7 +12,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BundleAnalysisReportSchema = z.object({
@@ -161,10 +161,11 @@ export const CommitPageDataQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'CommitPageDataQueryOpts - 404 Failed to parse schema',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'CommitPageDataQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 
@@ -172,15 +173,15 @@ export const CommitPageDataQueryOpts = ({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'CommitPageDataQueryOpts - 404 Not found',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'CommitPageDataQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'CommitPageDataQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -191,7 +192,6 @@ export const CommitPageDataQueryOpts = ({
                 </p>
               ),
             },
-            dev: 'CommitPageDataQueryOpts - 403 Owner not activated',
           })
         }
 

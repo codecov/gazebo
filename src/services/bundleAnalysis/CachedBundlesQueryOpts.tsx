@@ -7,7 +7,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BundleSchema = z.object({
@@ -122,10 +122,11 @@ export const CachedBundlesQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'CachedBundlesQueryOpts - 404 Failed to parse',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'CachedBundlesQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 
@@ -133,15 +134,15 @@ export const CachedBundlesQueryOpts = ({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'CachedBundlesQueryOpts - 404 Repository not found',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'CachedBundlesQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'CachedBundlesQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -152,7 +153,6 @@ export const CachedBundlesQueryOpts = ({
                 </p>
               ),
             },
-            dev: 'CachedBundlesQueryOpts - 403 Owner not activated',
           })
         }
 

@@ -269,8 +269,8 @@ describe('useInfiniteTestResults', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useInfiniteTestResults - Not Found Error',
               status: 404,
-              dev: 'useInfiniteTestResults - 404 Not found error',
             })
           )
         )
@@ -305,8 +305,8 @@ describe('useInfiniteTestResults', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useInfiniteTestResults - Owner Not Activated',
               status: 403,
-              dev: 'useInfiniteTestResults - 403 Owner not activated',
             })
           )
         )
@@ -341,8 +341,8 @@ describe('useInfiniteTestResults', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
-              dev: 'useInfiniteTestResults - 404 Failed to parse data',
+              dev: 'useInfiniteTestResults - Parsing Error',
+              status: 400,
             })
           )
         )

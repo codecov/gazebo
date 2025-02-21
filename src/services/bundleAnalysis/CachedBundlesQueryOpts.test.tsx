@@ -281,7 +281,8 @@ describe('CachedBundlesQueryOpts', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'CachedBundlesQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )

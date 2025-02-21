@@ -11,7 +11,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { type NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { PlanName, Plans } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
@@ -240,26 +240,27 @@ export const useInfiniteTestResults = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useInfiniteTestResults - 404 Failed to parse data',
-            error: parsedData.error,
-          } satisfies NetworkErrorObject)
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useInfiniteTestResults',
+              error: parsedData.error,
+            },
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useInfiniteTestResults - 404 Not found error',
-          } satisfies NetworkErrorObject)
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'useInfiniteTestResults' },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'useInfiniteTestResults' },
             data: {
               detail: (
                 <p>
@@ -270,8 +271,7 @@ export const useInfiniteTestResults = ({
                 </p>
               ),
             },
-            dev: 'useInfiniteTestResults - 403 Owner not activated',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         return {

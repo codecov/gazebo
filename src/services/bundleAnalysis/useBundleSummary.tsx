@@ -11,7 +11,7 @@ import {
   useRepoOverview,
 } from 'services/repo'
 import Api from 'shared/api/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BundleDataSchema = z.object({
@@ -156,10 +156,11 @@ export const BundleSummaryQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'BundleSummaryQueryOpts - 404 Failed to parse data',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'BundleSummaryQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 
@@ -167,15 +168,15 @@ export const BundleSummaryQueryOpts = ({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'BundleSummaryQueryOpts - 404 Not found error',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'BundleSummaryQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'BundleSummaryQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -186,7 +187,6 @@ export const BundleSummaryQueryOpts = ({
                 </p>
               ),
             },
-            dev: 'BundleSummaryQueryOpts - 403 Owner not activated',
           })
         }
 

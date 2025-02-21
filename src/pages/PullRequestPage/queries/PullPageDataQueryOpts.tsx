@@ -12,7 +12,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BundleAnalysisReportSchema = z.object({
@@ -220,10 +220,11 @@ export const PullPageDataQueryOpts = ({
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'PullPageDataQueryOpts - 404 Failed to parse schema',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'PullPageDataQueryOpts',
+              error: parsedData.error,
+            },
           })
         }
 
@@ -231,15 +232,15 @@ export const PullPageDataQueryOpts = ({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'PullPageDataQueryOpts - 404 Not found',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'PullPageDataQueryOpts' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'PullPageDataQueryOpts' },
             data: {
               detail: (
                 <p>
@@ -250,7 +251,6 @@ export const PullPageDataQueryOpts = ({
                 </p>
               ),
             },
-            dev: 'PullPageDataQueryOpts - 403 Owner not activated',
           })
         }
 

@@ -2,7 +2,8 @@ import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { Provider, rejectNetworkError } from 'shared/api/helpers'
+import { Provider } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { providerToInternalProvider } from 'shared/utils/provider'
 
 function getSunburstCoverage({ provider, owner, repo }: SunburstCoverageArgs) {
@@ -56,10 +57,11 @@ export function SunburstCoverageQueryOpts({
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'SunburstCoverageQueryOpts - 404 Failed to parse data',
-            error: parsedRes.error,
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'SunburstCoverageQueryOpts',
+              error: parsedRes.error,
+            },
           })
         }
 

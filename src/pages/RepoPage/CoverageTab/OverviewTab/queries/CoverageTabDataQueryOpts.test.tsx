@@ -184,8 +184,8 @@ describe('CoverageTabDataQueryOpts', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'CoverageTabDataQueryOpts - Not Found Error',
             status: 404,
-            dev: 'useCoverageTabData - 404 NotFoundError',
           })
         )
       )
@@ -222,8 +222,8 @@ describe('CoverageTabDataQueryOpts', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'CoverageTabDataQueryOpts - Owner Not Activated',
             status: 403,
-            dev: 'useCoverageTabData - 403 OwnerNotActivatedError',
           })
         )
       )
@@ -260,8 +260,8 @@ describe('CoverageTabDataQueryOpts', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useCoverageTabData - 404 schema parsing failed',
+            dev: 'CoverageTabDataQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )

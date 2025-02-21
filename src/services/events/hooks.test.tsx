@@ -185,8 +185,8 @@ describe('useEventContext', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
-              dev: 'OwnerContextQueryOpts - 404 Failed to parse data',
+              dev: 'OwnerContextQueryOpts - Parsing Error',
+              status: 400,
             })
           )
         )
@@ -234,8 +234,8 @@ describe('useEventContext', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
-              dev: 'RepoContextQueryOpts - 404 Failed to parse data',
+              dev: 'RepoContextQueryOpts - Parsing Error',
+              status: 400,
             })
           )
         )
@@ -262,8 +262,8 @@ describe('useEventContext', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'RepoContextQueryOpts - Not Found Error',
               status: 404,
-              dev: 'RepoContextQueryOpts - 404 NotFoundError',
             })
           )
         )
@@ -290,8 +290,8 @@ describe('useEventContext', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'RepoContextQueryOpts - Owner Not Activated',
               status: 403,
-              dev: 'RepoContextQueryOpts - 403 OwnerNotActivatedError',
             })
           )
         )
