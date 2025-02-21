@@ -17,13 +17,8 @@ const mockPullData = {
         pullId: 1,
         title: 'Cool Pull Request',
         state: 'OPEN',
-        author: {
-          username: 'cool-user',
-        },
-        head: {
-          branchName: 'cool-branch',
-          ciPassed: true,
-        },
+        author: { username: 'cool-user' },
+        head: { branchName: 'cool-branch', ciPassed: true },
         updatestamp: '',
       },
     },
@@ -32,10 +27,7 @@ const mockPullData = {
 
 const mockNotFoundError = {
   owner: {
-    repository: {
-      __typename: 'NotFoundError',
-      message: 'commit not found',
-    },
+    repository: { __typename: 'NotFoundError', message: 'commit not found' },
   },
 }
 
@@ -209,6 +201,7 @@ describe('usePullHeadData', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'PullHeadDataQueryOpts - Not Found Error',
               status: 404,
             })
           )
@@ -246,6 +239,7 @@ describe('usePullHeadData', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'PullHeadDataQueryOpts - Owner Not Activated',
               status: 403,
             })
           )
@@ -283,7 +277,8 @@ describe('usePullHeadData', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'PullHeadDataQueryOpts - Parsing Error',
+              status: 400,
             })
           )
         )
