@@ -68,9 +68,6 @@ const CodeBody = ({
     overlayRef: codeDisplayOverlayRef,
   })
 
-  // TODO: Remove this console log after debugging
-  console.debug('scrollMargin', scrollMargin)
-
   const virtualizer = useWindowVirtualizer({
     count: tokens.length,
     estimateSize: () => LINE_ROW_HEIGHT,
