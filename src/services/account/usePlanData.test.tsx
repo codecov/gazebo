@@ -147,4 +147,28 @@ describe('usePlanData', () => {
       })
     })
   })
+
+  describe('when the data is not valid', () => {
+    it('returns an error', async () => {
+      setup({ trialData: { hasPrivateRepos: 'string' } })
+      const { result } = renderHook(
+        () =>
+          usePlanData({
+            provider: 'gh',
+            owner: 'codecov',
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'usePlanData - Parsing Error',
+            status: 400,
+          })
+        )
+      )
+    })
+  })
 })
