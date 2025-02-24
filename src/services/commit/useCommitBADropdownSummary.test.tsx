@@ -13,14 +13,7 @@ const mockCommitBASummaryData = {
         bundleAnalysis: {
           bundleAnalysisCompareWithParent: {
             __typename: 'BundleAnalysisComparison',
-            bundleChange: {
-              loadTime: {
-                threeG: 2,
-              },
-              size: {
-                uncompress: 1,
-              },
-            },
+            bundleChange: { loadTime: { threeG: 2 }, size: { uncompress: 1 } },
           },
         },
       },
@@ -54,11 +47,7 @@ const mockOwnerNotActivatedError = {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
@@ -129,12 +118,8 @@ describe('useCommitBADropdownSummary', () => {
             bundleAnalysisCompareWithParent: {
               __typename: 'BundleAnalysisComparison',
               bundleChange: {
-                loadTime: {
-                  threeG: 2,
-                },
-                size: {
-                  uncompress: 1,
-                },
+                loadTime: { threeG: 2 },
+                size: { uncompress: 1 },
               },
             },
           },
@@ -178,7 +163,7 @@ describe('useCommitBADropdownSummary', () => {
       console.error = oldConsoleError
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -195,8 +180,8 @@ describe('useCommitBADropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: {},
+            dev: 'useCommitBADropdownSummary - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -231,8 +216,8 @@ describe('useCommitBADropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitBADropdownSummary - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )
@@ -267,6 +252,7 @@ describe('useCommitBADropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitBADropdownSummary - Owner Not Activated',
             status: 403,
           })
         )

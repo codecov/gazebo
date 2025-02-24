@@ -7,6 +7,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const RepositorySchema = z.object({
@@ -122,10 +123,11 @@ export function useCommitComponents({
         const parsedData = CommitComponentsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {
-              message: 'Error parsing commit components data',
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useCommitComponents',
+              error: parsedData.error,
             },
           })
         }
@@ -133,17 +135,20 @@ export function useCommitComponents({
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {
-              message: 'Repo not found',
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'useCommitComponents',
             },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: {
+              callingFn: 'useCommitComponents',
+            },
             data: {
               detail: (
                 <p>

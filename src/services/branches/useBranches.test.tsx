@@ -106,16 +106,8 @@ describe('GetBranches', () => {
             repository: {
               __typename: 'Repository',
               branches: {
-                edges: [
-                  {
-                    node: branchData,
-                  },
-                  null,
-                ],
-                pageInfo: {
-                  hasNextPage,
-                  endCursor,
-                },
+                edges: [{ node: branchData }, null],
+                pageInfo: { hasNextPage, endCursor },
               },
             },
           },
@@ -138,14 +130,7 @@ describe('GetBranches', () => {
           await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
           const expectedResponse = {
-            branches: [
-              {
-                name: 'branch1',
-                head: {
-                  commitid: '1',
-                },
-              },
-            ],
+            branches: [{ name: 'branch1', head: { commitid: '1' } }],
           }
 
           await waitFor(() =>
@@ -170,18 +155,8 @@ describe('GetBranches', () => {
 
           const expectedData = {
             branches: [
-              {
-                name: 'branch1',
-                head: {
-                  commitid: '1',
-                },
-              },
-              {
-                name: 'branch2',
-                head: {
-                  commitid: '2',
-                },
-              },
+              { name: 'branch1', head: { commitid: '1' } },
+              { name: 'branch2', head: { commitid: '2' } },
             ],
           }
 
@@ -237,8 +212,8 @@ describe('GetBranches', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useBranches - Not Found Error',
             status: 404,
-            dev: 'useBranches - 404 NotFoundError',
           })
         )
       )
@@ -267,8 +242,8 @@ describe('GetBranches', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useBranches - Owner Not Activated',
             status: 403,
-            dev: 'useBranches - 403 OwnerNotActivatedError',
           })
         )
       )
@@ -297,8 +272,8 @@ describe('GetBranches', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useBranches - 404 schema parsing failed',
+            dev: 'useBranches - Parsing Error',
+            status: 400,
           })
         )
       )
