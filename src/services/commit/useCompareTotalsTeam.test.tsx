@@ -14,9 +14,7 @@ const mockCompareData = {
         compareWithParent: {
           __typename: 'Comparison',
           state: 'processed',
-          patchTotals: {
-            coverage: 100,
-          },
+          patchTotals: { coverage: 100 },
           impactedFiles: {
             __typename: 'ImpactedFiles',
             results: [
@@ -57,11 +55,7 @@ const mockUnsuccessfulParseError = {}
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
@@ -133,17 +127,10 @@ describe('useCompareTotalsTeam', () => {
             impactedFiles: {
               __typename: 'ImpactedFiles',
               results: [
-                {
-                  headName: 'src/App.tsx',
-                  patchCoverage: {
-                    coverage: 100,
-                  },
-                },
+                { headName: 'src/App.tsx', patchCoverage: { coverage: 100 } },
               ],
             },
-            patchTotals: {
-              coverage: 100,
-            },
+            patchTotals: { coverage: 100 },
             state: 'processed',
           },
         }
@@ -201,8 +188,8 @@ describe('useCompareTotalsTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCompareTotalsTeam - Not Found Error',
             status: 404,
-            dev: 'useCompareTotalsTeam - 404 not found',
           })
         )
       )
@@ -237,8 +224,8 @@ describe('useCompareTotalsTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCompareTotalsTeam - Owner Not Activated',
             status: 403,
-            dev: 'useCompareTotalsTeam - 403 owner not activated',
           })
         )
       )
@@ -256,7 +243,7 @@ describe('useCompareTotalsTeam', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -273,8 +260,8 @@ describe('useCompareTotalsTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useCompareTotalsTeam - 404 failed to parse',
+            dev: 'useCompareTotalsTeam - Parsing Error',
+            status: 400,
           })
         )
       )
