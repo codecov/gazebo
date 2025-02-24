@@ -20,7 +20,6 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 const server = setupServer()
-
 beforeAll(() => {
   server.listen()
 })
@@ -70,9 +69,7 @@ const mockResponse = {
       staticAnalysisToken: 'static analysis token',
       graphToken: 'token',
       yaml: 'yaml',
-      bot: {
-        username: 'test',
-      },
+      bot: { username: 'test' },
       activated: true,
     },
   },
@@ -113,16 +110,13 @@ describe('useRepoSettings', () => {
           expect(result.current.data).toEqual({
             repository: {
               __typename: 'Repository',
-
               defaultBranch: 'master',
               private: true,
               uploadToken: 'token',
               staticAnalysisToken: 'static analysis token',
               graphToken: 'token',
               yaml: 'yaml',
-              bot: {
-                username: 'test',
-              },
+              bot: { username: 'test' },
               activated: true,
             },
           })
@@ -150,8 +144,8 @@ describe('useRepoSettings', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useRepoSettings - 404 schema parsing failed',
+            dev: 'fetchRepoSettingsDetails - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -177,8 +171,8 @@ describe('useRepoSettings', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'fetchRepoSettingsDetails - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )
@@ -204,6 +198,7 @@ describe('useRepoSettings', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'fetchRepoSettingsDetails - Owner Not Activated',
             status: 403,
           })
         )
