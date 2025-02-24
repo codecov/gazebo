@@ -426,8 +426,8 @@ describe('usePrefetchSingleFileComp', () => {
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'usePrefetchSingleFileComp - 404 schema parsing failed',
+            dev: 'usePrefetchSingleFileComp - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -459,8 +459,8 @@ describe('usePrefetchSingleFileComp', () => {
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
+            dev: 'usePrefetchSingleFileComp - Not Found Error',
             status: 404,
-            dev: 'usePrefetchSingleFileComp - 404 NotFoundError',
           })
         )
       )
@@ -492,8 +492,8 @@ describe('usePrefetchSingleFileComp', () => {
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
+            dev: 'usePrefetchSingleFileComp - Owner Not Activated',
             status: 403,
-            dev: 'usePrefetchSingleFileComp - 403 OwnerNotActivatedError',
           })
         )
       )
