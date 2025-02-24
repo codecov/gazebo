@@ -7,7 +7,7 @@ import { useDebounce } from 'react-use'
 import useClickAway from 'react-use/lib/useClickAway'
 
 import User from 'old_ui/User'
-import { ApiFilterEnum } from 'services/navigation'
+import { ApiFilterEnum } from 'services/navigation/normalize'
 import { useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils/ownerHelpers'
 import TextInput from 'ui/TextInput'

@@ -1,5 +1,5 @@
 import { eventTracker } from 'services/events/events'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { Provider } from 'shared/api/helpers'
 import { loginProviderImage } from 'shared/utils/loginProviders'
 import { providerToName } from 'shared/utils/provider'

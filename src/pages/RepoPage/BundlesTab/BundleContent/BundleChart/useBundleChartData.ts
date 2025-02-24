@@ -5,7 +5,7 @@ import {
   BUNDLE_TREND_REPORT_TYPES,
   BundleTrendDataQueryOpts,
 } from 'services/bundleAnalysis/BundleTrendDataQueryOpts'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoOverview } from 'services/repo'
 import { findBundleMultiplier } from 'shared/utils/bundleAnalysis'
 import { createTimeSeriesQueryVars, Trend } from 'shared/utils/timeseriesCharts'

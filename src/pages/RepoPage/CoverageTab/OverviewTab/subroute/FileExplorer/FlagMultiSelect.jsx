@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import {
   useRepoBackfilled,
   useRepoFlagsSelect,

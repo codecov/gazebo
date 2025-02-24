@@ -10,7 +10,7 @@ import {
 } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { AlertOptionsType } from 'ui/Alert'
 
 interface Breadcrumb {

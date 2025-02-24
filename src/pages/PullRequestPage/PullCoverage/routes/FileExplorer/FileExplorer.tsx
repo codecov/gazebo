@@ -1,5 +1,5 @@
 import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import { DisplayTypeButton } from 'shared/ContentsTable/DisplayTypeButton/DisplayTypeButton'
 import { usePullTreePaths } from 'shared/treePaths'

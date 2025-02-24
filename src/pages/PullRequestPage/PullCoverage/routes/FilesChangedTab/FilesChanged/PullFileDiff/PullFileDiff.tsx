@@ -1,7 +1,7 @@
 import { Fragment, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import {
   type PullImpactedFile,
   useSingularImpactedFileComparison,

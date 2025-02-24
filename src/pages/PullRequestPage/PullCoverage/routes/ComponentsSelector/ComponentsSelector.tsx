@@ -1,7 +1,7 @@
 import isUndefined from 'lodash/isUndefined'
 import { useMemo, useState } from 'react'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { usePullComponents } from 'services/pull'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'

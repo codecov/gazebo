@@ -1,4 +1,4 @@
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { Trend } from 'shared/utils/timeseriesCharts'
 import Select from 'ui/Select'
 
