@@ -14,9 +14,7 @@ const mockCompareData = {
         compareWithBase: {
           __typename: 'Comparison',
           state: 'processed',
-          patchTotals: {
-            coverage: 100,
-          },
+          patchTotals: { coverage: 100 },
           impactedFiles: {
             __typename: 'ImpactedFiles',
             results: [
@@ -42,9 +40,7 @@ const mockPullData = {
         compareWithBase: {
           __typename: 'Comparison',
           state: 'pending',
-          patchTotals: {
-            coverage: 100,
-          },
+          patchTotals: { coverage: 100 },
           impactedFiles: {
             __typename: 'ImpactedFiles',
             results: [
@@ -180,15 +176,11 @@ describe('usePullTeam', () => {
                   {
                     headName: 'src/App.tsx',
                     missesCount: 0,
-                    patchCoverage: {
-                      coverage: 100,
-                    },
+                    patchCoverage: { coverage: 100 },
                   },
                 ],
               },
-              patchTotals: {
-                coverage: 100,
-              },
+              patchTotals: { coverage: 100 },
               state: 'processed',
             },
             pullId: 10,
@@ -253,8 +245,8 @@ describe('usePullTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullTeam - Not Found Error',
             status: 404,
-            dev: 'usePullTeam - 404 not found',
           })
         )
       )
@@ -290,8 +282,8 @@ describe('usePullTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullTeam - Owner Not Activated',
             status: 403,
-            dev: 'usePullTeam - 403 owner not activated',
           })
         )
       )
@@ -308,7 +300,7 @@ describe('usePullTeam', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -327,8 +319,8 @@ describe('usePullTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'usePullTeam - 404 failed to parse',
+            dev: 'usePullTeam - Parsing Error',
+            status: 400,
           })
         )
       )
