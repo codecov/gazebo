@@ -208,18 +208,27 @@ describe('GitHubActions', () => {
       setup({ hasOrgUploadToken: true })
       const user = userEvent.setup()
       render(<GitHubActions />, { wrapper })
+
+      // Need to expand the example blurb dropdown
+      const trigger = await screen.findByText((content) =>
+        content.startsWith('Your final GitHub Actions workflow')
+      )
+      expect(trigger).toBeInTheDocument()
+
+      await user.click(trigger)
+
       const copyCommands = await screen.findAllByTestId(
         'clipboard-code-snippet'
       )
 
-      expect(copyCommands.length).toEqual(5)
+      expect(copyCommands.length).toEqual(6)
 
       const promises: Promise<void>[] = []
       copyCommands.forEach((copy) => promises.push(user.click(copy)))
       await Promise.all(promises)
 
       // One of the code-snippets does not have a metric associated with it
-      expect(eventTracker().track).toHaveBeenCalledTimes(4)
+      expect(eventTracker().track).toHaveBeenCalledTimes(5)
     })
   })
 })

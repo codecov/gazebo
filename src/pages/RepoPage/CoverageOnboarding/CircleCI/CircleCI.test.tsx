@@ -325,7 +325,6 @@ describe('CircleCI', () => {
 
   describe('user copies text', () => {
     it('stores codecov metric', async () => {
-      // will be removing this stuff soon, backend for this doesn't exist anymore
       setup({})
       const user = userEvent.setup()
       render(<CircleCI />, { wrapper })
@@ -335,10 +334,11 @@ describe('CircleCI', () => {
       )
       expect(copyCommands.length).toEqual(5)
 
-      await user.click(copyCommands[1] as HTMLElement)
+      const promises: Promise<void>[] = []
+      copyCommands.forEach((copy) => promises.push(user.click(copy)))
+      await Promise.all(promises)
 
-      await user.click(copyCommands[2] as HTMLElement)
-      await waitFor(() => expect(eventTracker().track).toHaveBeenCalledTimes(1))
+      await waitFor(() => expect(eventTracker().track).toHaveBeenCalledTimes(4))
     })
   })
 })
