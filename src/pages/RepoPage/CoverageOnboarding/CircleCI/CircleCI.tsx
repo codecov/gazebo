@@ -2,10 +2,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import envVarScreenshot from 'assets/onboarding/env_variable_screenshot.png'
-import {
-  EVENT_METRICS,
-  useStoreCodecovEventMetric,
-} from 'services/codecovEventMetrics/useStoreCodecovEventMetric'
+import { eventTracker } from 'services/events/events'
 import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { useRepo } from 'services/repo'
 import { Provider } from 'shared/api/helpers'
@@ -62,7 +59,7 @@ function CircleCI() {
       <OutputCoverageStep
         framework={framework}
         frameworkInstructions={frameworkInstructions}
-        owner={owner}
+        ciProvider="CircleCI"
         setFramework={setFramework}
       />
       <TokenStep
@@ -87,8 +84,6 @@ interface TokenStepProps {
 }
 
 function TokenStep({ tokenCopy, uploadToken, providerName }: TokenStepProps) {
-  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
-  const { owner } = useParams<URLParams>()
   return (
     <Card>
       <Card.Header>
@@ -118,10 +113,14 @@ function TokenStep({ tokenCopy, uploadToken, providerName }: TokenStepProps) {
             className="basis-2/3"
             clipboard={uploadToken}
             clipboardOnClick={() =>
-              storeEventMetric({
-                owner,
-                event: EVENT_METRICS.COPIED_TEXT,
-                jsonPayload: { text: 'Step 1 CircleCI' },
+              eventTracker().track({
+                type: 'Button Clicked',
+                properties: {
+                  buttonName: 'Copy',
+                  buttonLocation: 'Coverage onboarding',
+                  ciProvider: 'CircleCI',
+                  copied: 'Upload token',
+                },
               })
             }
           >
@@ -152,8 +151,6 @@ interface OrbYAMLStepProps {
 }
 
 function OrbYAMLStep({ defaultBranch }: OrbYAMLStepProps) {
-  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
-  const { owner } = useParams<URLParams>()
   return (
     <Card>
       <Card.Header>
@@ -179,10 +176,14 @@ function OrbYAMLStep({ defaultBranch }: OrbYAMLStepProps) {
         <CodeSnippet
           clipboard={orbsString}
           clipboardOnClick={() =>
-            storeEventMetric({
-              owner,
-              event: EVENT_METRICS.COPIED_TEXT,
-              jsonPayload: { text: 'Step 2 CircleCI' },
+            eventTracker().track({
+              type: 'Button Clicked',
+              properties: {
+                buttonName: 'Copy',
+                buttonLocation: 'Coverage onboarding',
+                ciProvider: 'CircleCI',
+                copied: 'YAML snippet',
+              },
             })
           }
         >

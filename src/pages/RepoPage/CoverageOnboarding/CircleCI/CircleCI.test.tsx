@@ -6,7 +6,11 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { eventTracker } from 'services/events/events'
+
 import CircleCI from './CircleCI'
+
+vi.mock('services/events/events')
 
 const mockGetRepo = {
   owner: {
@@ -79,10 +83,6 @@ interface SetupArgs {
 
 describe('CircleCI', () => {
   function setup({ hasOrgUploadToken = false }: SetupArgs) {
-    const mockMetricMutationVariables = vi.fn()
-    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
-    mockGetItem.mockReturnValue(null)
-
     server.use(
       graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockGetRepo })
@@ -91,14 +91,10 @@ describe('CircleCI', () => {
         return HttpResponse.json({
           data: hasOrgUploadToken ? mockGetOrgUploadToken : mockNoUploadToken,
         })
-      }),
-      graphql.mutation('storeEventMetric', (info) => {
-        mockMetricMutationVariables(info?.variables)
-        return HttpResponse.json({ data: { storeEventMetric: null } })
       })
     )
     const user = userEvent.setup()
-    return { mockMetricMutationVariables, user }
+    return { user }
   }
 
   describe('output coverage step', () => {
@@ -330,7 +326,7 @@ describe('CircleCI', () => {
   describe('user copies text', () => {
     it('stores codecov metric', async () => {
       // will be removing this stuff soon, backend for this doesn't exist anymore
-      const { mockMetricMutationVariables } = setup({})
+      setup({})
       const user = userEvent.setup()
       render(<CircleCI />, { wrapper })
 
@@ -342,9 +338,7 @@ describe('CircleCI', () => {
       await user.click(copyCommands[1] as HTMLElement)
 
       await user.click(copyCommands[2] as HTMLElement)
-      await waitFor(() =>
-        expect(mockMetricMutationVariables).toHaveBeenCalledTimes(1)
-      )
+      await waitFor(() => expect(eventTracker().track).toHaveBeenCalledTimes(1))
     })
   })
 })

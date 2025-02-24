@@ -1,3 +1,4 @@
+import { Framework } from 'pages/RepoPage/CoverageOnboarding/UseFrameworkInstructions'
 import { Provider } from 'shared/api/helpers'
 import { loginProviderToName } from 'shared/utils/loginProviders'
 
@@ -29,8 +30,16 @@ export type Event =
       type: 'Button Clicked'
       properties: {
         buttonName: ButtonName
-        buttonLocation?: string
+        buttonLocation?: string // Non-technical description of the button location (e.g., Coverage onboarding)
         loginProvider?: ReturnType<typeof loginProviderToName> // for login buttons only
+        ciProvider?: 'GitHub Actions' | 'CircleCI' | 'Codecov CLI' // E.g., product onboarding pages
+        testingFramework?: Framework // E.g., product onboarding pages
+        copied?:
+          | 'Upload token'
+          | 'YAML snippet'
+          | 'Example workflow'
+          | 'Install command'
+          | 'Run command' // Description of what was copied for buttonName="Copy" events
       }
     }
   | {
@@ -92,5 +101,6 @@ type ButtonName =
   | 'Continue'
   | 'Login'
   | 'Sync'
+  | 'Copy'
 
 type PageName = 'Owner Page'
