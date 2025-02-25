@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 export const RequestSchema = z
   .object({
@@ -41,13 +41,14 @@ export function useOwnerRateLimitStatus({
         signal,
         query,
       }).then((res) => {
+        const callingFn = 'useOwnerRateLimitStatus'
         const parsedData = RequestSchema.safeParse(res?.data)
+
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useOwnerRateLimitStatus - 404 NotFoundError',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedData.error },
+          })
         }
 
         const data = parsedData.data
