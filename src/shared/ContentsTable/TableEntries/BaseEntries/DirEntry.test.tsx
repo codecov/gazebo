@@ -4,7 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import DirEntry from './DirEntry'
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
     <Route path="/:provider/:owner/:repo/">{children}</Route>
   </MemoryRouter>
