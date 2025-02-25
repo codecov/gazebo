@@ -40,15 +40,13 @@ export const LoginProvidersQueryOpts = () => {
         signal,
         query,
       }).then((res) => {
+        const callingFn = 'LoginProvidersQueryOpts'
         const parsedRes = GetLoginProvidersSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'LoginProvidersQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

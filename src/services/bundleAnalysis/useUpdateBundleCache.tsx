@@ -76,14 +76,13 @@ export const useUpdateBundleCache = ({
   return useMutationV5({
     throwOnError: false,
     mutationFn: (input: z.infer<typeof UpdateBundleCacheInputSchema>) => {
+      const callingFn = 'useUpdateBundleCache'
       const parsedInput = UpdateBundleCacheInputSchema.safeParse(input)
+
       if (!parsedInput.success) {
         return rejectNetworkError({
           errorName: 'Parsing Error',
-          errorDetails: {
-            callingFn: 'useUpdateBundleCache',
-            error: parsedInput.error,
-          },
+          errorDetails: { callingFn, error: parsedInput.error },
         })
       }
 
@@ -98,10 +97,7 @@ export const useUpdateBundleCache = ({
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useUpdateBundleCache',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 

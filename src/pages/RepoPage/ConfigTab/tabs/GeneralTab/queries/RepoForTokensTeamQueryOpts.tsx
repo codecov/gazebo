@@ -74,15 +74,13 @@ export const RepoForTokensTeamQueryOpts = ({
           repo,
         },
       }).then((res) => {
+        const callingFn = 'RepoForTokensTeamQueryOpts'
         const parsedData = GetRepoDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'RepoForTokensTeamQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -91,14 +89,14 @@ export const RepoForTokensTeamQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'RepoForTokensTeamQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'RepoForTokensTeamQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

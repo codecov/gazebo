@@ -50,14 +50,13 @@ export function useGenerateUserToken({ provider }: { provider: string }) {
         variables,
         mutationPath: 'createUserToken',
       }).then((res) => {
+        const callingFn = 'useGenerateUserToken'
         const parsedData = UseGenerateTokenResponseSchema.safeParse(res?.data)
+
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useGenerateUserToken',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 

@@ -38,15 +38,13 @@ export const useAdminAccessList = () => {
         path: `/users?is_admin=true&page=${pageParam}`,
         signal,
       }).then((res) => {
+        const callingFn = 'useAdminAccessList'
         const parsedData = RequestSchema.safeParse(res)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useAdminAccessList',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
         return parsedData.data

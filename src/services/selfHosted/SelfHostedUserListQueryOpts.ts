@@ -47,15 +47,13 @@ export const SelfHostedUserListQueryOpts = ({
           page: pageParam,
         },
       }).then((res) => {
+        const callingFn = 'SelfHostedUserListQueryOpts'
         const parsedData = RequestSchema.safeParse(res)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'SelfHostedUserListQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 

@@ -31,15 +31,13 @@ export const SelfHostedHasAdminsQueryOpts = ({
         provider,
         query,
       }).then((res) => {
+        const callingFn = 'SelfHostedHasAdminsQueryOpts'
         const parsedRes = HasAdminsSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'SelfHostedHasAdminsQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

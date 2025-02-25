@@ -88,15 +88,13 @@ export function SessionsQueryOpts({ provider }: SessionsQueryArgs) {
         query,
         signal,
       }).then((res) => {
+        const callingFn = 'SessionsQueryOpts'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'SessionsQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

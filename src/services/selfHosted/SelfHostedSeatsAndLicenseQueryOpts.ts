@@ -45,15 +45,13 @@ export const SelfHostedSeatsAndLicenseQueryOpts = ({
         query,
         signal,
       }).then((res) => {
+        const callingFn = 'SelfHostedSeatsAndLicenseQueryOpts'
         const parsedRes = SelfHostedSeatsAndLicenseSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'SelfHostedSeatsAndLicenseQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

@@ -26,15 +26,13 @@ export const SelfHostedCurrentUserQueryOpts = ({
     queryKey: ['SelfHostedCurrentUser', provider],
     queryFn: ({ signal }) =>
       Api.get({ provider, path: '/users/current', signal }).then((res) => {
+        const callingFn = 'SelfHostedCurrentUserQueryOpts'
         const parsedData = SelfHostedCurrentUserSchema.safeParse(res)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'SelfHostedCurrentUserQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
         return parsedData.data

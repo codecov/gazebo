@@ -39,15 +39,13 @@ export const SyncProvidersQueryOpts = () => {
         signal,
         query,
       }).then((res) => {
+        const callingFn = 'SyncProvidersQueryOpts'
         const parsedRes = GetSyncProvidersSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'SyncProvidersQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

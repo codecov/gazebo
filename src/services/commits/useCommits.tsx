@@ -265,15 +265,13 @@ export function useCommits({
           after: pageParam,
         },
       }).then((res) => {
+        const callingFn = 'useCommits'
         const parsedData = GetCommitsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useCommits',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -282,18 +280,14 @@ export function useCommits({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'useCommits',
-            },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: {
-              callingFn: 'useCommits',
-            },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

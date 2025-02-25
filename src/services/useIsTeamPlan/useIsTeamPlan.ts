@@ -41,15 +41,13 @@ export const useIsTeamPlan = ({ provider, owner }: UseIsTeamPlanArgs) =>
           owner,
         },
       }).then((res) => {
+        const callingFn = 'useIsTeamPlan'
         const parsedRes = PlanSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useIsTeamPlan',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

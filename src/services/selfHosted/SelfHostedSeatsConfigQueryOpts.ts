@@ -34,15 +34,13 @@ export const SelfHostedSeatsConfigQueryOpts = ({
     queryKey: ['Seats', provider],
     queryFn: ({ signal }) =>
       Api.graphql({ provider, query, signal }).then((res) => {
+        const callingFn = 'SelfHostedSeatsConfigQueryOpts'
         const parsedRes = SeatsSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'SelfHostedSeatsConfigQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

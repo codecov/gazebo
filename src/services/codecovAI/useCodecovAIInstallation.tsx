@@ -40,14 +40,13 @@ export function useCodecovAIInstallation({
           username: owner,
         },
       }).then((res) => {
+        const callingFn = 'useCodecovAIInstallation'
         const parsedRes = ResponseSchema.safeParse(res?.data)
+
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useCodecovAIInstallation',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

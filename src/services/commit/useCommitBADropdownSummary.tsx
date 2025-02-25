@@ -142,15 +142,13 @@ export function useCommitBADropdownSummary({
           commitid,
         },
       }).then((res) => {
+        const callingFn = 'useCommitBADropdownSummary'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useCommitBADropdownSummary',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -159,18 +157,14 @@ export function useCommitBADropdownSummary({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'useCommitBADropdownSummary',
-            },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: {
-              callingFn: 'useCommitBADropdownSummary',
-            },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

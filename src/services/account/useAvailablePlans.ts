@@ -65,15 +65,13 @@ export const useAvailablePlans = ({
           owner,
         },
       }).then((res) => {
+        const callingFn = 'useAvailablePlans'
         const parsedRes = PlansSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useAvailablePlans',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

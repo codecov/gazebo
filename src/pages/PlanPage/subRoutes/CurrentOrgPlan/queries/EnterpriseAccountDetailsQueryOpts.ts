@@ -56,6 +56,7 @@ export function EnterpriseAccountDetailsQueryOpts({
           owner,
         },
       }).then((res) => {
+        const callingFn = 'EnterpriseAccountDetailsQueryOpts'
         const parsedRes = EnterpriseAccountDetailsRequestSchema.safeParse(
           res?.data
         )
@@ -63,10 +64,7 @@ export function EnterpriseAccountDetailsQueryOpts({
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'EnterpriseAccountDetailsQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

@@ -137,15 +137,13 @@ export const useInvoices = ({ provider, owner }: UseInvoicesArgs) =>
           owner,
         },
       }).then((res) => {
+        const callingFn = 'useInvoices'
         const parsedData = OwnerInvoiceSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useInvoices',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 

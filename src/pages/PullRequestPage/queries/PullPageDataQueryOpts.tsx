@@ -216,15 +216,13 @@ export const PullPageDataQueryOpts = ({
           isTeamPlan,
         },
       }).then((res) => {
+        const callingFn = 'PullPageDataQueryOpts'
         const parsedData = PullPageDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'PullPageDataQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -233,14 +231,14 @@ export const PullPageDataQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'PullPageDataQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'PullPageDataQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

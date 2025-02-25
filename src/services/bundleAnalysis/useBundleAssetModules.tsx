@@ -174,15 +174,13 @@ export const BundleAssetModulesQueryOpts = ({
           asset,
         },
       }).then((res) => {
+        const callingFn = 'BundleAssetModulesQueryOpts'
         const parsedData = RequestSchema.safeParse(res.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'BundleAssetModulesQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -191,14 +189,14 @@ export const BundleAssetModulesQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'BundleAssetModulesQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'BundleAssetModulesQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

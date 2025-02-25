@@ -103,14 +103,13 @@ export const useUpdateOktaConfig = ({ provider, owner }: URLParams) => {
       })
     },
     onSuccess: ({ data }) => {
+      const callingFn = 'useUpdateOktaConfig'
       const parsedData = ResponseSchema.safeParse(data)
+
       if (!parsedData.success) {
         return rejectNetworkError({
           errorName: 'Parsing Error',
-          errorDetails: {
-            callingFn: 'useUpdateOktaConfig',
-            error: parsedData.error,
-          },
+          errorDetails: { callingFn, error: parsedData.error },
         })
       }
 

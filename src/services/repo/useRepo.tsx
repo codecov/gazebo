@@ -89,15 +89,13 @@ export function useRepo({ provider, owner, repo, opts = {} }: UseRepoArgs) {
           repo,
         },
       }).then((res) => {
+        const callingFn = 'useRepo'
         const parsedRes = RepoSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useRepo',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -106,7 +104,7 @@ export function useRepo({ provider, owner, repo, opts = {} }: UseRepoArgs) {
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useRepo' },
+            errorDetails: { callingFn },
           })
         }
 

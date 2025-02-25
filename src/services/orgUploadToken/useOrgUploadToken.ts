@@ -35,15 +35,13 @@ export const useOrgUploadToken = ({ provider, owner }: UseOrgUploadTokenArgs) =>
           owner,
         },
       }).then((res) => {
+        const callingFn = 'useOrgUploadToken'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useOrgUploadToken',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

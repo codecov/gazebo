@@ -118,15 +118,13 @@ export const CachedBundlesQueryOpts = ({
         signal,
         variables,
       }).then((res) => {
+        const callingFn = 'CachedBundlesQueryOpts'
         const parsedData = BranchBundleSummaryDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'CachedBundlesQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -135,14 +133,14 @@ export const CachedBundlesQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'CachedBundlesQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'CachedBundlesQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

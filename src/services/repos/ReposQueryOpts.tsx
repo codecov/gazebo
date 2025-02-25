@@ -151,14 +151,13 @@ function ReposQueryOpts({
           after,
         },
       }).then((res) => {
+        const callingFn = 'ReposQueryOpts'
         const parsedRes = RequestSchema.safeParse(res?.data)
+
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'ReposQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

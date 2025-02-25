@@ -78,14 +78,13 @@ export function useActivateMeasurements({
       })
     },
     onSuccess: ({ data }) => {
+      const callingFn = 'useActivateMeasurements'
       const parsedData = ResponseSchema.safeParse(data)
+
       if (!parsedData.success) {
         return rejectNetworkError({
           errorName: 'Parsing Error',
-          errorDetails: {
-            callingFn: 'useActivateMeasurements',
-            error: parsedData.error,
-          },
+          errorDetails: { callingFn, error: parsedData.error },
         })
       }
 

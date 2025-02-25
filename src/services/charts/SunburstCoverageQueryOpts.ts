@@ -53,15 +53,13 @@ export function SunburstCoverageQueryOpts({
     queryFn: ({ signal }) => {
       const path = getSunburstCoverage({ provider, owner, repo })
       return Api.get({ path, provider, query, signal }).then((res) => {
+        const callingFn = 'SunburstCoverageQueryOpts'
         const parsedRes = ResponseSchema.safeParse(res)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'SunburstCoverageQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

@@ -44,15 +44,13 @@ export const useUploadTokenRequired = ({
           owner,
         },
       }).then((res) => {
+        const callingFn = 'useUploadTokenRequired'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useUploadTokenRequired',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

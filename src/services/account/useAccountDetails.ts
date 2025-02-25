@@ -201,15 +201,13 @@ export function useAccountDetails({
           return res as z.infer<typeof AccountDetailsSchema>
         }
 
+        const callingFn = 'useAccountDetails'
         const parsedRes = AccountDetailsSchema.safeParse(res)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useAccountDetails',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

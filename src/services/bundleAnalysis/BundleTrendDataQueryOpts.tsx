@@ -190,15 +190,13 @@ export const BundleTrendDataQueryOpts = ({
           filters,
         },
       }).then((res) => {
+        const callingFn = 'BundleTrendDataQueryOpts'
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'BundleTrendDataQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -207,14 +205,14 @@ export const BundleTrendDataQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'BundleTrendDataQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'BundleTrendDataQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>
