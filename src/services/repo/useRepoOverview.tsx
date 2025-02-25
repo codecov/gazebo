@@ -85,7 +85,6 @@ export function useRepoOverview({
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          console.debug(parsedData.error)
           return rejectNetworkError({
             errorName: 'Parsing Error',
             errorDetails: {
