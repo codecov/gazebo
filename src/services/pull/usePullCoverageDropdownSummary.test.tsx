@@ -13,10 +13,7 @@ const mockPullSummaryData = {
       pull: {
         compareWithBase: {
           __typename: 'Comparison',
-          patchTotals: {
-            missesCount: 1,
-            partialsCount: 2,
-          },
+          patchTotals: { missesCount: 1, partialsCount: 2 },
         },
       },
     },
@@ -122,10 +119,7 @@ describe('usePullCoverageDropdownSummary', () => {
         pull: {
           compareWithBase: {
             __typename: 'Comparison',
-            patchTotals: {
-              missesCount: 1,
-              partialsCount: 2,
-            },
+            patchTotals: { missesCount: 1, partialsCount: 2 },
           },
         },
       }
@@ -166,7 +160,7 @@ describe('usePullCoverageDropdownSummary', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -183,8 +177,8 @@ describe('usePullCoverageDropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: null,
+            dev: 'usePullCoverageDropdownSummary - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -218,8 +212,8 @@ describe('usePullCoverageDropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullCoverageDropdownSummary - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )
@@ -253,6 +247,7 @@ describe('usePullCoverageDropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullCoverageDropdownSummary - Owner Not Activated',
             status: 403,
           })
         )

@@ -135,7 +135,8 @@ describe('useRepoBackfilled', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'useRepoBackfilled - Parsing Error',
+              status: 400,
             })
           )
         )
@@ -151,6 +152,7 @@ describe('useRepoBackfilled', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useRepoBackfilled - Not Found Error',
               status: 404,
             })
           )
@@ -167,6 +169,7 @@ describe('useRepoBackfilled', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useRepoBackfilled - Owner Not Activated',
               status: 403,
             })
           )
