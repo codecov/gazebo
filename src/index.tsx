@@ -77,19 +77,20 @@ const queryClientV5 = new QueryClientV5({
     queries: {
       staleTime: QUERY_STALE_TIME,
       refetchOnWindowFocus: false,
-      retry: (failureCount, error) => {
-        // Do not retry if the response status is 429
-        if (
-          typeof error === 'object' &&
-          error !== null &&
-          'status' in error &&
-          error.status === TOO_MANY_REQUESTS_ERROR_CODE
-        ) {
-          return false
-        }
-        // Otherwise, retry up to 3 times
-        return failureCount < 3
-      },
+      retry: (failureCount, error) =>
+        Sentry.startSpan({ name: 'QueryClient V5 Retry' }, () => {
+          // Do not retry if the response status is 429
+          if (
+            typeof error === 'object' &&
+            error !== null &&
+            'status' in error &&
+            error.status === TOO_MANY_REQUESTS_ERROR_CODE
+          ) {
+            return false
+          }
+          // Otherwise, retry up to 3 times
+          return failureCount < 3
+        }),
     },
   },
 })
