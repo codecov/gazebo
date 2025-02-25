@@ -134,7 +134,7 @@ describe('useUser', () => {
         consoleSpy.mockRestore()
       })
 
-      it('returns 404 failed to parse', async () => {
+      it('returns 400 failed to parse', async () => {
         setup(badResponse)
         const { result } = renderHook(() => useUser(), {
           wrapper: wrapper(),
@@ -144,9 +144,8 @@ describe('useUser', () => {
         await waitFor(() =>
           expect(result.current.failureReason).toEqual(
             expect.objectContaining({
-              data: {},
-              dev: 'useUser - 404 failed to parse',
-              status: 404,
+              dev: 'useUser - Parsing Error',
+              status: 400,
             })
           )
         )
