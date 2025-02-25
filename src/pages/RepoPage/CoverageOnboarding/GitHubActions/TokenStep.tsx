@@ -1,4 +1,3 @@
-import { UseMutateFunction } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import orgSecretDark from 'assets/onboarding/org_secret_dark.png'
@@ -6,11 +5,7 @@ import orgSecretLight from 'assets/onboarding/org_secret_light.png'
 import repoSecretDark from 'assets/onboarding/repo_secret_dark.png'
 import repoSecretLight from 'assets/onboarding/repo_secret_light.png'
 import useGenerateOrgUploadToken from 'pages/AccountSettings/tabs/OrgUploadToken/useGenerateOrgUploadToken'
-import {
-  EVENT_METRICS,
-  StoreEventMetricMutationArgs,
-  useStoreCodecovEventMetric,
-} from 'services/codecovEventMetrics/useStoreCodecovEventMetric'
+import { eventTracker } from 'services/events/events'
 import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { useRepo } from 'services/repo'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
@@ -37,21 +32,12 @@ interface URLParams {
 
 interface SecretGHExampleProps {
   isUsingGlobalToken: boolean
-  owner: string
-  storeEventMetric: UseMutateFunction<
-    any,
-    unknown,
-    StoreEventMetricMutationArgs,
-    unknown
-  >
   uploadToken: string
 }
 
 function GitHubOrgSecretExample({
   isUsingGlobalToken,
-  storeEventMetric,
   uploadToken,
-  owner,
 }: SecretGHExampleProps) {
   return (
     <>
@@ -72,10 +58,14 @@ function GitHubOrgSecretExample({
           className="basis-2/3"
           clipboard={uploadToken}
           clipboardOnClick={() =>
-            storeEventMetric({
-              owner,
-              event: EVENT_METRICS.COPIED_TEXT,
-              jsonPayload: { text: 'GHA token copied' },
+            eventTracker().track({
+              type: 'Button Clicked',
+              properties: {
+                buttonName: 'Copy',
+                buttonLocation: 'Coverage onboarding',
+                ciProvider: 'GitHub Actions',
+                copied: 'Upload token',
+              },
             })
           }
         >
@@ -197,7 +187,6 @@ const AddTokenStep = ({
   })
   const { data } = useRepo({ provider, owner, repo })
   const repoUploadToken = data?.repository?.uploadToken ?? ''
-  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
   return (
     <Card>
       <Card.Header>
@@ -225,8 +214,6 @@ const AddTokenStep = ({
       <Card.Content className="flex flex-col gap-4">
         <GitHubOrgSecretExample
           isUsingGlobalToken={isUsingGlobalToken}
-          owner={owner}
-          storeEventMetric={storeEventMetric}
           uploadToken={
             isUsingGlobalToken ? (orgUploadToken ?? '') : repoUploadToken
           }

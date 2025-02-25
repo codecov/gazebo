@@ -6,6 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { eventTracker } from 'services/events/events'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import GitHubActions from './GitHubActions'
@@ -14,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   useFlags: vi.fn(),
 }))
 
+vi.mock('services/events/events')
 vi.mock('shared/featureFlags', async () => {
   const actual = await vi.importActual('shared/featureFlags')
   return {
@@ -119,20 +121,12 @@ describe('GitHubActions', () => {
       newRepoFlag: hasOrgUploadToken,
     })
 
-    const mockMetricMutationVariables = vi.fn()
-    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
-    mockGetItem.mockReturnValue(null)
-
     server.use(
       graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockGetRepo })
       }),
       graphql.query('GetOrgUploadToken', () => {
         return HttpResponse.json({ data: mockGetOrgUploadToken })
-      }),
-      graphql.mutation('storeEventMetric', (info) => {
-        mockMetricMutationVariables(info?.variables)
-        return HttpResponse.json({ data: { storeEventMetric: null } })
       }),
       graphql.query('GetUploadTokenRequired', () => {
         return HttpResponse.json({ data: mockGetUploadTokenRequired })
@@ -146,7 +140,7 @@ describe('GitHubActions', () => {
     )
     const user = userEvent.setup()
 
-    return { mockMetricMutationVariables, user }
+    return { user }
   }
 
   describe('when Go is selected', () => {
@@ -210,22 +204,31 @@ describe('GitHubActions', () => {
   })
 
   describe('user copies text', () => {
-    it('stores codecov metric', async () => {
-      const { mockMetricMutationVariables } = setup({ hasOrgUploadToken: true })
+    it('tracks an event', async () => {
+      setup({ hasOrgUploadToken: true })
       const user = userEvent.setup()
       render(<GitHubActions />, { wrapper })
+
+      // Need to expand the example blurb dropdown
+      const trigger = await screen.findByText((content) =>
+        content.startsWith('Your final GitHub Actions workflow')
+      )
+      expect(trigger).toBeInTheDocument()
+
+      await user.click(trigger)
+
       const copyCommands = await screen.findAllByTestId(
         'clipboard-code-snippet'
       )
 
-      expect(copyCommands.length).toEqual(5)
+      expect(copyCommands.length).toEqual(6)
 
       const promises: Promise<void>[] = []
       copyCommands.forEach((copy) => promises.push(user.click(copy)))
       await Promise.all(promises)
 
       // One of the code-snippets does not have a metric associated with it
-      expect(mockMetricMutationVariables).toHaveBeenCalledTimes(4)
+      expect(eventTracker().track).toHaveBeenCalledTimes(5)
     })
   })
 })

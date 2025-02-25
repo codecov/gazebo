@@ -33,7 +33,7 @@ describe('EventTracker', () => {
         type: 'Button Clicked',
         properties: {
           buttonName: 'Install GitHub App',
-          buttonLocation: 'test',
+          buttonLocation: 'Org selector',
         },
       })
     })

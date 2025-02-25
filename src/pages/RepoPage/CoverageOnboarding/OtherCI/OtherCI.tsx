@@ -53,7 +53,7 @@ function OtherCI() {
       <OutputCoverageStep
         framework={framework}
         frameworkInstructions={frameworkInstruction}
-        owner={owner}
+        ciProvider="Codecov CLI"
         setFramework={setFramework}
       />
       <TokenStep tokenCopy={tokenCopy} uploadToken={uploadToken} />
