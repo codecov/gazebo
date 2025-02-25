@@ -1,5 +1,3 @@
-import PropTypes from 'prop-types'
-
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
@@ -42,16 +40,6 @@ interface DirEntryProps {
   pageName?: string
   commitSha?: string
   queryParams?: any
-}
-
-DirEntry.propTypes = {
-  linkRef: PropTypes.string,
-  name: PropTypes.string.isRequired,
-  urlPath: PropTypes.string,
-  runPrefetch: PropTypes.func,
-  pageName: PropTypes.string,
-  commitSha: PropTypes.string,
-  queryParams: PropTypes.object,
 }
 
 export default DirEntry
