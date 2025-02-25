@@ -19,6 +19,8 @@ import { ExpandableSection } from 'ui/ExpandableSection'
 import LightDarkImg from 'ui/LightDarkImg'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 
+import { Framework } from '../UseFrameworkInstructions'
+
 export const TOKEN_OPTIONS = {
   GLOBAL: 'global',
   REPO: 'repo',
@@ -33,11 +35,13 @@ interface URLParams {
 interface SecretGHExampleProps {
   isUsingGlobalToken: boolean
   uploadToken: string
+  framework: Framework
 }
 
 function GitHubOrgSecretExample({
   isUsingGlobalToken,
   uploadToken,
+  framework,
 }: SecretGHExampleProps) {
   return (
     <>
@@ -64,6 +68,7 @@ function GitHubOrgSecretExample({
                 buttonName: 'Copy',
                 buttonLocation: 'Coverage onboarding',
                 ciProvider: 'GitHub Actions',
+                testingFramework: framework,
                 copied: 'Upload token',
               },
             })
@@ -176,9 +181,11 @@ function OrgOrRepoTokenSelector({
 const AddTokenStep = ({
   stepNum,
   isUsingGlobalToken,
+  framework,
 }: {
   stepNum: number
   isUsingGlobalToken: boolean
+  framework: Framework
 }) => {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data: orgUploadToken } = useOrgUploadToken({
@@ -217,6 +224,7 @@ const AddTokenStep = ({
           uploadToken={
             isUsingGlobalToken ? (orgUploadToken ?? '') : repoUploadToken
           }
+          framework={framework}
         />
       </Card.Content>
     </Card>
@@ -228,6 +236,7 @@ interface TokenStepSectionProps {
   setIsUsingGlobalToken: (value: boolean) => void
   showAddTokenStep: boolean
   showTokenSelector: boolean
+  framework: Framework
 }
 
 function TokenStepSection({
@@ -235,6 +244,7 @@ function TokenStepSection({
   setIsUsingGlobalToken,
   showAddTokenStep,
   showTokenSelector,
+  framework,
 }: TokenStepSectionProps) {
   const { provider, owner } = useParams<URLParams>()
   const { data: uploadTokenRequiredData } = useUploadTokenRequired({
@@ -278,6 +288,7 @@ function TokenStepSection({
         <AddTokenStep
           stepNum={showTokenSelector ? 3 : 2}
           isUsingGlobalToken={isUsingGlobalToken}
+          framework={framework}
         />
       )}
     </>

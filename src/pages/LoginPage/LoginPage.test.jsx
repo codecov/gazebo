@@ -93,7 +93,7 @@ describe('LoginPage', () => {
   describe('when the url is /login/gh', () => {
     beforeEach(() => setup())
 
-    it('renders the Github login button', () => {
+    it('renders the GitHub login button', () => {
       render(<LoginPage />, { wrapper: wrapper('/login/gh') })
 
       const githubLink = screen.getByRole('link', {

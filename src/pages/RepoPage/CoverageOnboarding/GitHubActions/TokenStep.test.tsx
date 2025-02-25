@@ -113,6 +113,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={true}
         isUsingGlobalToken={false}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -132,6 +133,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={false}
         isUsingGlobalToken={true}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -150,6 +152,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={false}
         isUsingGlobalToken={false}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -168,6 +171,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={true}
         isUsingGlobalToken={false}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -185,6 +189,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={true}
         isUsingGlobalToken={true}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -205,6 +210,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={true}
         isUsingGlobalToken={false}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -229,6 +235,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={true}
         isUsingGlobalToken={true}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -247,6 +254,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={true}
         isUsingGlobalToken={true}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -269,6 +277,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={true}
         isUsingGlobalToken={true}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -289,6 +298,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={true}
         isUsingGlobalToken={true}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -308,6 +318,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={true}
         isUsingGlobalToken={true}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -329,6 +340,7 @@ describe('TokenStepSection', () => {
         showTokenSelector={true}
         isUsingGlobalToken={false}
         setIsUsingGlobalToken={vi.fn()}
+        framework="Jest"
       />,
       {
         wrapper: wrapper(),
@@ -351,6 +363,7 @@ describe('TokenStepSection', () => {
           showTokenSelector={true}
           isUsingGlobalToken={true}
           setIsUsingGlobalToken={vi.fn()}
+          framework="Jest"
         />,
         {
           wrapper: wrapper(),
@@ -371,6 +384,7 @@ describe('TokenStepSection', () => {
           showTokenSelector={true}
           isUsingGlobalToken={false}
           setIsUsingGlobalToken={vi.fn()}
+          framework="Jest"
         />,
         {
           wrapper: wrapper(),

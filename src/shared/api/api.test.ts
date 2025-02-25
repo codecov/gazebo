@@ -15,7 +15,7 @@ const rawUserData = {
   },
   orgs: [
     { id: 1, long_name: 'Codecov' },
-    { id: 2, long_name: 'Github' },
+    { id: 2, long_name: 'GitHub' },
   ],
 }
 
@@ -27,7 +27,7 @@ const userData = {
   },
   orgs: [
     { id: 1, longName: 'Codecov' },
-    { id: 2, longName: 'Github' },
+    { id: 2, longName: 'GitHub' },
   ],
 }
 

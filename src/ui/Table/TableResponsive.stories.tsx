@@ -75,7 +75,7 @@ function ResponsiveExampleWithReactTable() {
       cell: (info) => info.renderValue(),
     }),
     columnHelper.accessor('githubHandle', {
-      header: () => 'Github Handle',
+      header: () => 'GitHub Handle',
       cell: (info) => '@' + info.renderValue(),
     }),
   ]

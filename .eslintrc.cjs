@@ -283,7 +283,7 @@ module.exports = {
       files: ['src/**/*.{js,jsx,ts,tsx}'],
       rules: {
         'no-restricted-syntax': [
-          'warn',
+          'error',
           {
             selector:
               'Literal[value=/\\bGithub\\b|\\bGitlab\\b|\\bBitBucket\\b/], JSXText[value=/\\bGithub\\b|\\bGitlab\\b|\\bBitBucket\\b/]',
