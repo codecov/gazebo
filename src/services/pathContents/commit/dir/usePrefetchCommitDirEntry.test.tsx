@@ -43,7 +43,7 @@ const mockData = {
           results: [
             {
               name: 'src',
-              path: null,
+              path: 'src',
               __typename: 'PathContentDir',
               hits: 4,
               misses: 2,
@@ -190,7 +190,7 @@ describe('usePrefetchCommitDirEntry', () => {
           {
             __typename: 'PathContentDir',
             name: 'src',
-            path: null,
+            path: 'src',
             percentCovered: 50.0,
             hits: 4,
             misses: 2,

@@ -25,7 +25,7 @@ const RepositoryConfigSchema = z.object({
 const PathContentFileSchema = z.object({
   __typename: z.literal('PathContentFile'),
   name: z.string(),
-  path: z.string().nullable(),
+  path: z.string(),
   hits: z.number(),
   misses: z.number(),
   partials: z.number(),
@@ -38,7 +38,7 @@ export type PathContentFile = z.infer<typeof PathContentFileSchema>
 const PathContentDirSchema = z.object({
   __typename: z.literal('PathContentDir'),
   name: z.string(),
-  path: z.string().nullable(),
+  path: z.string(),
   hits: z.number(),
   misses: z.number(),
   partials: z.number(),

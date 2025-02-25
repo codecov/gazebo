@@ -21,7 +21,7 @@ const BasePathContentSchema = z.object({
   partials: z.number(),
   lines: z.number(),
   name: z.string(),
-  path: z.string().nullable(),
+  path: z.string(),
   percentCovered: z.number(),
 })
 

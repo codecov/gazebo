@@ -22,7 +22,7 @@ const mockCommitContentData = {
           results: [
             {
               name: 'src',
-              path: null,
+              path: 'src',
               percentCovered: 50.0,
               hits: 24,
               misses: 24,
@@ -34,7 +34,7 @@ const mockCommitContentData = {
             },
             {
               name: 'file.ts',
-              path: null,
+              path: 'file.ts',
               percentCovered: 50.0,
               hits: 24,
               misses: 24,
