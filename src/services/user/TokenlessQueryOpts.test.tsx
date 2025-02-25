@@ -27,7 +27,6 @@ const wrapper =
           <Route path="/:provider">{children}</Route>
         </MemoryRouter>
       </QueryClientProvider>
-      ``
     </QueryClientProviderV5>
   )
 
@@ -51,9 +50,12 @@ const mockCodecovOrg = {
 }
 
 describe('TokenlessQueryOpts', () => {
-  function setup() {
+  function setup({ invalidSchema = false }) {
     server.use(
       graphql.query('OwnerTokenlessData', () => {
+        if (invalidSchema) {
+          return HttpResponse.json({ data: {} })
+        }
         return HttpResponse.json({ data: { owner: mockCodecovOrg } })
       })
     )
@@ -61,7 +63,7 @@ describe('TokenlessQueryOpts', () => {
 
   describe('when called and user is authenticated', () => {
     it('returns the org', async () => {
-      setup()
+      setup({})
       const { result } = renderHook(
         () =>
           useQueryV5(
@@ -71,6 +73,40 @@ describe('TokenlessQueryOpts', () => {
       )
 
       await waitFor(() => expect(result.current.data).toEqual(mockCodecovOrg))
+    })
+  })
+
+  describe('invalid schema', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    afterAll(() => {
+      consoleSpy.mockRestore()
+    })
+
+    it('rejects with 400 status', async () => {
+      setup({ invalidSchema: true })
+
+      const { result } = renderHook(
+        () =>
+          useQueryV5(
+            TokenlessQueryOpts({
+              username: 'codecov',
+              provider: 'gh',
+            })
+          ),
+        { wrapper: wrapper() }
+      )
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'TokenlessQueryOpts - Parsing Error',
+            status: 400,
+          })
+        )
+      )
     })
   })
 })

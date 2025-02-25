@@ -93,7 +93,7 @@ describe('useOktaConfig', () => {
         consoleSpy.mockRestore()
       })
 
-      it('rejects with 404 status', async () => {
+      it('rejects with 400 status', async () => {
         setup({})
 
         const { result } = renderHook(

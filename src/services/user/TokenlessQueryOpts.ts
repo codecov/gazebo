@@ -6,14 +6,14 @@ import { Provider } from 'shared/api/helpers'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const OwnerSchema = z.object({
-  hasActiveRepos: z.boolean().nullish(),
-  hasPublicRepos: z.boolean().nullish(),
+  hasActiveRepos: z.boolean(),
+  hasPublicRepos: z.boolean(),
 })
 
 export type Owner = z.infer<typeof OwnerSchema>
 
 const RequestSchema = z.object({
-  owner: OwnerSchema.nullish(),
+  owner: OwnerSchema.nullable(),
 })
 
 interface TokenlessQueryArgs {
@@ -25,7 +25,7 @@ interface TokenlessQueryArgs {
   }
 }
 
-const query = `query OwnerTokenlessData {
+const query = `query OwnerTokenlessData($username: String!) {
   owner(username: $username) {
     hasActiveRepos
     hasPublicRepos
@@ -40,7 +40,7 @@ export function TokenlessQueryOpts({
 }: TokenlessQueryArgs) {
   const variables = { username }
   return queryOptionsV5({
-    queryKey: ['OwnerTokenlessData', variables, provider, query],
+    queryKey: ['OwnerTokenlessData', variables, provider],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -48,19 +48,19 @@ export function TokenlessQueryOpts({
         variables,
         signal,
       }).then((res) => {
-        const parsedData = RequestSchema.safeParse(res?.data)
+        const parsedRes = RequestSchema.safeParse(res?.data)
 
-        if (!parsedData.success) {
+        if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
             errorDetails: {
               callingFn: 'TokenlessQueryOpts',
-              error: parsedData.error,
+              error: parsedRes.error,
             },
           })
         }
 
-        return parsedData?.data?.owner
+        return parsedRes?.data?.owner ?? null
       }),
     ...opts,
   })

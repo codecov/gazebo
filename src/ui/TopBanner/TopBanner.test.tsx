@@ -247,7 +247,6 @@ describe('TopBanner localStorage functions', () => {
       saveToLocalStorage('test-banner')
 
       const stored = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
-      console.log('After:', stored)
       expect(stored).not.toBeNull()
       expect(JSON.parse(stored!)).toEqual({ 'test-banner': 'true' })
     })
