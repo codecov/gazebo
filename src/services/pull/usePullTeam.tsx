@@ -12,7 +12,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 import { usePullCompareTotalsTeam } from './usePullCompareTotalsTeam'
@@ -206,26 +206,25 @@ export function usePullTeam({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'usePullTeam - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn: 'usePullTeam', error: parsedRes.error },
+          })
         }
 
         const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'usePullTeam - 404 not found',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'usePullTeam' },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'usePullTeam' },
             data: {
               detail: (
                 <p>
@@ -236,21 +235,17 @@ export function usePullTeam({
                 </p>
               ),
             },
-            dev: 'usePullTeam - 403 owner not activated',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         const pull = data?.owner?.repository?.pull
 
         if (!pull) {
-          return {
-            pull: null,
-          }
+          return { pull: null }
         }
+
         return {
-          pull: {
-            ...pull,
-          },
+          pull: { ...pull },
         }
       }),
     suspense: false,

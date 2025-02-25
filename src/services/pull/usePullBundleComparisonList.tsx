@@ -11,6 +11,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BundleSchema = z.object({
@@ -160,24 +161,28 @@ export function usePullBundleComparisonList({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: null,
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'usePullBundleComparisonList',
+              error: parsedRes.error,
+            },
           })
         }
 
         const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'usePullBundleComparisonList' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'usePullBundleComparisonList' },
             data: {
               detail: (
                 <p>

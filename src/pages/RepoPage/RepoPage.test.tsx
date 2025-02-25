@@ -290,8 +290,8 @@ describe('RepoPage', () => {
       const { queryClient } = setup({ hasRepoData: false })
       render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
-      const notFound = await screen.findByText(/not found/i)
-      expect(notFound).toBeInTheDocument()
+      const badRequest = await screen.findByText(/bad request/i)
+      expect(badRequest).toBeInTheDocument()
     })
   })
 

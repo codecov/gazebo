@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { PathContentsFilters } from 'services/pathContents/constants'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 import { query, RequestSchema } from './constants'
@@ -60,28 +60,34 @@ export function usePrefetchCommitDirEntry({
           const parsedRes = RequestSchema.safeParse(res?.data)
 
           if (!parsedRes.success) {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'usePrefetchCommitDirEntry - 404 schema parsing failed',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Parsing Error',
+              errorDetails: {
+                callingFn: 'usePrefetchCommitDirEntry',
+                error: parsedRes.error,
+              },
+            })
           }
 
           const data = parsedRes.data
 
           if (data?.owner?.repository?.__typename === 'NotFoundError') {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'usePrefetchCommitDirEntry - 404 NotFoundError',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Not Found Error',
+              errorDetails: {
+                callingFn: 'usePrefetchCommitDirEntry',
+              },
+            })
           }
 
           if (
             data?.owner?.repository?.__typename === 'OwnerNotActivatedError'
           ) {
-            return Promise.reject({
-              status: 403,
+            return rejectNetworkError({
+              errorName: 'Owner Not Activated',
+              errorDetails: {
+                callingFn: 'usePrefetchCommitDirEntry',
+              },
               data: {
                 detail: (
                   <p>
@@ -92,8 +98,7 @@ export function usePrefetchCommitDirEntry({
                   </p>
                 ),
               },
-              dev: 'usePrefetchCommitDirEntry - 403 OwnerNotActivatedError',
-            } satisfies NetworkErrorObject)
+            })
           }
 
           let results

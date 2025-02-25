@@ -70,7 +70,7 @@ function GitHubActions() {
       <OutputCoverageStep
         framework={framework}
         frameworkInstructions={frameworkInstructions}
-        owner={owner}
+        ciProvider="GitHub Actions"
         setFramework={setFramework}
       />
       <TokenStep

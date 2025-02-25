@@ -6,6 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BranchComponentsSchema = z
@@ -117,24 +118,32 @@ export const useBranchComponents = ({
         const parsedData = GetBranchComponentsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useBranchComponents',
+              error: parsedData.error,
+            },
           })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'useBranchComponents',
+            },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: {
+              callingFn: 'useBranchComponents',
+            },
             data: {
               detail: (
                 <p>

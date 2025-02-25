@@ -12,6 +12,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const ComparisonSchema = z.object({
@@ -128,24 +129,28 @@ export function usePullCoverageDropdownSummary({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: null,
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'usePullCoverageDropdownSummary',
+              error: parsedRes.error,
+            },
           })
         }
 
         const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'usePullCoverageDropdownSummary' },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'usePullCoverageDropdownSummary' },
             data: {
               detail: (
                 <p>

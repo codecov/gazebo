@@ -6,7 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const RepositorySchema = z.object({
@@ -83,26 +83,32 @@ export function useCommitYaml({
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useCommitYaml - 404 Failed to parse data',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useCommitYaml',
+              error: parsedData.error,
+            },
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useCommitYaml - 404 Not found error',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'useCommitYaml',
+            },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: {
+              callingFn: 'useCommitYaml',
+            },
             data: {
               detail: (
                 <p>
@@ -113,8 +119,7 @@ export function useCommitYaml({
                 </p>
               ),
             },
-            dev: 'useCommitYaml - 403 Owner not activated',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         return data.owner?.repository?.commit?.yaml

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { BillingRate, Plans } from 'shared/utils/billing'
 
 export const TrialStatuses = {
@@ -118,10 +119,14 @@ export const usePlanData = ({ provider, owner, opts }: UsePlanDataArgs) =>
         },
       }).then((res) => {
         const parsedRes = PlanDataSchema.safeParse(res?.data)
+
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: null,
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'usePlanData',
+              error: parsedRes.error,
+            },
           })
         }
 

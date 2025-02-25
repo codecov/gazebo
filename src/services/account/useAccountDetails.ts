@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject, Provider } from 'shared/api/helpers'
+import { Provider } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const InvoiceSchema = z
   .object({
@@ -201,11 +202,13 @@ export function useAccountDetails({
         const parsedRes = AccountDetailsSchema.safeParse(res)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useAccountDetails - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useAccountDetails',
+              error: parsedRes.error,
+            },
+          })
         }
 
         return parsedRes.data

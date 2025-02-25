@@ -31,7 +31,7 @@ const mockOverview = (language?: string) => {
 
 const mockNotFoundError = {
   owner: {
-    isCurrentUserPartOfOrg: true,
+    isCurrentUserActivated: true,
     repository: {
       __typename: 'NotFoundError',
       message: 'commit not found',
@@ -229,6 +229,7 @@ describe('useRepoOverview', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useRepoOverview - Not Found Error',
             status: 404,
           })
         )
@@ -246,7 +247,7 @@ describe('useRepoOverview', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -261,7 +262,8 @@ describe('useRepoOverview', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'useRepoOverview - Parsing Error',
+            status: 400,
           })
         )
       )

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 import { InvoiceSchema } from './useInvoices'
 
@@ -90,11 +90,13 @@ export const useInvoice = ({ provider, owner, id }: UseInvoiceArgs) =>
         const parsedData = OwnerInvoiceSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useInvoice - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useInvoice',
+              error: parsedData.error,
+            },
+          })
         }
 
         return parsedData.data.owner?.invoice ?? null

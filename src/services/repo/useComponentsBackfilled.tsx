@@ -7,7 +7,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const query = `
@@ -80,26 +80,28 @@ export function useComponentsBackfilled() {
         )
 
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useComponentsBackfilled - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useComponentsBackfilled',
+              error: parsedData.error,
+            },
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: `useComponentsBackfilled - 404 NotFoundError`,
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'useComponentsBackfilled' },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'useComponentsBackfilled' },
             data: {
               detail: (
                 <p>
@@ -115,8 +117,7 @@ export function useComponentsBackfilled() {
                 </p>
               ),
             },
-            dev: `useComponentsBackfilled - 403 OwnerNotActivatedError`,
-          } satisfies NetworkErrorObject)
+          })
         }
 
         return {

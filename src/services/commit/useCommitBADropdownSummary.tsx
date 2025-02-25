@@ -11,7 +11,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BAComparisonSchema = z.object({
@@ -145,26 +145,32 @@ export function useCommitBADropdownSummary({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: `useCommitBADropdownSummary - 404 failed to parse`,
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useCommitBADropdownSummary',
+              error: parsedRes.error,
+            },
+          })
         }
 
         const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: `useCommitBADropdownSummary - 404 NotFoundError`,
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'useCommitBADropdownSummary',
+            },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: {
+              callingFn: 'useCommitBADropdownSummary',
+            },
             data: {
               detail: (
                 <p>
@@ -175,8 +181,7 @@ export function useCommitBADropdownSummary({
                 </p>
               ),
             },
-            dev: `useCommitBADropdownSummary - 403 OwnerNotActivatedError`,
-          } satisfies NetworkErrorObject)
+          })
         }
 
         const commit = data?.owner?.repository?.commit ?? null

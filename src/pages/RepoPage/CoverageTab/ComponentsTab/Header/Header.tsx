@@ -5,7 +5,7 @@ import {
   TimeOption,
   TimeOptions,
 } from 'pages/RepoPage/shared/constants'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useComponentsBackfilled } from 'services/repo'
 import { useRepoComponentsSelect } from 'services/repo/useRepoComponentsSelect'
 import A from 'ui/A'

@@ -157,7 +157,7 @@ describe('useAdminAccessList', () => {
       consoleSpy.mockRestore()
     })
 
-    it('rejects with 404', async () => {
+    it('rejects with 400', async () => {
       setup({ invalidResponse: true })
       const { result } = renderHook(() => useAdminAccessList(), {
         wrapper: wrapper(),
@@ -166,8 +166,8 @@ describe('useAdminAccessList', () => {
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       expect(result.current.error).toEqual(
         expect.objectContaining({
-          status: 404,
-          dev: 'useAdminAccessList - 404 schema parsing failed',
+          dev: 'useAdminAccessList - Parsing Error',
+          status: 400,
         })
       )
     })

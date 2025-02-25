@@ -1,6 +1,6 @@
 import { Suspense, useCallback, useLayoutEffect, useState } from 'react'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'

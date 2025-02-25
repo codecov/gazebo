@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { orderingOptions } from 'services/repos/orderingOptions'
 import { useOwner } from 'services/user'
 import ReposTable from 'shared/ListRepo/ReposTable'

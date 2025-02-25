@@ -10,7 +10,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BranchSchema = z.object({
@@ -143,26 +143,32 @@ export function useBranches({
         const parsedData = GetBranchesSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useBranches - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useBranches',
+              error: parsedData.error,
+            },
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useBranches - 404 NotFoundError',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'useBranches',
+            },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: {
+              callingFn: 'useBranches',
+            },
             data: {
               detail: (
                 <p>
@@ -173,8 +179,7 @@ export function useBranches({
                 </p>
               ),
             },
-            dev: 'useBranches - 403 OwnerNotActivatedError',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         const edges = data?.owner?.repository?.branches?.edges

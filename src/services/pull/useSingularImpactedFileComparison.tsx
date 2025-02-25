@@ -12,7 +12,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 import {
@@ -123,26 +123,28 @@ export function useSingularImpactedFileComparison({
         const parsedRes = RepoSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useSingularImpactedFileComparison - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useSingularImpactedFileComparison',
+              error: parsedRes.error,
+            },
+          })
         }
 
         const { data } = parsedRes
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useSingularImpactedFileComparison - 404 NotFoundError',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn: 'useSingularImpactedFileComparison' },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn: 'useSingularImpactedFileComparison' },
             data: {
               detail: (
                 <p>
@@ -153,8 +155,7 @@ export function useSingularImpactedFileComparison({
                 </p>
               ),
             },
-            dev: 'useSingularImpactedFileComparison - 403 OwnerNotActivatedError',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         if (
@@ -166,11 +167,8 @@ export function useSingularImpactedFileComparison({
           )
         }
 
-        return Promise.reject({
-          status: 404,
-          data: {},
-          dev: 'useSingularImpactedFileComparison - 404 missing data',
-        } satisfies NetworkErrorObject)
+        // we can set to null, and use the error display message we currently have, rather than throwing
+        return null
       }),
   })
 }

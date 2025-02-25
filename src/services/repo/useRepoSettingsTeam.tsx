@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 import { RepoNotFoundErrorSchema } from './schemas/RepoNotFoundError'
 
@@ -21,13 +21,6 @@ const RepositorySchema = z.object({
     })
     .nullable(),
 })
-
-interface FetchRepoSettingsTeamArgs {
-  provider: string
-  owner: string
-  repo: string
-  signal?: AbortSignal
-}
 
 const RequestSchema = z.object({
   owner: z
@@ -67,50 +60,6 @@ query GetRepoSettingsTeam($name: String!, $repo: String!) {
   }
 }`
 
-function fetchRepoSettingsDetails({
-  provider,
-  owner,
-  repo,
-  signal,
-}: FetchRepoSettingsTeamArgs) {
-  return Api.graphql({
-    provider,
-    query,
-    signal,
-    variables: {
-      name: owner,
-      repo,
-    },
-  }).then((res) => {
-    const parsedRes = RequestSchema.safeParse(res?.data)
-
-    if (!parsedRes.success) {
-      return Promise.reject({
-        status: 404,
-        data: {},
-        dev: 'useRepoSettingsTeam - 404 schema parsing failed',
-      } satisfies NetworkErrorObject)
-    }
-
-    const data = parsedRes.data
-
-    if (data?.owner?.repository?.__typename === 'NotFoundError') {
-      return Promise.reject({
-        status: 404,
-        data: {},
-        dev: 'useRepoSettingsTeam - 404 not found error',
-      })
-    }
-
-    const repository = data.owner?.repository
-
-    return {
-      repository,
-      isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg,
-    }
-  })
-}
-
 interface URLParams {
   provider: string
   owner: string
@@ -123,6 +72,44 @@ export function useRepoSettingsTeam() {
   return useQuery({
     queryKey: ['GetRepoSettingsTeam', provider, owner, repo],
     queryFn: ({ signal }) =>
-      fetchRepoSettingsDetails({ provider, owner, repo, signal }),
+      Api.graphql({
+        provider,
+        query,
+        signal,
+        variables: {
+          name: owner,
+          repo,
+        },
+      }).then((res) => {
+        const parsedRes = RequestSchema.safeParse(res?.data)
+
+        if (!parsedRes.success) {
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useRepoSettingsTeam',
+              error: parsedRes.error,
+            },
+          })
+        }
+
+        const data = parsedRes.data
+
+        if (data?.owner?.repository?.__typename === 'NotFoundError') {
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'useRepoSettingsTeam',
+            },
+          })
+        }
+
+        const repository = data.owner?.repository
+
+        return {
+          repository,
+          isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg,
+        }
+      }),
   })
 }

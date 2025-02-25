@@ -3,12 +3,14 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Mock } from 'vitest'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 
 import { DisplayTypeButton } from './DisplayTypeButton'
 
-vi.mock('services/navigation', () => {
-  const originalModule = vi.importActual('services/navigation')
+vi.mock('services/navigation/useLocationParams', () => {
+  const originalModule = vi.importActual(
+    'services/navigation/useLocationParams'
+  )
   return {
     ...originalModule,
     useLocationParams: vi.fn(),

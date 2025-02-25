@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 import {
@@ -113,26 +113,32 @@ export function useRepoCoverage({
         const parsedRes = ResponseSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useRepoCoverage - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useRepoCoverage',
+              error: parsedRes.error,
+            },
+          })
         }
 
         const { data } = parsedRes
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useRepoCoverage - 404 NotFoundError',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'useRepoCoverage',
+            },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: {
+              callingFn: 'useRepoCoverage',
+            },
             data: {
               detail: (
                 <p>
@@ -143,8 +149,7 @@ export function useRepoCoverage({
                 </p>
               ),
             },
-            dev: 'useRepoCoverage - 403 OwnerNotActivated Error',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         return data?.owner?.repository?.branch ?? null

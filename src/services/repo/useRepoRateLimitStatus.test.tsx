@@ -162,6 +162,7 @@ describe('useRepoRateLimitStatus', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useRepoRateLimitStatus - Not Found Error',
               status: 404,
             })
           )
@@ -220,7 +221,8 @@ describe('useRepoRateLimitStatus', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'useRepoRateLimitStatus - Parsing Error',
+              status: 400,
             })
           )
         )

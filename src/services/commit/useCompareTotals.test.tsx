@@ -196,8 +196,8 @@ describe('useCompareTotals', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useCompareTotals - Not Found Error',
               status: 404,
-              dev: 'useCompareTotals - 404 not found',
             })
           )
         )
@@ -232,8 +232,8 @@ describe('useCompareTotals', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useCompareTotals - Owner Not Activated',
               status: 403,
-              dev: 'useCompareTotals - 403 owner not activated',
             })
           )
         )
@@ -251,7 +251,7 @@ describe('useCompareTotals', () => {
         consoleSpy.mockRestore()
       })
 
-      it('throws a 404', async () => {
+      it('throws a 400', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
@@ -268,8 +268,8 @@ describe('useCompareTotals', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
-              dev: 'useCompareTotals - 404 failed to parse',
+              dev: 'useCompareTotals - Parsing Error',
+              status: 400,
             })
           )
         )

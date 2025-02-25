@@ -16,13 +16,18 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
 
-beforeAll(() => server.listen())
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const mockNotFoundError = {
   owner: {
@@ -64,15 +69,9 @@ const mockResponse = {
             isRenamedFile: false,
             isNewFile: false,
             isDeletedFile: false,
-            baseCoverage: {
-              percentCovered: 23,
-            },
-            headCoverage: {
-              percentCovered: 24,
-            },
-            patchCoverage: {
-              percentCovered: 25,
-            },
+            baseCoverage: { percentCovered: 23 },
+            headCoverage: { percentCovered: 24 },
+            patchCoverage: { percentCovered: 25 },
             changeCoverage: 0,
             segments: {
               __typename: 'SegmentComparisons',
@@ -137,13 +136,9 @@ describe('useSingularImpactedFileComparison', () => {
   }
 
   describe('when called with successful res', () => {
-    beforeEach(() => {
-      setup({})
-    })
-    afterEach(() => server.resetHandlers())
-
     describe('when data is loaded', () => {
       it('returns the data', async () => {
+        setup({})
         const { result } = renderHook(
           () =>
             useSingularImpactedFileComparison({
@@ -207,8 +202,8 @@ describe('useSingularImpactedFileComparison', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useSingularImpactedFileComparison - 404 failed to parse',
+            dev: 'useSingularImpactedFileComparison - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -235,8 +230,8 @@ describe('useSingularImpactedFileComparison', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useSingularImpactedFileComparison - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )
@@ -263,6 +258,7 @@ describe('useSingularImpactedFileComparison', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useSingularImpactedFileComparison - Owner Not Activated',
             status: 403,
           })
         )
@@ -286,14 +282,8 @@ describe('useSingularImpactedFileComparison', () => {
           wrapper,
         }
       )
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-      await waitFor(() =>
-        expect(result.current.error).toEqual(
-          expect.objectContaining({
-            status: 404,
-          })
-        )
-      )
+
+      await waitFor(() => expect(result.current.error).toBeNull())
     })
   })
 })

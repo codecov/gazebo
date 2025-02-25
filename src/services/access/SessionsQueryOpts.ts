@@ -2,7 +2,7 @@ import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { mapEdges } from 'shared/utils/graphql'
 
 const SessionSchema = z.object({
@@ -91,11 +91,13 @@ export function SessionsQueryOpts({ provider }: SessionsQueryArgs) {
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useSessions - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'SessionsQueryOpts',
+              error: parsedRes.error,
+            },
+          })
         }
 
         const data = parsedRes.data

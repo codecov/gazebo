@@ -217,11 +217,7 @@ describe('usePrefetchCommitFileEntry', () => {
           ?.at(0) as Array<string>
 
         await waitFor(() =>
-          expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
-            expect.objectContaining({
-              status: 404,
-            })
-          )
+          expect(queryClient?.getQueryState(queryKey)?.error).toBeNull()
         )
       })
     })
@@ -310,6 +306,7 @@ describe('usePrefetchCommitFileEntry', () => {
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
+            dev: 'usePrefetchCommitFileEntry - Not Found Error',
             status: 404,
           })
         )
@@ -348,6 +345,7 @@ describe('usePrefetchCommitFileEntry', () => {
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
+            dev: 'usePrefetchCommitFileEntry - Owner Not Activated',
             status: 403,
           })
         )
@@ -365,7 +363,7 @@ describe('usePrefetchCommitFileEntry', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -386,7 +384,8 @@ describe('usePrefetchCommitFileEntry', () => {
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'usePrefetchCommitFileEntry - Parsing Error',
+            status: 400,
           })
         )
       )

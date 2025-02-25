@@ -2,16 +2,13 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 export const PlanSchema = z
   .object({
     owner: z
       .object({
-        plan: z
-          .object({
-            isTeamPlan: z.boolean(),
-          })
-          .nullable(),
+        plan: z.object({ isTeamPlan: z.boolean() }).nullable(),
       })
       .nullable(),
   })
@@ -47,9 +44,12 @@ export const useIsTeamPlan = ({ provider, owner }: UseIsTeamPlanArgs) =>
         const parsedRes = PlanSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: null,
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useIsTeamPlan',
+              error: parsedRes.error,
+            },
           })
         }
 

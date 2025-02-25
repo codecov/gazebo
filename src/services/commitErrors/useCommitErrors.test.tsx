@@ -27,12 +27,8 @@ const dataReturned = {
     repository: {
       __typename: 'Repository',
       commit: {
-        yamlErrors: {
-          edges: [{ node: { errorCode: 'invalid_yaml' } }],
-        },
-        botErrors: {
-          edges: [{ node: { errorCode: 'repo_bot_invalid' } }],
-        },
+        yamlErrors: { edges: [{ node: { errorCode: 'invalid_yaml' } }] },
+        botErrors: { edges: [{ node: { errorCode: 'repo_bot_invalid' } }] },
       },
     },
   },
@@ -124,7 +120,8 @@ describe('useCommitErrors', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'useCommitErrors - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -140,6 +137,7 @@ describe('useCommitErrors', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitErrors - Not Found Error',
             status: 404,
           })
         )
@@ -156,6 +154,7 @@ describe('useCommitErrors', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitErrors - Owner Not Activated',
             status: 403,
           })
         )

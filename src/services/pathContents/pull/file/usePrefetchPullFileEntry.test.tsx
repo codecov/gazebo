@@ -195,8 +195,8 @@ describe('usePrefetchPullFileEntry', () => {
     await waitFor(() =>
       expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
-          status: 404,
-          dev: 'usePrefetchPullFileEntry - 404 schema parsing failed',
+          dev: 'usePrefetchPullFileEntry - Parsing Error',
+          status: 400,
         })
       )
     )
@@ -225,8 +225,8 @@ describe('usePrefetchPullFileEntry', () => {
     await waitFor(() =>
       expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
+          dev: 'usePrefetchPullFileEntry - Not Found Error',
           status: 404,
-          dev: 'usePrefetchPullFileEntry - 404 NotFoundError',
         })
       )
     )
@@ -255,8 +255,8 @@ describe('usePrefetchPullFileEntry', () => {
     await waitFor(() =>
       expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
+          dev: 'usePrefetchPullFileEntry - Owner Not Activated',
           status: 403,
-          dev: 'usePrefetchPullFileEntry - 403 OwnerNotActivatedError',
         })
       )
     )
@@ -283,12 +283,7 @@ describe('usePrefetchPullFileEntry', () => {
       ?.at(0) as Array<string>
 
     await waitFor(() =>
-      expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
-        expect.objectContaining({
-          status: 404,
-          dev: 'usePrefetchCommitFileEntry - 404 failed to find coverage file',
-        })
-      )
+      expect(queryClient?.getQueryState(queryKey)?.error).toBeNull()
     )
   })
 })

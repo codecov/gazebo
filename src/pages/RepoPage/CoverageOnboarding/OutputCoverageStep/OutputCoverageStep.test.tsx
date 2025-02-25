@@ -1,8 +1,5 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw'
-import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -16,55 +13,25 @@ import { Framework, FrameworkInstructions } from '../UseFrameworkInstructions'
 
 vi.mock('config')
 
-const server = setupServer()
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-    },
-  },
-})
-
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new']}>
-      <ThemeContextProvider>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/new',
-            '/:provider/:owner/:repo/new/other-ci',
-          ]}
-        >
-          <Suspense fallback={null}>{children}</Suspense>
-        </Route>
-      </ThemeContextProvider>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new']}>
+    <ThemeContextProvider>
+      <Route
+        path={[
+          '/:provider/:owner/:repo/new',
+          '/:provider/:owner/:repo/new/other-ci',
+        ]}
+      >
+        <Suspense fallback={null}>{children}</Suspense>
+      </Route>
+    </ThemeContextProvider>
+  </MemoryRouter>
 )
-
-beforeAll(() => {
-  console.error = () => {}
-  server.listen()
-})
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => server.close())
 
 describe('OutputCoverageStep', () => {
   function setup({ isSelfHosted = false } = {}) {
     const user = userEvent.setup()
     config.IS_SELF_HOSTED = isSelfHosted
-
-    const mockMetricMutationVariables = vi.fn()
-    server.use(
-      graphql.mutation('storeEventMetric', (info) => {
-        mockMetricMutationVariables(info?.variables)
-        return HttpResponse.json({ data: { storeEventMetric: null } })
-      })
-    )
 
     return {
       user,
@@ -102,7 +69,7 @@ describe('OutputCoverageStep', () => {
       <OutputCoverageStep
         framework={framework}
         frameworkInstructions={frameworkInstructions}
-        owner="gh"
+        ciProvider="GitHub Actions"
         setFramework={setFramework}
       />,
       { wrapper }
@@ -120,7 +87,7 @@ describe('OutputCoverageStep', () => {
       <OutputCoverageStep
         framework={framework}
         frameworkInstructions={frameworkInstructions}
-        owner="gh"
+        ciProvider="GitHub Actions"
         setFramework={setFramework}
       />,
       { wrapper }
@@ -136,7 +103,7 @@ describe('OutputCoverageStep', () => {
       <OutputCoverageStep
         framework={framework}
         frameworkInstructions={frameworkInstructions}
-        owner="gh"
+        ciProvider="GitHub Actions"
         setFramework={setFramework}
       />,
       { wrapper }
@@ -157,7 +124,7 @@ describe('OutputCoverageStep', () => {
       <OutputCoverageStep
         framework={framework}
         frameworkInstructions={frameworkInstructions}
-        owner="gh"
+        ciProvider="GitHub Actions"
         setFramework={setFramework}
       />,
       { wrapper }
@@ -179,7 +146,7 @@ describe('OutputCoverageStep', () => {
         <OutputCoverageStep
           framework={framework}
           frameworkInstructions={frameworkInstructions}
-          owner="gh"
+          ciProvider="GitHub Actions"
           setFramework={setFramework}
         />,
         { wrapper }
@@ -196,7 +163,7 @@ describe('OutputCoverageStep', () => {
           <OutputCoverageStep
             framework={framework}
             frameworkInstructions={frameworkInstructions}
-            owner="gh"
+            ciProvider="GitHub Actions"
             setFramework={setFramework}
           />,
           { wrapper }
@@ -230,7 +197,7 @@ describe('OutputCoverageStep', () => {
           <OutputCoverageStep
             framework={framework}
             frameworkInstructions={frameworkInstructions}
-            owner="gh"
+            ciProvider="GitHub Actions"
             setFramework={setFramework}
           />,
           { wrapper }
@@ -250,7 +217,7 @@ describe('OutputCoverageStep', () => {
           <OutputCoverageStep
             framework={framework}
             frameworkInstructions={frameworkInstructions}
-            owner="gh"
+            ciProvider="GitHub Actions"
             setFramework={setFramework}
           />,
           { wrapper }
@@ -265,7 +232,7 @@ describe('OutputCoverageStep', () => {
           <OutputCoverageStep
             framework="Go"
             frameworkInstructions={frameworkInstructions}
-            owner="gh"
+            ciProvider="GitHub Actions"
             setFramework={setFramework}
           />
         )

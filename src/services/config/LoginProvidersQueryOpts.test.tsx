@@ -124,7 +124,7 @@ describe('useLoginProviders', () => {
       vi.restoreAllMocks()
     })
 
-    it('throws an error', async () => {
+    it('throws a 400', async () => {
       setup({
         hasParsingError: true,
       })
@@ -137,7 +137,10 @@ describe('useLoginProviders', () => {
       await waitFor(() => expect(result.current.isError).toBeTruthy())
 
       expect(result.current.error).toEqual(
-        expect.objectContaining({ status: 404 })
+        expect.objectContaining({
+          dev: 'LoginProvidersQueryOpts - Parsing Error',
+          status: 400,
+        })
       )
     })
   })

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 // This query needs to be common between this hook and hooks that use prefetch
@@ -57,26 +57,32 @@ export function useFileWithMainCoverage({
         const parsedData = PathContentsRequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useFileWithMainCoverage - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useFileWithMainCoverage',
+              error: parsedData.error,
+            },
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useFileWithMainCoverage - 404 NotFoundError',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'useFileWithMainCoverage',
+            },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: {
+              callingFn: 'useFileWithMainCoverage',
+            },
             data: {
               detail: (
                 <p>
@@ -87,8 +93,7 @@ export function useFileWithMainCoverage({
                 </p>
               ),
             },
-            dev: 'useFileWithMainCoverage - 403 OwnerNotActivatedError',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         return extractCoverageFromResponse(data?.owner?.repository)

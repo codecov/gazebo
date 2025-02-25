@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import z from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const ResponseSchema = z.object({
   owner: z
@@ -42,11 +42,13 @@ export function useCodecovAIInstallation({
       }).then((res) => {
         const parsedRes = ResponseSchema.safeParse(res?.data)
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useCodecovAIInstallation - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useCodecovAIInstallation',
+              error: parsedRes.error,
+            },
+          })
         }
 
         return {

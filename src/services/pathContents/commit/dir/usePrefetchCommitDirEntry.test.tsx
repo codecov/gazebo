@@ -250,7 +250,7 @@ describe('usePrefetchCommitDirEntry', () => {
     })
 
     describe('and bad response', () => {
-      it('returns 404 failed to parse', async () => {
+      it('returns 400 failed to parse', async () => {
         console.error = () => {}
         setup({ isUnsuccessfulParse: true })
         const { result } = renderHook(
@@ -266,8 +266,8 @@ describe('usePrefetchCommitDirEntry', () => {
 
         expect(queryClient.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'usePrefetchCommitDirEntry - 404 schema parsing failed',
+            status: 400,
+            dev: 'usePrefetchCommitDirEntry - Parsing Error',
           })
         )
       })
@@ -291,7 +291,7 @@ describe('usePrefetchCommitDirEntry', () => {
         expect(queryClient.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
             status: 404,
-            dev: 'usePrefetchCommitDirEntry - 404 NotFoundError',
+            dev: 'usePrefetchCommitDirEntry - Not Found Error',
           })
         )
       })
@@ -315,7 +315,7 @@ describe('usePrefetchCommitDirEntry', () => {
         expect(queryClient.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
             status: 403,
-            dev: 'usePrefetchCommitDirEntry - 403 OwnerNotActivatedError',
+            dev: 'usePrefetchCommitDirEntry - Owner Not Activated',
           })
         )
       })

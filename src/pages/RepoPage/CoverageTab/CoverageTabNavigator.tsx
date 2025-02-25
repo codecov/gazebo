@@ -1,6 +1,6 @@
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { Provider } from 'shared/api/helpers'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 

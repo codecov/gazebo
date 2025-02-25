@@ -12,7 +12,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import {
   ErrorCodeEnum,
   UploadStateEnum,
@@ -315,26 +315,32 @@ export function useCommitTeam({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useCommitTeam - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useCommitTeam',
+              error: parsedRes.error,
+            },
+          })
         }
 
         const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useCommitTeam - 404 not found',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'useCommitTeam',
+            },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: {
+              callingFn: 'useCommitTeam',
+            },
             data: {
               detail: (
                 <p>
@@ -345,8 +351,7 @@ export function useCommitTeam({
                 </p>
               ),
             },
-            dev: 'useCommitTeam - 403 owner not activated',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         const commit = data?.owner?.repository?.commit

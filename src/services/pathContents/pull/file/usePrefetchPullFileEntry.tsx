@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { extractCoverageFromResponse } from 'services/pathContents/utils'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 import {
@@ -51,28 +51,30 @@ export function usePrefetchPullFileEntry({
           const parsedRes = PathContentsRequestSchema.safeParse(res?.data)
 
           if (!parsedRes.success) {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'usePrefetchPullFileEntry - 404 schema parsing failed',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Parsing Error',
+              errorDetails: {
+                callingFn: 'usePrefetchPullFileEntry',
+                error: parsedRes.error,
+              },
+            })
           }
 
           const data = parsedRes.data
 
           if (data?.owner?.repository?.__typename === 'NotFoundError') {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'usePrefetchPullFileEntry - 404 NotFoundError',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Not Found Error',
+              errorDetails: { callingFn: 'usePrefetchPullFileEntry' },
+            })
           }
 
           if (
             data?.owner?.repository?.__typename === 'OwnerNotActivatedError'
           ) {
-            return Promise.reject({
-              status: 403,
+            return rejectNetworkError({
+              errorName: 'Owner Not Activated',
+              errorDetails: { callingFn: 'usePrefetchPullFileEntry' },
               data: {
                 detail: (
                   <p>
@@ -83,18 +85,13 @@ export function usePrefetchPullFileEntry({
                   </p>
                 ),
               },
-              dev: 'usePrefetchPullFileEntry - 403 OwnerNotActivatedError',
-            } satisfies NetworkErrorObject)
+            })
           }
 
           const coverage = extractCoverageFromResponse(data?.owner?.repository)
 
           if (!coverage) {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'usePrefetchCommitFileEntry - 404 failed to find coverage file',
-            } satisfies NetworkErrorObject)
+            return null
           }
 
           return coverage

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import GithubConfigBanner from 'pages/OwnerPage/HeaderBanners/GithubConfigBanner'
 import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { orderingOptions } from 'services/repos/orderingOptions'
 import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'

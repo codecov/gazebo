@@ -16,14 +16,8 @@ const mockBranchComponents = {
           commitid: 'commit-123',
           coverageAnalytics: {
             components: [
-              {
-                id: 'compOneId',
-                name: 'compOneName',
-              },
-              {
-                id: 'compTwoId',
-                name: 'compTwoName',
-              },
+              { id: 'compOneId', name: 'compOneName' },
+              { id: 'compTwoId', name: 'compTwoName' },
             ],
           },
         },
@@ -41,12 +35,7 @@ const mockBranchComponentsFiltered = {
         head: {
           commitid: 'commit-123',
           coverageAnalytics: {
-            components: [
-              {
-                id: 'compOneId',
-                name: 'compOneName',
-              },
-            ],
+            components: [{ id: 'compOneId', name: 'compOneName' }],
           },
         },
       },
@@ -159,14 +148,8 @@ describe('useBranchComponents', () => {
                 head: {
                   coverageAnalytics: {
                     components: [
-                      {
-                        id: 'compOneId',
-                        name: 'compOneName',
-                      },
-                      {
-                        id: 'compTwoId',
-                        name: 'compTwoName',
-                      },
+                      { id: 'compOneId', name: 'compOneName' },
+                      { id: 'compTwoId', name: 'compTwoName' },
                     ],
                   },
                 },
@@ -194,12 +177,7 @@ describe('useBranchComponents', () => {
               branch: {
                 head: {
                   coverageAnalytics: {
-                    components: [
-                      {
-                        id: 'compOneId',
-                        name: 'compOneName',
-                      },
-                    ],
+                    components: [{ id: 'compOneId', name: 'compOneName' }],
                   },
                 },
               },
@@ -259,6 +237,7 @@ describe('useBranchComponents', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useBranchComponents - Not Found Error',
               status: 404,
             })
           )
@@ -294,6 +273,7 @@ describe('useBranchComponents', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useBranchComponents - Owner Not Activated',
               status: 403,
             })
           )
@@ -312,7 +292,7 @@ describe('useBranchComponents', () => {
         consoleSpy.mockRestore()
       })
 
-      it('throws a 404', async () => {
+      it('throws a 400', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
@@ -329,7 +309,8 @@ describe('useBranchComponents', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'useBranchComponents - Parsing Error',
+              status: 400,
             })
           )
         )

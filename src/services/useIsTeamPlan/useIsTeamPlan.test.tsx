@@ -5,17 +5,9 @@ import { setupServer } from 'msw/node'
 
 import { useIsTeamPlan } from './useIsTeamPlan'
 
-const mockIsTeamPlan = {
-  owner: {
-    plan: {
-      isTeamPlan: true,
-    },
-  },
-}
+const mockIsTeamPlan = { owner: { plan: { isTeamPlan: true } } }
 
-const mockNullOwner = {
-  owner: null,
-}
+const mockNullOwner = { owner: null }
 
 const mockUnsuccessfulParseError = {}
 
@@ -118,16 +110,15 @@ describe('useIsTeamPlan', () => {
               provider: 'gh',
               owner: 'codecov',
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'useIsTeamPlan - Parsing Error',
+              status: 400,
             })
           )
         )

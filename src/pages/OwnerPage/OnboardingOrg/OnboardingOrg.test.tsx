@@ -5,14 +5,16 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock, vi } from 'vitest'
 
 import { eventTracker } from 'services/events/events'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 
 import OnboardingOrg from './OnboardingOrg'
 
 import { OnboardingContainerProvider } from '../OnboardingContainerContext/context'
 
-vi.mock('services/navigation', async () => {
-  const servicesNavigation = await vi.importActual('services/navigation')
+vi.mock('services/navigation/useLocationParams', async () => {
+  const servicesNavigation = await vi.importActual(
+    'services/navigation/useLocationParams'
+  )
 
   return {
     ...servicesNavigation,

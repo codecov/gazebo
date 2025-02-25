@@ -269,7 +269,7 @@ describe('useFileWithMainCoverage', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
-            dev: 'useFileWithMainCoverage - 404 NotFoundError',
+            dev: 'useFileWithMainCoverage - Not Found Error',
           })
         )
       )
@@ -307,7 +307,7 @@ describe('useFileWithMainCoverage', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 403,
-            dev: 'useFileWithMainCoverage - 403 OwnerNotActivatedError',
+            dev: 'useFileWithMainCoverage - Owner Not Activated',
           })
         )
       )
@@ -324,7 +324,7 @@ describe('useFileWithMainCoverage', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -344,8 +344,8 @@ describe('useFileWithMainCoverage', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useFileWithMainCoverage - 404 schema parsing failed',
+            status: 400,
+            dev: 'useFileWithMainCoverage - Parsing Error',
           })
         )
       )

@@ -86,7 +86,7 @@ describe('useCodecovAIInstalledRepos', () => {
       console.error = oldConsoleError
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -101,7 +101,8 @@ describe('useCodecovAIInstalledRepos', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'useCodecovAIInstalledRepos - Parsing Error',
+            status: 400,
           })
         )
       )

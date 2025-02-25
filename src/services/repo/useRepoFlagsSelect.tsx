@@ -13,7 +13,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 import { mapEdges } from '../../shared/utils/graphql'
@@ -120,26 +120,32 @@ function fetchRepoFlags({
     const parsedRes = FetchRepoFlagsSchema.safeParse(res?.data)
 
     if (!parsedRes.success) {
-      return Promise.reject({
-        status: 404,
-        data: {},
-        dev: `useRepoFlagsSelect - 404 failed to parse`,
-      } satisfies NetworkErrorObject)
+      return rejectNetworkError({
+        errorName: 'Parsing Error',
+        errorDetails: {
+          callingFn: 'fetchRepoFlags',
+          error: parsedRes.error,
+        },
+      })
     }
 
     const data = parsedRes.data
 
     if (data?.owner?.repository?.__typename === 'NotFoundError') {
-      return Promise.reject({
-        status: 404,
-        data: {},
-        dev: `useRepoFlagsSelect - 404 NotFoundError`,
-      } satisfies NetworkErrorObject)
+      return rejectNetworkError({
+        errorName: 'Not Found Error',
+        errorDetails: {
+          callingFn: 'fetchRepoFlags',
+        },
+      })
     }
 
     if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-      return Promise.reject({
-        status: 403,
+      return rejectNetworkError({
+        errorName: 'Owner Not Activated',
+        errorDetails: {
+          callingFn: 'fetchRepoFlags',
+        },
         data: {
           detail: (
             <p>
@@ -155,8 +161,7 @@ function fetchRepoFlags({
             </p>
           ),
         },
-        dev: `useRepoFlagsSelect - 403 OwnerNotActivatedError`,
-      } satisfies NetworkErrorObject)
+      })
     }
 
     const flags = data?.owner?.repository?.coverageAnalytics?.flags
@@ -293,25 +298,31 @@ function fetchRepoFlagsForPull({
     const parsedRes = FetchRepoFlagsForPullSchema.safeParse(res?.data)
 
     if (!parsedRes.success) {
-      return Promise.reject({
-        status: 404,
-        data: {},
-        dev: `useRepoFlagsSelect - 404 failed to parse`,
-      } satisfies NetworkErrorObject)
+      return rejectNetworkError({
+        errorName: 'Parsing Error',
+        errorDetails: {
+          callingFn: 'fetchRepoFlagsForPull',
+          error: parsedRes.error,
+        },
+      })
     }
 
     const data = parsedRes.data
     if (data?.owner?.repository?.__typename === 'NotFoundError') {
-      return Promise.reject({
-        status: 404,
-        data: {},
-        dev: `useRepoFlagsSelect - 404 NotFoundError`,
+      return rejectNetworkError({
+        errorName: 'Not Found Error',
+        errorDetails: {
+          callingFn: 'fetchRepoFlagsForPull',
+        },
       })
     }
 
     if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-      return Promise.reject({
-        status: 403,
+      return rejectNetworkError({
+        errorName: 'Owner Not Activated',
+        errorDetails: {
+          callingFn: 'fetchRepoFlagsForPull',
+        },
         data: {
           detail: (
             <p>
@@ -322,7 +333,6 @@ function fetchRepoFlagsForPull({
             </p>
           ),
         },
-        dev: `useRepoFlagsSelect - 403 OwnerNotActivatedError`,
       })
     }
 

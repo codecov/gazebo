@@ -124,16 +124,15 @@ describe('useUploadTokenRequired', () => {
               provider: 'gh',
               owner: 'codecov',
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'useUploadTokenRequired - Parsing Error',
+              status: 400,
             })
           )
         )
