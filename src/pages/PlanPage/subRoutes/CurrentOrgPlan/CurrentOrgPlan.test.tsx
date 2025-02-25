@@ -318,7 +318,9 @@ describe('CurrentOrgPlan', () => {
   describe('when plan value is not provided', () => {
     beforeEach(() => {
       setup({
-        accountDetails: { ...mockedAccountDetails },
+        accountDetails: mockedAccountDetails as z.infer<
+          typeof AccountDetailsSchema
+        >,
       })
     })
 

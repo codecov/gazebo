@@ -13,7 +13,7 @@ const OwnerSchema = z
     service: z.string(),
     stats: z
       .object({
-        repos: z.number().nullable(),
+        repos: z.number().nullish(),
       })
       .nullable(),
     username: z.string(),

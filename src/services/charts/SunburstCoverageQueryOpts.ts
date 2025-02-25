@@ -29,7 +29,7 @@ const SunburstSchema: z.ZodType<SunburstResponse> = baseResponseSchema.extend({
   children: z.lazy(() => SunburstSchema.array()).optional(),
 })
 
-const ResponseSchema = z.array(SunburstSchema)
+const ResponseSchema = z.array(SunburstSchema).nullable()
 
 interface SunburstCoverageArgs {
   provider: Provider
