@@ -78,6 +78,7 @@ function GitHubActions() {
         setIsUsingGlobalToken={setIsUsingGlobalToken}
         showAddTokenStep={showAddTokenStep}
         showTokenSelector={showTokenSelector}
+        framework={framework}
       />
       <WorkflowYMLStep
         framework={framework}
