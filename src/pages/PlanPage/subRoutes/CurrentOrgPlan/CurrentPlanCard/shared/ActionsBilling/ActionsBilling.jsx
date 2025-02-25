@@ -80,7 +80,7 @@ function ActionsBilling() {
       <div className="flex flex-col gap-4 border-ds-gray-secondary">
         <hr />
         <div className="flex gap-4">
-          <img className="size-8" alt="Github" src={githubLogo} />
+          <img className="size-8" alt="GitHub" src={githubLogo} />
           <p className="text-sm">
             Your account is configured via GitHub Marketplace
           </p>

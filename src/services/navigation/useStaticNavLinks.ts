@@ -196,21 +196,21 @@ export function useStaticNavLinks() {
     codecovGithubApp: {
       path: () => `https://github.com/apps/${config.GH_APP}`,
       isExternalLink: true,
-      text: 'Codecov Github App',
+      text: 'Codecov GitHub App',
       openNewTab: true,
     },
     codecovGithubAppSelectTarget: {
       path: () =>
         `https://github.com/apps/${config.GH_APP}/installations/select_target`,
       isExternalLink: true,
-      text: 'Codecov Github App',
+      text: 'Codecov GitHub App',
       openNewTab: true,
     },
     githubRateLimitExceeded: {
       path: () =>
         'https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api',
       isExternalLink: true,
-      text: 'Github documentation',
+      text: 'GitHub documentation',
       openNewTab: true,
     },
     teamBot: {
@@ -408,14 +408,14 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     codecovExampleJSCircleCIWorkflow: {
-      text: 'Github Codecov Example CircleCI JS workflow',
+      text: 'GitHub Codecov Example CircleCI JS workflow',
       path: () =>
         'https://github.com/codecov/example-javascript/blob/main/.circleci/config.yml',
       isExternalLink: true,
       openNewTab: true,
     },
     codecovExampleJSCircleCIWorkflowSteps: {
-      text: 'Github Codecov Example CircleCI JS workflow',
+      text: 'GitHub Codecov Example CircleCI JS workflow',
       path: () =>
         'https://app.circleci.com/pipelines/github/codecov/example-javascript/148/workflows/180ae354-0d8c-4205-8815-f4c516a042a4/jobs/130/steps',
       isExternalLink: true,
