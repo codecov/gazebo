@@ -81,13 +81,15 @@ export type PathContentResultType = z.infer<typeof PathContentsResultSchema>
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   repositoryConfig: RepositoryConfigSchema,
-  branch: z.object({
-    head: z
-      .object({
-        deprecatedPathContents: PathContentsUnionSchema.nullish(),
-      })
-      .nullable(),
-  }),
+  branch: z
+    .object({
+      head: z
+        .object({
+          deprecatedPathContents: PathContentsUnionSchema.nullish(),
+        })
+        .nullable(),
+    })
+    .nullable(),
 })
 
 const BranchContentsSchema = z.object({

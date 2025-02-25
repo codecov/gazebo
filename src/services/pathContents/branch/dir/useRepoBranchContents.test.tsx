@@ -325,14 +325,12 @@ describe('useRepoBranchContents', () => {
     })
 
     describe('request rejects', () => {
-      const oldConsoleError = console.error
-
       beforeEach(() => {
-        console.error = () => null
+        vi.spyOn(console, 'error').mockImplementation(() => {})
       })
 
       afterEach(() => {
-        console.error = oldConsoleError
+        vi.restoreAllMocks()
       })
 
       describe('on repository not found', () => {
