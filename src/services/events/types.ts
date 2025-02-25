@@ -34,12 +34,7 @@ export type Event =
         loginProvider?: ReturnType<typeof loginProviderToName> // for login buttons only
         ciProvider?: 'GitHub Actions' | 'CircleCI' | 'Codecov CLI' // E.g., product onboarding pages
         testingFramework?: Framework // E.g., product onboarding pages
-        copied?:
-          | 'Upload token'
-          | 'YAML snippet'
-          | 'Example workflow'
-          | 'Install command'
-          | 'Run command' // Description of what was copied for buttonName="Copy" events
+        copied?: Copyable // Description of what was copied for buttonName="Copy" events
       }
     }
   | {
@@ -104,3 +99,10 @@ type ButtonName =
   | 'Copy'
 
 type PageName = 'Owner Page'
+
+type Copyable =
+  | 'Upload token'
+  | 'YAML snippet'
+  | 'Example workflow'
+  | 'Install command'
+  | 'Run command'
