@@ -69,15 +69,13 @@ export const useTestResultsFlags = ({ term }: { term?: string }) => {
           term,
         },
       }).then((res) => {
+        const callingFn = 'useTestResultsFlags'
         const parsedData = TestResultsFlagsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useTestResultsFlags',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -86,7 +84,7 @@ export const useTestResultsFlags = ({ term }: { term?: string }) => {
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useTestResultsFlags' },
+            errorDetails: { callingFn },
           })
         }
 

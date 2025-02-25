@@ -74,15 +74,13 @@ export function usePrefetchPullDirEntry({
             filters,
           },
         }).then((res) => {
+          const callingFn = 'usePrefetchPullDirEntry'
           const parsedRes = RequestSchema.safeParse(res?.data)
 
           if (!parsedRes.success) {
             return rejectNetworkError({
               errorName: 'Parsing Error',
-              errorDetails: {
-                callingFn: 'usePrefetchPullDirEntry',
-                error: parsedRes.error,
-              },
+              errorDetails: { callingFn, error: parsedRes.error },
             })
           }
 
@@ -91,7 +89,7 @@ export function usePrefetchPullDirEntry({
           if (data?.owner?.repository?.__typename === 'NotFoundError') {
             return rejectNetworkError({
               errorName: 'Not Found Error',
-              errorDetails: { callingFn: 'usePrefetchPullDirEntry' },
+              errorDetails: { callingFn },
             })
           }
 
@@ -100,7 +98,7 @@ export function usePrefetchPullDirEntry({
           ) {
             return rejectNetworkError({
               errorName: 'Owner Not Activated',
-              errorDetails: { callingFn: 'usePrefetchPullDirEntry' },
+              errorDetails: { callingFn },
               data: {
                 detail: (
                   <p>

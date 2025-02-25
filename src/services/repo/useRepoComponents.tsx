@@ -144,15 +144,13 @@ export function useRepoComponents({
           branch,
         },
       }).then((res) => {
+        const callingFn = 'useRepoComponents'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useRepoComponentsArgs',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -161,14 +159,14 @@ export function useRepoComponents({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useRepoComponentsArgs' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'useRepoComponentsArgs' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

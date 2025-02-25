@@ -38,15 +38,13 @@ export const SelfHostedSettingsQueryOpts = ({
           provider,
         },
       }).then((res) => {
+        const callingFn = 'SelfHostedSettingsQueryOpts'
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'SelfHostedSettingsQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 

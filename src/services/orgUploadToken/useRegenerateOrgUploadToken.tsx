@@ -65,14 +65,13 @@ export function useRegenerateOrgUploadToken({
         variables: { input: { owner } },
         mutationPath: 'RegenerateOrgUploadToken',
       }).then(({ data }) => {
+        const callingFn = 'useRegenerateOrgUploadToken'
         const parsedRes = ResponseSchema.safeParse(data)
+
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useRegenerateOrgUploadToken',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

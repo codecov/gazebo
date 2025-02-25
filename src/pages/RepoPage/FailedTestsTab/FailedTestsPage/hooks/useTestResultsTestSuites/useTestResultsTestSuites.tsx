@@ -100,15 +100,13 @@ export const useTestResultsTestSuites = ({
           branch: branch ?? '',
         },
       }).then((res) => {
+        const callingFn = 'useTestResultsTestSuites'
         const parsedData = TestResultsTestSuitesSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useTestResultsTestSuites',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
         const data = parsedData.data
@@ -116,7 +114,7 @@ export const useTestResultsTestSuites = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useTestResultsTestSuites' },
+            errorDetails: { callingFn },
           })
         }
 

@@ -141,15 +141,13 @@ function ReposTeamQueryOpts({
           after,
         },
       }).then((res) => {
+        const callingFn = 'ReposTeamQueryOpts'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'ReposTeamQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

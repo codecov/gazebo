@@ -69,14 +69,13 @@ export const useCurrentOrgPlanPageData = ({
           owner,
         },
       }).then((res) => {
+        const callingFn = 'useCurrentOrgPlanPageData'
         const parsedRes = CurrentOrgPlanPageDataSchema.safeParse(res?.data)
+
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useCurrentOrgPlanPageData',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

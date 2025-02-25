@@ -86,15 +86,13 @@ export const ReposCoverageMeasurementsQueryOpts = ({
           isPublic,
         },
       }).then((res) => {
+        const callingFn = 'ReposCoverageMeasurementsQueryOpts'
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'ReposCoverageMeasurementsQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 

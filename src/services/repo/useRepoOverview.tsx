@@ -82,15 +82,13 @@ export function useRepoOverview({
           repo,
         },
       }).then((res) => {
+        const callingFn = 'useRepoOverview'
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useRepoOverview',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -99,9 +97,7 @@ export function useRepoOverview({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'useRepoOverview',
-            },
+            errorDetails: { callingFn },
           })
         }
 

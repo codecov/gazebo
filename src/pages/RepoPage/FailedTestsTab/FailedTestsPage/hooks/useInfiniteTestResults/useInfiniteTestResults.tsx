@@ -236,15 +236,13 @@ export const useInfiniteTestResults = ({
           before,
         },
       }).then((res) => {
+        const callingFn = 'useInfiniteTestResults'
         const parsedData = GetTestResultsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useInfiniteTestResults',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -253,14 +251,14 @@ export const useInfiniteTestResults = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useInfiniteTestResults' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'useInfiniteTestResults' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>
