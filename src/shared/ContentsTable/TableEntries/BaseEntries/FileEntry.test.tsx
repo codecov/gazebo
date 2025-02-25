@@ -15,7 +15,6 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 describe('FileEntry', () => {
   describe('checking properties on list display', () => {
     it('displays the file path', () => {
-      const runPrefetchMock = vi.fn()
       render(
         <FileEntry
           linkRef="main"
@@ -23,7 +22,6 @@ describe('FileEntry', () => {
           name="file.js"
           urlPath="dir"
           displayType={displayTypeParameter.list}
-          runPrefetch={runPrefetchMock}
         />,
         { wrapper }
       )
@@ -34,7 +32,6 @@ describe('FileEntry', () => {
 
   describe('checking properties on tree display', () => {
     it('displays the file name', () => {
-      const runPrefetchMock = vi.fn()
       render(
         <FileEntry
           linkRef="main"
@@ -42,7 +39,6 @@ describe('FileEntry', () => {
           name="file.js"
           urlPath="dir"
           displayType={displayTypeParameter.tree}
-          runPrefetch={runPrefetchMock}
         />,
         { wrapper }
       )
@@ -51,7 +47,6 @@ describe('FileEntry', () => {
     })
 
     it('does not display the file name', () => {
-      const runPrefetchMock = vi.fn()
       render(
         <FileEntry
           linkRef="main"
@@ -59,7 +54,6 @@ describe('FileEntry', () => {
           name="file.js"
           urlPath="dir"
           displayType={displayTypeParameter.tree}
-          runPrefetch={runPrefetchMock}
         />,
         { wrapper }
       )
@@ -70,7 +64,6 @@ describe('FileEntry', () => {
 
   describe('is displaying a list', () => {
     it('displays the file path label', () => {
-      const runPrefetchMock = vi.fn()
       render(
         <FileEntry
           linkRef="main"
@@ -78,7 +71,6 @@ describe('FileEntry', () => {
           name="file.js"
           urlPath="dir"
           displayType={displayTypeParameter.list}
-          runPrefetch={runPrefetchMock}
         />,
         { wrapper }
       )
@@ -110,7 +102,6 @@ describe('FileEntry', () => {
   })
 
   describe('passed pageName commit props', () => {
-    const runPrefetchMock = vi.fn()
     it('sets the correct href', () => {
       render(
         <FileEntry
@@ -119,7 +110,6 @@ describe('FileEntry', () => {
           urlPath="dir"
           commitSha="coolCommitSha"
           displayType={displayTypeParameter.tree}
-          runPrefetch={runPrefetchMock}
           pageName="commitFileDiff"
         />,
         { wrapper }
@@ -135,7 +125,6 @@ describe('FileEntry', () => {
 
   describe('passed queryParams prop', () => {
     it('sets the correct href', () => {
-      const runPrefetchMock = vi.fn()
       render(
         <FileEntry
           linkRef="main"
@@ -143,7 +132,6 @@ describe('FileEntry', () => {
           name="file.js"
           urlPath="dir"
           displayType={displayTypeParameter.list}
-          runPrefetch={runPrefetchMock}
           queryParams={{ flags: ['flag-1'] }}
         />,
         { wrapper }
