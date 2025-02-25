@@ -12,14 +12,8 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 
 describe('DirEntry', () => {
   it('displays the directory name', () => {
-    const runPrefetchMock = vi.fn()
     render(
-      <DirEntry
-        linkRef="branch"
-        name="dir"
-        urlPath="path/to/directory"
-        runPrefetch={runPrefetchMock}
-      />,
+      <DirEntry linkRef="branch" name="dir" urlPath="path/to/directory" />,
       { wrapper }
     )
 
@@ -29,14 +23,8 @@ describe('DirEntry', () => {
 
   describe('path is given', () => {
     it('sets the correct href', () => {
-      const runPrefetchMock = vi.fn()
       render(
-        <DirEntry
-          linkRef="branch"
-          name="dir"
-          urlPath="path/to/directory"
-          runPrefetch={runPrefetchMock}
-        />,
+        <DirEntry linkRef="branch" name="dir" urlPath="path/to/directory" />,
         { wrapper }
       )
 
@@ -50,11 +38,7 @@ describe('DirEntry', () => {
 
   describe('no path is given', () => {
     it('sets the correct href', () => {
-      const runPrefetchMock = vi.fn()
-      render(
-        <DirEntry linkRef="branch" name="dir" runPrefetch={runPrefetchMock} />,
-        { wrapper }
-      )
+      render(<DirEntry linkRef="branch" name="dir" />, { wrapper })
 
       const a = screen.getByRole('link')
       expect(a).toHaveAttribute('href', '/gh/codecov/test-repo/tree/branch/dir')
@@ -63,12 +47,10 @@ describe('DirEntry', () => {
 
   describe('query params value is passed', () => {
     it('sets the correct href', () => {
-      const runPrefetchMock = vi.fn()
       render(
         <DirEntry
           linkRef="branch"
           name="dir"
-          runPrefetch={runPrefetchMock}
           queryParams={{ flags: ['flag-1'] }}
         />,
         { wrapper }
@@ -102,13 +84,11 @@ describe('DirEntry', () => {
 
   describe('pageName prop is passed', () => {
     it('sets the correct href', () => {
-      const runPrefetchMock = vi.fn()
       render(
         <DirEntry
           commitSha="coolCommitSha"
           name="dir"
           urlPath="path/to/directory"
-          runPrefetch={runPrefetchMock}
           pageName="commitTreeView"
         />,
         { wrapper }
