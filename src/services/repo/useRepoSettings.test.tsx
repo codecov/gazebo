@@ -144,7 +144,7 @@ describe('useRepoSettings', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            dev: 'fetchRepoSettingsDetails - Parsing Error',
+            dev: 'useRepoSettings - Parsing Error',
             status: 400,
           })
         )
@@ -171,7 +171,7 @@ describe('useRepoSettings', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            dev: 'fetchRepoSettingsDetails - Not Found Error',
+            dev: 'useRepoSettings - Not Found Error',
             status: 404,
           })
         )
@@ -198,7 +198,7 @@ describe('useRepoSettings', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            dev: 'fetchRepoSettingsDetails - Owner Not Activated',
+            dev: 'useRepoSettings - Owner Not Activated',
             status: 403,
           })
         )

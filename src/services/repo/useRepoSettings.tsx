@@ -93,7 +93,7 @@ export function useRepoSettings() {
           return rejectNetworkError({
             errorName: 'Parsing Error',
             errorDetails: {
-              callingFn: 'fetchRepoSettingsDetails',
+              callingFn: 'useRepoSettings',
               error: parsedRes.error,
             },
           })
@@ -105,7 +105,7 @@ export function useRepoSettings() {
           return rejectNetworkError({
             errorName: 'Not Found Error',
             errorDetails: {
-              callingFn: 'fetchRepoSettingsDetails',
+              callingFn: 'useRepoSettings',
             },
           })
         }
@@ -114,7 +114,7 @@ export function useRepoSettings() {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
             errorDetails: {
-              callingFn: 'fetchRepoSettingsDetails',
+              callingFn: 'useRepoSettings',
             },
             data: {
               detail: (
