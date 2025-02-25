@@ -61,7 +61,7 @@ function OutputCoverageStep({
                     type: 'Button Clicked',
                     properties: {
                       buttonName: 'Copy',
-                      buttonLocation: 'Coverage Onboarding',
+                      buttonLocation: 'Coverage onboarding',
                       ciProvider: ciProvider,
                       testingFramework: framework,
                       copied: 'Install command',
@@ -82,7 +82,7 @@ function OutputCoverageStep({
                 type: 'Button Clicked',
                 properties: {
                   buttonName: 'Copy',
-                  buttonLocation: 'Coverage Onboarding',
+                  buttonLocation: 'Coverage onboarding',
                   ciProvider: ciProvider,
                   testingFramework: framework,
                   copied: 'Run command',

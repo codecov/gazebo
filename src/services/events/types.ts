@@ -30,7 +30,7 @@ export type Event =
       type: 'Button Clicked'
       properties: {
         buttonName: ButtonName
-        buttonLocation?: string // Non-technical description of the button location (e.g., Coverage onboarding)
+        buttonLocation?: ButtonLocation // Non-technical description of the button location (e.g., Coverage onboarding)
         loginProvider?: ReturnType<typeof loginProviderToName> // for login buttons only
         ciProvider?: 'GitHub Actions' | 'CircleCI' | 'Codecov CLI' // E.g., product onboarding pages
         testingFramework?: Framework // E.g., product onboarding pages
@@ -97,6 +97,16 @@ type ButtonName =
   | 'Login'
   | 'Sync'
   | 'Copy'
+
+type ButtonLocation =
+  | 'Coverage onboarding'
+  | 'User dropdown'
+  | 'Onboarding Container'
+  | 'Sync Provider Page'
+  | 'Terms of Service'
+  | 'Org selector'
+  | 'Install modal'
+  | 'Repo list'
 
 type PageName = 'Owner Page'
 
