@@ -6,8 +6,8 @@ import { Provider } from 'shared/api/helpers'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const OwnerSchema = z.object({
-  hasActiveRepos: z.boolean(),
-  hasPublicRepos: z.boolean(),
+  hasActiveRepos: z.boolean().nullable(),
+  hasPublicRepos: z.boolean().nullable(),
 })
 
 export type Owner = z.infer<typeof OwnerSchema>
