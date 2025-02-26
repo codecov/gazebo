@@ -9,7 +9,7 @@ import { BillingRate, Plans } from 'shared/utils/billing'
 
 import Activation from './Activation'
 
-vi.mock('./ChangePlanLink', () => ({
+vi.mock('./ChangePlanLink/ChangePlanLink', () => ({
   default: vi.fn(() => 'ChangePlanLink'),
 }))
 
