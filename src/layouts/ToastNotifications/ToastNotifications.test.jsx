@@ -23,7 +23,7 @@ const notifications = [
   },
 ]
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 
 describe('ToastNotifications', () => {
   const removeNotification = vi.fn()

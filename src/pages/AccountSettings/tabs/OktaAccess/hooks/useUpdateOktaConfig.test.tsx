@@ -15,7 +15,7 @@ import {
   useUpdateOktaConfig,
 } from './useUpdateOktaConfig'
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 const mockedToastNotification = useAddNotification as Mock
 
 const queryClientV5 = new QueryClientV5({

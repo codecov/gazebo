@@ -11,7 +11,7 @@ import { useFlags } from 'shared/featureFlags'
 
 import OrgUploadToken from './OrgUploadToken'
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 vi.mock('shared/featureFlags')
 vi.mock('./TokenlessSection', () => ({ default: () => 'TokenlessSection' }))
 

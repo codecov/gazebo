@@ -8,7 +8,7 @@ import { useAddNotification } from 'services/toastNotification/context'
 
 import NameEmailCard from './NameEmailCard'
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 
 const currentUser = {
   name: 'donald duck',

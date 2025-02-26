@@ -9,7 +9,7 @@ import { useAddNotification } from 'services/toastNotification/context'
 
 import DetailsSection from './DetailsSection'
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
