@@ -197,7 +197,7 @@ describe('CurrentOrgPlan', () => {
       })
 
       render(<CurrentOrgPlan />, { wrapper })
-      const updatedAlert = await screen.findByText('Plan successfully updated')
+      const updatedAlert = await screen.findByText('Plan successfully updated.')
       expect(updatedAlert).toBeInTheDocument()
     })
 
