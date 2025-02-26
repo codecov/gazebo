@@ -44,15 +44,13 @@ export function PlanPageDataQueryOpts({
         variables,
         signal,
       }).then((res) => {
+        const callingFn = 'PlanPageDataQueryOpts'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'PlanPageDataQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

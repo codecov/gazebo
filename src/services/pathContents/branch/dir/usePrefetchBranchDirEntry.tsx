@@ -150,15 +150,13 @@ export function usePrefetchBranchDirEntry({
             first: 20,
           },
         }).then((res) => {
+          const callingFn = 'usePrefetchBranchDirEntry'
           const parsedRes = BranchContentsSchema.safeParse(res?.data)
 
           if (!parsedRes.success) {
             return rejectNetworkError({
               errorName: 'Parsing Error',
-              errorDetails: {
-                callingFn: 'usePrefetchBranchDirEntry',
-                error: parsedRes.error,
-              },
+              errorDetails: { callingFn, error: parsedRes.error },
             })
           }
 
@@ -167,9 +165,7 @@ export function usePrefetchBranchDirEntry({
           if (data?.owner?.repository?.__typename === 'NotFoundError') {
             return rejectNetworkError({
               errorName: 'Not Found Error',
-              errorDetails: {
-                callingFn: 'usePrefetchBranchDirEntry',
-              },
+              errorDetails: { callingFn },
             })
           }
 
@@ -178,9 +174,7 @@ export function usePrefetchBranchDirEntry({
           ) {
             return rejectNetworkError({
               errorName: 'Owner Not Activated',
-              errorDetails: {
-                callingFn: 'usePrefetchBranchDirEntry',
-              },
+              errorDetails: { callingFn },
               data: {
                 detail: (
                   <p>

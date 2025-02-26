@@ -140,15 +140,13 @@ export function useBranches({
           after: pageParam,
         },
       }).then((res) => {
+        const callingFn = 'useBranches'
         const parsedData = GetBranchesSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useBranches',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -157,18 +155,14 @@ export function useBranches({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'useBranches',
-            },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: {
-              callingFn: 'useBranches',
-            },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

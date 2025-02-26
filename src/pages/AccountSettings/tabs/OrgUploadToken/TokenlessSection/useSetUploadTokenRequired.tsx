@@ -81,14 +81,13 @@ export const useSetUploadTokenRequired = ({
         },
         mutationPath: 'setUploadTokenRequired',
       }).then((res) => {
+        const callingFn = 'useSetUploadTokenRequired'
         const parsedData = ResponseSchema.safeParse(res.data)
+
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useSetUploadTokenRequired',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 

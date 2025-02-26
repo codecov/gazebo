@@ -57,15 +57,13 @@ export const useUnverifiedPaymentMethods = ({
           owner,
         },
       }).then((res) => {
+        const callingFn = 'useUnverifiedPaymentMethods'
         const parsedData = UnverifiedPaymentMethodsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useUnverifiedPaymentMethods',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 

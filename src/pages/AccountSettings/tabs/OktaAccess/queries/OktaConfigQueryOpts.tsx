@@ -62,15 +62,13 @@ export function OktaConfigQueryOpts({
           username,
         },
       }).then((res) => {
+        const callingFn = 'OktaConfigQueryOpts'
         const parsedRes = OktaConfigRequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'OktaConfigQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

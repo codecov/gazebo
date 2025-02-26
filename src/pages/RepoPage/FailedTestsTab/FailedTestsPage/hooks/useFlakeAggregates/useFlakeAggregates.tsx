@@ -95,15 +95,13 @@ export const useFlakeAggregates = ({
           interval,
         },
       }).then((res) => {
+        const callingFn = 'useFlakeAggregates'
         const parsedData = FlakeAggregatesSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useFlakeAggregates',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -112,7 +110,7 @@ export const useFlakeAggregates = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useFlakeAggregates' },
+            errorDetails: { callingFn },
           })
         }
 

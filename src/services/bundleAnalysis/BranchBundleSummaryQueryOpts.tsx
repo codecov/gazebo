@@ -160,15 +160,13 @@ export const BranchBundleSummaryQueryOpts = ({
           branch,
         },
       }).then((res) => {
+        const callingFn = 'BranchBundleSummaryQueryOpts'
         const parsedData = BranchBundleSummaryDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'BranchBundleSummaryQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -177,14 +175,14 @@ export const BranchBundleSummaryQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'BranchBundleSummaryQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'BranchBundleSummaryQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

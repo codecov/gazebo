@@ -115,15 +115,13 @@ export const useTestResultsAggregates = ({
           interval,
         },
       }).then((res) => {
+        const callingFn = 'useTestResultsAggregates'
         const parsedData = TestResultsAggregatesSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useTestResultsAggregates',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -132,7 +130,7 @@ export const useTestResultsAggregates = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useTestResultsAggregates' },
+            errorDetails: { callingFn },
           })
         }
 
