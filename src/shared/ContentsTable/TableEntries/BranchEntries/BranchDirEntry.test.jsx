@@ -27,7 +27,7 @@ const mockData = {
                 node: {
                   __typename: 'PathContentDir',
                   name: 'src',
-                  path: null,
+                  path: 'src',
                   percentCovered: 0.0,
                   hits: 4,
                   misses: 2,
@@ -191,7 +191,7 @@ describe('BranchDirEntry', () => {
             misses: 2,
             name: 'src',
             partials: 1,
-            path: null,
+            path: 'src',
             percentCovered: 0,
           },
         ],
