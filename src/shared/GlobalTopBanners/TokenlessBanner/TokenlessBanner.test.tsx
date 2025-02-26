@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -27,6 +31,9 @@ vi.mock('./TokenNotRequiredBanner', () => ({
 }))
 
 const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 
@@ -92,13 +99,15 @@ const mockSignedInUser = {
 const wrapper =
   (initialEntries = ['/gh/codecov']): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner">
-          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner">
+            <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 describe('TokenlessBanner', () => {
@@ -106,10 +115,14 @@ describe('TokenlessBanner', () => {
     tokenlessSection = true,
     uploadTokenRequired = false,
     currentUser,
+    hasActiveRepos = true,
+    hasPublicRepos = true,
   }: {
     tokenlessSection?: boolean
     uploadTokenRequired?: boolean
     currentUser?: any
+    hasActiveRepos?: boolean
+    hasPublicRepos?: boolean
   } = {}) {
     mocks.useFlags.mockReturnValue({ tokenlessSection })
 
@@ -127,30 +140,43 @@ describe('TokenlessBanner', () => {
       }),
       graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: currentUser })
+      }),
+      graphql.query('OwnerTokenlessData', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              hasActiveRepos,
+              hasPublicRepos,
+            },
+          },
+        })
       })
     )
   }
 
-  it('renders nothing when tokenlessSection flag is false', () => {
+  it('renders nothing when tokenlessSection flag is false', async () => {
     setup({ tokenlessSection: false, currentUser: mockSignedInUser })
     const { container } = render(<TokenlessBanner />, {
       wrapper: wrapper(['/gh/codecov']),
     })
-    expect(container).toBeEmptyDOMElement()
+    await waitFor(() => {
+      expect(container).toBeEmptyDOMElement()
+    })
   })
 
-  it('renders nothing when owner is not provided', () => {
+  it('renders nothing when owner is not provided', async () => {
     setup()
     const { container } = render(<TokenlessBanner />, {
       wrapper: wrapper(['/gh/codecov']),
     })
-    expect(container).toBeEmptyDOMElement()
+    await waitFor(() => {
+      expect(container).toBeEmptyDOMElement()
+    })
   })
 
   it('renders TokenRequiredBanner when uploadTokenRequired is true', async () => {
     setup({ uploadTokenRequired: true, currentUser: mockSignedInUser })
     render(<TokenlessBanner />, { wrapper: wrapper(['/gh/codecov']) })
-
     await waitFor(() => {
       const banner = screen.getByText('TokenRequiredBanner')
       expect(banner).toBeInTheDocument()
@@ -184,6 +210,26 @@ describe('TokenlessBanner', () => {
 
   it('renders nothing when currentUser is not provided', () => {
     setup({ uploadTokenRequired: false, currentUser: mockSignedInUser })
+    const { container } = render(<TokenlessBanner />, { wrapper: wrapper() })
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('renders nothing when owner has no active repos', () => {
+    setup({
+      uploadTokenRequired: false,
+      currentUser: mockSignedInUser,
+      hasActiveRepos: false,
+    })
+    const { container } = render(<TokenlessBanner />, { wrapper: wrapper() })
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('renders nothing when owner has no public repos', () => {
+    setup({
+      uploadTokenRequired: false,
+      currentUser: mockSignedInUser,
+      hasPublicRepos: false,
+    })
     const { container } = render(<TokenlessBanner />, { wrapper: wrapper() })
     expect(container).toBeEmptyDOMElement()
   })
