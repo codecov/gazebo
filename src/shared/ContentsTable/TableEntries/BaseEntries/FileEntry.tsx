@@ -1,11 +1,15 @@
-import PropTypes from 'prop-types'
-
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
 import { displayTypeParameter } from '../../constants'
 
-const FileHeader = ({ displayAsList, path, name }) => {
+interface FileHeaderProps {
+  displayAsList: boolean
+  path: string
+  name: string
+}
+
+const FileHeader = ({ displayAsList, path, name }: FileHeaderProps) => {
   return (
     <div className="flex items-center gap-1 break-all">
       {!displayAsList && <Icon name="document" size="md" />}
@@ -14,23 +18,17 @@ const FileHeader = ({ displayAsList, path, name }) => {
   )
 }
 
-FileHeader.propTypes = {
-  path: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  displayAsList: PropTypes.bool.isRequired,
-}
-
 function FileEntry({
   linkRef,
   path,
   name,
   urlPath,
   displayType,
-  runPrefetch,
+  runPrefetch = () => Promise.resolve(),
   pageName = 'fileViewer',
   commitSha,
-  queryParams,
-}) {
+  queryParams = {},
+}: FileEntryProps) {
   const displayAsList = displayType === displayTypeParameter.list
   return (
     <div
@@ -47,6 +45,8 @@ function FileEntry({
             queryParams,
           },
         }}
+        hook="expand-file-entry"
+        isExternal={false}
       >
         <FileHeader displayAsList={displayAsList} path={path} name={name} />
       </A>
@@ -54,16 +54,16 @@ function FileEntry({
   )
 }
 
-FileEntry.propTypes = {
-  linkRef: PropTypes.string,
-  path: PropTypes.string,
-  name: PropTypes.string.isRequired,
-  displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
-  urlPath: PropTypes.string.isRequired,
-  runPrefetch: PropTypes.func,
-  pageName: PropTypes.string,
-  commitSha: PropTypes.string,
-  queryParams: PropTypes.object,
+interface FileEntryProps {
+  linkRef?: string
+  path: string
+  name: string
+  displayType?: (typeof displayTypeParameter)[keyof typeof displayTypeParameter]
+  urlPath: string
+  runPrefetch?: () => Promise<void>
+  pageName?: string
+  commitSha?: string
+  queryParams?: any
 }
 
 export default FileEntry

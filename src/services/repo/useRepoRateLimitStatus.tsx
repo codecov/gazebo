@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 import {
   RepoNotFoundErrorSchema,
@@ -67,18 +68,23 @@ export function useRepoRateLimitStatus({
       }).then((res) => {
         const parsedData = RequestSchema.safeParse(res?.data)
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: {
+              callingFn: 'useRepoRateLimitStatus',
+              error: parsedData.error,
+            },
           })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: {
+              callingFn: 'useRepoRateLimitStatus',
+            },
           })
         }
 

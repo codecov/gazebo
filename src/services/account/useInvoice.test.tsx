@@ -75,7 +75,7 @@ describe('useInvoice', () => {
         vi.restoreAllMocks()
       })
 
-      it('fails to parse if bad data', async () => {
+      it('throws a 400', async () => {
         setup(true)
         const { result } = renderHook(
           () => useInvoice({ provider, owner, id: 'blah' }),
@@ -83,6 +83,14 @@ describe('useInvoice', () => {
         )
 
         await waitFor(() => expect(result.current.error).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              dev: 'useInvoice - Parsing Error',
+              status: 400,
+            })
+          )
+        )
       })
     })
   })

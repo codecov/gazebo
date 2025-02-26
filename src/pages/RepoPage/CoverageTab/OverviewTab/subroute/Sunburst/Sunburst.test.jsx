@@ -57,6 +57,8 @@ const treeMock = [
   },
 ]
 
+const mockNullTree = null
+
 const overviewMock = {
   owner: {
     isCurrentUserActivated: true,
@@ -77,15 +79,13 @@ const repoConfigMock = {
   owner: {
     repository: {
       __typename: 'Repository',
-      repositoryConfig: {
-        indicationRange: { upperRange: 80, lowerRange: 60 },
-      },
+      repositoryConfig: { indicationRange: { upperRange: 80, lowerRange: 60 } },
     },
   },
 }
 
 describe('Sunburst', () => {
-  function setup({ coverageTreeStatus = 200 }) {
+  function setup({ coverageTreeStatus = 200, coverageTreeData = treeMock }) {
     server.use(
       graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: overviewMock })
@@ -94,7 +94,7 @@ describe('Sunburst', () => {
         return HttpResponse.json({ data: repoConfigMock })
       }),
       http.get('/internal/:provider/:owner/:repo/coverage/tree', () => {
-        return HttpResponse.json(treeMock, {
+        return HttpResponse.json(coverageTreeData, {
           status: coverageTreeStatus,
         })
       })
@@ -102,13 +102,27 @@ describe('Sunburst', () => {
   }
 
   describe('successful call', () => {
-    it('renders something', async () => {
-      setup({ coverageTreeStatus: 200 })
-      render(<Sunburst />, { wrapper })
+    describe('with valid tree data', () => {
+      it('renders something', async () => {
+        setup({ coverageTreeStatus: 200 })
+        render(<Sunburst />, { wrapper })
 
-      const chart = await screen.findByText('Chart Mocked')
+        const chart = await screen.findByText('Chart Mocked')
 
-      expect(chart).toBeInTheDocument()
+        expect(chart).toBeInTheDocument()
+      })
+    })
+
+    describe('with invalid tree data', () => {
+      it('renders something', async () => {
+        setup({ coverageTreeStatus: 200, coverageTreeData: mockNullTree })
+        render(<Sunburst />, { wrapper })
+
+        const chart = await screen.findByText(
+          'The sunburst chart failed to load.'
+        )
+        expect(chart).toBeInTheDocument()
+      })
     })
   })
 

@@ -70,7 +70,7 @@ function GitHubActions() {
       <OutputCoverageStep
         framework={framework}
         frameworkInstructions={frameworkInstructions}
-        owner={owner}
+        ciProvider="GitHub Actions"
         setFramework={setFramework}
       />
       <TokenStep
@@ -78,6 +78,7 @@ function GitHubActions() {
         setIsUsingGlobalToken={setIsUsingGlobalToken}
         showAddTokenStep={showAddTokenStep}
         showTokenSelector={showTokenSelector}
+        framework={framework}
       />
       <WorkflowYMLStep
         framework={framework}

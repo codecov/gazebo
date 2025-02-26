@@ -12,7 +12,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 import { ComparisonSchema, FileComparisonWithBase } from './fragments'
@@ -115,28 +115,30 @@ export function usePrefetchSingleFileComp({
           const parsedData = RequestSchema.safeParse(res?.data)
 
           if (!parsedData.success) {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'usePrefetchSingleFileComp - 404 schema parsing failed',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Parsing Error',
+              errorDetails: {
+                callingFn: 'usePrefetchSingleFileComp',
+                error: parsedData.error,
+              },
+            })
           }
 
           const data = parsedData.data
 
           if (data?.owner?.repository?.__typename === 'NotFoundError') {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'usePrefetchSingleFileComp - 404 NotFoundError',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Not Found Error',
+              errorDetails: { callingFn: 'usePrefetchSingleFileComp' },
+            })
           }
 
           if (
             data?.owner?.repository?.__typename === 'OwnerNotActivatedError'
           ) {
-            return Promise.reject({
-              status: 403,
+            return rejectNetworkError({
+              errorName: 'Owner Not Activated',
+              errorDetails: { callingFn: 'usePrefetchSingleFileComp' },
               data: {
                 detail: (
                   <p>
@@ -147,8 +149,7 @@ export function usePrefetchSingleFileComp({
                   </p>
                 ),
               },
-              dev: 'usePrefetchSingleFileComp - 403 OwnerNotActivatedError',
-            } satisfies NetworkErrorObject)
+            })
           }
 
           if (

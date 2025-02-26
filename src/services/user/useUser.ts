@@ -4,7 +4,8 @@ import { z } from 'zod'
 
 import { eventTracker } from 'services/events/events'
 import Api from 'shared/api'
-import { NetworkErrorObject, Provider } from 'shared/api/helpers'
+import { Provider } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 export const TypeProjectsSchema = z.array(
   z.union([
@@ -146,14 +147,14 @@ export function useUser({ options }: UseUserArgs = {}) {
     queryKey: ['currentUser', provider, query],
     queryFn: ({ signal }) =>
       Api.graphql({ provider, query, signal }).then((res) => {
+        const callingFn = 'useUser'
         const parsedRes = UserSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useUser - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedRes.error },
+          })
         }
 
         if (parsedRes.data.me?.trackingMetadata.ownerid) {

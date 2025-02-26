@@ -29,7 +29,7 @@ function Sunburst() {
     return <Placeholder />
   }
 
-  if (isError) {
+  if (isError || !data) {
     return <p>The sunburst chart failed to load.</p>
   }
 

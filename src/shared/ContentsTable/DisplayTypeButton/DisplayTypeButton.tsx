@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { OptionButton } from 'ui/OptionButton/OptionButton'
 
 import { displayTypeParameter } from '../constants'

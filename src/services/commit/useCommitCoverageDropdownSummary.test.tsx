@@ -13,19 +13,10 @@ const mockCommitSummaryData = {
       commit: {
         compareWithParent: {
           __typename: 'Comparison',
-          patchTotals: {
-            missesCount: 1,
-            partialsCount: 2,
-          },
+          patchTotals: { missesCount: 1, partialsCount: 2 },
         },
         uploads: {
-          edges: [
-            {
-              node: {
-                state: 'COMPLETE',
-              },
-            },
-          ],
+          edges: [{ node: { state: 'COMPLETE' } }],
         },
       },
     },
@@ -58,11 +49,7 @@ const mockOwnerNotActivatedError = {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
@@ -182,7 +169,7 @@ describe('useCommitCoverageDropdownSummary', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -199,8 +186,8 @@ describe('useCommitCoverageDropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: null,
+            dev: 'useCommitCoverageDropdownSummary - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -235,8 +222,8 @@ describe('useCommitCoverageDropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitCoverageDropdownSummary - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )
@@ -271,6 +258,7 @@ describe('useCommitCoverageDropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitCoverageDropdownSummary - Owner Not Activated',
             status: 403,
           })
         )

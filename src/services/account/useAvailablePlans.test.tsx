@@ -214,7 +214,7 @@ describe('useAvailablePlans', () => {
         vi.restoreAllMocks()
       })
 
-      it('throws a 404', async () => {
+      it('throws a 400', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
@@ -229,7 +229,8 @@ describe('useAvailablePlans', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'useAvailablePlans - Parsing Error',
+              status: 400,
             })
           )
         )

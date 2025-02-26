@@ -32,6 +32,7 @@ const server = setupServer()
 const mockListData = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -57,6 +58,7 @@ const mockListData = {
 const mockUnknownPath = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -71,6 +73,7 @@ const mockUnknownPath = {
 const mockMissingCoverage = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -85,6 +88,7 @@ const mockMissingCoverage = {
 const mockTreeData = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {

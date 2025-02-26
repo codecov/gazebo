@@ -44,7 +44,8 @@ function SunburstChart({
       // if the node has children, process them
       if (Array.isArray(node.children)) {
         currentNode.children = node.children.map((child) => {
-          const newChild = structuredClone(child)
+          // sad ... some browsers still lack support for structuredClone
+          const newChild = JSON.parse(JSON.stringify(child))
           Object.assign(newChild, { value: selectorHandler.current(child) })
 
           nodeMap.set(child, newChild)

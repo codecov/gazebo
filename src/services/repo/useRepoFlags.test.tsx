@@ -5,8 +5,6 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import A from 'ui/A'
-
 import { useRepoFlags } from './useRepoFlags'
 
 const queryClient = new QueryClient({
@@ -119,7 +117,6 @@ const expectedNextPageData = [
     name: 'flag3',
     percentCovered: 92.95,
     percentChange: 1.38,
-
     measurements: [
       { avg: 92.92690138723546 },
       { avg: 92.99535449712643 },
@@ -265,11 +262,12 @@ describe('FlagMeasurements', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 404,
-          data: {},
-          dev: 'useRepoFlags - 404 failed to parse',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useRepoFlags - Parsing Error',
+            status: 400,
+          })
+        )
       )
     })
   })
@@ -297,11 +295,12 @@ describe('FlagMeasurements', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 404,
-          data: {},
-          dev: 'useRepoFlags - 404 NotFoundError',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useRepoFlags - Not Found Error',
+            status: 404,
+          })
+        )
       )
     })
   })
@@ -329,25 +328,12 @@ describe('FlagMeasurements', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 403,
-          data: {
-            detail: (
-              <p>
-                Activation is required to view this repo, please{' '}
-                <A
-                  to={{ pageName: 'membersTab' }}
-                  hook="activate-members"
-                  isExternal={false}
-                >
-                  click here{' '}
-                </A>{' '}
-                to activate your account.
-              </p>
-            ),
-          },
-          dev: 'useRepoFlags - 403 OwnerNotActivatedError',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useRepoFlags - Owner Not Activated',
+            status: 403,
+          })
+        )
       )
     })
   })

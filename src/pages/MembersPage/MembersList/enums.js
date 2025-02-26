@@ -1,4 +1,4 @@
-import { ApiFilterEnum } from 'services/navigation'
+import { ApiFilterEnum } from 'services/navigation/normalize'
 
 export const AdminItems = [
   { label: 'Everyone', value: ApiFilterEnum.none },

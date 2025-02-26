@@ -1,4 +1,3 @@
-import { UseMutateFunction } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import orgSecretDark from 'assets/onboarding/org_secret_dark.png'
@@ -6,11 +5,7 @@ import orgSecretLight from 'assets/onboarding/org_secret_light.png'
 import repoSecretDark from 'assets/onboarding/repo_secret_dark.png'
 import repoSecretLight from 'assets/onboarding/repo_secret_light.png'
 import useGenerateOrgUploadToken from 'pages/AccountSettings/tabs/OrgUploadToken/useGenerateOrgUploadToken'
-import {
-  EVENT_METRICS,
-  StoreEventMetricMutationArgs,
-  useStoreCodecovEventMetric,
-} from 'services/codecovEventMetrics/useStoreCodecovEventMetric'
+import { eventTracker } from 'services/events/events'
 import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { useRepo } from 'services/repo'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
@@ -23,6 +18,8 @@ import { CodeSnippet } from 'ui/CodeSnippet'
 import { ExpandableSection } from 'ui/ExpandableSection'
 import LightDarkImg from 'ui/LightDarkImg'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
+
+import { Framework } from '../UseFrameworkInstructions'
 
 export const TOKEN_OPTIONS = {
   GLOBAL: 'global',
@@ -37,21 +34,14 @@ interface URLParams {
 
 interface SecretGHExampleProps {
   isUsingGlobalToken: boolean
-  owner: string
-  storeEventMetric: UseMutateFunction<
-    any,
-    unknown,
-    StoreEventMetricMutationArgs,
-    unknown
-  >
   uploadToken: string
+  framework: Framework
 }
 
 function GitHubOrgSecretExample({
   isUsingGlobalToken,
-  storeEventMetric,
   uploadToken,
-  owner,
+  framework,
 }: SecretGHExampleProps) {
   return (
     <>
@@ -72,10 +62,15 @@ function GitHubOrgSecretExample({
           className="basis-2/3"
           clipboard={uploadToken}
           clipboardOnClick={() =>
-            storeEventMetric({
-              owner,
-              event: EVENT_METRICS.COPIED_TEXT,
-              jsonPayload: { text: 'GHA token copied' },
+            eventTracker().track({
+              type: 'Button Clicked',
+              properties: {
+                buttonName: 'Copy',
+                buttonLocation: 'Coverage onboarding',
+                ciProvider: 'GitHub Actions',
+                testingFramework: framework,
+                copied: 'Upload token',
+              },
             })
           }
         >
@@ -186,9 +181,11 @@ function OrgOrRepoTokenSelector({
 const AddTokenStep = ({
   stepNum,
   isUsingGlobalToken,
+  framework,
 }: {
   stepNum: number
   isUsingGlobalToken: boolean
+  framework: Framework
 }) => {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data: orgUploadToken } = useOrgUploadToken({
@@ -197,7 +194,6 @@ const AddTokenStep = ({
   })
   const { data } = useRepo({ provider, owner, repo })
   const repoUploadToken = data?.repository?.uploadToken ?? ''
-  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
   return (
     <Card>
       <Card.Header>
@@ -225,11 +221,10 @@ const AddTokenStep = ({
       <Card.Content className="flex flex-col gap-4">
         <GitHubOrgSecretExample
           isUsingGlobalToken={isUsingGlobalToken}
-          owner={owner}
-          storeEventMetric={storeEventMetric}
           uploadToken={
             isUsingGlobalToken ? (orgUploadToken ?? '') : repoUploadToken
           }
+          framework={framework}
         />
       </Card.Content>
     </Card>
@@ -241,6 +236,7 @@ interface TokenStepSectionProps {
   setIsUsingGlobalToken: (value: boolean) => void
   showAddTokenStep: boolean
   showTokenSelector: boolean
+  framework: Framework
 }
 
 function TokenStepSection({
@@ -248,6 +244,7 @@ function TokenStepSection({
   setIsUsingGlobalToken,
   showAddTokenStep,
   showTokenSelector,
+  framework,
 }: TokenStepSectionProps) {
   const { provider, owner } = useParams<URLParams>()
   const { data: uploadTokenRequiredData } = useUploadTokenRequired({
@@ -291,6 +288,7 @@ function TokenStepSection({
         <AddTokenStep
           stepNum={showTokenSelector ? 3 : 2}
           isUsingGlobalToken={isUsingGlobalToken}
+          framework={framework}
         />
       )}
     </>

@@ -3,7 +3,7 @@ import z from 'zod'
 
 import { renderToast } from 'services/toast'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 export const MEASUREMENT_TYPE = {
   FLAG_COVERAGE: 'FLAG_COVERAGE',
@@ -80,11 +80,13 @@ export function useActivateMeasurements({
     onSuccess: ({ data }) => {
       const parsedData = ResponseSchema.safeParse(data)
       if (!parsedData.success) {
-        return Promise.reject({
-          status: 404,
-          data: {},
-          dev: 'useActivateMeasurements - 404 failed to parse',
-        } satisfies NetworkErrorObject)
+        return rejectNetworkError({
+          errorName: 'Parsing Error',
+          errorDetails: {
+            callingFn: 'useActivateMeasurements',
+            error: parsedData.error,
+          },
+        })
       }
 
       const error = parsedData.data.activateMeasurements?.error

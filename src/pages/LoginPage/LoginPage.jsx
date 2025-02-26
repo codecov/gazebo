@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { loginProviderToShortName } from 'shared/utils/loginProviders'
 import A from 'ui/A'
 

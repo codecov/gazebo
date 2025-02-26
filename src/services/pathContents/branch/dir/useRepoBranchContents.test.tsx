@@ -325,14 +325,12 @@ describe('useRepoBranchContents', () => {
     })
 
     describe('request rejects', () => {
-      const oldConsoleError = console.error
-
       beforeEach(() => {
-        console.error = () => null
+        vi.spyOn(console, 'error').mockImplementation(() => {})
       })
 
       afterEach(() => {
-        console.error = oldConsoleError
+        vi.restoreAllMocks()
       })
 
       describe('on repository not found', () => {
@@ -355,8 +353,8 @@ describe('useRepoBranchContents', () => {
           await waitFor(() =>
             expect(result.current.error).toEqual(
               expect.objectContaining({
-                status: 404,
-                dev: 'useRepoBranchContents - 404 schema parsing failed',
+                status: 400,
+                dev: 'useRepoBranchContents - Parsing Error',
               })
             )
           )
@@ -384,7 +382,7 @@ describe('useRepoBranchContents', () => {
             expect(result.current.error).toEqual(
               expect.objectContaining({
                 status: 404,
-                dev: 'useRepoBranchContents - 404 NotFoundError',
+                dev: 'useRepoBranchContents - Not Found Error',
               })
             )
           )
@@ -412,7 +410,7 @@ describe('useRepoBranchContents', () => {
             expect(result.current.error).toEqual(
               expect.objectContaining({
                 status: 403,
-                dev: 'useRepoBranchContents - 403 OwnerNotActivatedError',
+                dev: 'useRepoBranchContents - Owner Not Activated',
               })
             )
           )

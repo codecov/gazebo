@@ -6,7 +6,7 @@ import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { BranchCoverageMeasurementsQueryOpts } from 'services/charts/BranchCoverageMeasurementsQueryOpts'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoOverview } from 'services/repo'
 import {
   createTimeSeriesQueryVars,

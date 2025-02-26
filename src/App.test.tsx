@@ -12,7 +12,7 @@ import { type Mock, vi } from 'vitest'
 
 import config from 'config'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { Plans } from 'shared/utils/billing'
 
 import App from './App'
@@ -37,8 +37,10 @@ vi.mock('./pages/SyncProviderPage', () => ({
   default: () => 'SyncProviderPage',
 }))
 
-vi.mock('services/navigation', async () => {
-  const servicesNavigation = await vi.importActual('services/navigation')
+vi.mock('services/navigation/useLocationParams', async () => {
+  const servicesNavigation = await vi.importActual(
+    'services/navigation/useLocationParams'
+  )
 
   return {
     ...servicesNavigation,

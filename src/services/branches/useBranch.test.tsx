@@ -172,8 +172,8 @@ describe('useBranch', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useBranch - Not Found Error',
               status: 404,
-              dev: 'useBranch - 404 NotFoundError',
             })
           )
         )
@@ -208,8 +208,8 @@ describe('useBranch', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useBranch - Owner Not Activated',
               status: 403,
-              dev: 'useBranch - 403 OwnerNotActivatedError',
             })
           )
         )
@@ -227,7 +227,7 @@ describe('useBranch', () => {
         consoleSpy.mockRestore()
       })
 
-      it('throws a 404', async () => {
+      it('throws a 400', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
@@ -244,8 +244,8 @@ describe('useBranch', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
-              dev: 'useBranch - 404 schema parsing failed',
+              dev: 'useBranch - Parsing Error',
+              status: 400,
             })
           )
         )

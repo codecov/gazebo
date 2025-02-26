@@ -3,7 +3,7 @@ import { format, fromUnixTime } from 'date-fns'
 
 import Card from 'old_ui/Card'
 import { invoicePropType } from 'services/account/propTypes'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 

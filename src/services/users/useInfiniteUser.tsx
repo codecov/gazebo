@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 export const MemberSchema = z.object({
   activated: z.boolean(),
@@ -60,14 +60,14 @@ export const useInfiniteUsers = (
           page: pageParam,
         },
       }).then((res) => {
+        const callingFn = 'useInfiniteUsers'
         const parsedRes = MemberListSchema.safeParse(res)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useInfiniteUser - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedRes.error },
+          })
         }
 
         return parsedRes.data

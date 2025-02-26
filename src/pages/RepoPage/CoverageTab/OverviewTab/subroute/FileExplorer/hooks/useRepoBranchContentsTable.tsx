@@ -2,7 +2,7 @@ import qs, { ParsedQs } from 'qs'
 import { useMemo } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoBranchContents } from 'services/pathContents/branch/dir'
 import { useRepoOverview } from 'services/repo'
 import { displayTypeParameter } from 'shared/ContentsTable/constants'
