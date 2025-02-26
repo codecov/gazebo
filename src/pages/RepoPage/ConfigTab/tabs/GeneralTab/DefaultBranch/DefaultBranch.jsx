@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { useBranches } from 'services/branches/useBranches'
 import { useUpdateRepo } from 'services/repo'
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 import SettingsDescriptor from 'ui/SettingsDescriptor'

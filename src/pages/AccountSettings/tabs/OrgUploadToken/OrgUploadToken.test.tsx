@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import { useFlags } from 'shared/featureFlags'
 
 import OrgUploadToken from './OrgUploadToken'

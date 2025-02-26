@@ -4,7 +4,7 @@ import {
 } from '@tanstack/react-queryV5'
 import z from 'zod'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import Api from 'shared/api'
 import { Provider } from 'shared/api/helpers'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'

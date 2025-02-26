@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 import {
   useNotifications,
   useRemoveNotification,
-} from 'services/toastNotification'
+} from 'services/toastNotification/context'
 
 import ToastNotifications from './ToastNotifications'
 
