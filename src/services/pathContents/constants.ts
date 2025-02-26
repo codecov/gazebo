@@ -3,10 +3,8 @@ import { z } from 'zod'
 
 import { OrderingDirection } from 'types'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import { DisplayType } from 'shared/ContentsTable/constants'
 
 const pathContentsFiltersParam = [
