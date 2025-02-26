@@ -38,7 +38,7 @@ describe('InfoMessageStripeCallback', () => {
       )
 
       await expect(
-        screen.getByText(/Subscription Update Successful/)
+        screen.getByText(/Plan successfully updated./)
       ).toBeInTheDocument()
     })
   })

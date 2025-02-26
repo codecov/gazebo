@@ -197,7 +197,7 @@ describe('CurrentOrgPlan', () => {
       })
 
       render(<CurrentOrgPlan />, { wrapper })
-      const updatedAlert = await screen.findByText('Plan successfully updated.')
+      const updatedAlert = await screen.findByText('Plan successfully updated')
       expect(updatedAlert).toBeInTheDocument()
     })
 
@@ -214,7 +214,7 @@ describe('CurrentOrgPlan', () => {
         } as z.infer<typeof AccountDetailsSchema>,
       })
       render(<CurrentOrgPlan />, { wrapper })
-      const updatedAlert = await screen.findByText('Plan successfully updated.')
+      const updatedAlert = await screen.findByText('Plan successfully updated')
       expect(updatedAlert).toBeInTheDocument()
       expect(
         screen.getByText(/with a monthly subscription for 34 seats/)
@@ -230,7 +230,7 @@ describe('CurrentOrgPlan', () => {
       expect(currentPlanCard).toBeInTheDocument()
 
       expect(
-        screen.queryByText('Plan successfully updated.')
+        screen.queryByText('Plan successfully updated')
       ).not.toBeInTheDocument()
     })
   })
