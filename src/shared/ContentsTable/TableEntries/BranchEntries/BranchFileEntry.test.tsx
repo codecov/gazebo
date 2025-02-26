@@ -1,99 +1,34 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw'
-import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { usePrefetchBranchFileEntry } from 'services/pathContents/branch/file'
 
 import BranchFileEntry from './BranchFileEntry'
 
 import { displayTypeParameter } from '../../constants'
 
-const mockData = {
-  owner: {
-    repository: {
-      commit: {
-        commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-        coverageAnalytics: {
-          flagNames: ['a', 'b'],
-          coverageFile: {
-            content:
-              'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
-            coverage: [
-              {
-                line: 1,
-                coverage: 1,
-              },
-              {
-                line: 2,
-                coverage: 1,
-              },
-              {
-                line: 4,
-                coverage: 1,
-              },
-              {
-                line: 5,
-                coverage: 1,
-              },
-              {
-                line: 7,
-                coverage: 1,
-              },
-              {
-                line: 8,
-                coverage: 1,
-              },
-            ],
-          },
-        },
-      },
-      branch: null,
-    },
-  },
-}
+const mockRunPrefetch = vi.hoisted(() => vi.fn())
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-const server = setupServer()
+vi.mock('services/pathContents/branch/file', () => ({
+  usePrefetchBranchFileEntry: vi
+    .fn()
+    .mockReturnValue({ runPrefetch: mockRunPrefetch }),
+}))
 
-const wrapper =
+const wrapper: (
+  initialEntried?: string[]
+) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/gh/codecov/test-repo/']) =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/">{children}</Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <MemoryRouter initialEntries={initialEntries}>
+      <Route path="/:provider/:owner/:repo/">{children}</Route>
+    </MemoryRouter>
   )
-beforeAll(() => {
-  server.listen()
-})
-
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-
-afterAll(() => {
-  server.close()
-})
 
 describe('BranchFileEntry', () => {
   function setup() {
-    const user = userEvent.setup()
-    const mockVars = vi.fn()
-
-    server.use(
-      graphql.query('CoverageForFile', (info) => {
-        mockVars(info.variables)
-
-        return HttpResponse.json({ data: mockData })
-      })
-    )
-
-    return { user, mockVars }
+    return { user: userEvent.setup() }
   }
 
   describe('checking properties on list display', () => {
@@ -148,9 +83,6 @@ describe('BranchFileEntry', () => {
         />,
         { wrapper: wrapper() }
       )
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
 
       const file = screen.queryByText('dir/file.js')
       expect(file).not.toBeInTheDocument()
@@ -245,42 +177,18 @@ describe('BranchFileEntry', () => {
       )
 
       const file = await screen.findByText('file.js')
+
+      expect(mockRunPrefetch).not.toHaveBeenCalled()
+
       await user.hover(file)
 
-      await waitFor(() => queryClient.getQueryState().isFetching)
-      await waitFor(() => !queryClient.getQueryState().isFetching)
-
-      await waitFor(() =>
-        expect(queryClient.getQueryState().data.content).toBe(
-          mockData.owner.repository.commit.coverageAnalytics.coverageFile
-            .content
-        )
-      )
-      await waitFor(() =>
-        expect(queryClient.getQueryState().data.coverage).toStrictEqual({
-          1: 1,
-          2: 1,
-          4: 1,
-          5: 1,
-          7: 1,
-          8: 1,
-        })
-      )
-      await waitFor(() =>
-        expect(queryClient.getQueryState().data.flagNames).toStrictEqual([
-          'a',
-          'b',
-        ])
-      )
-      await waitFor(() =>
-        expect(queryClient.getQueryState().data.totals).toBe(0)
-      )
+      expect(mockRunPrefetch).toHaveBeenCalled()
     })
 
     describe('filters arg is passed', () => {
       describe('there are more then zero flag', () => {
         it('calls the request with the flags arg with the provided flag', async () => {
-          const { user, mockVars } = setup()
+          const { user } = setup()
 
           render(
             <BranchFileEntry
@@ -300,12 +208,11 @@ describe('BranchFileEntry', () => {
           const file = await screen.findByText('file.js')
           await user.hover(file)
 
-          await waitFor(() => queryClient.getQueryState().isFetching)
-          await waitFor(() => !queryClient.getQueryState().isFetching)
-
-          await waitFor(() => expect(mockVars).toHaveBeenCalled())
           await waitFor(() =>
-            expect(mockVars).toHaveBeenCalledWith(
+            expect(usePrefetchBranchFileEntry).toHaveBeenCalled()
+          )
+          await waitFor(() =>
+            expect(usePrefetchBranchFileEntry).toHaveBeenCalledWith(
               expect.objectContaining({ flags: ['flag-1'] })
             )
           )
@@ -314,7 +221,7 @@ describe('BranchFileEntry', () => {
 
       describe('there are zero flags', () => {
         it('calls the request with the flags arg with an empty array', async () => {
-          const { user, mockVars } = setup()
+          const { user } = setup()
 
           render(
             <BranchFileEntry
@@ -323,7 +230,6 @@ describe('BranchFileEntry', () => {
               name="file.js"
               urlPath="dir"
               displayType={displayTypeParameter.tree}
-              filters={{ flags: [] }}
             />,
             { wrapper: wrapper() }
           )
@@ -331,12 +237,11 @@ describe('BranchFileEntry', () => {
           const file = await screen.findByText('file.js')
           await user.hover(file)
 
-          await waitFor(() => queryClient.getQueryState().isFetching)
-          await waitFor(() => !queryClient.getQueryState().isFetching)
-
-          await waitFor(() => expect(mockVars).toHaveBeenCalled())
           await waitFor(() =>
-            expect(mockVars).toHaveBeenCalledWith(
+            expect(usePrefetchBranchFileEntry).toHaveBeenCalled()
+          )
+          await waitFor(() =>
+            expect(usePrefetchBranchFileEntry).toHaveBeenCalledWith(
               expect.objectContaining({ flags: [] })
             )
           )
