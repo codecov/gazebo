@@ -23,11 +23,6 @@ function SunburstChart({
   const clickHandler = useRef(onClick)
   const hoverHandler = useRef(onHover)
 
-  /*
-   * I don't think the depthIndex will work, because we're not trying to render a given depth, we're trying to render a folder and all of its children.
-   * So we need to render all children of a given folder at once.
-   */
-
   // this state stores the root node of the sunburst chart
   const [root] = useState(() =>
     Sentry.startSpan({ name: 'SunburstChart.createRoot' }, () => {
@@ -41,6 +36,7 @@ function SunburstChart({
       while (stack.length > 0) {
         const node = stack.pop()
 
+        // set the value of the node if not previously set
         if (!('value' in node)) {
           node.value = selectorHandler.current(node)
         }
@@ -50,32 +46,13 @@ function SunburstChart({
           node.children.forEach((child) => stack.push(child))
         }
 
-        const root = partitionFn(result).each((d) => (d.current = d))
-
-        root.each((d) => {
-          const collection = depthIndex.get(d.depth) ?? []
-          collection.push(d)
-          depthIndex.set(d.depth, collection)
-        })
-
         // partition the data and add the `current` property to each node
-        return { root, depthIndex }
+        return partitionFn(result).each((d) => (d.current = d))
       }
-
-      // if the node has children, process them
-      if (Array.isArray(node.children)) {
-        node.children.forEach((child) => stack.push(child))
-      }
-
-      const root = partitionFn(result).each((d) => (d.current = d))
-
-      // partition the data and add the `current` property to each node
-      return root
     })
   )
 
   const [selectedNode, setSelectedNode] = useState(root)
-  const [forceUpdate, setForceUpdate] = useState(false)
 
   // In this case D3 is handling rendering not React, so useLayoutEffect is used to handle rendering
   // and changes outside of the React lifecycle.
@@ -121,17 +98,16 @@ function SunburstChart({
       .attr('transform', `translate(${width / 2},${width / 2})`)
 
     function renderArcs() {
+      const nodesToRender = selectedNode
+        .descendants()
+        .slice(1)
+        .filter((d) => d.depth <= selectedNode.depth + 2)
+
       // Renders an arc per data point in the correct location. (Pieces of the circle that add up to a circular graph)
-      console.debug('renderArcs', selectedNode)
       const path = g
         .append('g')
         .selectAll('path')
-        .data(
-          selectedNode
-            .descendants()
-            .slice(1)
-            .filter((d) => d.depth <= selectedNode.depth + 2)
-        )
+        .data(nodesToRender)
         .join('path')
         .attr('fill', (d) => color(d?.data?.value || 0))
         // If data point is a file fade the background color a bit.
@@ -144,15 +120,25 @@ function SunburstChart({
         .filter((d) => d.children)
         .style('cursor', 'pointer')
         .on('click', clickedFolder)
-        .on('mouseover', hoveredFolder)
-        .on('mouseout', mouseout)
+        .on('mouseover', function (_event, p) {
+          select(this).attr('fill-opacity', 0.6)
+          reactHoverCallback({ target: p, type: 'folder' })
+        })
+        .on('mouseout', function (_event, _node) {
+          select(this).attr('fill-opacity', 1)
+        })
 
       // Events for file
       path
         .filter((d) => !d.children)
         .style('cursor', 'pointer')
-        .on('click', clickedFile)
-        .on('mouseover', hoveredFile)
+        .on('click', function (_event, node) {
+          reactClickCallback({ target: node, type: 'file' })
+        })
+        .on('mouseover', function (_event, node) {
+          select(this).attr('fill-opacity', 0.6)
+          reactHoverCallback({ target: node, type: 'file' })
+        })
 
       // Create a11y label / mouse hover tooltip
       const formatTitle = (d) => {
@@ -172,54 +158,35 @@ function SunburstChart({
       g.append('circle')
         .datum(selectedNode.parent)
         .attr('r', radius)
+        .attr('class', 'fill-none')
         .attr('fill', 'none')
         .attr('pointer-events', 'all')
-        .attr('cursor', 'pointer')
+        .attr('cursor', (d) => (d ? 'pointer' : 'default'))
         .on('click', clickedFolder)
         .on('mouseover', hoveredRoot)
 
       g.append('text')
         .datum(selectedNode.parent)
         .text('..')
-        .attr('fill-opacity', (d) => {
-          // if the parent exists, show the text
-          return d ? 1 : 0
-        })
+        // if the parent exists (i.e. not root), show the text
+        .attr('fill-opacity', (d) => (d ? 1 : 0))
         .attr('text-anchor', 'middle')
-        .attr('class', 'text-7xl fill-ds-gray-quinary')
+        .attr('class', 'text-7xl fill-ds-gray-quinary select-none')
         .attr('cursor', 'pointer')
         .on('click', clickedFolder)
         .on('mouseover', hoveredRoot)
 
-      function clickedFolder(_event, p) {
-        reactClickCallback({ target: p, type: 'folder' })
-        changeLocation(p)
+      function clickedFolder(_event, node) {
+        reactClickCallback({ target: node, type: 'folder' })
+        changeLocation(node)
       }
 
-      function clickedFile(_event, p) {
-        reactClickCallback({ target: p, type: 'file' })
-      }
-
-      function hoveredRoot(_event, p) {
+      function hoveredRoot(_event, node) {
         if (previous) {
           reactHoverCallback({ target: previous, type: 'folder' })
           return
         }
-        reactHoverCallback({ target: p, type: 'folder' })
-      }
-
-      function hoveredFolder(_event, p) {
-        select(this).attr('fill-opacity', 0.6)
-        reactHoverCallback({ target: p, type: 'folder' })
-      }
-
-      function hoveredFile(_event, p) {
-        select(this).attr('fill-opacity', 0.6)
-        reactHoverCallback({ target: p, type: 'file' })
-      }
-
-      function mouseout(_event, _p) {
-        select(this).attr('fill-opacity', 1)
+        reactHoverCallback({ target: node, type: 'folder' })
       }
 
       function reactClickCallback({ target, type }) {
@@ -264,99 +231,39 @@ function SunburstChart({
         }
       }
 
-      function changeLocation(p) {
+      function changeLocation(node) {
         // Because you can move two layers at a time previous !== parent
-        previous = p
-        // const selected = p.parent || root
-        // const t = transition(g).duration(750)
+        previous = node
 
-        if (p) {
+        if (node) {
           // Update the selected node
           setSelectedNode(
-            p.each((d) => {
+            node.each((d) => {
               // determine x0 and y0
-              const x0Min = Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))
+              const x0Min = Math.min(1, (d.x0 - node.x0) / (node.x1 - node.x0))
               const x0 = Math.max(0, x0Min) * 2 * Math.PI
-              const y0 = Math.max(0, d.y0 - p.depth)
+              const y0 = Math.max(0, d.y0 - node.depth)
 
               // determine x1 and y1
-              const x1Min = Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))
+              const x1Min = Math.min(1, (d.x1 - node.x0) / (node.x1 - node.x0))
               const x1 = Math.max(0, x1Min) * 2 * Math.PI
-              const y1 = Math.max(0, d.y1 - p.depth)
+              const y1 = Math.max(0, d.y1 - node.depth)
 
+              // update the cords for the node
               d.current = { x0, y0, x1, y1 }
             })
           )
-          setForceUpdate(!forceUpdate)
         }
-
-        // handleTextUpdate({ current: p, selected, transition: t })
       }
-
-      // function handleArcsUpdate({ current, selected, transition }) {
-      //   parent.datum(selected)
-
-      //   // Handle animating in/out of a folder
-      //   root.each((d) => {
-      //     // determine x0 and y0
-      //     const x0Min = Math.min(
-      //       1,
-      //       (d.x0 - current.x0) / (current.x1 - current.x0)
-      //     )
-      //     const x0 = Math.max(0, x0Min) * 2 * Math.PI
-      //     const y0 = Math.max(0, d.y0 - current.depth)
-
-      //     // determine x1 and y1
-      //     const x1Min = Math.min(
-      //       1,
-      //       (d.x1 - current.x0) / (current.x1 - current.x0)
-      //     )
-      //     const x1 = Math.max(0, x1Min) * 2 * Math.PI
-      //     const y1 = Math.max(0, d.y1 - current.depth)
-
-      //     d.target = { x0, y0, x1, y1 }
-      //   })
-
-      // // Transition the data on all arcs, even the ones that aren’t visible,
-      // // so that if this transition is interrupted, entering arcs will start
-      // // the next transition from the desired position.
-      // path
-      //   .transition(transition)
-      //   .tween('data', (d) => {
-      //     const i = interpolate(d.current, d.target)
-      //     return (t) => (d.current = i(t))
-      //   })
-      //   .filter(function (d) {
-      //     return +this.getAttribute('fill-opacity') || arcVisible(d.target)
-      //   })
-      //   .attr('fill-opacity', (d) =>
-      //     arcVisible(d.target) ? (d.children ? 1 : 0.6) : 0
-      //   )
-      //   .attr('pointer-events', (d) =>
-      //     arcVisible(d.target) ? 'auto' : 'none'
-      //   )
-      //   .attrTween('d', (d) => () => drawArc(d.current))
-      // }
-
-      // function handleTextUpdate({ current, selected, transition }) {
-      //   backText.datum(selected)
-
-      //   // Only show back if not on root
-      //   if (current.parent) {
-      //     backText.transition(transition).attr('fill-opacity', 1)
-      //   } else {
-      //     backText.transition(transition).attr('fill-opacity', 0)
-      //   }
-      // }
     }
 
     renderArcs()
 
-    // On cleanup remove the root DOM generated by D3
     return () => {
+      // On cleanup remove the root DOM generated by D3
       g.remove()
     }
-  }, [colorDomainMax, colorDomainMin, forceUpdate, selectedNode, svgRenderSize])
+  }, [colorDomainMax, colorDomainMin, selectedNode, svgRenderSize])
 
   return (
     <svg
