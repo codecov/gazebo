@@ -4,7 +4,7 @@ import { useAccountDetails } from 'services/account/useAccountDetails'
 import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import A from 'ui/A/A'
 
-import ChangePlanLink from './ChangePlanLink'
+import ChangePlanLink from './ChangePlanLink/ChangePlanLink'
 
 function Activation() {
   const { owner, provider } = useParams()
