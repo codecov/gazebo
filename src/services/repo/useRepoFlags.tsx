@@ -4,14 +4,13 @@ import z from 'zod'
 
 import { OrderingDirection } from 'types'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo/schemas'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
+
+import { RepoNotFoundErrorSchema } from './schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from './schemas/RepoOwnerNotActivatedError'
 
 const query = `
 query FlagMeasurements(

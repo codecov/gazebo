@@ -4,10 +4,8 @@ import { z } from 'zod'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from './schemas'
+import { RepoNotFoundErrorSchema } from './schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from './schemas/RepoOwnerNotActivatedError'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),

@@ -6,10 +6,8 @@ import { MissingBaseCommitSchema } from 'services/comparison/schemas/MissingBase
 import { MissingBaseReportSchema } from 'services/comparison/schemas/MissingBaseReport'
 import { MissingHeadCommitSchema } from 'services/comparison/schemas/MissingHeadCommit'
 import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo/schemas'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'

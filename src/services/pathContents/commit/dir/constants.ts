@@ -7,10 +7,8 @@ import {
   PathContentsResultSchema,
   UnknownPathSchema,
 } from 'services/pathContents/branch/dir'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 
 const RepositoryConfigSchema = z.object({
   indicationRange: z

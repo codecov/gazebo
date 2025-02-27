@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
-import { RepoNotFoundErrorSchema } from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { Plans } from 'shared/utils/billing'

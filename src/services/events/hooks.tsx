@@ -6,10 +6,8 @@ import { useRef } from 'react'
 import { useParams, useRouteMatch } from 'react-router'
 import { z } from 'zod'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
 import { Provider } from 'shared/api/helpers'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
