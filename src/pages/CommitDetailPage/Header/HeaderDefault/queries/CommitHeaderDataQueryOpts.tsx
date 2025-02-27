@@ -102,15 +102,13 @@ export const CommitHeaderDataQueryOpts = ({
           commitId,
         },
       }).then((res) => {
+        const callingFn = 'CommitHeaderDataQueryOpts'
         const parsedData = CommitHeaderDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'CommitHeaderDataQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -119,14 +117,14 @@ export const CommitHeaderDataQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'CommitHeaderDataQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'CommitHeaderDataQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

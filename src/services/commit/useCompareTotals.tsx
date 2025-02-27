@@ -191,15 +191,13 @@ export function useCompareTotals({
           filters,
         },
       }).then((res) => {
+        const callingFn = 'useCompareTotals'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useCompareTotals',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -208,16 +206,14 @@ export function useCompareTotals({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'useCompareTotals',
-            },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'useCompareTotals' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

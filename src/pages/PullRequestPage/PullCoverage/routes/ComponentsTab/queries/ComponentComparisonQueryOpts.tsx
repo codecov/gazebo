@@ -170,15 +170,13 @@ export function ComponentComparisonQueryOpts({
           pullId: parseInt(pullId, 10),
         },
       }).then((res) => {
+        const callingFn = 'ComponentComparisonQueryOpts'
         const parsedRes = ComponentComparisonSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'ComponentComparisonQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -187,14 +185,14 @@ export function ComponentComparisonQueryOpts({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'ComponentComparisonQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'ComponentComparisonQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

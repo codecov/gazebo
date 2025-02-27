@@ -81,15 +81,13 @@ export function useRepoSettingsTeam() {
           repo,
         },
       }).then((res) => {
+        const callingFn = 'useRepoSettingsTeam'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useRepoSettingsTeam',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -98,9 +96,7 @@ export function useRepoSettingsTeam() {
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'useRepoSettingsTeam',
-            },
+            errorDetails: { callingFn },
           })
         }
 

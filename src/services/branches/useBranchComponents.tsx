@@ -113,15 +113,13 @@ export const useBranchComponents = ({
           filters,
         },
       }).then((res) => {
+        const callingFn = 'useBranchComponents'
         const parsedData = GetBranchComponentsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useBranchComponents',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -130,18 +128,14 @@ export const useBranchComponents = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'useBranchComponents',
-            },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: {
-              callingFn: 'useBranchComponents',
-            },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

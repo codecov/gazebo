@@ -9,7 +9,7 @@ import isEmpty from 'lodash/isEmpty'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { FlagsComparison, usePull } from 'services/pull'
+import { FlagsComparison, usePull } from 'services/pull/usePull'
 import FlagsNotConfigured from 'shared/FlagsNotConfigured'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'

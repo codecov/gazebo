@@ -74,6 +74,7 @@ export function useComponentsBackfilled() {
           repo,
         },
       }).then((res) => {
+        const callingFn = 'useComponentsBackfilled'
         const parsedData = BackfillComponentsMembershipSchema.safeParse(
           res?.data
         )
@@ -81,10 +82,7 @@ export function useComponentsBackfilled() {
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useComponentsBackfilled',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -93,14 +91,14 @@ export function useComponentsBackfilled() {
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useComponentsBackfilled' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'useComponentsBackfilled' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

@@ -150,15 +150,13 @@ export const BundleSummaryQueryOpts = ({
         signal,
         variables: { owner, repo, branch, bundle, filters },
       }).then((res) => {
+        const callingFn = 'BundleSummaryQueryOpts'
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'BundleSummaryQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -167,14 +165,14 @@ export const BundleSummaryQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'BundleSummaryQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'BundleSummaryQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

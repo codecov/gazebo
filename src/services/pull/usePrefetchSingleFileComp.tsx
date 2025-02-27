@@ -110,15 +110,13 @@ export function usePrefetchSingleFileComp({
             filters,
           },
         }).then((res) => {
+          const callingFn = 'usePrefetchSingleFileComp'
           const parsedData = RequestSchema.safeParse(res?.data)
 
           if (!parsedData.success) {
             return rejectNetworkError({
               errorName: 'Parsing Error',
-              errorDetails: {
-                callingFn: 'usePrefetchSingleFileComp',
-                error: parsedData.error,
-              },
+              errorDetails: { callingFn, error: parsedData.error },
             })
           }
 
@@ -127,7 +125,7 @@ export function usePrefetchSingleFileComp({
           if (data?.owner?.repository?.__typename === 'NotFoundError') {
             return rejectNetworkError({
               errorName: 'Not Found Error',
-              errorDetails: { callingFn: 'usePrefetchSingleFileComp' },
+              errorDetails: { callingFn },
             })
           }
 
@@ -136,7 +134,7 @@ export function usePrefetchSingleFileComp({
           ) {
             return rejectNetworkError({
               errorName: 'Owner Not Activated',
-              errorDetails: { callingFn: 'usePrefetchSingleFileComp' },
+              errorDetails: { callingFn },
               data: {
                 detail: (
                   <p>

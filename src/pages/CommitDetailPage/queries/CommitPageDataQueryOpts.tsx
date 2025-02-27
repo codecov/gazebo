@@ -155,15 +155,13 @@ export const CommitPageDataQueryOpts = ({
           commitId,
         },
       }).then((res) => {
+        const callingFn = 'CommitPageDataQueryOpts'
         const parsedData = CommitPageDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'CommitPageDataQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -172,14 +170,14 @@ export const CommitPageDataQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'CommitPageDataQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'CommitPageDataQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

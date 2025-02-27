@@ -94,15 +94,13 @@ export const useBranchHasCommits = ({
           branch,
         },
       }).then((res) => {
+        const callingFn = 'useBranchHasCommits'
         const parsedData = GetBranchCommitsSchema.safeParse(res.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useBranchHasCommits',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -111,18 +109,14 @@ export const useBranchHasCommits = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'useBranchHasCommits',
-            },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: {
-              callingFn: 'useBranchHasCommits',
-            },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

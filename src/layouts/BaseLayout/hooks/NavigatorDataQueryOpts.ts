@@ -65,15 +65,13 @@ export const NavigatorDataQueryOpts = ({
           repo,
         },
       }).then((res) => {
+        const callingFn = 'NavigatorDataQueryOpts'
         const parsedData = RequestSchema.safeParse(res.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'NavigatorDataQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 

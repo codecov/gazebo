@@ -52,15 +52,13 @@ export const useInternalUser = (opts: UseInternalUserArgs) =>
         return {} as InternalUserData
       }
 
+      const callingFn = 'useInternalUser'
       const parsedData = InternalUserSchema.safeParse(response)
 
       if (!parsedData.success) {
         return rejectNetworkError({
           errorName: 'Parsing Error',
-          errorDetails: {
-            callingFn: 'useInternalUser',
-            error: parsedData.error,
-          },
+          errorDetails: { callingFn, error: parsedData.error },
         })
       }
 

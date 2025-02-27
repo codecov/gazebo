@@ -87,15 +87,13 @@ export const OwnerContextQueryOpts = ({
           owner,
         },
       }).then((res) => {
+        const callingFn = 'OwnerContextQueryOpts'
         const parsedRes = OwnerContextSchema.safeParse(res.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'OwnerContextQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -170,22 +168,20 @@ export const RepoContextQueryOpts = ({
           repo,
         },
       }).then((res) => {
+        const callingFn = 'RepoContextQueryOpts'
         const parsedRes = RepoContextSchema.safeParse(res.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'RepoContextQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
         if (parsedRes.data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'RepoContextQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
@@ -195,7 +191,7 @@ export const RepoContextQueryOpts = ({
         ) {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'RepoContextQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

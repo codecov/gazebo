@@ -64,14 +64,13 @@ export function useRepoRateLimitStatus({
           repo,
         },
       }).then((res) => {
+        const callingFn = 'useRepoRateLimitStatus'
         const parsedData = RequestSchema.safeParse(res?.data)
+
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useRepoRateLimitStatus',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -80,9 +79,7 @@ export function useRepoRateLimitStatus({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'useRepoRateLimitStatus',
-            },
+            errorDetails: { callingFn },
           })
         }
 

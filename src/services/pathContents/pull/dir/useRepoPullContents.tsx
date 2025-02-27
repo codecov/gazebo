@@ -68,15 +68,13 @@ export function useRepoPullContents({
           filters,
         },
       }).then((res) => {
+        const callingFn = 'useRepoPullContents'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useRepoPullContents',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -85,14 +83,14 @@ export function useRepoPullContents({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useRepoPullContents' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'useRepoPullContents' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

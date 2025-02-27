@@ -119,6 +119,7 @@ export const BranchCoverageMeasurementsQueryOpts = ({
           branch,
         },
       }).then((res) => {
+        const callingFn = 'BranchCoverageMeasurementsQueryOpts'
         const parsedData = GetBranchCoverageMeasurementsSchema.safeParse(
           res?.data
         )
@@ -126,10 +127,7 @@ export const BranchCoverageMeasurementsQueryOpts = ({
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'BranchCoverageMeasurementsQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -138,14 +136,14 @@ export const BranchCoverageMeasurementsQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'BranchCoverageMeasurementsQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'BranchCoverageMeasurementsQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

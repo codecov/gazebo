@@ -5,8 +5,11 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { PullComparison } from 'services/pull'
-import { OrderingDirection, OrderingParameter } from 'services/pull/usePull'
+import {
+  OrderingDirection,
+  OrderingParameter,
+  PullComparison,
+} from 'services/pull/usePull'
 import { UploadTypeEnum } from 'shared/utils/commit'
 
 import FilesChangedTable, { getFilter } from './FilesChangedTable'

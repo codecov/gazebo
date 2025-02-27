@@ -156,15 +156,13 @@ export function usePullBundleComparisonList({
           pullId,
         },
       }).then((res) => {
+        const callingFn = 'usePullBundleComparisonList'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'usePullBundleComparisonList',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -173,14 +171,14 @@ export function usePullBundleComparisonList({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'usePullBundleComparisonList' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'usePullBundleComparisonList' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

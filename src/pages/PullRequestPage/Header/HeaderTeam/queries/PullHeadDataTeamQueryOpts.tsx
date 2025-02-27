@@ -158,15 +158,13 @@ export const PullHeadDataTeamQueryOpts = ({
           pullId: parseInt(pullId, 10),
         },
       }).then((res) => {
+        const callingFn = 'PullHeadDataTeamQueryOpts'
         const parsedData = PullHeadDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'PullHeadDataTeamQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -175,14 +173,14 @@ export const PullHeadDataTeamQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'PullHeadDataTeamQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'PullHeadDataTeamQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

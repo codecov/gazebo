@@ -116,15 +116,13 @@ function fetchRepoFlags({
       after,
     },
   }).then((res) => {
+    const callingFn = 'fetchRepoFlags'
     const parsedRes = FetchRepoFlagsSchema.safeParse(res?.data)
 
     if (!parsedRes.success) {
       return rejectNetworkError({
         errorName: 'Parsing Error',
-        errorDetails: {
-          callingFn: 'fetchRepoFlags',
-          error: parsedRes.error,
-        },
+        errorDetails: { callingFn, error: parsedRes.error },
       })
     }
 
@@ -133,18 +131,14 @@ function fetchRepoFlags({
     if (data?.owner?.repository?.__typename === 'NotFoundError') {
       return rejectNetworkError({
         errorName: 'Not Found Error',
-        errorDetails: {
-          callingFn: 'fetchRepoFlags',
-        },
+        errorDetails: { callingFn },
       })
     }
 
     if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
       return rejectNetworkError({
         errorName: 'Owner Not Activated',
-        errorDetails: {
-          callingFn: 'fetchRepoFlags',
-        },
+        errorDetails: { callingFn },
         data: {
           detail: (
             <p>
@@ -294,15 +288,13 @@ function fetchRepoFlagsForPull({
       pullId: parseInt(pullId, 10),
     },
   }).then((res) => {
+    const callingFn = 'fetchRepoFlagsForPull'
     const parsedRes = FetchRepoFlagsForPullSchema.safeParse(res?.data)
 
     if (!parsedRes.success) {
       return rejectNetworkError({
         errorName: 'Parsing Error',
-        errorDetails: {
-          callingFn: 'fetchRepoFlagsForPull',
-          error: parsedRes.error,
-        },
+        errorDetails: { callingFn, error: parsedRes.error },
       })
     }
 
@@ -310,18 +302,14 @@ function fetchRepoFlagsForPull({
     if (data?.owner?.repository?.__typename === 'NotFoundError') {
       return rejectNetworkError({
         errorName: 'Not Found Error',
-        errorDetails: {
-          callingFn: 'fetchRepoFlagsForPull',
-        },
+        errorDetails: { callingFn },
       })
     }
 
     if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
       return rejectNetworkError({
         errorName: 'Owner Not Activated',
-        errorDetails: {
-          callingFn: 'fetchRepoFlagsForPull',
-        },
+        errorDetails: { callingFn },
         data: {
           detail: (
             <p>
