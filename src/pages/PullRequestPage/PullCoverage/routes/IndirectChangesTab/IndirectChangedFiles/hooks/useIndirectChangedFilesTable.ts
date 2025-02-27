@@ -5,7 +5,7 @@ import qs, { ParsedQs } from 'qs'
 import { useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { PullSchemaType, usePull } from 'services/pull'
+import { PullSchemaType, usePull } from 'services/pull/usePull'
 
 const orderingDirection = Object.freeze({
   desc: 'DESC',
