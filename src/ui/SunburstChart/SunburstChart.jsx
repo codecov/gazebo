@@ -26,12 +26,17 @@ function SunburstChart({
   const clickHandler = useRef(onClick)
   const hoverHandler = useRef(onHover)
 
+  /*
+   * I don't think the depthIndex will work, because we're not trying to render a given depth, we're trying to render a folder and all of its children.
+   * So we need to render all children of a given folder at once.
+   */
+
   // this state stores the root node of the sunburst chart
-  const [{ root }] = useState(() =>
+  const [{ root, pathIndex }] = useState(() =>
     Sentry.startSpan({ name: 'SunburstChart.createRoot' }, () => {
       // go through the data and add `value` to each node
       const stack = [data]
-      const depthIndex = new Map()
+      const pathIndex = new Map()
 
       // create a new root node with the value of the root node
       const result = { ...data, value: selectorHandler.current(data) }
@@ -60,8 +65,27 @@ function SunburstChart({
         // partition the data and add the `current` property to each node
         return { root, depthIndex }
       }
+
+      // if the node has children, process them
+      if (Array.isArray(node.children)) {
+        node.children.forEach((child) => stack.push(child))
+      }
+
+      const root = partitionFn(result).each((d) => (d.current = d))
+
+      root.each((d) => {
+        // only add to pathIndex if the node has children as it represents a folder
+        if (d?.children) {
+          pathIndex.set(d.data.fullPath, d)
+        }
+      })
+
+      // partition the data and add the `current` property to each node
+      return { root, pathIndex }
     })
   )
+
+  const [selectedNode, setSelectedNode] = useState(root)
 
   // In this case D3 is handling rendering not React, so useLayoutEffect is used to handle rendering
   // and changes outside of the React lifecycle.
