@@ -27,38 +27,39 @@ function SunburstChart({
   const hoverHandler = useRef(onHover)
 
   // this state stores the root node of the sunburst chart
-  const [root] = useState(() =>
+  const [{ root }] = useState(() =>
     Sentry.startSpan({ name: 'SunburstChart.createRoot' }, () => {
       // go through the data and add `value` to each node
       const stack = [data]
-      const nodeMap = new Map()
+      const depthIndex = new Map()
 
       // create a new root node with the value of the root node
       const result = { ...data, value: selectorHandler.current(data) }
-      // add the root node to the node map
-      nodeMap.set(data, result)
 
       // while there are nodes to process, pop the last node from the stack
       while (stack.length > 0) {
         const node = stack.pop()
-        const currentNode = nodeMap.get(node)
+
+        if (!('value' in node)) {
+          node.value = selectorHandler.current(node)
+        }
 
         // if the node has children, process them
         if (Array.isArray(node.children)) {
-          currentNode.children = node.children.map((child) => {
-            // sad ... some browsers still lack support for structuredClone
-            const newChild = JSON.parse(JSON.stringify(child))
-            Object.assign(newChild, { value: selectorHandler.current(child) })
-
-            nodeMap.set(child, newChild)
-            stack.push(child)
-            return newChild
-          })
+          node.children.forEach((child) => stack.push(child))
         }
-      }
 
-      // partition the data and add the `current` property to each node
-      return partitionFn(result).each((d) => (d.current = d))
+        const root = partitionFn(result).each((d) => (d.current = d))
+
+        root.each((d) => {
+          const collection = depthIndex.get(d.depth) ?? []
+          collection.push(d)
+          depthIndex.set(d.depth, collection)
+        })
+
+        // partition the data and add the `current` property to each node
+        return { root, depthIndex }
+      }
     })
   )
 
