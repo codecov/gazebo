@@ -4,11 +4,11 @@ import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 
 import NameEmailCard from './NameEmailCard'
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 
 const currentUser = {
   name: 'donald duck',

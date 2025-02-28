@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useQueryClient as useQueryClientV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import Api from 'shared/api'
 import A from 'ui/A'
 

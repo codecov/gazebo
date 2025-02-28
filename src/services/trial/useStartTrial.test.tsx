@@ -11,8 +11,8 @@ const mocks = vi.hoisted(() => ({
   renderToast: vi.fn(),
 }))
 
-vi.mock('services/toast', async () => {
-  const actual = await vi.importActual('services/toast')
+vi.mock('services/toast/renderToast', async () => {
+  const actual = await vi.importActual('services/toast/renderToast')
   return {
     ...actual,
     renderToast: mocks.renderToast,

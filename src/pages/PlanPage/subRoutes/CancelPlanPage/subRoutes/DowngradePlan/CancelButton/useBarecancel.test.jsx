@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
   useParams: vi.fn(),
 }))
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.requireActual('react-router-dom')

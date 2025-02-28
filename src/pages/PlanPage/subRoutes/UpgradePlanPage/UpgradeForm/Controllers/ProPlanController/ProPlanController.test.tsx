@@ -17,8 +17,8 @@ const mocks = vi.hoisted(() => ({
 }))
 
 vi.mock('@stripe/react-stripe-js')
-vi.mock('services/toastNotification', async () => {
-  const actual = await vi.importActual('services/toastNotification')
+vi.mock('services/toastNotification/context', async () => {
+  const actual = await vi.importActual('services/toastNotification/context')
   return {
     ...actual,
     useAddNotification: mocks.useAddNotification,

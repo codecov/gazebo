@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router-dom'
 
 import { useSetCrumbs } from 'pages/PlanPage/context'
 import { useNavLinks } from 'services/navigation/useNavLinks'
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import Api from 'shared/api'
 import A from 'ui/A'
 import Button from 'ui/Button'

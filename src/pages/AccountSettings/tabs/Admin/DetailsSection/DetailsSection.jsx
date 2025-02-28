@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import { useUpdateProfile } from 'services/user'
 import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'

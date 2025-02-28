@@ -7,7 +7,7 @@ import { useOwnerPageData } from 'pages/OwnerPage/hooks'
 import { useAccountDetails } from 'services/account/useAccountDetails'
 import { useSentryToken } from 'services/account/useSentryToken'
 import { useLocationParams } from 'services/navigation/useLocationParams'
-import { renderToast } from 'services/toast'
+import { renderToast } from 'services/toast/renderToast'
 import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
 

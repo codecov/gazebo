@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import { useRegenerateRepositoryToken } from 'services/repositoryToken'
+import { useRegenerateRepositoryToken } from 'services/repositoryToken/useRegenerateRepositoryToken'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 

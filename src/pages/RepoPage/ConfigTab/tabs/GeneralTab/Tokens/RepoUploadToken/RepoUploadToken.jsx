@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router'
 
-import { useRegenerateRepoUploadToken } from 'services/repoUploadToken'
+import { useRegenerateRepoUploadToken } from 'services/repoUploadToken/useRegenerateRepoUploadToken'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import A from 'ui/A'
 import Button from 'ui/Button'

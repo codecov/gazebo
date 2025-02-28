@@ -1,7 +1,7 @@
 import {
   useNotifications,
   useRemoveNotification,
-} from 'services/toastNotification'
+} from 'services/toastNotification/context'
 
 import NotificationItem from './NotificationItem'
 

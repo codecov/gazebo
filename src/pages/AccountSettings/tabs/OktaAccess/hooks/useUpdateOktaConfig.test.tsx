@@ -8,14 +8,14 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock } from 'vitest'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 
 import {
   SaveOktaConfigMessage,
   useUpdateOktaConfig,
 } from './useUpdateOktaConfig'
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 const mockedToastNotification = useAddNotification as Mock
 
 const queryClientV5 = new QueryClientV5({

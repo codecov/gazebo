@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import Card from 'old_ui/Card'
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import { useUpdateProfile } from 'services/user'
 import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
