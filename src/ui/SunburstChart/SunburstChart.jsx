@@ -27,38 +27,40 @@ function SunburstChart({
   const hoverHandler = useRef(onHover)
 
   // this state stores the root node of the sunburst chart
-  const [root] = useState(() => {
-    // go through the data and add `value` to each node
-    const stack = [data]
-    const nodeMap = new Map()
+  const [root] = useState(
+    Sentry.startSpan({ name: 'SunburstChart.createRoot' }, () => {
+      // go through the data and add `value` to each node
+      const stack = [data]
+      const nodeMap = new Map()
 
-    // create a new root node with the value of the root node
-    const result = { ...data, value: selectorHandler.current(data) }
-    // add the root node to the node map
-    nodeMap.set(data, result)
+      // create a new root node with the value of the root node
+      const result = { ...data, value: selectorHandler.current(data) }
+      // add the root node to the node map
+      nodeMap.set(data, result)
 
-    // while there are nodes to process, pop the last node from the stack
-    while (stack.length > 0) {
-      const node = stack.pop()
-      const currentNode = nodeMap.get(node)
+      // while there are nodes to process, pop the last node from the stack
+      while (stack.length > 0) {
+        const node = stack.pop()
+        const currentNode = nodeMap.get(node)
 
-      // if the node has children, process them
-      if (Array.isArray(node.children)) {
-        currentNode.children = node.children.map((child) => {
-          // sad ... some browsers still lack support for structuredClone
-          const newChild = JSON.parse(JSON.stringify(child))
-          Object.assign(newChild, { value: selectorHandler.current(child) })
+        // if the node has children, process them
+        if (Array.isArray(node.children)) {
+          currentNode.children = node.children.map((child) => {
+            // sad ... some browsers still lack support for structuredClone
+            const newChild = JSON.parse(JSON.stringify(child))
+            Object.assign(newChild, { value: selectorHandler.current(child) })
 
-          nodeMap.set(child, newChild)
-          stack.push(child)
-          return newChild
-        })
+            nodeMap.set(child, newChild)
+            stack.push(child)
+            return newChild
+          })
+        }
       }
-    }
 
-    // partition the data and add the `current` property to each node
-    return partitionFn(result).each((d) => (d.current = d))
-  })
+      // partition the data and add the `current` property to each node
+      return partitionFn(result).each((d) => (d.current = d))
+    })
+  )
 
   // In this case D3 is handling rendering not React, so useLayoutEffect is used to handle rendering
   // and changes outside of the React lifecycle.
@@ -73,20 +75,24 @@ function SunburstChart({
     const radius = width / 6
 
     // Creates a function for creating arcs representing files and folders.
-    const drawArc = arc()
-      .startAngle((d) => d.x0)
-      .endAngle((d) => d.x1)
-      .padAngle((d) => Math.min((d.x1 - d.x0) / 2, 0.005))
-      .padRadius(radius * 1.5)
-      .innerRadius((d) => d.y0 * radius)
-      .outerRadius((d) => Math.max(d.y0 * radius, d.y1 * radius - 1))
+    const drawArc = Sentry.startSpan({ name: 'SunburstChart.drawArc' }, () =>
+      arc()
+        .startAngle((d) => d.x0)
+        .endAngle((d) => d.x1)
+        .padAngle((d) => Math.min((d.x1 - d.x0) / 2, 0.005))
+        .padRadius(radius * 1.5)
+        .innerRadius((d) => d.y0 * radius)
+        .outerRadius((d) => Math.max(d.y0 * radius, d.y1 * radius - 1))
+    )
 
     // A color function you can pass a number from 0-100 to and get a color back from the specified color range
     // Ex color(10.4)
-    const color = scaleSequential()
-      .domain([colorDomainMin, colorDomainMax])
-      .interpolator(colorRange)
-      .clamp(true)
+    const color = Sentry.startSpan({ name: 'SunburstChart.color' }, () =>
+      scaleSequential()
+        .domain([colorDomainMin, colorDomainMax])
+        .interpolator(colorRange)
+        .clamp(true)
+    )
 
     // Tracks previous location for rendering .. in the breadcrumb.
     let previous
@@ -100,18 +106,22 @@ function SunburstChart({
       .attr('transform', `translate(${width / 2},${width / 2})`)
 
     // Renders an arc per data point in the correct location. (Pieces of the circle that add up to a circular graph)
-    const path = g
-      .append('g')
-      .selectAll('path')
-      .data(root.descendants().slice(1))
-      .join('path')
-      .attr('fill', (d) => color(d?.data?.value || 0))
-      // If data point is a file fade the background color a bit.
-      .attr('fill-opacity', (d) =>
-        arcVisible(d.current) ? (d.children ? 1 : 0.6) : 0
-      )
-      .attr('pointer-events', (d) => (arcVisible(d.current) ? 'auto' : 'none'))
-      .attr('d', (d) => drawArc(d.current))
+    const path = Sentry.startSpan({ name: 'SunburstChart.renderArcs' }, () =>
+      g
+        .append('g')
+        .selectAll('path')
+        .data(root.descendants().slice(1))
+        .join('path')
+        .attr('fill', (d) => color(d?.data?.value || 0))
+        // If data point is a file fade the background color a bit.
+        .attr('fill-opacity', (d) =>
+          arcVisible(d.current) ? (d.children ? 1 : 0.6) : 0
+        )
+        .attr('pointer-events', (d) =>
+          arcVisible(d.current) ? 'auto' : 'none'
+        )
+        .attr('d', (d) => drawArc(d.current))
+    )
 
     // Events for folders
     path
@@ -233,49 +243,55 @@ function SunburstChart({
       handleTextUpdate({ current: p, selected, transition: t })
     }
 
-    function handleArcsUpdate({ current, selected, transition }) {
-      parent.datum(selected)
+    const handleArcsUpdate = ({ current, selected, transition }) =>
+      Sentry.startSpan({ name: 'SunburstChart.handleArcsUpdate' }, () => {
+        parent.datum(selected)
 
-      // Handle animating in/out of a folder
-      root.each((d) => {
-        // determine x0 and y0
-        const x0Min = Math.min(
-          1,
-          (d.x0 - current.x0) / (current.x1 - current.x0)
+        // Handle animating in/out of a folder
+        Sentry.startSpan({ name: 'SunburstChart.calculateCoordinates' }, () =>
+          root.each((d) => {
+            // determine x0 and y0
+            const x0Min = Math.min(
+              1,
+              (d.x0 - current.x0) / (current.x1 - current.x0)
+            )
+            const x0 = Math.max(0, x0Min) * 2 * Math.PI
+            const y0 = Math.max(0, d.y0 - current.depth)
+
+            // determine x1 and y1
+            const x1Min = Math.min(
+              1,
+              (d.x1 - current.x0) / (current.x1 - current.x0)
+            )
+            const x1 = Math.max(0, x1Min) * 2 * Math.PI
+            const y1 = Math.max(0, d.y1 - current.depth)
+
+            d.target = { x0, y0, x1, y1 }
+          })
         )
-        const x0 = Math.max(0, x0Min) * 2 * Math.PI
-        const y0 = Math.max(0, d.y0 - current.depth)
 
-        // determine x1 and y1
-        const x1Min = Math.min(
-          1,
-          (d.x1 - current.x0) / (current.x1 - current.x0)
+        // Transition the data on all arcs, even the ones that aren’t visible,
+        // so that if this transition is interrupted, entering arcs will start
+        // the next transition from the desired position.
+        Sentry.startSpan({ name: 'SunburstChart.transitionArcs' }, () =>
+          path
+            .transition(transition)
+            .tween('data', (d) => {
+              const i = interpolate(d.current, d.target)
+              return (t) => (d.current = i(t))
+            })
+            .filter(function (d) {
+              return +this.getAttribute('fill-opacity') || arcVisible(d.target)
+            })
+            .attr('fill-opacity', (d) =>
+              arcVisible(d.target) ? (d.children ? 1 : 0.6) : 0
+            )
+            .attr('pointer-events', (d) =>
+              arcVisible(d.target) ? 'auto' : 'none'
+            )
+            .attrTween('d', (d) => () => drawArc(d.current))
         )
-        const x1 = Math.max(0, x1Min) * 2 * Math.PI
-        const y1 = Math.max(0, d.y1 - current.depth)
-
-        d.target = { x0, y0, x1, y1 }
       })
-
-      // Transition the data on all arcs, even the ones that aren’t visible,
-      // so that if this transition is interrupted, entering arcs will start
-      // the next transition from the desired position.
-      path
-        .transition(transition)
-        .tween('data', (d) => {
-          const i = interpolate(d.current, d.target)
-          return (t) => (d.current = i(t))
-        })
-        .filter(function (d) {
-          return +this.getAttribute('fill-opacity') || arcVisible(d.target)
-        })
-        .attr('fill-opacity', (d) =>
-          arcVisible(d.target) ? (d.children ? 1 : 0.6) : 0
-        )
-        .attr('pointer-events', (d) => (arcVisible(d.target) ? 'auto' : 'none'))
-
-        .attrTween('d', (d) => () => drawArc(d.current))
-    }
 
     function handleTextUpdate({ current, selected, transition }) {
       backText.datum(selected)
