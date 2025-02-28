@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import { interpolate } from 'd3-interpolate'
 import { scaleSequential } from 'd3-scale'
 import { select } from 'd3-selection'
@@ -328,4 +329,6 @@ SunburstChart.propTypes = {
   colorDomainMax: PropTypes.number,
 }
 
-export default SunburstChart
+export default Sentry.withProfiler(SunburstChart, {
+  name: 'SunburstChart',
+})
