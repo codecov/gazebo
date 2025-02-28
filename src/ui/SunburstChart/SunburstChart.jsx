@@ -27,7 +27,7 @@ function SunburstChart({
   const hoverHandler = useRef(onHover)
 
   // this state stores the root node of the sunburst chart
-  const [root] = useState(
+  const [root] = useState(() =>
     Sentry.startSpan({ name: 'SunburstChart.createRoot' }, () => {
       // go through the data and add `value` to each node
       const stack = [data]
@@ -75,24 +75,24 @@ function SunburstChart({
     const radius = width / 6
 
     // Creates a function for creating arcs representing files and folders.
-    const drawArc = Sentry.startSpan({ name: 'SunburstChart.drawArc' }, () =>
-      arc()
+    const drawArc = Sentry.startSpan({ name: 'SunburstChart.drawArc' }, () => {
+      return arc()
         .startAngle((d) => d.x0)
         .endAngle((d) => d.x1)
         .padAngle((d) => Math.min((d.x1 - d.x0) / 2, 0.005))
         .padRadius(radius * 1.5)
         .innerRadius((d) => d.y0 * radius)
         .outerRadius((d) => Math.max(d.y0 * radius, d.y1 * radius - 1))
-    )
+    })
 
     // A color function you can pass a number from 0-100 to and get a color back from the specified color range
     // Ex color(10.4)
-    const color = Sentry.startSpan({ name: 'SunburstChart.color' }, () =>
-      scaleSequential()
+    const color = Sentry.startSpan({ name: 'SunburstChart.color' }, () => {
+      return scaleSequential()
         .domain([colorDomainMin, colorDomainMax])
         .interpolator(colorRange)
         .clamp(true)
-    )
+    })
 
     // Tracks previous location for rendering .. in the breadcrumb.
     let previous
@@ -248,7 +248,7 @@ function SunburstChart({
         parent.datum(selected)
 
         // Handle animating in/out of a folder
-        Sentry.startSpan({ name: 'SunburstChart.calculateCoordinates' }, () =>
+        Sentry.startSpan({ name: 'SunburstChart.calculateCoordinates' }, () => {
           root.each((d) => {
             // determine x0 and y0
             const x0Min = Math.min(
@@ -268,12 +268,12 @@ function SunburstChart({
 
             d.target = { x0, y0, x1, y1 }
           })
-        )
+        })
 
         // Transition the data on all arcs, even the ones that aren’t visible,
         // so that if this transition is interrupted, entering arcs will start
         // the next transition from the desired position.
-        Sentry.startSpan({ name: 'SunburstChart.transitionArcs' }, () =>
+        Sentry.startSpan({ name: 'SunburstChart.transitionArcs' }, () => {
           path
             .transition(transition)
             .tween('data', (d) => {
@@ -290,7 +290,7 @@ function SunburstChart({
               arcVisible(d.target) ? 'auto' : 'none'
             )
             .attrTween('d', (d) => () => drawArc(d.current))
-        )
+        })
       })
 
     function handleTextUpdate({ current, selected, transition }) {
