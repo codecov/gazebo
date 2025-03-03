@@ -25,7 +25,7 @@ const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
         z.object({
           headName: z.string().nullable(),
           missesCount: z.number(),
-          patchCoverage: CoverageObjSchema,
+          patchCoverage: CoverageObjSchema.nullable(),
         })
       )
       .nullable(),
