@@ -157,7 +157,7 @@ describe('ListRepo', () => {
   describe('renders', () => {
     it('renders the children', () => {
       setup({})
-      render(<ListRepo />, {
+      render(<ListRepo canRefetch />, {
         wrapper: wrapper({}),
       })
 
@@ -166,7 +166,7 @@ describe('ListRepo', () => {
 
     it('renders the repo table', () => {
       setup({})
-      render(<ListRepo />, {
+      render(<ListRepo canRefetch />, {
         wrapper: wrapper({}),
       })
 
@@ -177,7 +177,7 @@ describe('ListRepo', () => {
   describe('reads URL parameters', () => {
     it('reads search parameter from URL', () => {
       setup({})
-      render(<ListRepo />, {
+      render(<ListRepo canRefetch />, {
         wrapper: wrapper({ url: '?search=thisisaquery' }),
       })
 
@@ -189,7 +189,7 @@ describe('ListRepo', () => {
   describe('update params after typing', () => {
     it('calls setSearchValue', async () => {
       const { user } = setup({})
-      render(<ListRepo />, {
+      render(<ListRepo canRefetch />, {
         wrapper: wrapper({}),
       })
 
@@ -207,7 +207,7 @@ describe('ListRepo', () => {
   describe('when rendered for team plan', () => {
     it('renders the team table', async () => {
       setup({ isTeamPlan: true })
-      render(<ListRepo />, {
+      render(<ListRepo canRefetch />, {
         wrapper: wrapper({}),
       })
       const table = await screen.findByText(/ReposTableTeam/)
@@ -218,7 +218,7 @@ describe('ListRepo', () => {
   describe('welcome demo alert banner', () => {
     it('shows alert banner if it is my owner page and I came from onboarding', async () => {
       const { me } = setup({})
-      render(<ListRepo />, {
+      render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh/janedoe?source=onboarding',
           path: '/:provider/:owner',
@@ -231,7 +231,7 @@ describe('ListRepo', () => {
 
     it('does not show alert banner if I did not come from onboarding', async () => {
       const { me } = setup({})
-      render(<ListRepo />, {
+      render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh/janedoe',
           path: '/:provider/:owner',

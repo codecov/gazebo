@@ -15,7 +15,13 @@ describe('OrgControlTable', () => {
     it(`doesn't call setSearchValue yet`, async () => {
       const { user } = setup()
       const setSearchValue = vi.fn()
-      render(<OrgControlTable setSearchValue={setSearchValue} searchValue="" />)
+      render(
+        <OrgControlTable
+          canRefetch={true}
+          setSearchValue={setSearchValue}
+          searchValue=""
+        />
+      )
 
       const searchInput = screen.getByRole('textbox', {
         name: /search/i,
@@ -30,7 +36,11 @@ describe('OrgControlTable', () => {
         const { user } = setup()
         const setSearchValue = vi.fn()
         render(
-          <OrgControlTable setSearchValue={setSearchValue} searchValue="" />
+          <OrgControlTable
+            canRefetch={true}
+            setSearchValue={setSearchValue}
+            searchValue=""
+          />
         )
 
         const searchInput = screen.getByRole('textbox', {
@@ -43,9 +53,42 @@ describe('OrgControlTable', () => {
     })
   })
 
+  describe('when the user can refetch', () => {
+    it('renders the RepoOrgNotFound', () => {
+      render(
+        <OrgControlTable
+          setSearchValue={vi.fn()}
+          searchValue=""
+          canRefetch={true}
+        />
+      )
+      expect(screen.getByText(/RepoOrgNotFound/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user cannot refetch', () => {
+    it(`doesn't render the RepoOrgNotFound`, () => {
+      render(
+        <OrgControlTable
+          setSearchValue={vi.fn()}
+          searchValue=""
+          canRefetch={false}
+        />
+      )
+
+      expect(screen.queryByText(/RepoOrgNotFound/)).not.toBeInTheDocument()
+    })
+  })
+
   describe('when show team plan passed in', () => {
     it('does not render the ordering select', () => {
-      render(<OrgControlTable setSearchValue={vi.fn()} searchValue="" />)
+      render(
+        <OrgControlTable
+          canRefetch={false}
+          setSearchValue={vi.fn()}
+          searchValue=""
+        />
+      )
 
       const select = screen.queryByRole('combobox', {
         name: /Sort Order/i,

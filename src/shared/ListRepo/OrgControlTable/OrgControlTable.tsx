@@ -3,14 +3,18 @@ import useDebounce from 'react-use/lib/useDebounce'
 
 import TextInput from 'ui/TextInput'
 
+import RepoOrgNotFound from './RepoOrgNotFound'
+
 interface OrgControlTableProps {
   setSearchValue: (search: string) => void
   searchValue: string
+  canRefetch: boolean
 }
 
 function OrgControlTable({
   setSearchValue,
   searchValue,
+  canRefetch,
 }: OrgControlTableProps) {
   const [search, setSearch] = useState(searchValue)
 
@@ -34,6 +38,7 @@ function OrgControlTable({
         }
         data-testid="org-control-search"
       />
+      {canRefetch && <RepoOrgNotFound />}
     </div>
   )
 }
