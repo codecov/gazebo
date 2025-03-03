@@ -246,7 +246,7 @@ describe('ListRepo', () => {
   describe('user does not have gh app installed', () => {
     it('displays github app config banner if showDemoAlert is false', async () => {
       setup({})
-      render(<ListRepo hasGhApp={false} />, {
+      render(<ListRepo canRefetch hasGhApp={false} />, {
         wrapper: wrapper({
           url: '/gh/janedoe',
           path: '/:provider/:owner',
@@ -258,7 +258,7 @@ describe('ListRepo', () => {
     })
     it('does not display github app config banner if showDemoAlert is true', async () => {
       setup({})
-      render(<ListRepo hasGhApp={false} />, {
+      render(<ListRepo canRefetch hasGhApp={false} />, {
         wrapper: wrapper({
           url: '/gh/janedoe?source=onboarding',
           path: '/:provider/:owner',
@@ -272,7 +272,7 @@ describe('ListRepo', () => {
     })
     it('does not display github app config banner if isAdmin is false', async () => {
       setup({ isAdmin: false })
-      render(<ListRepo hasGhApp={false} />, {
+      render(<ListRepo canRefetch hasGhApp={false} />, {
         wrapper: wrapper({
           url: '/gh/janedoe',
           path: '/:provider/:owner',
@@ -285,7 +285,7 @@ describe('ListRepo', () => {
   describe('user has gh app installed', () => {
     it('does not display github app config banner if hasGhApp is true', async () => {
       setup({})
-      render(<ListRepo hasGhApp={true} />, {
+      render(<ListRepo canRefetch hasGhApp={true} />, {
         wrapper: wrapper({
           url: '/gh/janedoe',
           path: '/:provider/:owner',
