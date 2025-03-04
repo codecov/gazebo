@@ -697,6 +697,23 @@ describe('App', () => {
           expect(testLocation.pathname).toBe('/gh/codecov/test-app/pull/123')
         )
       })
+
+      it('redirects home if unknown to param', async () => {
+        mockedUseLocationParams
+          // on initial page visit the to param should be set
+          .mockReturnValueOnce({
+            params: { to: '/gh/path/does/not/exist' },
+          })
+          // after redirecting the param should be removed
+          .mockReturnValue({ params: {} })
+        setup({ hasLoggedInUser: true, hasSession: true })
+
+        render(<App />, {
+          wrapper: wrapper(['/gh?to=/gh/path/does/not/exist']),
+        })
+
+        await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
+      })
     })
   })
 })
