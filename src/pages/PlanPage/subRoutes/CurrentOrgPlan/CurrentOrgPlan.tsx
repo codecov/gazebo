@@ -88,7 +88,7 @@ function CurrentOrgPlan() {
             <Alert variant={planUpdatedNotification.alertOption}>
               {scheduleStart && scheduledPhase?.quantity ? (
                 <>
-                  <Alert.Title>Plan successfully updated.</Alert.Title>
+                  <Alert.Title>Plan successfully updated</Alert.Title>
                   <Alert.Description>
                     The start date is {scheduleStart} with a monthly
                     subscription for {scheduledPhase.quantity} seats.
