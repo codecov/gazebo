@@ -70,8 +70,8 @@ const HomePageRedirect = () => {
       // eslint-disable-next-line camelcase
       queryParams.setup_action = setupAction
     }
-    // ensure that we only redirect if the user is not setting up the action
-    else if (to) {
+    // ensure that we only redirect if the user is not setting up the action and we don't want to redirect if we're already redirecting to the plan page
+    else if (to && to !== 'plan') {
       redirectURL = to
     }
   }
