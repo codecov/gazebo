@@ -1,4 +1,5 @@
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import qs from 'qs'
 import { lazy } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { Redirect, Switch, useParams } from 'react-router-dom'
@@ -47,23 +48,36 @@ const HomePageRedirect = () => {
   let redirectURL = '/login'
 
   if (internalUser && internalUser.owners) {
-    redirectURL = `/${internalUser.owners[0]?.service}/${internalUser.owners[0]?.username}`
+    const service = internalUser.owners[0]?.service
+    const username = internalUser.owners[0]?.username
+    redirectURL = `/${service}/${username}`
     if (to === 'plan') {
       redirectURL = '/plan' + redirectURL
     }
   }
 
+  // create a query params object to be added to the redirect URL
+  const queryParams: Record<string, string> = {}
+
+  // only redirect if we have a provider and it's a valid provider and the user is logged in
   if (provider && isProvider(provider) && currentUser) {
+    // set the redirect URL to the owner's default org or the user's username
     const defaultOrg =
       currentUser.owner?.defaultOrgUsername ?? currentUser.user?.username
     redirectURL = `/${provider}/${defaultOrg}`
 
     if (setupAction) {
-      redirectURL += `?setup_action=${setupAction}`
+      // eslint-disable-next-line camelcase
+      queryParams.setup_action = setupAction
+    }
+    // ensure that we only redirect if the user is not setting up the action and we don't want to redirect if we're already redirecting to the plan page
+    else if (to && to !== 'plan') {
+      redirectURL = to
     }
   }
 
-  return <Redirect to={redirectURL} />
+  const queryString = qs.stringify(queryParams)
+  return <Redirect to={`${redirectURL}?${queryString}`} />
 }
 
 const MainAppRoutes = () => (
