@@ -37,7 +37,6 @@ function Sunburst() {
     <>
       <SunburstChart
         data={data}
-        svgFontSize="24px"
         svgRenderSize={930}
         selector={(data) => data?.coverage}
         onHover={({ path, type }) => setCurrentPath({ path, type })}
