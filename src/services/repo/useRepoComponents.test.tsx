@@ -168,7 +168,7 @@ describe('ComponentMeasurements', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            dev: 'useRepoComponentsArgs - Parsing Error',
+            dev: 'useRepoComponents - Parsing Error',
             status: 400,
           })
         )
@@ -201,7 +201,7 @@ describe('ComponentMeasurements', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            dev: 'useRepoComponentsArgs - Not Found Error',
+            dev: 'useRepoComponents - Not Found Error',
             status: 404,
           })
         )
@@ -234,7 +234,7 @@ describe('ComponentMeasurements', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            dev: 'useRepoComponentsArgs - Owner Not Activated',
+            dev: 'useRepoComponents - Owner Not Activated',
             status: 403,
           })
         )

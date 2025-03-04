@@ -7,10 +7,8 @@ import { MissingBaseReportSchema } from 'services/comparison/schemas/MissingBase
 import { MissingComparisonSchema } from 'services/comparison/schemas/MissingComparison'
 import { MissingHeadCommitSchema } from 'services/comparison/schemas/MissingHeadCommit'
 import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo/schemas'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
@@ -27,7 +25,7 @@ const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
         z.object({
           headName: z.string().nullable(),
           missesCount: z.number(),
-          patchCoverage: CoverageObjSchema,
+          patchCoverage: CoverageObjSchema.nullable(),
         })
       )
       .nullable(),
@@ -182,15 +180,13 @@ export function usePullCompareTotalsTeam({
           filters,
         },
       }).then((res) => {
+        const callingFn = 'usePullCompareTotalsTeam'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'usePullCompareTotalsTeam',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -199,14 +195,14 @@ export function usePullCompareTotalsTeam({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'usePullCompareTotalsTeam' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'usePullCompareTotalsTeam' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

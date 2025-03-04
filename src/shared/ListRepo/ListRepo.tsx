@@ -23,6 +23,7 @@ const defaultQueryParams = {
 }
 
 interface ListRepoProps {
+  canRefetch: boolean
   hasGhApp?: boolean
 }
 
@@ -31,7 +32,7 @@ interface URLParams {
   owner: string
 }
 
-function ListRepo({ hasGhApp }: ListRepoProps) {
+function ListRepo({ canRefetch, hasGhApp }: ListRepoProps) {
   const { provider, owner } = useParams<URLParams>()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   // @ts-expect-error useLocationParams needs to be typed
@@ -63,6 +64,7 @@ function ListRepo({ hasGhApp }: ListRepoProps) {
         setSearchValue={(search) => {
           updateParams({ search })
         }}
+        canRefetch={canRefetch}
       />
 
       {showDemoAlert ? (

@@ -26,7 +26,7 @@ const mockData = {
               {
                 __typename: 'PathContentDir',
                 name: 'src',
-                path: null,
+                path: 'src',
                 hits: 4,
                 misses: 2,
                 partials: 1,
@@ -148,7 +148,7 @@ describe('PullDirEntry', () => {
           {
             __typename: 'PathContentDir',
             name: 'src',
-            path: null,
+            path: 'src',
             percentCovered: 40.0,
             hits: 4,
             misses: 2,

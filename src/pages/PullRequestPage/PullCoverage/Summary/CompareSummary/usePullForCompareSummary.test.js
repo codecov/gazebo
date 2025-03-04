@@ -17,8 +17,8 @@ vi.mock('react-router-dom', async () => {
     useParams: mocks.useParams,
   }
 })
-vi.mock('services/pull', async () => {
-  const actual = await vi.importActual('services/pull')
+vi.mock('services/pull/usePull', async () => {
+  const actual = await vi.importActual('services/pull/usePull')
   return {
     ...actual,
     usePull: mocks.usePull,

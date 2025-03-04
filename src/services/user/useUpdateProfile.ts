@@ -132,14 +132,13 @@ export function useUpdateProfile({ provider }: { provider: string }) {
           },
         },
       }).then((res) => {
+        const callingFn = 'useUpdateProfile'
         const parsedData = UpdateProfileResponseSchema.safeParse(res.data)
+
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useUpdateProfile',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
         return parsedData.data.updateProfile?.me

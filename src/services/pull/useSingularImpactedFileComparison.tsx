@@ -7,10 +7,8 @@ import { MissingBaseReportSchema } from 'services/comparison/schemas/MissingBase
 import { MissingComparisonSchema } from 'services/comparison/schemas/MissingComparison'
 import { MissingHeadCommitSchema } from 'services/comparison/schemas/MissingHeadCommit'
 import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo/schemas'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
@@ -120,15 +118,13 @@ export function useSingularImpactedFileComparison({
           filters,
         },
       }).then((res) => {
+        const callingFn = 'useSingularImpactedFileComparison'
         const parsedRes = RepoSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useSingularImpactedFileComparison',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -137,14 +133,14 @@ export function useSingularImpactedFileComparison({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useSingularImpactedFileComparison' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'useSingularImpactedFileComparison' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

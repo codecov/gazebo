@@ -3,10 +3,8 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { PathContentsFilters } from 'services/pathContents/constants'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
@@ -74,15 +72,13 @@ export function usePrefetchPullDirEntry({
             filters,
           },
         }).then((res) => {
+          const callingFn = 'usePrefetchPullDirEntry'
           const parsedRes = RequestSchema.safeParse(res?.data)
 
           if (!parsedRes.success) {
             return rejectNetworkError({
               errorName: 'Parsing Error',
-              errorDetails: {
-                callingFn: 'usePrefetchPullDirEntry',
-                error: parsedRes.error,
-              },
+              errorDetails: { callingFn, error: parsedRes.error },
             })
           }
 
@@ -91,7 +87,7 @@ export function usePrefetchPullDirEntry({
           if (data?.owner?.repository?.__typename === 'NotFoundError') {
             return rejectNetworkError({
               errorName: 'Not Found Error',
-              errorDetails: { callingFn: 'usePrefetchPullDirEntry' },
+              errorDetails: { callingFn },
             })
           }
 
@@ -100,7 +96,7 @@ export function usePrefetchPullDirEntry({
           ) {
             return rejectNetworkError({
               errorName: 'Owner Not Activated',
-              errorDetails: { callingFn: 'usePrefetchPullDirEntry' },
+              errorDetails: { callingFn },
               data: {
                 detail: (
                   <p>
