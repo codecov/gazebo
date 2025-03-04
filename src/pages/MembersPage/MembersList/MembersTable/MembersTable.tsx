@@ -173,9 +173,7 @@ export default function MembersTable({
           ordering: getOrderingDirection(sorting),
         },
       },
-      {
-        suspense: false,
-      }
+      { suspense: false }
     )
 
   useEffect(() => {
