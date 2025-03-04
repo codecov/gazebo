@@ -357,7 +357,6 @@ jobs:
       - name: Run Overwatch CLI
         run: |
           ./overwatch-cli \
-            --url https://overwatch.codecov.dev \
             --auth-token ${{ secrets.SENTRY_AUTH_TOKEN }} \
             --organization-slug codecov \
             javascript
