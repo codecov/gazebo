@@ -334,6 +334,27 @@ jobs:
           # The head sha aligns with how the sha used in prod builds
           GAZEBO_SHA: ${{ github.event.pull_request.head.sha }}
 
+  overwatch:
+    name: Run Overwatch
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Overwatch CLI
+        run: |
+          curl -o overwatch-cli https://overwatch.codecov.io/linux/cli
+          chmod +x overwatch-cli
+
+      - name: Run Overwatch CLI
+        run: |
+          ./overwatch-cli \
+            --url https://overwatch.codecov.dev \
+            --auth-token ${{ secrets.SENTRY_AUTH_TOKEN }} \
+            --organization-slug codecov \
+            javascript
+
   storybook:
     name: Run storybook
     runs-on: ubuntu-latest
