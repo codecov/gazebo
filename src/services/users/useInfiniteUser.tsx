@@ -18,13 +18,15 @@ export const MemberSchema = z.object({
 
 export type Member = z.infer<typeof MemberSchema>
 
-export const MemberListSchema = z.object({
-  count: z.number(),
-  next: z.string().nullable(),
-  previous: z.string().nullable(),
-  results: z.array(MemberSchema),
-  totalPages: z.number(),
-})
+export const MemberListSchema = z
+  .object({
+    count: z.number(),
+    next: z.string().nullable(),
+    previous: z.string().nullable(),
+    results: z.array(MemberSchema),
+    totalPages: z.number(),
+  })
+  .nullable()
 
 export type MemberList = z.infer<typeof MemberListSchema>
 
@@ -47,7 +49,15 @@ export const useInfiniteUsers = (
     retry?: boolean
   }
 ) => {
-  const { data, ...rest } = useInfiniteQuery({
+  const {
+    data,
+    error,
+    isLoading,
+    isError,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
     queryKey: ['users', provider, owner, query],
     queryFn: ({ pageParam = 1, signal }) =>
       Api.get({
@@ -75,7 +85,7 @@ export const useInfiniteUsers = (
     select: (data) => {
       return {
         pages: data.pages,
-        results: data.pages.flatMap((page) => page.results),
+        results: data.pages.flatMap((page) => page?.results ?? []),
         pageParams: data.pageParams,
       }
     },
@@ -90,7 +100,15 @@ export const useInfiniteUsers = (
   })
 
   return {
-    data: useMemo(() => data?.pages.flatMap((page) => page.results), [data]),
-    ...rest,
+    data: useMemo(
+      () => data?.pages.flatMap((page) => page?.results ?? []),
+      [data]
+    ),
+    error,
+    isLoading,
+    isError,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
   }
 }
