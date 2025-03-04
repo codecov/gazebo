@@ -147,6 +147,7 @@ const mockRepoContext = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
+
 const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
@@ -642,20 +643,6 @@ describe('App', () => {
     })
   })
 
-  describe('user has setup action', () => {
-    it(`renders the setup action redirect page`, async () => {
-      mockedUseLocationParams.mockReturnValue({
-        params: { setup_action: 'install' },
-      })
-      setup({ hasLoggedInUser: true, hasSession: true })
-      render(<App />, { wrapper: wrapper(['/gh?setup_action=install']) })
-
-      await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
-      const page = await screen.findByText(/OwnerPage/i)
-      expect(page).toBeInTheDocument()
-    })
-  })
-
   describe('user has session, not logged in', () => {
     it('redirects to session default', async () => {
       setup({ hasLoggedInUser: false, hasSession: true })
@@ -677,6 +664,39 @@ describe('App', () => {
       await waitFor(() =>
         expect(testLocation.pathname).toBe('/plan/cool-service/cool-guy')
       )
+    })
+  })
+
+  describe('user is logged in', () => {
+    describe('params have setup action', () => {
+      it('renders the setup action redirect page', async () => {
+        mockedUseLocationParams.mockReturnValue({
+          params: { setup_action: 'install' },
+        })
+        setup({ hasLoggedInUser: true, hasSession: true })
+        render(<App />, { wrapper: wrapper(['/gh?setup_action=install']) })
+
+        await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
+        const page = await screen.findByText(/OwnerPage/i)
+        expect(page).toBeInTheDocument()
+      })
+    })
+
+    describe('params have to param', () => {
+      it('redirects to to param if it exists', async () => {
+        mockedUseLocationParams.mockReturnValue({
+          params: { to: '/gh/codecov/test-app/pull/123' },
+        })
+        setup({ hasLoggedInUser: true, hasSession: true })
+
+        render(<App />, { wrapper: wrapper(['/gh']) })
+
+        await waitFor(() => expect(testLocation.pathname).toBe('/gh'))
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/test-app/pull/123')
+        )
+      })
     })
   })
 })
