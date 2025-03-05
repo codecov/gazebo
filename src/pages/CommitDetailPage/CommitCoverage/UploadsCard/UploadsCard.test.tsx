@@ -869,6 +869,15 @@ describe('UploadsCard', () => {
               errors: [],
             },
           ],
+          // Provider with upload that doesn't have downloadUrl
+          'github': [
+            {
+              id: 5,
+              name: 'github-upload',
+              provider: 'github',
+              // No downloadUrl property
+            }
+          ],
           circleci: [
             {
               id: 3,
@@ -1042,6 +1051,15 @@ describe('UploadsCard', () => {
               buildCode: 'build2',
               errors: [],
             },
+          ],
+          // Provider with upload that doesn't have downloadUrl
+          'github': [
+            {
+              id: 5,
+              name: 'github-upload',
+              provider: 'github',
+              // No downloadUrl property
+            }
           ],
           circleci: [
             {
