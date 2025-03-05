@@ -55,13 +55,15 @@ export function useNavLinks() {
     },
     login: {
       text: 'Login',
-      path: () => {
+      path: ({ to }: { to?: string } = {}) => {
+        const query = qs.stringify({ to }, { addQueryPrefix: true })
+
         // Enterprise login page is at different url than Cloud; see App.tsx
         if (config.IS_SELF_HOSTED) {
-          return '/'
+          return `/${query}`
         }
 
-        return `/login`
+        return `/login${query}`
       },
       isExternalLink: false,
     },
