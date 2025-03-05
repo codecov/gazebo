@@ -1004,4 +1004,108 @@ describe('UploadsCard', () => {
       expect(travisUploadCheckboxTwo).not.toBeChecked()
     })
   })
+
+  describe('Download functionality', () => {
+    beforeEach(() => {
+      setup({
+        uploadsProviderList: ['travis', 'circleci'],
+        uploadsOverview: 'uploads overview',
+        groupedUploads: {
+          travis: [
+            {
+              id: 1,
+              name: 'travis-upload-1',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-25T16:36:19.559474+00:00',
+              updatedAt: '2020-08-25T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis1',
+              ciUrl: 'https://travis-ci.com/job/1',
+              uploadType: 'UPLOADED',
+              jobCode: 'job1',
+              buildCode: 'build1',
+              errors: [],
+            },
+            {
+              id: 2,
+              name: 'travis-upload-2',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-26T16:36:19.559474+00:00',
+              updatedAt: '2020-08-26T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis2',
+              ciUrl: 'https://travis-ci.com/job/2',
+              uploadType: 'UPLOADED',
+              jobCode: 'job2',
+              buildCode: 'build2',
+              errors: [],
+            },
+          ],
+          circleci: [
+            {
+              id: 3,
+              name: 'circleci-upload-1',
+              state: 'PROCESSED',
+              provider: 'circleci',
+              createdAt: '2020-08-27T16:36:19.559474+00:00',
+              updatedAt: '2020-08-27T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/circleci1',
+              ciUrl: 'https://circleci.com/job/1',
+              uploadType: 'UPLOADED',
+              jobCode: 'job3',
+              buildCode: 'build3',
+              errors: [],
+            },
+          ],
+        },
+        erroredUploads: {},
+        flagErrorUploads: {},
+        searchResults: [],
+        hasNoUploads: false,
+      })
+
+      // Mock document.createElement and related DOM APIs
+      document.createElement = vi.fn().mockImplementation((tag) => {
+        if (tag === 'a') {
+          return {
+            href: '',
+            setAttribute: vi.fn(),
+            click: vi.fn(),
+          }
+        }
+        return {}
+      })
+      document.body.appendChild = vi.fn()
+      document.body.removeChild = vi.fn()
+      window.URL.revokeObjectURL = vi.fn()
+
+      // Mock fetch to return a blob
+      mockFetch.mockResolvedValue({
+        blob: () => Promise.resolve(new Blob(['test content'], { type: 'text/plain' })),
+      })
+    })
+
+    it('renders download buttons for each provider group', () => {
+      render(<UploadsCard />, { wrapper })
+
+      const downloadButtons = screen.getAllByText('Download')
+      expect(downloadButtons.length).toBe(2) // One for travis and one for circleci
+    })
+
+    it('initiates downloads when the Download button is clicked', async () => {
+      const user = userEvent.setup()
+      render(<UploadsCard />, { wrapper })
+
+      const downloadButtons = screen.getAllByText('Download')
+      await user.click(downloadButtons[0]) // Click the first download button (travis)
+
+      // Expect fetch to be called for each upload in the provider group
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+      expect(mockFetch).toHaveBeenCalledWith('/download/travis1', { headers: { 'Content-Type': 'text/plain' } })
+      expect(mockFetch).toHaveBeenCalledWith('/download/travis2', { headers: { 'Content-Type': 'text/plain' } })
+    })
+  })
 })
