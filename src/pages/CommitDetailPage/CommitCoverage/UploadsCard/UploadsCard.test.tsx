@@ -979,9 +979,116 @@ describe('UploadsCard', () => {
       const icon = screen.getByTestId('minus')
       expect(icon).toBeInTheDocument()
     })
+  })
 
-    it('sets state to none when clicked on intermediate state', async () => {
+  describe('Download functionality', () => {
+    beforeEach(() => {
+      setup({
+        uploadsProviderList: ['travis', 'circleci'],
+        uploadsOverview: 'uploads overview',
+        groupedUploads: {
+          travis: [
+            {
+              id: 1,
+              name: 'travis-upload-1',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-25T16:36:19.559474+00:00',
+              updatedAt: '2020-08-25T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis1',
+              ciUrl: 'https://travis-ci.com/job/1',
+              uploadType: 'UPLOADED',
+              jobCode: 'job1',
+              buildCode: 'build1',
+              errors: [],
+            },
+            {
+              id: 2,
+              name: 'travis-upload-2',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-26T16:36:19.559474+00:00',
+              updatedAt: '2020-08-26T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis2',
+              ciUrl: 'https://travis-ci.com/job/2',
+              uploadType: 'UPLOADED',
+              jobCode: 'job2',
+              buildCode: 'build2',
+              errors: [],
+            }
+          ],
+          circleci: [
+            {
+              id: 3,
+              name: 'circleci-upload-1',
+              state: 'PROCESSED',
+              provider: 'circleci',
+              createdAt: '2020-08-27T16:36:19.559474+00:00',
+              updatedAt: '2020-08-27T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/circleci1',
+              ciUrl: 'https://circleci.com/job/1',
+              uploadType: 'UPLOADED',
+              jobCode: 'job3',
+              buildCode: 'build3',
+              errors: [],
+            }
+          ],
+          empty: []
+        },
+        erroredUploads: {},
+        flagErrorUploads: {},
+        searchResults: [],
+        hasNoUploads: false,
+      })
+    })
+
+    it('renders download buttons for each provider', () => {
+      render(<UploadsCard />, { wrapper })
+      
+      const downloadButtons = screen.getAllByText('Download')
+      // Expect one download button per provider plus individual download buttons for each upload
+      expect(downloadButtons.length).toBeGreaterThan(2)
+    })
+
+    it('calls fetch when download button is clicked', async () => {
       const user = userEvent.setup()
+      global.fetch = vi.fn().mockImplementation(() => 
+        Promise.resolve({
+          blob: () => Promise.resolve(new Blob(['test content'], { type: 'text/plain' }))
+        })
+      )
+
+      // Mock functions for URL creation and DOM manipulation
+      const mockCreateObjectURL = vi.fn().mockReturnValue('blob:test-url')
+      const mockRevokeObjectURL = vi.fn()
+      const originalCreateElement = document.createElement
+      const mockAppendChild = vi.fn()
+      const mockRemoveChild = vi.fn()
+      
+      // Setup mocks
+      window.URL.createObjectURL = mockCreateObjectURL
+      window.URL.revokeObjectURL = mockRevokeObjectURL
+      document.body.appendChild = mockAppendChild
+      document.body.removeChild = mockRemoveChild
+      document.createElement = vi.fn().mockImplementation((tagName) => {
+        const element = originalCreateElement.call(document, tagName)
+        element.click = vi.fn()
+        return element
+      })
+
+      render(<UploadsCard />, { wrapper })
+
+      const providerDownloadButtons = screen.getAllByText('Download').filter(button => button.tagName === 'BUTTON')
+      await user.click(providerDownloadButtons[0])
+
+      expect(global.fetch).toHaveBeenCalledWith('/download/travis1', expect.any(Object))
+      expect(global.fetch).toHaveBeenCalledWith('/download/travis2', expect.any(Object))
+    })
+  })
+})
       render(<UploadsCard />, { wrapper })
 
       const checkboxes = screen.getAllByRole('checkbox')
