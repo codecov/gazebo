@@ -4,12 +4,12 @@ import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import Activation from './Activation'
 
-vi.mock('./ChangePlanLink', () => ({
+vi.mock('./ChangePlanLink/ChangePlanLink', () => ({
   default: vi.fn(() => 'ChangePlanLink'),
 }))
 
@@ -19,25 +19,31 @@ const mockedAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
 }
 
 const mockPlanData = {
+  isEnterprisePlan: false,
+  isFreePlan: true,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
-  planUserCount: 1,
+  planUserCount: 9,
   hasSeatsLeft: true,
 }
 
@@ -77,16 +83,17 @@ describe('Activation', () => {
     planValue = mockedAccountDetails.plan.value
   ) {
     server.use(
-      http.get('/internal/:provider/:owner/account-details/', (info) => {
+      http.get('/internal/:provider/:owner/account-details/', () => {
         return HttpResponse.json(accountDetails)
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
+                isTrialPlan: planValue === Plans.USERS_TRIAL,
                 trialStatus,
                 value: planValue,
               },
@@ -144,7 +151,7 @@ describe('Activation', () => {
 
     describe('user is currently on a trial', () => {
       it('displays title', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, Plans.USERS_TRIAL)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -155,7 +162,7 @@ describe('Activation', () => {
       })
 
       it('displays number of activated users', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, Plans.USERS_TRIAL)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -167,7 +174,7 @@ describe('Activation', () => {
       })
 
       it('displays on trial notice', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, Plans.USERS_TRIAL)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -178,7 +185,7 @@ describe('Activation', () => {
       })
 
       it('displays upgrade plan link', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, Plans.USERS_TRIAL)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -235,7 +242,7 @@ describe('Activation', () => {
         render(<Activation />, { wrapper: wrapper() })
 
         const orgTrialedText = await screen.findByText(
-          /Your org trialed Pro Team plan/
+          /Your org trialed Pro plan/
         )
         expect(orgTrialedText).toBeInTheDocument()
       })

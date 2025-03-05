@@ -116,7 +116,7 @@ describe('BundleMessage', () => {
     }
   ) {
     server.use(
-      graphql.query('CommitBADropdownSummary', (info) => {
+      graphql.query('CommitBADropdownSummary', () => {
         if (noData) {
           return HttpResponse.json({ data: mockNoData })
         } else if (firstPullRequest) {

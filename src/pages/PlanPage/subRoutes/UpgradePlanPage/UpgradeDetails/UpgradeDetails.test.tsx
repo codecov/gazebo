@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import UpgradeDetails from './UpgradeDetails'
 
@@ -19,7 +19,7 @@ vi.mock('./TeamPlanDetails', () => ({
 const proPlanYear = {
   marketingName: 'Pro',
   value: Plans.USERS_PR_INAPPY,
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   baseUnitPrice: 10,
   benefits: [
     'Configurable # of users',
@@ -28,12 +28,14 @@ const proPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanMonth = {
   marketingName: 'Pro',
   value: Plans.USERS_PR_INAPPM,
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 10,
   benefits: [
     'Configurable # of users',
@@ -42,13 +44,15 @@ const proPlanMonth = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const sentryPlanYear = {
   marketingName: 'Sentry Pro',
   baseUnitPrice: 10,
   value: Plans.USERS_SENTRYY,
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   benefits: [
     'Includes 5 seats',
     'Unlimited public repositories',
@@ -56,13 +60,15 @@ const sentryPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro',
   baseUnitPrice: 10,
   value: Plans.USERS_SENTRYM,
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   benefits: [
     'Includes 5 seats',
     'Unlimited public repositories',
@@ -70,24 +76,30 @@ const sentryPlanMonth = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
+  isSentryPlan: true,
+  isTeamPlan: false,
 }
 
 const teamPlanYear = {
   baseUnitPrice: 5,
   benefits: ['Up to 10 users'],
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanMonth = {
   baseUnitPrice: 5,
   benefits: ['Up to 10 users'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 type WrapperClosure = (

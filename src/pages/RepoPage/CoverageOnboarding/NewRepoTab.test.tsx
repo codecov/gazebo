@@ -24,6 +24,7 @@ vi.mock('./GitHubActions', () => ({ default: () => 'GitHubActions' }))
 vi.mock('./CircleCI', () => ({ default: () => 'CircleCI' }))
 vi.mock('./OtherCI', () => ({ default: () => 'OtherCI' }))
 vi.mock('./ActivationBanner', () => ({ default: () => 'ActivationBanner' }))
+vi.mock('services/events/events')
 
 const mockCurrentUser = {
   me: {
@@ -124,12 +125,9 @@ describe('NewRepoTab', () => {
     mocks.useRedirect.mockImplementation((data) => ({
       hardRedirect: () => hardRedirect(data),
     }))
-    const mockMetricMutationVariables = vi.fn()
-    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
-    mockGetItem.mockReturnValue(null)
 
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({
           data: mockGetRepo(
             noUploadToken,
@@ -139,16 +137,12 @@ describe('NewRepoTab', () => {
           ),
         })
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: mockCurrentUser })
-      }),
-      graphql.mutation('storeEventMetric', (info) => {
-        mockMetricMutationVariables(info?.variables)
-        return HttpResponse.json({ data: { storeEventMetric: null } })
       })
     )
 
-    return { hardRedirect, mockMetricMutationVariables, user }
+    return { hardRedirect, user }
   }
 
   it('renders intro blurb', async () => {
@@ -239,7 +233,7 @@ describe('NewRepoTab', () => {
     describe('navigation', () => {
       describe('when GitHub Actions is selected', () => {
         it('should navigate to /new', async () => {
-          const { user, mockMetricMutationVariables } = setup({})
+          const { user } = setup({})
           render(<NewRepoTab />, {
             wrapper: wrapper('/gh/codecov/cool-repo/new/other-ci'),
           })
@@ -254,7 +248,6 @@ describe('NewRepoTab', () => {
 
           expect(githubActions).toBeInTheDocument()
           expect(githubActions).toHaveAttribute('data-state', 'checked')
-          expect(mockMetricMutationVariables).toHaveBeenCalled()
           expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
         })
       })

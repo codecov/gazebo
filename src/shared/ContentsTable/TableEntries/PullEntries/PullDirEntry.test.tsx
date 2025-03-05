@@ -26,7 +26,7 @@ const mockData = {
               {
                 __typename: 'PathContentDir',
                 name: 'src',
-                path: null,
+                path: 'src',
                 hits: 4,
                 misses: 2,
                 partials: 1,
@@ -109,7 +109,7 @@ describe('PullDirEntry', () => {
       const a = screen.getByRole('link')
       expect(a).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/pull/123/tree/path/to/directory/dir'
+        '/gh/codecov/test-repo/pull/123/tree/path/to/directory/dir?dropdown=coverage'
       )
     })
   })
@@ -121,7 +121,7 @@ describe('PullDirEntry', () => {
       const a = screen.getByRole('link')
       expect(a).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/pull/123/tree/dir'
+        '/gh/codecov/test-repo/pull/123/tree/dir?dropdown=coverage'
       )
     })
   })
@@ -148,7 +148,7 @@ describe('PullDirEntry', () => {
           {
             __typename: 'PathContentDir',
             name: 'src',
-            path: null,
+            path: 'src',
             percentCovered: 40.0,
             hits: 4,
             misses: 2,
@@ -181,7 +181,7 @@ describe('PullDirEntry', () => {
     const a = screen.getByRole('link')
     expect(a).toHaveAttribute(
       'href',
-      '/gh/codecov/test-repo/pull/123/tree/path/to/directory/dir?flags%5B0%5D=a&flags%5B1%5D=b'
+      '/gh/codecov/test-repo/pull/123/tree/path/to/directory/dir?flags%5B0%5D=a&flags%5B1%5D=b&dropdown=coverage'
     )
   })
 })

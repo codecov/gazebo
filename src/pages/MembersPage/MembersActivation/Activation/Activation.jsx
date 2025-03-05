@@ -1,10 +1,10 @@
 import { useParams } from 'react-router-dom'
 
-import { TrialStatuses, useAccountDetails, usePlanData } from 'services/account'
-import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import A from 'ui/A/A'
 
-import ChangePlanLink from './ChangePlanLink'
+import ChangePlanLink from './ChangePlanLink/ChangePlanLink'
 
 function Activation() {
   const { owner, provider } = useParams()
@@ -16,10 +16,10 @@ function Activation() {
   })
 
   const activatedUserCount = accountDetails?.activatedUserCount || 0
-  const planQuantity = accountDetails?.plan?.quantity || 0
+  const planQuantity = planData?.plan?.planUserCount || 0
 
   if (
-    isTrialPlan(planData?.plan?.value) &&
+    planData?.plan?.isTrialPlan &&
     planData?.plan?.trialStatus === TrialStatuses.ONGOING
   ) {
     return (
@@ -42,7 +42,7 @@ function Activation() {
   }
 
   if (
-    isFreePlan(planData?.plan?.value) &&
+    planData?.plan?.isFreePlan &&
     planData?.plan?.trialStatus === TrialStatuses.EXPIRED
   ) {
     return (
@@ -56,7 +56,7 @@ function Activation() {
             available seats{' '}
           </p>
           <p className="text-xs">
-            Your org trialed Pro Team plan{' '}
+            Your org trialed Pro plan{' '}
             <span className="font-semibold">
               <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade</A>
             </span>
@@ -74,7 +74,12 @@ function Activation() {
         activated members of{' '}
         <span className="text-lg font-semibold">{planQuantity}</span> available
         seats{' '}
-        {accountDetails && <ChangePlanLink accountDetails={accountDetails} />}
+        {accountDetails && (
+          <ChangePlanLink
+            accountDetails={accountDetails}
+            plan={planData?.plan}
+          />
+        )}
       </p>
       {/* TODO: new feature https://www.figma.com/file/iNTJAiBYGem3A4LmI4gvKX/Plan-and-members?node-id=103%3A1696 */}
     </div>

@@ -1,12 +1,15 @@
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails, useAvailablePlans } from 'services/account'
+import {
+  IndividualPlan,
+  useAvailablePlans,
+} from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
 import {
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
-  Plan,
 } from 'shared/utils/billing'
 import { UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE } from 'shared/utils/upgradeForm'
 
@@ -21,7 +24,7 @@ interface Errors {
 interface ErrorBannerProps {
   errors: Errors
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (plan?: Plan) => void
+  setSelectedPlan: (plan?: IndividualPlan) => void
 }
 
 export default function ErrorBanner({
@@ -31,12 +34,13 @@ export default function ErrorBanner({
 }: ErrorBannerProps) {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: planData } = usePlanData({ provider, owner })
   const { proPlanYear } = findProPlans({ plans })
   const { sentryPlanYear } = findSentryPlans({ plans })
-  const plan =
-    accountDetails?.rootOrganization?.plan?.value ?? accountDetails?.plan?.value
-  const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
+  const isSentryUpgrade = canApplySentryUpgrade({
+    isEnterprisePlan: planData?.plan?.isEnterprisePlan,
+    plans,
+  })
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
 
   if (errors?.seats?.message === UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE) {
@@ -50,7 +54,7 @@ export default function ErrorBanner({
           className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
           onClick={() => {
             setSelectedPlan(yearlyProPlan)
-            setFormValue('newPlan', yearlyProPlan?.value, {
+            setFormValue('newPlan', yearlyProPlan, {
               shouldValidate: true,
             })
           }}

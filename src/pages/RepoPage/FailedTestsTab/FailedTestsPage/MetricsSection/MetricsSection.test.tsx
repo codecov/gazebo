@@ -19,6 +19,9 @@ const mockAggResponse = (
   owner: {
     plan: {
       value: planValue,
+      isFreePlan: planValue === Plans.USERS_DEVELOPER,
+      isTeamPlan:
+        planValue === Plans.USERS_TEAMM || planValue === Plans.USERS_TEAMY,
     },
     repository: {
       __typename: 'Repository',
@@ -110,12 +113,12 @@ describe('MetricsSection', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetTestResultsAggregates', (info) => {
+      graphql.query('GetTestResultsAggregates', () => {
         return HttpResponse.json({
           data: mockAggResponse(planValue, isPrivate),
         })
       }),
-      graphql.query('GetFlakeAggregates', (info) => {
+      graphql.query('GetFlakeAggregates', () => {
         return HttpResponse.json({ data: mockFlakeAggResponse })
       })
     )
@@ -478,7 +481,7 @@ describe('MetricsSection', () => {
   describe('when on free plan', () => {
     describe('when repo is private', () => {
       it('does not render total flaky tests card', async () => {
-        setup(Plans.USERS_BASIC, true)
+        setup(Plans.USERS_DEVELOPER, true)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
@@ -490,7 +493,7 @@ describe('MetricsSection', () => {
       })
 
       it('does not render avg flaky tests card', async () => {
-        setup(Plans.USERS_BASIC, true)
+        setup(Plans.USERS_DEVELOPER, true)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
@@ -504,7 +507,7 @@ describe('MetricsSection', () => {
 
     describe('when repo is public', () => {
       it('renders total flaky tests card', async () => {
-        setup(Plans.USERS_BASIC, false)
+        setup(Plans.USERS_DEVELOPER, false)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
@@ -516,7 +519,7 @@ describe('MetricsSection', () => {
       })
 
       it('renders avg flaky tests card', async () => {
-        setup(Plans.USERS_BASIC, false)
+        setup(Plans.USERS_DEVELOPER, false)
         render(<MetricsSection />, {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })

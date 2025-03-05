@@ -1,39 +1,38 @@
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
-import {
-  CollectionMethods,
-  isEnterprisePlan,
-  isFreePlan,
-  isTrialPlan,
-} from 'shared/utils/billing'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { usePlanData } from 'services/account/usePlanData'
+import { Provider } from 'shared/api/helpers'
+import { CollectionMethods } from 'shared/utils/billing'
 
 import EnterprisePlanCard from './EnterprisePlanCard'
 import FreePlanCard from './FreePlanCard'
 import PaidPlanCard from './PaidPlanCard'
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 
 function CurrentPlanCard() {
   const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  const { data: planData } = usePlanData({ provider, owner })
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   const collectionMethod = accountDetails?.subscriptionDetail?.collectionMethod
 
-  if (isFreePlan(plan?.value) || isTrialPlan(plan?.value)) {
-    return <FreePlanCard plan={plan} scheduledPhase={scheduledPhase} />
+  if (planData?.plan?.isFreePlan || planData?.plan?.isTrialPlan) {
+    return (
+      <FreePlanCard plan={planData?.plan} scheduledPhase={scheduledPhase} />
+    )
   }
 
   if (
-    isEnterprisePlan(plan?.value) ||
+    planData?.plan?.isEnterprisePlan ||
     collectionMethod === CollectionMethods.INVOICED_CUSTOMER_METHOD ||
     accountDetails?.usesInvoice
   ) {
-    return <EnterprisePlanCard plan={plan} />
+    return <EnterprisePlanCard plan={planData?.plan} />
   }
 
   return <PaidPlanCard />

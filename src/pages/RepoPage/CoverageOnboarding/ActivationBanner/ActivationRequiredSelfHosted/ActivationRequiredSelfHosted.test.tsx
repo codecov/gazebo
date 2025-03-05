@@ -1,21 +1,35 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ActivationRequiredSelfHosted from './ActivationRequiredSelfHosted'
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov/gazebo/new']}>
+        <Route path="/:provider/:owner/:repo/new">
+          <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
+)
 
 const server = setupServer()
-
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
   console.error = () => {}
@@ -23,6 +37,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
   vi.clearAllMocks()
 })
@@ -31,18 +46,10 @@ afterAll(() => {
   server.close()
 })
 
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/gazebo/new']}>
-      <Route path="/:provider/:owner/:repo/new">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
-
 describe('ActivationRequiredSelfHosted', () => {
   function setup(isAdmin: boolean, seatsUsed: number, seatsLimit: number) {
     server.use(
-      http.get('/internal/users/current', (info) =>
+      http.get('/internal/users/current', () =>
         HttpResponse.json({
           isAdmin,
           email: 'user@example.com',
@@ -52,7 +59,7 @@ describe('ActivationRequiredSelfHosted', () => {
           activated: true,
         })
       ),
-      graphql.query('Seats', (info) => {
+      graphql.query('Seats', () => {
         return HttpResponse.json({
           data: {
             config: {

@@ -1,14 +1,10 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { Suspense } from 'react'
 import { Switch, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
-import {
-  EVENT_METRICS,
-  useStoreCodecovEventMetric,
-} from 'services/codecovEventMetrics'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepo } from 'services/repo'
 import { Provider } from 'shared/api/helpers'
 import { useRedirect } from 'shared/useRedirect'
@@ -21,8 +17,7 @@ import Spinner from 'ui/Spinner'
 import ActivationBanner from './ActivationBanner'
 import CircleCI from './CircleCI'
 import GitHubActions from './GitHubActions'
-
-const OtherCI = lazy(() => import('./OtherCI'))
+import OtherCI from './OtherCI'
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -40,7 +35,7 @@ type CIUrls = Record<keyof typeof CI_PROVIDERS, string>
 
 const getInitialProvider = (provider: Provider, path: string, urls: CIUrls) => {
   const defaultProvider =
-    providerToName(provider) !== 'Github'
+    providerToName(provider) !== 'GitHub'
       ? CI_PROVIDERS.OtherCI
       : CI_PROVIDERS.GitHubActions
   if (path === urls.CircleCI) {
@@ -134,15 +129,6 @@ function NewRepoTab() {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
   const { hardRedirect } = useRedirect({ href: `/${provider}` })
-  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
-
-  useEffect(() => {
-    storeEventMetric({
-      owner,
-      event: EVENT_METRICS.VISITED_PAGE,
-      jsonPayload: { page: 'Coverage Onboarding' },
-    })
-  }, [storeEventMetric, owner])
 
   // if no upload token redirect
   // also have a component render incase redirect isn't fast enough

@@ -55,7 +55,6 @@ const mockData = {
           components: [],
           coverageFile: {
             hashedPath: 'afsd',
-            isCriticalFile: true,
             content:
               'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
             coverage: [
@@ -103,7 +102,7 @@ describe('usePrefetchPullFileEntry', () => {
     nullOwner = false,
   }) {
     server.use(
-      graphql.query('CoverageForFile', (info) => {
+      graphql.query('CoverageForFile', () => {
         if (invalidSchema) {
           return HttpResponse.json({})
         } else if (repositoryNotFound) {
@@ -169,7 +168,6 @@ describe('usePrefetchPullFileEntry', () => {
       },
       flagNames: ['a', 'b'],
       componentNames: [],
-      isCriticalFile: true,
       totals: 100,
     })
   })
@@ -197,8 +195,8 @@ describe('usePrefetchPullFileEntry', () => {
     await waitFor(() =>
       expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
-          status: 404,
-          dev: 'usePrefetchPullFileEntry - 404 schema parsing failed',
+          dev: 'usePrefetchPullFileEntry - Parsing Error',
+          status: 400,
         })
       )
     )
@@ -227,8 +225,8 @@ describe('usePrefetchPullFileEntry', () => {
     await waitFor(() =>
       expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
+          dev: 'usePrefetchPullFileEntry - Not Found Error',
           status: 404,
-          dev: 'usePrefetchPullFileEntry - 404 NotFoundError',
         })
       )
     )
@@ -257,8 +255,8 @@ describe('usePrefetchPullFileEntry', () => {
     await waitFor(() =>
       expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
+          dev: 'usePrefetchPullFileEntry - Owner Not Activated',
           status: 403,
-          dev: 'usePrefetchPullFileEntry - 403 OwnerNotActivatedError',
         })
       )
     )
@@ -285,12 +283,7 @@ describe('usePrefetchPullFileEntry', () => {
       ?.at(0) as Array<string>
 
     await waitFor(() =>
-      expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
-        expect.objectContaining({
-          status: 404,
-          dev: 'usePrefetchCommitFileEntry - 404 failed to find coverage file',
-        })
-      )
+      expect(queryClient?.getQueryState(queryKey)?.error).toBeNull()
     )
   })
 })

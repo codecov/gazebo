@@ -3,7 +3,7 @@ import flatMap from 'lodash/flatMap'
 import { Fragment, useState } from 'react'
 
 import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
-import { useCommitErrors } from 'services/commitErrors'
+import { useCommitErrors } from 'services/commitErrors/useCommitErrors'
 import { cn } from 'shared/utils/cn'
 import { NONE } from 'shared/utils/extractUploads'
 import A from 'ui/A'
@@ -189,7 +189,7 @@ function UploadsCard() {
         <Card.Header className="p-4">
           <div className="flex justify-between">
             <Card.Title size="base">Coverage reports history</Card.Title>
-            {/* @ts-expect-error */}
+            {/* @ts-expect-error - A hasn't been typed yet */}
             <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
               {invalidYamlError ? (
                 <div className="flex items-center border-b border-dashed border-ds-primary-red font-light text-ds-primary-red">

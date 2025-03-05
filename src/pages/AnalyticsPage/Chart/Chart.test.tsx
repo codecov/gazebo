@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, within } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -44,13 +48,18 @@ const mockDataPoints = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
-      <Route path="/:provider/:owner/:repo">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
+        <Route path="/:provider/:owner/:repo">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
@@ -68,7 +77,7 @@ beforeEach(() => {
    * This mock also allow us to use {@link notifyResizeObserverChange} to fire changes
    * from inside our test.
    */
-  resizeObserverMock = vi.fn().mockImplementation((callback) => {
+  resizeObserverMock = vi.fn().mockImplementation((_callback) => {
     return {
       observe: vi.fn(),
       unobserve: vi.fn(),
@@ -76,7 +85,7 @@ beforeEach(() => {
     }
   })
 
-  // @ts-ignore
+  // @ts-expect-error - deleting so we can override with the mock
   delete window.ResizeObserver
 
   window.ResizeObserver = resizeObserverMock
@@ -84,6 +93,7 @@ beforeEach(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -104,7 +114,7 @@ describe('Analytics coverage chart', () => {
     hasError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetReposCoverageMeasurements', (info) => {
+      graphql.query('GetReposCoverageMeasurements', () => {
         if (hasNoData) {
           return HttpResponse.json({ data: { owner: { measurements: [] } } })
         } else if (hasSingleData) {
@@ -115,8 +125,8 @@ describe('Analytics coverage chart', () => {
 
         return HttpResponse.json({ data: mockDataPoints })
       }),
-      graphql.query('OwnerTier', (info) =>
-        HttpResponse.json({ data: { owner: { plan: { tierName: 'pro' } } } })
+      graphql.query('IsTeamPlan', () =>
+        HttpResponse.json({ data: { owner: { plan: { isTeamPlan: false } } } })
       )
     )
   }

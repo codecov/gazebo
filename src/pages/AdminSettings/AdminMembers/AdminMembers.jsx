@@ -1,14 +1,15 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 
 import Spinner from 'ui/Spinner'
+
+import ActivationInfo from './ActivationInfo'
+import MemberList from './MemberList'
+
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
     <Spinner />
   </div>
 )
-
-const ActivationInfo = lazy(() => import('./ActivationInfo'))
-const MemberList = lazy(() => import('./MemberList'))
 
 function AdminMembers() {
   return (

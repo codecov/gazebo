@@ -74,7 +74,6 @@ const commit = (state = 'complete') => ({
       results: [
         {
           headName: 'flag1/mafs.js',
-          isCriticalFile: false,
           patchCoverage: { coverage: 75 },
           baseCoverage: { coverage: 100 },
           headCoverage: { coverage: 90 },
@@ -115,7 +114,7 @@ afterAll(() => {
 describe('CommitCoverageSummary', () => {
   function setup(hasErrored = false) {
     server.use(
-      graphql.query('Commit', (info) => {
+      graphql.query('Commit', () => {
         if (hasErrored) {
           return HttpResponse.json({
             data: {

@@ -1,9 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import { Provider } from 'shared/api/helpers'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import Button from 'ui/Button'
@@ -12,7 +14,8 @@ import Icon from 'ui/Icon'
 import TextInput from 'ui/TextInput'
 import Toggle from 'ui/Toggle'
 
-import { useOktaConfig, useUpdateOktaConfig } from '../hooks'
+import { useUpdateOktaConfig } from '../hooks/useUpdateOktaConfig'
+import { OktaConfigQueryOpts } from '../queries/OktaConfigQueryOpts'
 
 const FormSchema = z.object({
   clientId: z.string().min(1, 'Client ID is required'),
@@ -22,17 +25,19 @@ const FormSchema = z.object({
 
 type FormValues = z.infer<typeof FormSchema>
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 
 export function OktaConfigForm() {
   const { provider, owner } = useParams<URLParams>()
 
-  const { data } = useOktaConfig({
-    provider,
-    username: owner,
-  })
+  const { data } = useSuspenseQueryV5(
+    OktaConfigQueryOpts({
+      provider,
+      username: owner,
+    })
+  )
   const oktaConfig = data?.owner?.account?.oktaConfig
 
   const { register, handleSubmit, formState, reset } = useForm<FormValues>({
@@ -44,9 +49,8 @@ export function OktaConfigForm() {
       redirectUri: oktaConfig?.url,
     },
   })
-  const { isDirty, isValid } = formState
-  const { mutate } = useUpdateOktaConfig({ provider, owner })
 
+  const { mutate } = useUpdateOktaConfig({ provider, owner })
   const [oktaEnabled, setOktaEnabled] = useState(oktaConfig?.enabled)
   const [oktaLoginEnforce, setOktaLoginEnforce] = useState(oktaConfig?.enforced)
   const [showPassword, setShowPassword] = useState(false)
@@ -158,7 +162,9 @@ export function OktaConfigForm() {
             <div>
               <Button
                 type="submit"
-                disabled={!isValid || !isDirty || isSubmitting}
+                disabled={
+                  !formState.isValid || !formState.isDirty || isSubmitting
+                }
                 to={undefined}
                 hook="save okta form changes"
               >

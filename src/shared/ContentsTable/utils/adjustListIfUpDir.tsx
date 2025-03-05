@@ -42,7 +42,7 @@ export function adjustListIfUpDir({
     const items = [
       {
         name: (
-          /* @ts-expect-error */
+          /* @ts-expect-error - A hasn't been typed yet */
           <A to={upDir} variant="upDirectory">
             <div className="pl-1 ">..</div>
           </A>

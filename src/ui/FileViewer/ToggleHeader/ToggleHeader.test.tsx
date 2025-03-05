@@ -6,19 +6,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import ToggleHeader from './ToggleHeader'
 
-const mocks = vi.hoisted(() => ({
-  useIntersection: vi.fn(),
-}))
-
-vi.mock('react-use', async () => {
-  const original = await vi.importActual('react-use')
-
-  return {
-    ...original,
-    useIntersection: mocks.useIntersection,
-  }
-})
-
 const mockFlagResponse = {
   owner: {
     repository: {
@@ -82,10 +69,10 @@ afterAll(() => {
 describe('ToggleHeader', () => {
   function setup() {
     server.use(
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillResponse })
       }),
-      graphql.query('FlagsSelect', (info) => {
+      graphql.query('FlagsSelect', () => {
         return HttpResponse.json({ data: mockFlagResponse })
       })
     )

@@ -18,41 +18,19 @@ const mockPullBundleListData = {
               name: 'bundle.js',
               changeType: 'added',
               bundleChange: {
-                loadTime: {
-                  threeG: 3,
-                },
-                size: {
-                  uncompress: 1,
-                },
+                loadTime: { threeG: 3 },
+                size: { uncompress: 1 },
               },
-              bundleData: {
-                loadTime: {
-                  threeG: 4,
-                },
-                size: {
-                  uncompress: 2,
-                },
-              },
+              bundleData: { loadTime: { threeG: 4 }, size: { uncompress: 2 } },
             },
             {
               name: 'bundle.css',
               changeType: 'removed',
               bundleChange: {
-                loadTime: {
-                  threeG: 7,
-                },
-                size: {
-                  uncompress: 5,
-                },
+                loadTime: { threeG: 7 },
+                size: { uncompress: 5 },
               },
-              bundleData: {
-                loadTime: {
-                  threeG: 8,
-                },
-                size: {
-                  uncompress: 6,
-                },
-              },
+              bundleData: { loadTime: { threeG: 8 }, size: { uncompress: 6 } },
             },
           ],
         },
@@ -126,7 +104,7 @@ describe('usePullBundleComparisonList', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('PullBundleComparisonList', (info) => {
+      graphql.query('PullBundleComparisonList', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -165,40 +143,24 @@ describe('usePullBundleComparisonList', () => {
                 name: 'bundle.js',
                 changeType: 'added',
                 bundleChange: {
-                  loadTime: {
-                    threeG: 3,
-                  },
-                  size: {
-                    uncompress: 1,
-                  },
+                  loadTime: { threeG: 3 },
+                  size: { uncompress: 1 },
                 },
                 bundleData: {
-                  loadTime: {
-                    threeG: 4,
-                  },
-                  size: {
-                    uncompress: 2,
-                  },
+                  loadTime: { threeG: 4 },
+                  size: { uncompress: 2 },
                 },
               },
               {
                 name: 'bundle.css',
                 changeType: 'removed',
                 bundleChange: {
-                  loadTime: {
-                    threeG: 7,
-                  },
-                  size: {
-                    uncompress: 5,
-                  },
+                  loadTime: { threeG: 7 },
+                  size: { uncompress: 5 },
                 },
                 bundleData: {
-                  loadTime: {
-                    threeG: 8,
-                  },
-                  size: {
-                    uncompress: 6,
-                  },
+                  loadTime: { threeG: 8 },
+                  size: { uncompress: 6 },
                 },
               },
             ],
@@ -242,7 +204,7 @@ describe('usePullBundleComparisonList', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -259,8 +221,8 @@ describe('usePullBundleComparisonList', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: null,
+            dev: 'usePullBundleComparisonList - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -294,8 +256,8 @@ describe('usePullBundleComparisonList', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullBundleComparisonList - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )
@@ -329,6 +291,7 @@ describe('usePullBundleComparisonList', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullBundleComparisonList - Owner Not Activated',
             status: 403,
           })
         )

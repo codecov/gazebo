@@ -1,24 +1,15 @@
 import { useParams } from 'react-router-dom'
 
 import githubLogo from 'assets/githublogo.png'
-import {
-  planPropType,
-  TrialStatuses,
-  useAccountDetails,
-  useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import { useStartTrial } from 'services/trial'
-import {
-  canApplySentryUpgrade,
-  isFreePlan,
-  isSentryPlan,
-  isTrialPlan,
-} from 'shared/utils/billing'
+import { canApplySentryUpgrade } from 'shared/utils/billing'
 import A from 'ui/A/A'
 import Button from 'ui/Button'
 
-function PlansActionsBilling({ plan }) {
+function PlansActionsBilling() {
   const { provider, owner } = useParams()
   const { data: plans } = useAvailablePlans({ provider, owner })
 
@@ -31,7 +22,7 @@ function PlansActionsBilling({ plan }) {
 
   const canStartTrial =
     planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
-    isFreePlan(planData?.plan?.value) &&
+    planData?.plan?.isFreePlan &&
     planData?.hasPrivateRepos
 
   if (canStartTrial) {
@@ -53,11 +44,16 @@ function PlansActionsBilling({ plan }) {
     )
   }
 
-  if (canApplySentryUpgrade({ plan, plans })) {
+  if (
+    canApplySentryUpgrade({
+      isEnterprisePlan: planData?.plan?.isEnterprisePlan,
+      plans,
+    })
+  ) {
     return (
       <div className="flex self-start">
         <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-          {isSentryPlan(plan?.value) ? 'Manage plan' : 'Upgrade'}
+          {planData?.plan?.isSentryPlan ? 'Manage plan' : 'Upgrade'}
         </Button>
       </div>
     )
@@ -66,7 +62,7 @@ function PlansActionsBilling({ plan }) {
   return (
     <div className="flex self-start">
       <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-        {isFreePlan(plan?.value) || isTrialPlan(plan?.value)
+        {planData?.plan?.isFreePlan || planData?.plan?.isTrialPlan
           ? 'Upgrade'
           : 'Manage plan'}
       </Button>
@@ -74,14 +70,9 @@ function PlansActionsBilling({ plan }) {
   )
 }
 
-PlansActionsBilling.propTypes = {
-  plan: planPropType,
-}
-
 function ActionsBilling() {
   const { owner, provider } = useParams()
   const { data: accountDetails } = useAccountDetails({ owner, provider })
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const username = accountDetails?.rootOrganization?.username
 
   if (accountDetails?.planProvider === 'github') {
@@ -89,7 +80,7 @@ function ActionsBilling() {
       <div className="flex flex-col gap-4 border-ds-gray-secondary">
         <hr />
         <div className="flex gap-4">
-          <img className="size-8" alt="Github" src={githubLogo} />
+          <img className="size-8" alt="GitHub" src={githubLogo} />
           <p className="text-sm">
             Your account is configured via GitHub Marketplace
           </p>
@@ -125,7 +116,7 @@ function ActionsBilling() {
     )
   }
 
-  return <PlansActionsBilling plan={plan} />
+  return <PlansActionsBilling />
 }
 
 export default ActionsBilling

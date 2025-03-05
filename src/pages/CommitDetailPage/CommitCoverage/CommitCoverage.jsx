@@ -1,14 +1,14 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import isEmpty from 'lodash/isEmpty'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import { useCommit } from 'services/commit'
-import { useCommitErrors } from 'services/commitErrors'
+import { useCommit } from 'services/commit/useCommit'
+import { useCommitErrors } from 'services/commitErrors/useCommitErrors'
 import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { useOwner } from 'services/user'
 import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
@@ -17,24 +17,19 @@ import { extractUploads } from 'shared/utils/extractUploads'
 import Spinner from 'ui/Spinner'
 
 import BotErrorBanner from './BotErrorBanner'
+import CommitCoverageSummary from './CommitCoverageSummary'
 import CommitCoverageSummarySkeleton from './CommitCoverageSummary/CommitCoverageSummarySkeleton'
 import CommitCoverageTabs from './CommitCoverageTabs'
 import ErroredUploads from './ErroredUploads'
 import FirstPullBanner from './FirstPullBanner'
+import CommitDetailFileExplorer from './routes/CommitDetailFileExplorer'
+import CommitDetailFileViewer from './routes/CommitDetailFileViewer'
+import FilesChangedTab from './routes/FilesChangedTab'
+import IndirectChangesTab from './routes/IndirectChangesTab'
+import UploadsCard from './UploadsCard'
 import YamlErrorBanner from './YamlErrorBanner'
 
 import { CommitPageDataQueryOpts } from '../queries/CommitPageDataQueryOpts'
-
-const CommitDetailFileExplorer = lazy(
-  () => import('./routes/CommitDetailFileExplorer')
-)
-const CommitDetailFileViewer = lazy(
-  () => import('./routes/CommitDetailFileViewer')
-)
-const FilesChangedTab = lazy(() => import('./routes/FilesChangedTab'))
-const IndirectChangesTab = lazy(() => import('./routes/IndirectChangesTab'))
-const UploadsCard = lazy(() => import('./UploadsCard'))
-const CommitCoverageSummary = lazy(() => import('./CommitCoverageSummary'))
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">
@@ -44,7 +39,7 @@ const Loader = () => (
 
 function CommitRoutes() {
   const { provider, owner, repo, commit: commitSha } = useParams()
-  const { data: tierName } = useTier({ owner, provider })
+  const { data: isTeamPlan } = useIsTeamPlan({ owner, provider })
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: commitPageData } = useSuspenseQueryV5(
     CommitPageDataQueryOpts({
@@ -74,7 +69,7 @@ function CommitRoutes() {
   // is still useful info to the user
   const isMissingBaseCommit = compareTypeName === 'MissingBaseCommit'
 
-  const showIndirectChanges = !(overview.private && tierName === TierNames.TEAM)
+  const showIndirectChanges = !(overview.private && isTeamPlan)
 
   return (
     <Suspense fallback={<Loader />}>
@@ -174,7 +169,7 @@ function CommitCoverageRoutes() {
 
 function CommitCoverage() {
   const { provider, owner, repo, commit: commitSha } = useParams()
-  const { data: tierName } = useTier({ owner, provider })
+  const { data: isTeamPlan } = useIsTeamPlan({ owner, provider })
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
   const { data: commitPageData } = useSuspenseQueryV5(
@@ -186,7 +181,7 @@ function CommitCoverage() {
     })
   )
 
-  const showCommitSummary = !(overview.private && tierName === TierNames.TEAM)
+  const showCommitSummary = !(overview.private && isTeamPlan)
   const showFirstPullBanner =
     commitPageData?.commit?.compareWithParent?.__typename === 'FirstPullRequest'
   return (

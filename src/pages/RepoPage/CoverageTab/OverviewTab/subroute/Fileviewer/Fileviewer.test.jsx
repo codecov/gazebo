@@ -4,8 +4,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import FileView from './Fileviewer'
 
 window.requestAnimationFrame = (cb) => {
@@ -19,7 +17,7 @@ window.scrollTo = scrollToMock
 window.scrollY = 100
 
 class ResizeObserverMock {
-  callback = (x) => null
+  callback = (_x) => null
 
   constructor(callback) {
     this.callback = callback
@@ -109,7 +107,6 @@ const mockCoverage = {
       components: [],
       coverageFile: {
         hashedPath: 'hashed-path',
-        isCriticalFile: false,
         content:
           'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
         coverage: [
@@ -192,47 +189,47 @@ afterAll(() => {
 
 describe('FileView', () => {
   function setup(
-    { tierName = TierNames.PRO, isPrivate = false } = {
-      tierName: TierNames.PRO,
+    { isTeamPlan = false, isPrivate = false } = {
+      isTeamPlan: false,
       isPrivate: false,
     }
   ) {
     server.use(
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: { owner: mockOwner } })
       }),
-      graphql.query('CoverageForFile', (info) => {
+      graphql.query('CoverageForFile', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockCoverage } },
         })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillResponse })
       }),
-      graphql.query('FlagsSelect', (info) => {
+      graphql.query('FlagsSelect', () => {
         return HttpResponse.json({ data: mockFlagResponse })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: tierName } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
       }),
-      graphql.query('GetBranchComponents', (info) => {
+      graphql.query('GetBranchComponents', () => {
         return HttpResponse.json({ data: mockComponents })
       }),
-      graphql.query('GetBranches', (info) => {
+      graphql.query('GetBranches', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('GetRepoCoverage', (info) => {
+      graphql.query('GetRepoCoverage', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({ data: {} })
       })
     )
@@ -310,7 +307,7 @@ describe('FileView', () => {
       describe('on a team plan', () => {
         describe('repo is public', () => {
           it('renders the flag multi select', async () => {
-            setup({ tierName: TierNames.TEAM, isPrivate: false })
+            setup({ isTeamPlan: true, isPrivate: false })
 
             render(<FileView />, { wrapper: wrapper() })
 
@@ -321,7 +318,7 @@ describe('FileView', () => {
 
         describe('repo is private', () => {
           it('does not render the flag multi select', async () => {
-            setup({ tierName: TierNames.TEAM, isPrivate: true })
+            setup({ isTeamPlan: true, isPrivate: true })
             render(<FileView />, { wrapper: wrapper() })
 
             await waitFor(() => queryClient.isFetching)

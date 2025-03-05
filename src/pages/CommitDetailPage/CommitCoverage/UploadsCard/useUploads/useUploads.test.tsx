@@ -12,7 +12,6 @@ import {
   commitOnePending,
   compareTotalsEmpty,
 } from 'services/commit/mocks'
-import { TierNames, TTierNames } from 'services/tier'
 
 import { useUploads } from './useUploads'
 
@@ -58,18 +57,18 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('useUploads', () => {
-  function setup(query: RequestHandler, tierValue: TTierNames = TierNames.PRO) {
+  function setup(query: RequestHandler, isTeamPlan = false) {
     server.use(query, compareTotalsEmpty)
 
     server.use(
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: {
-            owner: { plan: { tierName: tierValue } },
+            owner: { plan: { isTeamPlan } },
           },
         })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       })
     )
@@ -332,7 +331,7 @@ describe('useUploads', () => {
 
   describe('user is on team plan', () => {
     beforeEach(() => {
-      setup(commitOnePending, TierNames.TEAM)
+      setup(commitOnePending, true)
     })
 
     afterEach(() => {

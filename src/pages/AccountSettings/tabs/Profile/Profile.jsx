@@ -1,16 +1,20 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import PropTypes from 'prop-types'
 import { Redirect } from 'react-router-dom'
 
-import { useSelfHostedCurrentUser } from 'services/selfHosted'
+import { SelfHostedCurrentUserQueryOpts } from 'services/selfHosted/SelfHostedCurrentUserQueryOpts'
 
 import ActivationBanner from './ActivationBanner'
 import AdminBanner from './AdminBanner'
-import DeletionCard from './DeletionCard'
 import NameEmailCard from './NameEmailCard'
+
+import DeletionCard from '../DeletionCard'
 
 function Profile({ provider, owner }) {
   const yamlTab = `/account/${provider}/${owner}/yaml/`
-  const { data: currentUser } = useSelfHostedCurrentUser()
+  const { data: currentUser } = useSuspenseQueryV5(
+    SelfHostedCurrentUserQueryOpts({ provider })
+  )
 
   const isPersonalSettings =
     currentUser?.username?.toLowerCase() === owner?.toLowerCase()
@@ -24,7 +28,7 @@ function Profile({ provider, owner }) {
       {currentUser?.isAdmin && <AdminBanner />}
       <ActivationBanner />
       <NameEmailCard currentUser={currentUser} provider={provider} />
-      <DeletionCard />
+      <DeletionCard isPersonalSettings={isPersonalSettings} />
     </div>
   )
 }

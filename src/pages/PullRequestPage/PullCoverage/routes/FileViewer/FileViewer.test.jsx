@@ -26,7 +26,7 @@ window.scrollTo = scrollToMock
 window.scrollY = 100
 
 class ResizeObserverMock {
-  callback = (x) => null
+  callback = (_x) => null
 
   constructor(callback) {
     this.callback = callback
@@ -65,7 +65,7 @@ const mockCoverage = {
       components: [],
       coverageFile: {
         hashedPath: 'hashed-path',
-        isCriticalFile: false,
+
         content:
           'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
         coverage: [
@@ -102,6 +102,7 @@ const mockPullData = {
         bundleAnalysis: {
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
+            isCached: false,
           },
         },
       },
@@ -159,24 +160,24 @@ afterAll(() => {
 describe('FileViewer', () => {
   function setup() {
     server.use(
-      graphql.query('DetailOwner', (req, res, ctx) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: { owner: mockOwner } })
       }),
-      graphql.query('CoverageForFile', (req, res, ctx) => {
+      graphql.query('CoverageForFile', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockCoverage } },
         })
       }),
-      graphql.query('PullPageData', (req, res, ctx) => {
+      graphql.query('PullPageData', () => {
         return HttpResponse.json({ data: { owner: mockPullData } })
       }),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: { owner: null } })
       })
     )

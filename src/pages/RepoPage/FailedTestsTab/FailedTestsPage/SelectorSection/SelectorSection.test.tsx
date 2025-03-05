@@ -6,6 +6,8 @@ import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
+import { ErrorCodeEnum } from 'shared/utils/commit'
+
 import SelectorSection from './SelectorSection'
 
 const mockRepoOverview = {
@@ -35,6 +37,14 @@ const mockTestSuites = {
   __typename: 'Repository',
   testAnalytics: {
     testSuites: ['java', 'script', 'ok', 'blahbloo'],
+  },
+  branch: {
+    head: {
+      latestUploadError: {
+        errorCode: ErrorCodeEnum.fileNotFoundInStorage,
+        errorMessage: 'File not found',
+      },
+    },
   },
 }
 
@@ -120,27 +130,27 @@ describe('SelectorSection', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({
           data: {
             owner: { repository: { __typename: 'Repository', ...mockBranch } },
           },
         })
       }),
-      graphql.query('GetBranches', (info) => {
+      graphql.query('GetBranches', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockBranches } },
         })
       }),
-      graphql.query('GetTestResultsFlags', (info) => {
+      graphql.query('GetTestResultsFlags', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockFlags } },
         })
       }),
-      graphql.query('GetTestResultsTestSuites', (info) => {
+      graphql.query('GetTestResultsTestSuites', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockTestSuites } },
         })

@@ -5,7 +5,7 @@ import {
   UploadErrorCodeEnumSchema,
   UploadStateEnumSchema,
   UploadTypeEnumSchema,
-} from 'services/commit'
+} from 'services/commit/useCommit'
 import {
   UploadErrorStates,
   UploadStateEnum,
@@ -22,7 +22,7 @@ export interface Upload {
   provider: string | null
   createdAt: string
   updatedAt: string
-  flags: string[] | null
+  flags?: string[] | null
   jobCode: string | null
   downloadUrl: string
   ciUrl: string | null

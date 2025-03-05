@@ -1,12 +1,12 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import qs from 'qs'
-import { lazy, Suspense, useLayoutEffect } from 'react'
+import { Suspense, useLayoutEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
 import { useCrumbs } from 'pages/RepoPage/context'
 import { useRepoOverview } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import SummaryDropdown from 'ui/SummaryDropdown'
@@ -14,10 +14,9 @@ import SummaryDropdown from 'ui/SummaryDropdown'
 import PullBundleDropdown from './Dropdowns/PullBundleDropdown'
 import PullCoverageDropdown from './Dropdowns/PullCoverageDropdown'
 import Header from './Header'
+import PullBundleAnalysis from './PullBundleAnalysis'
+import PullCoverage from './PullCoverage'
 import { PullPageDataQueryOpts } from './queries/PullPageDataQueryOpts'
-
-const PullCoverage = lazy(() => import('./PullCoverage'))
-const PullBundleAnalysis = lazy(() => import('./PullBundleAnalysis'))
 
 interface usePRPageBreadCrumbsArgs {
   owner: string
@@ -90,7 +89,7 @@ function PullRequestPage() {
   const location = useLocation()
   const { provider, owner, repo, pullId } = useParams<URLParams>()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { data: tierData } = useTier({ provider, owner })
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
   usePRPageBreadCrumbs({
     owner,
@@ -99,15 +98,13 @@ function PullRequestPage() {
     isPrivate: overview?.private ?? false,
   })
 
-  const isTeamPlan = tierData === TierNames.TEAM && overview?.private
-
   const { data, isPending } = useSuspenseQueryV5(
     PullPageDataQueryOpts({
       provider,
       owner,
       repo,
       pullId,
-      isTeamPlan,
+      isTeamPlan: (isTeamPlan && overview?.private) ?? false,
     })
   )
 
@@ -115,7 +112,7 @@ function PullRequestPage() {
     return <NotFound />
   }
 
-  let defaultDropdown: Array<'coverage' | 'bundle'> = []
+  const defaultDropdown: Array<'coverage' | 'bundle'> = []
   // default to displaying only coverage
   let displayMode: TDisplayMode = DISPLAY_MODE.COVERAGE
   if (data?.bundleAnalysisEnabled && data?.coverageEnabled) {

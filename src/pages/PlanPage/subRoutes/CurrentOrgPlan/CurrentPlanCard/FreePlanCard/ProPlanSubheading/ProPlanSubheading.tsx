@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { TrialStatuses, usePlanData } from 'services/account'
-import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import A from 'ui/A'
 
 interface Params {
@@ -22,13 +21,13 @@ function ProPlanSubheading() {
   // - trial status is not started
   // - org has private repos
   if (
-    isFreePlan(planData?.plan?.value) &&
+    planData?.plan?.isFreePlan &&
     planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
     planData?.hasPrivateRepos
   ) {
     return (
       <p className="text-ds-gray-quinary">
-        {/* @ts-expect-error */}
+        {/* @ts-expect-error - A hasn't been typed yet */}
         Includes 14-day free trial <A to={{ pageName: 'freeTrialFaqs' }}>FAQ</A>
       </p>
     )
@@ -38,12 +37,12 @@ function ProPlanSubheading() {
   // - user is on a trial plan
   // - trial status is currently ongoing
   if (
-    isTrialPlan(planData?.plan?.value) &&
+    planData?.plan?.isTrialPlan &&
     planData?.plan?.trialStatus === TrialStatuses.ONGOING
   ) {
     return (
       <p className="text-ds-gray-quinary">
-        {/* @ts-expect-error */}
+        {/* @ts-expect-error - A hasn't been typed yet */}
         Current trial <A to={{ pageName: 'freeTrialFaqs' }}>FAQ</A>
       </p>
     )
@@ -53,7 +52,7 @@ function ProPlanSubheading() {
   // - user is currently on a free plan
   // - trial status is expired
   if (
-    isFreePlan(planData?.plan?.value) &&
+    planData?.plan?.isFreePlan &&
     planData?.plan?.trialStatus === TrialStatuses.EXPIRED
   ) {
     return <p className="text-ds-gray-quinary">Your org trialed this plan</p>

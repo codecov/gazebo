@@ -195,7 +195,7 @@ describe('Summary', () => {
     })
 
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -205,7 +205,7 @@ describe('Summary', () => {
           },
         })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({
           data: {
             owner: { repository: { __typename: 'Repository', ...mockBranch } },
@@ -231,7 +231,7 @@ describe('Summary', () => {
           data: { owner: { repository: mockBranches(hasNextPage) } },
         })
       }),
-      graphql.query('GetRepoCoverage', (info) => {
+      graphql.query('GetRepoCoverage', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockRepoCoverage } },
         })
@@ -348,7 +348,7 @@ describe('Summary', () => {
     describe('there is a next page', () => {
       it('calls fetchNextPage', async () => {
         const mockSetNewPath = vi.fn()
-        const { fetchNextPage, user } = setup({
+        const { fetchNextPage } = setup({
           isIntersecting: true,
           hasNextPage: true,
           coverageRedirectData: {
@@ -360,11 +360,6 @@ describe('Summary', () => {
           },
         })
         render(<SummaryTeamPlan />, { wrapper: wrapper() })
-
-        const select = await screen.findByRole('button', {
-          name: 'select branch',
-        })
-        await user.click(select)
 
         await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
       })

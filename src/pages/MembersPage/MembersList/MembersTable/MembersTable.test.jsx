@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { http, HttpResponse } from 'msw'
+import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { accountDetailsParsedObj } from 'services/account/mocks'
+import { TrialStatuses } from 'services/account/usePlanData'
 import { Plans } from 'shared/utils/billing'
 
 import MembersTable from './MembersTable'
@@ -89,6 +89,23 @@ const queryClient = new QueryClient({
   },
 })
 
+const mockPlanData = {
+  isEnterprisePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTrialPlan: false,
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Users Developer',
+  monthlyUploadLimit: 250,
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+}
+
 const server = setupServer()
 
 beforeAll(() => server.listen())
@@ -112,26 +129,16 @@ describe('MembersTable', () => {
       </QueryClientProvider>
     )
 
-  function setup(
-    {
-      accountDetails = {},
-      mockUserRequest = mockBaseUserRequest(false),
-      usePaginatedRequest = false,
-    } = {
-      accountDetails: {},
-      mockUserRequest: mockBaseUserRequest(false),
-      usePaginatedRequest: false,
-    }
-  ) {
+  function setup({
+    mockUserRequest = mockBaseUserRequest(false),
+    usePaginatedRequest = false,
+    planName = Plans.USERS_DEVELOPER,
+    planUserCount = 0,
+    hasSeatsLeft = false,
+  }) {
     const user = userEvent.setup()
     mocks.useImage.mockReturnValue({ src: 'mocked-avatar-url' })
     server.use(
-      http.get(
-        '/internal/:provider/codecov/account-details',
-        (req, res, ctx) => {
-          return HttpResponse.json(accountDetails)
-        }
-      ),
       http.get('/internal/:provider/codecov/users', (info) => {
         requestSearchParams = new URL(info.request.url).searchParams
 
@@ -144,6 +151,28 @@ describe('MembersTable', () => {
         }
 
         return HttpResponse.json(mockUserRequest)
+      }),
+      graphql.query('GetPlanData', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              hasPrivateRepos: false,
+              plan: {
+                ...mockPlanData,
+                value: planName,
+                isFreePlan:
+                  planName === Plans.USERS_DEVELOPER ||
+                  planName === Plans.USERS_BASIC,
+                isTeamPlan:
+                  planName === Plans.USERS_TEAMM ||
+                  planName === Plans.USERS_TEAMY ||
+                  planName === Plans.USERS_DEVELOPER,
+                planUserCount,
+                hasSeatsLeft,
+              },
+            },
+          },
+        })
       })
     )
 
@@ -272,10 +301,9 @@ describe('MembersTable', () => {
           describe('there are no open seats', () => {
             beforeEach(() =>
               setup({
-                accountDetails: {
-                  activatedUserCount: 5,
-                  plan: { value: Plans.USERS_PR_INAPPY, quantity: 5 },
-                },
+                planName: Plans.USERS_PR_INAPPY,
+                hasSeatsLeft: false,
+                planUserCount: 1,
               })
             )
 
@@ -289,23 +317,14 @@ describe('MembersTable', () => {
               await waitFor(() => expect(toggle).toBeDisabled())
             })
           })
-          // })
 
           describe('user is on a free plan', () => {
             describe('there are no open seats', () => {
               beforeEach(() =>
                 setup({
-                  accountDetails: {
-                    ...accountDetailsParsedObj,
-                    activatedUserCount: 5,
-                    plan: {
-                      baseUnitPrice: 1,
-                      benefits: ['a', 'b'],
-                      marketingName: 'test',
-                      value: Plans.USERS_BASIC,
-                      quantity: 5,
-                    },
-                  },
+                  planName: Plans.USERS_DEVELOPER,
+                  hasSeatsLeft: false,
+                  planUserCount: 1,
                 })
               )
 
@@ -321,17 +340,9 @@ describe('MembersTable', () => {
           describe('there are open seats', () => {
             beforeEach(() =>
               setup({
-                accountDetails: {
-                  ...accountDetailsParsedObj,
-                  activatedUserCount: 1,
-                  plan: {
-                    baseUnitPrice: 1,
-                    benefits: ['a', 'b'],
-                    marketingName: 'test',
-                    value: Plans.USERS_FREE,
-                    quantity: 5,
-                  },
-                },
+                planName: Plans.USERS_DEVELOPER,
+                hasSeatsLeft: true,
+                planUserCount: 1,
               })
             )
 
@@ -349,7 +360,7 @@ describe('MembersTable', () => {
   describe('user interacts with toggle', () => {
     describe('user is not a student', () => {
       it('calls handleActivate', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         const handleActivate = vi.fn()
         render(<MembersTable handleActivate={handleActivate} />, {
           wrapper: wrapper(),
@@ -370,17 +381,9 @@ describe('MembersTable', () => {
       it('calls handleActivate', async () => {
         const { user } = setup({
           mockUserRequest: mockBaseUserRequest({ student: true }),
-          accountDetails: {
-            ...accountDetailsParsedObj,
-            activatedUserCount: 1,
-            plan: {
-              baseUnitPrice: 1,
-              benefits: ['a', 'b'],
-              marketingName: 'test',
-              value: Plans.USERS_BASIC,
-              quantity: 0,
-            },
-          },
+          planName: Plans.USERS_DEVELOPER,
+          planUserCount: 1,
+          hasSeatsLeft: false,
         })
         const handleActivate = vi.fn()
         render(<MembersTable handleActivate={handleActivate} />, {
@@ -404,7 +407,7 @@ describe('MembersTable', () => {
     describe('interacting with the username column', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<MembersTable />, { wrapper: wrapper() })
 
           const userName = await screen.findByText('Username')
@@ -418,7 +421,7 @@ describe('MembersTable', () => {
 
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<MembersTable />, { wrapper: wrapper() })
 
           const userName = await screen.findByText('Username')
@@ -435,7 +438,7 @@ describe('MembersTable', () => {
 
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<MembersTable />, { wrapper: wrapper() })
 
           const userName = await screen.findByText('Username')
@@ -453,7 +456,7 @@ describe('MembersTable', () => {
     describe('interacting with the email column', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<MembersTable />, { wrapper: wrapper() })
 
           const email = await screen.findByText('Email')
@@ -469,7 +472,7 @@ describe('MembersTable', () => {
 
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<MembersTable />, { wrapper: wrapper() })
 
           const email = await screen.findByText('Email')
@@ -483,7 +486,7 @@ describe('MembersTable', () => {
 
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<MembersTable />, { wrapper: wrapper() })
 
           const email = await screen.findByText('Email')
@@ -501,7 +504,7 @@ describe('MembersTable', () => {
     describe('interacting with the activation status column', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<MembersTable />, { wrapper: wrapper() })
 
           const activationStatus = await screen.findByText('Activation status')
@@ -515,7 +518,7 @@ describe('MembersTable', () => {
 
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<MembersTable />, { wrapper: wrapper() })
 
           const activationStatus = await screen.findByText('Activation status')
@@ -530,7 +533,7 @@ describe('MembersTable', () => {
 
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<MembersTable />, { wrapper: wrapper() })
 
           const activationStatus = await screen.findByText('Activation status')

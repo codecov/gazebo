@@ -2,14 +2,13 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
-import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { UnknownFlagsSchema } from 'services/impactedFiles/schemas/UnknownFlags'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
+import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
 import { query } from './constants'
@@ -20,27 +19,34 @@ const BasePathContentSchema = z.object({
   partials: z.number(),
   lines: z.number(),
   name: z.string(),
-  path: z.string().nullable(),
+  path: z.string(),
   percentCovered: z.number(),
 })
 
 const PathContentFileSchema = BasePathContentSchema.extend({
   __typename: z.literal('PathContentFile'),
-  isCriticalFile: z.boolean(),
 })
 
 const PathContentDirSchema = BasePathContentSchema.extend({
   __typename: z.literal('PathContentDir'),
 })
 
-const PathContentsResultSchema = z.discriminatedUnion('__typename', [
+export const PathContentsResultSchema = z.discriminatedUnion('__typename', [
   PathContentFileSchema,
   PathContentDirSchema,
 ])
 
-const PathContentsSchema = z.object({
-  __typename: z.literal('PathContents'),
-  results: z.array(PathContentsResultSchema),
+const PathContentEdgeSchema = z.object({
+  node: PathContentsResultSchema,
+})
+
+const PathContentConnectionSchema = z.object({
+  __typename: z.literal('PathContentConnection'),
+  edges: z.array(PathContentEdgeSchema),
+  pageInfo: z.object({
+    hasNextPage: z.boolean(),
+    endCursor: z.string().nullable(),
+  }),
 })
 
 const UnknownPathSchema = z.object({
@@ -59,7 +65,7 @@ const MissingHeadReportSchema = z.object({
 })
 
 const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
-  PathContentsSchema,
+  PathContentConnectionSchema,
   UnknownPathSchema,
   MissingCoverageSchema,
   MissingHeadReportSchema,
@@ -72,7 +78,7 @@ const RepositorySchema = z.object({
   branch: z.object({
     head: z
       .object({
-        pathContents: PathContentsUnionSchema.nullish(),
+        deprecatedPathContents: PathContentsUnionSchema.nullish(),
       })
       .nullable(),
   }),
@@ -81,6 +87,7 @@ const RepositorySchema = z.object({
 const BranchContentsSchema = z.object({
   owner: z
     .object({
+      username: z.string().nullable(),
       repository: z.discriminatedUnion('__typename', [
         RepositorySchema,
         RepoNotFoundErrorSchema,
@@ -138,60 +145,70 @@ export function usePrefetchBranchDirEntry({
             branch,
             path,
             filters,
+            first: 20,
           },
         }).then((res) => {
+          const callingFn = 'usePrefetchBranchDirEntry'
           const parsedRes = BranchContentsSchema.safeParse(res?.data)
 
           if (!parsedRes.success) {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'usePrefetchBranchDirEntry - 404 schema parsing failed',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Parsing Error',
+              errorDetails: { callingFn, error: parsedRes.error },
+            })
           }
 
           const data = parsedRes.data
 
           if (data?.owner?.repository?.__typename === 'NotFoundError') {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'usePrefetchBranchDirEntry - 404 NotFoundError',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Not Found Error',
+              errorDetails: { callingFn },
+            })
           }
 
           if (
             data?.owner?.repository?.__typename === 'OwnerNotActivatedError'
           ) {
-            return Promise.reject({
-              status: 403,
+            return rejectNetworkError({
+              errorName: 'Owner Not Activated',
+              errorDetails: { callingFn },
               data: {
                 detail: (
                   <p>
                     Activation is required to view this repo, please{' '}
-                    {/* @ts-expect-error */}
+                    {/* @ts-expect-error - A hasn't been typed yet */}
                     <A to={{ pageName: 'membersTab' }}>click here </A> to
                     activate your account.
                   </p>
                 ),
               },
-              dev: 'usePrefetchBranchDirEntry - 403 OwnerNotActivatedError',
-            } satisfies NetworkErrorObject)
+            })
           }
 
-          let results
+          let results = null
+          const pathContent =
+            data?.owner?.repository?.branch?.head?.deprecatedPathContents
+
           if (
-            data?.owner?.repository?.branch?.head?.pathContents?.__typename ===
-            'PathContents'
+            pathContent &&
+            pathContent?.__typename === 'PathContentConnection'
           ) {
-            results =
-              data?.owner?.repository?.branch?.head?.pathContents?.results
+            results = mapEdges({
+              edges: pathContent?.edges,
+            })
+
+            return {
+              results,
+              pathContentsType: pathContent.__typename,
+              indicationRange:
+                data?.owner?.repository?.repositoryConfig?.indicationRange,
+            }
           }
 
           return {
-            __typename:
-              data?.owner?.repository?.branch?.head?.pathContents?.__typename,
-            results: results ?? null,
+            results,
+            pathContentsType: pathContent?.__typename,
             indicationRange:
               data?.owner?.repository?.repositoryConfig?.indicationRange,
           }

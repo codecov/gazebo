@@ -2,12 +2,12 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { usePrefetchSingleFileComp } from 'services/pull'
+import { usePrefetchSingleFileComp } from 'services/pull/usePrefetchSingleFileComp'
 import Icon from 'ui/Icon'
 
 export default function NameColumn({ row, getValue }) {
   const nameColumn = row.getValue('headName')
-  const [fileNames] = nameColumn?.props?.children
+  const fileNames = nameColumn?.props?.children?.[0]
   const path = fileNames?.props?.children
   const { provider, owner, repo, pullId } = useParams()
 

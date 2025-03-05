@@ -1,20 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
+import { useAccountDetails } from 'services/account/useAccountDetails'
 import {
-  useAccountDetails,
+  IndividualPlan,
   useAvailablePlans,
-  usePlanData,
-} from 'services/account'
-import {
-  canApplySentryUpgrade,
-  getNextBillingDate,
-  isTeamPlan,
-  Plan,
-  PlanName,
-} from 'shared/utils/billing'
+} from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
+import { useUnverifiedPaymentMethods } from 'services/account/useUnverifiedPaymentMethods'
+import { Provider } from 'shared/api/helpers'
+import { canApplySentryUpgrade, getNextBillingDate } from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
   getSchema,
@@ -27,35 +24,42 @@ import { useUpgradeControls } from './hooks'
 import PlanTypeOptions from './PlanTypeOptions'
 import UpdateBlurb from './UpdateBlurb/UpdateBlurb'
 import UpdateButton from './UpdateButton'
+import UpgradeFormModal from './UpgradeFormModal'
 
 type URLParams = {
-  provider: string
+  provider: Provider
   owner: string
 }
 
 type UpgradeFormProps = {
-  selectedPlan: NonNullable<Plan>
-  setSelectedPlan: (plan?: Plan) => void
+  selectedPlan: IndividualPlan
+  setSelectedPlan: (plan?: IndividualPlan) => void
 }
 
 export type UpgradeFormFields = {
-  newPlan?: PlanName
+  newPlan?: IndividualPlan
   seats: number
 }
 
 function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const currentPlan = accountDetails?.plan
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
+  const { data: unverifiedPaymentMethods } = useUnverifiedPaymentMethods({
+    provider,
+    owner,
+  })
   const { upgradePlan } = useUpgradeControls()
+  const [showModal, setShowModal] = useState(false)
+  const [formData, setFormData] = useState<UpgradeFormFields>()
+  const [isUpgrading, setIsUpgrading] = useState(false)
   const isSentryUpgrade = canApplySentryUpgrade({
-    plan: currentPlan?.value,
+    isEnterprisePlan: planData?.plan?.isEnterprisePlan,
     plans,
   })
   const minSeats =
-    isSentryUpgrade && !isTeamPlan(selectedPlan?.value)
+    isSentryUpgrade && !selectedPlan?.isTeamPlan
       ? MIN_SENTRY_SEATS
       : MIN_NB_SEATS_PRO
 
@@ -73,6 +77,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
       plans,
       trialStatus,
       selectedPlan,
+      plan: planData?.plan,
     }),
     resolver: zodResolver(
       getSchema({
@@ -80,6 +85,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         minSeats,
         trialStatus,
         selectedPlan,
+        plan: planData?.plan,
       })
     ),
     mode: 'onChange',
@@ -88,15 +94,29 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const newPlan = watch('newPlan')
   const seats = watch('seats')
 
+  const awaitingInitialPaymentMethodVerification =
+    !!unverifiedPaymentMethods?.length &&
+    !accountDetails?.subscriptionDetail?.defaultPaymentMethod
+
   useEffect(() => {
     // This is necessary because the validity of seats depends on the value of newPlan
     trigger('seats')
   }, [newPlan, trigger])
 
+  const onSubmit = handleSubmit((data) => {
+    if (awaitingInitialPaymentMethodVerification) {
+      setFormData(data)
+      setShowModal(true)
+    } else {
+      setIsUpgrading(true)
+      upgradePlan(data)
+    }
+  })
+
   return (
     <form
       className="flex flex-col gap-6 border p-4 text-ds-gray-default md:w-2/3"
-      onSubmit={handleSubmit(upgradePlan)}
+      onSubmit={onSubmit}
     >
       <div className="flex flex-col gap-1">
         <h3 className="font-semibold">Organization</h3>
@@ -108,7 +128,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         newPlan={newPlan}
       />
       <Controller
-        selectedPlan={selectedPlan.value}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
         seats={seats}
@@ -117,13 +136,24 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         errors={errors}
       />
       <UpdateBlurb
-        currentPlan={currentPlan}
-        selectedPlan={selectedPlan}
-        newPlanName={newPlan}
+        currentPlan={planData?.plan}
+        newPlan={newPlan}
         seats={Number(seats)}
         nextBillingDate={getNextBillingDate(accountDetails)!}
       />
       <UpdateButton isValid={isValid} newPlan={newPlan} seats={seats} />
+      {showModal && formData && (
+        <UpgradeFormModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          onConfirm={() => {
+            setIsUpgrading(true)
+            upgradePlan(formData)
+          }}
+          url={unverifiedPaymentMethods?.[0]?.hostedVerificationUrl || ''}
+          isUpgrading={isUpgrading}
+        />
+      )}
     </form>
   )
 }

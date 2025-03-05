@@ -7,7 +7,7 @@ import { type Mock, vi } from 'vitest'
 
 import config from 'config'
 
-import { useImpersonate } from 'services/impersonate'
+import { useImpersonate } from 'services/impersonate/useImpersonate'
 import { User } from 'services/user'
 import { Plans } from 'shared/utils/billing'
 
@@ -32,7 +32,7 @@ vi.mock('src/layouts/Header/components/ThemeToggle', () => ({
   default: () => 'Theme Toggle',
 }))
 
-vi.mock('services/impersonate')
+vi.mock('services/impersonate/useImpersonate')
 const mockedUseImpersonate = useImpersonate as Mock
 
 const mockUser = {
@@ -53,13 +53,12 @@ const mockUser = {
       student: false,
       studentCreatedAt: null,
       studentUpdatedAt: null,
-      customerIntent: 'PERSONAL',
     },
     trackingMetadata: {
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: Plans.USERS_BASIC,
+      plan: Plans.USERS_DEVELOPER,
       staff: false,
       hasYaml: false,
       bot: null,
@@ -121,7 +120,7 @@ describe('Header', () => {
   function setup({ user = mockUser }: SetupArgs) {
     mockedUseImpersonate.mockReturnValue({ isImpersonating: false })
     server.use(
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: user })
       })
     )

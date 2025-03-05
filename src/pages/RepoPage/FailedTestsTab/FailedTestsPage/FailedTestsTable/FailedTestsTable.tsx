@@ -8,14 +8,12 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import isEmpty from 'lodash/isEmpty'
 import qs from 'qs'
 import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
-import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -34,7 +32,7 @@ import {
 import { TableHeader } from '../TableHeader'
 
 const getDecodedBranch = (branch?: string) =>
-  !!branch ? decodeURIComponent(branch) : undefined
+  branch ? decodeURIComponent(branch) : undefined
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -229,8 +227,7 @@ const FailedTestsTable = () => {
   })
 
   const isDefaultBranch = testData?.defaultBranch === branch
-  const isTeamOrFreePlan =
-    isTeamPlan(testData?.plan) || isFreePlan(testData?.plan)
+  const isTeamOrFreePlan = testData?.isTeamPlan || testData?.isFreePlan
   // Only show flake rate column when on default branch for pro / enterprise plans or public repos
   const hideFlakeRate =
     (isTeamOrFreePlan && testData?.private) || (!!branch && !isDefaultBranch)
@@ -300,7 +297,7 @@ const FailedTestsTable = () => {
     }
   }, [fetchNextPage, inView, hasNextPage])
 
-  if (testData?.isFirstPullRequest) {
+  if (testData?.isFirstPullRequest && testData.totalCount === 0) {
     return (
       <div className="flex flex-col gap-2">
         <TableHeader
@@ -318,7 +315,7 @@ const FailedTestsTable = () => {
     )
   }
 
-  if (isEmpty(testData?.testResults) && !isLoading && !!branch) {
+  if (testData.totalCount === 0 && !isLoading && !!branch) {
     return (
       <div className="flex flex-col gap-2">
         <TableHeader

@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
+import { ThemeContextProvider } from 'shared/ThemeContext/ThemeContext'
 import { Plans } from 'shared/utils/billing'
 
 import InvoiceDetail from './InvoiceDetail'
@@ -9,12 +10,19 @@ const mocks = vi.hoisted(() => ({
   useInvoice: vi.fn(),
 }))
 
-vi.mock('services/account', async () => {
-  const actual = await vi.importActual('services/account')
+vi.mock('services/account/useInvoice', async () => {
+  const actual = await vi.importActual('services/account/useInvoice')
+  return {
+    ...actual,
+    useInvoice: mocks.useInvoice,
+  }
+})
+
+vi.mock('services/account/useAccountDetails', async () => {
+  const actual = await vi.importActual('services/account/useAccountDetails')
   return {
     ...actual,
     useAccountDetails: mocks.useAccountDetails,
-    useInvoice: mocks.useInvoice,
   }
 })
 
@@ -117,7 +125,9 @@ describe('InvoiceDetail', () => {
     })
     render(
       <MemoryRouter initialEntries={[url]}>
-        <InvoiceDetail />
+        <ThemeContextProvider>
+          <InvoiceDetail />
+        </ThemeContextProvider>
       </MemoryRouter>
     )
   }

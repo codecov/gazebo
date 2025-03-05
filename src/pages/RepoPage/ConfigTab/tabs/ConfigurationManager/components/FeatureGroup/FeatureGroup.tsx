@@ -1,10 +1,14 @@
+import { useNavLinks } from 'services/navigation/useNavLinks'
+import { useStaticNavLinks } from 'services/navigation/useStaticNavLinks'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import { Card } from 'ui/Card'
 
 interface FeatureGroupProps extends React.PropsWithChildren {
   title: string
-  getStartedLink?: string // navLink key
+  getStartedLink?:
+    | keyof ReturnType<typeof useNavLinks>
+    | keyof ReturnType<typeof useStaticNavLinks>
   showGetStartedLink?: boolean
 }
 

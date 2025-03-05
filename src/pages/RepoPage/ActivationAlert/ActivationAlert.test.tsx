@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { PlanName, Plans } from 'shared/utils/billing'
+import { BillingRate, PlanName, Plans } from 'shared/utils/billing'
 
 import ActivationAlert from './ActivationAlert'
 
@@ -52,10 +52,10 @@ afterAll(() => {
 const mockTrialData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: 'ONGOING',
   trialStartDate: '2023-01-01T08:55:25',
   trialEndDate: '2023-01-10T08:55:25',
@@ -63,19 +63,23 @@ const mockTrialData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTrialPlan: false,
 }
 
 describe('ActivationAlert', () => {
   function setup(
     privateRepos = true,
-    value: PlanName = Plans.USERS_BASIC,
+    value: PlanName = Plans.USERS_DEVELOPER,
     hasSeatsLeft = true,
     isSelfHosted = false
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -84,14 +88,17 @@ describe('ActivationAlert', () => {
                 ...mockTrialData,
                 value,
                 hasSeatsLeft,
+                isFreePlan: value === Plans.USERS_DEVELOPER,
+                isTeamPlan:
+                  value === Plans.USERS_TEAMM || value === Plans.USERS_TEAMY,
               },
               pretrialPlan: {
                 baseUnitPrice: 10,
                 benefits: [],
-                billingRate: 'monthly',
-                marketingName: 'Users Basic',
+                billingRate: BillingRate.MONTHLY,
+                marketingName: 'Users Developer',
                 monthlyUploadLimit: 250,
-                value: Plans.USERS_BASIC,
+                value: Plans.USERS_DEVELOPER,
               },
             },
           },
@@ -111,7 +118,7 @@ describe('ActivationAlert', () => {
   })
 
   it('renders FreePlanSeatsTakenAlert when on free plan and no seats left', async () => {
-    setup(false, Plans.USERS_BASIC, false)
+    setup(false, Plans.USERS_DEVELOPER, false)
     render(<ActivationAlert />, { wrapper })
 
     const freePlanSeatsTakenAlert = await screen.findByText(
@@ -141,7 +148,7 @@ describe('ActivationAlert', () => {
   })
 
   it('renders ActivationRequiredSelfHosted when user is self hosted', async () => {
-    setup(false, Plans.USERS_BASIC, true, true)
+    setup(false, Plans.USERS_DEVELOPER, true, true)
     render(<ActivationAlert />, { wrapper })
 
     const activationRequiredSelfHostedBanner = await screen.findByText(

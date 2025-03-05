@@ -8,7 +8,8 @@ import isNull from 'lodash/isNull'
 import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useRevokeUserToken, UserToken } from 'services/access'
+import { UserToken } from 'services/access/SessionsQueryOpts'
+import { useRevokeUserToken } from 'services/access/useRevokeUserToken'
 import { cn } from 'shared/utils/cn'
 import Button from 'ui/Button'
 

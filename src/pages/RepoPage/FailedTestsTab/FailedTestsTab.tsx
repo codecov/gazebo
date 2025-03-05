@@ -9,7 +9,7 @@ import {
 
 import { SentryRoute } from 'sentry'
 
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepoOverview } from 'services/repo'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'

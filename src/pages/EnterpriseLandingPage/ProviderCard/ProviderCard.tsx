@@ -1,4 +1,4 @@
-import { EnterpriseLoginProviders } from 'services/config/useLoginProviders'
+import { EnterpriseLoginProviders } from 'services/config/LoginProvidersQueryOpts'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
 import {
   loginProviderImage,

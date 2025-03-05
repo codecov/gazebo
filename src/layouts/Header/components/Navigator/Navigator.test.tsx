@@ -68,13 +68,12 @@ const mockUser = {
     student: false,
     studentCreatedAt: null,
     studentUpdatedAt: null,
-    customerIntent: 'PERSONAL',
   },
   trackingMetadata: {
     service: 'github',
     ownerid: 123,
     serviceId: '123',
-    plan: Plans.USERS_BASIC,
+    plan: Plans.USERS_DEVELOPER,
     staff: false,
     hasYaml: false,
     bot: null,
@@ -174,10 +173,10 @@ interface SetupArgs {
 describe('Header Navigator', () => {
   function setup({ isMyOrg = true, orgDoesNotExist = false }: SetupArgs) {
     server.use(
-      graphql.query('MyContexts', (info) => {
+      graphql.query('MyContexts', () => {
         return HttpResponse.json({ data: mockMyContexts })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         if (orgDoesNotExist) {
           return HttpResponse.json({ data: { owner: null } })
         }
@@ -188,7 +187,7 @@ describe('Header Navigator', () => {
 
         return HttpResponse.json({ data: mockDetailOwner })
       }),
-      graphql.query('OwnerPageData', (info) => {
+      graphql.query('OwnerPageData', () => {
         if (isMyOrg) {
           return HttpResponse.json({ data: mockOwnerPageData })
         }

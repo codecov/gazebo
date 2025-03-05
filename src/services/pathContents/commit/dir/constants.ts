@@ -1,16 +1,14 @@
 import { z } from 'zod'
 
-import { MissingHeadReportSchema } from 'services/comparison'
-import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
+import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
+import { UnknownFlagsSchema } from 'services/impactedFiles/schemas/UnknownFlags'
 import {
   MissingCoverageSchema,
-  PathContentsSchema,
+  PathContentsResultSchema,
   UnknownPathSchema,
 } from 'services/pathContents/branch/dir'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 
 const RepositoryConfigSchema = z.object({
   indicationRange: z
@@ -19,6 +17,11 @@ const RepositoryConfigSchema = z.object({
       lowerRange: z.number(),
     })
     .nullable(),
+})
+
+export const PathContentsSchema = z.object({
+  __typename: z.literal('PathContents'),
+  results: z.array(PathContentsResultSchema),
 })
 
 const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
@@ -80,9 +83,6 @@ export const query = `
                   name
                   path
                   percentCovered
-                  ... on PathContentFile {
-                    isCriticalFile
-                  }
                 }
                 __typename
               }

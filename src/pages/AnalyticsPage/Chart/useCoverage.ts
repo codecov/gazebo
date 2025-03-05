@@ -1,8 +1,11 @@
-import { useMemo } from 'react'
+import {
+  keepPreviousData,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
-import { useReposCoverageMeasurements } from 'services/charts/useReposCoverageMeasurements'
-import { TierNames, useTier } from 'services/tier'
+import { ReposCoverageMeasurementsQueryOpts } from 'services/charts/ReposCoverageMeasurementsQueryOpts'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { analyticsQuery } from 'shared/utils/timeseriesCharts'
 
 interface URLParams {
@@ -14,9 +17,8 @@ interface UseCoverageArgs {
   endDate: Date | null
   startDate: Date | null
   repositories: string[]
-  options?: {
-    suspense?: boolean
-    keepPreviousData?: boolean
+  opts?: {
+    keepPrevious?: boolean
   }
 }
 
@@ -24,56 +26,48 @@ export const useCoverage = ({
   startDate,
   endDate,
   repositories,
-  options = {},
+  opts,
 }: UseCoverageArgs) => {
   const { provider, owner } = useParams<URLParams>()
 
-  const { data: tierName } = useTier({ provider, owner })
-  const shouldDisplayPublicReposOnly =
-    tierName === TierNames.TEAM ? true : undefined
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
   const queryVars = analyticsQuery({ startDate, endDate, repositories })
 
-  const { data, ...rest } = useReposCoverageMeasurements({
-    provider,
-    owner,
-    interval: queryVars?.interval,
-    repos: queryVars?.repositories,
-    before: queryVars?.endDate,
-    after: queryVars?.startDate,
-    isPublic: shouldDisplayPublicReposOnly,
-    opts: {
-      staleTime: 30000,
-      keepPreviousData: false,
-      ...options,
+  return useQueryV5({
+    ...ReposCoverageMeasurementsQueryOpts({
+      provider,
+      owner,
+      interval: queryVars?.interval,
+      repos: queryVars?.repositories,
+      before: queryVars?.endDate,
+      after: queryVars?.startDate,
+      isPublic: isTeamPlan === true ? true : undefined,
+    }),
+    staleTime: 30000,
+    placeholderData: opts?.keepPrevious ? keepPreviousData : undefined,
+    select: (data) => {
+      if (data?.measurements?.[0]?.avg === null) {
+        data.measurements[0].avg = 0
+      }
+
+      // set prevPercent so we can reuse value if next value is null
+      let prevPercent = data?.measurements?.[0]?.avg ?? 0
+      const coverage = data?.measurements?.map((measurement) => {
+        const coverage = measurement?.avg ?? prevPercent
+
+        // can save on a few reassignments
+        if (prevPercent !== coverage) {
+          prevPercent = coverage
+        }
+
+        return {
+          date: new Date(measurement?.timestamp),
+          coverage,
+        }
+      })
+
+      return coverage
     },
   })
-
-  return useMemo(() => {
-    if (!data?.measurements) {
-      return { ...rest, data: [] }
-    }
-
-    if (data?.measurements?.[0]?.avg === null) {
-      data.measurements[0].avg = 0
-    }
-
-    // set prevPercent so we can reuse value if next value is null
-    let prevPercent = data?.measurements?.[0]?.avg ?? 0
-    const coverage = data?.measurements?.map((measurement) => {
-      let coverage = measurement?.avg ?? prevPercent
-
-      // can save on a few reassignments
-      if (prevPercent !== coverage) {
-        prevPercent = coverage
-      }
-
-      return {
-        date: new Date(measurement?.timestamp),
-        coverage,
-      }
-    })
-
-    return { ...rest, data: coverage }
-  }, [data?.measurements, rest])
 }

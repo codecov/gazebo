@@ -49,7 +49,7 @@ describe('useEncodeString', () => {
     mocks.useAddNotification.mockReturnValue(mockAddToast)
 
     server.use(
-      graphql.mutation('EncodeSecretString', (info) => {
+      graphql.mutation('EncodeSecretString', () => {
         if (isErrorResponse) {
           return HttpResponse.json({
             data: {

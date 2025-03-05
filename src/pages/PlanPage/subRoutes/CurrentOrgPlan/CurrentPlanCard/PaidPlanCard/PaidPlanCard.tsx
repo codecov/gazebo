@@ -1,17 +1,19 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import isNumber from 'lodash/isNumber'
 import { useParams } from 'react-router-dom'
 
-import { usePlanPageData } from 'pages/PlanPage/hooks'
-import { useAccountDetails, usePlanData } from 'services/account'
+import { PlanPageDataQueryOpts } from 'pages/PlanPage/queries/PlanPageDataQueryOpts'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { usePlanData } from 'services/account/usePlanData'
+import { Provider } from 'shared/api/helpers'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
-import { isTeamPlan } from 'shared/utils/billing'
 
 import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
 import PlanPricing from '../shared/PlanPricing'
 
 type URLParams = {
-  provider: string
+  provider: Provider
   owner: string
 }
 
@@ -22,13 +24,14 @@ function PaidPlanCard() {
     provider,
     owner,
   })
-  const { data: ownerData } = usePlanPageData({ owner, provider })
+  const { data: ownerData } = useSuspenseQueryV5(
+    PlanPageDataQueryOpts({ owner, provider })
+  )
 
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   const plan = planData?.plan
   const marketingName = plan?.marketingName
   const benefits = plan?.benefits
-  const value = plan?.value
   const baseUnitPrice = plan?.baseUnitPrice
   const seats = plan?.planUserCount
   const numberOfUploads = ownerData?.numberOfUploads
@@ -55,8 +58,8 @@ function PaidPlanCard() {
         <div className="flex flex-col border-t pt-2 sm:border-0 sm:p-0">
           <p className="mb-2 text-xs font-semibold">Pricing</p>
           <div className="mb-4">
-            {value && baseUnitPrice ? (
-              <PlanPricing value={value} baseUnitPrice={baseUnitPrice} />
+            {baseUnitPrice ? (
+              <PlanPricing plan={plan} baseUnitPrice={baseUnitPrice} />
             ) : null}
             {seats ? (
               <p className="text-xs text-ds-gray-senary">
@@ -68,7 +71,7 @@ function PaidPlanCard() {
             <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
           ) : null}
         </div>
-        {isNumber(numberOfUploads) && isTeamPlan(plan?.value) ? (
+        {isNumber(numberOfUploads) && plan?.isTeamPlan ? (
           <div>
             <p className="mb-2 text-xs font-semibold">Private repo uploads</p>
             <p className="text-xs text-ds-gray-senary">

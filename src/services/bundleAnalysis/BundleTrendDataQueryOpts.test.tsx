@@ -141,7 +141,7 @@ describe('useBundleTrendData', () => {
     isUnsuccessfulParseError,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBundleTrend', (info) => {
+      graphql.query('GetBundleTrend', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockRepoNotFound })
         } else if (isOwnerNotActivatedError) {
@@ -354,7 +354,8 @@ describe('useBundleTrendData', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'BundleTrendDataQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )

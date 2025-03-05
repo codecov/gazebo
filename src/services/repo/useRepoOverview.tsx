@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
-import { RepoNotFoundErrorSchema } from './schemas'
+import { RepoNotFoundErrorSchema } from './schemas/RepoNotFoundError'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
@@ -82,24 +82,23 @@ export function useRepoOverview({
           repo,
         },
       }).then((res) => {
+        const callingFn = 'useRepoOverview'
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useRepoOverview - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedData.error },
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useRepoOverview - 404 NotFoundError',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn },
+          })
         }
 
         if (!data?.owner?.repository) {

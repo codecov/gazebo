@@ -1,17 +1,15 @@
 import { useLayoutEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
-import { useAccountDetails, useAvailablePlans } from 'services/account'
-import { TierNames } from 'services/tier'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
 import {
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
   findTeamPlans,
-  isEnterprisePlan,
-  isFreePlan,
-  isTeamPlan,
   shouldDisplayTeamCard,
+  TierNames,
 } from 'shared/utils/billing'
 
 import UpgradeDetails from './UpgradeDetails'
@@ -23,8 +21,8 @@ import { useSetCrumbs } from '../../context'
 function UpgradePlanPage() {
   const { provider, owner } = useParams()
   const setCrumbs = useSetCrumbs()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
+  const { data: planData } = usePlanData({ provider, owner })
   const planParam = usePlanParams()
 
   const { proPlanYear } = findProPlans({ plans })
@@ -32,14 +30,15 @@ function UpgradePlanPage() {
   const { teamPlanYear } = findTeamPlans({ plans })
   const hasTeamPlans = shouldDisplayTeamCard({ plans })
 
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
-
-  const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
+  const isSentryUpgrade = canApplySentryUpgrade({
+    isEnterprisePlan: planData?.plan?.isEnterprisePlan,
+    plans,
+  })
 
   let defaultPaidYearlyPlan = null
   if (
     (hasTeamPlans && planParam === TierNames.TEAM) ||
-    isTeamPlan(plan?.value)
+    planData?.plan?.isTeamPlan
   ) {
     defaultPaidYearlyPlan = teamPlanYear
   } else if (isSentryUpgrade) {
@@ -54,13 +53,13 @@ function UpgradePlanPage() {
     setCrumbs([
       {
         pageName: 'upgradeOrgPlan',
-        text: isFreePlan(plan?.value) ? 'Upgrade plan' : 'Manage plan',
+        text: planData?.plan?.isFreePlan ? 'Upgrade plan' : 'Manage plan',
       },
     ])
-  }, [setCrumbs, plan?.value])
+  }, [setCrumbs, planData?.plan?.isFreePlan])
 
   // redirect right away if the user is on an enterprise plan
-  if (isEnterprisePlan(plan?.value)) {
+  if (planData?.plan?.isEnterprisePlan) {
     return <Redirect to={`/plan/${provider}/${owner}`} />
   }
 

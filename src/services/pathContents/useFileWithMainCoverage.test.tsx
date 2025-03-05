@@ -16,7 +16,6 @@ const mockCommitDetails = {
     components: [{ id: 'dir_component', name: 'component' }],
     coverageFile: {
       hashedPath: 'hashedPath',
-      isCriticalFile: true,
       content:
         'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
       coverage: [
@@ -115,7 +114,7 @@ describe('useFileWithMainCoverage', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CoverageForFile', (info) => {
+      graphql.query('CoverageForFile', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -204,7 +203,6 @@ describe('useFileWithMainCoverage', () => {
           totals: 100,
           flagNames: ['a', 'b'],
           componentNames: ['component'],
-          isCriticalFile: true,
           coverage: _.chain(
             mockBranchCoverage.head.coverageAnalytics.coverageFile.coverage
           )
@@ -271,7 +269,7 @@ describe('useFileWithMainCoverage', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
-            dev: 'useFileWithMainCoverage - 404 NotFoundError',
+            dev: 'useFileWithMainCoverage - Not Found Error',
           })
         )
       )
@@ -309,7 +307,7 @@ describe('useFileWithMainCoverage', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 403,
-            dev: 'useFileWithMainCoverage - 403 OwnerNotActivatedError',
+            dev: 'useFileWithMainCoverage - Owner Not Activated',
           })
         )
       )
@@ -326,7 +324,7 @@ describe('useFileWithMainCoverage', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -346,8 +344,8 @@ describe('useFileWithMainCoverage', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useFileWithMainCoverage - 404 schema parsing failed',
+            status: 400,
+            dev: 'useFileWithMainCoverage - Parsing Error',
           })
         )
       )

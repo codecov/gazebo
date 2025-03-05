@@ -2,8 +2,10 @@ import { fromUnixTime } from 'date-fns'
 import { format } from 'date-fns-tz'
 import { z } from 'zod'
 
-import { AccountDetailsSchema, InvoiceSchema } from 'services/account'
+import { AccountDetailsSchema } from 'services/account/useAccountDetails'
+import { InvoiceSchema } from 'services/account/useInvoices'
 import { CollectionMethods } from 'shared/utils/billing'
+import LightDarkImg from 'ui/LightDarkImg'
 
 import { generateAddressInfo } from './generateAddressInfo'
 import InvoiceOverview from './InvoiceOverview'
@@ -27,9 +29,10 @@ function InvoiceHeader({ invoice, accountDetails }: InvoiceHeaderProps) {
       <div className="flex justify-between">
         <InvoiceOverview isPaid={isPaid} invoice={invoice} dueDate={dueDate} />
         <div>
-          <img
+          <LightDarkImg
             alt="Codecov Logo"
-            src={`${process.env.PUBLIC_URL}/logo.svg`}
+            src="/logo.svg"
+            darkSrc="/logo_dark.svg"
             width={200}
           />
         </div>

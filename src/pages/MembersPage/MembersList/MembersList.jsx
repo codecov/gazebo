@@ -1,18 +1,17 @@
-import { lazy, Suspense, useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
-import { ApiFilterEnum, useLocationParams } from 'services/navigation'
+import { usePlanData } from 'services/account/usePlanData'
+import { ApiFilterEnum } from 'services/navigation/normalize'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useUpdateUser } from 'services/users'
-import { isFreePlan } from 'shared/utils/billing'
 import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
 
 import { ActivatedItems, AdminItems } from './enums'
+import MembersTable from './MembersTable'
 import UpgradeModal from './UpgradeModal/UpgradeModal'
-
-const MembersTable = lazy(() => import('./MembersTable'))
 
 const UserManagementClasses = {
   root: 'space-y-4 col-span-2 mb-20 grow mt-4', // Select pushes page length out. For now padding
@@ -40,11 +39,11 @@ function useActivateUser({ provider, owner }) {
   return { activate, ...rest }
 }
 
-const handleActivate = (accountDetails, activate, setIsOpen) => (user) => {
+const handleActivate = (planData, activate, setIsOpen) => (user) => {
   if (
-    accountDetails?.activatedUserCount >= accountDetails?.plan?.quantity &&
+    !planData?.plan?.hasSeatsLeft &&
     !user.activated &&
-    isFreePlan(accountDetails?.plan?.value)
+    planData?.plan?.isFreePlan
   ) {
     setIsOpen(true)
   } else {
@@ -63,7 +62,7 @@ function MembersList() {
   })
 
   const { activate } = useActivateUser({ owner, provider })
-  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const { data: planData } = usePlanData({ owner, provider })
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -115,7 +114,7 @@ function MembersList() {
         }
       >
         <MembersTable
-          handleActivate={handleActivate(accountDetails, activate, setIsOpen)}
+          handleActivate={handleActivate(planData, activate, setIsOpen)}
           params={params}
         />
       </Suspense>

@@ -127,7 +127,9 @@ export const setupSentry = ({
     if (!tracePropagationTargets.includes(hostname)) {
       tracePropagationTargets.push(hostname)
     }
-  } catch {}
+  } catch {
+    // do nothing
+  }
 
   Sentry.init({
     dsn: config.SENTRY_DSN,
@@ -151,6 +153,15 @@ export const setupSentry = ({
         filterKeys: ['gazebo'],
         behaviour: 'apply-tag-if-contains-third-party-frames',
       }),
+
+      // Adds LaunchDarkly integration for feature flag tracking/errors
+      Sentry.launchDarklyIntegration(),
+
+      // Conditionally adds Spotlight browser integration when in development mode
+      // Note - you'll need to have a valid Sentry DSN to use this, and please set the SENTRY_ENVIRONMENT to your username or something unique
+      ...(config.NODE_ENV === 'development'
+        ? [Sentry.spotlightBrowserIntegration()]
+        : []),
     ],
     tracePropagationTargets,
     tracesSampleRate: config?.SENTRY_TRACING_SAMPLE_RATE,

@@ -17,13 +17,8 @@ const mockPullData = {
         pullId: 1,
         title: 'Cool Pull Request',
         state: 'OPEN',
-        author: {
-          username: 'cool-user',
-        },
-        head: {
-          branchName: 'cool-branch',
-          ciPassed: true,
-        },
+        author: { username: 'cool-user' },
+        head: { branchName: 'cool-branch', ciPassed: true },
         updatestamp: '',
       },
     },
@@ -32,10 +27,7 @@ const mockPullData = {
 
 const mockNotFoundError = {
   owner: {
-    repository: {
-      __typename: 'NotFoundError',
-      message: 'commit not found',
-    },
+    repository: { __typename: 'NotFoundError', message: 'commit not found' },
   },
 }
 
@@ -93,7 +85,7 @@ describe('usePullHeadData', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullHeadData', (info) => {
+      graphql.query('PullHeadData', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -179,7 +171,7 @@ describe('usePullHeadData', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -209,6 +201,7 @@ describe('usePullHeadData', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'PullHeadDataQueryOpts - Not Found Error',
               status: 404,
             })
           )
@@ -217,7 +210,7 @@ describe('usePullHeadData', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -246,6 +239,7 @@ describe('usePullHeadData', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'PullHeadDataQueryOpts - Owner Not Activated',
               status: 403,
             })
           )
@@ -254,7 +248,7 @@ describe('usePullHeadData', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -264,7 +258,7 @@ describe('usePullHeadData', () => {
         console.error = oldConsoleError
       })
 
-      it('throws a 404', async () => {
+      it('throws a 400', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
@@ -283,7 +277,8 @@ describe('usePullHeadData', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'PullHeadDataQueryOpts - Parsing Error',
+              status: 400,
             })
           )
         )

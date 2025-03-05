@@ -23,6 +23,10 @@ const mockCommitData = {
           __typename: 'Comparison',
         },
         bundleAnalysis: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+            isCached: false,
+          },
           bundleAnalysisCompareWithParent: {
             __typename: 'BundleAnalysisComparison',
           },
@@ -89,7 +93,7 @@ interface SetupArgs {
   isNullOwner?: boolean
 }
 
-describe('useCommitPageData', () => {
+describe('CommitPageData', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
@@ -97,7 +101,7 @@ describe('useCommitPageData', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CommitPageData', (info) => {
+      graphql.query('CommitPageData', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -146,6 +150,10 @@ describe('useCommitPageData', () => {
                 __typename: 'Comparison',
               },
               bundleAnalysis: {
+                bundleAnalysisReport: {
+                  __typename: 'BundleAnalysisReport',
+                  isCached: false,
+                },
                 bundleAnalysisCompareWithParent: {
                   __typename: 'BundleAnalysisComparison',
                 },
@@ -194,7 +202,7 @@ describe('useCommitPageData', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -232,7 +240,7 @@ describe('useCommitPageData', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -270,7 +278,7 @@ describe('useCommitPageData', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -300,7 +308,8 @@ describe('useCommitPageData', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'CommitPageDataQueryOpts - Parsing Error',
+              status: 400,
             })
           )
         )

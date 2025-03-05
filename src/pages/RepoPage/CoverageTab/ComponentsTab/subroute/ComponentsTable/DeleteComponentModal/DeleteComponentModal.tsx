@@ -1,4 +1,4 @@
-import { useDeleteComponentMeasurements } from 'services/deleteComponentMeasurements'
+import { useDeleteComponentMeasurements } from 'services/deleteComponentMeasurements/useDeleteComponentMeasurements'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
@@ -33,14 +33,14 @@ const DeleteComponentModal = ({
           <p>
             This will remove the historical data of{' '}
             <span className="font-semibold italic">{name}</span> component in
-            the app and we can’t retrieve the data.
+            the app and we can&apos;t retrieve the data.
           </p>
           <br></br>
           <p>
-            <span className="font-semibold">Action required:</span> You’ll need
-            to remove <span className="font-semibold italic">{name}</span>{' '}
-            component in your yaml file otherwise you’ll still see it in this
-            table.
+            <span className="font-semibold">Action required:</span> You&apos;ll
+            need to remove <span className="font-semibold italic">{name}</span>{' '}
+            component in your yaml file otherwise you&apos;ll still see it in
+            this table.
           </p>
           <br></br>
           <p>It will take some time to reflect this deletion.</p>
@@ -63,8 +63,7 @@ const DeleteComponentModal = ({
               to={undefined}
               disabled={false}
               onClick={() => {
-                // TODO: fix when we convert the hooks to TS
-                // @ts-expect-error
+                // @ts-expect-error - hook hasn't been typed yet
                 mutate({ componentId })
                 closeModal()
               }}

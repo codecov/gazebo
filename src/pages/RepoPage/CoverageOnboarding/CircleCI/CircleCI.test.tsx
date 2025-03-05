@@ -6,19 +6,11 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { eventTracker } from 'services/events/events'
+
 import CircleCI from './CircleCI'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
-vi.mock('shared/featureFlags', async () => {
-  const actual = await vi.importActual('shared/featureFlags')
-  return {
-    ...actual,
-    useFlags: mocks.useFlags,
-  }
-})
+vi.mock('services/events/events')
 
 const mockGetRepo = {
   owner: {
@@ -42,6 +34,12 @@ const mockGetRepo = {
 const mockGetOrgUploadToken = {
   owner: {
     orgUploadToken: 'org-token-asdf-1234',
+  },
+}
+
+const mockNoUploadToken = {
+  owner: {
+    orgUploadToken: null,
   },
 }
 
@@ -85,35 +83,51 @@ interface SetupArgs {
 
 describe('CircleCI', () => {
   function setup({ hasOrgUploadToken = false }: SetupArgs) {
-    mocks.useFlags.mockReturnValue({
-      newRepoFlag: hasOrgUploadToken,
-    })
-    const mockMetricMutationVariables = vi.fn()
-    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
-    mockGetItem.mockReturnValue(null)
-
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockGetRepo })
       }),
-      graphql.query('GetOrgUploadToken', (info) => {
-        return HttpResponse.json({ data: mockGetOrgUploadToken })
-      }),
-      graphql.mutation('storeEventMetric', (info) => {
-        mockMetricMutationVariables(info?.variables)
-        return HttpResponse.json({ data: { storeEventMetric: null } })
+      graphql.query('GetOrgUploadToken', () => {
+        return HttpResponse.json({
+          data: hasOrgUploadToken ? mockGetOrgUploadToken : mockNoUploadToken,
+        })
       })
     )
     const user = userEvent.setup()
-    return { mockMetricMutationVariables, user }
+    return { user }
   }
 
-  describe('step one', () => {
+  describe('output coverage step', () => {
     it('renders header', async () => {
       setup({})
       render(<CircleCI />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 1/ })
+      const header = await screen.findByText(
+        /Step \d: Output a Coverage report file in your CI/
+      )
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders body', async () => {
+      setup({})
+      render(<CircleCI />, { wrapper })
+
+      const body = await screen.findByText(/Select your language below/)
+      expect(body).toBeInTheDocument()
+
+      const jest = await screen.findByText(/Jest/)
+      expect(jest).toBeInTheDocument()
+    })
+  })
+
+  describe('token step', () => {
+    it('renders header', async () => {
+      setup({})
+      render(<CircleCI />, { wrapper })
+
+      const header = await screen.findByRole('heading', {
+        name: /Step \d: add repository token to environment variables/,
+      })
       expect(header).toBeInTheDocument()
     })
 
@@ -204,13 +218,15 @@ describe('CircleCI', () => {
     })
   })
 
-  describe('step two', () => {
+  describe('orb yaml step', () => {
     beforeEach(() => setup({}))
 
     it('renders header', async () => {
       render(<CircleCI />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 2/ })
+      const header = await screen.findByRole('heading', {
+        name: /Step \d: add Codecov orb to CircleCI/,
+      })
       expect(header).toBeInTheDocument()
 
       const CircleCIJSWorkflowLink = await screen.findByRole('link', {
@@ -219,7 +235,7 @@ describe('CircleCI', () => {
       expect(CircleCIJSWorkflowLink).toBeInTheDocument()
 
       const CircleCIJSExampleLink = await screen.findByRole('link', {
-        name: /javascript config.yml/,
+        name: /JavaScript config.yml/,
       })
       expect(CircleCIJSExampleLink).toBeInTheDocument()
       expect(CircleCIJSExampleLink).toHaveAttribute(
@@ -252,8 +268,18 @@ describe('CircleCI', () => {
     })
   })
 
-  describe('step three', () => {
+  describe('merge step', () => {
     beforeEach(() => setup({}))
+
+    it('renders header', async () => {
+      render(<CircleCI />, { wrapper })
+
+      const header = await screen.findByText(
+        /Step \d: merge to main or your preferred feature branch/
+      )
+      expect(header).toBeInTheDocument()
+    })
+
     it('renders body', async () => {
       render(<CircleCI />, { wrapper })
 
@@ -299,21 +325,20 @@ describe('CircleCI', () => {
 
   describe('user copies text', () => {
     it('stores codecov metric', async () => {
-      const { mockMetricMutationVariables } = setup({})
+      setup({})
       const user = userEvent.setup()
       render(<CircleCI />, { wrapper })
 
       const copyCommands = await screen.findAllByTestId(
         'clipboard-code-snippet'
       )
-      expect(copyCommands.length).toEqual(3)
+      expect(copyCommands.length).toEqual(5)
 
-      await user.click(copyCommands[1] as HTMLElement)
+      const promises: Promise<void>[] = []
+      copyCommands.forEach((copy) => promises.push(user.click(copy)))
+      await Promise.all(promises)
 
-      await user.click(copyCommands[2] as HTMLElement)
-      await waitFor(() =>
-        expect(mockMetricMutationVariables).toHaveBeenCalledTimes(2)
-      )
+      await waitFor(() => expect(eventTracker().track).toHaveBeenCalledTimes(4))
     })
   })
 })

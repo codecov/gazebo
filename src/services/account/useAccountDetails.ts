@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
-import { Plans } from 'shared/utils/billing'
+import { Provider } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const InvoiceSchema = z
   .object({
@@ -66,6 +66,11 @@ export const BillingDetailsSchema = z
   })
   .nullable()
 
+export const USBankAccountSchema = z.object({
+  bankName: z.string(),
+  last4: z.string(),
+})
+
 export const PaymentMethodSchema = z
   .object({
     card: z
@@ -76,6 +81,7 @@ export const PaymentMethodSchema = z
         last4: z.string(),
       })
       .nullish(),
+    usBankAccount: USBankAccountSchema.nullish(),
     billingDetails: BillingDetailsSchema.nullable(),
   })
   .nullable()
@@ -113,56 +119,44 @@ export const SubscriptionDetailSchema = z
   })
   .nullable()
 
-export const PlanSchema = z
+export const AccountDetailsSchema = z
   .object({
-    baseUnitPrice: z.number(),
-    benefits: z.array(z.string()),
-    billingRate: z.string().nullable(),
-    marketingName: z.string(),
-    monthlyUploadLimit: z.number().nullish(),
-    quantity: z.number().nullish(),
-    value: z.nativeEnum(Plans),
-    trialDays: z.number().nullish(),
+    activatedStudentCount: z.number(),
+    activatedUserCount: z.number(),
+    checkoutSessionId: z.string().nullable(),
+    delinquent: z.boolean().nullable(),
+    email: z.string().nullable(),
+    inactiveUserCount: z.number(),
+    integrationId: z.number().nullable(),
+    name: z.string().nullable(),
+    nbActivePrivateRepos: z.number().nullable(),
+    planAutoActivate: z.boolean().nullable(),
+    planProvider: z.string().nullable(),
+    repoTotalCredits: z.number(),
+    rootOrganization: z
+      .object({
+        username: z.string().nullish(),
+      })
+      .nullable(),
+    scheduleDetail: z
+      .object({
+        scheduledPhase: z
+          .object({
+            quantity: z.number(),
+            plan: z.string(),
+            startDate: z.number(),
+          })
+          .nullable(),
+      })
+      .nullable(),
+    studentCount: z.number(),
+    subscriptionDetail: SubscriptionDetailSchema,
+    usesInvoice: z.boolean(),
   })
-  .nullable()
-
-export const AccountDetailsSchema = z.object({
-  activatedStudentCount: z.number(),
-  activatedUserCount: z.number(),
-  checkoutSessionId: z.string().nullable(),
-  delinquent: z.boolean().nullable(),
-  email: z.string().nullable(),
-  inactiveUserCount: z.number(),
-  integrationId: z.number().nullable(),
-  name: z.string().nullable(),
-  nbActivePrivateRepos: z.number().nullable(),
-  plan: PlanSchema,
-  planAutoActivate: z.boolean().nullable(),
-  planProvider: z.string().nullable(),
-  repoTotalCredits: z.number(),
-  rootOrganization: z
-    .object({
-      plan: PlanSchema,
-    })
-    .nullable(),
-  scheduleDetail: z
-    .object({
-      scheduledPhase: z
-        .object({
-          quantity: z.number(),
-          plan: z.string(),
-          startDate: z.number(),
-        })
-        .nullable(),
-    })
-    .nullable(),
-  studentCount: z.number(),
-  subscriptionDetail: SubscriptionDetailSchema,
-  usesInvoice: z.boolean(),
-})
+  .nullish()
 
 export interface UseAccountDetailsArgs {
-  provider: string
+  provider: Provider
   owner: string
   opts?: {
     enabled?: boolean
@@ -173,7 +167,7 @@ function getPathAccountDetails({
   provider,
   owner,
 }: {
-  provider: string
+  provider: Provider
   owner: string
 }) {
   return `/${provider}/${owner}/account-details/`
@@ -184,7 +178,7 @@ function fetchAccountDetails({
   owner,
   signal,
 }: {
-  provider: string
+  provider: Provider
   owner: string
   signal?: AbortSignal
 }) {
@@ -207,14 +201,14 @@ export function useAccountDetails({
           return res as z.infer<typeof AccountDetailsSchema>
         }
 
+        const callingFn = 'useAccountDetails'
         const parsedRes = AccountDetailsSchema.safeParse(res)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useAccountDetails - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedRes.error },
+          })
         }
 
         return parsedRes.data

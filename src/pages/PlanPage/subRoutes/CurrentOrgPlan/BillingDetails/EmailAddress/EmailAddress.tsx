@@ -4,7 +4,9 @@ import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
-import { useAccountDetails, useUpdateBillingEmail } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useUpdateBillingEmail } from 'services/account/useUpdateBillingEmail'
+import { Provider } from 'shared/api/helpers'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
@@ -18,7 +20,7 @@ const emailSchema = z.object({
 })
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 
@@ -61,7 +63,7 @@ function EmailAddress() {
       <div className="flex justify-between">
         <h4 className="font-semibold">Email address</h4>{' '}
         {!isFormOpen && (
-          /* @ts-expect-error */
+          /* @ts-expect-error - A hasn't been typed yet */
           <A
             variant="semibold"
             onClick={() => setIsFormOpen(true)}

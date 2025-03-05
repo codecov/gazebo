@@ -3,14 +3,14 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import { useAvailablePlans } from './useAvailablePlans'
 
 const mockAvailablePlans = [
   {
     marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -19,11 +19,13 @@ const mockAvailablePlans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -32,11 +34,13 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -45,11 +49,13 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Sentry Pro Team',
     value: Plans.USERS_SENTRYY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -58,11 +64,13 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: true,
   },
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_ENTERPRISEM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -71,11 +79,13 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_ENTERPRISEY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -84,14 +94,18 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Team',
     value: Plans.USERS_TEAMM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 6,
     benefits: ['Patch coverage analysis'],
     monthlyUploadLimit: null,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
 ]
 
@@ -140,7 +154,7 @@ describe('useAvailablePlans', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
@@ -200,7 +214,7 @@ describe('useAvailablePlans', () => {
         vi.restoreAllMocks()
       })
 
-      it('throws a 404', async () => {
+      it('throws a 400', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
@@ -215,7 +229,8 @@ describe('useAvailablePlans', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'useAvailablePlans - Parsing Error',
+              status: 400,
             })
           )
         )

@@ -62,7 +62,7 @@ describe('BundleFeedbackBanner', () => {
     const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(bundleAnalysisEnabled) })
       })
     )

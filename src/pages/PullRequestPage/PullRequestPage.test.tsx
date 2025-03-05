@@ -10,7 +10,6 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
-import { TierNames, TTierNames } from 'services/tier'
 
 import PullRequestPage from './PullRequestPage'
 
@@ -49,6 +48,7 @@ const mockPullPageData = {
     bundleAnalysis: {
       bundleAnalysisReport: {
         __typename: 'BundleAnalysisReport',
+        isCached: false,
       },
     },
   },
@@ -75,6 +75,7 @@ const mockPullPageDataTeam = {
     bundleAnalysis: {
       bundleAnalysisReport: {
         __typename: 'BundleAnalysisReport',
+        isCached: false,
       },
     },
   },
@@ -185,7 +186,7 @@ afterAll(() => {
 
 interface SetupArgs {
   pullData?: typeof mockPullPageData | null
-  tierValue?: TTierNames
+  isTeamPlan?: boolean
   privateRepo?: boolean
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
@@ -194,13 +195,13 @@ interface SetupArgs {
 describe('PullRequestPage', () => {
   function setup({
     pullData = mockPullPageData,
-    tierValue = TierNames.BASIC,
+    isTeamPlan = false,
     privateRepo = false,
     coverageEnabled = true,
     bundleAnalysisEnabled = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullHeadData', (info) => {
+      graphql.query('PullHeadData', () => {
         return HttpResponse.json({ data: mockPullHeadData })
       }),
       graphql.query('PullPageData', (info) => {
@@ -232,20 +233,20 @@ describe('PullRequestPage', () => {
           },
         })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(privateRepo) })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
           data: {
-            owner: { plan: { tierName: tierValue } },
+            owner: { plan: { isTeamPlan } },
           },
         })
       }),
-      graphql.query('PullCoverageDropdownSummary', (info) => {
+      graphql.query('PullCoverageDropdownSummary', () => {
         return HttpResponse.json({ data: mockPullCoverageDropdownSummary })
       }),
-      graphql.query('PullBADropdownSummary', (info) => {
+      graphql.query('PullBADropdownSummary', () => {
         return HttpResponse.json({ data: mockPullBADropdownSummary })
       })
     )

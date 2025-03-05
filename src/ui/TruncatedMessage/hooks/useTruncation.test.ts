@@ -2,9 +2,9 @@ import { renderHook } from '@testing-library/react'
 
 import { useTruncation } from './useTruncation'
 
-let entry: {} | undefined = {}
+let entry: object | undefined = {}
 class ResizeObserver {
-  callback = (x: any) => null
+  callback = (_x: any) => null
 
   constructor(callback: any) {
     this.callback = callback

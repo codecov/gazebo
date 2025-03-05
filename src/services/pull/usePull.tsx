@@ -1,20 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
-import {
-  FirstPullRequestSchema,
-  MissingBaseCommitSchema,
-  MissingBaseReportSchema,
-  MissingComparisonSchema,
-  MissingHeadCommitSchema,
-  MissingHeadReportSchema,
-} from 'services/comparison/schemas'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo/schemas'
+import { FirstPullRequestSchema } from 'services/comparison/schemas/FirstPullRequest'
+import { MissingBaseCommitSchema } from 'services/comparison/schemas/MissingBaseCommit'
+import { MissingBaseReportSchema } from 'services/comparison/schemas/MissingBaseReport'
+import { MissingComparisonSchema } from 'services/comparison/schemas/MissingComparison'
+import { MissingHeadCommitSchema } from 'services/comparison/schemas/MissingHeadCommit'
+import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { UploadTypeEnum } from 'shared/utils/commit'
 import A from 'ui/A'
 
@@ -47,7 +43,6 @@ const ImpactedFileSchema = z
     fileName: z.string().nullable(),
     headName: z.string().nullable(),
     missesCount: z.number(),
-    isCriticalFile: z.boolean(),
     patchCoverage: percentCoveredSchema.nullable(),
     baseCoverage: percentCoveredSchema.nullable(),
     headCoverage: percentCoveredSchema.nullable(),
@@ -320,41 +315,40 @@ export function usePull({
           filters,
         },
       }).then((res) => {
+        const callingFn = 'usePull'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'usePull - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedRes.error },
+          })
         }
 
         const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'usePull - 404 not found',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>
                   Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
+                  {/* @ts-expect-error - A hasn't been typed yet*/}
                   <A to={{ pageName: 'membersTab' }}>click here </A> to activate
                   your account.
                 </p>
               ),
             },
-            dev: 'usePull - 403 owner not activated',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         const pull = data?.owner?.repository?.pull

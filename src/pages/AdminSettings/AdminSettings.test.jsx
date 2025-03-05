@@ -1,7 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import AdminSettings from './AdminSettings'
@@ -21,23 +26,30 @@ const user = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 let testLocation
 const wrapper =
   ({ initialEntries, path }) =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path={path}>{children}</Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Suspense fallback={<div>Loading</div>}>
+            <Route path={path}>{children}</Route>
+            <Route
+              path="*"
+              render={({ location }) => {
+                testLocation = location
+                return null
+              }}
+            />
+          </Suspense>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 const server = setupServer()
@@ -45,9 +57,10 @@ beforeAll(() => {
   server.listen()
 })
 
-beforeEach(() => {
-  server.resetHandlers()
+afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
+  server.resetHandlers()
 })
 
 afterAll(() => {
@@ -57,10 +70,10 @@ afterAll(() => {
 describe('AdminSettings', () => {
   function setup({ data = {} }) {
     server.use(
-      http.get('/internal/users/current', (info) => {
+      http.get('/internal/users/current', () => {
         return HttpResponse.json({ ...user, ...data })
       }),
-      graphql.query('CurrentUser', (req, res, ctx) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: { me: null } })
       })
     )

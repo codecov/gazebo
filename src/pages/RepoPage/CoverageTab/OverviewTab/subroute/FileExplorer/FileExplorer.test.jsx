@@ -9,8 +9,8 @@ import FileExplorer from './FileExplorer'
 
 vi.mock('./FileListTable', () => ({ default: () => 'File list table' }))
 vi.mock('./CodeTreeTable', () => ({ default: () => 'Code tree table' }))
-vi.mock('shared/ContentsTable/DisplayTypeButton', () => ({
-  default: () => 'Display type button',
+vi.mock('shared/ContentsTable/DisplayTypeButton/DisplayTypeButton', () => ({
+  DisplayTypeButton: () => 'Display type button',
 }))
 vi.mock('shared/ContentsTable/FileBreadcrumb', () => ({
   default: () => 'File breadcrumb',
@@ -32,6 +32,7 @@ const server = setupServer()
 const mockListData = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -57,6 +58,7 @@ const mockListData = {
 const mockUnknownPath = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -71,6 +73,7 @@ const mockUnknownPath = {
 const mockMissingCoverage = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -85,6 +88,7 @@ const mockMissingCoverage = {
 const mockTreeData = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -189,7 +193,7 @@ describe('FileExplorer', () => {
 
         return HttpResponse.json({ data: { owner: mockTreeData } })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       })
     )

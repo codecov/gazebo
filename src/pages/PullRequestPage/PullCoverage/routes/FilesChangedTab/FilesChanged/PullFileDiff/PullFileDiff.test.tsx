@@ -41,7 +41,7 @@ window.scrollTo = scrollToMock
 window.scrollY = 100
 
 class ResizeObserverMock {
-  callback = (x: any) => null
+  callback = (_x: any) => null
 
   constructor(callback: any) {
     this.callback = callback
@@ -71,12 +71,10 @@ const baseMock = ({
   isNewFile,
   isRenamedFile,
   isDeletedFile,
-  isCriticalFile,
 }: {
   isNewFile?: boolean
   isRenamedFile?: boolean
   isDeletedFile?: boolean
-  isCriticalFile?: boolean
 }) => ({
   owner: {
     repository: {
@@ -89,7 +87,6 @@ const baseMock = ({
             hashedPath: 'hashedFilePath',
             isRenamedFile,
             isDeletedFile,
-            isCriticalFile,
             isNewFile,
             baseCoverage: null,
             headCoverage: null,
@@ -171,7 +168,6 @@ interface SetupArgs {
   isNewFile?: boolean
   isRenamedFile?: boolean
   isDeletedFile?: boolean
-  isCriticalFile?: boolean
 }
 
 describe('FileDiff', () => {
@@ -181,12 +177,11 @@ describe('FileDiff', () => {
       isNewFile = false,
       isRenamedFile = false,
       isDeletedFile = false,
-      isCriticalFile = false,
     }: SetupArgs = {
       isNewFile: false,
       isRenamedFile: false,
       isDeletedFile: false,
-      isCriticalFile: false,
+
       bundleAnalysisEnabled: false,
     }
   ) {
@@ -197,17 +192,16 @@ describe('FileDiff', () => {
     }))
 
     server.use(
-      graphql.query('ImpactedFileComparison', (info) => {
+      graphql.query('ImpactedFileComparison', () => {
         return HttpResponse.json({
           data: baseMock({
             isNewFile,
             isRenamedFile,
             isDeletedFile,
-            isCriticalFile,
           }),
         })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(bundleAnalysisEnabled) })
       })
     )
@@ -285,18 +279,6 @@ describe('FileDiff', () => {
 
       const deleted = await screen.findByText(/Deleted/i)
       expect(deleted).toBeInTheDocument()
-    })
-  })
-
-  describe('a critical file', () => {
-    beforeEach(() => {
-      setup({ isCriticalFile: true })
-    })
-    it('renders a critical file label', async () => {
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
-
-      const criticalFile = await screen.findByText(/Critical File/i)
-      expect(criticalFile).toBeInTheDocument()
     })
   })
 

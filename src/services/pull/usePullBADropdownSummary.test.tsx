@@ -11,18 +11,12 @@ const mockPullBASummaryData = {
     repository: {
       __typename: 'Repository',
       pull: {
-        head: {
-          commitid: '2788fb9824b079807f7992f04482450c09774ec7',
-        },
+        head: { commitid: '2788fb9824b079807f7992f04482450c09774ec7' },
         bundleAnalysisCompareWithBase: {
           __typename: 'BundleAnalysisComparison',
           bundleChange: {
-            size: {
-              uncompress: 1,
-            },
-            loadTime: {
-              threeG: 2,
-            },
+            size: { uncompress: 1 },
+            loadTime: { threeG: 2 },
           },
         },
       },
@@ -54,19 +48,15 @@ const mockOwnerNotActivatedError = {
   },
 }
 
-const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
@@ -95,7 +85,7 @@ describe('usePullBADropdownSummary', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('PullBADropdownSummary', (info) => {
+      graphql.query('PullBADropdownSummary', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -180,7 +170,7 @@ describe('usePullBADropdownSummary', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -197,8 +187,8 @@ describe('usePullBADropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: {},
+            dev: 'usePullBADropdownSummary - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -232,8 +222,8 @@ describe('usePullBADropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullBADropdownSummary - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )
@@ -267,6 +257,7 @@ describe('usePullBADropdownSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullBADropdownSummary - Owner Not Activated',
             status: 403,
           })
         )

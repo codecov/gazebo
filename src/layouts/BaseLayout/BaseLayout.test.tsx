@@ -12,7 +12,7 @@ import { type Mock } from 'vitest'
 import config from 'config'
 
 import { useImage } from 'services/image'
-import { useImpersonate } from 'services/impersonate'
+import { useImpersonate } from 'services/impersonate/useImpersonate'
 import { useInternalUser, useUser } from 'services/user'
 import { Plans } from 'shared/utils/billing'
 
@@ -21,19 +21,13 @@ import BaseLayout from './BaseLayout'
 vi.mock('services/image')
 const mockedUseImage = useImage as Mock
 
-vi.mock('services/impersonate')
+vi.mock('services/impersonate/useImpersonate')
 const mockedUseImpersonate = useImpersonate as Mock
 
 vi.mock('shared/GlobalTopBanners', () => ({
   default: () => 'GlobalTopBanners',
 }))
-vi.mock('./InstallationHelpBanner', () => ({
-  default: () => 'InstallationHelpBanner',
-}))
 vi.mock('pages/TermsOfService', () => ({ default: () => 'TermsOfService' }))
-vi.mock('pages/DefaultOrgSelector', () => ({
-  default: () => 'DefaultOrgSelector',
-}))
 vi.mock('layouts/Header', () => ({ default: () => 'Header' }))
 vi.mock('layouts/Footer', () => ({ default: () => 'Footer' }))
 
@@ -53,7 +47,6 @@ const mockUser = {
   student: false,
   studentCreatedAt: null,
   studentUpdatedAt: null,
-  customerIntent: 'BUSINESS',
   externalId: 'asdf',
   owners: [
     {
@@ -78,7 +71,7 @@ const mockTrackingMetadata = {
   service: 'github',
   ownerid: 123,
   serviceId: '123',
-  plan: Plans.USERS_BASIC,
+  plan: Plans.USERS_DEVELOPER,
   staff: false,
   hasYaml: false,
   bot: null,
@@ -170,6 +163,22 @@ const mockNavigatorData = {
   },
 }
 
+const mockOwnerContext = {
+  owner: {
+    ownerid: 123,
+  },
+}
+
+const mockRepoContext = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      repoid: 321,
+      private: false,
+    },
+  },
+}
+
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -208,6 +217,11 @@ beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
 
+beforeEach(() => {
+  vi.resetModules()
+  vi.restoreAllMocks()
+})
+
 afterEach(() => {
   queryClient.clear()
   queryClientV5.clear()
@@ -241,29 +255,29 @@ describe('BaseLayout', () => {
     mockedUseImpersonate.mockReturnValue({ isImpersonating })
 
     server.use(
-      http.get('/internal/user', (info) => {
+      http.get('/internal/user', () => {
         return HttpResponse.json(internalUser)
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: currentUser })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: mockOwner })
       }),
-      http.get('/internal/:provider/:owner/account-details', (info) => {
+      http.get('/internal/:provider/:owner/account-details', () => {
         return HttpResponse.json({})
       }),
       // Self hosted only
-      graphql.query('HasAdmins', (info) => {
+      graphql.query('HasAdmins', () => {
         return HttpResponse.json({ data: { config: null } })
       }),
-      graphql.query('Seats', (info) => {
+      graphql.query('Seats', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('TermsOfService', (info) => {
+      graphql.query('TermsOfService', () => {
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('UseMyOrganizations', (info) => {
+      graphql.query('UseMyOrganizations', () => {
         return HttpResponse.json({
           data: {
             myOrganizationsData: {
@@ -277,13 +291,21 @@ describe('BaseLayout', () => {
           },
         })
       }),
-      graphql.mutation('updateDefaultOrganization', (info) => {
+      graphql.mutation('updateDefaultOrganization', () => {
         return HttpResponse.json({ data: {} })
       }),
       graphql.query('NavigatorData', () => {
         return HttpResponse.json({ data: mockNavigatorData })
       }),
-      http.get('/internal/users/current', (info) => {
+      graphql.query('OwnerContext', () => {
+        return HttpResponse.json({ data: mockOwnerContext })
+      }),
+      graphql.query('RepoContext', () => {
+        return HttpResponse.json({
+          data: mockRepoContext,
+        })
+      }),
+      http.get('/internal/users/current', () => {
         return HttpResponse.json({})
       })
     )
@@ -300,9 +322,6 @@ describe('BaseLayout', () => {
         expect(await screen.findByText('hello')).toBeTruthy()
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
-
-        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrg).not.toBeInTheDocument()
 
         const termsOfService = screen.queryByText(/TermsOfService/)
         expect(termsOfService).not.toBeInTheDocument()
@@ -322,9 +341,6 @@ describe('BaseLayout', () => {
         expect(await screen.findByText('hello')).toBeTruthy()
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
-
-        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrg).not.toBeInTheDocument()
 
         const termsOfService = screen.queryByText(/TermsOfService/)
         expect(termsOfService).not.toBeInTheDocument()
@@ -356,60 +372,11 @@ describe('BaseLayout', () => {
         const header = screen.queryByText(/Header/)
         expect(header).not.toBeInTheDocument()
       })
-
-      it('renders help banner', async () => {
-        setup({
-          currentUser: userNoTermsAgreement,
-          internalUser: mockUserNoTermsAgreement,
-        })
-
-        render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
-        const helpBanner = await screen.findByText(/InstallationHelpBanner/)
-        expect(helpBanner).toBeInTheDocument()
-      })
     })
 
-    describe('when no default org selected', () => {
-      it('renders the default org selector', async () => {
-        setup({
-          currentUser: loggedInUser,
-          internalUser: mockUser,
-        })
-        render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
-
-        const defaultOrgSelector = await screen.findByText(/DefaultOrgSelector/)
-        expect(defaultOrgSelector).toBeInTheDocument()
-      })
-
-      it('does not render the header', async () => {
-        setup({
-          currentUser: loggedInUser,
-          internalUser: mockUser,
-        })
-        render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
-
-        const defaultOrgSelector = await screen.findByText(/DefaultOrgSelector/)
-        expect(defaultOrgSelector).toBeInTheDocument()
-
-        const header = screen.queryByText(/Header/)
-        expect(header).not.toBeInTheDocument()
-      })
-
-      it('renders help banner', async () => {
-        setup({
-          currentUser: loggedInUser,
-          internalUser: mockUser,
-        })
-
-        render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
-        const helpBanner = await screen.findByText(/InstallationHelpBanner/)
-        expect(helpBanner).toBeInTheDocument()
-      })
-    })
-
-    describe('when agreed to TOS and default org selected', () => {
+    describe('when agreed to TOS', () => {
       it('renders children', async () => {
-        setup({ currentUser: userHasDefaultOrg })
+        setup({ currentUser: loggedInUser })
         render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
 
         const children = await screen.findByText(/hello/)
@@ -417,7 +384,7 @@ describe('BaseLayout', () => {
       })
 
       it('renders header', async () => {
-        setup({ currentUser: userHasDefaultOrg })
+        setup({ currentUser: loggedInUser })
         render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
 
         const header = await screen.findByText(/Header/)
@@ -459,9 +426,6 @@ describe('BaseLayout', () => {
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
 
-        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrg).not.toBeInTheDocument()
-
         const termsOfService = screen.queryByText(/TermsOfService/)
         expect(termsOfService).not.toBeInTheDocument()
       })
@@ -480,9 +444,6 @@ describe('BaseLayout', () => {
         expect(await screen.findByText('hello')).toBeTruthy()
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
-
-        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrg).not.toBeInTheDocument()
 
         const termsOfService = screen.queryByText(/TermsOfService/)
         expect(termsOfService).not.toBeInTheDocument()
@@ -521,15 +482,12 @@ describe('BaseLayout', () => {
 
         const header = await screen.findByText(/Header/)
         expect(header).toBeInTheDocument()
-
-        const defaultOrgSelector = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrgSelector).not.toBeInTheDocument()
       })
     })
 
     describe('when agreed to TOS and default org selected', () => {
       it('renders children', async () => {
-        setup({ currentUser: userHasDefaultOrg })
+        setup({ currentUser: loggedInUser })
         render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
 
         const children = await screen.findByText(/hello/)
@@ -537,7 +495,7 @@ describe('BaseLayout', () => {
       })
 
       it('renders header', async () => {
-        setup({ currentUser: userHasDefaultOrg })
+        setup({ currentUser: loggedInUser })
         render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
 
         const header = await screen.findByText(/Header/)
@@ -586,6 +544,29 @@ describe('BaseLayout', () => {
         /Please try refreshing your browser/
       )
       expect(errorMainAppUI).toBeInTheDocument()
+    })
+  })
+
+  describe('When Header has a network call error', async () => {
+    it('renders nothing for the errored header', async () => {
+      vi.spyOn(
+        await import('layouts/Header'),
+        'default'
+      ).mockImplementationOnce(() => {
+        throw new Error('Simulated Header Error')
+      })
+
+      setup({ currentUser: userHasDefaultOrg })
+      render(<BaseLayout>hello</BaseLayout>, { wrapper: wrapper() })
+
+      const header = screen.queryByText(/Header/)
+      expect(header).not.toBeInTheDocument()
+
+      const mainAppContent = await screen.findByText('hello')
+      expect(mainAppContent).toBeInTheDocument()
+
+      const footerContent = await screen.findByText(/Footer/)
+      expect(footerContent).toBeInTheDocument()
     })
   })
 })

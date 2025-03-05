@@ -6,12 +6,10 @@ import { useMemo } from 'react'
 import { z } from 'zod'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
-import { type NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { PlanName, Plans } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
@@ -65,6 +63,8 @@ const GetTestResultsSchema = z.object({
       plan: z
         .object({
           value: z.nativeEnum(Plans),
+          isFreePlan: z.boolean(),
+          isTeamPlan: z.boolean(),
         })
         .nullable(),
       repository: z.discriminatedUnion('__typename', [
@@ -111,6 +111,8 @@ query GetTestResults(
   owner(username: $owner) {
     plan {
       value
+      isFreePlan
+      isTeamPlan
     }
     repository: repository(name: $repo) {
       __typename
@@ -181,10 +183,12 @@ interface UseTestResultsArgs {
     testResults: TestResult[]
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
     private: boolean | null
-    plan: PlanName | null
+    planName: PlanName | null
+    isFreePlan: boolean
     defaultBranch: string | null
     totalCount: number | null
     isFirstPullRequest: boolean | null
+    isTeamPlan: boolean | null
   }>
 }
 
@@ -230,42 +234,40 @@ export const useInfiniteTestResults = ({
           before,
         },
       }).then((res) => {
+        const callingFn = 'useInfiniteTestResults'
         const parsedData = GetTestResultsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useInfiniteTestResults - 404 Failed to parse data',
-            error: parsedData.error,
-          } satisfies NetworkErrorObject)
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedData.error },
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useInfiniteTestResults - 404 Not found error',
-          } satisfies NetworkErrorObject)
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>
                   Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
+                  {/* @ts-expect-error - A hasn't been typed yet */}
                   <A to={{ pageName: 'membersTab' }}>click here </A> to activate
                   your account.
                 </p>
               ),
             },
-            dev: 'useInfiniteTestResults - 403 Owner not activated',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         return {
@@ -281,7 +283,9 @@ export const useInfiniteTestResults = ({
             data?.owner?.repository?.testAnalytics?.testResults?.totalCount ??
             0,
           private: data?.owner?.repository?.private ?? null,
-          plan: data?.owner?.plan?.value ?? null,
+          planName: data?.owner?.plan?.value ?? null,
+          isFreePlan: data?.owner?.plan?.isFreePlan ?? false,
+          isTeamPlan: data?.owner?.plan?.isTeamPlan ?? false,
           defaultBranch: data?.owner?.repository?.defaultBranch ?? null,
           isFirstPullRequest:
             data?.owner?.repository?.isFirstPullRequest ?? null,
@@ -305,7 +309,9 @@ export const useInfiniteTestResults = ({
       testResults: memoedData,
       totalCount: data?.pages?.[0]?.totalCount ?? 0,
       private: data?.pages?.[0]?.private ?? null,
-      plan: data?.pages?.[0]?.plan ?? null,
+      planName: data?.pages?.[0]?.planName ?? null,
+      isFreePlan: data?.pages?.[0]?.isFreePlan ?? false,
+      isTeamPlan: data?.pages?.[0]?.isTeamPlan ?? false,
       defaultBranch: data?.pages?.[0]?.defaultBranch ?? null,
       isFirstPullRequest: data?.pages?.[0]?.isFirstPullRequest ?? null,
     },

@@ -5,8 +5,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import FlagMultiSelect from './FlagMultiSelect'
 
 const mocks = vi.hoisted(() => ({
@@ -187,13 +185,13 @@ describe('FlagMultiSelect', () => {
       isIntersecting = false,
       noNextPage = false,
       backfillData = mockBackfillHasFlagsAndActive,
-      tierValue = TierNames.PRO,
+      isTeamPlan = false,
       isPrivate = false,
     } = {
       isIntersecting: false,
       noNextPage: false,
       mockBackfillHasFlagsAndActive: mockBackfillHasFlagsAndActive,
-      tierValue: TierNames.PRO,
+      isTeamPlan: false,
       isPrivate: false,
     }
   ) {
@@ -212,15 +210,15 @@ describe('FlagMultiSelect', () => {
 
         return HttpResponse.json({ data: mockFirstResponse })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: backfillData })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: tierValue } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
       })
     )
@@ -346,7 +344,7 @@ describe('FlagMultiSelect', () => {
     describe('repo is public', () => {
       it('renders multi select', async () => {
         setup({
-          tierValue: TierNames.TEAM,
+          isTeamPlan: true,
           isPrivate: false,
         })
         render(<FlagMultiSelect />, { wrapper })
@@ -358,7 +356,7 @@ describe('FlagMultiSelect', () => {
 
     describe('repo is private', () => {
       it('does not show multi select', async () => {
-        setup({ tierValue: TierNames.TEAM, isPrivate: true })
+        setup({ isTeamPlan: true, isPrivate: true })
         const { container } = render(<FlagMultiSelect />, { wrapper })
 
         await waitFor(() => queryClient.isFetching)

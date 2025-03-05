@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const RequestSchema = z.object({
   owner: z
@@ -43,13 +44,13 @@ export const useUploadTokenRequired = ({
           owner,
         },
       }).then((res) => {
+        const callingFn = 'useUploadTokenRequired'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: null,
-            dev: 'Failed parse for GetUploadTokenRequired',
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

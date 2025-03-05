@@ -281,7 +281,8 @@ describe('useBranchBundlesNames', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'BranchBundlesNamesQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )

@@ -61,6 +61,15 @@ export const saveToLocalStorage = (localStorageKey: string) => {
   }
 }
 
+export const removeFromLocalStorage = (localStorageKey: string) => {
+  const currentStore = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
+  if (currentStore) {
+    const store = JSON.parse(currentStore)
+    delete store[localStorageKey]
+    localStorage.setItem(LOCAL_STORE_ROOT_KEY, JSON.stringify(store))
+  }
+}
+
 /*
  * WARNING: not for use outside of this hook, only exported for testing purposes
  */
@@ -89,16 +98,13 @@ const DismissButton: React.FC<React.PropsWithChildren> = ({ children }) => {
   }
 
   return (
-    <>
-      {/* @ts-ignore */}
-      <Button
-        variant="plain"
-        hook={`dismiss-${localStorageKey}`}
-        onClick={handleClick}
-      >
-        {children}
-      </Button>
-    </>
+    <Button
+      variant="plain"
+      hook={`dismiss-${localStorageKey}`}
+      onClick={handleClick}
+    >
+      {children}
+    </Button>
   )
 }
 

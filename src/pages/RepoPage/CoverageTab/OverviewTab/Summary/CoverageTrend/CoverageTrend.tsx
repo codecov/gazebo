@@ -1,6 +1,7 @@
+import { keepPreviousData } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
+import { useBranches } from 'services/branches/useBranches'
 import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 import { SummaryField } from 'ui/Summary'
@@ -30,13 +31,9 @@ function CoverageTrend() {
     defaultBranch: overview?.defaultBranch ?? '',
   })
 
-  const { data, isLoading } = useRepoCoverageTimeseries({
+  const { data, isPending, isSuccess } = useRepoCoverageTimeseries({
     branch: selection?.name,
-    options: {
-      enabled: !!selection?.name,
-      suspense: false,
-      keepPreviousData: true,
-    },
+    options: { enabled: !!selection?.name, placeholderData: keepPreviousData },
   })
 
   return (
@@ -44,9 +41,9 @@ function CoverageTrend() {
       <TrendDropdown />
       <div className="flex items-center gap-2 pb-[1.3rem]">
         {/* ^ CSS doesn't want to render like the others without a p tag in the dom. */}
-        {isLoading ? (
+        {isPending ? (
           <Spinner />
-        ) : data?.measurements?.length > 0 ? (
+        ) : isSuccess && data.measurements.length > 0 ? (
           <TotalsNumber value={data?.coverageChange ?? 0} light showChange />
         ) : (
           <p className="text-sm font-medium">

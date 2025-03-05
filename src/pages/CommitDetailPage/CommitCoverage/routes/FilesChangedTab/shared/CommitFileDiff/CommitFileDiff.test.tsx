@@ -10,7 +10,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import { ImpactedFileType } from 'services/comparison'
+import { ImpactedFileType } from 'services/comparison/useComparisonForCommitAndParent'
 
 import CommitFileDiff from './CommitFileDiff'
 
@@ -48,7 +48,7 @@ window.scrollTo = scrollToMock
 window.scrollY = 100
 
 class ResizeObserverMock {
-  callback = (x: any) => null
+  callback = (_x: any) => null
 
   constructor(callback: any) {
     this.callback = callback
@@ -97,7 +97,6 @@ const baseMock = (impactedFile: ImpactedFileType | null) => {
 }
 
 const mockImpactedFile = {
-  isCriticalFile: false,
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
   isNewFile: false,
@@ -247,10 +246,10 @@ describe('CommitFileDiff', () => {
     }))
 
     server.use(
-      graphql.query('ImpactedFileComparedWithParent', (info) => {
+      graphql.query('ImpactedFileComparedWithParent', () => {
         return HttpResponse.json({ data: baseMock(impactedFile) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(bundleAnalysisEnabled) })
       })
     )
@@ -298,7 +297,7 @@ describe('CommitFileDiff', () => {
     beforeEach(() => {
       const impactedFile = {
         ...mockImpactedFile,
-        isCriticalFile: false,
+
         isNewFile: true,
       }
       setup({ impactedFile })
@@ -344,22 +343,6 @@ describe('CommitFileDiff', () => {
     })
   })
 
-  describe('a critical file', () => {
-    beforeEach(() => {
-      const impactedFile = {
-        ...mockImpactedFile,
-        isCriticalFile: true,
-      }
-      setup({ impactedFile })
-    })
-    it('renders a critical file label', async () => {
-      render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
-
-      const criticalFile = await screen.findByText(/Critical File/i)
-      expect(criticalFile).toBeInTheDocument()
-    })
-  })
-
   describe('when there is no data', () => {
     let consoleSpy: MockInstance
 
@@ -375,10 +358,10 @@ describe('CommitFileDiff', () => {
       setup({ impactedFile: null })
       render(<CommitFileDiff path={'random/path'} />, { wrapper })
 
-      const criticalFile = await screen.findByText(
+      const errorMessage = await screen.findByText(
         /There was a problem getting the source code from your provider. Unable to show line by line coverage/i
       )
-      expect(criticalFile).toBeInTheDocument()
+      expect(errorMessage).toBeInTheDocument()
     })
 
     it('renders a login link', async () => {
@@ -441,7 +424,7 @@ describe('CommitFileDiff', () => {
     describe('when segment is an empty array', () => {
       const impactedFile = {
         ...mockImpactedFile,
-        isCriticalFile: false,
+
         headName: 'flag1/file.js',
         segments: { results: [] },
       }

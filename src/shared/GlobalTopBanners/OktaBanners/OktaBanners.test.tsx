@@ -1,5 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -15,34 +19,45 @@ vi.mock('../OktaErrorBanners', () => ({
   default: () => 'OktaErrorBanners',
 }))
 
-const wrapper =
-  (initialEntries = ['/gh/owner']): React.FC<React.PropsWithChildren> =>
-  ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner">
-          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
-
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+const wrapper =
+  (initialEntries = ['/gh/owner']): React.FC<React.PropsWithChildren> =>
+  ({ children }) => (
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner">
+            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
+  )
 
 const server = setupServer()
-beforeAll(() => server.listen())
-beforeEach(() => {
-  server.resetHandlers()
-  queryClient.clear()
+beforeAll(() => {
+  server.listen()
 })
-afterAll(() => server.close())
+
+beforeEach(() => {
+  queryClient.clear()
+  queryClientV5.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 describe('OktaBanners', () => {
   function setup(data = {}) {
     server.use(
-      graphql.query('GetOktaConfig', (info) => {
+      graphql.query('GetOktaConfig', () => {
         return HttpResponse.json({ data: data })
       })
     )
@@ -50,14 +65,12 @@ describe('OktaBanners', () => {
 
   describe('when owner is not provided', () => {
     it('should render null', async () => {
-      setup({
-        owner: null,
-      })
+      setup({ owner: null })
       const { container } = render(<OktaBanners />, {
         wrapper: wrapper(['/gh']),
       })
 
-      expect(container).toBeEmptyDOMElement()
+      await waitFor(() => expect(container).toBeEmptyDOMElement())
     })
   })
 
@@ -80,7 +93,7 @@ describe('OktaBanners', () => {
         })
 
         const { container } = render(<OktaBanners />, { wrapper: wrapper() })
-        expect(container).toBeEmptyDOMElement()
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
 
@@ -102,7 +115,7 @@ describe('OktaBanners', () => {
         })
 
         const { container } = render(<OktaBanners />, { wrapper: wrapper() })
-        expect(container).toBeEmptyDOMElement()
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
 
@@ -124,7 +137,7 @@ describe('OktaBanners', () => {
         })
 
         const { container } = render(<OktaBanners />, { wrapper: wrapper() })
-        expect(container).toBeEmptyDOMElement()
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
 

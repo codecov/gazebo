@@ -19,7 +19,6 @@ const mockData = {
           flagNames: ['a', 'b'],
           components: [],
           coverageFile: {
-            isCriticalFile: true,
             hashedPath: 'hashed-path',
             content:
               'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
@@ -95,7 +94,6 @@ describe('CommitFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.list}
         />,
         { wrapper }
@@ -105,7 +103,7 @@ describe('CommitFileEntry', () => {
       expect(path).toBeInTheDocument()
       expect(path).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/commit/1234/blob/dir/file.js'
+        '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?dropdown=coverage'
       )
     })
 
@@ -118,7 +116,6 @@ describe('CommitFileEntry', () => {
             path="dir/file.js"
             name="file.js"
             urlPath="dir"
-            isCriticalFile={false}
             displayType={displayTypeParameter.list}
             filters={{ flags: ['flag-1'] }}
           />,
@@ -129,7 +126,7 @@ describe('CommitFileEntry', () => {
         expect(path).toBeInTheDocument()
         expect(path).toHaveAttribute(
           'href',
-          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1'
+          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1&dropdown=coverage'
         )
       })
     })
@@ -143,7 +140,6 @@ describe('CommitFileEntry', () => {
             path="dir/file.js"
             name="file.js"
             urlPath="dir"
-            isCriticalFile={false}
             displayType={displayTypeParameter.list}
             filters={{ flags: ['flag-1'], components: ['component-test'] }}
           />,
@@ -154,7 +150,7 @@ describe('CommitFileEntry', () => {
         expect(path).toBeInTheDocument()
         expect(path).toHaveAttribute(
           'href',
-          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1&components%5B0%5D=component-test'
+          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1&components%5B0%5D=component-test&dropdown=coverage'
         )
       })
     })
@@ -169,7 +165,6 @@ describe('CommitFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
         />,
         { wrapper }
@@ -179,7 +174,7 @@ describe('CommitFileEntry', () => {
       expect(path).toBeInTheDocument()
       expect(path).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/commit/1234/blob/dir/file.js'
+        '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?dropdown=coverage'
       )
     })
 
@@ -191,7 +186,6 @@ describe('CommitFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
         />,
         { wrapper }
@@ -210,7 +204,6 @@ describe('CommitFileEntry', () => {
             path="dir/file.js"
             name="file.js"
             urlPath="dir"
-            isCriticalFile={false}
             displayType={displayTypeParameter.tree}
             filters={{ flags: ['flag-1'] }}
           />,
@@ -221,29 +214,9 @@ describe('CommitFileEntry', () => {
         expect(path).toBeInTheDocument()
         expect(path).toHaveAttribute(
           'href',
-          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1'
+          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1&dropdown=coverage'
         )
       })
-    })
-  })
-
-  describe('file is a critical file', () => {
-    it('displays critical file label', () => {
-      setup()
-      render(
-        <CommitFileEntry
-          commitSha="1234"
-          path="dir/file.js"
-          name="file.js"
-          urlPath="dir"
-          isCriticalFile={true}
-          displayType={displayTypeParameter.tree}
-        />,
-        { wrapper }
-      )
-
-      const label = screen.getByText('Critical File')
-      expect(label).toBeInTheDocument()
     })
   })
 
@@ -256,7 +229,6 @@ describe('CommitFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
         />,
         { wrapper }
@@ -282,7 +254,7 @@ describe('CommitFileEntry', () => {
           },
           flagNames: ['a', 'b'],
           componentNames: [],
-          isCriticalFile: true,
+
           totals: 66.67,
           hashedPath: 'hashed-path',
         })
@@ -300,7 +272,6 @@ describe('CommitFileEntry', () => {
               path="dir/file.js"
               name="file.js"
               urlPath="dir"
-              isCriticalFile={false}
               displayType={displayTypeParameter.tree}
               filters={{ flags: ['flag-1'] }}
             />,
@@ -329,7 +300,6 @@ describe('CommitFileEntry', () => {
               path="dir/file.js"
               name="file.js"
               urlPath="dir"
-              isCriticalFile={false}
               displayType={displayTypeParameter.tree}
               filters={{ flags: [] }}
             />,

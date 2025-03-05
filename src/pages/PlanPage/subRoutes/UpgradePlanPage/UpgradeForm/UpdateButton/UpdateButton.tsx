@@ -1,14 +1,14 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
-import { isFreePlan, PlanName } from 'shared/utils/billing'
+import { IndividualPlan } from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
 import Button from 'ui/Button'
 
 interface BillingControlsProps {
   seats: number
   isValid: boolean
-  newPlan?: PlanName
+  newPlan?: IndividualPlan
 }
 
 const UpdateButton: React.FC<BillingControlsProps> = ({
@@ -17,12 +17,12 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
   seats,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: planData } = usePlanData({ provider, owner })
 
-  const currentPlanValue = accountDetails?.plan?.value
-  const currentPlanQuantity = accountDetails?.plan?.quantity || 0
+  const currentPlanValue = planData?.plan?.value
+  const currentPlanQuantity = planData?.plan?.planUserCount || 0
 
-  const isSamePlan = newPlan === currentPlanValue
+  const isSamePlan = newPlan?.value === currentPlanValue
   const noChangeInSeats = seats === currentPlanQuantity
   const disabled = !isValid || (isSamePlan && noChangeInSeats)
 
@@ -36,7 +36,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
         hook="submit-upgrade"
         to={undefined}
       >
-        {isFreePlan(currentPlanValue) ? 'Proceed to checkout' : 'Update'}
+        {planData?.plan?.isFreePlan ? 'Proceed to checkout' : 'Update'}
       </Button>
     </div>
   )

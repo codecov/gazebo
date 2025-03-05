@@ -162,7 +162,7 @@ describe('useBundleSummary', () => {
 
         return HttpResponse.json({ data: mockBundleSummary })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )
@@ -408,7 +408,8 @@ describe('useBundleSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'BundleSummaryQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )

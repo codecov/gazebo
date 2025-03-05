@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { PlanName, Plans } from 'shared/utils/billing'
+import { BillingRate, PlanName, Plans } from 'shared/utils/billing'
 
 import ActivationBanner from './ActivationBanner'
 
@@ -52,10 +52,10 @@ afterAll(() => {
 const mockTrialData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: 'ONGOING',
   trialStartDate: '2023-01-01T08:55:25',
   trialEndDate: '2023-01-10T08:55:25',
@@ -63,20 +63,24 @@ const mockTrialData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTrialPlan: false,
 }
 
 describe('ActivationBanner', () => {
   function setup(
     privateRepos = true,
     trialStatus = 'NOT_STARTED',
-    value: PlanName = Plans.USERS_BASIC,
+    value: PlanName = Plans.USERS_DEVELOPER,
     hasSeatsLeft = true,
     isSelfHosted = false
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -86,14 +90,17 @@ describe('ActivationBanner', () => {
                 trialStatus,
                 value,
                 hasSeatsLeft,
+                isFreePlan: value === Plans.USERS_DEVELOPER,
+                isTeamPlan:
+                  value === Plans.USERS_TEAMM || value === Plans.USERS_TEAMY,
               },
               pretrialPlan: {
                 baseUnitPrice: 10,
                 benefits: [],
-                billingRate: 'monthly',
-                marketingName: 'Users Basic',
+                billingRate: BillingRate.MONTHLY,
+                marketingName: 'Users Developer',
                 monthlyUploadLimit: 250,
-                value: Plans.USERS_BASIC,
+                value: Plans.USERS_DEVELOPER,
               },
             },
           },
@@ -111,7 +118,7 @@ describe('ActivationBanner', () => {
   })
 
   it('does not render trial eligible banner if user is not eligible to trial', async () => {
-    setup(false, 'ONGOING', Plans.USERS_BASIC, true)
+    setup(false, 'ONGOING', Plans.USERS_DEVELOPER, true)
     const { container } = render(<ActivationBanner />, { wrapper })
 
     await waitFor(() => queryClient.isFetching)
@@ -131,7 +138,7 @@ describe('ActivationBanner', () => {
   })
 
   it('renders seats limit reached banner if user has no seats left and on free plan', async () => {
-    setup(true, 'ONGOING', Plans.USERS_BASIC, false)
+    setup(true, 'ONGOING', Plans.USERS_DEVELOPER, false)
     render(<ActivationBanner />, { wrapper })
 
     const FreePlanSeatsLimitBanner = await screen.findByText(
@@ -151,7 +158,7 @@ describe('ActivationBanner', () => {
   })
 
   it('renders activation required self hosted banner if user is self hosted', async () => {
-    setup(true, 'ONGOING', Plans.USERS_BASIC, true, true)
+    setup(true, 'ONGOING', Plans.USERS_DEVELOPER, true, true)
     render(<ActivationBanner />, { wrapper })
 
     const ActivationRequiredSelfHostedBanner = await screen.findByText(

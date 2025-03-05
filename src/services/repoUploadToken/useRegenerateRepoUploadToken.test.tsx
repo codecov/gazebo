@@ -50,7 +50,7 @@ describe('useRegenerateRepoUploadToken', () => {
     mocks.useAddNotification.mockReturnValue(mockAddToast)
 
     server.use(
-      graphql.mutation('RegenerateRepositoryUploadToken', (info) => {
+      graphql.mutation('RegenerateRepositoryUploadToken', () => {
         if (isErrorResponse) {
           return HttpResponse.json({
             data: {

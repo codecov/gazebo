@@ -39,19 +39,6 @@ export const accountDetailsObject = {
   activated_user_count: 19,
   inactive_user_count: 5,
   plan_auto_activate: true,
-  plan: {
-    marketing_name: 'Pro Team',
-    value: Plans.USERS_PR_INAPPM,
-    billing_rate: 'monthly',
-    base_unit_price: 12,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    quantity: 20,
-  },
   subscription_detail: {
     latest_invoice: {
       id: 'in_1JnNyfGlVGuVgOrkkdkCYayW',
@@ -153,19 +140,6 @@ export const accountDetailsParsedObj = {
   activatedUserCount: 19,
   inactiveUserCount: 5,
   planAutoActivate: true,
-  plan: {
-    marketingName: 'Pro Team',
-    value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
-    baseUnitPrice: 12,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    quantity: 20,
-  },
   subscriptionDetail: {
     latestInvoice: {
       id: 'in_1JnNyfGlVGuVgOrkkdkCYayW',

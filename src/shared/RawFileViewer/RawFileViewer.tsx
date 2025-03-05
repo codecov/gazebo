@@ -5,13 +5,12 @@ import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
-import { useCommitBasedCoverageForFileViewer } from 'services/file'
+import { useCommitBasedCoverageForFileViewer } from 'services/file/useCommitBasedCoverageForFileViewer'
 import { useOwner } from 'services/user'
 import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsMapper'
 import { getFilenameFromFilePath } from 'shared/utils/url'
 import A from 'ui/A'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
-import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Title from 'ui/FileViewer/ToggleHeader/Title'
 import { VirtualFileRenderer } from 'ui/VirtualRenderers'
@@ -72,7 +71,6 @@ interface CodeRendererContentProps {
   content?: string | null
   path: string
   coverageData?: Dictionary<'H' | 'M' | 'P'>
-  stickyPadding: number
 }
 
 function CodeRendererContent({
@@ -80,7 +78,6 @@ function CodeRendererContent({
   content,
   path,
   coverageData,
-  stickyPadding,
 }: CodeRendererContentProps) {
   if (isUnsupportedFileType) {
     return (
@@ -114,7 +111,6 @@ interface RawFileViewerProps {
   title: string | React.ReactNode
   sticky?: boolean
   withKey?: boolean
-  stickyPadding?: number
   commit: string
   showFlagsSelect?: boolean
   showComponentsSelect?: boolean
@@ -126,7 +122,6 @@ function RawFileViewer({
   title,
   sticky = false,
   withKey = true,
-  stickyPadding,
   commit,
   showFlagsSelect = false,
   showComponentsSelect = false,
@@ -151,7 +146,6 @@ function RawFileViewer({
     content,
     totals: fileCoverage,
     coverage: coverageData,
-    isCriticalFile,
   } = useCommitBasedCoverageForFileViewer({
     owner,
     repo,
@@ -180,14 +174,11 @@ function RawFileViewer({
       />
       <div id={path} className="target:ring">
         <CodeRendererProgressHeader path={path} fileCoverage={fileCoverage} />
-        {!!isCriticalFile && <CriticalFileLabel variant="borderTop" />}
         <CodeRendererContent
           isUnsupportedFileType={isUnsupportedFileType}
           content={content}
           path={path}
           coverageData={coverageData}
-          // just adding a fallback value here, as we'll be removing it with the move to the virtual file renderer
-          stickyPadding={stickyPadding ?? 0}
         />
       </div>
     </div>

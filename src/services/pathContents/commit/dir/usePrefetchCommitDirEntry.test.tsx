@@ -43,7 +43,7 @@ const mockData = {
           results: [
             {
               name: 'src',
-              path: null,
+              path: 'src',
               __typename: 'PathContentDir',
               hits: 4,
               misses: 2,
@@ -51,7 +51,6 @@ const mockData = {
               partials: 1,
               lines: 7,
               type: 'file',
-              isCriticalFile: false,
             },
           ],
         },
@@ -141,7 +140,7 @@ describe('usePrefetchCommitDirEntry', () => {
     isUnsuccessfulParse = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CommitPathContents', (info) => {
+      graphql.query('CommitPathContents', () => {
         if (isMissingCoverage) {
           return HttpResponse.json({ data: mockDataMissingCoverage })
         } else if (isUnknownPath) {
@@ -191,7 +190,7 @@ describe('usePrefetchCommitDirEntry', () => {
           {
             __typename: 'PathContentDir',
             name: 'src',
-            path: null,
+            path: 'src',
             percentCovered: 50.0,
             hits: 4,
             misses: 2,
@@ -251,7 +250,7 @@ describe('usePrefetchCommitDirEntry', () => {
     })
 
     describe('and bad response', () => {
-      it('returns 404 failed to parse', async () => {
+      it('returns 400 failed to parse', async () => {
         console.error = () => {}
         setup({ isUnsuccessfulParse: true })
         const { result } = renderHook(
@@ -267,8 +266,8 @@ describe('usePrefetchCommitDirEntry', () => {
 
         expect(queryClient.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'usePrefetchCommitDirEntry - 404 schema parsing failed',
+            status: 400,
+            dev: 'usePrefetchCommitDirEntry - Parsing Error',
           })
         )
       })
@@ -292,7 +291,7 @@ describe('usePrefetchCommitDirEntry', () => {
         expect(queryClient.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
             status: 404,
-            dev: 'usePrefetchCommitDirEntry - 404 NotFoundError',
+            dev: 'usePrefetchCommitDirEntry - Not Found Error',
           })
         )
       })
@@ -316,7 +315,7 @@ describe('usePrefetchCommitDirEntry', () => {
         expect(queryClient.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
             status: 403,
-            dev: 'usePrefetchCommitDirEntry - 403 OwnerNotActivatedError',
+            dev: 'usePrefetchCommitDirEntry - Owner Not Activated',
           })
         )
       })

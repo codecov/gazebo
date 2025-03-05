@@ -22,7 +22,7 @@ const imageExtCache = new Map()
 export function useImage({ src }: { src: string }) {
   const [, setIsLoading] = useState(true)
 
-  let imageCache = useMemo(
+  const imageCache = useMemo(
     () => (imageExtCache ? imageExtCache : new Map()),
     []
   )

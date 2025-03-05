@@ -4,8 +4,8 @@ import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import MembersActivation from './MembersActivation'
 
@@ -20,7 +20,7 @@ const mockedAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
@@ -29,10 +29,10 @@ const mockedAccountDetails = {
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -40,6 +40,12 @@ const mockPlanData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const server = setupServer()
@@ -72,13 +78,28 @@ describe('Members Activation', () => {
   function setup(
     accountDetails = mockedAccountDetails,
     trialStatus = TrialStatuses.NOT_STARTED,
-    planValue = mockedAccountDetails.plan.value
+    planValue = mockedAccountDetails.plan.value,
+    isEnterprisePlan = false,
+    isAdmin = true
   ) {
     server.use(
-      http.get('/internal/:provider/:owner/account-details/', (info) => {
+      http.get('/internal/:provider/:owner/account-details/', () => {
         return HttpResponse.json(accountDetails)
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('DetailOwner', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              ownerid: 123,
+              username: 'codecov',
+              avatarUrl: null,
+              isCurrentUserPartOfOrg: true,
+              isAdmin,
+            },
+          },
+        })
+      }),
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -87,6 +108,7 @@ describe('Members Activation', () => {
                 ...mockPlanData,
                 trialStatus,
                 value: planValue,
+                isEnterprisePlan,
               },
             },
           },
@@ -172,6 +194,90 @@ describe('Members Activation', () => {
 
           const AutoActivate = screen.queryByText(/AutoActivate/)
           expect(AutoActivate).not.toBeInTheDocument()
+        })
+      })
+
+      describe('user is in an enterprise org', () => {
+        describe('and they are not an admin', () => {
+          it('does not render auto activate component', async () => {
+            setup(
+              { ...mockedAccountDetails, planAutoActivate: true },
+              TrialStatuses.NOT_STARTED,
+              Plans.USERS_ENTERPRISEY,
+              true,
+              false
+            )
+
+            render(<MembersActivation />, { wrapper })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const AutoActivate = screen.queryByText(/AutoActivate/)
+            expect(AutoActivate).not.toBeInTheDocument()
+          })
+        })
+
+        describe('and they are an admin', () => {
+          it('renders auto activate component', async () => {
+            setup(
+              { ...mockedAccountDetails, planAutoActivate: true },
+              TrialStatuses.NOT_STARTED,
+              Plans.USERS_ENTERPRISEY,
+              true,
+              true
+            )
+
+            render(<MembersActivation />, { wrapper })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const AutoActivate = await screen.findByText(/AutoActivate/)
+            expect(AutoActivate).toBeInTheDocument()
+          })
+        })
+      })
+
+      describe('user is not in an enterprise org', () => {
+        describe('and they are not an admin', () => {
+          it('renders auto activate component', async () => {
+            setup(
+              { ...mockedAccountDetails, planAutoActivate: true },
+              TrialStatuses.NOT_STARTED,
+              Plans.USERS_PR_INAPPM,
+              false,
+              false
+            )
+
+            render(<MembersActivation />, { wrapper })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const AutoActivate = await screen.findByText(/AutoActivate/)
+            expect(AutoActivate).toBeInTheDocument()
+          })
+        })
+
+        describe('and they are an admin', () => {
+          it('renders auto activate component', async () => {
+            setup(
+              { ...mockedAccountDetails, planAutoActivate: true },
+              TrialStatuses.NOT_STARTED,
+              Plans.USERS_PR_INAPPM,
+              false,
+              true
+            )
+
+            render(<MembersActivation />, { wrapper })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const AutoActivate = await screen.findByText(/AutoActivate/)
+            expect(AutoActivate).toBeInTheDocument()
+          })
         })
       })
     })

@@ -5,8 +5,6 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import A from 'ui/A'
-
 import { useRepoComponentsSelect } from './useRepoComponentsSelect'
 
 const queryClient = new QueryClient({
@@ -45,14 +43,8 @@ const dataReturned = {
       __typename: 'Repository',
       coverageAnalytics: {
         componentsYaml: [
-          {
-            name: 'foo',
-            id: '1',
-          },
-          {
-            name: 'bar',
-            id: '2',
-          },
+          { name: 'foo', id: '1' },
+          { name: 'bar', id: '2' },
         ],
       },
     },
@@ -66,7 +58,7 @@ describe('RepoComponentsYamlSelector', () => {
     isNotFoundError = false,
   } = {}) {
     server.use(
-      graphql.query('RepoComponentsSelector', (info) => {
+      graphql.query('RepoComponentsSelector', () => {
         if (isSchemaInvalid) {
           return HttpResponse.json({})
         }
@@ -135,6 +127,7 @@ describe('RepoComponentsYamlSelector', () => {
     afterAll(() => {
       consoleSpy.mockRestore()
     })
+
     it('returns an error', async () => {
       setup({ isSchemaInvalid: true })
       const { result } = renderHook(() => useRepoComponentsSelect(), {
@@ -142,11 +135,12 @@ describe('RepoComponentsYamlSelector', () => {
       })
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 404,
-          data: {},
-          dev: 'useRepoComponentsSelect - 404 Error parsing repo components data',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useRepoComponentsSelect - Parsing Error',
+            status: 400,
+          })
+        )
       )
     })
   })
@@ -168,11 +162,12 @@ describe('RepoComponentsYamlSelector', () => {
       })
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 404,
-          data: {},
-          dev: 'useRepoComponentsSelect - 404 RepoNotFoundError',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useRepoComponentsSelect - Not Found Error',
+            status: 404,
+          })
+        )
       )
     })
   })
@@ -194,25 +189,12 @@ describe('RepoComponentsYamlSelector', () => {
       })
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 403,
-          data: {
-            detail: (
-              <p>
-                Activation is required to view this repo, please{' '}
-                <A
-                  to={{ pageName: 'membersTab' }}
-                  hook="members-page-link"
-                  isExternal={false}
-                >
-                  click here{' '}
-                </A>{' '}
-                to activate your account.
-              </p>
-            ),
-          },
-          dev: 'useRepoComponentsSelect - 403 OwnerNotActivatedError',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useRepoComponentsSelect - Owner Not Activated',
+            status: 403,
+          })
+        )
       )
     })
   })

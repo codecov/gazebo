@@ -15,11 +15,7 @@ const mockRepoCoverage = {
         head: {
           yamlState: 'DEFAULT',
           coverageAnalytics: {
-            totals: {
-              percentCovered: 70.44,
-              lineCount: 90,
-              hitsCount: 80,
-            },
+            totals: { percentCovered: 70.44, lineCount: 90, hitsCount: 80 },
           },
         },
       },
@@ -89,7 +85,7 @@ describe('useRepoCoverage', () => {
     nullBranch = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoCoverage', (info) => {
+      graphql.query('GetRepoCoverage', () => {
         if (nullBranch) {
           return HttpResponse.json({ data: mockNullBranch })
         } else if (badResponse) {
@@ -115,9 +111,7 @@ describe('useRepoCoverage', () => {
             repo: 'woof',
             branch: 'main',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() =>
@@ -126,11 +120,7 @@ describe('useRepoCoverage', () => {
           head: {
             yamlState: 'DEFAULT',
             coverageAnalytics: {
-              totals: {
-                percentCovered: 70.44,
-                lineCount: 90,
-                hitsCount: 80,
-              },
+              totals: { percentCovered: 70.44, lineCount: 90, hitsCount: 80 },
             },
           },
         })
@@ -149,9 +139,7 @@ describe('useRepoCoverage', () => {
             repo: 'woof',
             branch: 'main',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => {
@@ -170,7 +158,7 @@ describe('useRepoCoverage', () => {
       consoleSpy.mockRestore()
     })
 
-    it('rejects with 404', async () => {
+    it('rejects with 400', async () => {
       setup({ badResponse: true })
       const { result } = renderHook(
         () =>
@@ -188,8 +176,8 @@ describe('useRepoCoverage', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useRepoCoverage - 404 failed to parse',
+            dev: 'useRepoCoverage - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -216,16 +204,14 @@ describe('useRepoCoverage', () => {
             repo: 'woof',
             branch: 'main',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useRepoCoverage - Not Found Error',
             status: 404,
-            dev: 'useRepoCoverage - 404 NotFoundError',
           })
         )
       )
@@ -252,9 +238,7 @@ describe('useRepoCoverage', () => {
             repo: 'woof',
             branch: 'main',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -262,8 +246,8 @@ describe('useRepoCoverage', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useRepoCoverage - Owner Not Activated',
             status: 403,
-            dev: 'useRepoCoverage - 403 OwnerNotActivated Error',
           })
         )
       )

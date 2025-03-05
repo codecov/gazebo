@@ -4,9 +4,8 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { TrialStatuses, usePlanData } from 'services/account'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import { useOwner } from 'services/user'
-import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
 
 import ExpiredBanner from './ExpiredBanner'
 import OngoingBanner from './OngoingBanner'
@@ -52,10 +51,9 @@ const TrialBanner: React.FC = () => {
   const { data: planData } = usePlanData({
     provider: providerString,
     owner: owner || '',
-    opts: { enabled: ownerData?.isCurrentUserPartOfOrg },
+    opts: { enabled: !!ownerData?.isCurrentUserPartOfOrg },
   })
 
-  const planValue = planData?.plan?.value
   const trialStatus = planData?.plan?.trialStatus
   const dateDiff = determineDateDiff({
     trialEndDate: planData?.plan?.trialEndDate,
@@ -72,10 +70,10 @@ const TrialBanner: React.FC = () => {
     return null
   }
 
-  // user is not on a free plan, trial is currently on going
-  // there are 3 or less days left, so display ongoing banner
+  // Display ongoing banner if user is current on trial plan (ongoing)
+  // and there are 3 or less days left
   if (
-    isTrialPlan(planValue) &&
+    planData?.plan?.isTrialPlan &&
     trialStatus === TrialStatuses.ONGOING &&
     dateDiff < 4 &&
     dateDiff >= 0
@@ -83,8 +81,7 @@ const TrialBanner: React.FC = () => {
     return <OngoingBanner dateDiff={dateDiff} />
   }
 
-  // user has a free plan again, and the trial status is expired
-  if (isFreePlan(planValue) && trialStatus === TrialStatuses.EXPIRED) {
+  if (planData?.plan?.isFreePlan && trialStatus === TrialStatuses.EXPIRED) {
     return <ExpiredBanner />
   }
 

@@ -2,8 +2,8 @@ import isUndefined from 'lodash/isUndefined'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranchComponents } from 'services/branches'
-import { useLocationParams } from 'services/navigation'
+import { useBranchComponents } from 'services/branches/useBranchComponents'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 
@@ -68,7 +68,7 @@ export default function ComponentsMultiSelect() {
   return (
     <div className="w-full sm:w-60">
       <MultiSelect
-        // @ts-expect-error
+        // @ts-expect-error - type issues with MultiSelect
         disabled={false}
         dataMarketing="coverage-tab-component-multi-select"
         hook="coverage-tab-component-multi-select"
@@ -77,12 +77,12 @@ export default function ComponentsMultiSelect() {
         resourceName="component"
         isLoading={isLoading}
         selectedItemsOverride={selectedComponents}
-        onChange={(components: String[]) => {
+        onChange={(components: string[]) => {
           setSelectedComponents(components)
           updateParams({ components })
         }}
         onSearch={(term: string) => setComponentSearch(term)}
-        renderSelected={(selectedItems: String[]) => (
+        renderSelected={(selectedItems: string[]) => (
           <span className="flex items-center gap-2">
             <Icon variant="solid" name="database" />
             {selectedItems.length === 0 ? (

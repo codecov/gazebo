@@ -3,7 +3,7 @@ import {
   QueryClientProvider as QueryClientProviderV5,
   QueryClient as QueryClientV5,
 } from '@tanstack/react-queryV5'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -22,11 +22,13 @@ const mockCommitPageData = ({
   coverageEnabled = true,
   firstPullRequest = false,
   comparisonError = false,
+  hasCachedBundle = false,
 }: {
   bundleAnalysisEnabled?: boolean
   coverageEnabled?: boolean
   firstPullRequest?: boolean
   comparisonError?: boolean
+  hasCachedBundle?: boolean
 }) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
@@ -41,6 +43,10 @@ const mockCommitPageData = ({
           __typename: 'Comparison',
         },
         bundleAnalysis: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+            isCached: hasCachedBundle,
+          },
           bundleAnalysisCompareWithParent: {
             __typename: firstPullRequest
               ? 'FirstPullRequest'
@@ -175,6 +181,7 @@ interface SetupArgs {
   noData?: boolean
   firstPullRequest?: boolean
   comparisonError?: boolean
+  hasCachedBundle?: boolean
 }
 
 describe('CommitBundleAnalysis', () => {
@@ -186,6 +193,7 @@ describe('CommitBundleAnalysis', () => {
       noData = false,
       firstPullRequest = false,
       comparisonError = false,
+      hasCachedBundle = false,
     }: SetupArgs = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
@@ -193,20 +201,22 @@ describe('CommitBundleAnalysis', () => {
       noData: false,
       firstPullRequest: false,
       comparisonError: false,
+      hasCachedBundle: false,
     }
   ) {
     server.use(
-      graphql.query('CommitPageData', (info) => {
+      graphql.query('CommitPageData', () => {
         return HttpResponse.json({
           data: mockCommitPageData({
             coverageEnabled,
             bundleAnalysisEnabled,
             firstPullRequest,
             comparisonError,
+            hasCachedBundle,
           }),
         })
       }),
-      graphql.query('CommitBADropdownSummary', (info) => {
+      graphql.query('CommitBADropdownSummary', () => {
         if (noData) {
           return HttpResponse.json({ data: mockNoData })
         } else if (firstPullRequest) {
@@ -217,7 +227,7 @@ describe('CommitBundleAnalysis', () => {
 
         return HttpResponse.json({ data: mockSummaryData(uncompress) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview({ coverageEnabled, bundleAnalysisEnabled }),
         })
@@ -234,6 +244,33 @@ describe('CommitBundleAnalysis', () => {
         'CommitBundleAnalysisTable'
       )
       expect(commitBundleAnalysisTable).toBeInTheDocument()
+    })
+
+    describe('there are cached bundles', () => {
+      it('renders CachedBundleContentBanner', async () => {
+        setup({ hasCachedBundle: true })
+        render(<CommitBundleAnalysis />, { wrapper })
+
+        const cachedBundleContentBanner = await screen.findByText(
+          'The reported bundle size includes cached data from previous commits'
+        )
+        expect(cachedBundleContentBanner).toBeInTheDocument()
+      })
+    })
+
+    describe('there are no cached bundles', () => {
+      it('does not render CachedBundleContentBanner', async () => {
+        setup({ hasCachedBundle: false })
+        render(<CommitBundleAnalysis />, { wrapper })
+
+        await waitFor(() => queryClientV5.isFetching())
+        await waitFor(() => !queryClientV5.isFetching())
+
+        const cachedBundleContentBanner = screen.queryByText(
+          'The reported bundle size includes cached data from previous commits'
+        )
+        expect(cachedBundleContentBanner).not.toBeInTheDocument()
+      })
     })
 
     describe('there is no data', () => {
@@ -507,6 +544,33 @@ describe('CommitBundleAnalysis', () => {
           const emptyTable = await screen.findByText(/EmptyTable/)
           expect(emptyTable).toBeInTheDocument()
         })
+      })
+    })
+
+    describe('there are cached bundles', () => {
+      it('renders CachedBundleContentBanner', async () => {
+        setup({ hasCachedBundle: true })
+        render(<CommitBundleAnalysis />, { wrapper })
+
+        const cachedBundleContentBanner = await screen.findByText(
+          'The reported bundle size includes cached data from previous commits'
+        )
+        expect(cachedBundleContentBanner).toBeInTheDocument()
+      })
+    })
+
+    describe('there are no cached bundles', () => {
+      it('does not render CachedBundleContentBanner', async () => {
+        setup({ hasCachedBundle: false })
+        render(<CommitBundleAnalysis />, { wrapper })
+
+        await waitFor(() => queryClientV5.isFetching())
+        await waitFor(() => !queryClientV5.isFetching())
+
+        const cachedBundleContentBanner = screen.queryByText(
+          'The reported bundle size includes cached data from previous commits'
+        )
+        expect(cachedBundleContentBanner).not.toBeInTheDocument()
       })
     })
 

@@ -32,7 +32,7 @@ function TeamPlanSpecialOffer() {
       <A
         variant="black"
         to={{ pageName: 'downgradePlanPage' }}
-        hook="proceed-with-basic"
+        hook="proceed-with-developer-plan"
         isExternal={false}
       >
         No thanks, I&apos;ll proceed with cancellation

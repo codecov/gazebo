@@ -4,7 +4,7 @@ import { forwardRef, useMemo, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { BranchBundlesNamesQueryOpts } from 'services/bundleAnalysis/BranchBundlesNamesQueryOpts'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepoOverview } from 'services/repo'
 import Select from 'ui/Select'
 
@@ -86,7 +86,7 @@ const BundleSelector = forwardRef<any, BranchSelectorProps>(
         <span className="max-w-64 text-sm">
           <Select
             ref={ref}
-            // @ts-expect-error
+            // @ts-expect-error - Select hasn't been typed yet
             // using bundles here and not bundlesState because we don't want to disable the select if there aren't any matching bundles in the search
             disabled={bundles.length === 0}
             resourceName="bundle"

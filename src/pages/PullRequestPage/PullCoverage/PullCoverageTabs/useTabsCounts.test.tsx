@@ -26,6 +26,7 @@ const mockPullData = {
           bundleAnalysis: {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
+              isCached: false,
             },
           },
         },
@@ -105,7 +106,7 @@ afterAll(() => {
 describe('useTabsCount', () => {
   function setup({ firstPullRequest = false }) {
     server.use(
-      graphql.query('PullPageData', (info) => {
+      graphql.query('PullPageData', () => {
         if (firstPullRequest) {
           return HttpResponse.json({ data: mockFirstPullData })
         }

@@ -17,10 +17,7 @@ const mockData = {
     repository: {
       __typename: 'Repository',
       repositoryConfig: {
-        indicationRange: {
-          upperRange: 80,
-          lowerRange: 60,
-        },
+        indicationRange: { upperRange: 80, lowerRange: 60 },
       },
       pull: {
         head: {
@@ -37,7 +34,6 @@ const mockData = {
                 partials: 0,
                 lines: 10,
                 percentCovered: 50.0,
-                isCriticalFile: false,
               },
             ],
           },
@@ -71,10 +67,7 @@ const mockDataUnknownPath = {
     repository: {
       __typename: 'Repository',
       repositoryConfig: {
-        indicationRange: {
-          upperRange: 80,
-          lowerRange: 60,
-        },
+        indicationRange: { upperRange: 80, lowerRange: 60 },
       },
       pull: {
         head: {
@@ -141,7 +134,7 @@ describe('useRepoPullContents', () => {
     isUnknownPath = false,
   }) {
     server.use(
-      graphql.query('PullPathContents', (info) => {
+      graphql.query('PullPathContents', () => {
         if (invalidSchema) {
           return HttpResponse.json({ data: {} })
         } else if (repositoryNotFound) {
@@ -190,14 +183,10 @@ describe('useRepoPullContents', () => {
             partials: 0,
             lines: 10,
             percentCovered: 50.0,
-            isCriticalFile: false,
           },
         ],
         commitid: 'commit123',
-        indicationRange: {
-          upperRange: 80,
-          lowerRange: 60,
-        },
+        indicationRange: { upperRange: 80, lowerRange: 60 },
         pathContentsType: 'PathContents',
       }
 
@@ -227,10 +216,7 @@ describe('useRepoPullContents', () => {
 
         expect(result.current.data).toEqual({
           commitid: 'commit123',
-          indicationRange: {
-            upperRange: 80,
-            lowerRange: 60,
-          },
+          indicationRange: { upperRange: 80, lowerRange: 60 },
           results: null,
           pathContentsType: 'MissingCoverage',
         })
@@ -258,10 +244,7 @@ describe('useRepoPullContents', () => {
 
         expect(result.current.data).toEqual({
           commitid: 'commit123',
-          indicationRange: {
-            upperRange: 80,
-            lowerRange: 60,
-          },
+          indicationRange: { upperRange: 80, lowerRange: 60 },
           results: null,
           pathContentsType: 'UnknownPath',
         })
@@ -278,7 +261,7 @@ describe('useRepoPullContents', () => {
         consoleSpy.mockRestore()
       })
 
-      it('returns 404', async () => {
+      it('returns 400', async () => {
         setup({ invalidSchema: true })
         const { result } = renderHook(
           () =>
@@ -298,8 +281,8 @@ describe('useRepoPullContents', () => {
 
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useRepoPullContents - 404 schema parsing failed',
+            dev: 'useRepoPullContents - Parsing Error',
+            status: 400,
           })
         )
       })
@@ -335,8 +318,8 @@ describe('useRepoPullContents', () => {
 
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useRepoPullContents - Not Found Error',
             status: 404,
-            dev: 'useRepoPullContents - 404 NotFoundError',
           })
         )
       })
@@ -372,8 +355,8 @@ describe('useRepoPullContents', () => {
 
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useRepoPullContents - Owner Not Activated',
             status: 403,
-            dev: 'useRepoPullContents - 403 OwnerNotActivatedError',
           })
         )
       })

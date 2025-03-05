@@ -12,13 +12,7 @@ const mockBranchHasCommits = {
     repository: {
       __typename: 'Repository',
       commits: {
-        edges: [
-          {
-            node: {
-              commitid: 'commit-123',
-            },
-          },
-        ],
+        edges: [{ node: { commitid: 'commit-123' } }],
       },
     },
   },
@@ -28,9 +22,7 @@ const mockBranchHasNoCommits = {
   owner: {
     repository: {
       __typename: 'Repository',
-      commits: {
-        edges: [],
-      },
+      commits: { edges: [] },
     },
   },
 }
@@ -113,7 +105,7 @@ describe('useBranchHasCommits', () => {
     commitsIsNull = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBranchCommits', (info) => {
+      graphql.query('GetBranchCommits', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -248,6 +240,7 @@ describe('useBranchHasCommits', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useBranchHasCommits - Not Found Error',
               status: 404,
             })
           )
@@ -283,6 +276,7 @@ describe('useBranchHasCommits', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useBranchHasCommits - Owner Not Activated',
               status: 403,
             })
           )
@@ -318,7 +312,8 @@ describe('useBranchHasCommits', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'useBranchHasCommits - Parsing Error',
+              status: 400,
             })
           )
         )

@@ -7,7 +7,7 @@ import {
   TIME_OPTION_KEY,
   TIME_OPTION_VALUES,
 } from 'pages/RepoPage/shared/constants'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepo } from 'services/repo'
 import { useRepoFlags } from 'services/repo/useRepoFlags'
 
@@ -56,7 +56,7 @@ function useRepoFlagsTable(isDesc: boolean) {
   const { afterDate, interval } = createMeasurementVariables(
     // @ts-expect-errors, useLocation params needs to be updated to have full types
     params?.historicalTrend
-      ? // @ts-expect-errors
+      ? // @ts-expect-errors - useLocationParams has type issues
         params.historicalTrend
       : TIME_OPTION_VALUES.LAST_3_MONTHS,
     repoData?.repository?.oldestCommitAt ?? undefined

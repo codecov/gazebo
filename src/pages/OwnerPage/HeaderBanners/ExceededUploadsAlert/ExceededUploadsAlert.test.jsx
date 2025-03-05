@@ -4,8 +4,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import ExceededUploadsAlert from './ExceededUploadsAlert'
 
@@ -26,7 +26,7 @@ const wrapper = ({ children }) => (
 const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'some-name',
   monthlyUploadLimit: 123,
   value: Plans.USERS_PR_INAPPM,
@@ -37,6 +37,12 @@ const mockPlanDataResponse = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 beforeAll(() => {
@@ -55,7 +61,7 @@ afterAll(() => {
 describe('ExceededUploadsAlert', () => {
   function setup() {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {

@@ -5,6 +5,7 @@ query BranchContents(
   $branch: String!
   $path: String!
   $filters: PathContentsFilters!
+  $after: String
 ) {
   owner(username: $name) {
     username
@@ -19,27 +20,36 @@ query BranchContents(
         }
         branch(name: $branch) {
           head {
-            pathContents(path: $path, filters: $filters) {
+            deprecatedPathContents(path: $path, filters: $filters, first: 20, after: $after) {
               __typename
-              ... on PathContents {
-                results {
-                  __typename
-                  hits
-                  misses
-                  partials
-                  lines
-                  name
-                  path
-                  percentCovered
-                  ... on PathContentFile {
-                    isCriticalFile
+              ... on PathContentConnection {
+                edges {
+                  node {
+                    __typename
+                    hits
+                    misses
+                    partials
+                    lines
+                    name
+                    path
+                    percentCovered
                   }
+                }
+                pageInfo {
+                  hasNextPage
+                  endCursor
                 }
               }
               ... on UnknownPath {
                 message
               }
               ... on MissingCoverage {
+                message
+              }
+              ... on MissingHeadReport {
+                message
+              }
+              ... on UnknownFlags {
                 message
               }
             }

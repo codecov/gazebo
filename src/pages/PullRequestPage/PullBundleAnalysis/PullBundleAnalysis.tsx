@@ -1,7 +1,8 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { CachedBundleContentBanner } from 'shared/CachedBundleContentBanner/CachedBundleContentBanner'
 import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import { ReportUploadType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
@@ -9,16 +10,13 @@ import Spinner from 'ui/Spinner'
 import BundleMessage from './BundleMessage'
 import EmptyTable from './EmptyTable'
 import FirstPullBanner from './FirstPullBanner'
+import PullBundleComparisonTable from './PullBundleComparisonTable'
+import PullBundleHeadTable from './PullBundleHeadTable'
 
 import {
   PullPageDataQueryOpts,
   TBundleAnalysisComparisonResult,
 } from '../queries/PullPageDataQueryOpts'
-
-const PullBundleComparisonTable = lazy(
-  () => import('./PullBundleComparisonTable')
-)
-const PullBundleHeadTable = lazy(() => import('./PullBundleHeadTable'))
 
 interface URLParams {
   provider: string
@@ -35,12 +33,14 @@ const Loader = () => (
 
 interface BundleContentProps {
   bundleCompareType?: TBundleAnalysisComparisonResult
-  headHasBundle?: boolean
+  headHasBundle: boolean
+  hasCachedBundle: boolean
 }
 
 const BundleContent: React.FC<BundleContentProps> = ({
   bundleCompareType,
   headHasBundle,
+  hasCachedBundle,
 }) => {
   if (bundleCompareType === 'FirstPullRequest') {
     return (
@@ -76,9 +76,12 @@ const BundleContent: React.FC<BundleContentProps> = ({
   }
 
   return (
-    <Suspense fallback={<Loader />}>
-      <PullBundleComparisonTable />
-    </Suspense>
+    <>
+      {hasCachedBundle ? <CachedBundleContentBanner /> : null}
+      <Suspense fallback={<Loader />}>
+        <PullBundleComparisonTable />
+      </Suspense>
+    </>
   )
 }
 
@@ -98,15 +101,24 @@ const PullBundleAnalysis: React.FC = () => {
 
   const bundleCompareType =
     data?.pull?.bundleAnalysisCompareWithBase?.__typename
-  const headHasBundle =
+
+  let headHasBundle = false
+  let hasCachedBundle = false
+  if (
     data?.pull?.head?.bundleAnalysis?.bundleAnalysisReport?.__typename ===
     'BundleAnalysisReport'
+  ) {
+    headHasBundle = true
+    hasCachedBundle =
+      data?.pull?.head?.bundleAnalysis?.bundleAnalysisReport?.isCached
+  }
 
   if (data?.coverageEnabled && data?.bundleAnalysisEnabled) {
     return (
       <BundleContent
         bundleCompareType={bundleCompareType}
         headHasBundle={headHasBundle}
+        hasCachedBundle={hasCachedBundle}
       />
     )
   }
@@ -119,6 +131,7 @@ const PullBundleAnalysis: React.FC = () => {
       <BundleContent
         bundleCompareType={bundleCompareType}
         headHasBundle={headHasBundle}
+        hasCachedBundle={hasCachedBundle}
       />
     </>
   )

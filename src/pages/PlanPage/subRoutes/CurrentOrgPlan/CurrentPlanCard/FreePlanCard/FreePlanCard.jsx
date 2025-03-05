@@ -1,19 +1,16 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import isNumber from 'lodash/isNumber'
 import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { usePlanPageData } from 'pages/PlanPage/hooks'
-import {
-  planPropType,
-  TrialStatuses,
-  useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+import { PlanPageDataQueryOpts } from 'pages/PlanPage/queries/PlanPageDataQueryOpts'
+import { planPropType } from 'services/account/propTypes'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import {
   canApplySentryUpgrade,
-  isTrialPlan,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 import A from 'ui/A'
@@ -25,7 +22,9 @@ import PlanPricing from '../shared/PlanPricing'
 
 function FreePlanCard({ plan, scheduledPhase }) {
   const { provider, owner } = useParams()
-  const { data: ownerData } = usePlanPageData({ owner, provider })
+  const { data: ownerData } = useSuspenseQueryV5(
+    PlanPageDataQueryOpts({ owner, provider })
+  )
   const { data: planData } = usePlanData({
     provider,
     owner,
@@ -34,17 +33,15 @@ function FreePlanCard({ plan, scheduledPhase }) {
 
   const uploadsNumber = ownerData?.numberOfUploads
   const trialOngoing =
-    isTrialPlan(planData?.plan?.value) &&
-    planData?.plan.trialStatus === TrialStatuses.ONGOING
+    planData?.plan?.isTrialPlan &&
+    planData?.plan?.trialStatus === TrialStatuses.ONGOING
 
   let benefits = plan?.benefits
-  let planValue = plan?.value
   let baseUnitPrice = plan?.baseUnitPrice
   let marketingName = plan?.marketingName
 
   if (trialOngoing) {
     benefits = planData?.pretrialPlan?.benefits
-    planValue = planData?.pretrialPlan?.value
     baseUnitPrice = planData?.pretrialPlan?.baseUnitPrice
     marketingName = planData?.pretrialPlan?.marketingName
   }
@@ -73,7 +70,10 @@ function FreePlanCard({ plan, scheduledPhase }) {
           <div className="flex flex-col border-t pt-2 sm:border-0 sm:p-0">
             <p className="mb-2 text-xs font-semibold">Pricing</p>
             <div className="mb-4">
-              <PlanPricing value={planValue} baseUnitPrice={baseUnitPrice} />
+              <PlanPricing
+                plan={planData?.plan}
+                baseUnitPrice={baseUnitPrice}
+              />
             </div>
             <div>
               {isNumber(uploadsNumber) && (
@@ -90,7 +90,10 @@ function FreePlanCard({ plan, scheduledPhase }) {
       </div>
       {shouldDisplayTeamCard({ plans }) && <PlanUpgradeTeam />}
       <PlanUpgradePro
-        isSentryUpgrade={canApplySentryUpgrade({ plan, plans })}
+        isSentryUpgrade={canApplySentryUpgrade({
+          isEnterprisePlan: planData?.plan?.isEnterprisePlan,
+          plans,
+        })}
         plans={plans}
       />
       <div className="text-xs">

@@ -4,26 +4,19 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCommitYaml } from './index'
+import { useCommitYaml } from './useCommitYaml'
 
 const mockCommitYaml = (yaml: string) => ({
   owner: {
     repository: {
       __typename: 'Repository',
-      commit: {
-        commitid: 'asdf',
-        yaml,
-      },
+      commit: { commitid: 'asdf', yaml },
     },
   },
 })
 
 const mockCommitYamlBadSchema = {
-  owner: {
-    repository: {
-      asdf: 'asdf',
-    },
-  },
+  owner: { repository: { asdf: 'asdf' } },
 }
 
 const mockCommitYamlNotFound = {
@@ -93,7 +86,7 @@ describe('useCommitYaml', () => {
     ownerNotActivatedError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query(`CommitYaml`, (info) => {
+      graphql.query(`CommitYaml`, () => {
         if (badSchema) {
           return HttpResponse.json({ data: mockCommitYamlBadSchema })
         } else if (notFoundError) {
@@ -130,7 +123,7 @@ describe('useCommitYaml', () => {
   })
 
   describe('when bad response', () => {
-    it('returns 404 failed to parse', async () => {
+    it('returns 400 failed to parse', async () => {
       setup({ badSchema: true })
       const { result } = renderHook(
         () =>
@@ -140,15 +133,14 @@ describe('useCommitYaml', () => {
             repo: 'repo-test',
             commitid: 'a23sda3',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       expect(result.current.error).toEqual(
         expect.objectContaining({
-          status: 404,
+          dev: 'useCommitYaml - Parsing Error',
+          status: 400,
         })
       )
     })
@@ -165,14 +157,13 @@ describe('useCommitYaml', () => {
             repo: 'repo-test',
             commitid: 'a23sda3',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       expect(result.current.error).toEqual(
         expect.objectContaining({
+          dev: 'useCommitYaml - Not Found Error',
           status: 404,
         })
       )
@@ -190,14 +181,13 @@ describe('useCommitYaml', () => {
             repo: 'repo-test',
             commitid: 'a23sda3',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       expect(result.current.error).toEqual(
         expect.objectContaining({
+          dev: 'useCommitYaml - Owner Not Activated',
           status: 403,
         })
       )

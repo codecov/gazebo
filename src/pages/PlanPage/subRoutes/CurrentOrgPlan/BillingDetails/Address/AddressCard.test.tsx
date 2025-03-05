@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { z } from 'zod'
 
-import { SubscriptionDetailSchema } from 'services/account'
+import { SubscriptionDetailSchema } from 'services/account/useAccountDetails'
 import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import AddressCard from './AddressCard'
@@ -51,7 +51,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 vi.mock('@stripe/react-stripe-js', () => {
   function makeFakeComponent(name: string) {
     // mocking onReady to be called after a bit of time
-    return function Component({ onReady }: { onReady?: any }) {
+    return function Component({ _onReady }: { _onReady?: any }) {
       return name
     }
   }
@@ -224,7 +224,7 @@ describe('AddressCard', () => {
         { wrapper }
       )
 
-      expect(screen.getByText('Cardholder name')).toBeInTheDocument()
+      expect(screen.getByText('Full name')).toBeInTheDocument()
       expect(screen.getByText('N/A')).toBeInTheDocument()
       expect(screen.getByText('Billing address')).toBeInTheDocument()
       expect(screen.queryByText(/null/)).not.toBeInTheDocument()
@@ -241,7 +241,7 @@ describe('AddressCard', () => {
         { wrapper }
       )
 
-      expect(screen.getByText(/Cardholder name/)).toBeInTheDocument()
+      expect(screen.getByText(/Full name/)).toBeInTheDocument()
       expect(screen.getByText(/Bob Smith/)).toBeInTheDocument()
     })
   })

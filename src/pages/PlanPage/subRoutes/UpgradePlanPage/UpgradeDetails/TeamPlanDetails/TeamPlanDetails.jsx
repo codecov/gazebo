@@ -1,10 +1,8 @@
 import { useParams } from 'react-router-dom'
 
-import {
-  useAccountDetails,
-  useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import { findTeamPlans } from 'shared/utils/billing'
@@ -19,7 +17,6 @@ function TeamPlanDetails() {
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
 
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
 
   const cancelAtPeriodEnd =
@@ -53,7 +50,11 @@ function TeamPlanDetails() {
         {scheduledPhase && (
           <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
         )}
-        {shouldRenderCancelLink({ cancelAtPeriodEnd, plan, trialStatus }) && (
+        {shouldRenderCancelLink({
+          cancelAtPeriodEnd,
+          plan: planData?.plan,
+          trialStatus,
+        }) && (
           <A
             to={{ pageName: 'cancelOrgPlan' }}
             variant="black"

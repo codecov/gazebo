@@ -6,7 +6,7 @@ import { useMemo } from 'react'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { mapEdges } from 'shared/utils/graphql'
 
 const MyContextsSchema = z.object({
@@ -76,14 +76,14 @@ export function useMyContexts({ provider, opts = {} }: UseMyContextsArgs) {
         signal,
         variables: { after: pageParam },
       }).then((res) => {
+        const callingFn = 'useMyContexts'
         const parsedRes = MyContextsSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useMyContexts - 404 Failed to parse data',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedRes.error },
+          })
         }
 
         return parsedRes?.data

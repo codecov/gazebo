@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, within } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -26,21 +30,27 @@ vi.mock('recharts', async () => {
   }
 })
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
 const wrapper =
   (
     initialEntries = ['/gh/codecov/bells-hells/tree/main']
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo">{children}</Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
 const server = setupServer()
 
 beforeAll(() => {
@@ -57,7 +67,7 @@ beforeEach(() => {
    * This mock also allow us to use {@link notifyResizeObserverChange} to fire changes
    * from inside our test.
    */
-  resizeObserverMock = vi.fn().mockImplementation((callback) => {
+  resizeObserverMock = vi.fn().mockImplementation(() => {
     return {
       observe: vi.fn(),
       unobserve: vi.fn(),
@@ -65,7 +75,7 @@ beforeEach(() => {
     }
   })
 
-  // @ts-ignore
+  // @ts-expect-error - we're deleting the window resize observer which is being replaced by a mock
   delete window.ResizeObserver
 
   window.ResizeObserver = resizeObserverMock
@@ -73,6 +83,7 @@ beforeEach(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -156,16 +167,16 @@ describe('CoverageChart', () => {
     noData = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: repoOverviewData })
       }),
-      graphql.query('GetBranches', (info) => {
+      graphql.query('GetBranches', () => {
         return HttpResponse.json({ data: branchesData })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({ data: branchMock })
       }),
-      graphql.query('GetBranchCoverageMeasurements', (info) => {
+      graphql.query('GetBranchCoverageMeasurements', () => {
         if (coverageRepoStatus) {
           return HttpResponse.json(
             { errors: [{ message: 'error' }] },

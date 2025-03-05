@@ -10,7 +10,7 @@ import { useEffect, useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { usePulls } from 'services/pulls'
 import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
@@ -85,11 +85,11 @@ export default function PullsTable() {
     repo,
     filters: {
       // useLocationParams needs to be updated to have full types
-      // @ts-expect-errors
+      // @ts-expect-error - type issues with useLocationParams
       state: params?.prStates,
     },
     // useLocationParams needs to be updated to have full types
-    // @ts-expect-error
+    // @ts-expect-error - type issues with useLocationParams
     orderingDirection: params?.order,
   })
 

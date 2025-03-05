@@ -19,7 +19,6 @@ const mockData = {
             isNewFile: true,
             isRenamedFile: false,
             isDeletedFile: false,
-            isCriticalFile: false,
             changeCoverage: null,
             baseCoverage: null,
             headCoverage: null,
@@ -45,7 +44,6 @@ const mockRenamedFile = {
             isNewFile: false,
             isRenamedFile: true,
             isDeletedFile: false,
-            isCriticalFile: false,
             changeCoverage: null,
             baseCoverage: null,
             headCoverage: null,
@@ -71,7 +69,6 @@ const mockDeletedFile = {
             isNewFile: false,
             isRenamedFile: false,
             isDeletedFile: true,
-            isCriticalFile: false,
             changeCoverage: null,
             baseCoverage: null,
             headCoverage: null,
@@ -97,7 +94,6 @@ const mockUnchangedFile = {
             isNewFile: false,
             isRenamedFile: false,
             isDeletedFile: false,
-            isCriticalFile: false,
             changeCoverage: null,
             baseCoverage: null,
             headCoverage: null,
@@ -182,7 +178,7 @@ describe('usePrefetchSingleFileComp', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('ImpactedFileComparison', (info) => {
+      graphql.query('ImpactedFileComparison', () => {
         if (isRenamed) {
           return HttpResponse.json({ data: mockRenamedFile })
         } else if (isDeleted) {
@@ -253,7 +249,6 @@ describe('usePrefetchSingleFileComp', () => {
           fileLabel: 'New',
           headName: 'file A',
           hashedPath: 'hashed-path',
-          isCriticalFile: false,
           segments: [],
         })
       })
@@ -289,7 +284,6 @@ describe('usePrefetchSingleFileComp', () => {
           fileLabel: 'Renamed',
           headName: 'file A',
           hashedPath: 'hashed-path',
-          isCriticalFile: false,
           segments: [],
         })
       })
@@ -325,7 +319,6 @@ describe('usePrefetchSingleFileComp', () => {
           fileLabel: 'Deleted',
           headName: 'file A',
           hashedPath: 'hashed-path',
-          isCriticalFile: false,
           segments: [],
         })
       })
@@ -361,7 +354,6 @@ describe('usePrefetchSingleFileComp', () => {
           fileLabel: null,
           headName: 'file A',
           hashedPath: 'hashed-path',
-          isCriticalFile: false,
           segments: [],
         })
       })
@@ -434,8 +426,8 @@ describe('usePrefetchSingleFileComp', () => {
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'usePrefetchSingleFileComp - 404 schema parsing failed',
+            dev: 'usePrefetchSingleFileComp - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -467,8 +459,8 @@ describe('usePrefetchSingleFileComp', () => {
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
+            dev: 'usePrefetchSingleFileComp - Not Found Error',
             status: 404,
-            dev: 'usePrefetchSingleFileComp - 404 NotFoundError',
           })
         )
       )
@@ -500,8 +492,8 @@ describe('usePrefetchSingleFileComp', () => {
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
+            dev: 'usePrefetchSingleFileComp - Owner Not Activated',
             status: 403,
-            dev: 'usePrefetchSingleFileComp - 403 OwnerNotActivatedError',
           })
         )
       )

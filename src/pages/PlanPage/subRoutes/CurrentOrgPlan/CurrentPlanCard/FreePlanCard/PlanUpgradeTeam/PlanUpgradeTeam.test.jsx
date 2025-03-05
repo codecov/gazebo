@@ -5,20 +5,26 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import PlanUpgradeTeam from './PlanUpgradeTeam'
 
 vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
 
 const mockPlanBasic = {
+  isEnterprisePlan: false,
+  isFreePlan: true,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
   baseUnitPrice: 0,
   benefits: ['Up to # user', 'Unlimited public repositories'],
-  billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -29,9 +35,15 @@ const mockPlanBasic = {
 }
 
 const mockPlanPro = {
+  isEnterprisePlan: false,
+  isProPlan: true,
+  isFreePlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
   baseUnitPrice: 10,
   benefits: ['Up to # user', 'Unlimited public repositories'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro',
   monthlyUploadLimit: null,
   value: Plans.USERS_PR_INAPPM,
@@ -45,9 +57,15 @@ const mockPlanPro = {
 }
 
 const mockPlanTrialing = {
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: true,
   baseUnitPrice: 10,
   benefits: ['Up to # user', 'Unlimited public repositories'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Trial',
   monthlyUploadLimit: null,
   value: Plans.USERS_TRIAL,
@@ -63,7 +81,7 @@ const mockPlanTrialing = {
 const mockAvailablePlans = [
   {
     marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -72,11 +90,13 @@ const mockAvailablePlans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -85,11 +105,13 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -98,11 +120,13 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_ENTERPRISEM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -111,11 +135,13 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_ENTERPRISEY,
-    billingRate: 'annually',
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -124,32 +150,38 @@ const mockAvailablePlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     baseUnitPrice: 6,
     benefits: ['Up to 10 users'],
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMM,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
   {
     baseUnitPrice: 5,
     benefits: ['Up to 10 users'],
-    billingRate: 'yearly',
+    billingRate: BillingRate.ANNUALLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMY,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
 ]
 
 const mockPreTrialPlanInfo = {
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', 'Pre Trial benefits'],
-  billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
 }
 
 const server = setupServer()
@@ -184,7 +216,7 @@ const wrapper = ({ children }) => (
 describe('PlanUpgradeTeam', () => {
   function setup({ plan = mockPlanBasic } = { plan: mockPlanBasic }) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -195,7 +227,7 @@ describe('PlanUpgradeTeam', () => {
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: { owner: { availablePlans: mockAvailablePlans } },
         })
@@ -203,7 +235,7 @@ describe('PlanUpgradeTeam', () => {
     )
   }
 
-  describe('when rendered with basic plan', () => {
+  describe('when rendered with developers plan', () => {
     it('shows the monthly marketing name', async () => {
       setup({ plan: mockPlanBasic })
       render(<PlanUpgradeTeam />, {
@@ -291,7 +323,7 @@ describe('PlanUpgradeTeam', () => {
     })
   })
 
-  describe('when rendered with non-basic plan', () => {
+  describe('when rendered with non-developers plan', () => {
     beforeEach(() => {
       setup({ plan: mockPlanPro })
     })

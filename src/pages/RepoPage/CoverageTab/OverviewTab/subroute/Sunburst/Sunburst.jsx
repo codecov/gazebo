@@ -29,7 +29,7 @@ function Sunburst() {
     return <Placeholder />
   }
 
-  if (isError) {
+  if (isError || !data) {
     return <p>The sunburst chart failed to load.</p>
   }
 
@@ -37,7 +37,6 @@ function Sunburst() {
     <>
       <SunburstChart
         data={data}
-        svgFontSize="24px"
         svgRenderSize={930}
         selector={(data) => data?.coverage}
         onHover={({ path, type }) => setCurrentPath({ path, type })}

@@ -13,7 +13,6 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier/useTier'
 import { UploadStateEnum } from 'shared/utils/commit'
 
 import CommitCoverage from './CommitCoverage'
@@ -199,10 +198,10 @@ const mockRepoSettingsTeamData = (isPrivate = false) => ({
   },
 })
 
-const mockOwnerTier = (tier = TierNames.PRO) => ({
+const mockIsTeamPlan = (isTeamPlan = false) => ({
   owner: {
     plan: {
-      tierName: tier,
+      isTeamPlan,
     },
   },
 })
@@ -317,6 +316,10 @@ const mockCommitPageData = (
                 : 'Comparison',
         },
         bundleAnalysis: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+            isCached: false,
+          },
           bundleAnalysisCompareWithParent: {
             __typename: 'BundleAnalysisComparison',
           },
@@ -392,7 +395,7 @@ describe('CommitCoverage', () => {
   function setup(
     {
       isPrivate = false,
-      tierName = TierNames.PRO,
+      isTeamPlan = false,
       hasCommitErrors = false,
       hasErroredUploads = false,
       hasCommitPageMissingCommitDataError = false,
@@ -403,7 +406,7 @@ describe('CommitCoverage', () => {
       isGithubRateLimited = false,
     } = {
       isPrivate: false,
-      tierName: TierNames.PRO,
+      isTeamPlan: false,
       hasCommitErrors: false,
       hasErroredUploads: false,
       hasCommitPageMissingCommitDataError: false,
@@ -420,17 +423,17 @@ describe('CommitCoverage', () => {
     })
 
     server.use(
-      graphql.query('Commit', (info) => {
+      graphql.query('Commit', () => {
         if (hasErroredUploads) {
           return HttpResponse.json({ data: mockErroredUploads })
         }
 
         return HttpResponse.json({ data: mockCommitData })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettingsTeamData(isPrivate) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview({
             coverageEnabled,
@@ -439,25 +442,25 @@ describe('CommitCoverage', () => {
           }),
         })
       }),
-      graphql.query('OwnerTier', (info) => {
-        return HttpResponse.json({ data: mockOwnerTier(tierName) })
+      graphql.query('IsTeamPlan', () => {
+        return HttpResponse.json({ data: mockIsTeamPlan(isTeamPlan) })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockRepoBackfilledData })
       }),
-      graphql.query('CommitErrors', (info) => {
+      graphql.query('CommitErrors', () => {
         return HttpResponse.json({ data: mockCommitErrors(hasCommitErrors) })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: mockOwnerData })
       }),
-      graphql.query('CompareTotals', (info) => {
+      graphql.query('CompareTotals', () => {
         return HttpResponse.json({ data: mockCompareTotals })
       }),
-      graphql.query('CommitComponents', (info) => {
+      graphql.query('CommitComponents', () => {
         return HttpResponse.json({ data: mockCommitComponentData })
       }),
-      graphql.query('CommitPageData', (info) => {
+      graphql.query('CommitPageData', () => {
         return HttpResponse.json({
           data: mockCommitPageData(
             hasCommitPageMissingCommitDataError,
@@ -466,7 +469,7 @@ describe('CommitCoverage', () => {
           ),
         })
       }),
-      graphql.query('GetRepoRateLimitStatus', (info) => {
+      graphql.query('GetRepoRateLimitStatus', () => {
         return HttpResponse.json({
           data: mockRepoRateLimitStatus({ isGithubRateLimited }),
         })
@@ -578,7 +581,7 @@ describe('CommitCoverage', () => {
     describe('user is on a team plan', () => {
       it('does not render commit coverage summary', async () => {
         const { queryClient, queryClientV5 } = setup({
-          tierName: TierNames.TEAM,
+          isTeamPlan: true,
           isPrivate: true,
         })
         render(<CommitCoverage />, {
@@ -594,7 +597,7 @@ describe('CommitCoverage', () => {
 
       it('does not render indirect changes tab', async () => {
         const { queryClient, queryClientV5 } = setup({
-          tierName: TierNames.TEAM,
+          isTeamPlan: true,
           isPrivate: true,
         })
         render(<CommitCoverage />, {

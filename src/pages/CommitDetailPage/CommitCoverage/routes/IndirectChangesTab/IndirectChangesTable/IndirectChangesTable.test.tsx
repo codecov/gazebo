@@ -105,7 +105,7 @@ describe('IndirectChangesTable', () => {
       results: [
         {
           headName: 'src/index2.py',
-          isCriticalFile: false,
+
           baseCoverage: {
             coverage: 62.5,
           },
@@ -123,14 +123,8 @@ describe('IndirectChangesTable', () => {
       const { queryClient } = setup(mockData)
       render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
-      const link = await screen.findByRole('link', {
-        name: 'src/index2.py',
-      })
+      const link = await screen.findByText('src/index2.py')
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute(
-        'href',
-        '/gh/codecov/cool-repo/commit/123/blob/src/index2.py'
-      )
     })
 
     it('renders coverage', async () => {
@@ -184,7 +178,7 @@ describe('IndirectChangesTable', () => {
       results: [
         {
           headName: '',
-          isCriticalFile: false,
+
           baseCoverage: null,
           headCoverage: {
             coverage: 67,
@@ -255,7 +249,7 @@ describe('IndirectChangesTable', () => {
       results: [
         {
           headName: 'src/index2.py',
-          isCriticalFile: false,
+
           baseCoverage: {
             coverage: 62.5,
           },
@@ -350,58 +344,6 @@ describe('IndirectChangesTable', () => {
 
       const loader = screen.getByTestId('spinner')
       expect(loader).toBeInTheDocument()
-    })
-  })
-
-  describe('highlights critical files', () => {
-    it('renders critical file', async () => {
-      const { queryClient } = setup({
-        __typename: 'ImpactedFiles',
-        results: [
-          {
-            headName: 'src/main.rs',
-            isCriticalFile: true,
-            baseCoverage: {
-              coverage: 40.0,
-            },
-            headCoverage: {
-              coverage: 50.0,
-            },
-            patchCoverage: {
-              coverage: 100.0,
-            },
-          },
-        ],
-      })
-      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
-
-      const criticalFile = await screen.findByText(/Critical file/)
-      expect(criticalFile).toBeInTheDocument()
-    })
-
-    it('renders non-critical file', async () => {
-      const { queryClient } = setup({
-        __typename: 'ImpactedFiles',
-        results: [
-          {
-            headName: 'src/main.rs',
-            isCriticalFile: false,
-            baseCoverage: {
-              coverage: 40.0,
-            },
-            headCoverage: {
-              coverage: 50.0,
-            },
-            patchCoverage: {
-              coverage: 100.0,
-            },
-          },
-        ],
-      })
-      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
-
-      const criticalFile = screen.queryByText(/Critical file/)
-      expect(criticalFile).not.toBeInTheDocument()
     })
   })
 })

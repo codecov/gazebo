@@ -1,9 +1,10 @@
+import { useInfiniteQuery as useInfiniteQueryV5 } from '@tanstack/react-queryV5'
 import PropTypes from 'prop-types'
 import { useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useRepos } from 'services/repos'
-import { TierNames, useTier } from 'services/tier'
+import { ReposQueryOpts } from 'services/repos/ReposQueryOpts'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import A from 'ui/A'
 import DateRangePicker from 'ui/DateRangePicker'
 import MultiSelect from 'ui/MultiSelect'
@@ -52,24 +53,24 @@ function RepoSelector({
     updateParams({ repositories: item })
   }
 
-  const { data: tierName } = useTier({ provider, owner })
-  const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
   const {
     data: reposData,
     isLoading,
     fetchNextPage,
     hasNextPage,
-  } = useRepos({
-    provider,
-    owner,
-    sortItem,
-    activated: active,
-    term: search,
-    first: Infinity,
-    suspense: false,
-    isPublic: shouldDisplayPublicReposOnly,
-  })
+  } = useInfiniteQueryV5(
+    ReposQueryOpts({
+      provider,
+      owner,
+      sortItem,
+      activated: active,
+      term: search,
+      first: Infinity,
+      isPublic: isTeamPlan === true ? true : null,
+    })
+  )
 
   const reposSelectData = useMemo(() => {
     const data = reposData?.pages?.map((page) => page?.repos).flat()
@@ -112,7 +113,7 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
   const { repositories, startDate, endDate } = params
   const [selectedRepos, setSelectedRepos] = useState(repositories)
 
-  const { data: tierData } = useTier({ provider, owner })
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
   if (selectedRepos.length > 0 && repositories.length === 0) {
     setSelectedRepos([])
@@ -149,7 +150,7 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
       >
         Clear filters
       </button>
-      {tierData === TierNames.TEAM ? (
+      {isTeamPlan ? (
         <p className="self-end">
           Public repos only. <A to={{ pageName: 'upgradeOrgPlan' }}>Upgrade</A>{' '}
           to Pro to include private repos.

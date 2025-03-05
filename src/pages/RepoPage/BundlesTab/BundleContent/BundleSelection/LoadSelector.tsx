@@ -3,7 +3,7 @@ import { forwardRef, useState } from 'react'
 import { useParams } from 'react-router'
 
 import { BranchBundlesNamesQueryOpts } from 'services/bundleAnalysis/BranchBundlesNamesQueryOpts'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoOverview } from 'services/repo'
 import MultiSelect from 'ui/MultiSelect'
 
@@ -58,7 +58,7 @@ export const LoadSelector = forwardRef((_, ref) => {
       <span className="max-w-64 text-sm">
         <MultiSelect
           ref={ref}
-          // @ts-ignore
+          // @ts-expect-error - MultiSelect hasn't been typed yet
           disabled={bundleData?.bundles?.length === 0 || bundlesIsFetching}
           hook="bundle-loading-selector"
           ariaName="bundle tab loading selector"

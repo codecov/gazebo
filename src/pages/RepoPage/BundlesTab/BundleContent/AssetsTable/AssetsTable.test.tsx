@@ -13,7 +13,25 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { AssetsTable, ChangeOverTime } from './AssetsTable'
 
-const mockAssets = (hasNextPage = true) => {
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn().mockReturnValue({ renderBundleFilePathColumn: true }),
+}))
+
+vi.mock('shared/featureFlags', async () => {
+  const original = await vi.importActual('shared/featureFlags')
+  return {
+    ...original,
+    useFlags: mocks.useFlags,
+  }
+})
+
+const mockAssets = ({
+  hasNextPage = true,
+  pluginName = '@codecov/vite-plugin',
+}: {
+  hasNextPage?: boolean
+  pluginName?: string
+}) => {
   const asset1 = {
     name: 'asset-1',
     routes: ['/'],
@@ -69,6 +87,7 @@ const mockAssets = (hasNextPage = true) => {
               bundleAnalysisReport: {
                 __typename: 'BundleAnalysisReport',
                 bundle: {
+                  info: { pluginName },
                   bundleData: { size: { uncompress: 6000 } },
                   assetsPaginated: {
                     edges: [
@@ -104,6 +123,7 @@ const mockBundleAssetModules = {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
               bundle: {
+                info: { pluginName: '@codecov/vite-plugin' },
                 bundleData: { size: { uncompress: 12 } },
                 asset: { modules: [] },
               },
@@ -115,7 +135,7 @@ const mockBundleAssetModules = {
   },
 }
 
-const mockEmptyAssets = {
+const mockEmptyAssets = (pluginName: string) => ({
   owner: {
     repository: {
       __typename: 'Repository',
@@ -125,6 +145,7 @@ const mockEmptyAssets = {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
               bundle: {
+                info: { pluginName },
                 bundleData: { size: { uncompress: 12 } },
                 assetsPaginated: {
                   edges: [],
@@ -137,7 +158,7 @@ const mockEmptyAssets = {
       },
     },
   },
-}
+})
 
 const mockMissingHeadReport = {
   owner: {
@@ -215,6 +236,7 @@ interface SetupArgs {
   isEmptyBundles?: boolean
   isMissingHeadReport?: boolean
   multipleAssets?: boolean
+  pluginName?: string
 }
 
 describe('AssetsTable', () => {
@@ -222,6 +244,7 @@ describe('AssetsTable', () => {
     isEmptyBundles = false,
     isMissingHeadReport = false,
     multipleAssets = true,
+    pluginName = '@codecov/vite-plugin',
   }: SetupArgs) {
     const user = userEvent.setup()
     const mockOrdering = vi.fn()
@@ -230,7 +253,7 @@ describe('AssetsTable', () => {
     server.use(
       graphql.query('BundleAssets', (info) => {
         if (isEmptyBundles) {
-          return HttpResponse.json({ data: mockEmptyAssets })
+          return HttpResponse.json({ data: mockEmptyAssets(pluginName) })
         } else if (isMissingHeadReport) {
           return HttpResponse.json({ data: mockMissingHeadReport })
         }
@@ -247,12 +270,14 @@ describe('AssetsTable', () => {
           multipleAssets = true
         }
 
-        return HttpResponse.json({ data: mockAssets(multipleAssets) })
+        return HttpResponse.json({
+          data: mockAssets({ hasNextPage: multipleAssets, pluginName }),
+        })
       }),
-      graphql.query('BundleAssetModules', (info) => {
+      graphql.query('BundleAssetModules', () => {
         return HttpResponse.json({ data: mockBundleAssetModules })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )
@@ -261,17 +286,35 @@ describe('AssetsTable', () => {
   }
 
   describe('there is no data', () => {
-    it('renders the empty table', async () => {
-      setup({ isEmptyBundles: true })
-      render(<AssetsTable />, { wrapper })
+    describe('non-file path plugin', () => {
+      it('renders the empty table with 5 dashes', async () => {
+        setup({ isEmptyBundles: true })
+        render(<AssetsTable />, { wrapper })
 
-      const tableRoles = await screen.findAllByRole('row')
-      expect(tableRoles).toHaveLength(2)
+        const tableRoles = await screen.findAllByRole('row')
+        expect(tableRoles).toHaveLength(2)
 
-      const tableCells = await within(tableRoles[1]!).findAllByRole('cell')
-      expect(tableCells).toHaveLength(4)
-      tableCells.forEach((cell) => {
-        expect(cell).toHaveTextContent('-')
+        const tableCells = await within(tableRoles[1]!).findAllByRole('cell')
+        expect(tableCells).toHaveLength(5)
+        tableCells.forEach((cell) => {
+          expect(cell).toHaveTextContent('-')
+        })
+      })
+    })
+
+    describe('file path plugin', () => {
+      it('renders the empty table with 6 dashes', async () => {
+        setup({ isEmptyBundles: true, pluginName: '@codecov/sveltekit-plugin' })
+        render(<AssetsTable />, { wrapper })
+
+        const tableRoles = await screen.findAllByRole('row')
+        expect(tableRoles).toHaveLength(2)
+
+        const tableCells = await within(tableRoles[1]!).findAllByRole('cell')
+        expect(tableCells).toHaveLength(6)
+        tableCells.forEach((cell) => {
+          expect(cell).toHaveTextContent('-')
+        })
       })
     })
   })
@@ -285,7 +328,7 @@ describe('AssetsTable', () => {
       expect(tableRoles).toHaveLength(2)
 
       const tableCells = await within(tableRoles[1]!).findAllByRole('cell')
-      expect(tableCells).toHaveLength(4)
+      expect(tableCells).toHaveLength(5)
       tableCells.forEach((cell) => {
         expect(cell).toHaveTextContent('-')
       })
@@ -302,19 +345,21 @@ describe('AssetsTable', () => {
         expect(asset).toBeInTheDocument()
       })
 
-      it('renders type column', async () => {
-        setup({})
-        render(<AssetsTable />, { wrapper })
+      describe('file path plugin', () => {
+        it('renders file path column', async () => {
+          setup({ pluginName: '@codecov/sveltekit-plugin' })
+          render(<AssetsTable />, { wrapper })
 
-        const type = await screen.findByText('Type')
-        expect(type).toBeInTheDocument()
+          const filePath = await screen.findByText('File path')
+          expect(filePath).toBeInTheDocument()
+        })
       })
 
       it('renders load time column', async () => {
         setup({})
         render(<AssetsTable />, { wrapper })
 
-        const loadTime = await screen.findByText('Estimated load time (3G)')
+        const loadTime = await screen.findByText('Est. load time (3G)')
         expect(loadTime).toBeInTheDocument()
       })
 
@@ -342,6 +387,16 @@ describe('AssetsTable', () => {
 
         const asset = await screen.findByText('asset-1')
         expect(asset).toBeInTheDocument()
+      })
+
+      describe('file path plugin', () => {
+        it('renders file path column', async () => {
+          setup({ pluginName: '@codecov/sveltekit-plugin' })
+          render(<AssetsTable />, { wrapper })
+
+          const filePath = await screen.findByText('/login')
+          expect(filePath).toBeInTheDocument()
+        })
       })
 
       it('renders type column', async () => {
@@ -435,9 +490,7 @@ describe('AssetsTable', () => {
           const { user, mockOrdering } = setup({ multipleAssets: false })
           render(<AssetsTable />, { wrapper })
 
-          const loadTimeColumn = await screen.findByText(
-            'Estimated load time (3G)'
-          )
+          const loadTimeColumn = await screen.findByText('Est. load time (3G)')
           await user.click(loadTimeColumn)
 
           await waitFor(() => expect(mockOrdering).toHaveBeenCalledWith('SIZE'))

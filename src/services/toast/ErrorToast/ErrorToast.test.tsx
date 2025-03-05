@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import ErrorToast from './ErrorToast'
+import { ErrorToast } from './ErrorToast'
 
 describe('ErrorToast', () => {
   it('renders the title', () => {

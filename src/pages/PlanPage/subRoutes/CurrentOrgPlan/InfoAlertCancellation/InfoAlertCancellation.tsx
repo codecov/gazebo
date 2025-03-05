@@ -1,7 +1,7 @@
 import { format, fromUnixTime } from 'date-fns'
 import { z } from 'zod'
 
-import { SubscriptionDetailSchema } from 'services/account'
+import { SubscriptionDetailSchema } from 'services/account/useAccountDetails'
 import { Alert } from 'ui/Alert'
 
 function getPeriodEnd(

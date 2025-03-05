@@ -99,7 +99,7 @@ describe('usePullHeadDataTeam', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullHeadDataTeam', (info) => {
+      graphql.query('PullHeadDataTeam', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -191,7 +191,7 @@ describe('usePullHeadDataTeam', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -221,6 +221,7 @@ describe('usePullHeadDataTeam', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'PullHeadDataTeamQueryOpts - Not Found Error',
               status: 404,
             })
           )
@@ -229,7 +230,7 @@ describe('usePullHeadDataTeam', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -258,6 +259,7 @@ describe('usePullHeadDataTeam', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'PullHeadDataTeamQueryOpts - Owner Not Activated',
               status: 403,
             })
           )
@@ -266,7 +268,7 @@ describe('usePullHeadDataTeam', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -276,7 +278,7 @@ describe('usePullHeadDataTeam', () => {
         console.error = oldConsoleError
       })
 
-      it('throws a 404', async () => {
+      it('throws a 400', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
@@ -295,7 +297,8 @@ describe('usePullHeadDataTeam', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'PullHeadDataTeamQueryOpts - Parsing Error',
+              status: 400,
             })
           )
         )

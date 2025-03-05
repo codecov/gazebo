@@ -1,12 +1,10 @@
 import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
-import { rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const RepositorySchema = z.object({
@@ -104,14 +102,13 @@ export const CommitHeaderDataQueryOpts = ({
           commitId,
         },
       }).then((res) => {
+        const callingFn = 'CommitHeaderDataQueryOpts'
         const parsedData = CommitHeaderDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'CommitHeaderDataQueryOpts - 404 Failed to parse schema',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -119,26 +116,25 @@ export const CommitHeaderDataQueryOpts = ({
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'CommitHeaderDataQueryOpts - 404 Not Found',
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
-            status: 403,
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>
                   Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
+                  {/* @ts-expect-error - A hasn't been typed yet */}
                   <A to={{ pageName: 'membersTab' }}>click here </A> to activate
                   your account.
                 </p>
               ),
             },
-            dev: 'CommitHeaderDataQueryOpts - 403 Owner Not Activated',
           })
         }
 

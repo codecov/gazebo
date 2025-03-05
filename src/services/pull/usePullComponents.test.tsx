@@ -15,12 +15,8 @@ const mockCompareData = {
         compareWithBase: {
           __typename: 'Comparison',
           componentComparisons: [
-            {
-              name: 'component1',
-            },
-            {
-              name: 'component2',
-            },
+            { name: 'component1' },
+            { name: 'component2' },
           ],
         },
       },
@@ -97,7 +93,7 @@ describe('usePullComponents', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('PullComponentsSelector', (info) => {
+      graphql.query('PullComponentsSelector', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -123,12 +119,8 @@ describe('usePullComponents', () => {
           compareWithBase: {
             __typename: 'Comparison',
             componentComparisons: [
-              {
-                name: 'component1',
-              },
-              {
-                name: 'component2',
-              },
+              { name: 'component1' },
+              { name: 'component2' },
             ],
           },
         },
@@ -160,7 +152,7 @@ describe('usePullComponents', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(() => usePullComponents(), { wrapper })
 
@@ -168,10 +160,8 @@ describe('usePullComponents', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: {
-              message: 'Error parsing pull components selector data',
-            },
+            dev: 'usePullComponents - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -198,10 +188,8 @@ describe('usePullComponents', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullComponents - Not Found Error',
             status: 404,
-            data: {
-              message: 'Repo not found',
-            },
           })
         )
       )
@@ -228,6 +216,7 @@ describe('usePullComponents', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullComponents - Owner Not Activated',
             status: 403,
           })
         )

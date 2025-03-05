@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
@@ -6,7 +10,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock } from 'vitest'
 
-import { Session } from 'services/access'
+import { Session } from 'services/access/SessionsQueryOpts'
 import { formatTimeToNow } from 'shared/utils/dates'
 
 import SessionsTable from './SessionsTable'
@@ -28,29 +32,37 @@ const mockSessions: Session[] = [
   },
 ]
 
-const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { suspense: true, retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
-      <Route path="/:provider/:owner/:repo">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
+        <Route path="/:provider/:owner/:repo">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
-beforeAll(() => server.listen())
+const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('SessionsTable', () => {
   function setup() {

@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import { useCommit } from './index'
+import { useCommit } from './useCommit'
 
 const compareDoneData = {
   owner: {
@@ -304,7 +304,7 @@ describe('useCommit', () => {
           return HttpResponse.json({ data: dataToReturn })
         }
       }),
-      graphql.query(`CompareTotals`, (info) => {
+      graphql.query(`CompareTotals`, () => {
         if (skipPolling) {
           return HttpResponse.json({ data: { owner: null } })
         }
@@ -549,8 +549,8 @@ describe('useCommit', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommit - Not Found Error',
             status: 404,
-            dev: 'useCommit - 404 not found',
           })
         )
       )
@@ -587,8 +587,8 @@ describe('useCommit', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommit - Owner Not Activated',
             status: 403,
-            dev: 'useCommit - 403 owner not activated',
           })
         )
       )
@@ -625,8 +625,8 @@ describe('useCommit', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useCommit - 404 failed to parse',
+            dev: 'useCommit - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -640,10 +640,10 @@ describe('useCommit polling', () => {
   function setup() {
     nbCallCompare = 0
     server.use(
-      graphql.query(`Commit`, (info) => {
+      graphql.query(`Commit`, () => {
         return HttpResponse.json({ data: dataReturned })
       }),
-      graphql.query(`CompareTotals`, (info) => {
+      graphql.query(`CompareTotals`, () => {
         nbCallCompare++
         // after 10 calls, the server returns that the commit is processed
         if (nbCallCompare < 1) {

@@ -1,13 +1,13 @@
-import { isSentryPlan, isTeamPlan, Plan } from 'shared/utils/billing'
+import { IndividualPlan } from 'services/account/useAvailablePlans'
 
 import ProPlanDetails from './ProPlanDetails'
 import SentryPlanDetails from './SentryPlanDetails'
 import TeamPlanDetails from './TeamPlanDetails'
 
-function UpgradeDetails({ selectedPlan }: { selectedPlan: Plan }) {
-  if (isSentryPlan(selectedPlan?.value)) {
+function UpgradeDetails({ selectedPlan }: { selectedPlan: IndividualPlan }) {
+  if (selectedPlan.isSentryPlan) {
     return <SentryPlanDetails />
-  } else if (isTeamPlan(selectedPlan?.value)) {
+  } else if (selectedPlan.isTeamPlan) {
     return <TeamPlanDetails />
   } else {
     return <ProPlanDetails />

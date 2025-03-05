@@ -123,26 +123,19 @@ describe('BundleOnboarding', () => {
     mocks.useRedirect.mockImplementation((data) => ({
       hardRedirect: () => hardRedirect(data),
     }))
-    const mockMetricMutationVariables = vi.fn()
-    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
-    mockGetItem.mockReturnValue(null)
 
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({
           data: mockGetRepo(hasUploadToken, hasCommits),
         })
       }),
-      graphql.query('GetOrgUploadToken', (info) => {
+      graphql.query('GetOrgUploadToken', () => {
         return HttpResponse.json({ data: mockGetOrgUploadToken })
-      }),
-      graphql.mutation('storeEventMetric', (info) => {
-        mockMetricMutationVariables(info.variables)
-        return HttpResponse.json({ data: { storeEventMetric: null } })
       })
     )
 
-    return { hardRedirect, mockMetricMutationVariables, user }
+    return { hardRedirect, user }
   }
 
   it('renders intro', async () => {
@@ -163,7 +156,7 @@ describe('BundleOnboarding', () => {
   describe('navigation', () => {
     describe('when Vite is selected', () => {
       it('should navigate to /new', async () => {
-        const { user, mockMetricMutationVariables } = setup({})
+        const { user } = setup({})
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
@@ -173,7 +166,6 @@ describe('BundleOnboarding', () => {
         expect(vite).toHaveAttribute('data-state', 'unchecked')
 
         await user.click(vite)
-        expect(mockMetricMutationVariables).toHaveBeenCalled()
 
         expect(vite).toBeInTheDocument()
         expect(vite).toHaveAttribute('data-state', 'checked')

@@ -26,7 +26,7 @@ function PullDirEntry({ pullId, urlPath, name, filters }: PullDirEntryProps) {
       urlPath={urlPath}
       runPrefetch={runPrefetch}
       pageName="pullTreeView"
-      queryParams={{ flags }}
+      queryParams={{ flags, dropdown: 'coverage' }}
     />
   )
 }

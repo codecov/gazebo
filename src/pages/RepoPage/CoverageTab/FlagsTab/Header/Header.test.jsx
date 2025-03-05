@@ -22,8 +22,8 @@ vi.mock('react-use', async () => {
   }
 })
 
-vi.mock('services/navigation', async () => {
-  const actual = await vi.importActual('services/navigation')
+vi.mock('services/navigation/useLocationParams', async () => {
+  const actual = await vi.importActual('services/navigation/useLocationParams')
   return {
     ...actual,
     useLocationParams: mocks.useLocationParams,

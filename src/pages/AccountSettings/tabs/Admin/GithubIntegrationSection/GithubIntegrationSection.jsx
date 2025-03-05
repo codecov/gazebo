@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
 import A from 'ui/A'
 
 function GithubIntegrationCopy({ integrationId }) {
@@ -11,7 +11,7 @@ function GithubIntegrationCopy({ integrationId }) {
     return (
       <p>
         This account is configured via the GitHub App. You can manage the apps
-        repository integration on <A to={{ pageName: 'github' }}>Github.</A>
+        repository integration on <A to={{ pageName: 'github' }}>GitHub.</A>
       </p>
     )
   return (
@@ -47,7 +47,7 @@ function GithubIntegrationSection() {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Github Integration</h2>
+      <h2 className="text-lg font-semibold">GitHub Integration</h2>
       <GithubIntegrationCopy integrationId={accountDetails?.integrationId} />
     </div>
   )

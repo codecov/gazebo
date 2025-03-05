@@ -23,7 +23,7 @@ afterAll(() => server.close())
 describe('useActivateMeasurements', () => {
   function setup() {
     server.use(
-      graphql.mutation('ActivateMeasurements', (info) => {
+      graphql.mutation('ActivateMeasurements', () => {
         return HttpResponse.json({ data: { activateMeasurements: null } })
       })
     )
@@ -41,18 +41,14 @@ describe('useActivateMeasurements', () => {
               repo: 'bassuras',
               measurementType: MEASUREMENT_TYPE.FLAG_COVERAGE,
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         result.current.mutate()
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
-            data: {
-              activateMeasurements: null,
-            },
+            data: { activateMeasurements: null },
           })
         )
       })
@@ -70,7 +66,7 @@ describe('useActivateMeasurements', () => {
 
       it('returns expected output', async () => {
         server.use(
-          graphql.mutation('ActivateMeasurements', (info) => {
+          graphql.mutation('ActivateMeasurements', () => {
             return HttpResponse.json({
               data: {
                 activateMeasurements: {
@@ -92,9 +88,7 @@ describe('useActivateMeasurements', () => {
               repo: 'bassuras',
               measurementType: MEASUREMENT_TYPE.FLAG_COVERAGE,
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         result.current.mutate()
@@ -117,7 +111,7 @@ describe('useActivateMeasurements', () => {
 
       it('returns expected output', async () => {
         server.use(
-          graphql.mutation('ActivateMeasurements', (info) => {
+          graphql.mutation('ActivateMeasurements', () => {
             return HttpResponse.json({
               data: {
                 activateMeasurements: {
@@ -139,19 +133,18 @@ describe('useActivateMeasurements', () => {
               repo: 'bassuras',
               measurementType: MEASUREMENT_TYPE.FLAG_COVERAGE,
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         result.current.mutate()
 
         await waitFor(() =>
-          expect(result.current.error).toEqual({
-            data: {},
-            dev: 'useActivateMeasurements - 404 failed to parse',
-            status: 404,
-          })
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              dev: 'useActivateMeasurements - Parsing Error',
+              status: 400,
+            })
+          )
         )
       })
     })

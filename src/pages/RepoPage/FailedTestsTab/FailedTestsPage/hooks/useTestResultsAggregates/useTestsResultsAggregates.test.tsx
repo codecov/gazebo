@@ -43,7 +43,7 @@ const mockNotFoundError = {
       message: 'repo not found',
     },
     plan: {
-      value: Plans.USERS_BASIC,
+      value: Plans.USERS_DEVELOPER,
     },
   },
 }
@@ -54,7 +54,9 @@ const mockIncorrectResponse = {
       invalid: 'invalid',
     },
     plan: {
-      value: Plans.USERS_BASIC,
+      value: Plans.USERS_DEVELOPER,
+      isFreePlan: true,
+      isTeamPlan: false,
     },
   },
 }
@@ -62,7 +64,9 @@ const mockIncorrectResponse = {
 const mockResponse = {
   owner: {
     plan: {
-      value: Plans.USERS_BASIC,
+      value: Plans.USERS_DEVELOPER,
+      isFreePlan: true,
+      isTeamPlan: false,
     },
     repository: {
       __typename: 'Repository',
@@ -92,7 +96,7 @@ describe('useTestResultsAggregates', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query('GetTestResultsAggregates', (info) => {
+      graphql.query('GetTestResultsAggregates', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {
@@ -128,7 +132,9 @@ describe('useTestResultsAggregates', () => {
               totalSkips: 20,
               totalSkipsPercentChange: 0,
             },
-            plan: 'users-basic',
+            planName: Plans.USERS_DEVELOPER,
+            isFreePlan: true,
+            isTeamPlan: false,
             private: true,
             defaultBranch: 'main',
           })
@@ -156,8 +162,8 @@ describe('useTestResultsAggregates', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useTestResultsAggregates - 404 Failed to parse data',
+            dev: 'useTestResultsAggregates - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -183,8 +189,8 @@ describe('useTestResultsAggregates', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: {},
+            dev: 'useTestResultsAggregates - Parsing Error',
+            status: 400,
           })
         )
       )

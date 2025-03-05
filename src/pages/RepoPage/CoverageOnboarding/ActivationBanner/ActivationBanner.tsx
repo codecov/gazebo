@@ -2,8 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { TrialStatuses, usePlanData } from 'services/account'
-import { isBasicPlan, isFreePlan } from 'shared/utils/billing'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 
 import ActivationRequiredBanner from './ActivationRequiredBanner'
 import ActivationRequiredSelfHosted from './ActivationRequiredSelfHosted'
@@ -24,11 +23,9 @@ function ActivationBanner() {
   })
   const isNewTrial = planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED
   const isTrialEligible =
-    isBasicPlan(planData?.plan?.value) &&
-    planData?.hasPrivateRepos &&
-    isNewTrial
+    planData?.plan?.isFreePlan && planData?.hasPrivateRepos && isNewTrial
   const seatsLimitReached = !planData?.plan?.hasSeatsLeft
-  const isFreePlanValue = isFreePlan(planData?.plan?.value)
+  const isFreePlanValue = planData?.plan?.isFreePlan
 
   if (config.IS_SELF_HOSTED) {
     return <ActivationRequiredSelfHosted />

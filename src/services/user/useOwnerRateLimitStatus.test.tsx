@@ -43,7 +43,7 @@ interface SetupArgs {
 describe('useOwnerRateLimitStatus', () => {
   function setup({ isUnsuccessfulParseError = false }: SetupArgs) {
     server.use(
-      graphql.query('GetOwnerRateLimitStatus', (info) => {
+      graphql.query('GetOwnerRateLimitStatus', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }
@@ -78,7 +78,7 @@ describe('useOwnerRateLimitStatus', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () => useOwnerRateLimitStatus({ provider: 'gh' }),
@@ -88,7 +88,8 @@ describe('useOwnerRateLimitStatus', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'useOwnerRateLimitStatus - Parsing Error',
+            status: 400,
           })
         )
       )

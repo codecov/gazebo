@@ -2,14 +2,17 @@ import { Fragment } from 'react'
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails, useAvailablePlans } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
 import {
+  IndividualPlan,
+  useAvailablePlans,
+} from 'services/account/useAvailablePlans'
+import { Provider } from 'shared/api/helpers'
+import {
+  BillingRate,
   findSentryPlans,
   formatNumberToUSD,
   getNextBillingDate,
-  isAnnualPlan,
-  PlanName,
-  Plans,
 } from 'shared/utils/billing'
 import {
   calculatePriceSentryPlan,
@@ -21,7 +24,7 @@ import Icon from 'ui/Icon'
 import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
-  newPlan?: PlanName
+  newPlan?: IndividualPlan
   seats: number
   setFormValue: UseFormSetValue<UpgradeFormFields>
 }
@@ -31,7 +34,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
   seats,
   setFormValue,
 }) => {
-  const { provider, owner } = useParams<{ provider: string; owner: string }>()
+  const { provider, owner } = useParams<{ provider: Provider; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
   const perMonthPrice = calculatePriceSentryPlan({
@@ -42,7 +45,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
     seats,
     baseUnitPrice: sentryPlanYear?.baseUnitPrice,
   })
-  const isPerYear = isAnnualPlan(newPlan)
+  const isPerYear = newPlan?.billingRate === BillingRate.ANNUALLY
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
 
@@ -118,7 +121,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
               )}{' '}
               <button
                 className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-                onClick={() => setFormValue('newPlan', Plans.USERS_SENTRYY)}
+                onClick={() => setFormValue('newPlan', sentryPlanYear)}
               >
                 switch to annual
               </button>

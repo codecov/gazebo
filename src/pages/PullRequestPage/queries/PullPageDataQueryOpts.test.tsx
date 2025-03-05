@@ -25,6 +25,7 @@ const mockPullData = {
           bundleAnalysis: {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
+              isCached: false,
             },
           },
         },
@@ -60,6 +61,7 @@ const mockPullDataTeam = {
           bundleAnalysis: {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
+              isCached: false,
             },
           },
         },
@@ -195,6 +197,7 @@ describe('PullPageDataQueryOpts', () => {
                   bundleAnalysis: {
                     bundleAnalysisReport: {
                       __typename: 'BundleAnalysisReport',
+                      isCached: false,
                     },
                   },
                 },
@@ -249,7 +252,7 @@ describe('PullPageDataQueryOpts', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -288,7 +291,7 @@ describe('PullPageDataQueryOpts', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -327,7 +330,7 @@ describe('PullPageDataQueryOpts', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -358,7 +361,8 @@ describe('PullPageDataQueryOpts', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'PullPageDataQueryOpts - Parsing Error',
+              status: 400,
             })
           )
         )
@@ -402,6 +406,7 @@ describe('PullPageDataQueryOpts', () => {
                 bundleAnalysis: {
                   bundleAnalysisReport: {
                     __typename: 'BundleAnalysisReport',
+                    isCached: false,
                   },
                 },
               },

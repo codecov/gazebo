@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
@@ -31,30 +35,37 @@ vi.mock('shared/featureFlags', async () => {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/account/gh/codecov/org-upload-token']}>
+        <Route path="/account/:provider/:owner/org-upload-token">
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
+)
 
 const server = setupServer()
-
 beforeAll(() => {
   console.error = () => {}
   server.listen()
 })
 
-beforeEach(() => {
-  server.resetHandlers()
+afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
+  server.resetHandlers()
 })
 
-afterAll(() => server.close())
-
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/account/gh/codecov/org-upload-token']}>
-      <Route path="/account/:provider/:owner/org-upload-token">
-        {children}
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+afterAll(() => {
+  server.close()
+})
 
 describe('TokenlessSection', () => {
   function setup({
@@ -99,7 +110,9 @@ describe('TokenlessSection', () => {
     setup()
     render(<TokenlessSection />, { wrapper })
 
-    const title = await screen.findByText('Token authentication')
+    const title = await screen.findByText(
+      'Token authentication for public repositories'
+    )
     expect(title).toBeInTheDocument()
   })
 
@@ -126,7 +139,7 @@ describe('TokenlessSection', () => {
     render(<TokenlessSection />, { wrapper })
 
     const notRequiredDescription = await screen.findByText(
-      'When a token is not required, your team can upload coverage reports without one. Existing tokens will still work, and no action is needed for past uploads. Designed for public open-source projects.'
+      'When a token is not required, your team can upload coverage reports without one. Existing tokens will still work, and no action is needed for past uploads.'
     )
     expect(notRequiredDescription).toBeInTheDocument()
   })
@@ -136,7 +149,7 @@ describe('TokenlessSection', () => {
     render(<TokenlessSection />, { wrapper })
 
     const requiredDescription = await screen.findByText(
-      'When a token is required, your team must use a global or repo-specific token for uploads. Designed for private repositories and closed-source projects.'
+      'When a token is required, your team must use a global or repo-specific token for uploads.'
     )
     expect(requiredDescription).toBeInTheDocument()
   })

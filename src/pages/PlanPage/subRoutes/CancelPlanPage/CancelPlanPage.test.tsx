@@ -5,8 +5,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import CancelPlanPage from './CancelPlanPage'
 
@@ -20,25 +20,29 @@ const teamPlans = [
   {
     baseUnitPrice: 6,
     benefits: ['Up to 10 users'],
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMM,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
   {
     baseUnitPrice: 5,
     benefits: ['Up to 10 users'],
-    billingRate: 'yearly',
+    billingRate: BillingRate.ANNUALLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
     value: Plans.USERS_TEAMY,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
 ]
 
 const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
   {
     marketingName: 'Basic',
-    value: Plans.USERS_BASIC,
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -47,11 +51,13 @@ const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
     value: Plans.USERS_PR_INAPPM,
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -60,6 +66,8 @@ const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   ...(hasTeamPlans ? teamPlans : []),
 ]
@@ -67,10 +75,10 @@ const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -78,6 +86,12 @@ const mockPlanData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -126,6 +140,7 @@ interface SetupProps {
   planValue?: string
   trialStatus?: string
   hasTeamPlans?: boolean
+  billingRate?: string
 }
 
 describe('CancelPlanPage', () => {
@@ -134,29 +149,38 @@ describe('CancelPlanPage', () => {
     planValue = Plans.USERS_PR_INAPPM,
     trialStatus = TrialStatuses.NOT_STARTED,
     hasTeamPlans = false,
+    billingRate = BillingRate.MONTHLY,
   }: SetupProps = {}) {
     server.use(
-      http.get('internal/gh/codecov/account-details/', (info) => {
+      http.get('internal/gh/codecov/account-details/', () => {
         return HttpResponse.json({
-          plan: { value: planValue },
+          plan: { value: planValue, billingRate },
           subscriptionDetail: { customer: { discount: hasDiscount } },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
+                billingRate,
                 trialStatus,
                 value: planValue,
+                isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
+                isFreePlan: planValue === Plans.USERS_DEVELOPER,
+                isProPlan: planValue === Plans.USERS_PR_INAPPM,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
+                isTrialPlan: planValue === Plans.USERS_TRIAL,
               },
             },
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -280,7 +304,12 @@ describe('CancelPlanPage', () => {
   })
 
   describe('user is on a annual plan', () => {
-    beforeEach(() => setup({ planValue: Plans.USERS_INAPPY }))
+    beforeEach(() =>
+      setup({
+        planValue: Plans.USERS_INAPPY,
+        billingRate: BillingRate.ANNUALLY,
+      })
+    )
 
     it('directs them directly to downgrade page', async () => {
       render(<CancelPlanPage />, {

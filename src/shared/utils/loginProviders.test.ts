@@ -49,7 +49,7 @@ describe('loginProviderToName', () => {
   describe('valid value is passed', () => {
     it('returns the provider name', () => {
       const data = loginProviderToName(LOGIN_PROVIDER_SHORT_NAMES.gh)
-      expect(data).toMatch(/Github/)
+      expect(data).toMatch(/GitHub/)
     })
   })
 

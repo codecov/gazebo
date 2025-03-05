@@ -1,15 +1,14 @@
 import * as Sentry from '@sentry/react'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
-import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { UnknownFlagsSchema } from 'services/impactedFiles/schemas/UnknownFlags'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
+import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
 import { query } from './constants'
@@ -20,13 +19,12 @@ const BasePathContentSchema = z.object({
   partials: z.number(),
   lines: z.number(),
   name: z.string(),
-  path: z.string().nullable(),
+  path: z.string(),
   percentCovered: z.number(),
 })
 
 const PathContentFileSchema = BasePathContentSchema.extend({
   __typename: z.literal('PathContentFile'),
-  isCriticalFile: z.boolean(),
 })
 
 const PathContentDirSchema = BasePathContentSchema.extend({
@@ -38,9 +36,17 @@ const PathContentsResultSchema = z.discriminatedUnion('__typename', [
   PathContentDirSchema,
 ])
 
-export const PathContentsSchema = z.object({
-  __typename: z.literal('PathContents'),
-  results: z.array(PathContentsResultSchema),
+const PathContentEdgeSchema = z.object({
+  node: PathContentsResultSchema,
+})
+
+export const PathContentConnectionSchema = z.object({
+  __typename: z.literal('PathContentConnection'),
+  edges: z.array(PathContentEdgeSchema),
+  pageInfo: z.object({
+    hasNextPage: z.boolean(),
+    endCursor: z.string().nullable(),
+  }),
 })
 
 export type PathContentsSchemaType = z.infer<typeof PathContentsResultSchema>
@@ -61,7 +67,7 @@ const MissingHeadReportSchema = z.object({
 })
 
 const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
-  PathContentsSchema,
+  PathContentConnectionSchema,
   UnknownPathSchema,
   MissingCoverageSchema,
   MissingHeadReportSchema,
@@ -73,18 +79,21 @@ export type PathContentResultType = z.infer<typeof PathContentsResultSchema>
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   repositoryConfig: RepositoryConfigSchema,
-  branch: z.object({
-    head: z
-      .object({
-        pathContents: PathContentsUnionSchema.nullish(),
-      })
-      .nullable(),
-  }),
+  branch: z
+    .object({
+      head: z
+        .object({
+          deprecatedPathContents: PathContentsUnionSchema.nullish(),
+        })
+        .nullable(),
+    })
+    .nullable(),
 })
 
 const BranchContentsSchema = z.object({
   owner: z
     .object({
+      username: z.string(),
       repository: z.discriminatedUnion('__typename', [
         RepositorySchema,
         RepoNotFoundErrorSchema,
@@ -100,7 +109,7 @@ interface RepoBranchContentsArgs {
   repo: string
   branch: string
   path: string
-  filters?: {}
+  filters?: object
   options?: {
     suspense?: boolean
     enabled?: boolean
@@ -116,9 +125,9 @@ export function useRepoBranchContents({
   filters,
   options,
 }: RepoBranchContentsArgs) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ['BranchContents', provider, owner, repo, branch, path, filters],
-    queryFn: ({ signal }) => {
+    queryFn: ({ signal, pageParam }) => {
       return Sentry.startSpan({ name: 'fetch branch contents' }, () => {
         return Api.graphql({
           provider,
@@ -130,65 +139,78 @@ export function useRepoBranchContents({
             branch,
             path,
             filters,
+            after: pageParam,
           },
         }).then((res) => {
+          const callingFn = 'useRepoBranchContents'
           const parsedRes = BranchContentsSchema.safeParse(res?.data)
 
           if (!parsedRes.success) {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'useRepoBranchContents - 404 schema parsing failed',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Parsing Error',
+              errorDetails: { callingFn, error: parsedRes.error },
+            })
           }
 
           const data = parsedRes.data
 
           if (data?.owner?.repository?.__typename === 'NotFoundError') {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'useRepoBranchContents - 404 NotFoundError',
-            } satisfies NetworkErrorObject)
+            return rejectNetworkError({
+              errorName: 'Not Found Error',
+              errorDetails: { callingFn },
+            })
           }
 
           if (
             data?.owner?.repository?.__typename === 'OwnerNotActivatedError'
           ) {
-            return Promise.reject({
-              status: 403,
+            return rejectNetworkError({
+              errorName: 'Owner Not Activated',
+              errorDetails: { callingFn },
               data: {
                 detail: (
                   <p>
                     Activation is required to view this repo, please{' '}
-                    {/* @ts-expect-error */}
+                    {/* @ts-expect-error - A hasn't been typed yet */}
                     <A to={{ pageName: 'membersTab' }}>click here </A> to
                     activate your account.
                   </p>
                 ),
               },
-              dev: 'useRepoBranchContents - 403 OwnerNotActivatedError',
-            } satisfies NetworkErrorObject)
+            })
           }
 
-          let results
-          const pathContentsType =
-            data?.owner?.repository?.branch?.head?.pathContents?.__typename
-          if (pathContentsType === 'PathContents') {
-            results =
-              data?.owner?.repository?.branch?.head?.pathContents?.results
+          let results = null
+          const pathContents =
+            data?.owner?.repository?.branch?.head?.deprecatedPathContents
+          if (
+            pathContents &&
+            pathContents?.__typename === 'PathContentConnection'
+          ) {
+            results = mapEdges({
+              edges: pathContents?.edges,
+            })
+
+            return {
+              results,
+              pathContentsType: pathContents.__typename,
+              indicationRange:
+                data?.owner?.repository?.repositoryConfig?.indicationRange,
+              pageInfo: pathContents?.pageInfo,
+            }
           }
 
           return {
-            results: results ?? null,
-            pathContentsType,
+            results,
+            pathContentsType: pathContents?.__typename,
             indicationRange:
               data?.owner?.repository?.repositoryConfig?.indicationRange,
-            __typename: res?.data?.owner?.repository?.branch?.head?.__typename,
+            pageInfo: null,
           }
         })
       })
     },
+    getNextPageParam: (lastPage) => lastPage.pageInfo?.endCursor ?? undefined,
     ...options,
   })
 }

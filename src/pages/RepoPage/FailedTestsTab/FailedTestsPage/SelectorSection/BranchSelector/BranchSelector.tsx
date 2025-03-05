@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import { Branch, useBranch, useBranches } from 'services/branches'
-import { useNavLinks } from 'services/navigation'
+import { useBranch } from 'services/branches/useBranch'
+import { Branch, useBranches } from 'services/branches/useBranches'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepoOverview } from 'services/repo'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
@@ -15,7 +16,7 @@ interface URLParams {
 }
 
 const getDecodedBranch = (branch?: string) =>
-  !!branch ? decodeURIComponent(branch) : undefined
+  branch ? decodeURIComponent(branch) : undefined
 
 const BranchSelector = () => {
   const history = useHistory()

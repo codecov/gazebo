@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { TrialStatuses, usePlanData } from 'services/account'
-import { TierNames, useTier } from 'services/tier'
+import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import A from 'ui/A'
 import TopBanner from 'ui/TopBanner'
 
@@ -14,10 +13,9 @@ interface URLParams {
 
 const ProPlanFeedbackBanner = () => {
   const { provider, owner } = useParams<URLParams>()
-  const { data: tierData } = useTier({ provider, owner })
-  const { data: trialData } = usePlanData({ provider, owner })
-  const isProPlan = tierData === TierNames.PRO
-  const isTrialing = trialData?.plan?.trialStatus === TrialStatuses.ONGOING
+  const { data: planData } = usePlanData({ provider, owner })
+  const isProPlan = planData?.plan?.isProPlan
+  const isTrialing = planData?.plan?.trialStatus === TrialStatuses.ONGOING
 
   if (!isProPlan || isTrialing) {
     return null

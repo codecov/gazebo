@@ -1,10 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { TierNames, TTierNames } from 'services/tier'
 
 import { useCoverage } from './useCoverage'
 
@@ -40,12 +42,18 @@ const mockPublicRepoMeasurements = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
-      <Route path="/:provider/:owner/:repo">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
+        <Route path="/:provider/:owner/:repo">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
@@ -55,6 +63,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
   vi.clearAllMocks()
 })
@@ -65,14 +74,14 @@ afterAll(() => {
 
 interface SetupArgs {
   nullFirstVal?: boolean
-  tierValue?: TTierNames
+  isTeamPlan?: boolean
 }
 
 describe('useCoverage', () => {
   function setup(
-    { nullFirstVal, tierValue }: SetupArgs = {
+    { nullFirstVal, isTeamPlan }: SetupArgs = {
       nullFirstVal: false,
-      tierValue: TierNames.PRO,
+      isTeamPlan: false,
     }
   ) {
     server.use(
@@ -85,9 +94,9 @@ describe('useCoverage', () => {
         }
         return HttpResponse.json({ data: mockRepoMeasurements })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: tierValue } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       })
     )
@@ -140,7 +149,7 @@ describe('useCoverage', () => {
 
   describe('owner is on a team plan', () => {
     it('gets public repos from useReposCoverageMeasurements', async () => {
-      setup({ tierValue: TierNames.TEAM })
+      setup({ isTeamPlan: true })
       const { result } = renderHook(
         () =>
           useCoverage({

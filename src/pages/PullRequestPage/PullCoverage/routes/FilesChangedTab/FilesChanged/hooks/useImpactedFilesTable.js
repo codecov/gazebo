@@ -4,7 +4,7 @@ import qs from 'qs'
 import { useCallback, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { usePull } from 'services/pull'
+import { usePull } from 'services/pull/usePull'
 import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
 const orderingDirection = Object.freeze({
@@ -56,7 +56,6 @@ function transformImpactedFilesData({ pull }) {
         hasHeadOrPatchCoverage,
         headName: impactedFile?.headName,
         fileName: impactedFile?.fileName,
-        isCriticalFile: impactedFile?.isCriticalFile,
         pullId: pull?.pullId,
       }
     }

@@ -1,16 +1,21 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
+import { Toaster } from 'react-hot-toast'
 import { MemoryRouter, Route } from 'react-router'
 
-import { TierNames, TTierNames } from 'services/tier'
-
 import ConfigurationManager from './ConfigurationManager'
-import { RepositoryConfiguration } from './hooks/useRepoConfigurationStatus/useRepoConfigurationStatus'
+import { RepositoryConfiguration } from './hooks/useRepoConfigurationStatus/RepoConfigurationStatusQueryOpts'
 
 interface mockRepoConfigArgs {
-  tierName?: TTierNames
+  isTeamPlan?: boolean
   flags?: boolean
   components?: boolean
   coverage?: boolean
@@ -23,7 +28,7 @@ interface mockRepoConfigArgs {
 const yamlWithProjectStatus = 'coverage:\n  status:\n    project: true\n'
 
 function mockRepoConfig({
-  tierName = TierNames.PRO,
+  isTeamPlan = false,
   flags = false,
   components = false,
   coverage = false,
@@ -34,7 +39,7 @@ function mockRepoConfig({
 }: mockRepoConfigArgs): RepositoryConfiguration {
   return {
     plan: {
-      tierName: tierName,
+      isTeamPlan,
     },
     repository: {
       __typename: 'Repository',
@@ -51,20 +56,45 @@ function mockRepoConfig({
   }
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
+const mockCachedBundles = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundles: [
+                { name: 'bundle1', cacheConfig: true },
+                { name: 'bundle2', cacheConfig: false },
+              ],
+            },
+          },
+        },
+      },
     },
   },
+}
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/config']}>
-      <Route path="/:provider/:owner/:repo/config">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov/cool-repo/config']}>
+        <Route path="/:provider/:owner/:repo/config">
+          <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+      <Toaster />
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -72,6 +102,7 @@ beforeAll(() => {
 })
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 afterAll(() => {
@@ -84,11 +115,18 @@ interface SetupArgs {
 
 describe('Configuration Manager', () => {
   function setup({ repoConfig = mockRepoConfig({}) }: SetupArgs) {
+    const user = userEvent.setup()
+
     server.use(
-      graphql.query('GetRepoConfigurationStatus', (info) => {
+      graphql.query('GetRepoConfigurationStatus', () => {
         return HttpResponse.json({ data: { owner: repoConfig } })
+      }),
+      graphql.query('CachedBundleList', () => {
+        return HttpResponse.json({ data: mockCachedBundles })
       })
     )
+
+    return { user }
   }
 
   describe('CoverageConfiguration', () => {
@@ -216,7 +254,7 @@ describe('Configuration Manager', () => {
 
     describe('when not on team plan', () => {
       it('does not render upgrade to pro messaging', async () => {
-        setup({ repoConfig: mockRepoConfig({ tierName: 'pro' }) })
+        setup({ repoConfig: mockRepoConfig({ isTeamPlan: false }) })
         render(<ConfigurationManager />, { wrapper })
 
         await waitFor(() =>
@@ -230,7 +268,7 @@ describe('Configuration Manager', () => {
 
     describe('when on team plan', () => {
       it('renders upgrade to pro message', async () => {
-        setup({ repoConfig: mockRepoConfig({ tierName: 'team' }) })
+        setup({ repoConfig: mockRepoConfig({ isTeamPlan: true }) })
         render(<ConfigurationManager />, { wrapper })
 
         const upgrade = await screen.findByText('Available with Pro Plan')
@@ -240,7 +278,7 @@ describe('Configuration Manager', () => {
       it('hides configured status for pro only items', async () => {
         setup({
           repoConfig: mockRepoConfig({
-            tierName: 'team',
+            isTeamPlan: true,
             coverage: true,
             yaml: yamlWithProjectStatus,
             flags: true,
@@ -255,7 +293,7 @@ describe('Configuration Manager', () => {
 
       it('hides unconfigured status for pro only items', async () => {
         setup({
-          repoConfig: mockRepoConfig({ tierName: 'team', coverage: true }),
+          repoConfig: mockRepoConfig({ isTeamPlan: true, coverage: true }),
         })
         render(<ConfigurationManager />, { wrapper })
 
@@ -366,6 +404,41 @@ describe('Configuration Manager', () => {
 
         const configuredStatus = await screen.findByText('Configured')
         expect(configuredStatus).toBeInTheDocument()
+      })
+    })
+
+    describe('bundle caching', () => {
+      it('renders bundle caching button', async () => {
+        setup({
+          repoConfig: mockRepoConfig({
+            bundleAnalysis: true,
+            languages: ['typescript'],
+          }),
+        })
+        render(<ConfigurationManager />, { wrapper })
+
+        const button = await screen.findByText('Configure data caching')
+        expect(button).toBeInTheDocument()
+      })
+
+      it('renders bundle caching modal', async () => {
+        const { user } = setup({
+          repoConfig: mockRepoConfig({
+            bundleAnalysis: true,
+            languages: ['typescript'],
+          }),
+        })
+        render(<ConfigurationManager />, { wrapper })
+
+        const button = await screen.findByText('Configure data caching')
+        expect(button).toBeInTheDocument()
+
+        await user.click(button)
+
+        const modalHeader = await screen.findByText(
+          'Configure bundle caching data'
+        )
+        expect(modalHeader).toBeInTheDocument()
       })
     })
   })

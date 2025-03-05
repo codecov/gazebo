@@ -27,7 +27,7 @@ const mockData = {
           results: [
             {
               name: 'file.ts',
-              path: null,
+              path: 'file.ts',
               __typename: 'PathContentFile',
               hits: 24,
               misses: 24,
@@ -35,7 +35,6 @@ const mockData = {
               partials: 22,
               lines: 22,
               type: 'file',
-              isCriticalFile: false,
             },
           ],
         },
@@ -144,7 +143,7 @@ describe('useRepoCommitContents', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CommitPathContents', (info) => {
+      graphql.query('CommitPathContents', () => {
         if (isMissingCoverage) {
           return HttpResponse.json({ data: mockDataMissingCoverage })
         } else if (isUnknownPath) {
@@ -205,10 +204,9 @@ describe('useRepoCommitContents', () => {
             percentCovered: 50,
             __typename: 'PathContentFile',
             hits: 24,
-            isCriticalFile: false,
             lines: 22,
             misses: 24,
-            path: null,
+            path: 'file.ts',
             partials: 22,
           },
         ],
@@ -287,7 +285,7 @@ describe('useRepoCommitContents', () => {
     })
 
     describe('owner not activated', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -297,7 +295,7 @@ describe('useRepoCommitContents', () => {
         console.error = oldConsoleError
       })
 
-      it('throws an error', async () => {
+      it('throws a 403 error', async () => {
         setup({ isOwnerNotActivatedError: true })
 
         const { result } = renderHook(
@@ -312,13 +310,12 @@ describe('useRepoCommitContents', () => {
           { wrapper }
         )
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
               status: 403,
+              dev: 'useRepoCommitContents - Owner Not Activated',
             })
           )
         )
@@ -326,7 +323,7 @@ describe('useRepoCommitContents', () => {
     })
 
     describe('failed to parse schema', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
       beforeEach(() => {
         console.error = () => null
       })
@@ -335,7 +332,7 @@ describe('useRepoCommitContents', () => {
         console.error = oldConsoleError
       })
 
-      it('throws an error', async () => {
+      it('throws a 400 error', async () => {
         setup({ isUnsuccessfulParseError: true })
 
         const { result } = renderHook(
@@ -350,13 +347,12 @@ describe('useRepoCommitContents', () => {
           { wrapper }
         )
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              status: 400,
+              dev: 'useRepoCommitContents - Parsing Error',
             })
           )
         )
@@ -364,7 +360,7 @@ describe('useRepoCommitContents', () => {
     })
 
     describe('not found error', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -388,13 +384,12 @@ describe('useRepoCommitContents', () => {
           { wrapper }
         )
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
               status: 404,
+              dev: 'useRepoCommitContents - Not Found Error',
             })
           )
         )

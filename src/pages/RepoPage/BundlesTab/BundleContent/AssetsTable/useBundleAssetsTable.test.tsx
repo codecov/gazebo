@@ -40,11 +40,8 @@ const mockedBundleAssets = {
             bundleAnalysisReport: {
               __typename: 'BundleAnalysisReport',
               bundle: {
-                bundleData: {
-                  size: {
-                    uncompress: 12,
-                  },
-                },
+                info: { pluginName: '@codecov/vite-plugin' },
+                bundleData: { size: { uncompress: 12 } },
                 assetsPaginated: {
                   edges: [
                     {
@@ -124,7 +121,7 @@ describe('useBundleAssetsTable', () => {
         queryVarMock(info.variables)
         return HttpResponse.json({ data: mockedBundleAssets })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )
@@ -167,7 +164,11 @@ describe('useBundleAssetsTable', () => {
             },
           ],
           bundleData: { size: { uncompress: 12 } },
-          pageInfo: { endCursor: null, hasNextPage: false },
+          bundleInfo: { pluginName: '@codecov/vite-plugin' },
+          pageInfo: {
+            endCursor: null,
+            hasNextPage: false,
+          },
         },
       ],
     }

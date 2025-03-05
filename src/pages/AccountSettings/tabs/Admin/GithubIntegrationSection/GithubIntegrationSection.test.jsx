@@ -54,10 +54,10 @@ describe('GithubIntegrationSection', () => {
     config.GH_APP = 'codecov'
 
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, (info) => {
+      http.get(`/internal/gh/codecov/account-details/`, () => {
         return HttpResponse.json({
           plan: {
-            marketingName: Plans.USERS_BASIC,
+            marketingName: Plans.USERS_DEVELOPER,
             baseUnitPrice: 12,
             benefits: ['Configurable # of users', 'Unlimited repos'],
             quantity: 5,
@@ -146,7 +146,7 @@ describe('GithubIntegrationSection', () => {
       render(<GithubIntegrationSection />, { wrapper: wrapper() })
 
       const link = await screen.findByRole('link', {
-        name: /Github/i,
+        name: /GitHub/i,
       })
       expect(link).toBeInTheDocument()
     })

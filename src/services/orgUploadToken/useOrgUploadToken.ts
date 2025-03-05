@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const RequestSchema = z.object({
   owner: z
@@ -21,14 +21,9 @@ const query = `query GetOrgUploadToken ($owner: String!) {
 interface UseOrgUploadTokenArgs {
   provider: string
   owner: string
-  enabled?: boolean
 }
 
-export const useOrgUploadToken = ({
-  provider,
-  owner,
-  enabled = true,
-}: UseOrgUploadTokenArgs) =>
+export const useOrgUploadToken = ({ provider, owner }: UseOrgUploadTokenArgs) =>
   useQuery({
     queryKey: ['GetOrgUploadToken', provider, owner],
     queryFn: ({ signal }) =>
@@ -40,17 +35,16 @@ export const useOrgUploadToken = ({
           owner,
         },
       }).then((res) => {
+        const callingFn = 'useOrgUploadToken'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useOrgUploadToken - 404 Failed to parse data',
-          } satisfies NetworkErrorObject)
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedRes.error },
+          })
         }
 
         return parsedRes?.data?.owner?.orgUploadToken ?? null
       }),
-    enabled,
   })

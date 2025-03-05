@@ -80,7 +80,7 @@ describe('useCancelPlan', () => {
       await waitFor(() =>
         expect(mockBody).toHaveBeenCalledWith({
           plan: {
-            value: Plans.USERS_BASIC,
+            value: Plans.USERS_DEVELOPER,
           },
         })
       )

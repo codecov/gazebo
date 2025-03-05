@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 import { RepoNotFoundErrorSchema } from './schemas/RepoNotFoundError'
@@ -15,7 +15,6 @@ const RepositorySchema = z.object({
   activated: z.boolean().nullable(),
   uploadToken: z.string().nullable(),
   defaultBranch: z.string().nullable(),
-  profilingToken: z.string().nullable(),
   staticAnalysisToken: z.string().nullable(),
   graphToken: z.string().nullable(),
   yaml: z.string().nullable(),
@@ -25,13 +24,6 @@ const RepositorySchema = z.object({
     })
     .nullable(),
 })
-
-interface FetchRepoSettingsArgs {
-  provider: string
-  owner: string
-  repo: string
-  signal?: AbortSignal
-}
 
 const RequestSchema = z.object({
   owner: z
@@ -57,7 +49,6 @@ query GetRepoSettings($name: String!, $repo: String!) {
         activated
         uploadToken
         defaultBranch
-        profilingToken
         staticAnalysisToken
         graphToken
         yaml
@@ -75,66 +66,6 @@ query GetRepoSettings($name: String!, $repo: String!) {
   }
 }`
 
-function fetchRepoSettingsDetails({
-  provider,
-  owner,
-  repo,
-  signal,
-}: FetchRepoSettingsArgs) {
-  return Api.graphql({
-    provider,
-    query,
-    signal,
-    variables: {
-      name: owner,
-      repo,
-    },
-  }).then((res) => {
-    const parsedRes = RequestSchema.safeParse(res?.data)
-
-    if (!parsedRes.success) {
-      return Promise.reject({
-        status: 404,
-        data: {},
-        dev: 'useRepoSettings - 404 schema parsing failed',
-      } satisfies NetworkErrorObject)
-    }
-
-    const data = parsedRes.data
-
-    if (data?.owner?.repository?.__typename === 'NotFoundError') {
-      return Promise.reject({
-        status: 404,
-        data: {},
-        dev: 'useRepoSettings - 404 not found error',
-      })
-    }
-
-    if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-      return Promise.reject({
-        status: 403,
-        data: {
-          detail: (
-            <p>
-              Activation is required to view this repo, please{' '}
-              {/* @ts-expect-error */}
-              <A to={{ pageName: 'membersTab' }}>click here </A> to activate
-              your account.
-            </p>
-          ),
-        },
-        dev: 'useRepoSettings - 403 owner not activated error',
-      })
-    }
-
-    const repository = data.owner?.repository
-
-    return {
-      repository,
-    }
-  })
-}
-
 interface URLParams {
   provider: string
   owner: string
@@ -147,6 +78,56 @@ export function useRepoSettings() {
   return useQuery({
     queryKey: ['GetRepoSettings', provider, owner, repo],
     queryFn: ({ signal }) =>
-      fetchRepoSettingsDetails({ provider, owner, repo, signal }),
+      Api.graphql({
+        provider,
+        query,
+        signal,
+        variables: {
+          name: owner,
+          repo,
+        },
+      }).then((res) => {
+        const callingFn = 'useRepoSettings'
+        const parsedRes = RequestSchema.safeParse(res?.data)
+
+        if (!parsedRes.success) {
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedRes.error },
+          })
+        }
+
+        const data = parsedRes.data
+
+        if (data?.owner?.repository?.__typename === 'NotFoundError') {
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn },
+          })
+        }
+
+        if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn },
+            data: {
+              detail: (
+                <p>
+                  Activation is required to view this repo, please{' '}
+                  {/* @ts-expect-error - A hasn't been typed yet */}
+                  <A to={{ pageName: 'membersTab' }}>click here </A> to activate
+                  your account.
+                </p>
+              ),
+            },
+          })
+        }
+
+        const repository = data.owner?.repository
+
+        return {
+          repository,
+        }
+      }),
   })
 }

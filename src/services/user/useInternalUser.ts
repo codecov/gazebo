@@ -2,6 +2,7 @@ import { useQuery, type UseQueryOptions } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const OwnerSchema = z
   .object({
@@ -12,7 +13,7 @@ const OwnerSchema = z
     service: z.string(),
     stats: z
       .object({
-        repos: z.number().nullable(),
+        repos: z.number().nullish(),
       })
       .nullable(),
     username: z.string(),
@@ -51,12 +52,13 @@ export const useInternalUser = (opts: UseInternalUserArgs) =>
         return {} as InternalUserData
       }
 
+      const callingFn = 'useInternalUser'
       const parsedData = InternalUserSchema.safeParse(response)
 
       if (!parsedData.success) {
-        return Promise.reject({
-          status: 404,
-          data: null,
+        return rejectNetworkError({
+          errorName: 'Parsing Error',
+          errorDetails: { callingFn, error: parsedData.error },
         })
       }
 

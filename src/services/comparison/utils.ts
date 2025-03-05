@@ -32,7 +32,6 @@ export function transformImpactedFileToDiff(impactedFile: ImpactedFileType) {
   return {
     fileLabel,
     headName: impactedFile?.headName,
-    isCriticalFile: impactedFile?.isCriticalFile,
     segments: impactedFile?.segments?.results,
     ...(!!hashedPath && { hashedPath }),
   }

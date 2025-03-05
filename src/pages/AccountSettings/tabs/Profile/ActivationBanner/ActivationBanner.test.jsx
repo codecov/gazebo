@@ -1,10 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { Route } from 'react-router-dom'
-import { MemoryRouter } from 'react-router-dom/cjs/react-router-dom.min'
+import { Suspense } from 'react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import ActivationBanner from './ActivationBanner'
 
@@ -27,26 +31,37 @@ const mockUserData = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
-beforeAll(() => {
-  server.listen()
-})
-beforeEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => {
-  server.close()
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh']}>
-      <Route path="/:provider">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh']}>
+        <Route path="/:provider">
+          <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
+
+const server = setupServer()
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  queryClientV5.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 describe('ActivationBanner', () => {
   function setup(
@@ -58,14 +73,14 @@ describe('ActivationBanner', () => {
     const user = userEvent.setup()
 
     let restUsersCurrent = { ...mockUserData, ...overrideUserData }
-    const querySeats = { ...mockSeatData, ...overrideSeatData }
+    const querySeats = { ...mockSeatData.config, ...overrideSeatData }
 
     server.use(
-      http.get('/internal/users/current', (info) => {
+      http.get('/internal/users/current', () => {
         return HttpResponse.json(restUsersCurrent)
       }),
-      graphql.query('Seats', (info) => {
-        return HttpResponse.json({ data: querySeats })
+      graphql.query('Seats', () => {
+        return HttpResponse.json({ data: { config: querySeats } })
       }),
       http.patch('/internal/users/current', async (info) => {
         const { activated } = await info.request.json()
@@ -83,9 +98,8 @@ describe('ActivationBanner', () => {
   }
 
   describe('rendering banner header', () => {
-    beforeEach(() => setup())
-
     it('renders header content', async () => {
+      setup()
       render(<ActivationBanner />, { wrapper })
 
       const heading = await screen.findByText('Activation Status')
@@ -95,9 +109,8 @@ describe('ActivationBanner', () => {
 
   describe('rendering banner content', () => {
     describe('user is activated', () => {
-      beforeEach(() => setup({ overrideUserData: { activated: true } }))
-
       it('displays user is activated', async () => {
+        setup({ overrideUserData: { activated: true } })
         render(<ActivationBanner />, { wrapper })
 
         const activated = await screen.findByText('You are currently activated')
@@ -107,9 +120,8 @@ describe('ActivationBanner', () => {
 
     describe('user is not activated', () => {
       describe('org has free seats', () => {
-        beforeEach(() => setup({ overrideSeatData: { activated: false } }))
-
         it('displays user is not activated', async () => {
+          setup({ overrideSeatData: { activated: false } })
           render(<ActivationBanner />, { wrapper })
 
           const activated = await screen.findByText(
@@ -120,14 +132,11 @@ describe('ActivationBanner', () => {
       })
 
       describe('org does not have free seats', () => {
-        beforeEach(() =>
+        it('displays org out of seat message', async () => {
           setup({
             overrideSeatData: { seatsUsed: 10, seatsLimit: 10 },
             overrideUserData: { activated: false },
           })
-        )
-
-        it('displays org out of seat message', async () => {
           render(<ActivationBanner />, { wrapper })
 
           const noSeatMsg = await screen.findByText(
@@ -137,6 +146,10 @@ describe('ActivationBanner', () => {
         })
 
         it('sets toggle to disabled', async () => {
+          setup({
+            overrideSeatData: { seatsUsed: 10, seatsLimit: 10 },
+            overrideUserData: { activated: false },
+          })
           render(<ActivationBanner />, { wrapper })
 
           const button = await screen.findByRole('button')

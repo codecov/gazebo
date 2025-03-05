@@ -7,7 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import AccountSettings from './AccountSettings'
 
@@ -28,10 +28,10 @@ vi.mock('./tabs/OktaAccess', () => ({ default: () => 'OktaAccess' }))
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_BASIC,
+  value: Plans.USERS_DEVELOPER,
   trialStatus: 'NOT_STARTED',
   trialStartDate: '',
   trialEndDate: '',
@@ -59,13 +59,12 @@ const mockCurrentUser = (username) => ({
       student: false,
       studentCreatedAt: null,
       studentUpdatedAt: null,
-      customerIntent: 'PERSONAL',
     },
     trackingMetadata: {
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: Plans.USERS_BASIC,
+      plan: Plans.USERS_DEVELOPER,
       staff: false,
       hasYaml: false,
       bot: null,
@@ -131,29 +130,29 @@ describe('AccountSettings', () => {
       username = 'codecov',
       isAdmin = false,
       hideAccessTab = true,
-      planValue = Plans.USERS_BASIC,
+      planValue = Plans.USERS_DEVELOPER,
     } = {
       isSelfHosted: false,
       owner: 'codecov',
       username: 'codecov',
       isAdmin: false,
       hideAccessTab: true,
-      planValue: Plans.USERS_BASIC,
+      planValue: Plans.USERS_DEVELOPER,
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
     config.HIDE_ACCESS_TAB = hideAccessTab
 
     server.use(
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: mockCurrentUser(username) })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
           data: { owner: { username: owner, isAdmin } },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -161,6 +160,17 @@ describe('AccountSettings', () => {
               plan: {
                 ...mockPlanData,
                 value: planValue,
+                isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
+                isFreePlan:
+                  planValue === Plans.USERS_DEVELOPER ||
+                  planValue === Plans.USERS_BASIC,
+                isProPlan: false,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY ||
+                  planValue === Plans.USERS_DEVELOPER,
+                isTrialPlan: false,
+                isSentryPlan: false,
               },
             },
           },

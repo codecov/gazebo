@@ -8,6 +8,7 @@ import { userEvent } from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
+import { Toaster } from 'react-hot-toast'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import BundleSelection from './BundleSelection'
@@ -61,6 +62,27 @@ const mockBranchBundles = {
   },
 }
 
+const mockCachedBundles = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          bundleAnalysis: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundles: [
+                { name: 'bundle1', cacheConfig: true },
+                { name: 'bundle2', cacheConfig: false },
+              ],
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
@@ -85,6 +107,7 @@ const wrapper =
             ]}
           >
             <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+            <Toaster />
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -110,7 +133,7 @@ describe('BundleSelection', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -120,7 +143,7 @@ describe('BundleSelection', () => {
           },
         })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -129,13 +152,16 @@ describe('BundleSelection', () => {
           },
         })
       }),
-      graphql.query('GetBranches', (info) => {
+      graphql.query('GetBranches', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockBranches } },
         })
       }),
-      graphql.query('BranchBundlesNames', (info) => {
+      graphql.query('BranchBundlesNames', () => {
         return HttpResponse.json({ data: mockBranchBundles })
+      }),
+      graphql.query('CachedBundleList', () => {
+        return HttpResponse.json({ data: mockCachedBundles })
       })
     )
 
@@ -180,6 +206,16 @@ describe('BundleSelection', () => {
       name: 'bundle tab loading selector',
     })
     expect(loadSelector).toBeInTheDocument()
+  })
+
+  it('renders bundle caching button', async () => {
+    setup()
+    render(<BundleSelection />, { wrapper: wrapper() })
+
+    const bundleCachingButton = await screen.findByRole('button', {
+      name: 'Configure data caching',
+    })
+    expect(bundleCachingButton).toBeInTheDocument()
   })
 
   describe('user interacts with branch and bundle selectors', () => {
@@ -275,6 +311,23 @@ describe('BundleSelection', () => {
           expect(updatedLoadingSelector).toHaveTextContent('All load types')
         )
       })
+    })
+  })
+
+  describe('user clicks bundle caching button', () => {
+    it('renders bundle caching modal', async () => {
+      const { user } = setup()
+      render(<BundleSelection />, { wrapper: wrapper() })
+
+      const bundleCachingButton = await screen.findByRole('button', {
+        name: 'Configure data caching',
+      })
+      await user.click(bundleCachingButton)
+
+      const modalHeader = await screen.findByText(
+        'Configure bundle caching data'
+      )
+      expect(modalHeader).toBeInTheDocument()
     })
   })
 })

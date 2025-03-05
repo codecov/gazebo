@@ -2,14 +2,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useOwner } from 'services/user'
 
 import AnalyticsPage from './AnalyticsPage'
 
 vi.mock('services/user')
 vi.mock('services/account')
-vi.mock('services/navigation')
+vi.mock('services/navigation/useLocationParams')
 vi.mock('./Tabs', () => ({
   default: () => 'Tabs',
 }))

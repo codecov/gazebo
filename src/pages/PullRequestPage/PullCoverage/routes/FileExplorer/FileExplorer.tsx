@@ -1,7 +1,7 @@
 import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
-import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
+import { DisplayTypeButton } from 'shared/ContentsTable/DisplayTypeButton/DisplayTypeButton'
 import { usePullTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 import SearchField from 'ui/SearchField'
@@ -31,7 +31,7 @@ function FileExplorer() {
         </div>
         <div className="flex gap-2">
           <SearchField
-            // @ts-expect-error
+            // @ts-expect-error - SearchField hasn't been typed yet
             dataMarketing="pull-files-search"
             placeholder="Search for files"
             searchValue={params?.search}
