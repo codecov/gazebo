@@ -53,6 +53,18 @@ export function useNavLinks() {
       },
       isExternalLink: true,
     },
+    login: {
+      text: 'Login',
+      path: () => {
+        // Enterprise login page is at different url than Cloud; see App.tsx
+        if (config.IS_SELF_HOSTED) {
+          return '/'
+        }
+
+        return `/login`
+      },
+      isExternalLink: false,
+    },
     signUp: {
       text: 'Sign Up',
       path: () => `${config.MARKETING_BASE_URL}/sign-up/`,

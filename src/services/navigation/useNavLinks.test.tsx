@@ -8,6 +8,7 @@ const wrapper =
   (location: string): React.FC<PropsWithChildren> =>
   ({ children }) => (
     <MemoryRouter initialEntries={[location]} initialIndex={0}>
+      <Route path="/login">{children}</Route>
       <Route path="/:provider">{children}</Route>
       <Route path="/:provider/:owner">{children}</Route>
       <Route path="/:provider/:owner/:repo">{children}</Route>
@@ -88,6 +89,17 @@ describe('useNavLinks', () => {
       expect(path).toBe(
         '/login/gl?to=https%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov'
       )
+    })
+  })
+
+  describe('login', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator'),
+      })
+
+      const path = result.current.login.path()
+      expect(path).toBe('/login')
     })
   })
 
