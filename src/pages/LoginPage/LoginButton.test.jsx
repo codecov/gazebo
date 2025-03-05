@@ -1,5 +1,8 @@
 import { act, render, screen } from '@testing-library/react'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import config from 'config'
 
 import { eventTracker } from 'services/events/events'
 import { ThemeContextProvider } from 'shared/ThemeContext'
@@ -7,6 +10,24 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 import LoginButton from './LoginButton'
 
 vi.mock('services/events/events')
+
+vi.mock('config')
+config.API_URL = 'secret-api-url'
+
+const { location } = window
+
+beforeEach(() => {
+  delete window.location
+  window.location = {
+    ...location,
+    protocol: 'http:',
+    host: 'secret-api-url',
+  }
+})
+
+afterEach(() => {
+  window.location = location
+})
 
 const wrapper =
   ({ initialEntries, path }) =>
@@ -98,5 +119,25 @@ describe('LoginButton', () => {
         loginProvider: 'GitHub',
       },
     })
+  })
+
+  it('appends the correct redirect query string', () => {
+    render(<LoginButton provider="gh" />, {
+      wrapper: wrapper({
+        initialEntries: '/login/gh?to=https://example.com',
+        path: '/login/:provider',
+      }),
+    })
+
+    const redirectQueryString = qs.stringify({ to: 'https://example.com' })
+    const toQueryString = qs.stringify({
+      to: `http://secret-api-url/gh?${redirectQueryString}`,
+    })
+
+    const github = screen.getByText(/Login with GitHub/i)
+    expect(github).toHaveAttribute(
+      'href',
+      `secret-api-url/login/gh?${toQueryString}`
+    )
   })
 })

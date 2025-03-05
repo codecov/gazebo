@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
+import qs from 'qs'
 
 import { eventTracker } from 'services/events/events'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useNavLinks } from 'services/navigation/useNavLinks'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
 import {
@@ -13,9 +15,12 @@ function LoginButton({ provider }) {
   const { theme } = useThemeContext()
 
   const isDarkMode = theme === Theme.DARK
-  const to = `${window.location.protocol}//${window.location.host}/${provider}`
   const providerName = loginProviderToName(provider)
   const providerImage = loginProviderImage(provider, isDarkMode)
+
+  const { params } = useLocationParams()
+  const queryString = qs.stringify({ to: params?.to }, { addQueryPrefix: true })
+  const to = `${window.location.protocol}//${window.location.host}/${provider}${queryString}`
 
   return (
     <a
