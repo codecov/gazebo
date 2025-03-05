@@ -361,7 +361,7 @@ jobs:
 
       - name: Install ESLint
         run: |
-          yarn add eslint --dev
+          yarn add eslint@8 --dev
 
       - name: Install Build Dependencies
         run: |
