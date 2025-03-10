@@ -87,9 +87,7 @@ export default function AdminTable() {
           ordering: getOrderingDirection(sorting),
         },
       },
-      {
-        suspense: false,
-      }
+      { suspense: false }
     )
   const { mutate, isLoading: isUpdatingUser } = useUpdateUser({
     provider,

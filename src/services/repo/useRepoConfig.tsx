@@ -5,10 +5,8 @@ import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from './schemas'
+import { RepoNotFoundErrorSchema } from './schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from './schemas/RepoOwnerNotActivatedError'
 
 const IndicationRangeSchema = z
   .object({
@@ -94,15 +92,13 @@ export const useRepoConfig = ({
           repo,
         },
       }).then((res) => {
+        const callingFn = 'useRepoConfig'
         const parsedRes = UseRepoConfigSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useRepoConfig',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -111,18 +107,14 @@ export const useRepoConfig = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'useRepoConfig',
-            },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: {
-              callingFn: 'useRepoConfig',
-            },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

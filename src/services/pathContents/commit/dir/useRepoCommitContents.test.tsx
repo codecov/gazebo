@@ -27,7 +27,7 @@ const mockData = {
           results: [
             {
               name: 'file.ts',
-              path: null,
+              path: 'file.ts',
               __typename: 'PathContentFile',
               hits: 24,
               misses: 24,
@@ -206,7 +206,7 @@ describe('useRepoCommitContents', () => {
             hits: 24,
             lines: 22,
             misses: 24,
-            path: null,
+            path: 'file.ts',
             partials: 22,
           },
         ],

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
-import { RepoNotFoundErrorSchema } from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { Plans } from 'shared/utils/billing'
@@ -115,15 +115,13 @@ export const useTestResultsAggregates = ({
           interval,
         },
       }).then((res) => {
+        const callingFn = 'useTestResultsAggregates'
         const parsedData = TestResultsAggregatesSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useTestResultsAggregates',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -132,7 +130,7 @@ export const useTestResultsAggregates = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useTestResultsAggregates' },
+            errorDetails: { callingFn },
           })
         }
 

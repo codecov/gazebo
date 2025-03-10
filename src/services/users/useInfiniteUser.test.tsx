@@ -88,8 +88,8 @@ describe('useInfiniteUser', () => {
         { wrapper }
       )
 
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
 
       await waitFor(() =>
         expect(result.current.data).toStrictEqual([
@@ -121,13 +121,13 @@ describe('useInfiniteUser', () => {
         { wrapper }
       )
 
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
 
       result.current.fetchNextPage()
 
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
 
       await waitFor(() =>
         expect(result.current.data).toStrictEqual([

@@ -98,15 +98,13 @@ export function InfiniteAccountOrganizationsQueryOpts({
           after,
         },
       }).then((res) => {
+        const callingFn = 'InfiniteAccountOrganizationsQueryOpts'
         const parsedRes = RequestSchema.safeParse(res.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'InfiniteAccountOrganizationsQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -115,9 +113,7 @@ export function InfiniteAccountOrganizationsQueryOpts({
         if (!account) {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'InfiniteAccountOrganizationsQueryOpts',
-            },
+            errorDetails: { callingFn },
           })
         }
 

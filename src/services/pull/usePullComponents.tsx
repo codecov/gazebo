@@ -8,10 +8,8 @@ import { MissingBaseReportSchema } from 'services/comparison/schemas/MissingBase
 import { MissingComparisonSchema } from 'services/comparison/schemas/MissingComparison'
 import { MissingHeadCommitSchema } from 'services/comparison/schemas/MissingHeadCommit'
 import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
@@ -154,15 +152,13 @@ export function usePullComponents({
           pullId: parseInt(pullId, 10),
         },
       }).then((res) => {
+        const callingFn = 'usePullComponents'
         const parsedData = PullComponentsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'usePullComponents',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -171,14 +167,14 @@ export function usePullComponents({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'usePullComponents' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'usePullComponents' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

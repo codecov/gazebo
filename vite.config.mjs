@@ -59,9 +59,15 @@ export default defineConfig((config) => {
   return {
     server: {
       port: 3000,
+      headers: {
+        'Document-Policy': 'js-profiling',
+      },
     },
     preview: {
       port: 3000,
+      headers: {
+        'Document-Policy': 'js-profiling',
+      },
     },
     build: {
       outDir: 'build',

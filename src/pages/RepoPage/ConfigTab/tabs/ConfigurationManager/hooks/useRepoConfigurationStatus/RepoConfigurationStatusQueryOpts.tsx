@@ -1,10 +1,8 @@
 import { queryOptions as queryOptionsV5 } from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
@@ -102,15 +100,13 @@ export function RepoConfigurationStatusQueryOpts({
           repo,
         },
       }).then((res) => {
+        const callingFn = 'RepoConfigurationStatusQueryOpts'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'RepoConfigurationStatusQueryOpts',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -119,14 +115,14 @@ export function RepoConfigurationStatusQueryOpts({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'RepoConfigurationStatusQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'RepoConfigurationStatusQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

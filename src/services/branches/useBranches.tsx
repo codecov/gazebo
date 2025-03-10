@@ -5,10 +5,8 @@ import {
 import isArray from 'lodash/isArray'
 import { z } from 'zod'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
@@ -140,15 +138,13 @@ export function useBranches({
           after: pageParam,
         },
       }).then((res) => {
+        const callingFn = 'useBranches'
         const parsedData = GetBranchesSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useBranches',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -157,18 +153,14 @@ export function useBranches({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: {
-              callingFn: 'useBranches',
-            },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: {
-              callingFn: 'useBranches',
-            },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

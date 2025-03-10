@@ -3,10 +3,8 @@ import { z } from 'zod'
 
 // import { BUNDLE_LOAD_TYPE_ITEMS } from 'pages/RepoPage/BundlesTab/BundleContent/constants'
 import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
@@ -190,15 +188,13 @@ export const BundleTrendDataQueryOpts = ({
           filters,
         },
       }).then((res) => {
+        const callingFn = 'BundleTrendDataQueryOpts'
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'BundleTrendDataQueryOpts',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -207,14 +203,14 @@ export const BundleTrendDataQueryOpts = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'BundleTrendDataQueryOpts' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'BundleTrendDataQueryOpts' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

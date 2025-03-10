@@ -3,10 +3,8 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { UnknownFlagsSchema } from 'services/impactedFiles/schemas/UnknownFlags'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
@@ -21,7 +19,7 @@ const BasePathContentSchema = z.object({
   partials: z.number(),
   lines: z.number(),
   name: z.string(),
-  path: z.string().nullable(),
+  path: z.string(),
   percentCovered: z.number(),
 })
 
@@ -150,15 +148,13 @@ export function usePrefetchBranchDirEntry({
             first: 20,
           },
         }).then((res) => {
+          const callingFn = 'usePrefetchBranchDirEntry'
           const parsedRes = BranchContentsSchema.safeParse(res?.data)
 
           if (!parsedRes.success) {
             return rejectNetworkError({
               errorName: 'Parsing Error',
-              errorDetails: {
-                callingFn: 'usePrefetchBranchDirEntry',
-                error: parsedRes.error,
-              },
+              errorDetails: { callingFn, error: parsedRes.error },
             })
           }
 
@@ -167,9 +163,7 @@ export function usePrefetchBranchDirEntry({
           if (data?.owner?.repository?.__typename === 'NotFoundError') {
             return rejectNetworkError({
               errorName: 'Not Found Error',
-              errorDetails: {
-                callingFn: 'usePrefetchBranchDirEntry',
-              },
+              errorDetails: { callingFn },
             })
           }
 
@@ -178,9 +172,7 @@ export function usePrefetchBranchDirEntry({
           ) {
             return rejectNetworkError({
               errorName: 'Owner Not Activated',
-              errorDetails: {
-                callingFn: 'usePrefetchBranchDirEntry',
-              },
+              errorDetails: { callingFn },
               data: {
                 detail: (
                   <p>

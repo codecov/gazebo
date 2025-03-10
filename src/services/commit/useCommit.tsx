@@ -11,10 +11,8 @@ import { MissingComparisonSchema } from 'services/comparison/schemas/MissingComp
 import { MissingHeadCommitSchema } from 'services/comparison/schemas/MissingHeadCommit'
 import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
 import { UnknownFlagsSchema } from 'services/impactedFiles/schemas/UnknownFlags'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo/schemas'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import {
@@ -349,15 +347,13 @@ export function useCommit({
           isTeamPlan,
         },
       }).then((res) => {
+        const callingFn = 'useCommit'
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useCommit',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
@@ -366,14 +362,14 @@ export function useCommit({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useCommit' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'useCommit' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

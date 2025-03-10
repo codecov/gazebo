@@ -6,10 +6,8 @@ import { useMemo } from 'react'
 import { z } from 'zod'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { PlanName, Plans } from 'shared/utils/billing'
@@ -236,15 +234,13 @@ export const useInfiniteTestResults = ({
           before,
         },
       }).then((res) => {
+        const callingFn = 'useInfiniteTestResults'
         const parsedData = GetTestResultsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useInfiniteTestResults',
-              error: parsedData.error,
-            },
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
@@ -253,14 +249,14 @@ export const useInfiniteTestResults = ({
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
             errorName: 'Not Found Error',
-            errorDetails: { callingFn: 'useInfiniteTestResults' },
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return rejectNetworkError({
             errorName: 'Owner Not Activated',
-            errorDetails: { callingFn: 'useInfiniteTestResults' },
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>

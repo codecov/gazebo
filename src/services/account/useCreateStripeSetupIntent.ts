@@ -69,14 +69,13 @@ export function useCreateStripeSetupIntent({
     queryKey: ['setupIntent', provider, owner],
     queryFn: ({ signal }) =>
       createStripeSetupIntent({ provider, owner, signal }).then((res) => {
+        const callingFn = 'useCreateStripeSetupIntent'
         const parsedRes = CreateStripeSetupIntentSchema.safeParse(res.data)
+
         if (!parsedRes.success) {
           return rejectNetworkError({
             errorName: 'Parsing Error',
-            errorDetails: {
-              callingFn: 'useCreateStripeSetupIntent',
-              error: parsedRes.error,
-            },
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 
