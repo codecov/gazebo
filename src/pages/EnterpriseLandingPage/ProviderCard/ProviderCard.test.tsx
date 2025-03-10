@@ -40,59 +40,59 @@ type Provider = {
   [K in keyof LoginProviders]: LoginProviders[K]
 }[keyof LoginProviders]
 
-interface Case {
-  provider: Provider
-  name: string
-  providers: Array<EnterpriseLoginProviders>
-  to: string
-}
-
-const cases: Case[] = [
-  {
-    provider: LoginProvidersEnum.BITBUCKET,
-    name: LoginProvidersEnum.BITBUCKET.name,
-    providers: ['BITBUCKET'],
-    to: '/login/bb',
-  },
-  {
-    provider: LoginProvidersEnum.BITBUCKET,
-    name: LoginProvidersEnum.BITBUCKET.selfHostedName,
-    providers: ['BITBUCKET_SERVER'],
-    to: '/login/bbs',
-  },
-  {
-    provider: LoginProvidersEnum.GITHUB,
-    name: LoginProvidersEnum.GITHUB.name,
-    providers: ['GITHUB'],
-    to: '/login/gh',
-  },
-  {
-    provider: LoginProvidersEnum.GITHUB,
-    name: LoginProvidersEnum.GITHUB.selfHostedName,
-    providers: ['GITHUB_ENTERPRISE'],
-    to: '/login/ghe',
-  },
-  {
-    provider: LoginProvidersEnum.GITLAB,
-    name: LoginProvidersEnum.GITLAB.name,
-    providers: ['GITLAB'],
-    to: '/login/gl',
-  },
-  {
-    provider: LoginProvidersEnum.GITLAB,
-    name: LoginProvidersEnum.GITLAB.selfHostedName,
-    providers: ['GITLAB_ENTERPRISE'],
-    to: '/login/gle',
-  },
-  {
-    provider: LoginProvidersEnum.OKTA,
-    name: LoginProvidersEnum.OKTA.name,
-    providers: ['OKTA'],
-    to: '/login/okta',
-  },
-]
-
 describe('ProviderCard', () => {
+  interface Case {
+    provider: Provider
+    name: string
+    providers: Array<EnterpriseLoginProviders>
+    to: string
+  }
+
+  const cases: Case[] = [
+    {
+      provider: LoginProvidersEnum.BITBUCKET,
+      name: LoginProvidersEnum.BITBUCKET.name,
+      providers: ['BITBUCKET'],
+      to: '/login/bb',
+    },
+    {
+      provider: LoginProvidersEnum.BITBUCKET,
+      name: LoginProvidersEnum.BITBUCKET.selfHostedName,
+      providers: ['BITBUCKET_SERVER'],
+      to: '/login/bbs',
+    },
+    {
+      provider: LoginProvidersEnum.GITHUB,
+      name: LoginProvidersEnum.GITHUB.name,
+      providers: ['GITHUB'],
+      to: '/login/gh',
+    },
+    {
+      provider: LoginProvidersEnum.GITHUB,
+      name: LoginProvidersEnum.GITHUB.selfHostedName,
+      providers: ['GITHUB_ENTERPRISE'],
+      to: '/login/ghe',
+    },
+    {
+      provider: LoginProvidersEnum.GITLAB,
+      name: LoginProvidersEnum.GITLAB.name,
+      providers: ['GITLAB'],
+      to: '/login/gl',
+    },
+    {
+      provider: LoginProvidersEnum.GITLAB,
+      name: LoginProvidersEnum.GITLAB.selfHostedName,
+      providers: ['GITLAB_ENTERPRISE'],
+      to: '/login/gle',
+    },
+    {
+      provider: LoginProvidersEnum.OKTA,
+      name: LoginProvidersEnum.OKTA.name,
+      providers: ['OKTA'],
+      to: '/login/okta',
+    },
+  ]
+
   describe.each(cases)('$name', ({ provider, providers, to, name }) => {
     describe('when system is configured with $providers.[0]', () => {
       it('renders the correct login button', () => {
@@ -110,31 +110,64 @@ describe('ProviderCard', () => {
   })
 
   describe('when to param is provided', () => {
-    it('appends redirect param to the login url', () => {
-      const queryString = qs.stringify(
-        { to: '/gh/codecov/gazebo' },
-        { addQueryPrefix: true }
-      )
-      render(
-        <ProviderCard
-          provider={LoginProvidersEnum.BITBUCKET}
-          providers={['BITBUCKET']}
-        />,
-        { wrapper: wrapper(`/login/bb${queryString}`) }
-      )
+    interface Case {
+      provider: typeof LoginProvidersEnum.GITHUB
+      isSelfHosted: boolean
+      name: string
+      providers: Array<EnterpriseLoginProviders>
+      to: string
+    }
 
-      const redirectURL = qs.stringify(
-        { to: `http://secret-api-url/bb${queryString}` },
-        { addQueryPrefix: true }
-      )
-      const element = screen.getByRole('link', {
-        name: `Login via Bitbucket`,
-      })
-      expect(element).toBeInTheDocument()
-      expect(element).toHaveAttribute(
-        'href',
-        `secret-api-url/login/bb${redirectURL}`
-      )
-    })
+    const cases: Case[] = [
+      {
+        provider: LoginProvidersEnum.GITHUB,
+        isSelfHosted: false,
+        name: LoginProvidersEnum.GITHUB.name,
+        providers: ['GITHUB'],
+        to: '/login/gh',
+      },
+      {
+        provider: LoginProvidersEnum.GITHUB,
+        isSelfHosted: true,
+        name: LoginProvidersEnum.GITHUB.selfHostedName,
+        providers: ['GITHUB_ENTERPRISE'],
+        to: '/login/ghe',
+      },
+    ]
+
+    describe.each(cases)(
+      '$name',
+      ({ provider, providers, name, isSelfHosted }) => {
+        describe(`is ${isSelfHosted ? 'self hosted' : 'external'} provider`, () => {
+          it('appends redirect param to the login url', () => {
+            const key = isSelfHosted
+              ? provider.selfHostedKey
+              : provider.externalKey
+            const queryString = qs.stringify(
+              { to: `/${key}/codecov/gazebo` },
+              { addQueryPrefix: true }
+            )
+
+            render(<ProviderCard provider={provider} providers={providers} />, {
+              wrapper: wrapper(`/login/${key}${queryString}`),
+            })
+
+            const redirectURL = qs.stringify(
+              { to: `http://secret-api-url/${key}${queryString}` },
+              { addQueryPrefix: true }
+            )
+
+            const element = screen.getByRole('link', {
+              name: `Login via ${name}`,
+            })
+            expect(element).toBeInTheDocument()
+            expect(element).toHaveAttribute(
+              'href',
+              `secret-api-url/login/${key}${redirectURL}`
+            )
+          })
+        })
+      }
+    )
   })
 })
