@@ -10,7 +10,7 @@ import SpecialOffer from './SpecialOffer'
 const mockBody = vi.fn()
 const mockToast = vi.fn()
 
-vi.mock('services/toastNotification', () => ({
+vi.mock('services/toastNotification/context', () => ({
   useAddNotification: () => (data) => mockToast(data),
 }))
 

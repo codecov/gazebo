@@ -3,7 +3,7 @@ import { useHistory, useParams } from 'react-router-dom'
 
 import { useSetPlanUpdatedNotification } from 'pages/PlanPage/context'
 import { useUpgradePlan } from 'services/account/useUpgradePlan'
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import { Provider } from 'shared/api/helpers'
 
 import { UpgradeFormFields } from '../UpgradeForm'
