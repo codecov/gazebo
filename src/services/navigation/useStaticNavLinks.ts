@@ -447,18 +447,6 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
-    login: {
-      text: 'Login',
-      path: () => {
-        // Enterprise login page is at different url than Cloud; see App.tsx
-        if (config.IS_SELF_HOSTED) {
-          return '/'
-        }
-
-        return `/login`
-      },
-      isExternalLink: false,
-    },
     testsAnalytics: {
       text: 'Tests Analytics',
       path: () =>

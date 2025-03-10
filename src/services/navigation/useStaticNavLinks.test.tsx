@@ -88,7 +88,6 @@ describe('useStaticNavLinks', () => {
       ${links.bundleConfigFeedback}          | ${'https://github.com/codecov/feedback/issues/270'}
       ${links.quickStart}                    | ${'https://docs.codecov.com/docs/quick-start'}
       ${links.installSelfHosted}             | ${'https://docs.codecov.com/docs/installing-codecov-self-hosted'}
-      ${links.login}                         | ${`/login`}
       ${links.testsAnalytics}                | ${'https://docs.codecov.com/docs/test-analytics#failed-test-reporting'}
       ${links.testsAnalyticsDataRetention}   | ${'https://docs.codecov.com/docs/test-analytics#data-retention'}
       ${links.expiredReports}                | ${'https://docs.codecov.com/docs/codecov-yaml#section-expired-reports'}
