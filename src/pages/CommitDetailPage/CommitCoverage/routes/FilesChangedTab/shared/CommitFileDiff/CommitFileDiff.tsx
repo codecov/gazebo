@@ -1,6 +1,6 @@
 import { useQuery as useQueryV5 } from '@tanstack/react-queryV5'
 import { Fragment, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
 import {
@@ -122,6 +122,8 @@ function DiffRenderer({
 }
 
 function ErrorDisplayMessage() {
+  const location = useLocation()
+
   return (
     <p className="border border-solid border-ds-gray-tertiary p-4">
       There was a problem getting the source code from your provider. Unable to
@@ -132,6 +134,7 @@ function ErrorDisplayMessage() {
         <A
           to={{
             pageName: 'login',
+            options: { to: location.pathname },
           }}
           hook={undefined}
           isExternal={undefined}

@@ -1,3 +1,5 @@
+import { useLocation } from 'react-router'
+
 import config from 'config'
 
 import { CodecovIcon } from 'assets/svg/codecov'
@@ -26,6 +28,7 @@ const LogoButton = () => {
 
 function GuestHeader() {
   const isSelfHosted = config.IS_SELF_HOSTED
+  const location = useLocation()
 
   return (
     <div className="border-b">
@@ -69,7 +72,7 @@ function GuestHeader() {
           <ThemeToggle />
           {isSelfHosted ? (
             <Button
-              to={{ pageName: 'login' }}
+              to={{ pageName: 'login', options: { to: location.pathname } }}
               variant="primary"
               activeClassName="hidden"
               exact={true}
@@ -86,7 +89,7 @@ function GuestHeader() {
               className="mx-2 flex items-center justify-between gap-4 md:mx-0"
             >
               <A
-                to={{ pageName: 'login' }}
+                to={{ pageName: 'login', options: { to: location.pathname } }}
                 variant="guestHeader"
                 activeClassName="hidden"
                 isExternal={false}

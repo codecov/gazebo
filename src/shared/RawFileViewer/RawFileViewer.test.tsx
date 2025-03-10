@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import RawFileViewer from './RawFileViewer'
@@ -359,14 +360,18 @@ describe('RawFileViewer', () => {
       expect(errorMessage).toBeInTheDocument()
     })
 
-    it('renders a login link', async () => {
+    it('renders a login link with redirect to path', async () => {
       render(
         <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
         { wrapper: wrapper() }
       )
+
+      const queryString = qs.stringify({
+        to: '/gh/codecov/cool-repo/blob/branch-name/a/file.js',
+      })
       const link = await screen.findByText(/logging in/)
       expect(link).toBeVisible()
-      expect(link).toHaveAttribute('href', '/login')
+      expect(link).toHaveAttribute('href', `/login?${queryString}`)
     })
   })
 

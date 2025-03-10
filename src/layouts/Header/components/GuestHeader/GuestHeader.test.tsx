@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import qs from 'qs'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -47,6 +48,7 @@ describe('GuestHeader', () => {
         expect(link).toHaveAttribute('href', 'https://about.codecov.io')
       })
     })
+
     describe('why test code link', () => {
       it('directs user to what is code coverage page', async () => {
         render(<GuestHeader />, {
@@ -61,6 +63,7 @@ describe('GuestHeader', () => {
         )
       })
     })
+
     describe('Get a demo link', () => {
       it('directs user to demo page', async () => {
         render(<GuestHeader />, {
@@ -72,6 +75,7 @@ describe('GuestHeader', () => {
         expect(link).toHaveAttribute('href', 'https://about.codecov.io/demo')
       })
     })
+
     describe('pricing link', () => {
       it('directs user to pricing page', async () => {
         render(<GuestHeader />, {
@@ -83,17 +87,20 @@ describe('GuestHeader', () => {
         expect(link).toHaveAttribute('href', 'https://about.codecov.io/pricing')
       })
     })
+
     describe('login link', () => {
-      it('directs user to login page', async () => {
+      it('directs user to login page with redirect to path', async () => {
         render(<GuestHeader />, {
           wrapper,
         })
 
+        const queryString = qs.stringify({ to: '/gh' })
         const link = await screen.findByTestId('login-link')
         expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/login')
+        expect(link).toHaveAttribute('href', `/login?${queryString}`)
       })
     })
+
     describe('start trial link', () => {
       it('directs user to start trial page', async () => {
         render(<GuestHeader />, {
@@ -128,18 +135,21 @@ describe('GuestHeader', () => {
       const pricing = screen.queryByText('Pricing')
       expect(pricing).not.toBeInTheDocument()
     })
+
     it('does not render start free trial link', () => {
       render(<GuestHeader />, { wrapper })
 
       const startFreeTrial = screen.queryByText('Start Free Trial')
       expect(startFreeTrial).not.toBeInTheDocument()
     })
-    it('renders a login button', () => {
+
+    it('renders a login button with redirect to path', () => {
       render(<GuestHeader />, { wrapper })
 
+      const queryString = qs.stringify({ to: '/gh' })
       const login = screen.queryByText('Login')
       expect(login).toBeInTheDocument()
-      expect(login).toHaveAttribute('href', '/')
+      expect(login).toHaveAttribute('href', `/?${queryString}`)
     })
   })
 })

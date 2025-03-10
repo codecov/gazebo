@@ -6,6 +6,7 @@ import {
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
@@ -364,13 +365,16 @@ describe('CommitFileDiff', () => {
       expect(errorMessage).toBeInTheDocument()
     })
 
-    it('renders a login link', async () => {
+    it('renders a login link with redirect to path', async () => {
       setup({ impactedFile: null })
       render(<CommitFileDiff path={'random/path'} />, { wrapper })
 
+      const queryString = qs.stringify({
+        to: '/gh/codecov/gazebo/commit/123sha/folder/subfolder/file.js',
+      })
       const link = await screen.findByText(/logging in/)
       expect(link).toBeVisible()
-      expect(link).toHaveAttribute('href', '/login')
+      expect(link).toHaveAttribute('href', `/login?${queryString}`)
     })
   })
 
