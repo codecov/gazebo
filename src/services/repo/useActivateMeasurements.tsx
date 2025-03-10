@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import z from 'zod'
 
-import { renderToast } from 'services/toast'
+import { renderToast } from 'services/toast/renderToast'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
