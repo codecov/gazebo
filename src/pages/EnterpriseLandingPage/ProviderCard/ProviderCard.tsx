@@ -1,4 +1,7 @@
+import qs from 'qs'
+
 import { EnterpriseLoginProviders } from 'services/config/LoginProvidersQueryOpts'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
 import {
   loginProviderImage,
@@ -19,11 +22,18 @@ interface ProviderCardProps {
 
 interface ExternalProviderButtonProps {
   provider: Provider
+  queryString?: string
 }
 
 const ExternalProviderButton: React.FC<ExternalProviderButtonProps> = ({
   provider,
+  queryString,
 }) => {
+  let to = undefined
+  if (queryString) {
+    to = `${window.location.protocol}//${window.location.host}/${provider.externalKey}${queryString}`
+  }
+
   return (
     <Button
       hook=""
@@ -31,7 +41,7 @@ const ExternalProviderButton: React.FC<ExternalProviderButtonProps> = ({
       variant={provider.variant}
       to={{
         pageName: 'signIn',
-        options: { provider: provider?.externalKey },
+        options: { provider: provider?.externalKey, to },
       }}
     >
       Login via {provider.name}
@@ -41,13 +51,20 @@ const ExternalProviderButton: React.FC<ExternalProviderButtonProps> = ({
 
 interface InternalProviderButtonProps {
   provider: Provider
+  queryString?: string
 }
 
-export const InternalProviderButton: React.FC<InternalProviderButtonProps> = ({
+const InternalProviderButton: React.FC<InternalProviderButtonProps> = ({
   provider,
+  queryString,
 }) => {
   if (provider.name === LoginProvidersEnum.OKTA.name) {
     return null
+  }
+
+  let to = undefined
+  if (queryString) {
+    to = `${window.location.protocol}//${window.location.host}/${provider.selfHostedKey}${queryString}`
   }
 
   return (
@@ -57,7 +74,7 @@ export const InternalProviderButton: React.FC<InternalProviderButtonProps> = ({
       variant={provider?.variant}
       to={{
         pageName: 'signIn',
-        options: { provider: provider.selfHostedKey },
+        options: { provider: provider.selfHostedKey, to },
       }}
     >
       Login via {provider.selfHostedName}
@@ -79,6 +96,17 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ provider, providers }) => {
     | string
     | undefined
 
+  const { params } = useLocationParams()
+  let queryString = undefined
+  // @ts-expect-error useLocationParams needs to be typed
+  if (params?.to) {
+    queryString = qs.stringify(
+      // @ts-expect-error useLocationParams needs to be typed
+      { to: params?.to },
+      { addQueryPrefix: true }
+    )
+  }
+
   return (
     <div className="flex flex-col items-center">
       <div className="flex w-64 flex-row items-center justify-center gap-2 pb-2">
@@ -87,10 +115,16 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ provider, providers }) => {
       </div>
       <div className="flex w-64 flex-col gap-2">
         {isExternalProvider ? (
-          <ExternalProviderButton provider={provider} />
+          <ExternalProviderButton
+            provider={provider}
+            queryString={queryString}
+          />
         ) : null}
         {isInternalProvider ? (
-          <InternalProviderButton provider={provider} />
+          <InternalProviderButton
+            provider={provider}
+            queryString={queryString}
+          />
         ) : null}
       </div>
     </div>
