@@ -49,13 +49,18 @@ function Username({ name, username }: UsernameProps) {
 function useActivateUser({
   provider,
   owner,
+  onSuccess,
 }: {
   provider: string
   owner: string
+  onSuccess: ({ activated }: { activated: boolean }) => void
 }) {
   const { mutate, ...rest } = useUpdateUser({
     provider,
     owner,
+    opts: {
+      onSuccess,
+    },
   })
 
   function activate(ownerid: number, activated: boolean) {
@@ -79,8 +84,21 @@ function ActivationStatus({
   openUpgradeModal,
 }: ActivationStatusProps) {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
-  const { activate, isLoading } = useActivateUser({ owner, provider })
+  const [optimisticActivation, setOptimisticActivation] =
+    useState<boolean>(activated)
+  const { activate, isLoading } = useActivateUser({
+    owner,
+    provider,
+    onSuccess: ({ activated }) => {
+      setOptimisticActivation(activated)
+    },
+  })
   const { data: planData } = usePlanData({ owner, provider })
+
+  useEffect(() => {
+    // if real activation status changes, update optimistic status to reflect
+    setOptimisticActivation(activated)
+  }, [activated])
 
   let disabled = false
 
@@ -94,22 +112,22 @@ function ActivationStatus({
   return (
     <Toggle
       dataMarketing="handle-members-activation"
-      label={activated ? 'Activated' : 'Non-Active'}
-      value={activated}
+      label={optimisticActivation ? 'Activated' : 'Non-Active'}
+      value={optimisticActivation}
       onClick={() => {
         if (
           !planData?.plan?.hasSeatsLeft &&
-          !activated &&
+          !optimisticActivation &&
           planData?.plan?.isFreePlan &&
           !student
         ) {
           openUpgradeModal()
         } else {
-          activate(ownerid, !activated)
+          activate(ownerid, !optimisticActivation)
         }
       }}
       isLoading={isLoading}
-      disabled={disabled && !activated}
+      disabled={disabled && !optimisticActivation}
     />
   )
 }
