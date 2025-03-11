@@ -357,6 +357,10 @@ describe('MembersTable', () => {
           describe('there are no open seats', () => {
             beforeEach(() =>
               setup({
+                mockUserRequest: mockBaseUserRequest({
+                  student: false,
+                  activated: false,
+                }),
                 planName: Plans.USERS_PR_INAPPY,
                 hasSeatsLeft: false,
                 planUserCount: 1,
@@ -367,9 +371,6 @@ describe('MembersTable', () => {
               render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
                 wrapper: wrapper(),
               })
-
-              await waitFor(() => queryClient.isFetching())
-              await waitFor(() => !queryClient.isFetching())
 
               const toggle = await screen.findByRole('button')
               await waitFor(() => expect(toggle).toBeDisabled())

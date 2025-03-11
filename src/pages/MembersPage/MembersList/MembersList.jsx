@@ -7,7 +7,7 @@ import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
 
 import { ActivatedItems, AdminItems } from './enums'
-import MembersTable from './MembersTable'
+import MembersTable from './MembersTable/MembersTable'
 import UpgradeModal from './UpgradeModal/UpgradeModal'
 
 const UserManagementClasses = {
