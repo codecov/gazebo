@@ -15,6 +15,7 @@ export function useUpdateUser({ provider, owner, opts = {} }) {
     queryClient.invalidateQueries(['users'])
     queryClient.invalidateQueries(['accountDetails'])
     queryClient.invalidateQueries(['InfiniteUsers'])
+    queryClient.invalidateQueries(['GetPlanData'])
 
     if (onSuccess) {
       // Execute passed onSuccess after invalidating queries

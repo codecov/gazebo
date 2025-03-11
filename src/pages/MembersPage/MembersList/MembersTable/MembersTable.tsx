@@ -109,7 +109,7 @@ function ActivationStatus({
         }
       }}
       isLoading={isLoading}
-      disabled={disabled}
+      disabled={disabled && !activated}
     />
   )
 }
