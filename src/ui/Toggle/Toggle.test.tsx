@@ -199,5 +199,23 @@ describe('Toggle', () => {
         expect(spinner).toBeInTheDocument()
       })
     })
+
+    describe('when isLoading is false', () => {
+      it('does not render spinner', () => {
+        render(
+          <Toggle
+            label="🐕"
+            dataMarketing="marketing"
+            value={true}
+            disabled={false}
+            isLoading={false}
+            onClick={() => {}}
+          />
+        )
+
+        const spinner = screen.queryByTestId('toggle-loading-spinner')
+        expect(spinner).not.toBeInTheDocument()
+      })
+    })
   })
 })
