@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, within } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullFileDiff from './PullFileDiff'
@@ -322,13 +323,14 @@ describe('FileDiff', () => {
       expect(errorMessage).toBeInTheDocument()
     })
 
-    it('renders a login link', async () => {
+    it('renders a login link with redirect to path', async () => {
       setup({})
       render(<PullFileDiff path={undefined} />, { wrapper })
 
+      const queryString = qs.stringify({ to: '/gh/codecov/cool-repo/pull/1' })
       const loginLink = await screen.findByRole('link', { name: /logging in/ })
       expect(loginLink).toBeInTheDocument()
-      expect(loginLink).toHaveAttribute('href', '/login')
+      expect(loginLink).toHaveAttribute('href', `/login?${queryString}`)
     })
   })
 })
