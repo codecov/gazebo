@@ -95,11 +95,6 @@ function ActivationStatus({
   })
   const { data: planData } = usePlanData({ owner, provider })
 
-  useEffect(() => {
-    // if real activation status changes, update optimistic status to reflect
-    setOptimisticActivation(activated)
-  }, [activated])
-
   let disabled = false
 
   if (planData?.plan) {
