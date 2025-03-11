@@ -188,10 +188,6 @@ function ResetHandler({ logoutUser = false, reset, statusCode }) {
         >
           Login
         </Button>
-      ) : statusCode === 404 && user ? (
-        <Button variant="primary" to={{ pageName: 'prevLink' }}>
-          Home
-        </Button>
       ) : null}
     </div>
   )
