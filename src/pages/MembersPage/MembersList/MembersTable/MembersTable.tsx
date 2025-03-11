@@ -11,7 +11,7 @@ import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
 import { usePlanData } from 'services/account/usePlanData'
-import { Member, useInfiniteUsers } from 'services/users'
+import { Member, useInfiniteUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils/ownerHelpers'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 import Icon from 'ui/Icon'
@@ -46,20 +46,40 @@ function Username({ name, username }: UsernameProps) {
   )
 }
 
+function useActivateUser({
+  provider,
+  owner,
+}: {
+  provider: string
+  owner: string
+}) {
+  const { mutate, ...rest } = useUpdateUser({
+    provider,
+    owner,
+  })
+
+  function activate(ownerid: number, activated: boolean) {
+    mutate({ targetUserOwnerid: ownerid, activated })
+  }
+
+  return { activate, ...rest }
+}
+
 interface ActivationStatusProps {
   activated: boolean
   ownerid: number
   student: boolean
-  handleActivate: (user: any) => void
+  openUpgradeModal: () => void
 }
 
 function ActivationStatus({
   activated,
   ownerid,
   student,
-  handleActivate,
+  openUpgradeModal,
 }: ActivationStatusProps) {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
+  const { activate, isLoading } = useActivateUser({ owner, provider })
   const { data: planData } = usePlanData({ owner, provider })
 
   let disabled = false
@@ -77,18 +97,24 @@ function ActivationStatus({
       label={activated ? 'Activated' : 'Non-Active'}
       value={activated}
       onClick={() => {
-        handleActivate({ ownerid, activated })
+        if (
+          !planData?.plan?.hasSeatsLeft &&
+          !activated &&
+          planData?.plan?.isFreePlan &&
+          !student
+        ) {
+          openUpgradeModal()
+        } else {
+          activate(ownerid, !activated)
+        }
       }}
-      disabled={disabled && !activated}
+      isLoading={isLoading}
+      disabled={disabled}
     />
   )
 }
 
-function getColumns({
-  handleActivate,
-}: {
-  handleActivate: (user: any) => void
-}) {
+function getColumns({ openUpgradeModal }: { openUpgradeModal: () => void }) {
   return [
     columnHelper.accessor('username', {
       id: 'username',
@@ -113,7 +139,12 @@ function getColumns({
       id: 'activated',
       header: () => 'Activation status',
       cell: ({ row }) => (
-        <ActivationStatus {...row.original} handleActivate={handleActivate} />
+        <div className="flex justify-end">
+          <ActivationStatus
+            {...row.original}
+            openUpgradeModal={openUpgradeModal}
+          />
+        </div>
       ),
     }),
   ]
@@ -140,7 +171,7 @@ function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
 }
 
 interface MembersTableProps {
-  handleActivate: (user: any) => void
+  openUpgradeModal: () => void
   params?: {
     activated?: boolean
     isAdmin?: boolean
@@ -151,7 +182,7 @@ interface MembersTableProps {
 }
 
 export default function MembersTable({
-  handleActivate,
+  openUpgradeModal,
   params,
 }: MembersTableProps) {
   const [sorting, setSorting] = useState<SortingState>([
@@ -183,7 +214,7 @@ export default function MembersTable({
   }, [inView, hasNextPage, fetchNextPage])
 
   const table = useReactTable({
-    columns: getColumns({ handleActivate }),
+    columns: getColumns({ openUpgradeModal }),
     data: data || [],
     state: {
       sorting,

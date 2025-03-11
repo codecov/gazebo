@@ -6,15 +6,19 @@ import Toggle from 'ui/Toggle'
 
 function AutoActivate({ planAutoActivate }) {
   const { owner, provider } = useParams()
-  const { mutate: autoActivate } = useAutoActivate({ owner, provider })
+  const { mutate: autoActivate, isLoading } = useAutoActivate({
+    owner,
+    provider,
+  })
 
   return (
-    <div className="flex flex-col gap-2 p-4">
+    <div className="flex flex-col items-start gap-2 p-4">
       <div className="font-semibold">
         <Toggle
           dataMarketing="auto-activate-members"
           onClick={() => autoActivate(!planAutoActivate)}
           value={planAutoActivate}
+          isLoading={isLoading}
           label="Auto-activate members"
         />
       </div>
