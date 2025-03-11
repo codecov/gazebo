@@ -180,4 +180,24 @@ describe('Toggle', () => {
       expect(button).toHaveAttribute('disabled')
     })
   })
+
+  describe('isLoading behavior', () => {
+    describe('when isLoading is true', () => {
+      it('renders spinner', () => {
+        render(
+          <Toggle
+            label="🐕"
+            dataMarketing="marketing"
+            value={true}
+            disabled={false}
+            isLoading={true}
+            onClick={() => {}}
+          />
+        )
+
+        const spinner = screen.getByTestId('toggle-loading-spinner')
+        expect(spinner).toBeInTheDocument()
+      })
+    })
+  })
 })

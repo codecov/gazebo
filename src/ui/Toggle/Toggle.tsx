@@ -8,6 +8,7 @@ interface ToggleProps {
   label: string
   onClick: () => void
   disabled?: boolean
+  isLoading?: boolean
   dataMarketing: string
 }
 
@@ -16,6 +17,7 @@ function Toggle({
   value = false,
   onClick,
   disabled = false,
+  isLoading = false,
   dataMarketing,
 }: ToggleProps) {
   const ID = uniqueId('toggle')
@@ -63,18 +65,31 @@ function Toggle({
           )}
         >
           <div
-            className={cn({
+            className={cn('flex size-5 items-center justify-center', {
               'text-toggle-active': value,
               'text-toggle-inactive': !value && !disabled,
               'text-toggle-disabled': disabled,
             })}
           >
-            <Icon
-              name={value ? 'check' : 'x'}
-              label={value ? 'check' : 'x'}
-              variant="solid"
-              size="flex"
-            />
+            {isLoading ? (
+              <div
+                data-testid="toggle-loading-spinner"
+                className={cn(
+                  'size-4 animate-spin rounded-full border-4 border-white',
+                  {
+                    'border-t-toggle-active': value,
+                    'border-t-toggle-inactive': !value && !disabled,
+                  }
+                )}
+              />
+            ) : (
+              <Icon
+                name={value ? 'check' : 'x'}
+                label={value ? 'check' : 'x'}
+                variant="solid"
+                size="flex"
+              />
+            )}
           </div>
         </span>
       </button>
