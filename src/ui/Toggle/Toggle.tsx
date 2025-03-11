@@ -26,7 +26,7 @@ function Toggle({
     <div
       data-marketing={`${ID}-${dataMarketing}`}
       onClick={() => {
-        if (!disabled) {
+        if (!disabled && !isLoading) {
           onClick()
         }
       }}
@@ -45,7 +45,7 @@ function Toggle({
             'bg-toggle-active': value,
             'bg-toggle-inactive': !value && !disabled,
             'bg-toggle-disabled': disabled,
-            'cursor-not-allowed': disabled,
+            'cursor-not-allowed': disabled || isLoading,
           }
         )}
         aria-pressed="false"
