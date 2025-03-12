@@ -21,15 +21,17 @@ then
   sed -i "s/${SCHEME_BASE}:\/\/${WEB_BASE}/${SCHEME}:\/\/${CODECOV_BASE_HOST}/g" /var/www/app/gazebo/assets/*.js
   if [[ -n "${GHE_BASE}" ]]; then
     echo "Replacing GHE ${GHE_SCHEME_BASE}://${GHE_BASE}"
-    sed -i -r "s/r\.[a-zA-Z]+\.GHE_URL/\"${GHE_SCHEME_BASE}:\/\/${GHE_BASE}\"/g" /var/www/app/gazebo/assets/*.js
+    echo $(ls /var/www/app/gazebo)
+    echo $(ls /var/www/app/gazebo/assets)
+    sed -i -r "s/[a-zA-Z]+\.GHE_URL/\"${GHE_SCHEME_BASE}:\/\/${GHE_BASE}\"/g" /var/www/app/gazebo/assets/*.js
   fi
   if [[ -n "${GLE_BASE}" ]]; then
     echo "Replacing GLE ${GLE_SCHEME_BASE}://${GLE_BASE}"
-    sed -i -r "s/r\.[a-zA-Z]+\.GLE_URL/\"${GLE_SCHEME_BASE}:\/\/${GLE_BASE}\"/g" /var/www/app/gazebo/assets/*.js
+    sed -i -r "s/[a-zA-Z]+\.GLE_URL/\"${GLE_SCHEME_BASE}:\/\/${GLE_BASE}\"/g" /var/www/app/gazebo/assets/*.js
   fi
   if [[ -n "${BBS_BASE}" ]]; then
     echo "Replacing BBS ${BBS_SCHEME_BASE}://${BBS_BASE}"
-    sed -i -r "s/r\.[a-zA-Z]+\.BBS_URL/\"${BBS_SCHEME_BASE}:\/\/${BBS_BASE}\"/g" /var/www/app/gazebo/assets/*.js
+    sed -i -r "s/[a-zA-Z]+\.BBS_URL/\"${BBS_SCHEME_BASE}:\/\/${BBS_BASE}\"/g" /var/www/app/gazebo/assets/*.js
   fi
 
   export DOLLAR='$'
