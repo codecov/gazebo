@@ -21,8 +21,6 @@ then
   sed -i "s/${SCHEME_BASE}:\/\/${WEB_BASE}/${SCHEME}:\/\/${CODECOV_BASE_HOST}/g" /var/www/app/gazebo/assets/*.js
   if [[ -n "${GHE_BASE}" ]]; then
     echo "Replacing GHE ${GHE_SCHEME_BASE}://${GHE_BASE}"
-    echo $(ls /var/www/app/gazebo)
-    echo $(ls /var/www/app/gazebo/assets)
     sed -i -r "s/[a-zA-Z]+\.GHE_URL/\"${GHE_SCHEME_BASE}:\/\/${GHE_BASE}\"/g" /var/www/app/gazebo/assets/*.js
   fi
   if [[ -n "${GLE_BASE}" ]]; then
