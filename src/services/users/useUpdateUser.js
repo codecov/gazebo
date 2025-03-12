@@ -12,16 +12,13 @@ export function useUpdateUser({ provider, owner, opts = {} }) {
 
   const successHandler = (...args) => {
     if (onSuccess) {
+      // The following cache busts will trigger react-query to retry the api call updating components depending on this data.
+      queryClient.invalidateQueries(['accountDetails'])
+      queryClient.invalidateQueries(['GetPlanData'])
+      queryClient.invalidateQueries(['users'])
       // Execute passed onSuccess after invalidating queries
       onSuccess.apply(null, args)
     }
-  }
-
-  const settleHandler = () => {
-    // The following cache busts will trigger react-query to retry the api call updating components depending on this data.
-    queryClient.invalidateQueries(['users'])
-    queryClient.invalidateQueries(['accountDetails'])
-    queryClient.invalidateQueries(['GetPlanData'])
   }
 
   return useMutation({
@@ -30,7 +27,6 @@ export function useUpdateUser({ provider, owner, opts = {} }) {
       return Api.patch({ path, provider, body })
     },
     onSuccess: successHandler,
-    onSettled: settleHandler,
     ...passedOpts,
   })
 }
