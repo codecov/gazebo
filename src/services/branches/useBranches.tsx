@@ -35,16 +35,18 @@ const GetBranchesSchema = z.object({
       repository: z.discriminatedUnion('__typename', [
         z.object({
           __typename: z.literal('Repository'),
-          branches: z.object({
-            edges: z.array(
-              z
-                .object({
-                  node: BranchSchema,
-                })
-                .nullable()
-            ),
-            pageInfo: PageInfoSchema,
-          }),
+          branches: z
+            .object({
+              edges: z.array(
+                z
+                  .object({
+                    node: BranchSchema,
+                  })
+                  .nullable()
+              ),
+              pageInfo: PageInfoSchema,
+            })
+            .nullable(),
         }),
         RepoNotFoundErrorSchema,
         RepoOwnerNotActivatedErrorSchema,
@@ -53,41 +55,40 @@ const GetBranchesSchema = z.object({
     .nullable(),
 })
 
-const query = `
-  query GetBranches(
-    $owner: String!
-    $repo: String!
-    $after: String
-    $filters: BranchesSetFilters
-  ) {
-    owner(username: $owner) {
-      repository(name: $repo) {
-        __typename
-        ... on Repository {
-          branches(first: 20, after: $after, filters: $filters) {
-            edges {
-              node {
-                name
-                head {
-                  commitid
-                }
+const query = `query GetBranches(
+  $owner: String!
+  $repo: String!
+  $after: String
+  $filters: BranchesSetFilters
+) {
+  owner(username: $owner) {
+    repository(name: $repo) {
+      __typename
+      ... on Repository {
+        branches(first: 20, after: $after, filters: $filters) {
+          edges {
+            node {
+              name
+              head {
+                commitid
               }
             }
-            pageInfo {
-              hasNextPage
-              endCursor
-            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
-        ... on NotFoundError {
-          message
-        }
-        ... on OwnerNotActivatedError {
-          message
-        }
+      }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
       }
     }
-  }`
+  }
+}`
 
 type GetBranchesReturn = { branches: Branch[]; pageInfo: PageInfo | null }
 

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { LOCAL_STORAGE_USER_STARTED_TRIAL_KEY } from 'pages/OwnerPage/OwnerPage'
-import { renderToast } from 'services/toast'
+import { renderToast } from 'services/toast/renderToast'
 import Api from 'shared/api'
 import { useRedirect } from 'shared/useRedirect'
 

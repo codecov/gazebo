@@ -53,6 +53,20 @@ export function useNavLinks() {
       },
       isExternalLink: true,
     },
+    login: {
+      text: 'Login',
+      path: ({ to }: { to?: string } = {}) => {
+        const query = qs.stringify({ to }, { addQueryPrefix: true })
+
+        // Enterprise login page is at different url than Cloud; see App.tsx
+        if (config.IS_SELF_HOSTED) {
+          return `/${query}`
+        }
+
+        return `/login${query}`
+      },
+      isExternalLink: false,
+    },
     signUp: {
       text: 'Sign Up',
       path: () => `${config.MARKETING_BASE_URL}/sign-up/`,

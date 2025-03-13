@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import Api from 'shared/api'
 import A from 'ui/A'
 

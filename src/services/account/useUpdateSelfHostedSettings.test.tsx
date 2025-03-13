@@ -14,8 +14,8 @@ const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
 }))
 
-vi.mock('services/toastNotification', async () => {
-  const original = await vi.importActual('services/toastNotification')
+vi.mock('services/toastNotification/context', async () => {
+  const original = await vi.importActual('services/toastNotification/context')
   return {
     ...original,
     useAddNotification: mocks.useAddNotification,
