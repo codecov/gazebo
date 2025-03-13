@@ -359,10 +359,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
-      - name: Install dependencies
-        run: |
-          yarn install
-
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
