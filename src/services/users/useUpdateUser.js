@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
 
 import Api from 'shared/api'
+
+const UPDATE_USERS_TIMEOUT_KEY = 'update_users_timeout'
 
 function patchPathUsers({ provider, owner, targetUserOwnerid }) {
   return `/${provider}/${owner}/users/${targetUserOwnerid}/`
@@ -10,7 +11,6 @@ function patchPathUsers({ provider, owner, targetUserOwnerid }) {
 export function useUpdateUser({ provider, owner, opts = {} }) {
   const { onSuccess, ...passedOpts } = opts
   const queryClient = useQueryClient()
-  const [refetchTimeout, setRefetchTimeout] = useState(0)
 
   const successHandler = (...args) => {
     if (onSuccess) {
@@ -18,7 +18,8 @@ export function useUpdateUser({ provider, owner, opts = {} }) {
       queryClient.invalidateQueries(['accountDetails'])
       queryClient.invalidateQueries(['GetPlanData'])
 
-      setRefetchTimeout(
+      sessionStorage.setItem(
+        UPDATE_USERS_TIMEOUT_KEY,
         setTimeout(() => queryClient.invalidateQueries(['users']), 1000)
       )
 
@@ -30,7 +31,7 @@ export function useUpdateUser({ provider, owner, opts = {} }) {
   return useMutation({
     mutationFn: ({ targetUserOwnerid, ...body }) => {
       // Prevent refreshing users list until done chaining requests w/ timeout
-      clearTimeout(refetchTimeout)
+      clearTimeout(sessionStorage.getItem(UPDATE_USERS_TIMEOUT_KEY))
       queryClient.cancelQueries(['users'])
 
       const path = patchPathUsers({ provider, owner, targetUserOwnerid })
