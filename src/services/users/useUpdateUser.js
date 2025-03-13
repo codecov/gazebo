@@ -20,7 +20,7 @@ export function useUpdateUser({ provider, owner, opts = {} }) {
 
       sessionStorage.setItem(
         UPDATE_USERS_TIMEOUT_KEY,
-        setTimeout(() => queryClient.invalidateQueries(['users']), 1000)
+        setTimeout(() => queryClient.invalidateQueries(['users']), 2000) // feels good to me
       )
 
       // Execute passed onSuccess after invalidating queries
