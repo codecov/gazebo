@@ -46,10 +46,7 @@ const Title = ({
           </h2>
         </A>
         <p className="text-xs">
-          {/* @ts-expect-error - type issues with A */}
-          <A to={{ pageName: 'owner' }}>
-            <span className="text-ds-secondary-text">{author?.username}</span>
-          </A>
+          <span className="text-ds-secondary-text">{author?.username}</span>
           {createdAt && (
             <span className="text-ds-gray-quinary">
               {' '}
