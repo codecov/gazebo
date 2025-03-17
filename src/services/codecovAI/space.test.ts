@@ -85,14 +85,16 @@ describe('Space Topics', () => {
 
   describe('_getRandomTopic', () => {
     it('returns a valid Topic instance', () => {
-      // Access _getRandomTopic through the module
-      const topic = spaceModule._getRandomTopic()
+      const topic = _getRandomTopic()
       expect(topic).toHaveProperty('id')
+      expect(typeof topic.id).toBe('number')
       expect(topic).toHaveProperty('name')
+      expect(typeof topic.name).toBe('string')
       expect(typeof topic.getFact).toBe('function')
-    })
+    }) 
 
     it('can return different topics based on random value', () => {
+      const originalRandom = Math.random
       const originalRandom = Math.random
       
       try {
