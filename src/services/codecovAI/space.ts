@@ -43,7 +43,7 @@ class TechnologyTopic implements Topic {
   }
 }
 
-function _getRandomTopic(): Topic {
+export function getRandomTopic(): Topic {
   const topics: Topic[] = [
     new SpaceTopic(),
     new CookingTopic(),
@@ -51,3 +51,5 @@ function _getRandomTopic(): Topic {
   ]
   return topics[Math.floor(Math.random() * topics.length)]!
 }
+
+export { Topic, SpaceTopic, CookingTopic, TechnologyTopic }

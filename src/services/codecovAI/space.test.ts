@@ -82,6 +82,25 @@ describe('Topic implementations', () => {
   })
 })
 
+describe('getRandomTopic', () => {
+  it('returns a valid Topic instance', () => {
+    const topic = getRandomTopic()
+    expect(topic).toBeDefined()
+    expect(topic.id).toBeDefined()
+    expect(topic.name).toBeDefined()
+    expect(typeof topic.getFact).toBe('function')
+  })
+
+  it('returns one of the three implemented Topic classes', () => {    
+    vi.spyOn(Math, 'random').mockReturnValue(0)
+    expect(getRandomTopic()).toBeInstanceOf(SpaceTopic)
+    vi.spyOn(Math, 'random').mockReturnValue(0.34)
+    expect(getRandomTopic()).toBeInstanceOf(CookingTopic)
+    vi.spyOn(Math, 'random').mockReturnValue(0.67)
+    expect(getRandomTopic()).toBeInstanceOf(TechnologyTopic)
+  })
+})
+
 describe('_getRandomTopic', () => {
   it('returns a valid Topic instance', () => {
     const topic = _getRandomTopic()
@@ -114,5 +133,24 @@ describe('_getRandomTopic', () => {
     randomMock.mockReturnValue(0.666)
     expect(getRandomTopic()).toBeInstanceOf(TechnologyTopicClass)
     randomMock.mockRestore()
+  })
+})
+
+describe('getRandomTopic', () => {
+  it('returns a valid Topic instance', () => {
+    const topic = getRandomTopic()
+    expect(topic).toBeDefined()
+    expect(topic.id).toBeDefined()
+    expect(topic.name).toBeDefined()
+    expect(typeof topic.getFact).toBe('function')
+  })
+
+  it('returns one of the three implemented Topic classes', () => {    
+    vi.spyOn(Math, 'random').mockReturnValue(0)
+    expect(getRandomTopic()).toBeInstanceOf(SpaceTopic)
+    vi.spyOn(Math, 'random').mockReturnValue(0.34)
+    expect(getRandomTopic()).toBeInstanceOf(CookingTopic)
+    vi.spyOn(Math, 'random').mockReturnValue(0.67)
+    expect(getRandomTopic()).toBeInstanceOf(TechnologyTopic)
   })
 })
