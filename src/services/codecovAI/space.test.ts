@@ -1,9 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-import { SpaceTopic, CookingTopic, TechnologyTopic, _getRandomTopic } from './space'
+// Mock Math.random for deterministic tests 
+const originalMathRandom = Math.random
 
-describe('Topic implementations', () => {
-  describe('SpaceTopic', () => {
+beforeEach(() => {
+  vi.resetAllMocks()
+})
+
+afterEach(() => {
+  Math.random = originalMathRandom
+})
+
+// Import from the module to test
+import {
+  SpaceTopic,
     let spaceTopic: SpaceTopic
 
     beforeEach(() => {
