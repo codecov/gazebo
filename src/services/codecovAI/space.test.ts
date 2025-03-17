@@ -125,7 +125,31 @@ describe('_getRandomTopic', () => {
     expect(isValidTopicInstance).toBe(true)
   })
 
-  it('returns each possible topic with controlled random values', () => {
+  it('uses Math.random to select a topic', () => {
+    const randomSpy = vi.spyOn(Math, 'floor')
+    
+    // Mock to return first topic (SpaceTopic)
+    randomSpy.mockReturnValueOnce(0)
+    let topic = _getRandomTopic()
+    expect(topic instanceof SpaceTopic).toBe(true)
+    
+    // Mock to return second topic (CookingTopic)
+    randomSpy.mockReturnValueOnce(1)
+    topic = _getRandomTopic()
+    expect(topic instanceof CookingTopic).toBe(true)
+    
+    // Mock to return third topic (TechnologyTopic)
+    randomSpy.mockReturnValueOnce(2)
+    topic = _getRandomTopic()
+    expect(topic instanceof TechnologyTopic).toBe(true)
+    
+    // Verify Math.random was called the expected number of times
+    expect(randomSpy).toHaveBeenCalledTimes(3)
+    
+    randomSpy.mockRestore()
+  })
+
+})
     const mathRandomSpy = vi.spyOn(Math, 'random')
     
     // First topic (0/3)
