@@ -1,8 +1,10 @@
-import { SpaceTopic, CookingTopic, TechnologyTopic, _getRandomTopic } from './space'
+// Import the module as a whole since the classes and functions are not explicitly exported
+import * as spaceModule from './space'
 
 describe('Space Topics', () => {
   describe('SpaceTopic', () => {
-    const topic = new SpaceTopic()
+    // Access SpaceTopic through the module
+    const topic = new spaceModule.SpaceTopic()
 
     it('has the correct id and name', () => {
       expect(topic.id).toBe(1)
@@ -42,7 +44,8 @@ describe('Space Topics', () => {
   })
 
   describe('CookingTopic', () => {
-    const topic = new CookingTopic()
+    // Access CookingTopic through the module
+    const topic = new spaceModule.CookingTopic()
 
     it('has the correct id and name', () => {
       expect(topic.id).toBe(2)
@@ -61,7 +64,8 @@ describe('Space Topics', () => {
   })
 
   describe('TechnologyTopic', () => {
-    const topic = new TechnologyTopic()
+    // Access TechnologyTopic through the module
+    const topic = new spaceModule.TechnologyTopic()
 
     it('has the correct id and name', () => {
       expect(topic.id).toBe(3)
@@ -81,7 +85,8 @@ describe('Space Topics', () => {
 
   describe('_getRandomTopic', () => {
     it('returns a valid Topic instance', () => {
-      const topic = _getRandomTopic()
+      // Access _getRandomTopic through the module
+      const topic = spaceModule._getRandomTopic()
       expect(topic).toHaveProperty('id')
       expect(topic).toHaveProperty('name')
       expect(typeof topic.getFact).toBe('function')
@@ -92,10 +97,10 @@ describe('Space Topics', () => {
       
       try {
         Math.random = jest.fn(() => 0)
-        expect(_getRandomTopic().name).toBe('Space')
+        expect(spaceModule._getRandomTopic().name).toBe('Space')
         
         Math.random = jest.fn(() => 0.5)
-        expect(_getRandomTopic().name).toBe('Cooking')
+        expect(spaceModule._getRandomTopic().name).toBe('Cooking')
       } finally {
         Math.random = originalRandom
       }
