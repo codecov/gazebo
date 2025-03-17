@@ -89,15 +89,34 @@ describe('getRandomTopic', () => {
     expect(topic.id).toBeDefined()
     expect(topic.name).toBeDefined()
     expect(typeof topic.getFact).toBe('function')
+    
+    // Verify the returned topic actually follows the Topic interface
+    const fact = topic.getFact()
+    expect(typeof fact).toBe('string')
+    expect(fact.length).toBeGreaterThan(0)
   })
 
-  it('returns one of the three implemented Topic classes', () => {    
+  it('can return different Topic classes based on random values', () => {
+    // Reset any mocks from previous tests
+    vi.resetAllMocks()
+    
     vi.spyOn(Math, 'random').mockReturnValue(0)
     expect(getRandomTopic()).toBeInstanceOf(SpaceTopic)
+    
     vi.spyOn(Math, 'random').mockReturnValue(0.34)
     expect(getRandomTopic()).toBeInstanceOf(CookingTopic)
+    
     vi.spyOn(Math, 'random').mockReturnValue(0.67)
     expect(getRandomTopic()).toBeInstanceOf(TechnologyTopic)
+  })
+  
+  it('uses Math.random to select a topic', () => {
+    // Reset mocks
+    vi.resetAllMocks()
+    
+    const randomSpy = vi.spyOn(Math, 'random')
+    getRandomTopic()
+    expect(randomSpy).toHaveBeenCalled()
   })
 })
 
@@ -143,14 +162,33 @@ describe('getRandomTopic', () => {
     expect(topic.id).toBeDefined()
     expect(topic.name).toBeDefined()
     expect(typeof topic.getFact).toBe('function')
+    
+    // Verify the returned topic actually follows the Topic interface
+    const fact = topic.getFact()
+    expect(typeof fact).toBe('string')
+    expect(fact.length).toBeGreaterThan(0)
   })
 
-  it('returns one of the three implemented Topic classes', () => {    
+  it('can return different Topic classes based on random values', () => {
+    // Reset any mocks from previous tests
+    vi.resetAllMocks()
+    
     vi.spyOn(Math, 'random').mockReturnValue(0)
     expect(getRandomTopic()).toBeInstanceOf(SpaceTopic)
+    
     vi.spyOn(Math, 'random').mockReturnValue(0.34)
     expect(getRandomTopic()).toBeInstanceOf(CookingTopic)
+    
     vi.spyOn(Math, 'random').mockReturnValue(0.67)
     expect(getRandomTopic()).toBeInstanceOf(TechnologyTopic)
+  })
+  
+  it('uses Math.random to select a topic', () => {
+    // Reset mocks
+    vi.resetAllMocks()
+    
+    const randomSpy = vi.spyOn(Math, 'random')
+    getRandomTopic()
+    expect(randomSpy).toHaveBeenCalled()
   })
 })

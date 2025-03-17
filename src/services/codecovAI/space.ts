@@ -52,4 +52,6 @@ export function getRandomTopic(): Topic {
   return topics[Math.floor(Math.random() * topics.length)]!
 }
 
+export const _getRandomTopic = getRandomTopic;
+
 export { Topic, SpaceTopic, CookingTopic, TechnologyTopic }
