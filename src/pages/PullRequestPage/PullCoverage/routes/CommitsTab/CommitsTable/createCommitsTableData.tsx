@@ -78,6 +78,8 @@ export const createCommitsTableData = ({ pages }: CommitsTableData) => {
       bundleAnalysis = <p>{content}</p>
     }
 
+    // arbitrary change
+    console.log('hello')
     return {
       name: (
         <Title
