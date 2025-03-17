@@ -51,3 +51,5 @@ function _getRandomTopic(): Topic {
   ]
   return topics[Math.floor(Math.random() * topics.length)]!
 }
+
+export { Topic, SpaceTopic, CookingTopic, TechnologyTopic, _getRandomTopic }
