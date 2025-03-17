@@ -43,7 +43,6 @@ export const createCommitsTableData = ({ pages }: CommitsTableData) => {
     if (commit?.coverageStatus === COMMIT_STATUS_ERROR) {
       patch = <ErroredUpload />
     } else if (commit?.coverageStatus === COMMIT_STATUS_PENDING) {
-      console.log('pending upload')
       patch = <PendingUpload />
     } else if (
       commit?.coverageStatus === COMMIT_STATUS_COMPLETED &&
@@ -79,7 +78,9 @@ export const createCommitsTableData = ({ pages }: CommitsTableData) => {
       bundleAnalysis = <p>{content}</p>
     }
 
-    // sdfasgsags
+    // making changes to test processing process
+    console.log('hello')
+
     return {
       name: (
         <Title
