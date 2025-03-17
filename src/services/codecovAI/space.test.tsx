@@ -1,9 +1,9 @@
 import {
   SpaceTopic,
   CookingTopic,
-  TechnologyTopic,
   _getRandomTopic,
 } from './space'
+import { TechnologyTopic } from './space';
 
 describe('SpaceTopic', () => {
   it('should return a fact about space', () => {
