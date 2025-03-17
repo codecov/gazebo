@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 
 // Import the functions and classes we're testing
 import { SpaceTopic, CookingTopic, TechnologyTopic, _getRandomTopic } from './space'
@@ -21,6 +21,23 @@ describe('Topic implementations', () => {
       ]
       expect(possibleFacts).toContain(fact)
     })
+
+    it('returns each possible fact with controlled random values', () => {
+      const topic = new SpaceTopic()
+      const mathRandomSpy = vi.spyOn(Math, 'random')
+      
+      // First fact (0/3)
+      mathRandomSpy.mockReturnValueOnce(0)
+      expect(topic.getFact()).toBe('The universe is expanding at an accelerating rate.')
+      
+      // Second fact (1/3)
+      mathRandomSpy.mockReturnValueOnce(0.34)
+      expect(topic.getFact()).toBe('Black holes can warp space and time.')
+      
+      // Third fact (2/3)
+      mathRandomSpy.mockReturnValueOnce(0.67)
+      expect(topic.getFact()).toBe('Stars are born in cosmic nurseries called nebulae.')
+    })
   })
 
   describe('CookingTopic', () => {
@@ -39,6 +56,23 @@ describe('Topic implementations', () => {
         'Baking requires precise measurements to succeed.',
       ]
       expect(possibleFacts).toContain(fact)
+    })
+
+    it('returns each possible fact with controlled random values', () => {
+      const topic = new CookingTopic()
+      const mathRandomSpy = vi.spyOn(Math, 'random')
+      
+      // First fact (0/3)
+      mathRandomSpy.mockReturnValueOnce(0)
+      expect(topic.getFact()).toBe('Searing meat locks in its juices.')
+      
+      // Second fact (1/3)
+      mathRandomSpy.mockReturnValueOnce(0.34)
+      expect(topic.getFact()).toBe('A pinch of salt enhances sweet flavors.')
+      
+      // Third fact (2/3)
+      mathRandomSpy.mockReturnValueOnce(0.67)
+      expect(topic.getFact()).toBe('Baking requires precise measurements to succeed.')
     })
   })
 
@@ -59,6 +93,23 @@ describe('Topic implementations', () => {
       ]
       expect(possibleFacts).toContain(fact)
     })
+
+    it('returns each possible fact with controlled random values', () => {
+      const topic = new TechnologyTopic()
+      const mathRandomSpy = vi.spyOn(Math, 'random')
+      
+      // First fact (0/3)
+      mathRandomSpy.mockReturnValueOnce(0)
+      expect(topic.getFact()).toBe("Moore's law predicts the doubling of transistors every couple of years.")
+      
+      // Second fact (1/3)
+      mathRandomSpy.mockReturnValueOnce(0.34)
+      expect(topic.getFact()).toBe('Artificial intelligence is transforming numerous industries.')
+      
+      // Third fact (2/3)
+      mathRandomSpy.mockReturnValueOnce(0.67)
+      expect(topic.getFact()).toBe('Quantum computing promises to revolutionize cryptography.')
+    })
   })
 })
 
@@ -72,5 +123,25 @@ describe('_getRandomTopic', () => {
     const possibleTopics = [SpaceTopic, CookingTopic, TechnologyTopic]
     const isValidTopicInstance = possibleTopics.some(TopicClass => topic instanceof TopicClass)
     expect(isValidTopicInstance).toBe(true)
+  })
+
+  it('returns each possible topic with controlled random values', () => {
+    const mathRandomSpy = vi.spyOn(Math, 'random')
+    
+    // First topic (0/3)
+    mathRandomSpy.mockReturnValueOnce(0)
+    expect(_getRandomTopic()).toBeInstanceOf(SpaceTopic)
+    
+    // Second topic (1/3)
+    mathRandomSpy.mockReturnValueOnce(0.34)
+    expect(_getRandomTopic()).toBeInstanceOf(CookingTopic)
+    
+    // Third topic (2/3)
+    mathRandomSpy.mockReturnValueOnce(0.67)
+    expect(_getRandomTopic()).toBeInstanceOf(TechnologyTopic)
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 })
