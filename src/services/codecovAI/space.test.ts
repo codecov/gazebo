@@ -95,8 +95,24 @@ describe('_getRandomTopic', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0)
     expect(_getRandomTopic()).toBeInstanceOf(SpaceTopic)
     vi.spyOn(Math, 'random').mockReturnValue(0.34)
-    expect(_getRandomTopic()).toBeInstanceOf(CookingTopic)
+    expect(getRandomTopic()).toBeInstanceOf(CookingTopicClass)
     vi.spyOn(Math, 'random').mockReturnValue(0.67)
-    expect(_getRandomTopic()).toBeInstanceOf(TechnologyTopic)
+    expect(getRandomTopic()).toBeInstanceOf(TechnologyTopicClass)
+  })
+  
+  it('properly distributes selection of topics based on random value', () => {
+    // Test multiple random values to ensure distribution works correctly
+    const randomMock = vi.spyOn(Math, 'random')
+    
+    // Test different ranges for each topic
+    randomMock.mockReturnValue(0)
+    expect(getRandomTopic()).toBeInstanceOf(SpaceTopicClass)
+    
+    randomMock.mockReturnValue(0.333)
+    expect(getRandomTopic()).toBeInstanceOf(CookingTopicClass)
+    
+    randomMock.mockReturnValue(0.666)
+    expect(getRandomTopic()).toBeInstanceOf(TechnologyTopicClass)
+    randomMock.mockRestore()
   })
 })
