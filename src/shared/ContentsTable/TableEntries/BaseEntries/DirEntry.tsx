@@ -1,6 +1,16 @@
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
+interface DirEntryProps {
+  linkRef?: string
+  name: string
+  urlPath?: string
+  runPrefetch?: () => Promise<void>
+  pageName?: string
+  commitSha?: string
+  queryParams?: any
+}
+
 function DirEntry({
   linkRef,
   name,
@@ -30,16 +40,6 @@ function DirEntry({
       </A>
     </div>
   )
-}
-
-interface DirEntryProps {
-  linkRef?: string
-  name: string
-  urlPath?: string
-  runPrefetch?: () => Promise<void>
-  pageName?: string
-  commitSha?: string
-  queryParams?: any
 }
 
 export default DirEntry
