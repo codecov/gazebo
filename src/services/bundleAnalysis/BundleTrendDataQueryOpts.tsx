@@ -51,10 +51,12 @@ const BranchSchema = z.object({
     .object({
       bundleAnalysis: z
         .object({
-          bundleAnalysisReport: z.discriminatedUnion('__typename', [
-            BundleReportSchema,
-            MissingHeadReportSchema,
-          ]),
+          bundleAnalysisReport: z
+            .discriminatedUnion('__typename', [
+              BundleReportSchema,
+              MissingHeadReportSchema,
+            ])
+            .nullable(),
         })
         .nullable(),
     })
@@ -228,7 +230,10 @@ export const BundleTrendDataQueryOpts = ({
           data.owner?.repository?.branch?.head?.bundleAnalysis
             ?.bundleAnalysisReport
 
-        if (bundleReport?.__typename === 'BundleAnalysisReport') {
+        if (
+          bundleReport &&
+          bundleReport?.__typename === 'BundleAnalysisReport'
+        ) {
           return bundleReport?.bundle?.measurements
         }
 

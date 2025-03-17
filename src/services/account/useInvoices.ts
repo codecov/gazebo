@@ -61,7 +61,7 @@ const InvoicesSchema = z.array(InvoiceSchema)
 const OwnerInvoiceSchema = z.object({
   owner: z
     .object({
-      invoices: InvoicesSchema,
+      invoices: InvoicesSchema.nullable(),
     })
     .nullable(),
 })

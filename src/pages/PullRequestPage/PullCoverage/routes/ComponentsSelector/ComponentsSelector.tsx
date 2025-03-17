@@ -25,7 +25,7 @@ function ComponentsSelector() {
   })
 
   const components = useMemo(() => {
-    return data?.pull?.compareWithBase.__typename === 'Comparison'
+    return data?.pull?.compareWithBase?.__typename === 'Comparison'
       ? data?.pull?.compareWithBase?.componentComparisons
       : []
   }, [data])

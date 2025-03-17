@@ -17,7 +17,7 @@ vi.mock('services/pathContents/branch/file', () => ({
 }))
 
 const wrapper: (
-  initialEntried?: string[]
+  initialEntries?: string[]
 ) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/gh/codecov/test-repo/']) =>
   ({ children }) => (

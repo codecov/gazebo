@@ -1,14 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, http, HttpResponse } from 'msw'
+import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import 'react-intersection-observer/test-utils'
-
-import { TrialStatuses } from 'services/account/usePlanData'
-import { Plans } from 'shared/utils/billing'
 
 import MembersList from './MembersList'
 
@@ -50,23 +47,6 @@ const mockActiveUserRequest = {
   total_pages: 1,
 }
 
-const mockPlanData = {
-  isEnterprisePlan: false,
-  isProPlan: false,
-  isSentryPlan: false,
-  isTrialPlan: false,
-  baseUnitPrice: 10,
-  benefits: [],
-  billingRate: 'monthly',
-  marketingName: 'Users Developer',
-  monthlyUploadLimit: 250,
-  trialStatus: TrialStatuses.NOT_STARTED,
-  trialStartDate: '',
-  trialEndDate: '',
-  trialTotalDays: 0,
-  pretrialUsersCount: 0,
-}
-
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -101,11 +81,7 @@ describe('MembersList', () => {
     </QueryClientProvider>
   )
 
-  function setup({
-    planName = Plans.USERS_DEVELOPER,
-    planUserCount = 0,
-    hasSeatsLeft = true,
-  }) {
+  function setup() {
     const user = userEvent.setup()
     const mockActivateUser = vi.fn()
 
@@ -118,30 +94,6 @@ describe('MembersList', () => {
           return HttpResponse.json(mockActiveUserRequest)
         }
         return HttpResponse.json(mockNonActiveUserRequest)
-      }),
-      http.patch('/internal/:provider/codecov/users/:ownerid', () => {
-        sendActivatedUser = true
-        mockActivateUser()
-        return HttpResponse.json({})
-      }),
-      graphql.query('GetPlanData', () => {
-        return HttpResponse.json({
-          data: {
-            owner: {
-              hasPrivateRepos: false,
-              plan: {
-                ...mockPlanData,
-                value: planName,
-                isFreePlan: planName === Plans.USERS_DEVELOPER,
-                isTeamPlan:
-                  planName === Plans.USERS_TEAMM ||
-                  planName === Plans.USERS_TEAMY,
-                planUserCount,
-                hasSeatsLeft,
-              },
-            },
-          },
-        })
       })
     )
 
@@ -149,7 +101,7 @@ describe('MembersList', () => {
   }
 
   describe('rendering MembersList', () => {
-    beforeEach(() => setup({}))
+    beforeEach(() => setup())
 
     it('does not render UpgradeModal', () => {
       render(<MembersList />, { wrapper })
@@ -197,7 +149,7 @@ describe('MembersList', () => {
   describe('interacting with the status selector', () => {
     describe('selecting Active Users', () => {
       it('updates select text', async () => {
-        const { user } = setup({})
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -213,7 +165,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const { user } = setup({})
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -230,7 +182,7 @@ describe('MembersList', () => {
 
     describe('selecting Inactive Users', () => {
       it('updates select text', async () => {
-        const { user } = setup({})
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -246,7 +198,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const { user } = setup({})
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -267,7 +219,7 @@ describe('MembersList', () => {
   describe('interacting with the search field', () => {
     describe('user types into search field', () => {
       it('updates url params', async () => {
-        const { user } = setup({})
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const searchField = await screen.findByTestId('search-input-members')
@@ -281,7 +233,7 @@ describe('MembersList', () => {
   describe('interacting with the role selector', () => {
     describe('selecting Admins Users', () => {
       it('updates select text', async () => {
-        const { user } = setup({})
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('Everyone')
@@ -297,7 +249,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const { user } = setup({})
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = screen.getByText('Everyone')
@@ -312,7 +264,7 @@ describe('MembersList', () => {
 
     describe('selecting Developers', () => {
       it('updates select text', async () => {
-        const { user } = setup({})
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('Everyone')
@@ -326,7 +278,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const { user } = setup({})
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = screen.getByText('Everyone')
@@ -336,125 +288,6 @@ describe('MembersList', () => {
         await user.click(selectDevelopers)
 
         await waitFor(() => expect(testLocation.search).toBe('?isAdmin=False'))
-      })
-    })
-  })
-
-  describe('interacting with user toggles', () => {
-    describe('user is on a free plan', () => {
-      describe('activated seats is greater then or equal to plan quantity', () => {
-        it('opens up upgrade modal', async () => {
-          const { user } = setup({
-            hasSeatsLeft: false,
-            planUserCount: 1,
-            planName: Plans.USERS_DEVELOPER,
-          })
-
-          render(<MembersList />, { wrapper })
-
-          await waitFor(() =>
-            expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-          )
-
-          const tableHeader = await screen.findByText('Username')
-          expect(tableHeader).toBeInTheDocument()
-
-          const toggle = await screen.findByLabelText('Non-Active')
-          expect(toggle).toBeInTheDocument()
-          await user.click(toggle)
-
-          const modalHeader = await screen.findByText('Upgrade to Pro')
-          expect(modalHeader).toBeInTheDocument()
-        })
-      })
-
-      describe('activated seats is less then or equal to plan quantity', () => {
-        it('does not open upgrade modal', async () => {
-          const { user } = setup({
-            hasSeatsLeft: true,
-            planUserCount: 1,
-            planName: Plans.USERS_DEVELOPER,
-          })
-          render(<MembersList />, { wrapper })
-
-          await waitFor(() =>
-            expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-          )
-
-          const tableHeader = await screen.findByText('Username')
-          expect(tableHeader).toBeInTheDocument()
-
-          const toggle = await screen.findByLabelText('Non-Active')
-          expect(toggle).toBeInTheDocument()
-          await user.click(toggle)
-
-          await waitFor(() =>
-            expect(
-              screen.queryByLabelText('Non-Active')
-            ).not.toBeInTheDocument()
-          )
-
-          const activeToggle = await screen.findByText('Activated')
-          expect(activeToggle).toBeInTheDocument()
-        })
-      })
-    })
-
-    describe('user is not on a free plan', () => {
-      describe('activated seats is greater then or equal to plan quantity', () => {
-        it('renders disabled toggle', async () => {
-          setup({
-            hasSeatsLeft: false,
-            planUserCount: 1,
-            planName: Plans.USERS_PR_INAPPY,
-          })
-
-          render(<MembersList />, { wrapper })
-
-          await waitFor(() =>
-            expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-          )
-
-          const tableHeader = await screen.findByText('Username')
-          expect(tableHeader).toBeInTheDocument()
-
-          const toggle = await screen.findByLabelText('Non-Active')
-          expect(toggle).toBeInTheDocument()
-          expect(toggle).toBeDisabled()
-        })
-      })
-
-      describe('activated seats is less then or equal to plan quantity', () => {
-        it('calls activate user', async () => {
-          const { user, mockActivateUser } = setup({
-            hasSeatsLeft: true,
-            planUserCount: 1,
-            planName: Plans.USERS_PR_INAPPY,
-          })
-          render(<MembersList />, { wrapper })
-
-          await waitFor(() =>
-            expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-          )
-
-          const tableHeader = await screen.findByText('Username')
-          expect(tableHeader).toBeInTheDocument()
-
-          const toggle = await screen.findByLabelText('Non-Active')
-          expect(toggle).toBeInTheDocument()
-          await user.click(toggle)
-
-          await waitFor(() =>
-            expect(
-              screen.queryByLabelText('Non-Active')
-            ).not.toBeInTheDocument()
-          )
-
-          const activeToggle = await screen.findByText('Activated')
-          expect(activeToggle).toBeInTheDocument()
-
-          await waitFor(() => expect(mockActivateUser).toHaveBeenCalled())
-        })
       })
     })
   })

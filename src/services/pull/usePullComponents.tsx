@@ -69,24 +69,26 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   pull: z
     .object({
-      compareWithBase: z.discriminatedUnion('__typename', [
-        z.object({
-          __typename: z.literal('Comparison'),
-          componentComparisons: z
-            .array(
-              z.object({
-                name: z.string(),
-              })
-            )
-            .nullable(),
-        }),
-        FirstPullRequestSchema,
-        MissingBaseCommitSchema,
-        MissingBaseReportSchema,
-        MissingComparisonSchema,
-        MissingHeadCommitSchema,
-        MissingHeadReportSchema,
-      ]),
+      compareWithBase: z
+        .discriminatedUnion('__typename', [
+          z.object({
+            __typename: z.literal('Comparison'),
+            componentComparisons: z
+              .array(
+                z.object({
+                  name: z.string(),
+                })
+              )
+              .nullable(),
+          }),
+          FirstPullRequestSchema,
+          MissingBaseCommitSchema,
+          MissingBaseReportSchema,
+          MissingComparisonSchema,
+          MissingHeadCommitSchema,
+          MissingHeadReportSchema,
+        ])
+        .nullable(),
     })
     .nullable(),
 })
@@ -193,9 +195,7 @@ export function usePullComponents({
           })
         }
 
-        return {
-          pull: data?.owner?.repository?.pull,
-        }
+        return { pull: data?.owner?.repository?.pull }
       }),
     ...options,
   })
