@@ -105,24 +105,24 @@ describe('Topic implementations', () => {
   describe('_getRandomTopic', () => {
     it('returns a SpaceTopic when random value corresponds to index 0', () => {
       Math.random = jest.fn().mockReturnValue(0)
-      const topic = _getRandomTopic()
-      expect(topic).toBeInstanceOf(SpaceTopic)
+      const topic = spaceModule._getRandomTopic()
+      expect(topic).toBeInstanceOf(spaceModule.SpaceTopic)
       expect(topic.id).toBe(1)
       expect(topic.name).toBe('Space')
     })
 
     it('returns a CookingTopic when random value corresponds to index 1', () => {
       Math.random = jest.fn().mockReturnValue(0.4)
-      const topic = _getRandomTopic()
-      expect(topic).toBeInstanceOf(CookingTopic)
+      const topic = spaceModule._getRandomTopic()
+      expect(topic).toBeInstanceOf(spaceModule.CookingTopic)
       expect(topic.id).toBe(2)
       expect(topic.name).toBe('Cooking')
     })
 
     it('returns a TechnologyTopic when random value corresponds to index 2', () => {
       Math.random = jest.fn().mockReturnValue(0.7)
-      const topic = _getRandomTopic()
-      expect(topic).toBeInstanceOf(TechnologyTopic)
+      const topic = spaceModule._getRandomTopic()
+      expect(topic).toBeInstanceOf(spaceModule.TechnologyTopic)
       expect(topic.id).toBe(3)
       expect(topic.name).toBe('Technology')
     })
