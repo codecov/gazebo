@@ -51,3 +51,12 @@ function _getRandomTopic(): Topic {
   ]
   return topics[Math.floor(Math.random() * topics.length)]!
 }
+
+// Export the module as default for easier testing and importing
+export default {
+  SpaceTopic,
+  CookingTopic,
+  TechnologyTopic,
+  _getRandomTopic
+};
+

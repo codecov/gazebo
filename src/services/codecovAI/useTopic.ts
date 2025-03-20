@@ -6,11 +6,11 @@ import { _getRandomTopic } from './space';
  * @returns An object containing the current topic and a function to get a new random topic
  */
 export function useTopic() {
-  const [topic, setTopic] = useState(() => _getRandomTopic());
+  const [topic, setTopic] = useState(() => spaceModule._getRandomTopic());
   
   // Function to get a new random topic
   const getNewTopic = useCallback(() => {
-    setTopic(_getRandomTopic());
+    setTopic(spaceModule._getRandomTopic());
   }, []);
 
   // Get a fact from the current topic

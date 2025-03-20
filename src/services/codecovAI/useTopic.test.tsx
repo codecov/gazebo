@@ -76,8 +76,6 @@ describe('useTopic', () => {
   it('returns a stable getNewTopic function that does not change on rerenders', () => {
     // Render the hook
     const { result, rerender } = renderHook(() => useTopic());
-    const initialGetNewTopic = result.current.getNewTopic;
-    
     // Rerender the hook and check that getNewTopic is the same function
     rerender();
     expect(result.current.getNewTopic).toBe(initialGetNewTopic);

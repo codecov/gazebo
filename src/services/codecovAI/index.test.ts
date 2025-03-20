@@ -10,6 +10,11 @@ describe('codecovAI module exports', () => {
     expect(codecovAI.useTopic).toBeDefined();
   });
 
+  it('exports the Topic classes', () => {
+    expect(codecovAI.SpaceTopic).toBeDefined();
+    expect(codecovAI.CookingTopic).toBeDefined();
+    expect(codecovAI.TechnologyTopic).toBeDefined();
+  });
   it('exports the existing hooks', () => {
     expect(codecovAI.useCodecovAIInstallation).toBeDefined();
     expect(codecovAI.useCodecovAIInstalledRepos).toBeDefined();

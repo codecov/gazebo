@@ -44,4 +44,11 @@ describe('getRandomTopic', () => {
     // Verify that it called the internal function
     expect(spaceModule._getRandomTopic).toHaveBeenCalledTimes(1);
   });
+  
+  it('returns a topic with the expected structure', () => {
+    const topic = getRandomTopic();
+    expect(topic.id).toBeDefined();
+    expect(topic.name).toBeDefined();
+    expect(typeof topic.getFact).toBe('function');
+  });
 });
