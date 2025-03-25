@@ -23,13 +23,18 @@ vi.mock('services/image', async () => {
   }
 })
 
-const mockBaseUserRequest = ({ student = false } = { student: false }) => ({
+const mockBaseUserRequest = (
+  { student, activated }: { student: boolean; activated: boolean } = {
+    student: false,
+    activated: true,
+  }
+) => ({
   count: 2,
   next: null,
   previous: null,
   results: [
     {
-      activated: false,
+      activated,
       isAdmin: false,
       username: 'codecov-user',
       email: 'user@codecov.io',
@@ -41,6 +46,23 @@ const mockBaseUserRequest = ({ student = false } = { student: false }) => ({
   ],
   totalPages: 1,
 })
+
+type MockBaseUserRequest = {
+  count: number
+  next: string | null
+  previous: string | null
+  results: {
+    activated: boolean
+    isAdmin: boolean
+    username: string | null
+    email: string
+    ownerid: number
+    student: boolean
+    name: string
+    lastPullTimestamp: null
+  }[]
+  totalPages: number
+}
 
 const mockedFirstResponse = {
   count: 1,
@@ -117,9 +139,13 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('MembersTable', () => {
-  let requestSearchParams
+  let requestSearchParams: any
+  const mockOpenUpgradeModal = vi.fn()
+  const handleActivate = vi.fn()
 
-  const wrapper =
+  const wrapper: (
+    initialEntries?: string[]
+  ) => React.FC<React.PropsWithChildren> =
     (initialEntries = ['/gh/codecov']) =>
     ({ children }) => (
       <QueryClientProvider client={queryClient}>
@@ -129,13 +155,21 @@ describe('MembersTable', () => {
       </QueryClientProvider>
     )
 
+  interface SetupArgs {
+    mockUserRequest?: MockBaseUserRequest
+    usePaginatedRequest?: boolean
+    planName?: (typeof Plans)[keyof typeof Plans]
+    planUserCount?: number
+    hasSeatsLeft?: boolean
+  }
+
   function setup({
-    mockUserRequest = mockBaseUserRequest(false),
+    mockUserRequest = mockBaseUserRequest({ student: false, activated: true }),
     usePaginatedRequest = false,
     planName = Plans.USERS_DEVELOPER,
     planUserCount = 0,
     hasSeatsLeft = false,
-  }) {
+  }: SetupArgs) {
     const user = userEvent.setup()
     mocks.useImage.mockReturnValue({ src: 'mocked-avatar-url' })
     server.use(
@@ -151,6 +185,10 @@ describe('MembersTable', () => {
         }
 
         return HttpResponse.json(mockUserRequest)
+      }),
+      http.patch(`/internal/:provider/:owner/users/:ownerid`, () => {
+        handleActivate()
+        return HttpResponse.json('NICE')
       }),
       graphql.query('GetPlanData', () => {
         return HttpResponse.json({
@@ -184,28 +222,36 @@ describe('MembersTable', () => {
 
     describe('renders table header', () => {
       it('has Username column', async () => {
-        render(<MembersTable />, { wrapper: wrapper() })
+        render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+          wrapper: wrapper(),
+        })
 
         const userName = await screen.findByText('Username')
         expect(userName).toBeInTheDocument()
       })
 
       it('has Type column', async () => {
-        render(<MembersTable />, { wrapper: wrapper() })
+        render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+          wrapper: wrapper(),
+        })
 
         const type = await screen.findByText('Type')
         expect(type).toBeInTheDocument()
       })
 
       it('has email column', async () => {
-        render(<MembersTable />, { wrapper: wrapper() })
+        render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+          wrapper: wrapper(),
+        })
 
         const email = await screen.findByText('Email')
         expect(email).toBeInTheDocument()
       })
 
       it('has Activation status column', async () => {
-        render(<MembersTable />, { wrapper: wrapper() })
+        render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+          wrapper: wrapper(),
+        })
 
         const activationStatus = await screen.findByText('Activation status')
         expect(activationStatus).toBeInTheDocument()
@@ -221,7 +267,7 @@ describe('MembersTable', () => {
                 ...mockBaseUserRequest(),
                 results: [
                   {
-                    ...mockBaseUserRequest().results[0],
+                    ...mockBaseUserRequest().results[0]!,
                     name: 'codecov-name',
                   },
                 ],
@@ -230,7 +276,9 @@ describe('MembersTable', () => {
           )
 
           it('renders with name', async () => {
-            render(<MembersTable />, { wrapper: wrapper() })
+            render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+              wrapper: wrapper(),
+            })
 
             const name = await screen.findByText('codecov-name')
             expect(name).toBeInTheDocument()
@@ -241,7 +289,9 @@ describe('MembersTable', () => {
           beforeEach(() => setup({}))
 
           it('renders with the username', async () => {
-            render(<MembersTable />, { wrapper: wrapper() })
+            render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+              wrapper: wrapper(),
+            })
 
             const userName = await screen.findByText('codecov')
             expect(userName).toBeInTheDocument()
@@ -257,8 +307,8 @@ describe('MembersTable', () => {
                 ...mockBaseUserRequest(),
                 results: [
                   {
-                    ...mockBaseUserRequest().results[0],
-                    is_admin: true,
+                    ...mockBaseUserRequest().results[0]!,
+                    isAdmin: true,
                   },
                 ],
               },
@@ -266,7 +316,9 @@ describe('MembersTable', () => {
           )
 
           it('renders admin', async () => {
-            render(<MembersTable />, { wrapper: wrapper() })
+            render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+              wrapper: wrapper(),
+            })
 
             const admin = await screen.findByText('Admin')
             expect(admin).toBeInTheDocument()
@@ -277,7 +329,9 @@ describe('MembersTable', () => {
           beforeEach(() => setup({}))
 
           it('renders Developer', async () => {
-            render(<MembersTable />, { wrapper: wrapper() })
+            render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+              wrapper: wrapper(),
+            })
 
             const developer = await screen.findByText('Developer')
             expect(developer).toBeInTheDocument()
@@ -289,7 +343,9 @@ describe('MembersTable', () => {
         beforeEach(() => setup({}))
 
         it('displays users email', async () => {
-          render(<MembersTable />, { wrapper: wrapper() })
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
 
           const email = await screen.findByText('user@codecov.io')
           expect(email).toBeInTheDocument()
@@ -301,6 +357,10 @@ describe('MembersTable', () => {
           describe('there are no open seats', () => {
             beforeEach(() =>
               setup({
+                mockUserRequest: mockBaseUserRequest({
+                  student: false,
+                  activated: false,
+                }),
                 planName: Plans.USERS_PR_INAPPY,
                 hasSeatsLeft: false,
                 planUserCount: 1,
@@ -308,10 +368,9 @@ describe('MembersTable', () => {
             )
 
             it('displays disabled toggle', async () => {
-              render(<MembersTable />, { wrapper: wrapper() })
-
-              await waitFor(() => queryClient.isFetching())
-              await waitFor(() => !queryClient.isFetching())
+              render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+                wrapper: wrapper(),
+              })
 
               const toggle = await screen.findByRole('button')
               await waitFor(() => expect(toggle).toBeDisabled())
@@ -329,7 +388,12 @@ describe('MembersTable', () => {
               )
 
               it('displays enabled toggle', async () => {
-                render(<MembersTable />, { wrapper: wrapper() })
+                render(
+                  <MembersTable openUpgradeModal={mockOpenUpgradeModal} />,
+                  {
+                    wrapper: wrapper(),
+                  }
+                )
 
                 const toggle = await screen.findByRole('button')
                 expect(toggle).not.toBeDisabled()
@@ -347,7 +411,9 @@ describe('MembersTable', () => {
             )
 
             it('renders an non-disabled toggle', async () => {
-              render(<MembersTable />, { wrapper: wrapper() })
+              render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+                wrapper: wrapper(),
+              })
 
               const toggle = await screen.findByRole('button')
               expect(toggle).not.toBeDisabled()
@@ -359,46 +425,126 @@ describe('MembersTable', () => {
   })
   describe('user interacts with toggle', () => {
     describe('user is not a student', () => {
-      it('calls handleActivate', async () => {
-        const { user } = setup({})
-        const handleActivate = vi.fn()
-        render(<MembersTable handleActivate={handleActivate} />, {
-          wrapper: wrapper(),
+      describe('and user is not activated', () => {
+        describe('and is free plan with no seats available', () => {
+          it('calls openUpgradeModal', async () => {
+            const { user } = setup({
+              hasSeatsLeft: false,
+              mockUserRequest: mockBaseUserRequest({
+                student: false,
+                activated: false,
+              }),
+            })
+            render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+              wrapper: wrapper(),
+            })
+
+            const toggle = await screen.findByRole('button')
+            await user.click(toggle)
+
+            await waitFor(() => expect(mockOpenUpgradeModal).toHaveBeenCalled())
+          })
         })
 
-        const toggle = await screen.findByRole('button')
-        await user.click(toggle)
+        describe('and seats are available', () => {
+          it('calls activate', async () => {
+            const { user } = setup({ hasSeatsLeft: true })
+            render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+              wrapper: wrapper(),
+            })
 
-        await waitFor(() =>
-          expect(handleActivate).toHaveBeenCalledWith({
-            activated: false,
-            ownerid: 1,
+            const toggle = await screen.findByRole('button')
+            await user.click(toggle)
+
+            await waitFor(() => expect(handleActivate).toHaveBeenCalled())
           })
-        )
+        })
+      })
+
+      describe('and user is activated', () => {
+        describe('and no seats are available', () => {
+          it('calls activate', async () => {
+            const { user } = setup({
+              mockUserRequest: mockBaseUserRequest({
+                student: false,
+                activated: true,
+              }),
+            })
+            render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+              wrapper: wrapper(),
+            })
+
+            const toggle = await screen.findByRole('button')
+            await user.click(toggle)
+
+            await waitFor(() => expect(handleActivate).toHaveBeenCalled())
+          })
+        })
+
+        describe('and seats are available', () => {
+          it('calls activate', async () => {
+            const { user } = setup({
+              mockUserRequest: mockBaseUserRequest({
+                student: false,
+                activated: true,
+              }),
+              hasSeatsLeft: true,
+            })
+            render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+              wrapper: wrapper(),
+            })
+
+            const toggle = await screen.findByRole('button')
+            await user.click(toggle)
+
+            await waitFor(() => expect(handleActivate).toHaveBeenCalled())
+          })
+        })
       })
     })
-    describe('user is a student and limit has been reached', () => {
-      it('calls handleActivate', async () => {
-        const { user } = setup({
-          mockUserRequest: mockBaseUserRequest({ student: true }),
-          planName: Plans.USERS_DEVELOPER,
-          planUserCount: 1,
-          hasSeatsLeft: false,
-        })
-        const handleActivate = vi.fn()
-        render(<MembersTable handleActivate={handleActivate} />, {
-          wrapper: wrapper(),
-        })
-
-        const toggle = await screen.findByRole('button')
-        await user.click(toggle)
-
-        await waitFor(() =>
-          expect(handleActivate).toHaveBeenCalledWith({
-            activated: false,
-            ownerid: 1,
+    describe('user is a student', () => {
+      describe('user is not activated', () => {
+        it('calls activate', async () => {
+          const { user } = setup({
+            mockUserRequest: mockBaseUserRequest({
+              student: true,
+              activated: false,
+            }),
+            planName: Plans.USERS_DEVELOPER,
+            planUserCount: 1,
+            hasSeatsLeft: false,
           })
-        )
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
+
+          const toggle = await screen.findByRole('button')
+          await user.click(toggle)
+
+          await waitFor(() => expect(handleActivate).toHaveBeenCalled())
+        })
+      })
+
+      describe('user is activated', () => {
+        it('calls activate', async () => {
+          const { user } = setup({
+            mockUserRequest: mockBaseUserRequest({
+              student: true,
+              activated: true,
+            }),
+            planName: Plans.USERS_DEVELOPER,
+            planUserCount: 1,
+            hasSeatsLeft: false,
+          })
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
+
+          const toggle = await screen.findByRole('button')
+          await user.click(toggle)
+
+          await waitFor(() => expect(handleActivate).toHaveBeenCalled())
+        })
       })
     })
   })
@@ -408,7 +554,9 @@ describe('MembersTable', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
           const { user } = setup({})
-          render(<MembersTable />, { wrapper: wrapper() })
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
 
           const userName = await screen.findByText('Username')
           await user.click(userName)
@@ -422,7 +570,9 @@ describe('MembersTable', () => {
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
           const { user } = setup({})
-          render(<MembersTable />, { wrapper: wrapper() })
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
 
           const userName = await screen.findByText('Username')
 
@@ -439,7 +589,9 @@ describe('MembersTable', () => {
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
           const { user } = setup({})
-          render(<MembersTable />, { wrapper: wrapper() })
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
 
           const userName = await screen.findByText('Username')
 
@@ -457,7 +609,9 @@ describe('MembersTable', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
           const { user } = setup({})
-          render(<MembersTable />, { wrapper: wrapper() })
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
 
           const email = await screen.findByText('Email')
 
@@ -473,7 +627,9 @@ describe('MembersTable', () => {
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
           const { user } = setup({})
-          render(<MembersTable />, { wrapper: wrapper() })
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
 
           const email = await screen.findByText('Email')
           await user.click(email)
@@ -487,7 +643,9 @@ describe('MembersTable', () => {
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
           const { user } = setup({})
-          render(<MembersTable />, { wrapper: wrapper() })
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
 
           const email = await screen.findByText('Email')
           await user.click(email)
@@ -505,7 +663,9 @@ describe('MembersTable', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
           const { user } = setup({})
-          render(<MembersTable />, { wrapper: wrapper() })
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
 
           const activationStatus = await screen.findByText('Activation status')
           await user.click(activationStatus)
@@ -519,7 +679,9 @@ describe('MembersTable', () => {
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
           const { user } = setup({})
-          render(<MembersTable />, { wrapper: wrapper() })
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
 
           const activationStatus = await screen.findByText('Activation status')
           await user.click(activationStatus)
@@ -534,7 +696,9 @@ describe('MembersTable', () => {
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
           const { user } = setup({})
-          render(<MembersTable />, { wrapper: wrapper() })
+          render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+            wrapper: wrapper(),
+          })
 
           const activationStatus = await screen.findByText('Activation status')
           await user.click(activationStatus)
@@ -551,11 +715,13 @@ describe('MembersTable', () => {
 
   describe('triggering isIntersecting', () => {
     beforeEach(() => {
-      setup({ usePaginatedRequest: true, isIntersecting: true })
+      setup({ usePaginatedRequest: true })
     })
 
     it('displays two users', async () => {
-      render(<MembersTable />, { wrapper: wrapper() })
+      render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+        wrapper: wrapper(),
+      })
 
       const user1 = await screen.findByText('User 1')
       expect(user1).toBeInTheDocument()
@@ -580,7 +746,7 @@ describe('MembersTable', () => {
             ...mockBaseUserRequest(),
             results: [
               {
-                ...mockBaseUserRequest().results[0],
+                ...mockBaseUserRequest().results[0]!,
                 username: null,
               },
             ],
@@ -589,7 +755,9 @@ describe('MembersTable', () => {
       })
 
       it('uses default author', async () => {
-        render(<MembersTable />, { wrapper: wrapper(['/gl/codecov']) })
+        render(<MembersTable openUpgradeModal={mockOpenUpgradeModal} />, {
+          wrapper: wrapper(),
+        })
 
         const avatar = await screen.findByRole('img')
         await waitFor(() => expect(avatar).toBeInTheDocument())

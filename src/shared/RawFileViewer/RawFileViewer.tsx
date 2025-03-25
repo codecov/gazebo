@@ -16,6 +16,7 @@ import Title from 'ui/FileViewer/ToggleHeader/Title'
 import { VirtualFileRenderer } from 'ui/VirtualRenderers'
 
 function ErrorDisplayMessage() {
+  const location = useLocation()
   return (
     <p className="border border-solid border-ds-gray-tertiary p-4">
       There was a problem getting the source code from your provider. Unable to
@@ -24,9 +25,7 @@ function ErrorDisplayMessage() {
       <span>
         If you continue to experience this issue, please try{' '}
         <A
-          to={{
-            pageName: 'login',
-          }}
+          to={{ pageName: 'login', options: { to: location.pathname } }}
           hook={undefined}
           isExternal={undefined}
         >

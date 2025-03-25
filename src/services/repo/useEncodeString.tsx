@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import Api from 'shared/api'
 
 const query = `

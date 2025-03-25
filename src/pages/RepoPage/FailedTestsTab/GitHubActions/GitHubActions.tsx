@@ -37,7 +37,7 @@ const JobsScript = `jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
         with:

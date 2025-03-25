@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 import {
   useNotifications,
   useRemoveNotification,
-} from 'services/toastNotification'
+} from 'services/toastNotification/context'
 
 import ToastNotifications from './ToastNotifications'
 
@@ -23,7 +23,7 @@ const notifications = [
   },
 ]
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 
 describe('ToastNotifications', () => {
   const removeNotification = vi.fn()

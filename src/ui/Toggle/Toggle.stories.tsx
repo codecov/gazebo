@@ -46,3 +46,25 @@ export const DisabledToggle: Story = {
     )
   },
 }
+
+export const LoadingToggle: Story = {
+  render: (args) => {
+    const [toggle, setToggle] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const toggler = async () => {
+      setIsLoading(true)
+      setTimeout(() => {
+        setToggle(!toggle)
+        setIsLoading(false)
+      }, 2000)
+    }
+    return (
+      <Toggle
+        value={toggle}
+        isLoading={isLoading}
+        {...args}
+        onClick={toggler}
+      />
+    )
+  },
+}

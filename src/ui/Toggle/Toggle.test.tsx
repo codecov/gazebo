@@ -180,4 +180,88 @@ describe('Toggle', () => {
       expect(button).toHaveAttribute('disabled')
     })
   })
+
+  describe('isLoading behavior', () => {
+    describe('when isLoading is true', () => {
+      it('renders spinner', () => {
+        render(
+          <Toggle
+            label="🐕"
+            dataMarketing="marketing"
+            value={true}
+            disabled={false}
+            isLoading={true}
+            onClick={() => {}}
+          />
+        )
+
+        const spinner = screen.getByTestId('toggle-loading-spinner')
+        expect(spinner).toBeInTheDocument()
+      })
+
+      describe('and is clicked', () => {
+        it('does not fire onClick', async () => {
+          const { user } = setup()
+          const mockFn = vi.fn()
+          render(
+            <Toggle
+              label="🐕"
+              dataMarketing="marketing"
+              value={false}
+              disabled={false}
+              onClick={mockFn}
+              isLoading={true}
+            />
+          )
+
+          const button = screen.getByRole('button')
+
+          await user.click(button)
+
+          expect(mockFn).not.toHaveBeenCalled()
+        })
+      })
+    })
+
+    describe('when isLoading is false', () => {
+      it('does not render spinner', () => {
+        render(
+          <Toggle
+            label="🐕"
+            dataMarketing="marketing"
+            value={true}
+            disabled={false}
+            isLoading={false}
+            onClick={() => {}}
+          />
+        )
+
+        const spinner = screen.queryByTestId('toggle-loading-spinner')
+        expect(spinner).not.toBeInTheDocument()
+      })
+
+      describe('and is clicked', () => {
+        it('does fire onClick', async () => {
+          const { user } = setup()
+          const mockFn = vi.fn()
+          render(
+            <Toggle
+              label="🐕"
+              dataMarketing="marketing"
+              value={false}
+              disabled={false}
+              onClick={mockFn}
+              isLoading={false}
+            />
+          )
+
+          const button = screen.getByRole('button')
+
+          await user.click(button)
+
+          expect(mockFn).toHaveBeenCalled()
+        })
+      })
+    })
+  })
 })

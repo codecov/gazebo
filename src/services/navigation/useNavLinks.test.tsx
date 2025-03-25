@@ -1,13 +1,24 @@
 import { renderHook } from '@testing-library/react'
+import qs from 'qs'
 import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { useNavLinks } from './useNavLinks'
+
+vi.mock('config')
+
+// ensuring that we reset the config after each test
+afterEach(() => {
+  config.IS_SELF_HOSTED = false
+})
 
 const wrapper =
   (location: string): React.FC<PropsWithChildren> =>
   ({ children }) => (
     <MemoryRouter initialEntries={[location]} initialIndex={0}>
+      <Route path="/login">{children}</Route>
       <Route path="/:provider">{children}</Route>
       <Route path="/:provider/:owner">{children}</Route>
       <Route path="/:provider/:owner/:repo">{children}</Route>
@@ -88,6 +99,74 @@ describe('useNavLinks', () => {
       expect(path).toBe(
         '/login/gl?to=https%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov'
       )
+    })
+  })
+
+  describe('login', () => {
+    describe('config is not set to self-hosted', () => {
+      beforeEach(() => {
+        config.IS_SELF_HOSTED = false
+      })
+
+      it('returns the correct link with nothing passed', () => {
+        const { result } = renderHook(() => useNavLinks(), {
+          wrapper: wrapper('/gl/doggo/squirrel-locator'),
+        })
+
+        const path = result.current.login.path()
+        expect(path).toBe('/login')
+      })
+
+      describe('to parameter is passed', () => {
+        it('appends the param to the login url', () => {
+          const { result } = renderHook(() => useNavLinks(), {
+            wrapper: wrapper('/gl/doggo/squirrel-locator'),
+          })
+
+          const path = result.current.login.path({
+            to: '/gh/codecov/gazebo',
+          })
+
+          const query = qs.stringify(
+            { to: '/gh/codecov/gazebo' },
+            { addQueryPrefix: true }
+          )
+          expect(path).toBe(`/login${query}`)
+        })
+      })
+    })
+
+    describe('config is set to self-hosted', () => {
+      beforeEach(() => {
+        config.IS_SELF_HOSTED = true
+      })
+
+      it('returns the correct link with nothing passed', () => {
+        const { result } = renderHook(() => useNavLinks(), {
+          wrapper: wrapper('/gl/doggo/squirrel-locator'),
+        })
+
+        const path = result.current.login.path()
+        expect(path).toBe('/')
+      })
+
+      describe('to parameter is passed', () => {
+        it('appends the param to the login url', () => {
+          const { result } = renderHook(() => useNavLinks(), {
+            wrapper: wrapper('/gl/doggo/squirrel-locator'),
+          })
+
+          const path = result.current.login.path({
+            to: '/gh/codecov/gazebo',
+          })
+
+          const query = qs.stringify(
+            { to: '/gh/codecov/gazebo' },
+            { addQueryPrefix: true }
+          )
+          expect(path).toBe(`/${query}`)
+        })
+      })
     })
   })
 
