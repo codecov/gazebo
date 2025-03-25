@@ -1004,4 +1004,76 @@ describe('UploadsCard', () => {
       expect(travisUploadCheckboxTwo).not.toBeChecked()
     })
   })
+
+  describe('Download button', () => {
+    beforeEach(() => {
+      setup({
+        uploadsProviderList: ['travis', 'circleci'],
+        uploadsOverview: 'uploads overview',
+        groupedUploads: {
+          travis: [
+            {
+              id: 1,
+              name: 'travis-upload-1',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-25T16:36:19.559474+00:00',
+              updatedAt: '2020-08-25T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis1.txt',
+              ciUrl: 'https://travis-ci.com/job/1',
+              uploadType: 'UPLOADED',
+              jobCode: 'job1',
+              buildCode: 'build1',
+              errors: [],
+            },
+            {
+              id: 2,
+              name: 'travis-upload-2',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-26T16:36:19.559474+00:00',
+              updatedAt: '2020-08-26T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis2.txt',
+              ciUrl: 'https://travis-ci.com/job/2',
+              uploadType: 'UPLOADED',
+              jobCode: 'job2',
+              buildCode: 'build2',
+              errors: [],
+            },
+          ]
+        },
+        erroredUploads: {},
+        flagErrorUploads: {},
+        searchResults: [],
+        hasNoUploads: false,
+      })
+
+      // Mock fetch API
+      global.fetch = vi.fn()
+      global.URL.createObjectURL = vi.fn(() => 'blob:mock-url')
+      global.URL.revokeObjectURL = vi.fn()
+      
+      // Mock DOM methods
+      document.body.appendChild = vi.fn()
+      document.body.removeChild = vi.fn()
+      const mockLink = {
+        href: '',
+        setAttribute: vi.fn(),
+        click: vi.fn()
+      }
+      document.createElement = vi.fn(() => mockLink)
+    })
+
+    it('renders download button for each provider', () => {
+      render(<UploadsCard />, { wrapper })
+      
+      const downloadButtons = screen.getAllByText('Download')
+      expect(downloadButtons.length).toBeGreaterThan(0)
+      
+      // Check that the first download button is in the provider header
+      expect(downloadButtons[0].closest('div')?.textContent).toContain('travis')
+    })
+  })
 })
