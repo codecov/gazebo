@@ -20,7 +20,7 @@ import { OktaConfigQueryOpts } from '../queries/OktaConfigQueryOpts'
 const FormSchema = z.object({
   clientId: z.string().min(1, 'Client ID is required'),
   clientSecret: z.string().min(1, 'Client Secret is required'),
-  redirectUri: z.string().url('Redirect URI must be a valid URL'),
+  redirectUrl: z.string().url('Redirect URL must be a valid URL'),
 })
 
 type FormValues = z.infer<typeof FormSchema>
@@ -46,7 +46,7 @@ export function OktaConfigForm() {
     defaultValues: {
       clientId: oktaConfig?.clientId,
       clientSecret: oktaConfig?.clientSecret,
-      redirectUri: oktaConfig?.url,
+      redirectUrl: oktaConfig?.url,
     },
   })
 
@@ -62,7 +62,7 @@ export function OktaConfigForm() {
       {
         clientId: data.clientId,
         clientSecret: data.clientSecret,
-        url: data.redirectUri,
+        url: data.redirectUrl,
       },
       {
         onSettled: () => {
@@ -143,19 +143,19 @@ export function OktaConfigForm() {
               ) : null}
             </div>
             <div className="flex flex-col gap-1">
-              <label htmlFor="redirectUri" className="block font-semibold">
-                Redirect URI
+              <label htmlFor="redirectUrl" className="block font-semibold">
+                Redirect URL
               </label>
               <TextInput
                 defaultValue={oktaConfig?.url}
-                {...register('redirectUri', { required: true })}
+                {...register('redirectUrl', { required: true })}
                 type="text"
-                id="redirectUri"
-                placeholder="Enter Redirect URI"
+                id="redirectUrl"
+                placeholder="Enter Redirect URL"
               />
-              {formState.errors.redirectUri ? (
+              {formState.errors.redirectUrl ? (
                 <p className="mt-1 text-ds-primary-red">
-                  {formState.errors.redirectUri.message}
+                  {formState.errors.redirectUrl.message}
                 </p>
               ) : null}
             </div>
