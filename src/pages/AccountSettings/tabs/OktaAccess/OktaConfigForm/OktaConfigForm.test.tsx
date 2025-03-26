@@ -121,8 +121,8 @@ describe('OktaConfigForm', () => {
     const clientSecretInput = await screen.findByLabelText(/Client Secret/)
     await userEvent.type(clientSecretInput, 'clientSecret')
 
-    const redirectUrlInput = await screen.findByLabelText(/Redirect URL/)
-    await userEvent.type(redirectUrlInput, 'http://localhost:3000')
+    const oktaUrlInput = await screen.findByLabelText(/Okta Base URL/)
+    await userEvent.type(oktaUrlInput, 'http://localhost:3000')
 
     const clientIdInput = await screen.findByLabelText(/Client ID/)
     await userEvent.type(clientIdInput, 'clientId')
@@ -139,8 +139,8 @@ describe('OktaConfigForm', () => {
     const clientIdInput = await screen.findByLabelText(/Client ID/)
     await userEvent.type(clientIdInput, 'clientId')
 
-    const redirectUrlInput = await screen.findByLabelText(/Redirect URL/)
-    await userEvent.type(redirectUrlInput, 'http://localhost:3000')
+    const oktaUrlInput = await screen.findByLabelText(/Okta Base URL/)
+    await userEvent.type(oktaUrlInput, 'http://localhost:3000')
 
     const clientSecretInput = await screen.findByLabelText(/Client Secret/)
     await userEvent.type(clientSecretInput, 'clientSecret')
@@ -179,7 +179,7 @@ describe('OktaConfigForm', () => {
     expect(clientSecretInput).toHaveAttribute('type', 'password')
   })
 
-  it('should display Redirect URL validation error when removing redirect url value', async () => {
+  it('should display Okta Base URL validation error when removing okta base url value', async () => {
     setup()
     render(<OktaConfigForm />, { wrapper })
 
@@ -189,14 +189,14 @@ describe('OktaConfigForm', () => {
     const clientSecretInput = await screen.findByLabelText(/Client Secret/)
     await userEvent.type(clientSecretInput, 'clientSecret')
 
-    const redirectUrlInput = await screen.findByLabelText(/Redirect URL/)
-    await userEvent.type(redirectUrlInput, 'http://localhost:3000')
-    await userEvent.clear(redirectUrlInput)
+    const oktaUrlInput = await screen.findByLabelText(/Okta Base URL/)
+    await userEvent.type(oktaUrlInput, 'http://localhost:3000')
+    await userEvent.clear(oktaUrlInput)
 
-    const redirectUrlError = await screen.findByText(
-      /Redirect URL must be a valid URL/
+    const oktaUrlError = await screen.findByText(
+      /Okta Base URL must be a valid URL/
     )
-    expect(redirectUrlError).toBeInTheDocument()
+    expect(oktaUrlError).toBeInTheDocument()
   })
 
   it('should toggle Okta Sync Enabled on', async () => {
@@ -306,13 +306,13 @@ describe('OktaConfigForm', () => {
       })
     })
 
-    it('renders default values for redirect url', async () => {
+    it('renders default values for okta base url', async () => {
       setup()
       render(<OktaConfigForm />, { wrapper })
 
-      const redirectUrlInput = await screen.findByLabelText(/Redirect URL/)
+      const oktaUrlInput = await screen.findByLabelText(/Okta Base URL/)
       await waitFor(() => {
-        expect(redirectUrlInput).toHaveValue('https://okta.com')
+        expect(oktaUrlInput).toHaveValue('https://okta.com')
       })
     })
 
@@ -345,15 +345,15 @@ describe('OktaConfigForm', () => {
 
     const clientIdInput = await screen.findByLabelText(/Client ID/)
     const clientSecretInput = await screen.findByLabelText(/Client Secret/)
-    const redirectUrlInput = await screen.findByLabelText(/Redirect URL/)
+    const oktaUrlInput = await screen.findByLabelText(/Okta Base URL/)
 
     await user.clear(clientIdInput)
     await user.clear(clientSecretInput)
-    await user.clear(redirectUrlInput)
+    await user.clear(oktaUrlInput)
 
     await user.type(clientIdInput, 'New client ID')
     await user.type(clientSecretInput, 'New client secret')
-    await user.type(redirectUrlInput, 'http://localhost:3000')
+    await user.type(oktaUrlInput, 'http://localhost:3000')
 
     const saveButton = await screen.findByRole('button', { name: /Save/ })
     await user.click(saveButton)
@@ -376,15 +376,15 @@ describe('OktaConfigForm', () => {
 
     const clientIdInput = await screen.findByLabelText(/Client ID/)
     const clientSecretInput = await screen.findByLabelText(/Client Secret/)
-    const redirectUrlInput = await screen.findByLabelText(/Redirect URL/)
+    const oktaUrlInput = await screen.findByLabelText(/Okta Base URL/)
 
     await userEvent.clear(clientIdInput)
     await userEvent.clear(clientSecretInput)
-    await userEvent.clear(redirectUrlInput)
+    await userEvent.clear(oktaUrlInput)
 
     await userEvent.type(clientIdInput, 'New client ID')
     await userEvent.type(clientSecretInput, 'New client secret')
-    await userEvent.type(redirectUrlInput, 'http://localhost:3000')
+    await userEvent.type(oktaUrlInput, 'http://localhost:3000')
 
     const saveButton = await screen.findByRole('button', { name: /Save/ })
     await userEvent.click(saveButton)
