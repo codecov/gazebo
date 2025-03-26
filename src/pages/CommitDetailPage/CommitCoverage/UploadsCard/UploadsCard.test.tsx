@@ -1004,4 +1004,113 @@ describe('UploadsCard', () => {
       expect(travisUploadCheckboxTwo).not.toBeChecked()
     })
   })
+
+  describe('download functionality', () => {
+    let fetchMock: ReturnType<typeof vi.fn>
+    let createObjectURLMock: ReturnType<typeof vi.fn>
+    let revokeObjectURLMock: ReturnType<typeof vi.fn>
+    let appendChildMock: ReturnType<typeof vi.fn>
+    let removeChildMock: ReturnType<typeof vi.fn>
+    let clickMock: ReturnType<typeof vi.fn>
+    let createElementMock: ReturnType<typeof vi.fn>
+
+    const mockObjectUrl = 'blob:mock-url'
+    let mockLinkElement: HTMLAnchorElement
+
+    beforeEach(() => {
+      // Mock fetch
+      fetchMock = vi.fn().mockResolvedValue({
+        blob: () => Promise.resolve(new Blob(['test content'], { type: 'text/plain' })),
+      })
+      global.fetch = fetchMock
+
+      // Mock URL methods
+      createObjectURLMock = vi.fn().mockReturnValue(mockObjectUrl)
+      revokeObjectURLMock = vi.fn()
+      global.URL.createObjectURL = createObjectURLMock
+      global.URL.revokeObjectURL = revokeObjectURLMock
+
+      // Mock document methods
+      mockLinkElement = {
+        href: '',
+        setAttribute: vi.fn(),
+        click: vi.fn(),
+      } as unknown as HTMLAnchorElement
+
+      createElementMock = vi.fn().mockReturnValue(mockLinkElement)
+      appendChildMock = vi.fn()
+      removeChildMock = vi.fn()
+      clickMock = vi.fn()
+      
+      document.createElement = createElementMock
+      document.body.appendChild = appendChildMock
+      document.body.removeChild = removeChildMock
+
+      // Setup test data for uploads
+      setup({
+        uploadsProviderList: ['travis', 'circleci'],
+        uploadsOverview: 'uploads overview',
+        groupedUploads: {
+          travis: [
+            {
+              id: 1,
+              name: 'travis-upload-1',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-25T16:36:19.559474+00:00',
+              updatedAt: '2020-08-25T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis/file1.txt',
+              ciUrl: 'https://travis-ci.com/job/1',
+              uploadType: 'UPLOADED',
+              jobCode: 'job1',
+              buildCode: 'build1',
+              errors: [],
+            },
+            {
+              id: 2,
+              name: 'travis-upload-2',
+              state: 'PROCESSED',
+              provider: 'travis',
+              createdAt: '2020-08-26T16:36:19.559474+00:00',
+              updatedAt: '2020-08-26T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl: '/download/travis/file2.txt',
+              ciUrl: 'https://travis-ci.com/job/2',
+              uploadType: 'UPLOADED',
+              jobCode: 'job2',
+              buildCode: 'build2',
+              errors: [],
+            }
+          ]
+        },
+        erroredUploads: {},
+        flagErrorUploads: {},
+        searchResults: [],
+        hasNoUploads: false,
+      })
+    })
+
+    it('renders download buttons for each provider', async () => {
+      render(<UploadsCard />, { wrapper })
+      
+      const downloadButtons = screen.getAllByText('Download')
+      // There should be a download button for each provider
+      expect(downloadButtons).toHaveLength(1) // Only travis provider in this test
+    })
+
+    it('downloads files when download button is clicked', async () => {
+      const user = userEvent.setup()
+      render(<UploadsCard />, { wrapper })
+      
+      const downloadButton = screen.getByText('Download')
+      await user.click(downloadButton)
+
+      // Verify fetch was called for each upload in the provider
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+      expect(fetchMock.mock.calls[0][0]).toBe('/download/travis/file1.txt')
+      expect(fetchMock.mock.calls[1][0]).toBe('/download/travis/file2.txt')
+      expect(createObjectURLMock).toHaveBeenCalledTimes(2)
+    })
+  })
 })
