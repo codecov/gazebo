@@ -248,8 +248,12 @@ describe('TitleFlags', () => {
 
       render(<TitleFlags />, { wrapper })
 
-      const select = await screen.findByText('All flags')
+      const select = await screen.findByRole('button', {
+        name: 'Filter by flags',
+      })
       expect(select).toBeInTheDocument()
+
+      await waitFor(() => expect(select).not.toHaveAttribute('disabled'))
       await user.click(select)
 
       const flag1 = await screen.findByText('flag-1')
