@@ -166,7 +166,9 @@ describe('UserDropdown', () => {
 
         const link = screen.getByText('Settings')
         expect(link).toBeVisible()
-        expect(link).toHaveAttribute('href', '/account/gh/janedoe')
+        await waitFor(() =>
+          expect(link).toHaveAttribute('href', '/account/gh/janedoe')
+        )
       })
 
       it('shows sign out button', async () => {

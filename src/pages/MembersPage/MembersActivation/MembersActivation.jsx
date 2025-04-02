@@ -22,6 +22,7 @@ function MemberActivation() {
   const planAutoActivateIsDefined = !isUndefined(
     accountDetails?.planAutoActivate
   )
+  const planDataIsDefined = !isUndefined(planData)
   const isNotTrialing =
     !planData?.plan?.isTrialPlan &&
     planData?.plan?.trialStatus !== TrialStatuses.ONGOING
@@ -30,7 +31,10 @@ function MemberActivation() {
   ) // only show for admins on enterprise cloud plans
 
   const showAutoActivate =
-    planAutoActivateIsDefined && isNotTrialing && isNotAnEnterpriseDeveloper
+    planAutoActivateIsDefined &&
+    planDataIsDefined &&
+    isNotTrialing &&
+    isNotAnEnterpriseDeveloper
 
   return (
     <div className="border-2 border-ds-gray-primary">
