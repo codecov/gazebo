@@ -344,7 +344,17 @@ describe('useCommit', () => {
             branchName: null,
             ciPassed: true,
             commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-            compareWithParent: undefined,
+            compareWithParent: {
+              __typename: 'Comparison',
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: [],
+              },
+              patchTotals: null,
+              state: 'pending',
+              indirectChangedFilesCount: 1,
+              directChangedFilesCount: 1,
+            },
             createdAt: '2020-08-25T16:35:32',
             message: 'paths test',
             parent: {
@@ -431,7 +441,17 @@ describe('useCommit', () => {
             branchName: null,
             ciPassed: true,
             commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-            compareWithParent: undefined,
+            compareWithParent: {
+              __typename: 'Comparison',
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: [],
+              },
+              patchTotals: null,
+              state: 'pending',
+              indirectChangedFilesCount: 1,
+              directChangedFilesCount: 1,
+            },
             createdAt: '2020-08-25T16:35:32',
             message: 'paths test',
             parent: {
