@@ -232,8 +232,12 @@ describe('FlagMultiSelect', () => {
 
       render(<FlagMultiSelect />, { wrapper })
 
-      const select = await screen.findByText('All flags')
+      const select = await screen.findByRole('button', {
+        name: 'Select flags to show',
+      })
       expect(select).toBeInTheDocument()
+
+      await waitFor(() => expect(select).not.toHaveAttribute('disabled'))
       await user.click(select)
 
       const flag1 = await screen.findByText('flag-1')
