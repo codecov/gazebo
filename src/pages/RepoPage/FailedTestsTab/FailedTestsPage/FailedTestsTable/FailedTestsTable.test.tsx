@@ -63,10 +63,17 @@ const node3 = {
   totalSkipCount: 13,
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: false,
+    },
+  },
+})
+
 const server = setupServer()
 const wrapper =
   (
-    queryClient: QueryClient,
     initialEntries: string[] = ['/gh/codecov/repo/tests']
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
@@ -139,14 +146,6 @@ describe('FailedTestsTable', () => {
     isPrivate = false,
     isFirstPullRequest = false,
   }: SetupArgs) {
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          suspense: false,
-        },
-      },
-    })
-
     const user = userEvent.setup({ delay: null })
     const mockVariables = vi.fn()
 
@@ -221,22 +220,23 @@ describe('FailedTestsTable', () => {
       })
     )
 
-    return { queryClient, user, mockVariables }
+    return { user, mockVariables }
   }
 
   describe('renders table headers', () => {
     describe('when repo is private', () => {
       describe('when plan is team plan', () => {
         it('does not render flake rate column', async () => {
-          const { queryClient } = setup({
+          setup({
             planValue: Plans.USERS_TEAMM,
             isPrivate: true,
           })
           render(<FailedTestsTable />, {
-            wrapper: wrapper(queryClient),
+            wrapper: wrapper(),
           })
 
-          await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+          const tableData = await screen.findByText('test-1')
+          expect(tableData).toBeInTheDocument()
 
           const flakeRateColumn = screen.queryByText('Flake rate')
           expect(flakeRateColumn).not.toBeInTheDocument()
@@ -245,15 +245,16 @@ describe('FailedTestsTable', () => {
 
       describe('when plan is free', () => {
         it('does not render flake rate column', async () => {
-          const { queryClient } = setup({
+          setup({
             planValue: Plans.USERS_DEVELOPER,
             isPrivate: true,
           })
           render(<FailedTestsTable />, {
-            wrapper: wrapper(queryClient),
+            wrapper: wrapper(),
           })
 
-          await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+          const tableData = await screen.findByText('test-1')
+          expect(tableData).toBeInTheDocument()
 
           const flakeRateColumn = screen.queryByText('Flake rate')
           expect(flakeRateColumn).not.toBeInTheDocument()
@@ -262,12 +263,13 @@ describe('FailedTestsTable', () => {
 
       describe('when not on default branch', () => {
         it('does not render flake rate column', async () => {
-          const { queryClient } = setup({})
+          setup({})
           render(<FailedTestsTable />, {
-            wrapper: wrapper(queryClient, ['/gh/codecov/repo/tests/lol']),
+            wrapper: wrapper(['/gh/codecov/repo/tests/lol']),
           })
 
-          await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+          const tableData = await screen.findByText('test-1')
+          expect(tableData).toBeInTheDocument()
 
           const flakeRateColumn = screen.queryByText('Flake rate')
           expect(flakeRateColumn).not.toBeInTheDocument()
@@ -276,9 +278,9 @@ describe('FailedTestsTable', () => {
     })
 
     it('renders each column name', async () => {
-      const { queryClient } = setup({})
+      setup({})
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(),
       })
 
       const nameColumn = await screen.findByText('Test name')
@@ -301,9 +303,9 @@ describe('FailedTestsTable', () => {
     })
 
     it('renders table header', async () => {
-      const { queryClient } = setup({})
+      setup({})
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(),
       })
 
       const tableHeader = await screen.findByText('Table Header')
@@ -313,9 +315,9 @@ describe('FailedTestsTable', () => {
 
   describe('renders table body', () => {
     it('renders the first element', async () => {
-      const { queryClient } = setup({})
+      setup({})
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(),
       })
 
       const loading = await screen.findByText('Loading')
@@ -341,9 +343,9 @@ describe('FailedTestsTable', () => {
     })
 
     it('shows additional info when hovering flake rate', async () => {
-      const { queryClient, user } = setup({})
+      const { user } = setup({})
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(),
       })
 
       const loading = await screen.findByText('Loading')
@@ -363,12 +365,12 @@ describe('FailedTestsTable', () => {
   describe('when first pull request', () => {
     describe('when there are no test results', () => {
       it('renders no data message', async () => {
-        const { queryClient } = setup({
+        setup({
           isFirstPullRequest: true,
           noEntries: true,
         })
         render(<FailedTestsTable />, {
-          wrapper: wrapper(queryClient),
+          wrapper: wrapper(),
         })
 
         const noDataMessage = await screen.findByText('No data yet')
@@ -383,9 +385,9 @@ describe('FailedTestsTable', () => {
 
     describe('there are test results', () => {
       it('renders data in the table', async () => {
-        const { queryClient } = setup({ isFirstPullRequest: true })
+        setup({ isFirstPullRequest: true })
         render(<FailedTestsTable />, {
-          wrapper: wrapper(queryClient),
+          wrapper: wrapper(),
         })
 
         const nameColumn = await screen.findByText('test-1')
@@ -411,9 +413,9 @@ describe('FailedTestsTable', () => {
 
   describe('no data is returned', () => {
     it('still returns an empty table', async () => {
-      const { queryClient } = setup({ noEntries: true })
+      setup({ noEntries: true })
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(),
       })
 
       const tableBody = screen.getByTestId('failed-tests-table-body')
@@ -424,9 +426,9 @@ describe('FailedTestsTable', () => {
 
   describe('ability to sort', () => {
     it('can sort on duration column', async () => {
-      const { queryClient, user, mockVariables } = setup({ noEntries: true })
+      const { user, mockVariables } = setup({ noEntries: true })
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(),
       })
 
       const durationColumn = await screen.findByText('Avg. duration')
@@ -458,9 +460,9 @@ describe('FailedTestsTable', () => {
     })
 
     it('can sort on failure rate column', async () => {
-      const { queryClient, user, mockVariables } = setup({ noEntries: true })
+      const { user, mockVariables } = setup({ noEntries: true })
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(),
       })
 
       const failureRateColumn = await screen.findByText('Failure rate')
@@ -492,9 +494,9 @@ describe('FailedTestsTable', () => {
     })
 
     it('can sort on flake rate column', async () => {
-      const { queryClient, user, mockVariables } = setup({ noEntries: true })
+      const { user, mockVariables } = setup({ noEntries: true })
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(),
       })
 
       const flakeRateColumn = await screen.findByText('Flake rate')
@@ -526,9 +528,9 @@ describe('FailedTestsTable', () => {
     })
 
     it('can sort on commits failed column', async () => {
-      const { queryClient, user, mockVariables } = setup({ noEntries: true })
+      const { user, mockVariables } = setup({ noEntries: true })
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(),
       })
 
       const commitsFailedColumn = await screen.findByText('Commits failed')
@@ -560,9 +562,9 @@ describe('FailedTestsTable', () => {
     })
 
     it('can sort on last run column', async () => {
-      const { queryClient, user, mockVariables } = setup({ noEntries: true })
+      const { user, mockVariables } = setup({ noEntries: true })
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(),
       })
 
       const lastRunColumn = await screen.findByText('Last run')
@@ -596,9 +598,9 @@ describe('FailedTestsTable', () => {
 
   describe('infinite scrolling', () => {
     it('loads next page', async () => {
-      const { queryClient } = setup({})
+      setup({})
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(),
       })
 
       const loading = await screen.findByText('Loading')
@@ -612,9 +614,9 @@ describe('FailedTestsTable', () => {
 
   describe('when landing on a branch page', () => {
     it('filters data by the expected branch', async () => {
-      const { queryClient, mockVariables } = setup({})
+      const { mockVariables } = setup({})
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient, ['/gh/codecov/repo/tests/main']),
+        wrapper: wrapper(['/gh/codecov/repo/tests/main']),
       })
 
       await waitFor(() => {
@@ -629,9 +631,9 @@ describe('FailedTestsTable', () => {
     })
 
     it('renders no data if no entries are returned', async () => {
-      const { queryClient } = setup({ noEntries: true })
+      setup({ noEntries: true })
       render(<FailedTestsTable />, {
-        wrapper: wrapper(queryClient, ['/gh/codecov/repo/tests/main']),
+        wrapper: wrapper(['/gh/codecov/repo/tests/main']),
       })
 
       const content = await screen.findByText('No test results found')
