@@ -194,8 +194,12 @@ describe('ComponentsMultiSelect', () => {
 
       render(<ComponentsMultiSelect />, { wrapper })
 
-      const select = await screen.findByText('All components')
+      const select = await screen.findByRole('button', {
+        name: 'Select components to show',
+      })
       expect(select).toBeInTheDocument()
+
+      await waitFor(() => expect(select).not.toHaveAttribute('disabled'))
       await user.click(select)
 
       const component1 = await screen.findByText('component-1')
