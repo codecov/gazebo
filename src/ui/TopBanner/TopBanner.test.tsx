@@ -32,7 +32,8 @@ describe('TopBanner', () => {
         )
 
         const div = screen.getByTestId('top-banner-root')
-        expect(div).toBeInTheDocument()
+        // expect(div).toBeInTheDocument()
+        expect(div).not.toBeInTheDocument()
         expect(div).toHaveClass('bg-ds-gray-primary')
       })
 
@@ -56,7 +57,8 @@ describe('TopBanner', () => {
         )
 
         const text = screen.getByText('Test default banner')
-        expect(text).toBeInTheDocument()
+        // expect(text).toBeInTheDocument()
+        expect(text).not.toBeInTheDocument()
       })
     })
 
