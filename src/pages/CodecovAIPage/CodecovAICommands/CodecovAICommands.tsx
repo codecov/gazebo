@@ -1,5 +1,7 @@
 import darkModeImage from 'assets/codecovAI/pr-review-example-dark-mode.png'
 import lightModeImage from 'assets/codecovAI/pr-review-example-light-mode.png'
+import darkModeImageTests from 'assets/codecovAI/test-gen-example-dark-mode.png'
+import lightModeImageTests from 'assets/codecovAI/test-gen-example-light-mode.png'
 import { Card } from 'ui/Card'
 import { ExpandableSection } from 'ui/ExpandableSection'
 import LightDarkImg from 'ui/LightDarkImg'
@@ -36,26 +38,28 @@ const CodecovAICommands: React.FC = () => {
             generation may take time.
           </p>
         </ExpandableSection.Trigger>
-        <ExpandableSection.Content>
-          Screenshot goes here
-        </ExpandableSection.Content>
-      </ExpandableSection>
-      <ExpandableSection className="-mt-2 border-t-0">
-        <ExpandableSection.Trigger>
-          <p>
-            Here is an example of Codecov AI Test Generator in PR comments.
-            Comment generation may take time.
-          </p>
-        </ExpandableSection.Trigger>
-        <ExpandableSection.Content>
-          Screenshot goes here
-        </ExpandableSection.Content>
         <ExpandableSection.Content className="m-0 p-0">
           <LightDarkImg
             className="size-full object-cover"
             src={lightModeImage}
             darkSrc={darkModeImage}
             alt="codecov pr review example"
+          />
+        </ExpandableSection.Content>
+      </ExpandableSection>
+      <ExpandableSection className="-mt-2 border-t-0">
+        <ExpandableSection.Trigger>
+          <p>
+            Here is an example of Codecov AI Test Generation. Test generation
+            may take time.
+          </p>
+        </ExpandableSection.Trigger>
+        <ExpandableSection.Content className="m-0 p-0">
+          <LightDarkImg
+            className="size-full object-cover"
+            src={lightModeImageTests}
+            darkSrc={darkModeImageTests}
+            alt="codecov test generation example"
           />
         </ExpandableSection.Content>
       </ExpandableSection>
