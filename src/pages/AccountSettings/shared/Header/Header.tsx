@@ -6,7 +6,7 @@ import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
   const { codecovAiFeaturesTab } = useFlags({
-    codecovAiFeaturesTab: true,
+    codecovAiFeaturesTab: false,
   })
 
   return (
