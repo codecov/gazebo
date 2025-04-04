@@ -40,7 +40,7 @@ const CodecovAICommands: React.FC = () => {
         </ExpandableSection.Trigger>
         <ExpandableSection.Content className="m-0 p-0">
           <LightDarkImg
-            className="size-full object-cover"
+            className="h-[500px] w-full object-contain"
             src={lightModeImage}
             darkSrc={darkModeImage}
             alt="codecov pr review example"
@@ -56,7 +56,7 @@ const CodecovAICommands: React.FC = () => {
         </ExpandableSection.Trigger>
         <ExpandableSection.Content className="m-0 p-0">
           <LightDarkImg
-            className="size-full object-cover"
+            className="h-[500px] w-full object-contain"
             src={lightModeImageTests}
             darkSrc={darkModeImageTests}
             alt="codecov test generation example"
