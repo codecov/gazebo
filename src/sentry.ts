@@ -133,7 +133,7 @@ export const setupSentry = ({
 
   Sentry.init({
     dsn: config.SENTRY_DSN,
-    debug: config.NODE_ENV !== 'production',
+    debug: config.SENTRY_ENVIRONMENT !== 'production',
     environment: config.SENTRY_ENVIRONMENT,
     integrations: [
       // Adds Sentry Replay
