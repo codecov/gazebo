@@ -39,12 +39,14 @@ const CodecovAICommands: React.FC = () => {
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content className="m-0 p-0">
-          <LightDarkImg
-            className="h-[500px] w-full object-contain"
-            src={lightModeImage}
-            darkSrc={darkModeImage}
-            alt="codecov pr review example"
-          />
+          <div className="flex justify-center">
+            <LightDarkImg
+              className="h-[400px] w-auto max-w-full object-contain"
+              src={lightModeImage}
+              darkSrc={darkModeImage}
+              alt="codecov pr review example"
+            />
+          </div>
         </ExpandableSection.Content>
       </ExpandableSection>
       <ExpandableSection className="-mt-2 border-t-0">
@@ -55,12 +57,14 @@ const CodecovAICommands: React.FC = () => {
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content className="m-0 p-0">
-          <LightDarkImg
-            className="h-[500px] w-full object-contain"
-            src={lightModeImageTests}
-            darkSrc={darkModeImageTests}
-            alt="codecov test generation example"
-          />
+          <div className="flex justify-center">
+            <LightDarkImg
+              className="h-[400px] w-auto max-w-full object-contain"
+              src={lightModeImageTests}
+              darkSrc={darkModeImageTests}
+              alt="codecov test generation example"
+            />
+          </div>
         </ExpandableSection.Content>
       </ExpandableSection>
     </div>
