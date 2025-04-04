@@ -39,9 +39,9 @@ const CodecovAICommands: React.FC = () => {
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content className="m-0 p-0">
-          <div className="flex justify-center">
+          <div className="h-[300px] w-full">
             <LightDarkImg
-              className="h-[400px] w-auto max-w-full object-contain"
+              className="size-full object-cover"
               src={lightModeImage}
               darkSrc={darkModeImage}
               alt="codecov pr review example"
@@ -57,9 +57,9 @@ const CodecovAICommands: React.FC = () => {
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content className="m-0 p-0">
-          <div className="flex justify-center">
+          <div className={`h-[300px] w-full`}>
             <LightDarkImg
-              className="h-[400px] w-auto max-w-full object-contain"
+              className="size-full object-cover"
               src={lightModeImageTests}
               darkSrc={darkModeImageTests}
               alt="codecov test generation example"

@@ -17,7 +17,7 @@ interface URLParams {
 const CodecovAIPage: React.FC = () => {
   const { provider, owner } = useParams<URLParams>()
   const { codecovAiFeaturesTab } = useFlags({
-    codecovAiFeaturesTab: false,
+    codecovAiFeaturesTab: true,
   })
 
   const { data: installationData } = useCodecovAIInstallation({
