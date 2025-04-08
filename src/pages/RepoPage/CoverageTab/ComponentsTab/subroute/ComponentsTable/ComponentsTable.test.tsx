@@ -197,7 +197,7 @@ describe('ComponentsTable', () => {
       const components = await screen.findByText('Components')
       expect(components).toBeInTheDocument()
 
-      const coverage = await screen.findByText('Coverage %')
+      const coverage = await screen.findByText('Last aggregated coverage %')
       expect(coverage).toBeInTheDocument()
 
       const trend = await screen.findByText('Historical Trend')
