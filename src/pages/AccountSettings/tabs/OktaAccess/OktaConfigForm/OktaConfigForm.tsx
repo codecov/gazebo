@@ -20,7 +20,7 @@ import { OktaConfigQueryOpts } from '../queries/OktaConfigQueryOpts'
 const FormSchema = z.object({
   clientId: z.string().min(1, 'Client ID is required'),
   clientSecret: z.string().min(1, 'Client Secret is required'),
-  redirectUri: z.string().url('Redirect URI must be a valid URL'),
+  oktaUrl: z.string().url('Okta Base URL must be a valid URL'),
 })
 
 type FormValues = z.infer<typeof FormSchema>
@@ -46,7 +46,7 @@ export function OktaConfigForm() {
     defaultValues: {
       clientId: oktaConfig?.clientId,
       clientSecret: oktaConfig?.clientSecret,
-      redirectUri: oktaConfig?.url,
+      oktaUrl: oktaConfig?.url,
     },
   })
 
@@ -62,7 +62,7 @@ export function OktaConfigForm() {
       {
         clientId: data.clientId,
         clientSecret: data.clientSecret,
-        url: data.redirectUri,
+        url: data.oktaUrl,
       },
       {
         onSettled: () => {
@@ -143,19 +143,19 @@ export function OktaConfigForm() {
               ) : null}
             </div>
             <div className="flex flex-col gap-1">
-              <label htmlFor="redirectUri" className="block font-semibold">
-                Redirect URI
+              <label htmlFor="oktaUrl" className="block font-semibold">
+                Okta Base URL
               </label>
               <TextInput
                 defaultValue={oktaConfig?.url}
-                {...register('redirectUri', { required: true })}
+                {...register('oktaUrl', { required: true })}
                 type="text"
-                id="redirectUri"
-                placeholder="Enter Redirect URI"
+                id="oktaUrl"
+                placeholder="Enter Okta Base URL"
               />
-              {formState.errors.redirectUri ? (
+              {formState.errors.oktaUrl ? (
                 <p className="mt-1 text-ds-primary-red">
-                  {formState.errors.redirectUri.message}
+                  {formState.errors.oktaUrl.message}
                 </p>
               ) : null}
             </div>
