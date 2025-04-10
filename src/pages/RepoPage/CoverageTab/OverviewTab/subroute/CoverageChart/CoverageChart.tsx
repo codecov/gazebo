@@ -38,7 +38,6 @@ function CoverageChart() {
     repo,
     owner,
   })
-
   const { data: branchesData } = useBranches({ repo, provider, owner })
   const { selection } = useBranchSelector({
     branches: branchesData?.branches ?? [],
