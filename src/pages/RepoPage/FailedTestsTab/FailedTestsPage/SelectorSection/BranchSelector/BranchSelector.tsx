@@ -30,6 +30,7 @@ const BranchSelector = () => {
     repo,
   })
 
+  console.log('branch selector')
   const {
     data: branchList,
     isFetching: branchListIsFetching,

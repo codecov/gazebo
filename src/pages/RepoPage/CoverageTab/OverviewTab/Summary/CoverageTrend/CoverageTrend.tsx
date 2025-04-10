@@ -24,6 +24,10 @@ function CoverageTrend() {
     owner,
   })
 
+  console.log(
+    "this may be where it's getting called without a search term the first call"
+  )
+
   const { data: branchesData } = useBranches({ provider, repo, owner })
 
   const { selection } = useBranchSelector({
