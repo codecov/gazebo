@@ -39,7 +39,6 @@ function CoverageChart() {
     owner,
   })
 
-  console.log('this is where the branches are getting called')
   const { data: branchesData } = useBranches({ repo, provider, owner })
   const { selection } = useBranchSelector({
     branches: branchesData?.branches ?? [],

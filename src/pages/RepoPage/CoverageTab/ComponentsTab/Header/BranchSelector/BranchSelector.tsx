@@ -38,7 +38,6 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
   const history = useHistory()
   const { componentsTab } = useNavLinks()
 
-  console.log('branch selector - components tab - is it this?')
   const {
     data: branchList,
     isFetching: branchListIsFetching,

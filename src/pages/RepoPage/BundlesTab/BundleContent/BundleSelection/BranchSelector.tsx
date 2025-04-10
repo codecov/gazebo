@@ -37,7 +37,6 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
     repo,
   })
 
-  console.log('branch selector - maybe the second call')
   const {
     data: branchList,
     isFetching: branchListIsFetching,
