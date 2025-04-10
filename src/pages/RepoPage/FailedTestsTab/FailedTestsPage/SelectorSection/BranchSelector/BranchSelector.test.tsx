@@ -10,6 +10,7 @@ import BranchSelector from './BranchSelector'
 
 const mocks = vi.hoisted(() => ({
   useIntersection: vi.fn(),
+  useFlags: vi.fn(),
 }))
 
 vi.mock('react-use', async () => {
@@ -17,6 +18,14 @@ vi.mock('react-use', async () => {
   return {
     ...original,
     useIntersection: mocks.useIntersection,
+  }
+})
+
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
   }
 })
 
@@ -96,33 +105,34 @@ const wrapper =
     queryClient: QueryClient,
     initialEntries = '/gh/codecov/test-repo/tests'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/tests/:branch',
-            '/:provider/:owner/:repo/tests',
-          ]}
-        >
-          <Suspense fallback={<p>loading</p>}>{children}</Suspense>
-        </Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
+    ({ children }) => (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/tests/:branch',
+              '/:provider/:owner/:repo/tests',
+            ]}
+          >
+            <Suspense fallback={<p>loading</p>}>{children}</Suspense>
+          </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
 })
 
 afterEach(() => {
+  vi.clearAllMocks()
   server.resetHandlers()
 })
 
@@ -143,14 +153,18 @@ describe('BranchSelector', () => {
       nullOverview = false,
       nullHead = false,
     }: SetupArgs = {
-      hasNextPage: false,
-      nullOverview: false,
-      nullHead: false,
-    }
+        hasNextPage: false,
+        nullOverview: false,
+        nullHead: false,
+      }
   ) {
+
     const user = userEvent.setup()
     const fetchNextPage = vi.fn()
     const mockSearching = vi.fn()
+
+    mocks.useFlags.mockReturnValue({ allBranchesEnabled: false })
+
 
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -393,6 +407,222 @@ describe('BranchSelector', () => {
       })
 
       expect(select).toHaveTextContent('Select branch')
+    })
+  })
+})
+
+describe('BranchSelector with All Branches enabled', () => {
+  function setup(
+    {
+      hasNextPage = false,
+      nullOverview = false,
+      nullHead = false,
+    }: SetupArgs = {
+        hasNextPage: false,
+        nullOverview: false,
+        nullHead: false,
+      }
+  ) {
+    const user = userEvent.setup()
+    const fetchNextPage = vi.fn()
+    const mockSearching = vi.fn()
+
+    mocks.useFlags.mockReturnValue({ allBranchesEnabled: true })
+
+
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          suspense: true,
+          retry: false,
+        },
+      },
+    })
+
+    server.use(
+      graphql.query('GetRepoOverview', () => {
+        if (nullOverview) {
+          return HttpResponse.json({ data: { owner: null } })
+        }
+
+        return HttpResponse.json({
+          data: {
+            owner: {
+              isCurrentUserActivated: true,
+              repository: mockRepoOverview,
+            },
+          },
+        })
+      }),
+      graphql.query('GetBranch', (info) => {
+        let branch = 'main'
+        if (info.variables?.branch) {
+          branch = info.variables?.branch
+        }
+
+        let mockedBranch = mockBranch(branch)
+        if (nullHead) {
+          mockedBranch = mockBranch(branch, null)
+        }
+
+        return HttpResponse.json({
+          data: {
+            owner: {
+              repository: { __typename: 'Repository', ...mockedBranch },
+            },
+          },
+        })
+      }),
+      graphql.query('GetBranches', (info) => {
+        if (info.variables?.after) {
+          fetchNextPage(info.variables?.after)
+        }
+
+        if (info.variables?.filters?.searchValue === 'main') {
+          return HttpResponse.json({
+            data: { owner: { repository: mockMainBranchSearch } },
+          })
+        }
+
+        if (info.variables?.filters?.searchValue) {
+          mockSearching(info.variables?.filters?.searchValue)
+        }
+
+        return HttpResponse.json({
+          data: { owner: { repository: mockBranches(hasNextPage) } },
+        })
+      })
+    )
+
+    return {
+      fetchNextPage,
+      mockSearching,
+      user,
+      queryClient,
+    }
+  }
+
+  describe('with populated data', () => {
+    it('renders the branch selector', async () => {
+      const { queryClient } = setup()
+      render(<BranchSelector />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const branchContext = await screen.findByText(/Branch Context/)
+      expect(branchContext).toBeInTheDocument()
+    })
+
+    it('renders default branch as selected branch', async () => {
+      const { queryClient } = setup()
+      render(<BranchSelector />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const dropDownBtn = await screen.findByText('All branches')
+      expect(dropDownBtn).toBeInTheDocument()
+    })
+  })
+
+  describe('navigating branches', () => {
+    describe('user lands on the page', () => {
+      it('redirects to the default branch', async () => {
+        const { queryClient } = setup()
+        render(<BranchSelector />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/tests')
+        )
+      })
+
+      it('does not redirect on Select branch', async () => {
+        const { queryClient } = setup({
+          nullHead: true,
+        })
+        render(<BranchSelector />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/tests')
+        )
+      })
+    })
+
+    describe('user selects a branch', () => {
+      it('shows default branch as first option in dropdown', async () => {
+        const { queryClient, user } = setup()
+        render(<BranchSelector />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        const select = await screen.findByRole('button', {
+          name: 'test results branch selector',
+        })
+        await user.click(select)
+
+        const options = screen.getAllByRole('option')
+        expect(options[0]).toHaveTextContent('main')
+      })
+
+      it('navigates to the selected branch', async () => {
+        const { user, queryClient } = setup()
+        render(<BranchSelector />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        const select = await screen.findByRole('button', {
+          name: 'test results branch selector',
+        })
+        await user.click(select)
+
+        const branch = await screen.findByText('branch-1')
+        await user.click(branch)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/test-repo/tests/branch-1'
+          )
+        )
+      })
+    })
+  })
+
+  describe('user searches for branch', () => {
+    it('calls the api with the search value', async () => {
+      const { mockSearching, user, queryClient } = setup()
+      render(<BranchSelector />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const select = await screen.findByText('All branches')
+      await user.click(select)
+
+      const input = await screen.findByRole('combobox')
+      await user.type(input, 'searching for branch')
+
+      await waitFor(() =>
+        expect(mockSearching).toHaveBeenCalledWith('searching for branch')
+      )
+    })
+  })
+
+  describe('when the branch is not found', () => {
+    it('displays select a branch in the button', async () => {
+      const { queryClient } = setup({
+        nullOverview: true,
+      })
+      render(<BranchSelector />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const select = await screen.findByRole('button', {
+        name: 'test results branch selector',
+      })
+
+      expect(select).toHaveTextContent('All branches')
     })
   })
 })

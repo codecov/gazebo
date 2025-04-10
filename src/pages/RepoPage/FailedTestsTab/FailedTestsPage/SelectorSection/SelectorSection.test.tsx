@@ -10,6 +10,15 @@ import { ErrorCodeEnum } from 'shared/utils/commit'
 
 import SelectorSection from './SelectorSection'
 
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+
+  return {
+    ...actual,
+    useFlags: vi.fn(() => ({ allBranchesEnabled: false })),
+  };
+})
+
 const mockRepoOverview = {
   owner: {
     isCurrentUserActivated: true,
@@ -89,28 +98,28 @@ const server = setupServer()
 let testLocation: ReturnType<typeof useLocation>
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo/tests') =>
-  ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/tests',
-            '/:provider/:owner/:repo/tests/:branch',
-          ]}
-          exact
-        >
-          <Suspense fallback={null}>{children}</Suspense>
-        </Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
+    ({ children }) => (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/tests',
+              '/:provider/:owner/:repo/tests/:branch',
+            ]}
+            exact
+          >
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()

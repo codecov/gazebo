@@ -3,8 +3,9 @@ import { useHistory, useParams } from 'react-router-dom'
 
 import { useBranch } from 'services/branches/useBranch'
 import { Branch, useBranches } from 'services/branches/useBranches'
-import { useNavLinks } from 'services/navigation/useNavLinks'
+import { ALL_BRANCHES, useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepoOverview } from 'services/repo'
+import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 
@@ -19,6 +20,10 @@ const getDecodedBranch = (branch?: string) =>
   branch ? decodeURIComponent(branch) : undefined
 
 const BranchSelector = () => {
+  const { allBranchesEnabled: allBranchesEnabledFlag } = useFlags({
+    allBranchesEnabled: false,
+  })
+
   const history = useHistory()
   const { failedTests: failedTestsLink } = useNavLinks()
   const { provider, owner, repo, branch } = useParams<URLParams>()
@@ -46,7 +51,9 @@ const BranchSelector = () => {
   })
 
   const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
+  const selectedBranch = allBranchesEnabledFlag
+    ? decodedBranch ?? ALL_BRANCHES
+    : decodedBranch ?? overview?.defaultBranch ?? ''
 
   const { data: searchBranchValue } = useBranch({
     provider,
@@ -67,15 +74,28 @@ const BranchSelector = () => {
     }
   }
 
-  if (
-    selectedBranch === overview?.defaultBranch &&
-    !branch &&
-    selection.head !== null
-  ) {
-    history.push(
-      failedTestsLink.path({ branch: encodeURIComponent(selection?.name) })
-    )
+  if (allBranchesEnabledFlag) {
+    if (
+      selectedBranch === ALL_BRANCHES &&
+      !branch
+    ) {
+      history.push(
+        failedTestsLink.path({ branch: encodeURIComponent(selection?.name) })
+      )
+    }
+  } else {
+    if (
+      selectedBranch === overview?.defaultBranch &&
+      !branch &&
+      selection.head !== null
+    ) {
+      history.push(
+        failedTestsLink.path({ branch: encodeURIComponent(selection?.name) })
+      )
+    }
   }
+
+
 
   const sortedBranchList = useMemo(() => {
     if (!branchList?.branches) return []

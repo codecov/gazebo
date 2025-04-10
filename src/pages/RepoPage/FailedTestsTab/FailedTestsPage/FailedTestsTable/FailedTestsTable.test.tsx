@@ -24,6 +24,15 @@ vi.mock('../TableHeader/TableHeader', () => ({
   default: () => 'Table Header',
 }))
 
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+
+  return {
+    ...actual,
+    useFlags: vi.fn(() => ({ allBranchesEnabled: false })),
+  };
+})
+
 const node1 = {
   updatedAt: '2023-01-01T00:00:00Z',
   name: 'test-1',
@@ -76,18 +85,18 @@ const wrapper =
   (
     initialEntries: string[] = ['/gh/codecov/repo/tests']
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/tests" exact>
-          {children}
-        </Route>
-        <Route path="/:provider/:owner/:repo/tests/:branch" exact>
-          {children}
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
+    ({ children }) => (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/tests" exact>
+            {children}
+          </Route>
+          <Route path="/:provider/:owner/:repo/tests/:branch" exact>
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 let consoleError: any
 let consoleWarn: any
@@ -113,8 +122,8 @@ global.window.ResizeObserver = ResizeObserverMock
 beforeAll(() => {
   server.listen()
   // Mock console.error and console.warn
-  consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
-  consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  consoleError = vi.spyOn(console, 'error').mockImplementation(() => { })
+  consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => { })
 
   vi.useFakeTimers().setSystemTime(new Date('2024-06-01T00:00:00Z'))
 })

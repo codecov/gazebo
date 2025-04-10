@@ -6,6 +6,15 @@ import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import TableHeader from './TableHeader'
 
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+
+  return {
+    ...actual,
+    useFlags: vi.fn(() => ({ allBranchesEnabled: false })),
+  };
+})
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true, retry: false } },
 })
@@ -13,28 +22,28 @@ const queryClient = new QueryClient({
 let testLocation: ReturnType<typeof useLocation>
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo/tests') =>
-  ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/tests',
-            '/:provider/:owner/:repo/tests/:branch',
-          ]}
-          exact
-        >
-          <Suspense fallback={null}>{children}</Suspense>
-        </Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
+    ({ children }) => (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/tests',
+              '/:provider/:owner/:repo/tests/:branch',
+            ]}
+            exact
+          >
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 describe('TableHeader', () => {
   beforeEach(() => {
