@@ -300,6 +300,8 @@ const FailedTestsTable = () => {
   }, [fetchNextPage, inView, hasNextPage])
 
   if (testData?.isFirstPullRequest && testData.totalCount === 0) {
+    const defaultBranch = testData?.defaultBranch ?? 'default'
+
     return (
       <div className="flex flex-col gap-2">
         <TableHeader
@@ -310,8 +312,8 @@ const FailedTestsTable = () => {
         <div className="mt-4 text-center text-ds-gray-quinary">
           <p>No data yet</p>
           <p>
-            To see data for the {testData?.defaultBranch} branch, merge your PR
-            into the {testData?.defaultBranch} branch.
+            To see data for the {defaultBranch} branch, merge your PR into the{' '}
+            {defaultBranch} branch.
           </p>
         </div>
       </div>

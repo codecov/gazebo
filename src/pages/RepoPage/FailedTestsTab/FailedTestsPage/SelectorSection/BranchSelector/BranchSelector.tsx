@@ -69,7 +69,6 @@ const BranchSelector = () => {
   })
 
   let selection = searchBranchValue?.branch
-  console.log('selection', selection)
 
   if (!allBranchesEnabledFlag) {
     if (!selection) {
