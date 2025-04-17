@@ -155,9 +155,6 @@ export function createTimeSeriesQueryVars({
   oldestCommit: Date | null
 }) {
   let after = calculateTrendDate({ today, trend })
-
-  console.log('today', today)
-  console.log('after', after)
   if (after === null) {
     after = oldestCommit
   }
