@@ -18,8 +18,13 @@ function FileExplorer() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const isFileListDisplay = params?.displayType === 'list'
 
+  const defaultInitialSorting = {
+    direction: 'ASC',
+    ordering: 'NAME',
+  }
+
   const { data: branchData, isLoading: branchIsLoading } =
-    useRepoBranchContentsTable()
+    useRepoBranchContentsTable(defaultInitialSorting)
 
   return (
     <div className="flex flex-col gap-4">
