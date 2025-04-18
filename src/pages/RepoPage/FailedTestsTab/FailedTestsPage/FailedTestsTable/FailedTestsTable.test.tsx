@@ -24,6 +24,19 @@ vi.mock('../TableHeader/TableHeader', () => ({
   default: () => 'Table Header',
 }))
 
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(() => ({ allBranchesEnabled: false })),
+}))
+
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
+})
+
 const node1 = {
   updatedAt: '2023-01-01T00:00:00Z',
   name: 'test-1',
@@ -139,7 +152,12 @@ interface SetupArgs {
   isFirstPullRequest?: boolean
 }
 
-describe('FailedTestsTable', () => {
+describe.each([true, false])('FailedTestsTable', (allBranchesEnabled) => {
+  beforeEach(() => {
+    queryClient.clear()
+    mocks.useFlags.mockReturnValue({ allBranchesEnabled })
+  })
+
   function setup({
     noEntries = false,
     planValue = Plans.USERS_ENTERPRISEM,
