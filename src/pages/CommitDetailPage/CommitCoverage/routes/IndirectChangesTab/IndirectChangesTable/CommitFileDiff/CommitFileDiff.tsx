@@ -170,7 +170,16 @@ function CommitFileDiff({ path }: CommitFileDiffProps) {
     },
   })
 
-  if (!comparisonData || !comparisonData?.impactedFile || !path) {
+  const hadErrorFetchingFileFromProvider =
+    comparisonData?.impactedFile?.segments?.__typename === 'ProviderError' ||
+    comparisonData?.impactedFile?.segments?.__typename === 'UnknownPath'
+
+  if (
+    !comparisonData ||
+    !comparisonData?.impactedFile ||
+    !path ||
+    hadErrorFetchingFileFromProvider
+  ) {
     return <ErrorDisplayMessage />
   }
 

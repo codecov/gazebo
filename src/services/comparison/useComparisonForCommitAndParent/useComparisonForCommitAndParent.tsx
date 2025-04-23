@@ -30,27 +30,38 @@ export const ImpactedFileSchema = z.object({
   headCoverage: CoverageObjSchema.nullable(),
   patchCoverage: CoverageObjSchema.nullable(),
   changeCoverage: z.number().nullable(),
-  segments: z.object({
-    results: z.array(
-      z.object({
-        header: z.string(),
-        hasUnintendedChanges: z.boolean(),
-        lines: z.array(
-          z.object({
-            baseNumber: z.string().nullable(),
-            headNumber: z.string().nullable(),
-            baseCoverage: z.string().nullable(),
-            headCoverage: z.string().nullable(),
-            content: z.string().nullable(),
-            coverageInfo: z.object({
-              hitCount: z.number().nullable(),
-              hitUploadIds: z.array(z.number()).nullable(),
-            }),
-          })
-        ),
-      })
-    ),
-  }),
+  segments: z.discriminatedUnion('__typename', [
+    z.object({
+      __typename: z.literal('SegmentComparisons'),
+      results: z.array(
+        z.object({
+          header: z.string(),
+          hasUnintendedChanges: z.boolean(),
+          lines: z.array(
+            z.object({
+              baseNumber: z.string().nullable(),
+              headNumber: z.string().nullable(),
+              baseCoverage: z.string().nullable(),
+              headCoverage: z.string().nullable(),
+              content: z.string().nullable(),
+              coverageInfo: z.object({
+                hitCount: z.number().nullable(),
+                hitUploadIds: z.array(z.number()).nullable(),
+              }),
+            })
+          ),
+        })
+      ),
+    }),
+    z.object({
+      __typename: z.literal('UnknownPath'),
+      message: z.string(),
+    }),
+    z.object({
+      __typename: z.literal('ProviderError'),
+      message: z.string(),
+    }),
+  ]),
 })
 
 export type ImpactedFileType = z.infer<typeof ImpactedFileSchema>
