@@ -64,7 +64,21 @@ export const ImpactedFileSchema = z.object({
   ]),
 })
 
-export type ImpactedFileType = z.infer<typeof ImpactedFileSchema>
+// segments is a union type of SegmentComparisons, ProviderError, and UnknownPath
+export type ImpactedFileWithSegmentsUnionType = z.infer<
+  typeof ImpactedFileSchema
+>
+
+// guaranteed to have segments (instead of ProviderError or UnknownPath for that union type)
+export type ImpactedFileType = Omit<
+  ImpactedFileWithSegmentsUnionType,
+  'segments'
+> & {
+  segments: Extract<
+    z.infer<typeof ImpactedFileSchema.shape.segments>,
+    { __typename: 'SegmentComparisons' }
+  >
+}
 
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),

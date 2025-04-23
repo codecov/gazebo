@@ -171,11 +171,24 @@ function CommitFileDiff({ path }: CommitFileDiffProps) {
     opts: { enabled: !!path },
   })
 
-  if (!comparisonData || !comparisonData?.impactedFile || !path) {
+  const hadErrorFetchingFileFromProvider =
+    comparisonData?.impactedFile?.segments?.__typename === 'ProviderError' ||
+    comparisonData?.impactedFile?.segments?.__typename === 'UnknownPath'
+
+  if (
+    !comparisonData ||
+    !comparisonData?.impactedFile ||
+    !path ||
+    hadErrorFetchingFileFromProvider
+  ) {
     return <ErrorDisplayMessage />
   }
 
-  return <DiffRenderer impactedFile={comparisonData.impactedFile} path={path} />
+  // since above we've handled when segments is of one of the other union types,
+  // we can safely assert that it's of type SegmentComparisons now
+  const impactedFile = comparisonData.impactedFile as ImpactedFileType
+
+  return <DiffRenderer impactedFile={impactedFile} path={path} />
 }
 
 export default CommitFileDiff

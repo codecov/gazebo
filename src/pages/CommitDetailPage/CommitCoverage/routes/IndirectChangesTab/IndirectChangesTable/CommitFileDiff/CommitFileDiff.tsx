@@ -183,7 +183,11 @@ function CommitFileDiff({ path }: CommitFileDiffProps) {
     return <ErrorDisplayMessage />
   }
 
-  return <DiffRenderer impactedFile={comparisonData.impactedFile} path={path} />
+  // since above we've handled when segments is of one of the other union types,
+  // we can safely assert that it's of type SegmentComparisons now
+  const impactedFile = comparisonData.impactedFile as ImpactedFileType
+
+  return <DiffRenderer impactedFile={impactedFile} path={path} />
 }
 
 CommitFileDiff.propTypes = {

@@ -11,7 +11,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import { ImpactedFileType } from 'services/comparison/useComparisonForCommitAndParent'
+import { ImpactedFileWithSegmentsUnionType } from 'services/comparison/useComparisonForCommitAndParent'
 
 import CommitFileDiff from './CommitFileDiff'
 
@@ -75,7 +75,7 @@ class ResizeObserverMock {
 }
 global.window.ResizeObserver = ResizeObserverMock
 
-const baseMock = (impactedFile: ImpactedFileType | null) => {
+const baseMock = (impactedFile: ImpactedFileWithSegmentsUnionType | null) => {
   if (!impactedFile) {
     return { owner: null }
   }
@@ -97,7 +97,7 @@ const baseMock = (impactedFile: ImpactedFileType | null) => {
   }
 }
 
-const mockImpactedFile = {
+const mockImpactedFile: ImpactedFileWithSegmentsUnionType = {
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
   isNewFile: false,
@@ -114,6 +114,7 @@ const mockImpactedFile = {
   },
   changeCoverage: 0,
   segments: {
+    __typename: 'SegmentComparisons',
     results: [
       {
         header: '-0,0 +1,45',
@@ -226,7 +227,7 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  impactedFile?: ImpactedFileType | null
+  impactedFile?: ImpactedFileWithSegmentsUnionType | null
   bundleAnalysisEnabled?: boolean
 }
 
@@ -378,6 +379,46 @@ describe('CommitFileDiff', () => {
     })
   })
 
+  describe('when segments union type returned error', () => {
+    describe('when provider error', () => {
+      it('renders a error display message', async () => {
+        const impactedFileWithProviderError = {
+          ...mockImpactedFile,
+          segments: {
+            __typename: 'ProviderError',
+            message: 'Error fetching data from the provider',
+          },
+        } as ImpactedFileWithSegmentsUnionType
+        setup({ impactedFile: impactedFileWithProviderError })
+        render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+        const errorMessage = await screen.findByText(
+          /There was a problem getting the source code from your provider. Unable to show line by line coverage/i
+        )
+        expect(errorMessage).toBeInTheDocument()
+      })
+    })
+
+    describe('when path error', () => {
+      it('renders a error display message for path error', async () => {
+        const impactedFileWithPathError = {
+          ...mockImpactedFile,
+          segments: {
+            __typename: 'UnknownPath',
+            message: 'Unknown path',
+          },
+        } as ImpactedFileWithSegmentsUnionType
+        setup({ impactedFile: impactedFileWithPathError })
+        render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+        const errorMessage = await screen.findByText(
+          /There was a problem getting the source code from your provider. Unable to show line by line coverage/i
+        )
+        expect(errorMessage).toBeInTheDocument()
+      })
+    })
+  })
+
   describe('code renderer', () => {
     it('renders text area', async () => {
       setup({})
@@ -430,7 +471,10 @@ describe('CommitFileDiff', () => {
         ...mockImpactedFile,
 
         headName: 'flag1/file.js',
-        segments: { results: [] },
+        segments: {
+          __typename: 'SegmentComparisons',
+          results: [],
+        } as ImpactedFileWithSegmentsUnionType['segments'],
       }
 
       it('does not render information on the code renderer', async () => {

@@ -115,6 +115,7 @@ const mockImpactedFile = {
   },
   changeCoverage: 0,
   segments: {
+    __typename: 'SegmentComparisons',
     results: [
       {
         header: '-0,0 +1,45',
@@ -364,6 +365,46 @@ describe('CommitFileDiff', () => {
       const link = await screen.findByText(/logging in/)
       expect(link).toBeVisible()
       expect(link).toHaveAttribute('href', `/login?${queryString}`)
+    })
+  })
+
+  describe('when segments union type returned error', () => {
+    describe('when provider error', () => {
+      it('renders a error display message', async () => {
+        const impactedFileWithProviderError = {
+          ...mockImpactedFile,
+          segments: {
+            __typename: 'ProviderError',
+            message: 'Error fetching data from the provider',
+          },
+        }
+        setup({ impactedFile: impactedFileWithProviderError })
+        render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+        const errorMessage = await screen.findByText(
+          /There was a problem getting the source code from your provider. Unable to show line by line coverage/i
+        )
+        expect(errorMessage).toBeInTheDocument()
+      })
+    })
+
+    describe('when path error', () => {
+      it('renders a error display message for path error', async () => {
+        const impactedFileWithPathError = {
+          ...mockImpactedFile,
+          segments: {
+            __typename: 'UnknownPath',
+            message: 'Unknown path',
+          },
+        }
+        setup({ impactedFile: impactedFileWithPathError })
+        render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+        const errorMessage = await screen.findByText(
+          /There was a problem getting the source code from your provider. Unable to show line by line coverage/i
+        )
+        expect(errorMessage).toBeInTheDocument()
+      })
     })
   })
 
