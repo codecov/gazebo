@@ -5,9 +5,9 @@ import SentryPlanDetails from './SentryPlanDetails'
 import TeamPlanDetails from './TeamPlanDetails'
 
 function UpgradeDetails({ selectedPlan }: { selectedPlan: IndividualPlan }) {
-  if (selectedPlan.isSentryPlan) {
+  if (selectedPlan?.isSentryPlan) {
     return <SentryPlanDetails />
-  } else if (selectedPlan.isTeamPlan) {
+  } else if (selectedPlan?.isTeamPlan) {
     return <TeamPlanDetails />
   } else {
     return <ProPlanDetails />
