@@ -537,5 +537,11 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    pathFixing: {
+      text: 'Path Fixing',
+      path: () => 'https://docs.codecov.com/docs/fixing-paths',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }

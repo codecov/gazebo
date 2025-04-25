@@ -145,6 +145,37 @@ function ErrorDisplayMessage() {
   )
 }
 
+function UnknownPathErrorDisplayMessage({ path }: { path: string }) {
+  const location = useLocation()
+
+  return (
+    <p className="border border-solid border-ds-gray-tertiary p-4">
+      There was a problem getting the source code from your provider by path
+      for: <strong>{path}</strong>. Unable to show line by line coverage.
+      <br />
+      <span>
+        If you continue to experience this issue, please try{' '}
+        <A
+          to={{ pageName: 'login', options: { to: location.pathname } }}
+          hook={undefined}
+          isExternal={undefined}
+        >
+          logging in
+        </A>{' '}
+        again to refresh your credentials. Otherwise, please visit our{' '}
+        <A
+          to={{ pageName: 'pathFixing', options: { to: location.pathname } }}
+          hook={undefined}
+          isExternal={undefined}
+        >
+          Path Fixing
+        </A>{' '}
+        documentation for troubleshooting tips.
+      </span>
+    </p>
+  )
+}
+
 interface URLParams {
   provider: string
   owner: string
@@ -170,24 +201,28 @@ function CommitFileDiff({ path }: CommitFileDiffProps) {
     },
   })
 
-  const hadErrorFetchingFileFromProvider =
-    comparisonData?.impactedFile?.segments?.__typename === 'ProviderError' ||
-    comparisonData?.impactedFile?.segments?.__typename === 'UnknownPath'
+  const segments = comparisonData?.impactedFile?.segments
 
   if (
     !comparisonData ||
     !comparisonData?.impactedFile ||
     !path ||
-    hadErrorFetchingFileFromProvider
+    !segments ||
+    segments?.__typename === 'ProviderError'
   ) {
     return <ErrorDisplayMessage />
   }
 
-  // since above we've handled when segments is of one of the other union types,
-  // we can safely assert that it's of type SegmentComparisons now
-  const impactedFile = comparisonData.impactedFile as ImpactedFileType
+  if (segments?.__typename === 'UnknownPath') {
+    return <UnknownPathErrorDisplayMessage path={path} />
+  }
 
-  return <DiffRenderer impactedFile={impactedFile} path={path} />
+  const impactedFileWithSegments = {
+    ...comparisonData.impactedFile,
+    segments,
+  }
+
+  return <DiffRenderer impactedFile={impactedFileWithSegments} path={path} />
 }
 
 CommitFileDiff.propTypes = {

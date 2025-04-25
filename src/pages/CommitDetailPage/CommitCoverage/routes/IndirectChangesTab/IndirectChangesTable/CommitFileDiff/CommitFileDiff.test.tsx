@@ -401,7 +401,7 @@ describe('CommitFileDiff', () => {
         render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
         const errorMessage = await screen.findByText(
-          /There was a problem getting the source code from your provider. Unable to show line by line coverage/i
+          /There was a problem getting the source code from your provider by path for/i
         )
         expect(errorMessage).toBeInTheDocument()
       })
