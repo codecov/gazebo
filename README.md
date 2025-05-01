@@ -1,6 +1,7 @@
 # Gazebo
 
 [![codecov](https://codecov.io/gh/codecov/gazebo/branch/main/graph/badge.svg?token=UAP786D58M)](https://codecov.io/gh/codecov/gazebo)
+[![bundle size](https://codecov.io/github/codecov/gazebo/graph/bundle/gazebo-production-esm/badge.svg)](https://app.codecov.io/github/codecov/gazebo/bundles/main/gazebo-production-esm)
 
 > We believe that everyone should have access to quality software (like Sentry), that’s why we have always offered Codecov for free to open source maintainers.
 >

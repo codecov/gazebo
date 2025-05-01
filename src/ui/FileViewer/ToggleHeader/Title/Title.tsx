@@ -72,7 +72,7 @@ export const TitleFlags = ({ commitDetailView = false }: TitleFlagsProps) => {
     hasNextPage: flagsHasNextPage,
     fetchNextPage: flagsFetchNextPage,
   } = useRepoFlagsSelect({
-    filters: { term: flagSearch },
+    filters: { term: flagSearch || undefined },
     options: {
       suspense: false,
       enabled: flagsMeasurementsActive && !noFlagsPresent && isTimescaleEnabled,

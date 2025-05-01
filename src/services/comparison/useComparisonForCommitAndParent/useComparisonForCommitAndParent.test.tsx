@@ -29,6 +29,7 @@ const mockImpactedFile = {
   },
   changeCoverage: 0,
   segments: {
+    __typename: 'SegmentComparisons',
     results: [
       {
         header: '-0,0 +1,45',
@@ -193,6 +194,7 @@ describe('useComparisonForCommitAndParent', () => {
               coverage: 100,
             },
             segments: {
+              __typename: 'SegmentComparisons',
               results: [
                 {
                   hasUnintendedChanges: false,

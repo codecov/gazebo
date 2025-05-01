@@ -21,6 +21,9 @@ export function useSummary() {
     owner,
   })
 
+  const branchFilters = branchSearchTerm
+    ? { searchValue: branchSearchTerm }
+    : undefined
   const {
     data: branchList,
     isFetching: branchListIsFetching,
@@ -30,7 +33,7 @@ export function useSummary() {
     repo,
     owner,
     provider,
-    filters: { searchValue: branchSearchTerm },
+    filters: branchFilters,
     opts: {
       suspense: false,
     },

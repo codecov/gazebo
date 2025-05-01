@@ -377,7 +377,7 @@ jobs:
           ./overwatch-cli \
             --auth-token ${{ secrets.SENTRY_AUTH_TOKEN }} \
             --organization-slug codecov \
-            javascript --package-manager yarn --workdir src
+            typescript --package-manager yarn --eslint-pattern src
 
   storybook:
     name: Run storybook

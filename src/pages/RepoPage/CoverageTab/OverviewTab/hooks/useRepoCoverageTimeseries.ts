@@ -2,7 +2,7 @@ import {
   keepPreviousData,
   useQuery as useQueryV5,
 } from '@tanstack/react-queryV5'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { BranchCoverageMeasurementsQueryOpts } from 'services/charts/BranchCoverageMeasurementsQueryOpts'
@@ -42,15 +42,20 @@ export function useRepoCoverageTimeseries({
     params: { trend?: Trends }
   } = useLocationParams({ trend: Trend.THREE_MONTHS })
 
-  const today = useMemo(() => new Date(), [])
+  const todayRef = useRef(new Date())
+  todayRef.current.setMilliseconds(0)
 
   const queryVars = useMemo(() => {
     const trend = getTrendEnum(params?.trend ?? Trend.THREE_MONTHS)
     const oldestCommit = overview?.oldestCommitAt
       ? new Date(overview?.oldestCommitAt)
       : null
-    return createTimeSeriesQueryVars({ trend, oldestCommit, today })
-  }, [overview?.oldestCommitAt, params?.trend, today])
+    return createTimeSeriesQueryVars({
+      trend,
+      oldestCommit,
+      today: todayRef.current,
+    })
+  }, [overview?.oldestCommitAt, params?.trend])
 
   return useQueryV5({
     ...BranchCoverageMeasurementsQueryOpts({
@@ -59,7 +64,7 @@ export function useRepoCoverageTimeseries({
       repo,
       branch,
       after: queryVars?.after,
-      before: today,
+      before: queryVars?.before,
       interval: queryVars.interval,
     }),
     select: (data) => {
