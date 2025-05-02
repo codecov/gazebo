@@ -109,7 +109,7 @@
     "@storybook/theming": "^8.3.7",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tanstack/eslint-plugin-query": "^4.38.0",
-    "@tanstack/react-query-devtools": "^4.29.6",
+    "@tanstack/react-query-devtools": "^5.75.1",
     "@testing-library/dom": "10.3.2",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.0.0",
