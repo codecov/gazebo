@@ -30,30 +30,55 @@ export const ImpactedFileSchema = z.object({
   headCoverage: CoverageObjSchema.nullable(),
   patchCoverage: CoverageObjSchema.nullable(),
   changeCoverage: z.number().nullable(),
-  segments: z.object({
-    results: z.array(
-      z.object({
-        header: z.string(),
-        hasUnintendedChanges: z.boolean(),
-        lines: z.array(
-          z.object({
-            baseNumber: z.string().nullable(),
-            headNumber: z.string().nullable(),
-            baseCoverage: z.string().nullable(),
-            headCoverage: z.string().nullable(),
-            content: z.string().nullable(),
-            coverageInfo: z.object({
-              hitCount: z.number().nullable(),
-              hitUploadIds: z.array(z.number()).nullable(),
-            }),
-          })
-        ),
-      })
-    ),
-  }),
+  segments: z.discriminatedUnion('__typename', [
+    z.object({
+      __typename: z.literal('SegmentComparisons'),
+      results: z.array(
+        z.object({
+          header: z.string(),
+          hasUnintendedChanges: z.boolean(),
+          lines: z.array(
+            z.object({
+              baseNumber: z.string().nullable(),
+              headNumber: z.string().nullable(),
+              baseCoverage: z.string().nullable(),
+              headCoverage: z.string().nullable(),
+              content: z.string().nullable(),
+              coverageInfo: z.object({
+                hitCount: z.number().nullable(),
+                hitUploadIds: z.array(z.number()).nullable(),
+              }),
+            })
+          ),
+        })
+      ),
+    }),
+    z.object({
+      __typename: z.literal('UnknownPath'),
+      message: z.string(),
+    }),
+    z.object({
+      __typename: z.literal('ProviderError'),
+      message: z.string(),
+    }),
+  ]),
 })
 
-export type ImpactedFileType = z.infer<typeof ImpactedFileSchema>
+// segments is a union type of SegmentComparisons, ProviderError, and UnknownPath
+export type ImpactedFileWithSegmentsUnionType = z.infer<
+  typeof ImpactedFileSchema
+>
+
+// guaranteed to have segments (instead of ProviderError or UnknownPath for that union type)
+export type ImpactedFileType = Omit<
+  ImpactedFileWithSegmentsUnionType,
+  'segments'
+> & {
+  segments: Extract<
+    z.infer<typeof ImpactedFileSchema.shape.segments>,
+    { __typename: 'SegmentComparisons' }
+  >
+}
 
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),

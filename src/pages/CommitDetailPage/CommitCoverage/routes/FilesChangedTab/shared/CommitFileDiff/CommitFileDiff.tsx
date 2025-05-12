@@ -147,6 +147,37 @@ function ErrorDisplayMessage() {
   )
 }
 
+function UnknownPathErrorDisplayMessage({ path }: { path: string }) {
+  const location = useLocation()
+
+  return (
+    <p className="border border-solid border-ds-gray-tertiary p-4">
+      There was a problem getting the source code from your provider by path
+      for: <strong>{path}</strong>. Unable to show line by line coverage.
+      <br />
+      <span>
+        If you continue to experience this issue, please try{' '}
+        <A
+          to={{ pageName: 'login', options: { to: location.pathname } }}
+          hook={undefined}
+          isExternal={undefined}
+        >
+          logging in
+        </A>{' '}
+        again to refresh your credentials. Otherwise, please visit our{' '}
+        <A
+          to={{ pageName: 'pathFixing', options: { to: location.pathname } }}
+          hook={undefined}
+          isExternal={undefined}
+        >
+          Path Fixing
+        </A>{' '}
+        documentation for troubleshooting tips.
+      </span>
+    </p>
+  )
+}
+
 interface URLParams {
   provider: string
   owner: string
@@ -171,11 +202,28 @@ function CommitFileDiff({ path }: CommitFileDiffProps) {
     opts: { enabled: !!path },
   })
 
-  if (!comparisonData || !comparisonData?.impactedFile || !path) {
+  const segments = comparisonData?.impactedFile?.segments
+
+  if (
+    !comparisonData ||
+    !comparisonData?.impactedFile ||
+    !path ||
+    !segments ||
+    segments?.__typename === 'ProviderError'
+  ) {
     return <ErrorDisplayMessage />
   }
 
-  return <DiffRenderer impactedFile={comparisonData.impactedFile} path={path} />
+  if (segments?.__typename === 'UnknownPath') {
+    return <UnknownPathErrorDisplayMessage path={path} />
+  }
+
+  const impactedFileWithSegments = {
+    ...comparisonData.impactedFile,
+    segments,
+  }
+
+  return <DiffRenderer impactedFile={impactedFileWithSegments} path={path} />
 }
 
 export default CommitFileDiff
