@@ -8,11 +8,6 @@
  * - Please do NOT serve this file on production.
  */
 
-const PACKAGE_VERSION = '2.4.11'
-const INTEGRITY_CHECKSUM = '26357c79639bfa20d64c0efca2a87423'
-const IS_MOCKED_RESPONSE = Symbol('isMockedResponse')
-const activeClientIds = new Set()
-
 self.addEventListener('install', function () {
   self.skipWaiting()
 })
