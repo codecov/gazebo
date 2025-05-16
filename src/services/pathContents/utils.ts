@@ -18,7 +18,7 @@ export function extractCoverageFromResponse(
   const coverageTotal = coverageFile?.totals?.percentCovered
   const hashedPath = coverageFile?.hashedPath
 
-  const result = {
+  return {
     content: coverageFile?.content,
     coverage: fileCoverage,
     totals: coverageTotal && !Number.isNaN(coverageTotal) ? coverageTotal : 0,
@@ -26,8 +26,6 @@ export function extractCoverageFromResponse(
     componentNames: coverageSource?.components?.map(({ name }) => name) ?? [],
     ...(hashedPath && { hashedPath }),
   }
-
-  return result
 }
 
 export type PrefetchBranchFileEntryCoverage = ReturnType<
