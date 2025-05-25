@@ -5,6 +5,8 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { MockInstance } from 'vitest'
 
+import { ErrorCodeEnum } from 'shared/utils/commit'
+
 import { useTestResultsTestSuites } from './useTestResultsTestSuites'
 
 const queryClient = new QueryClient({
@@ -58,6 +60,14 @@ const mockResponse = {
       testAnalytics: {
         testSuites: ['java', 'script', 'javascript'],
       },
+      branch: {
+        head: {
+          latestUploadError: {
+            errorCode: ErrorCodeEnum.fileNotFoundInStorage,
+            errorMessage: 'File not found',
+          },
+        },
+      },
     },
   },
 }
@@ -68,7 +78,7 @@ describe('useTestResultsTestSuites', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query('GetTestResultsTestSuites', (info) => {
+      graphql.query('GetTestResultsTestSuites', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {
@@ -92,6 +102,10 @@ describe('useTestResultsTestSuites', () => {
       await waitFor(() =>
         expect(result.current.data).toEqual({
           testSuites: ['java', 'script', 'javascript'],
+          latestUploadError: {
+            errorCode: ErrorCodeEnum.fileNotFoundInStorage,
+            errorMessage: 'File not found',
+          },
         })
       )
     })
@@ -116,8 +130,8 @@ describe('useTestResultsTestSuites', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useTestResultsTestSuites - 404 Failed to parse data',
+            dev: 'useTestResultsTestSuites - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -143,8 +157,8 @@ describe('useTestResultsTestSuites', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useTestResultsTestSuites - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )

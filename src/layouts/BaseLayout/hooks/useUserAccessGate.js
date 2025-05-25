@@ -5,9 +5,9 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 
 import config from 'config'
 
-import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
-import { useLocationParams } from 'services/navigation'
-import { CustomerIntent, useInternalUser, useUser } from 'services/user'
+import { useUpdateDefaultOrganization } from 'services/defaultOrganization/useUpdateDefaultOrganization'
+import { useLocationParams } from 'services/navigation/useLocationParams'
+import { useInternalUser, useUser } from 'services/user'
 
 const SetUpActions = Object.freeze({
   INSTALL: 'install',
@@ -39,15 +39,13 @@ const useUserAccessGate = () => {
     data: userData,
     isLoading: userIsLoading,
     isFetching: userIsFetching,
-    isSuccess: userIsSuccess,
   } = useUser({
     options: {
       suspense: false,
       enabled: !!provider && !config.IS_SELF_HOSTED,
     },
   })
-  const { mutate: updateDefaultOrg, isLoading: isMutationLoading } =
-    useUpdateDefaultOrganization()
+  const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
 
   const {
     data: internalUser,
@@ -61,28 +59,19 @@ const useUserAccessGate = () => {
   })
 
   useEffect(() => {
-    if (
-      userData?.user?.customerIntent === CustomerIntent.PERSONAL &&
-      !userData?.owner?.defaultOrgUsername
-    ) {
+    // only update the default org if the user exists
+    if (userData && !userData?.owner?.defaultOrgUsername) {
       updateDefaultOrg({ username: userData?.user?.username })
     }
-  }, [
-    userData?.user?.customerIntent,
-    userData?.user?.username,
-    userData?.owner?.defaultOrgUsername,
-    updateDefaultOrg,
-  ])
+  }, [userData, updateDefaultOrg])
 
   useOnboardingRedirect({
     username: userData?.user?.username,
   })
 
-  const foundUser = userData && userIsSuccess
   const foundInternalUser = internalUser && internalUserIsSuccess
 
   let showAgreeToTerms = false
-  let showDefaultOrgSelector = false
   let redirectToSyncPage = false
 
   // the undefined provider check can be removed when the ToS has
@@ -98,15 +87,6 @@ const useUserAccessGate = () => {
     redirectToSyncPage = isEqual(internalUser?.owners?.length, 0)
   }
 
-  if (
-    !isUndefined(provider) &&
-    foundUser &&
-    !config.IS_SELF_HOSTED &&
-    !isMutationLoading
-  ) {
-    showDefaultOrgSelector = !userData?.owner?.defaultOrgUsername
-  }
-
   // so when a query is disabled it goes into it's loading state which will be
   // true on the /sync route, and well we don't really care about that call
   // so this just ignores that fact and only checks to see if the internal user
@@ -118,11 +98,9 @@ const useUserAccessGate = () => {
 
   // Not fully tested logic yet, waiting on API to be available.
   return {
-    isFullExperience:
-      !showAgreeToTerms && !redirectToSyncPage && !showDefaultOrgSelector,
+    isFullExperience: !showAgreeToTerms && !redirectToSyncPage,
     isLoading,
     showAgreeToTerms,
-    showDefaultOrgSelector,
     redirectToSyncPage,
   }
 }

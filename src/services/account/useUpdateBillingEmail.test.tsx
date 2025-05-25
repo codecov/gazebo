@@ -3,6 +3,8 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
+import { Plans } from 'shared/utils/billing'
+
 import { useUpdateBillingEmail } from './useUpdateBillingEmail'
 
 const queryClient = new QueryClient({
@@ -36,7 +38,7 @@ const accountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
-    value: 'users-inappm',
+    value: Plans.USERS_PR_INAPPM,
   },
   subscription_detail: {
     latest_invoice: {
@@ -93,6 +95,7 @@ describe('useUpdateBillingEmail', () => {
       await waitFor(() =>
         expect(mockBody).toHaveBeenCalledWith({
           new_email: 'test@gmail.com',
+          apply_to_default_payment_method: true,
         })
       )
     })

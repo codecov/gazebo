@@ -1,9 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { http, HttpResponse } from 'msw'
+import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { TrialStatuses } from 'services/account/usePlanData'
+import { PlanName, Plans } from 'shared/utils/billing'
 
 import CurrentPlanCard from './CurrentPlanCard'
 
@@ -19,15 +22,21 @@ const proPlanDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
-    value: 'users-inappm',
+    value: Plans.USERS_PR_INAPPM,
     billingRate: null,
+    isEnterprisePlan: false,
+    isFreePlan: false,
+    isProPlan: true,
+    isSentryPlan: false,
+    isTeamPlan: true,
+    isTrialPlan: false,
   },
 }
 
 const freePlanDetails = {
   plan: {
     marketingName: 'Basic',
-    value: 'users-free',
+    value: Plans.USERS_FREE,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -35,13 +44,19 @@ const freePlanDetails = {
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    isEnterprisePlan: false,
+    isFreePlan: true,
+    isProPlan: false,
+    isSentryPlan: false,
+    isTeamPlan: false,
+    isTrialPlan: false,
   },
 }
 
 const enterprisePlan = {
   plan: {
     marketingName: 'Enterprise',
-    value: 'users-enterprisey',
+    value: Plans.USERS_ENTERPRISEY,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -49,13 +64,19 @@ const enterprisePlan = {
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    isEnterprisePlan: true,
+    isFreePlan: false,
+    isProPlan: false,
+    isSentryPlan: false,
+    isTeamPlan: false,
+    isTrialPlan: false,
   },
 }
 
 const usesInvoiceTeamPlan = {
   plan: {
     marketingName: 'blah',
-    value: 'users-teamm',
+    value: Plans.USERS_TEAMM,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -63,6 +84,12 @@ const usesInvoiceTeamPlan = {
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    isEnterprisePlan: false,
+    isFreePlan: false,
+    isProPlan: false,
+    isSentryPlan: false,
+    isTeamPlan: true,
+    isTrialPlan: false,
   },
   usesInvoice: true,
 }
@@ -74,8 +101,24 @@ const trialPlanDetails = {
     billingRate: null,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
-    value: 'users-trial',
+    value: Plans.USERS_TRIAL,
+    isEnterprisePlan: false,
+    isFreePlan: false,
+    isProPlan: false,
+    isTeamPlan: true,
+    isTrialPlan: true,
+    isSentryPlan: false,
   },
+}
+
+interface TestPlan {
+  plan: {
+    marketingName: string
+    value: PlanName
+    billingRate: null
+    baseUnitPrice: number
+    benefits: string[]
+  }
 }
 
 const queryClient = new QueryClient({
@@ -100,10 +143,31 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('CurrentPlanCard', () => {
-  function setup(planDetails = freePlanDetails) {
+  function setup(planDetails: TestPlan = freePlanDetails) {
     server.use(
-      http.get('/internal/bb/critical-role/account-details/', (http) => {
+      http.get('/internal/bb/critical-role/account-details/', () => {
         return HttpResponse.json(planDetails)
+      }),
+      graphql.query('GetPlanData', () => {
+        const planChunk = {
+          trialStatus: TrialStatuses.NOT_STARTED,
+          trialStartDate: '',
+          trialEndDate: '',
+          trialTotalDays: 0,
+          pretrialUsersCount: 0,
+          planUserCount: 1,
+          hasSeatsLeft: true,
+          monthlyUploadLimit: 100,
+        }
+
+        return HttpResponse.json({
+          data: {
+            owner: {
+              hasPrivateRepos: true,
+              plan: { ...planDetails.plan, ...planChunk },
+            },
+          },
+        })
       })
     )
   }

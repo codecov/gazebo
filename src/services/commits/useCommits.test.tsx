@@ -167,19 +167,8 @@ describe('GetCommits', () => {
               __typename: 'Repository',
               commits: {
                 edges: info.variables.after
-                  ? [
-                      {
-                        node: node3,
-                      },
-                    ]
-                  : [
-                      {
-                        node: node1,
-                      },
-                      {
-                        node: node2,
-                      },
-                    ],
+                  ? [{ node: node3 }]
+                  : [{ node: node1 }, { node: node2 }],
                 pageInfo: {
                   hasNextPage: info.variables.after ? false : true,
                   endCursor: info.variables.after
@@ -300,7 +289,7 @@ describe('GetCommits', () => {
   })
 
   describe('when __typename is NotFoundError', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -321,6 +310,7 @@ describe('GetCommits', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommits - Not Found Error',
             status: 404,
           })
         )
@@ -329,7 +319,7 @@ describe('GetCommits', () => {
   })
 
   describe('when __typename is OwnerNotActivatedError', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -350,6 +340,7 @@ describe('GetCommits', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommits - Owner Not Activated',
             status: 403,
           })
         )
@@ -358,7 +349,7 @@ describe('GetCommits', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -368,7 +359,7 @@ describe('GetCommits', () => {
       console.error = oldConsoleError
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () => useCommits({ provider, owner, repo }),
@@ -379,7 +370,8 @@ describe('GetCommits', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'useCommits - Parsing Error',
+            status: 400,
           })
         )
       )

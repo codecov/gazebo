@@ -14,24 +14,24 @@ describe('ExampleBlurb', () => {
     render(<ExampleBlurb />, { wrapper })
 
     const docsLink = await screen.findByRole('link', {
-      name: /repo here/,
+      name: /JavaScript config.yml example/,
     })
     expect(docsLink).toBeInTheDocument()
     expect(docsLink).toHaveAttribute(
       'href',
-      'https://github.com/codecov/example-python/blob/main/.github/workflows/ci.yml'
+      'https://github.com/codecov/example-javascript/blob/main/.circleci/config.yml'
     )
   })
   it('renders correct CLI link', async () => {
     render(<ExampleBlurb />, { wrapper })
 
     const docsLink = await screen.findByRole('link', {
-      name: /our CLI/,
+      name: /the setup on CircleCI/,
     })
     expect(docsLink).toBeInTheDocument()
     expect(docsLink).toHaveAttribute(
       'href',
-      'https://github.com/codecov/codecov-action'
+      'https://app.circleci.com/pipelines/github/codecov/example-javascript/148/workflows/180ae354-0d8c-4205-8815-f4c516a042a4/jobs/130/steps'
     )
   })
 })

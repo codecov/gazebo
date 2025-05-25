@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, within } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullFileDiff from './PullFileDiff'
@@ -40,7 +41,7 @@ window.scrollTo = scrollToMock
 window.scrollY = 100
 
 class ResizeObserverMock {
-  callback = (x: any) => null
+  callback = (_x: any) => null
 
   constructor(callback: any) {
     this.callback = callback
@@ -70,12 +71,10 @@ const baseMock = ({
   isNewFile,
   isRenamedFile,
   isDeletedFile,
-  isCriticalFile,
 }: {
   isNewFile?: boolean
   isRenamedFile?: boolean
   isDeletedFile?: boolean
-  isCriticalFile?: boolean
 }) => ({
   owner: {
     repository: {
@@ -88,7 +87,6 @@ const baseMock = ({
             hashedPath: 'hashedFilePath',
             isRenamedFile,
             isDeletedFile,
-            isCriticalFile,
             isNewFile,
             baseCoverage: null,
             headCoverage: null,
@@ -168,7 +166,6 @@ interface SetupArgs {
   isNewFile?: boolean
   isRenamedFile?: boolean
   isDeletedFile?: boolean
-  isCriticalFile?: boolean
 }
 
 describe('FileDiff', () => {
@@ -177,7 +174,6 @@ describe('FileDiff', () => {
     isNewFile = false,
     isRenamedFile = false,
     isDeletedFile = false,
-    isCriticalFile = false,
   }: SetupArgs) {
     mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
@@ -186,17 +182,16 @@ describe('FileDiff', () => {
     }))
 
     server.use(
-      graphql.query('ImpactedFileComparison', (info) => {
+      graphql.query('ImpactedFileComparison', () => {
         return HttpResponse.json({
           data: baseMock({
             isNewFile,
             isRenamedFile,
             isDeletedFile,
-            isCriticalFile,
           }),
         })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(bundleAnalysisEnabled) })
       })
     )
@@ -277,18 +272,6 @@ describe('FileDiff', () => {
     })
   })
 
-  describe('a critical file', () => {
-    beforeEach(() => {
-      setup({ isCriticalFile: true })
-    })
-    it('renders a critical file label', async () => {
-      render(<PullFileDiff path={'flag1/file.js'} />, { wrapper })
-
-      const criticalFile = await screen.findByText(/Critical File/i)
-      expect(criticalFile).toBeInTheDocument()
-    })
-  })
-
   describe('code renderer', () => {
     it('renders the textarea', async () => {
       setup({})
@@ -340,13 +323,14 @@ describe('FileDiff', () => {
       expect(errorMessage).toBeInTheDocument()
     })
 
-    it('renders a login link', async () => {
+    it('renders a login link with redirect to path', async () => {
       setup({})
       render(<PullFileDiff path={undefined} />, { wrapper })
 
+      const queryString = qs.stringify({ to: '/gh/codecov/cool-repo/pull/1' })
       const loginLink = await screen.findByRole('link', { name: /logging in/ })
       expect(loginLink).toBeInTheDocument()
-      expect(loginLink).toHaveAttribute('href', '/login')
+      expect(loginLink).toHaveAttribute('href', `/login?${queryString}`)
     })
   })
 })

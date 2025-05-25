@@ -76,7 +76,7 @@ describe('RepoATSInfo', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('RepoATSInfo', (info) => {
+      graphql.query('RepoATSInfo', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -145,7 +145,7 @@ describe('RepoATSInfo', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -172,6 +172,7 @@ describe('RepoATSInfo', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useRepoATS - Not Found Error',
               status: 404,
             })
           )
@@ -180,7 +181,7 @@ describe('RepoATSInfo', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -207,6 +208,7 @@ describe('RepoATSInfo', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useRepoATS - Owner Not Activated',
               status: 403,
             })
           )
@@ -215,7 +217,7 @@ describe('RepoATSInfo', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -225,7 +227,7 @@ describe('RepoATSInfo', () => {
         console.error = oldConsoleError
       })
 
-      it('throws an error', async () => {
+      it('throws a 400', async () => {
         setup({ isUnsuccessfulParseError: true })
 
         const { result } = renderHook(
@@ -242,7 +244,8 @@ describe('RepoATSInfo', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'useRepoATS - Parsing Error',
+              status: 400,
             })
           )
         )

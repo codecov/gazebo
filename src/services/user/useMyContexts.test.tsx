@@ -43,7 +43,7 @@ describe('useMyContexts', () => {
           return HttpResponse.json({})
         }
 
-        const orgList = !!info.variables?.after ? orgList2 : orgList1
+        const orgList = info.variables?.after ? orgList2 : orgList1
         const hasNextPage = info.variables?.after ? false : true
         const endCursor = info.variables?.after ? 'second' : 'first'
 
@@ -56,10 +56,7 @@ describe('useMyContexts', () => {
             },
             myOrganizations: {
               edges: [{ node: orgList }],
-              pageInfo: {
-                hasNextPage,
-                endCursor,
-              },
+              pageInfo: { hasNextPage, endCursor },
             },
           },
         }
@@ -83,15 +80,9 @@ describe('useMyContexts', () => {
           defaultOrgUsername: null,
         },
         myOrganizations: [
-          {
-            avatarUrl: 'http://127.0.0.1/avatar-url',
-            username: 'org1',
-          },
+          { avatarUrl: 'http://127.0.0.1/avatar-url', username: 'org1' },
         ],
-        pageInfo: {
-          endCursor: 'first',
-          hasNextPage: true,
-        },
+        pageInfo: { endCursor: 'first', hasNextPage: true },
       }
 
       await waitFor(() =>
@@ -111,7 +102,7 @@ describe('useMyContexts', () => {
         consoleSpy.mockRestore()
       })
 
-      it('throws 404 failed to parse', async () => {
+      it('throws 400 failed to parse', async () => {
         console.error = () => {}
         setup({ badResponse: true })
         const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
@@ -121,8 +112,8 @@ describe('useMyContexts', () => {
         await waitFor(() =>
           expect(result.current.failureReason).toEqual(
             expect.objectContaining({
-              dev: 'useMyContexts - 404 Failed to parse data',
-              status: 404,
+              dev: 'useMyContexts - Parsing Error',
+              status: 400,
             })
           )
         )
@@ -152,19 +143,10 @@ describe('useMyContexts', () => {
           defaultOrgUsername: null,
         },
         myOrganizations: [
-          {
-            avatarUrl: 'http://127.0.0.1/avatar-url',
-            username: 'org1',
-          },
-          {
-            avatarUrl: 'http://127.0.0.1/avatar-url',
-            username: 'org2',
-          },
+          { avatarUrl: 'http://127.0.0.1/avatar-url', username: 'org1' },
+          { avatarUrl: 'http://127.0.0.1/avatar-url', username: 'org2' },
         ],
-        pageInfo: {
-          endCursor: 'second',
-          hasNextPage: false,
-        },
+        pageInfo: { endCursor: 'second', hasNextPage: false },
       }
 
       await waitFor(() =>

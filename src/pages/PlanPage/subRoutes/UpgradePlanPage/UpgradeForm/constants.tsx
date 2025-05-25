@@ -1,5 +1,6 @@
-import { Plans } from 'shared/utils/billing'
-
+// These consts are used when we need to show the time period on copy, hence the first letter being capital
+// If we want to check the time period on the plan object itself, we should use the BillingRate enum
+// in billing.ts
 export const TimePeriods = {
   ANNUAL: 'Annual',
   MONTHLY: 'Monthly',
@@ -15,11 +16,3 @@ export type PlanTiers = typeof TierName.TEAM | typeof TierName.PRO
 export type OptionPeriod =
   | typeof TimePeriods.ANNUAL
   | typeof TimePeriods.MONTHLY
-
-export type NewPlanType =
-  | typeof Plans.USERS_PR_INAPPM
-  | typeof Plans.USERS_PR_INAPPY
-  | typeof Plans.USERS_SENTRYM
-  | typeof Plans.USERS_SENTRYY
-  | typeof Plans.USERS_TEAMM
-  | typeof Plans.USERS_TEAMY

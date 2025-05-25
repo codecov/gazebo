@@ -4,13 +4,12 @@ import z from 'zod'
 
 import { OrderingDirection } from 'types'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo/schemas'
 import Api from 'shared/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
+
+import { RepoNotFoundErrorSchema } from './schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from './schemas/RepoOwnerNotActivatedError'
 
 const query = `
 query ComponentMeasurements(
@@ -86,97 +85,6 @@ const RequestSchema = z.object({
     .nullable(),
 })
 
-interface FetchRepoComponentsArgs {
-  provider: string
-  owner: string
-  repo: string
-  filters?: {
-    components?: string[]
-  }
-  branch?: string
-  orderingDirection: OrderingDirection
-  interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
-  after: string
-  before: string
-  signal?: AbortSignal
-}
-
-function fetchRepoComponents({
-  provider,
-  owner: name,
-  repo,
-  filters,
-  orderingDirection,
-  interval,
-  after,
-  before,
-  branch,
-  signal,
-}: FetchRepoComponentsArgs) {
-  return Api.graphql({
-    provider,
-    query,
-    signal,
-    variables: {
-      name,
-      repo,
-      filters,
-      orderingDirection,
-      interval,
-      after,
-      before,
-      branch,
-    },
-  }).then((res) => {
-    const parsedRes = RequestSchema.safeParse(res?.data)
-
-    if (!parsedRes.success) {
-      return Promise.reject({
-        status: 404,
-        data: {},
-        dev: `useRepoComponents - 404 failed to parse`,
-      } satisfies NetworkErrorObject)
-    }
-
-    const data = parsedRes.data
-
-    if (data?.owner?.repository?.__typename === 'NotFoundError') {
-      return Promise.reject({
-        status: 404,
-        data: {},
-        dev: `useRepoComponents - 404 NotFoundError`,
-      } satisfies NetworkErrorObject)
-    }
-
-    if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-      return Promise.reject({
-        status: 403,
-        data: {
-          detail: (
-            <p>
-              Activation is required to view this repo, please{' '}
-              <A
-                to={{ pageName: 'membersTab' }}
-                hook="activate-members"
-                isExternal={false}
-              >
-                click here{' '}
-              </A>{' '}
-              to activate your account.
-            </p>
-          ),
-        },
-        dev: `useRepoComponents - 403 OwnerNotActivatedError`,
-      } satisfies NetworkErrorObject)
-    }
-
-    // This returns something else 2
-    return {
-      components: data?.owner?.repository?.coverageAnalytics?.components,
-    }
-  })
-}
-
 interface useRepoComponentsArgs {
   filters?: {
     components?: string[]
@@ -219,19 +127,69 @@ export function useRepoComponents({
       before,
       branch,
     ],
-    queryFn: ({ signal }) =>
-      fetchRepoComponents({
+    queryFn: ({ signal }) => {
+      return Api.graphql({
         provider,
-        owner,
-        repo,
-        filters: filters,
-        orderingDirection,
-        interval,
-        after,
-        before,
-        branch,
+        query,
         signal,
-      }),
+        variables: {
+          name: owner,
+          repo,
+          filters,
+          orderingDirection,
+          interval,
+          after,
+          before,
+          branch,
+        },
+      }).then((res) => {
+        const callingFn = 'useRepoComponents'
+        const parsedRes = RequestSchema.safeParse(res?.data)
+
+        if (!parsedRes.success) {
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedRes.error },
+          })
+        }
+
+        const data = parsedRes.data
+
+        if (data?.owner?.repository?.__typename === 'NotFoundError') {
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn },
+          })
+        }
+
+        if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn },
+            data: {
+              detail: (
+                <p>
+                  Activation is required to view this repo, please{' '}
+                  <A
+                    to={{ pageName: 'membersTab' }}
+                    hook="activate-members"
+                    isExternal={false}
+                  >
+                    click here{' '}
+                  </A>{' '}
+                  to activate your account.
+                </p>
+              ),
+            },
+          })
+        }
+
+        // This returns something else 2
+        return {
+          components: data?.owner?.repository?.coverageAnalytics?.components,
+        }
+      })
+    },
     ...opts,
   })
 }

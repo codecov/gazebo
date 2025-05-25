@@ -1,10 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Plan, PretrialPlan, TrialStatuses } from 'services/account'
+import { Plan, PretrialPlan, TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import PaidPlanCard from './PaidPlanCard'
 
@@ -22,9 +28,15 @@ vi.mock('shared/plan/ScheduledPlanDetails', () => ({
 }))
 
 const mockProPlan = {
+  isEnterprisePlan: false,
+  isProPlan: true,
+  isFreePlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
   marketingName: 'Pro',
-  value: 'users-pr-inappm',
-  billingRate: 'monthly',
+  value: Plans.USERS_PR_INAPPM,
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 0,
   benefits: ['Unlimited public repositories', 'Unlimited private repositories'],
   planUserCount: 5,
@@ -38,9 +50,15 @@ const mockProPlan = {
 }
 
 const mockTeamPlan = {
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: true,
+  isTrialPlan: false,
   marketingName: 'Team',
-  value: 'users-teamm',
-  billingRate: 'monthly',
+  value: Plans.USERS_TEAMM,
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 123,
   benefits: ['Team benefits', 'Unlimited private repositories'],
   planUserCount: 8,
@@ -65,23 +83,37 @@ const mockScheduleDetail = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
-      <Route path="/plan/:provider/:owner">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <Suspense fallback={null}>
+        <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
+          <Route path="/plan/:provider/:owner">{children}</Route>
+        </MemoryRouter>
+      </Suspense>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 interface SetupArgs {
   hasScheduledDetails?: boolean
@@ -94,7 +126,7 @@ describe('PaidPlanCard', () => {
     plan = mockProPlan,
   }: SetupArgs) {
     server.use(
-      http.get('/internal/:provider/:owner/account-details/', (info) => {
+      http.get('/internal/:provider/:owner/account-details/', () => {
         if (hasScheduledDetails) {
           return HttpResponse.json({
             scheduleDetail: mockScheduleDetail,
@@ -102,14 +134,14 @@ describe('PaidPlanCard', () => {
         }
         return HttpResponse.json({ data: {} })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: { hasPrivateRepos: true, plan },
           },
         })
       }),
-      graphql.query('PlanPageData', (info) => {
+      graphql.query('PlanPageData', () => {
         return HttpResponse.json({
           data: {
             owner: {

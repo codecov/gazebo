@@ -5,6 +5,9 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import type { MockInstance } from 'vitest'
 
+import { Plans } from 'shared/utils/billing'
+
+import { IndividualPlan } from './useAvailablePlans'
 import { useUpgradePlan } from './useUpgradePlan'
 
 const mocks = vi.hoisted(() => ({
@@ -41,7 +44,7 @@ const accountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
-    value: 'users-inappm',
+    value: Plans.USERS_PR_INAPPM,
   },
   activatedUserCount: 2,
   inactiveUserCount: 1,
@@ -82,15 +85,12 @@ describe('useUpgradePlan', () => {
   describe('when called', () => {
     beforeEach(() => {
       server.use(
-        http.patch(
-          `/internal/${provider}/${owner}/account-details/`,
-          (info) => {
-            return HttpResponse.json({
-              ...accountDetails,
-              checkoutSessionId: '1234',
-            })
-          }
-        )
+        http.patch(`/internal/${provider}/${owner}/account-details/`, () => {
+          return HttpResponse.json({
+            ...accountDetails,
+            checkoutSessionId: '1234',
+          })
+        })
       )
     })
 
@@ -113,7 +113,7 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: 'users-pr-inappy',
+          newPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
         })
 
         await waitFor(() => {
@@ -127,15 +127,12 @@ describe('useUpgradePlan', () => {
     describe('when calling the mutation, which does not return a checkoutSessionId', () => {
       beforeEach(() => {
         server.use(
-          http.patch(
-            `/internal/${provider}/${owner}/account-details/`,
-            (info) => {
-              return HttpResponse.json({
-                ...accountDetails,
-                checkoutSessionId: null,
-              })
-            }
-          )
+          http.patch(`/internal/${provider}/${owner}/account-details/`, () => {
+            return HttpResponse.json({
+              ...accountDetails,
+              checkoutSessionId: null,
+            })
+          })
         )
       })
 
@@ -147,7 +144,7 @@ describe('useUpgradePlan', () => {
 
         result.current.mutate({
           seats: 12,
-          newPlan: 'users-pr-inappy',
+          newPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
         })
 
         await waitFor(() => expect(redirectToCheckout).not.toHaveBeenCalled())

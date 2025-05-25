@@ -1,3 +1,4 @@
+import { useInfiniteQuery as useInfiniteQueryV5 } from '@tanstack/react-queryV5'
 import type { SortingState } from '@tanstack/react-table'
 import {
   createColumnHelper,
@@ -8,23 +9,24 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import PropTypes from 'prop-types'
-import { useContext, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
   OrderingDirection,
   Repository,
+  ReposTeamQueryOpts,
   TeamOrdering,
-  useReposTeam,
-} from 'services/repos'
-import { ActiveContext } from 'shared/context'
+} from 'services/repos/ReposTeamQueryOpts'
+import { Provider } from 'shared/api/helpers'
 import { formatTimeToNow } from 'shared/utils/dates'
+import { isNotNull } from 'shared/utils/demo'
+import { getFilteredRecentlyVisitedRepo } from 'shared/utils/getFilteredRecentlyVisitedRepo'
+import { transformStringToLocalStorageKey } from 'shared/utils/transformStringToLocalStorageKey'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
 import InactiveRepo from '../InactiveRepo'
-import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
 import RepoTitleLink from '../RepoTitleLink'
 
@@ -60,21 +62,25 @@ interface ReposTableTeamProps {
 }
 
 const getColumns = ({
-  inactive,
   isCurrentUserPartOfOrg,
+  owner,
 }: {
-  inactive: boolean
   isCurrentUserPartOfOrg: boolean
+  owner: string
 }) => {
+  const recentlyVisitedRepoName = localStorage.getItem(
+    `${transformStringToLocalStorageKey(owner)}_recently_visited`
+  )
+
   const nameColumn = columnHelper.accessor('name', {
     header: 'Name',
     id: 'name',
     cell: (info) => {
       const repo = info.row.original
       let pageName = 'new'
-      if (!!repo?.coverageEnabled) {
+      if (repo?.coverageEnabled) {
         pageName = 'repo'
-      } else if (!!repo?.bundleAnalysisEnabled) {
+      } else if (repo?.bundleAnalysisEnabled) {
         pageName = 'bundles'
       }
 
@@ -84,31 +90,13 @@ const getColumns = ({
           showRepoOwner={!!repo?.author?.username}
           pageName={pageName}
           disabledLink={!isCurrentUserPartOfOrg && !repo?.active}
+          isRecentlyVisited={
+            !!recentlyVisitedRepoName && recentlyVisitedRepoName === repo?.name
+          }
         />
       )
     },
   })
-
-  if (inactive) {
-    return [
-      nameColumn,
-      columnHelper.accessor('coverageAnalytics.lines', {
-        header: '',
-        id: 'lines',
-        cell: (info) => {
-          const repo = info.row.original
-          return (
-            <InactiveRepo
-              owner={repo?.author?.username ?? ''}
-              repoName={repo?.name}
-              isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
-              isActive={!!repo?.active}
-            />
-          )
-        },
-      }),
-    ]
-  }
 
   return [
     nameColumn,
@@ -144,7 +132,12 @@ const getColumns = ({
   ]
 }
 
+interface URLParams {
+  provider: Provider
+}
+
 const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
+  const { provider } = useParams<URLParams>()
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: 'latestCommitAt',
@@ -153,38 +146,68 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
   ])
   const { owner } = useParams<{ owner: string }>()
 
-  const repoDisplay = useContext(ActiveContext)
-
-  const activated =
-    repoDisplayOptions[
-      repoDisplay
-        .replace(/\s/g, '_')
-        .toUpperCase() as keyof typeof repoDisplayOptions
-    ]?.status
-
   const {
     data: reposData,
     fetchNextPage,
     hasNextPage,
     isFetching,
     isFetchingNextPage,
-  } = useReposTeam({
-    activated,
-    sortItem: getSortingOption(sorting),
-    term: searchValue,
-    owner,
-  })
+  } = useInfiniteQueryV5(
+    ReposTeamQueryOpts({
+      provider,
+      sortItem: getSortingOption(sorting),
+      term: searchValue,
+      owner,
+    })
+  )
+
+  const recentlyVisitedRepoName = localStorage.getItem(
+    `${transformStringToLocalStorageKey(owner)}_recently_visited`
+  )
+
+  const { data: recentlyVisitedRepoData } = useInfiniteQueryV5(
+    ReposTeamQueryOpts({
+      provider,
+      owner,
+      repoNames: recentlyVisitedRepoName ? [recentlyVisitedRepoName] : [],
+    })
+  )
 
   const isCurrentUserPartOfOrg = !!reposData?.pages?.[0]?.isCurrentUserPartOfOrg
 
   const tableData = useMemo(() => {
-    const data = reposData?.pages?.map((page) => page?.repos).flat()
-    return data ?? []
-  }, [reposData?.pages])
+    const data = reposData?.pages
+      ?.map((page) => page?.repos)
+      .flat()
+      .filter(isNotNull)
+
+    const filteredRecentlyVisitedRepo = getFilteredRecentlyVisitedRepo(
+      recentlyVisitedRepoData?.pages[0]?.repos,
+      searchValue,
+      owner
+    )
+
+    // only filter out the recently visited repo from the repos list if we are including it
+    const filteredRepos =
+      filteredRecentlyVisitedRepo && Array.isArray(data)
+        ? data.filter((repo) => recentlyVisitedRepoName !== repo.name)
+        : data
+
+    return [
+      ...(filteredRecentlyVisitedRepo ? [filteredRecentlyVisitedRepo] : []),
+      ...(filteredRepos ?? []),
+    ]
+  }, [
+    reposData?.pages,
+    owner,
+    recentlyVisitedRepoData,
+    recentlyVisitedRepoName,
+    searchValue,
+  ])
   const table = useReactTable({
     columns: getColumns({
-      inactive: repoDisplay === repoDisplayOptions.NOT_CONFIGURED.text,
       isCurrentUserPartOfOrg: isCurrentUserPartOfOrg,
+      owner,
     }),
     getCoreRowModel: getCoreRowModel(),
     data: tableData,
@@ -266,7 +289,7 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
           <Button
             hook="load-more"
             isLoading={isFetchingNextPage}
-            onClick={fetchNextPage}
+            onClick={() => fetchNextPage()}
             to={undefined}
             disabled={false}
           >
@@ -276,10 +299,6 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
       )}
     </div>
   )
-}
-
-ReposTableTeam.propTypes = {
-  searchValue: PropTypes.string.isRequired,
 }
 
 export default ReposTableTeam

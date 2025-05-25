@@ -1,11 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import FreePlanCard from './FreePlanCard'
 
@@ -14,7 +19,7 @@ vi.mock('./PlanUpgradeTeam', () => ({ default: () => 'PlanUpgradeTeam' }))
 const allPlans = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -23,11 +28,13 @@ const allPlans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
-    billingRate: 'monthly',
+    value: Plans.USERS_PR_INAPPM,
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -36,11 +43,13 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappy',
-    billingRate: 'annually',
+    value: Plans.USERS_PR_INAPPY,
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -49,11 +58,13 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisem',
-    billingRate: 'monthly',
+    value: Plans.USERS_ENTERPRISEM,
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -62,11 +73,13 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisey',
-    billingRate: 'annually',
+    value: Plans.USERS_ENTERPRISEY,
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -75,51 +88,67 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     baseUnitPrice: 6,
     benefits: ['Up to 10 users'],
-    billingRate: 'monthly',
+    billingRate: BillingRate.MONTHLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamm',
+    value: Plans.USERS_TEAMM,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
   {
     baseUnitPrice: 5,
     benefits: ['Up to 10 users'],
-    billingRate: 'yearly',
+    billingRate: BillingRate.ANNUALLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    value: 'users-teamy',
+    value: Plans.USERS_TEAMY,
+    isTeamPlan: true,
+    isSentryPlan: false,
   },
 ]
 
 const sentryPlans = [
   {
     marketingName: 'Sentry',
-    value: 'users-sentrym',
+    value: Plans.USERS_SENTRYM,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: ['Includes 5 seats', 'Unlimited public repositories'],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: true,
   },
   {
     marketingName: 'Sentry',
-    value: 'users-sentryy',
+    value: Plans.USERS_SENTRYY,
     billingRate: null,
     baseUnitPrice: 10,
     benefits: ['Includes 5 seats', 'Unlimited private repositories'],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: true,
   },
 ]
 
 const freePlan = {
   marketingName: 'Free',
-  value: 'users-basic',
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', '250 free uploads'],
   monthlyUploadLimit: null,
+  isFreePlan: true,
+  isEnterprisePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const scheduledPhase = {
@@ -131,10 +160,10 @@ const scheduledPhase = {
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: ['Up to # user', 'Unlimited public repositories'],
-  billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -142,20 +171,28 @@ const mockPlanData = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTrialPlan: false,
 }
 
 const mockPreTrialPlanInfo = {
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', 'Pre Trial benefits'],
-  billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_DEVELOPER,
 }
 
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
+})
+
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 beforeAll(() => {
@@ -164,6 +201,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
   vi.resetAllMocks()
 })
@@ -173,44 +211,34 @@ afterAll(() => {
 })
 
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
-      <Route path="/plan/:provider/:owner">
-        <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
+        <Route path="/plan/:provider/:owner">
+          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 describe('FreePlanCard', () => {
-  function setup(
-    {
-      owner = {
-        username: 'codecov',
-        isCurrentUserPartOfOrg: true,
-        numberOfUploads: 10,
-      },
-      plans = allPlans,
-      trialStatus = TrialStatuses.CANNOT_TRIAL,
-      planValue = 'users-basic',
-      planUserCount = 1,
-    } = {
-      owner: {
-        username: 'codecov',
-        isCurrentUserPartOfOrg: true,
-        numberOfUploads: 10,
-      },
-      trialStatus: TrialStatuses.CANNOT_TRIAL,
-      planValue: 'users-basic',
-      plans: allPlans,
-      planUserCount: 1,
-    }
-  ) {
+  function setup({
+    owner = {
+      username: 'codecov',
+      isCurrentUserPartOfOrg: true,
+      numberOfUploads: 10,
+    },
+    plans = allPlans,
+    trialStatus = TrialStatuses.CANNOT_TRIAL,
+    planValue = Plans.USERS_DEVELOPER,
+    planUserCount = 1,
+  }) {
     server.use(
-      graphql.query('PlanPageData', (info) => {
+      graphql.query('PlanPageData', () => {
         return HttpResponse.json({ data: { owner } })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -220,18 +248,23 @@ describe('FreePlanCard', () => {
                 trialStatus,
                 value: planValue,
                 planUserCount,
+                isFreePlan: planValue === Plans.USERS_DEVELOPER,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
+                isTrialPlan: planValue === Plans.USERS_TRIAL,
               },
               pretrialPlan: mockPreTrialPlanInfo,
             },
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: { owner: { availablePlans: plans } },
         })
       }),
-      http.get('/internal/bb/critical-role/account-details/', (info) => {
+      http.get('/internal/bb/critical-role/account-details/', () => {
         return HttpResponse.json({ numberOfUploads: 250 })
       })
     )
@@ -239,7 +272,7 @@ describe('FreePlanCard', () => {
 
   describe('rendering component', () => {
     it('renders the plan marketing name', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} scheduledPhase={scheduledPhase} />, {
         wrapper,
@@ -250,7 +283,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the benefits', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -261,7 +294,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the scheduled phase', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} scheduledPhase={scheduledPhase} />, {
         wrapper,
@@ -272,20 +305,20 @@ describe('FreePlanCard', () => {
     })
 
     it('renders actions billing button', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
 
-      const link = await screen.findByRole('link', { name: /Manage plan/ })
+      const link = await screen.findByRole('link', { name: /Upgrade/ })
 
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
     })
 
     it('renders the help message', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -298,7 +331,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders number of uploads', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -311,7 +344,7 @@ describe('FreePlanCard', () => {
     })
 
     it('does not render team plan card if not trialing', () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -322,7 +355,7 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the expected price details for pro team billing', async () => {
-      setup()
+      setup({})
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
@@ -343,7 +376,7 @@ describe('FreePlanCard', () => {
     describe('the user is currently on a trial', () => {
       it('renders downgrade text', async () => {
         setup({
-          planValue: 'users-trial',
+          planValue: Plans.USERS_TRIAL,
           trialStatus: TrialStatuses.ONGOING,
           plans: allPlans,
         })
@@ -360,7 +393,7 @@ describe('FreePlanCard', () => {
 
       it('renders the pretrial benefits', async () => {
         setup({
-          planValue: 'users-trial',
+          planValue: Plans.USERS_TRIAL,
           trialStatus: TrialStatuses.ONGOING,
           plans: allPlans,
         })
@@ -378,7 +411,7 @@ describe('FreePlanCard', () => {
 
       it('renders the team plan component if less than 10 users', async () => {
         setup({
-          planValue: 'users-trial',
+          planValue: Plans.USERS_TRIAL,
           trialStatus: TrialStatuses.ONGOING,
           plans: allPlans,
         })
@@ -393,7 +426,7 @@ describe('FreePlanCard', () => {
 
       it('does not render the team plan component if more than 10 users', () => {
         setup({
-          planValue: 'users-trial',
+          planValue: Plans.USERS_TRIAL,
           trialStatus: TrialStatuses.ONGOING,
           plans: allPlans,
         })

@@ -36,12 +36,12 @@ export function cleanupBaremetrics() {
     '[href="https://baremetrics-barecancel.baremetrics.com/css/barecancel.css"]'
   )
 
-  if (!!scriptElement) {
+  if (scriptElement) {
     scriptElement.parentNode.removeChild(scriptElement)
     delete window.barecancel
   }
 
-  if (!!stylesElement) {
+  if (stylesElement) {
     stylesElement.parentNode.removeChild(stylesElement)
   }
 }

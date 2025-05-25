@@ -9,7 +9,6 @@ fragment ComparisonFragment on Comparison {
       isNewFile
       isRenamedFile
       isDeletedFile
-      isCriticalFile
       baseCoverage {
         percentCovered
       }
@@ -22,6 +21,7 @@ fragment ComparisonFragment on Comparison {
       changeCoverage
       segments (filters: $filters) {
         ... on SegmentComparisons {
+          __typename
           results {
             header
             hasUnintendedChanges
@@ -37,6 +37,14 @@ fragment ComparisonFragment on Comparison {
               }
             }
           }
+        }
+        ... on ProviderError {
+          __typename
+          message
+        }
+        ... on UnknownPath {
+          __typename
+          message
         }
       }
     }

@@ -10,9 +10,8 @@ import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
-import { Member, useInfiniteUsers } from 'services/users'
-import { isFreePlan } from 'shared/utils/billing'
+import { usePlanData } from 'services/account/usePlanData'
+import { Member, useInfiniteUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils/ownerHelpers'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 import Icon from 'ui/Icon'
@@ -47,49 +46,88 @@ function Username({ name, username }: UsernameProps) {
   )
 }
 
+function useActivateUser({
+  provider,
+  owner,
+  onSuccess,
+}: {
+  provider: string
+  owner: string
+  onSuccess: ({ activated }: { activated: boolean }) => void
+}) {
+  const { mutate, ...rest } = useUpdateUser({
+    provider,
+    owner,
+    opts: {
+      onSuccess,
+    },
+  })
+
+  function activate(ownerid: number, activated: boolean) {
+    mutate({ targetUserOwnerid: ownerid, activated })
+  }
+
+  return { activate, ...rest }
+}
+
 interface ActivationStatusProps {
   activated: boolean
   ownerid: number
   student: boolean
-  handleActivate: (user: any) => void
+  openUpgradeModal: () => void
 }
 
 function ActivationStatus({
   activated,
   ownerid,
   student,
-  handleActivate,
+  openUpgradeModal,
 }: ActivationStatusProps) {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
-  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const [optimisticActivation, setOptimisticActivation] =
+    useState<boolean>(activated)
+  const { activate, isLoading } = useActivateUser({
+    owner,
+    provider,
+    onSuccess: ({ activated }) => {
+      setOptimisticActivation(activated)
+    },
+  })
+  const { data: planData } = usePlanData({ owner, provider })
 
   let disabled = false
-  if (accountDetails?.activatedUserCount && accountDetails?.plan?.quantity) {
-    disabled =
-      accountDetails?.activatedUserCount >= accountDetails?.plan?.quantity &&
-      !isFreePlan(accountDetails?.plan?.value)
+
+  if (planData?.plan) {
+    disabled = !planData?.plan?.hasSeatsLeft && !planData?.plan?.isFreePlan
   }
-  if (!!student) {
+
+  if (student) {
     disabled = false
   }
   return (
     <Toggle
       dataMarketing="handle-members-activation"
-      label={activated ? 'Activated' : 'Non-Active'}
-      value={activated}
+      label={optimisticActivation ? 'Activated' : 'Non-Active'}
+      value={optimisticActivation}
       onClick={() => {
-        handleActivate({ ownerid, activated })
+        if (
+          !planData?.plan?.hasSeatsLeft &&
+          !optimisticActivation &&
+          planData?.plan?.isFreePlan &&
+          !student
+        ) {
+          openUpgradeModal()
+        } else {
+          activate(ownerid, !optimisticActivation)
+        }
       }}
-      disabled={disabled && !activated}
+      isLoading={isLoading}
+      disabled={disabled && !optimisticActivation}
     />
   )
 }
 
-function getColumns({
-  handleActivate,
-}: {
-  handleActivate: (user: any) => void
-}) {
+function getColumns({ openUpgradeModal }: { openUpgradeModal: () => void }) {
   return [
     columnHelper.accessor('username', {
       id: 'username',
@@ -114,7 +152,12 @@ function getColumns({
       id: 'activated',
       header: () => 'Activation status',
       cell: ({ row }) => (
-        <ActivationStatus {...row.original} handleActivate={handleActivate} />
+        <div className="flex justify-end">
+          <ActivationStatus
+            {...row.original}
+            openUpgradeModal={openUpgradeModal}
+          />
+        </div>
       ),
     }),
   ]
@@ -141,7 +184,7 @@ function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
 }
 
 interface MembersTableProps {
-  handleActivate: (user: any) => void
+  openUpgradeModal: () => void
   params?: {
     activated?: boolean
     isAdmin?: boolean
@@ -152,7 +195,7 @@ interface MembersTableProps {
 }
 
 export default function MembersTable({
-  handleActivate,
+  openUpgradeModal,
   params,
 }: MembersTableProps) {
   const [sorting, setSorting] = useState<SortingState>([
@@ -174,9 +217,7 @@ export default function MembersTable({
           ordering: getOrderingDirection(sorting),
         },
       },
-      {
-        suspense: false,
-      }
+      { suspense: false }
     )
 
   useEffect(() => {
@@ -186,7 +227,7 @@ export default function MembersTable({
   }, [inView, hasNextPage, fetchNextPage])
 
   const table = useReactTable({
-    columns: getColumns({ handleActivate }),
+    columns: getColumns({ openUpgradeModal }),
     data: data || [],
     state: {
       sorting,

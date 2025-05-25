@@ -75,7 +75,7 @@ describe('useRepoConfig', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('RepoConfig', (info) => {
+      graphql.query('RepoConfig', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -163,7 +163,8 @@ describe('useRepoConfig', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'useRepoConfig - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -187,11 +188,13 @@ describe('useRepoConfig', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useRepoConfig - Owner Not Activated',
             status: 403,
           })
         )
       )
     })
+
     it('can return not found error', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
@@ -210,6 +213,7 @@ describe('useRepoConfig', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useRepoConfig - Not Found Error',
             status: 404,
           })
         )

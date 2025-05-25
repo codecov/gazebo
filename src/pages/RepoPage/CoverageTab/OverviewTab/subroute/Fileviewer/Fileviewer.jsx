@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useRepoSettingsTeam } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import RawFileViewer from 'shared/RawFileViewer'
 import { useTreePaths } from 'shared/treePaths'
 import { STICKY_PADDING_SIZES } from 'shared/utils/fileviewer'
@@ -12,11 +12,9 @@ function FileView() {
   const { provider, owner, ref: commit } = useParams()
   const { data: repoData } = useRepoSettingsTeam()
 
-  const { data: tierName } = useTier({ provider, owner })
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
-  const showFlagSelector = !(
-    tierName === TierNames.TEAM && repoData?.repository?.private
-  )
+  const showFlagSelector = !(isTeamPlan && repoData?.repository?.private)
 
   return (
     <>

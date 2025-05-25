@@ -1,8 +1,9 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { forwardRef, useState } from 'react'
 import { useParams } from 'react-router'
 
-import { useBranchBundlesNames } from 'services/bundleAnalysis'
-import { useLocationParams } from 'services/navigation'
+import { BranchBundlesNamesQueryOpts } from 'services/bundleAnalysis/BranchBundlesNamesQueryOpts'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoOverview } from 'services/repo'
 import MultiSelect from 'ui/MultiSelect'
 
@@ -35,12 +36,14 @@ export const TypeSelector = forwardRef((_, ref) => {
   const branch = branchParam ?? overviewData?.defaultBranch ?? ''
 
   const { data: bundleData, isFetching: bundlesIsFetching } =
-    useBranchBundlesNames({
-      provider,
-      owner,
-      repo,
-      branch,
-    })
+    useSuspenseQueryV5(
+      BranchBundlesNamesQueryOpts({
+        provider,
+        owner,
+        repo,
+        branch,
+      })
+    )
 
   return (
     <div className="md:w-64">
@@ -50,7 +53,7 @@ export const TypeSelector = forwardRef((_, ref) => {
       <span className="max-w-64 text-sm">
         <MultiSelect
           ref={ref}
-          // @ts-ignore
+          // @ts-expect-error - MultiSelect hasn't been typed yet
           disabled={bundleData?.bundles?.length === 0 || bundlesIsFetching}
           hook="bundle-type-selector"
           ariaName="bundle tab types selector"

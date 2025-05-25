@@ -10,23 +10,15 @@ const node1 = {
   title: 'first pull',
   state: 'MERGED',
   updatestamp: '20-2-2021',
-  author: {
-    username: 'cool-user',
-    avatarUrl: 'http://127.0.0.1/avatar-url',
-  },
-  head: {
-    bundleStatus: 'PENDING',
-    coverageStatus: 'PENDING',
-  },
+  author: { username: 'cool-user', avatarUrl: 'http://127.0.0.1/avatar-url' },
+  head: { bundleStatus: 'PENDING', coverageStatus: 'PENDING' },
   bundleAnalysisCompareWithBase: {
     __typename: 'MissingHeadReport',
     message: 'Missing head report',
   },
   compareWithBase: {
     __typename: 'Comparison',
-    patchTotals: {
-      percentCovered: 87,
-    },
+    patchTotals: { percentCovered: 87 },
   },
 }
 
@@ -35,23 +27,15 @@ const node2 = {
   title: 'second pull',
   state: 'MERGED',
   updatestamp: '20-2-2021',
-  author: {
-    username: 'cool-user',
-    avatarUrl: 'http://127.0.0.1/avatar-url',
-  },
-  head: {
-    bundleStatus: 'PENDING',
-    coverageStatus: 'PENDING',
-  },
+  author: { username: 'cool-user', avatarUrl: 'http://127.0.0.1/avatar-url' },
+  head: { bundleStatus: 'PENDING', coverageStatus: 'PENDING' },
   bundleAnalysisCompareWithBase: {
     __typename: 'MissingHeadReport',
     message: 'Missing head report',
   },
   compareWithBase: {
     __typename: 'Comparison',
-    patchTotals: {
-      percentCovered: 87,
-    },
+    patchTotals: { percentCovered: 87 },
   },
 }
 
@@ -60,23 +44,15 @@ const node3 = {
   title: 'third pull',
   state: 'MERGED',
   updatestamp: '20-2-2021',
-  author: {
-    username: 'cool-user',
-    avatarUrl: 'http://127.0.0.1/avatar-url',
-  },
-  head: {
-    bundleStatus: 'PENDING',
-    coverageStatus: 'PENDING',
-  },
+  author: { username: 'cool-user', avatarUrl: 'http://127.0.0.1/avatar-url' },
+  head: { bundleStatus: 'PENDING', coverageStatus: 'PENDING' },
   bundleAnalysisCompareWithBase: {
     __typename: 'MissingHeadReport',
     message: 'Missing head report',
   },
   compareWithBase: {
     __typename: 'Comparison',
-    patchTotals: {
-      percentCovered: 87,
-    },
+    patchTotals: { percentCovered: 87 },
   },
 }
 
@@ -200,7 +176,6 @@ describe('GetPulls', () => {
       describe('when data is loaded', () => {
         it('returns expected pulls nodes', async () => {
           setup({})
-
           const { result } = renderHook(
             () =>
               usePulls({
@@ -212,9 +187,7 @@ describe('GetPulls', () => {
                 },
                 orderingDirection: 'ASC',
               }),
-            {
-              wrapper,
-            }
+            { wrapper }
           )
 
           await waitFor(() => result.current.isLoading)
@@ -229,7 +202,6 @@ describe('GetPulls', () => {
       describe('when call next page', () => {
         it('returns prev and next page pulls of the user', async () => {
           setup({})
-
           const { result } = renderHook(
             () =>
               usePulls({
@@ -241,9 +213,7 @@ describe('GetPulls', () => {
                 },
                 orderingDirection: 'ASC',
               }),
-            {
-              wrapper,
-            }
+            { wrapper }
           )
 
           await waitFor(() => result.current.isFetching)
@@ -264,7 +234,6 @@ describe('GetPulls', () => {
     describe('when null owner is returned', () => {
       it('returns an empty list', async () => {
         setup({ isNullOwner: true })
-
         const { result } = renderHook(
           () =>
             usePulls({
@@ -276,9 +245,7 @@ describe('GetPulls', () => {
               },
               orderingDirection: 'ASC',
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         await waitFor(() => result.current.isLoading)
@@ -290,7 +257,7 @@ describe('GetPulls', () => {
   })
 
   describe('when __typename is NotFoundError', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -313,15 +280,14 @@ describe('GetPulls', () => {
             },
             orderingDirection: 'ASC',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePulls - Not Found Error',
             status: 404,
           })
         )
@@ -330,7 +296,7 @@ describe('GetPulls', () => {
   })
 
   describe('when __typename is OwnerNotActivatedError', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -353,15 +319,14 @@ describe('GetPulls', () => {
             },
             orderingDirection: 'ASC',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePulls - Owner Not Activated',
             status: 403,
           })
         )
@@ -370,7 +335,7 @@ describe('GetPulls', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -380,7 +345,7 @@ describe('GetPulls', () => {
       console.error = oldConsoleError
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -393,16 +358,15 @@ describe('GetPulls', () => {
             },
             orderingDirection: 'ASC',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'usePulls - Parsing Error',
+            status: 400,
           })
         )
       )

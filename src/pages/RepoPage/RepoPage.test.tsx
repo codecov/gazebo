@@ -7,7 +7,6 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
-import { TierNames } from 'services/tier'
 
 import { RepoBreadcrumbProvider } from './context'
 import RepoPage from './RepoPage'
@@ -106,7 +105,6 @@ const mockUser = {
       student: false,
       studentCreatedAt: null,
       studentUpdatedAt: null,
-      customerIntent: 'PERSONAL',
     },
     trackingMetadata: {
       service: 'github',
@@ -198,7 +196,7 @@ interface SetupArgs {
   isRepoPrivate?: boolean
   isRepoActivated?: boolean
   isRepoActive?: boolean
-  tierValue?: string
+  isTeamPlan?: boolean
   isCurrentUserActivated?: boolean
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
@@ -215,7 +213,7 @@ describe('RepoPage', () => {
       isRepoPrivate = false,
       isRepoActivated = true,
       isRepoActive = true,
-      tierValue = TierNames.PRO,
+      isTeamPlan = false,
       isCurrentUserActivated = true,
       coverageEnabled = true,
       bundleAnalysisEnabled = true,
@@ -228,7 +226,7 @@ describe('RepoPage', () => {
       isRepoPrivate: false,
       isRepoActivated: true,
       isRepoActive: true,
-      tierValue: TierNames.PRO,
+      isTeamPlan: false,
       isCurrentUserActivated: true,
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
@@ -245,7 +243,7 @@ describe('RepoPage', () => {
     })
 
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         if (hasRepoData) {
           return HttpResponse.json({
             data: mockGetRepo({
@@ -261,17 +259,12 @@ describe('RepoPage', () => {
 
         return HttpResponse.json({ data: { owner: {} } })
       }),
-      graphql.query('OwnerTier', (info) => {
-        if (tierValue === TierNames.TEAM) {
-          return HttpResponse.json({
-            data: { owner: { plan: { tierName: TierNames.TEAM } } },
-          })
-        }
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: TierNames.PRO } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview({
             coverageEnabled,
@@ -281,10 +274,10 @@ describe('RepoPage', () => {
           }),
         })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: { owner: mockOwner } })
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: mockUser })
       })
     )
@@ -297,8 +290,8 @@ describe('RepoPage', () => {
       const { queryClient } = setup({ hasRepoData: false })
       render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
-      const notFound = await screen.findByText(/not found/i)
-      expect(notFound).toBeInTheDocument()
+      const badRequest = await screen.findByText(/bad request/i)
+      expect(badRequest).toBeInTheDocument()
     })
   })
 

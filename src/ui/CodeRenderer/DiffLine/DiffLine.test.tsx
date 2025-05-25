@@ -71,7 +71,7 @@ describe('DiffLine', () => {
           baseCoverage={null}
           hitCount={null}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -95,7 +95,7 @@ describe('DiffLine', () => {
           baseCoverage="H"
           hitCount={null}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -115,7 +115,7 @@ describe('DiffLine', () => {
           baseCoverage="H"
           hitCount={18}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -139,7 +139,7 @@ describe('DiffLine', () => {
           baseCoverage={null}
           hitCount={null}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -159,7 +159,7 @@ describe('DiffLine', () => {
           baseCoverage={null}
           hitCount={18}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -183,7 +183,7 @@ describe('DiffLine', () => {
           baseCoverage="M"
           hitCount={null}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -201,7 +201,7 @@ describe('DiffLine', () => {
           baseCoverage="M"
           hitCount={null}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -219,7 +219,7 @@ describe('DiffLine', () => {
           baseCoverage="M"
           hitCount={18}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -243,7 +243,7 @@ describe('DiffLine', () => {
           baseCoverage="M"
           hitCount={null}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -260,7 +260,7 @@ describe('DiffLine', () => {
           baseCoverage="M"
           hitCount={18}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -284,7 +284,7 @@ describe('DiffLine', () => {
           baseCoverage="P"
           hitCount={null}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -301,7 +301,7 @@ describe('DiffLine', () => {
           baseCoverage="P"
           hitCount={null}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -318,7 +318,7 @@ describe('DiffLine', () => {
           baseCoverage="P"
           hitCount={18}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -350,7 +350,7 @@ describe('DiffLine', () => {
           baseCoverage={null}
           hitCount={null}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -374,7 +374,7 @@ describe('DiffLine', () => {
           baseCoverage={null}
           hitCount={null}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )
@@ -400,7 +400,7 @@ describe('DiffLine', () => {
           baseCoverage={null}
           hitCount={null}
           lineContent={content}
-          getTokenProps={({ token, key }) => ({})}
+          getTokenProps={() => ({})}
         />,
         { wrapper }
       )

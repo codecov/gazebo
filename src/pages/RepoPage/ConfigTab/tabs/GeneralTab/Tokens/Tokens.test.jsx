@@ -49,7 +49,7 @@ describe('Tokens', () => {
     })
 
     server.use(
-      graphql.query('GetRepoSettings', (req, res, ctx) => {
+      graphql.query('GetRepoSettings', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -64,7 +64,6 @@ describe('Tokens', () => {
                 bot: {
                   username: 'test',
                 },
-                profilingToken: 'profiling token',
                 staticAnalysisToken: 'static analysis token',
               },
             },
@@ -80,14 +79,6 @@ describe('Tokens', () => {
       render(<Tokens />, { wrapper })
 
       const title = await screen.findByText(/Repository upload token/)
-      expect(title).toBeInTheDocument()
-    })
-
-    it('renders impact analysis component', async () => {
-      setup()
-      render(<Tokens />, { wrapper })
-
-      const title = await screen.findByText(/Impact analysis token/)
       expect(title).toBeInTheDocument()
     })
 

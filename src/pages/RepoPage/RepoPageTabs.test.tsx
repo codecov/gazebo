@@ -11,8 +11,6 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames, TTierNames } from 'services/tier'
-
 import RepoPageTabs, { useRepoTabs } from './RepoPageTabs'
 
 const mockRepoOverview = ({
@@ -121,9 +119,8 @@ interface SetupArgs {
   isRepoPrivate?: boolean
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
-  tierName?: TTierNames
+  isTeamPlan?: boolean
   isCurrentUserPartOfOrg?: boolean
-  componentTab?: boolean
   testAnalyticsEnabled?: boolean
 }
 
@@ -133,13 +130,12 @@ describe('RepoPageTabs', () => {
     bundleAnalysisEnabled,
     coverageEnabled,
     isRepoPrivate,
-    tierName = TierNames.PRO,
+    isTeamPlan = false,
     isCurrentUserPartOfOrg = true,
-    componentTab = true,
     testAnalyticsEnabled = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview({
             language,
@@ -151,10 +147,10 @@ describe('RepoPageTabs', () => {
         })
       }),
 
-      graphql.query('OwnerTier', (info) => {
-        return HttpResponse.json({ data: { owner: { plan: { tierName } } } })
+      graphql.query('IsTeamPlan', () => {
+        return HttpResponse.json({ data: { owner: { plan: { isTeamPlan } } } })
       }),
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockRepo({ isCurrentUserPartOfOrg }) })
       })
     )
@@ -442,11 +438,11 @@ describe('useRepoTabs', () => {
     coverageEnabled,
     testAnalyticsEnabled = false,
     isRepoPrivate,
-    tierName = TierNames.PRO,
+    isTeamPlan = false,
     isCurrentUserPartOfOrg = true,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: mockRepoOverview({
             language,
@@ -457,10 +453,10 @@ describe('useRepoTabs', () => {
           }),
         })
       }),
-      graphql.query('OwnerTier', (info) => {
-        return HttpResponse.json({ data: { owner: { plan: { tierName } } } })
+      graphql.query('IsTeamPlan', () => {
+        return HttpResponse.json({ data: { owner: { plan: { isTeamPlan } } } })
       }),
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockRepo({ isCurrentUserPartOfOrg }) })
       })
     )

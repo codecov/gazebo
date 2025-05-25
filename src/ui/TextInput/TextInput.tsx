@@ -51,7 +51,7 @@ const TextInput = forwardRef(
     const textLabel = defaultTo(label, placeholder)
 
     return (
-      <div>
+      <div className={className}>
         <label
           htmlFor={id}
           className={cn('mb-2 block font-semibold', {

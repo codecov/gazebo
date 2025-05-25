@@ -23,7 +23,6 @@ const mockCompareData = {
               {
                 headName: 'src/App.tsx',
                 missesCount: 0,
-                isCriticalFile: false,
                 patchCoverage: { coverage: 100 },
               },
             ],
@@ -62,11 +61,7 @@ const mockUnsuccessfulParseError = {}
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
@@ -101,7 +96,7 @@ describe('usePullCompareTotalsTeam', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetPullCompareTotalsTeam', (info) => {
+      graphql.query('GetPullCompareTotalsTeam', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -141,16 +136,11 @@ describe('usePullCompareTotalsTeam', () => {
                 {
                   headName: 'src/App.tsx',
                   missesCount: 0,
-                  isCriticalFile: false,
-                  patchCoverage: {
-                    coverage: 100,
-                  },
+                  patchCoverage: { coverage: 100 },
                 },
               ],
             },
-            patchTotals: {
-              coverage: 100,
-            },
+            patchTotals: { coverage: 100 },
             state: 'processed',
           },
         }
@@ -207,8 +197,8 @@ describe('usePullCompareTotalsTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullCompareTotalsTeam - Not Found Error',
             status: 404,
-            dev: 'usePullCompareTotalsTeam - 404 not found',
           })
         )
       )
@@ -242,8 +232,8 @@ describe('usePullCompareTotalsTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullCompareTotalsTeam - Owner Not Activated',
             status: 403,
-            dev: 'usePullCompareTotalsTeam - 403 owner not activated',
           })
         )
       )
@@ -260,7 +250,7 @@ describe('usePullCompareTotalsTeam', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -277,8 +267,8 @@ describe('usePullCompareTotalsTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'usePullCompareTotalsTeam - 404 failed to parse',
+            dev: 'usePullCompareTotalsTeam - Parsing Error',
+            status: 400,
           })
         )
       )

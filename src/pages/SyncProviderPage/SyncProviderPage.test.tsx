@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -22,30 +26,35 @@ const createMockedInternalUser = (
   owners: owner !== undefined ? [owner] : [],
 })
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { suspense: true } },
-})
 const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
-let testLocation: { pathname: string } = {
+const testLocation: { pathname: string } = {
   pathname: '',
 }
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/sync']}>
-      <Route path="/sync">
-        <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-      </Route>
-      <Route
-        path="*"
-        render={({ location }) => {
-          testLocation.pathname = location.pathname
-          return null
-        }}
-      />
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/sync']}>
+        <Route path="/sync">
+          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        </Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation.pathname = location.pathname
+            return null
+          }}
+        />
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -54,6 +63,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -77,10 +87,10 @@ describe('SyncProviderPage', () => {
     }
   ) {
     server.use(
-      http.get('/internal/user', (info) => {
+      http.get('/internal/user', () => {
         return HttpResponse.json(user)
       }),
-      graphql.query('GetSyncProviders', (info) => {
+      graphql.query('GetSyncProviders', () => {
         if (noSyncProviders) {
           return HttpResponse.json({
             data: {
@@ -126,19 +136,19 @@ describe('SyncProviderPage', () => {
         setup()
         render(<SyncProviderPage />, { wrapper })
 
-        const githubSyncButton = await screen.findByText(/Sync with Github/)
+        const githubSyncButton = await screen.findByText(/Sync with GitHub/)
         expect(githubSyncButton).toBeInTheDocument()
       })
 
-      it('renders github enterprise sync button', async () => {
+      it('renders gitlab enterprise sync button', async () => {
         setup()
 
         render(<SyncProviderPage />, { wrapper })
 
-        const gheSyncButton = await screen.findByText(
-          /Sync with Gitlab Enterprise/
+        const gleSyncButton = await screen.findByText(
+          /Sync with GitLab Enterprise/
         )
-        expect(gheSyncButton).toBeInTheDocument()
+        expect(gleSyncButton).toBeInTheDocument()
       })
     })
 

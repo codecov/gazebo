@@ -1,3 +1,5 @@
+import { Plans } from 'shared/utils/billing'
+
 /* eslint-disable camelcase */
 export const invoiceObject = {
   amountDue: 1407.0,
@@ -37,19 +39,6 @@ export const accountDetailsObject = {
   activated_user_count: 19,
   inactive_user_count: 5,
   plan_auto_activate: true,
-  plan: {
-    marketing_name: 'Pro Team',
-    value: 'users-pr-inappm',
-    billing_rate: 'monthly',
-    base_unit_price: 12,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    quantity: 20,
-  },
   subscription_detail: {
     latest_invoice: {
       id: 'in_1JnNyfGlVGuVgOrkkdkCYayW',
@@ -78,7 +67,7 @@ export const accountDetailsObject = {
             end: 1636479475,
             start: 1634910008,
           },
-          plan_name: 'users-pr-inappm',
+          plan_name: Plans.USERS_PR_INAPPM,
           quantity: 21,
         },
         {
@@ -90,7 +79,7 @@ export const accountDetailsObject = {
             end: 1636479475,
             start: 1634910008,
           },
-          plan_name: 'users-pr-inappm',
+          plan_name: Plans.USERS_PR_INAPPM,
           quantity: 23,
         },
       ],
@@ -151,19 +140,6 @@ export const accountDetailsParsedObj = {
   activatedUserCount: 19,
   inactiveUserCount: 5,
   planAutoActivate: true,
-  plan: {
-    marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
-    billingRate: 'monthly',
-    baseUnitPrice: 12,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    quantity: 20,
-  },
   subscriptionDetail: {
     latestInvoice: {
       id: 'in_1JnNyfGlVGuVgOrkkdkCYayW',
@@ -192,7 +168,7 @@ export const accountDetailsParsedObj = {
             end: 1636479475,
             start: 1634910008,
           },
-          planName: 'users-pr-inappm',
+          planName: Plans.USERS_PR_INAPPM,
           quantity: 21,
         },
         {
@@ -204,7 +180,7 @@ export const accountDetailsParsedObj = {
             end: 1636479475,
             start: 1634910008,
           },
-          planName: 'users-pr-inappm',
+          planName: Plans.USERS_PR_INAPPM,
           quantity: 23,
         },
       ],

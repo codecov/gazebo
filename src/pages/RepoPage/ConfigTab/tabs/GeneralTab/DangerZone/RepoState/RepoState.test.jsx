@@ -11,8 +11,8 @@ const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
 }))
 
-vi.mock('services/toastNotification', async () => {
-  const actual = await vi.importActual('services/toastNotification')
+vi.mock('services/toastNotification/context', async () => {
+  const actual = await vi.importActual('services/toastNotification/context')
   return {
     ...actual,
     useAddNotification: mocks.useAddNotification,
@@ -49,7 +49,7 @@ describe('RepoState', () => {
     const addNotification = vi.fn()
 
     server.use(
-      graphql.query('GetRepoSettings', (info) => {
+      graphql.query('GetRepoSettings', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -64,14 +64,13 @@ describe('RepoState', () => {
                 bot: {
                   username: 'test',
                 },
-                profilingToken: null,
                 staticAnalysisToken: null,
               },
             },
           },
         })
       }),
-      http.patch('/internal/github/codecov/repos/codecov-client/', (info) => {
+      http.patch('/internal/github/codecov/repos/codecov-client/', () => {
         mutate()
 
         if (failMutation) {

@@ -10,7 +10,7 @@ import SpecialOffer from './SpecialOffer'
 const mockBody = vi.fn()
 const mockToast = vi.fn()
 
-vi.mock('services/toastNotification', () => ({
+vi.mock('services/toastNotification/context', () => ({
   useAddNotification: () => (data) => mockToast(data),
 }))
 
@@ -118,7 +118,7 @@ describe('SpecialOffer', () => {
       render(<SpecialOffer />, { wrapper: wrapper() })
 
       const link = screen.getByRole('link', {
-        name: /No thanks, I'll proceed to the basic plan/,
+        name: /No thanks, I'll proceed to the developers plan/,
       })
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/plan/gh/codecov/cancel/downgrade')
@@ -221,7 +221,7 @@ describe('SpecialOffer', () => {
       render(<SpecialOffer />, { wrapper: wrapper() })
 
       const link = screen.getByRole('link', {
-        name: /No thanks, I'll proceed to the basic plan/,
+        name: /No thanks, I'll proceed to the developers plan/,
       })
       expect(link).toBeInTheDocument()
 

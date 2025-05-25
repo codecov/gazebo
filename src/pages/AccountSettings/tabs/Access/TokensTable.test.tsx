@@ -3,11 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock } from 'vitest'
 
-import { useRevokeUserToken } from 'services/access'
+import { useRevokeUserToken } from 'services/access/useRevokeUserToken'
 
 import TokensTable from './TokensTable'
 
-vi.mock('services/access')
+vi.mock('services/access/useRevokeUserToken')
 const mockedUseRevokeUserToken = useRevokeUserToken as Mock
 
 window.confirm = () => true

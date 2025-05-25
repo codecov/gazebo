@@ -1,6 +1,6 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
-import { IndividualPlan } from 'services/account'
+import { IndividualPlan } from 'services/account/useAvailablePlans'
 import {
   MIN_NB_SEATS_PRO,
   TEAM_PLAN_MAX_ACTIVE_USERS,
@@ -12,7 +12,6 @@ import ErrorBanner from './ErrorBanner'
 import PriceCallout from './PriceCallout'
 import UserCount from './UserCount'
 
-import { NewPlanType } from '../../constants'
 import { UpgradeFormFields } from '../../UpgradeForm'
 
 interface Errors {
@@ -23,10 +22,10 @@ interface Errors {
 
 interface PlanControllerProps {
   seats: number
-  newPlan: NewPlanType
+  newPlan?: IndividualPlan
   register: UseFormRegister<UpgradeFormFields>
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (plan: IndividualPlan) => void
+  setSelectedPlan: (plan?: IndividualPlan) => void
   errors?: Errors
 }
 

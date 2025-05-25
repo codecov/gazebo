@@ -10,8 +10,8 @@ const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
 }))
 
-vi.mock('services/toastNotification', async () => {
-  const actual = await vi.importActual('services/toastNotification')
+vi.mock('services/toastNotification/context', async () => {
+  const actual = await vi.importActual('services/toastNotification/context')
   return {
     ...actual,
     useAddNotification: mocks.useAddNotification,
@@ -50,7 +50,7 @@ describe('useRegenerateRepoUploadToken', () => {
     mocks.useAddNotification.mockReturnValue(mockAddToast)
 
     server.use(
-      graphql.mutation('RegenerateRepositoryUploadToken', (info) => {
+      graphql.mutation('RegenerateRepositoryUploadToken', () => {
         if (isErrorResponse) {
           return HttpResponse.json({
             data: {

@@ -30,7 +30,8 @@ const LicenseExpirationModal: React.FC<LicenseExpirationModalArgs> = ({
               <span className="font-semibold">Seat limit reached</span>
               <span className="text-xs">
                 All of the seats on the organization&apos;s plan have been used.
-                Please reach out to {/* @ts-expect-error */}
+                Please reach out to{' '}
+                {/* @ts-expect-error - A hasn't been typed yet */}
                 <A
                   href={'mailto:support@codecov.io'}
                   hook="codecov-support"
@@ -48,7 +49,7 @@ const LicenseExpirationModal: React.FC<LicenseExpirationModalArgs> = ({
               <span className="text-xs">
                 Your license is about to expire. To avoid any interruption in
                 service, please renew your license promptly. Follow{' '}
-                {/* @ts-expect-error */}
+                {/* @ts-expect-error - A hasn't been typed yet */}
                 <A
                   to={{ pageName: 'generateSelfHostedLicense' }}
                   showExternalIcon={false}
@@ -64,7 +65,8 @@ const LicenseExpirationModal: React.FC<LicenseExpirationModalArgs> = ({
               Looking for more control and customization?
             </span>
             <span className="text-xs">
-              Consider setting up a {/* @ts-expect-error */}
+              Consider setting up a{' '}
+              {/* @ts-expect-error - A hasn't been typed yet */}
               <A
                 to={{ pageName: 'dedicatedEnterpriseCloudGuide' }}
                 showExternalIcon={false}
@@ -78,7 +80,6 @@ const LicenseExpirationModal: React.FC<LicenseExpirationModalArgs> = ({
       }
       footer={
         <div className="flex gap-2">
-          {/* @ts-expect-error */}
           <Button
             to={{ pageName: 'generateSelfHostedLicense' }}
             showExternalIcon={false}

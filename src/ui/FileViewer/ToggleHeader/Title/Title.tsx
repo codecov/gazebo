@@ -2,7 +2,7 @@ import eq from 'lodash/eq'
 import isUndefined from 'lodash/isUndefined'
 import { useState } from 'react'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
 import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
@@ -72,7 +72,7 @@ export const TitleFlags = ({ commitDetailView = false }: TitleFlagsProps) => {
     hasNextPage: flagsHasNextPage,
     fetchNextPage: flagsFetchNextPage,
   } = useRepoFlagsSelect({
-    filters: { term: flagSearch },
+    filters: { term: flagSearch || undefined },
     options: {
       suspense: false,
       enabled: flagsMeasurementsActive && !noFlagsPresent && isTimescaleEnabled,

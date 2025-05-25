@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useBundleSummary } from 'services/bundleAnalysis/useBundleSummary'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import {
   formatSizeToString,
   formatTimeToString,
@@ -85,7 +85,6 @@ export const BundleDetails: React.FC = () => {
       reportGroups: types,
       loadTypes: loadTypes,
     },
-    opts: { enabled: bundle !== '' },
   })
 
   if (!bundle || !summaryData || !summaryData.bundleSummary) {

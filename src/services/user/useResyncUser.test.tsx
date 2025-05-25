@@ -43,12 +43,12 @@ describe('useResyncUser', () => {
   let syncStatus = false
   function setup() {
     server.use(
-      graphql.query('IsSyncing', (info) => {
+      graphql.query('IsSyncing', () => {
         return HttpResponse.json({
           data: { me: { isSyncing: syncStatus } },
         })
       }),
-      graphql.mutation('SyncData', (info) => {
+      graphql.mutation('SyncData', () => {
         syncStatus = true
         return HttpResponse.json({
           data: { syncWithGitProvider: { me: { isSyncing: syncStatus } } },

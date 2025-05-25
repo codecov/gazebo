@@ -70,7 +70,7 @@ describe('CodecovAIPage', () => {
     aiEnabledRepos = ['repo-1', 'repo-2']
   ) {
     server.use(
-      graphql.query('GetCodecovAIAppInstallInfo', (info) => {
+      graphql.query('GetCodecovAIAppInstallInfo', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -79,7 +79,7 @@ describe('CodecovAIPage', () => {
           },
         })
       }),
-      graphql.query('GetCodecovAIInstalledRepos', (info) => {
+      graphql.query('GetCodecovAIInstalledRepos', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -143,6 +143,11 @@ describe('CodecovAIPage', () => {
       / the assistant will review the PR/
     )
     expect(commandOneText).toBeInTheDocument()
+
+    const commandTwoText = await screen.findByText(
+      / the assistant will generate tests/
+    )
+    expect(commandTwoText).toBeInTheDocument()
   })
 
   it('renders examples', async () => {
@@ -154,20 +159,27 @@ describe('CodecovAIPage', () => {
     expect(reviewExample).toBeInTheDocument()
   })
 
-  it('renders screenshot', async () => {
+  it('renders screenshots', async () => {
     render(<CodecovAIPage />, { wrapper })
     const user = userEvent.setup()
-    const trigger = await screen.findByText((content) =>
+    const trigger = await screen.findAllByText((content) =>
       content.startsWith('Here is an example')
     )
-    expect(trigger).toBeInTheDocument()
+    expect(trigger).toHaveLength(2)
 
-    await user.click(trigger)
+    await user.click(trigger[0]!)
 
-    const screenshot = await screen.findByRole('img', {
+    const screenshotReview = await screen.findByRole('img', {
       name: /codecov pr review example/,
     })
-    expect(screenshot).toBeInTheDocument()
+    expect(screenshotReview).toBeInTheDocument()
+
+    await user.click(trigger[1]!)
+
+    const screenshotTestGen = await screen.findByRole('img', {
+      name: /codecov test generation example/,
+    })
+    expect(screenshotTestGen).toBeInTheDocument()
   })
 
   it('renders a link to the docs', async () => {

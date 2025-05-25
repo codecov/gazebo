@@ -46,7 +46,7 @@ interface SetupArgs {
 describe('useCodecovAIInstallation', () => {
   function setup({ isUnsuccessfulParseError = false }: SetupArgs) {
     server.use(
-      graphql.query('GetCodecovAIAppInstallInfo', (info) => {
+      graphql.query('GetCodecovAIAppInstallInfo', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         }
@@ -76,7 +76,7 @@ describe('useCodecovAIInstallation', () => {
   })
 
   describe('unsuccessful parse of zod schema', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -86,7 +86,7 @@ describe('useCodecovAIInstallation', () => {
       console.error = oldConsoleError
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -101,7 +101,8 @@ describe('useCodecovAIInstallation', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'useCodecovAIInstallation - Parsing Error',
+            status: 400,
           })
         )
       )

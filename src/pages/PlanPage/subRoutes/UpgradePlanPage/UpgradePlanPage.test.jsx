@@ -10,8 +10,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import UpgradePlanPage from './UpgradePlanPage'
 
@@ -20,7 +20,7 @@ vi.mock('./UpgradeForm', () => ({ default: () => 'UpgradeForm' }))
 const plans = [
   {
     marketingName: 'Basic',
-    value: 'users-free',
+    value: Plans.USERS_FREE,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -29,11 +29,13 @@ const plans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
-    billingRate: 'monthly',
+    value: Plans.USERS_PR_INAPPM,
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -42,11 +44,13 @@ const plans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappy',
-    billingRate: 'annually',
+    value: Plans.USERS_PR_INAPPY,
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -55,11 +59,13 @@ const plans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisem',
-    billingRate: 'monthly',
+    value: Plans.USERS_ENTERPRISEM,
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -68,11 +74,13 @@ const plans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisey',
-    billingRate: 'annually',
+    value: Plans.USERS_ENTERPRISEY,
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -81,13 +89,15 @@ const plans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
 ]
 
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro Team',
-  value: 'users-sentrym',
-  billingRate: 'monthly',
+  value: Plans.USERS_SENTRYM,
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 12,
   benefits: [
     'Includes 5 seats',
@@ -97,12 +107,14 @@ const sentryPlanMonth = {
   ],
   monthlyUploadLimit: null,
   trialDays: 14,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const sentryPlanYear = {
   marketingName: 'Sentry Pro Team',
-  value: 'users-sentryy',
-  billingRate: 'annually',
+  value: Plans.USERS_SENTRYY,
+  billingRate: BillingRate.ANNUALLY,
   baseUnitPrice: 10,
   benefits: [
     'Includes 5 seats',
@@ -112,33 +124,39 @@ const sentryPlanYear = {
   ],
   monthlyUploadLimit: null,
   trialDays: 14,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const teamPlanMonth = {
   baseUnitPrice: 6,
   benefits: ['Up to 10 users'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamm',
+  value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanYear = {
   baseUnitPrice: 5,
   benefits: ['Up to 10 users'],
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamy',
+  value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -190,31 +208,42 @@ afterAll(() => {
 describe('UpgradePlanPage', () => {
   function setup(
     {
-      planValue = Plans.USERS_INAPPY,
+      planValue = Plans.USERS_PR_INAPPY,
       periodEnd = undefined,
       includeSentryPlans = false,
       includeTeamPlans = false,
     } = {
-      planValue: Plans.USERS_INAPPY,
+      planValue: Plans.UUSERS_PR_INAPPY,
       periodEnd: undefined,
       includeSentryPlans: false,
       includeTeamPlans: false,
     }
   ) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
+                isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
+                isFreePlan: planValue === Plans.USERS_DEVELOPER,
+                isProPlan: planValue === Plans.USERS_PR_INAPPY,
+                isTrialPlan: planValue === Plans.USERS_TRIAL,
+                isSentryPlan:
+                  planValue === Plans.USERS_SENTRYY ||
+                  planValue === Plans.USERS_SENTRYM,
+                value: planValue,
               },
             },
           },
         })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         if (includeSentryPlans) {
           return HttpResponse.json({
             data: {
@@ -235,7 +264,7 @@ describe('UpgradePlanPage', () => {
           })
         }
       }),
-      http.get('/internal/gh/codecov/account-details', (info) => {
+      http.get('/internal/gh/codecov/account-details', () => {
         if (planValue === Plans.USERS_SENTRYY) {
           return HttpResponse.json({
             plan: sentryPlanYear,
@@ -272,7 +301,7 @@ describe('UpgradePlanPage', () => {
       setup()
     })
 
-    it('renders the basic plan title', async () => {
+    it('renders the developers plan title', async () => {
       render(<UpgradePlanPage />, { wrapper: wrapper() })
 
       const title = await screen.findByText(/Pro Team/)
@@ -297,8 +326,8 @@ describe('UpgradePlanPage', () => {
   })
 
   describe('when rendered with a free plan', () => {
-    it('renders the basic plan title', async () => {
-      setup({ planValue: Plans.USERS_BASIC })
+    it('renders the developers plan title', async () => {
+      setup({ planValue: Plans.USERS_DEVELOPER })
 
       render(<UpgradePlanPage />, { wrapper: wrapper() })
 
@@ -307,7 +336,7 @@ describe('UpgradePlanPage', () => {
     })
 
     it('does not render a cancel plan link', async () => {
-      setup({ planValue: Plans.USERS_BASIC })
+      setup({ planValue: Plans.USERS_DEVELOPER })
 
       render(<UpgradePlanPage />, { wrapper: wrapper() })
 
@@ -318,7 +347,7 @@ describe('UpgradePlanPage', () => {
     })
 
     it('does not render upgrade banner', async () => {
-      setup({ planValue: Plans.USERS_BASIC })
+      setup({ planValue: Plans.USERS_DEVELOPER })
 
       render(<UpgradePlanPage />, { wrapper: wrapper() })
 
@@ -330,7 +359,7 @@ describe('UpgradePlanPage', () => {
 
     describe('when rendered with a team plan search param', () => {
       it('renders the team plan title', async () => {
-        setup({ planValue: Plans.USERS_BASIC, includeTeamPlans: true })
+        setup({ planValue: Plans.USERS_DEVELOPER, includeTeamPlans: true })
         render(<UpgradePlanPage />, {
           wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
         })
@@ -340,7 +369,7 @@ describe('UpgradePlanPage', () => {
       })
 
       it('renders the team plan price', async () => {
-        setup({ planValue: Plans.USERS_BASIC, includeTeamPlans: true })
+        setup({ planValue: Plans.USERS_DEVELOPER, includeTeamPlans: true })
         render(<UpgradePlanPage />, {
           wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
         })
@@ -353,7 +382,7 @@ describe('UpgradePlanPage', () => {
       })
 
       it('renders the team plan benefits', async () => {
-        setup({ planValue: Plans.USERS_BASIC, includeTeamPlans: true })
+        setup({ planValue: Plans.USERS_DEVELOPER, includeTeamPlans: true })
         render(<UpgradePlanPage />, {
           wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
         })

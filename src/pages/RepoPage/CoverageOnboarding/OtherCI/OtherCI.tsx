@@ -1,10 +1,10 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useOrgUploadToken } from 'services/orgUploadToken'
+import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { useRepo } from 'services/repo'
-import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
@@ -13,6 +13,11 @@ import { InstructionBox } from './TerminalInstructions'
 
 import ExampleBlurb from '../ExampleBlurb'
 import LearnMoreBlurb from '../LearnMoreBlurb'
+import OutputCoverageStep from '../OutputCoverageStep/OutputCoverageStep'
+import {
+  Framework,
+  UseFrameworkInstructions,
+} from '../UseFrameworkInstructions'
 
 interface URLParams {
   provider: string
@@ -21,15 +26,11 @@ interface URLParams {
 }
 
 function OtherCI() {
-  const { newRepoFlag: showOrgToken } = useFlags({
-    newRepoFlag: false,
-  })
   const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
   const { data: orgUploadToken } = useOrgUploadToken({
     provider,
     owner,
-    enabled: showOrgToken,
   })
 
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken ?? ''
@@ -40,12 +41,25 @@ function OtherCI() {
     orgUploadToken ? ` -r ${owner}/${repo}` : ''
   }`
 
+  const [framework, setFramework] = useState<Framework>('Jest')
+  const frameworkInstruction = UseFrameworkInstructions({
+    orgUploadToken,
+    owner,
+    repo,
+  })
+
   return (
-    <div className="flex flex-col gap-6">
-      <Step1 tokenCopy={tokenCopy} uploadToken={uploadToken} />
-      <Step2 />
-      <Step3 uploadCommand={uploadCommand} />
-      <Step4 />
+    <div className="flex flex-col gap-5">
+      <OutputCoverageStep
+        framework={framework}
+        frameworkInstructions={frameworkInstruction}
+        ciProvider="Codecov CLI"
+        setFramework={setFramework}
+      />
+      <TokenStep tokenCopy={tokenCopy} uploadToken={uploadToken} />
+      <InstallStep />
+      <UploadStep uploadCommand={uploadCommand} />
+      <MergeStep />
       <FeedbackCTA />
       <LearnMoreBlurb />
     </div>
@@ -54,17 +68,17 @@ function OtherCI() {
 
 export default OtherCI
 
-interface Step1Props {
+interface TokenStepProps {
   tokenCopy: string
   uploadToken: string
 }
 
-function Step1({ tokenCopy, uploadToken }: Step1Props) {
+function TokenStep({ tokenCopy, uploadToken }: TokenStepProps) {
   return (
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 1: add {tokenCopy} token as a secret to your CI Provider
+          Step 2: add {tokenCopy} token as a secret to your CI Provider
         </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
@@ -81,12 +95,12 @@ function Step1({ tokenCopy, uploadToken }: Step1Props) {
   )
 }
 
-function Step2() {
+function InstallStep() {
   return (
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 2: add the{' '}
+          Step 3: add the{' '}
           <A
             to={{ pageName: 'uploader' }}
             data-testid="uploader"
@@ -105,16 +119,16 @@ function Step2() {
   )
 }
 
-interface Step3Props {
+interface UploadStepProps {
   uploadCommand: string
 }
 
-function Step3({ uploadCommand }: Step3Props) {
+function UploadStep({ uploadCommand }: UploadStepProps) {
   return (
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 3: upload coverage to Codecov via the CLI after your tests have
+          Step 4: upload coverage to Codecov via the CLI after your tests have
           run
         </Card.Title>
       </Card.Header>
@@ -126,12 +140,12 @@ function Step3({ uploadCommand }: Step3Props) {
   )
 }
 
-function Step4() {
+function MergeStep() {
   return (
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 4: merge to main or your preferred feature branch
+          Step 5: merge to main or your preferred feature branch
         </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">

@@ -129,7 +129,7 @@ describe('FailedTestsTab', () => {
     isPrivate?: boolean
   }) {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         if (testEnabled) {
           return HttpResponse.json({
             data: mockRepoOverview({

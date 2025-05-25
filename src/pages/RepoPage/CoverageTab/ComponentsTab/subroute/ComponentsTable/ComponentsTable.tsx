@@ -87,7 +87,7 @@ const columns = [
     cell: ({ renderValue }) => renderValue(),
   }),
   columnHelper.accessor('coverage', {
-    header: () => 'Coverage %',
+    header: () => 'Last aggregated coverage %',
     cell: ({ renderValue }) => renderValue(),
   }),
   columnHelper.accessor('trend', {

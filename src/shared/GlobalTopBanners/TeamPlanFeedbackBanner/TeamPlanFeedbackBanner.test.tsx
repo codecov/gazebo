@@ -6,25 +6,7 @@ import { setupServer } from 'msw/node'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import TeamPlanFeedbackBanner from './TeamPlanFeedbackBanner'
-
-const mockTeamTier = {
-  owner: {
-    plan: {
-      tierName: TierNames.TEAM,
-    },
-  },
-}
-
-const mockProTier = {
-  owner: {
-    plan: {
-      tierName: TierNames.PRO,
-    },
-  },
-}
 
 console.error = () => {}
 
@@ -59,17 +41,22 @@ const wrapper =
   )
 
 describe('TeamPlanFeedbackBanner', () => {
-  function setup(isPro = false) {
+  function setup({ isTeamPlan = true } = {}) {
     const user = userEvent.setup()
     const mockSetItem = vi.spyOn(window.localStorage.__proto__, 'setItem')
     const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
-      graphql.query('OwnerTier', (info) => {
-        if (isPro) {
-          return HttpResponse.json({ data: mockProTier })
-        }
-        return HttpResponse.json({ data: mockTeamTier })
+      graphql.query('IsTeamPlan', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              plan: {
+                isTeamPlan,
+              },
+            },
+          },
+        })
       })
     )
 
@@ -139,7 +126,7 @@ describe('TeamPlanFeedbackBanner', () => {
 
   describe('user is not on team plan', () => {
     it('does not render banner', async () => {
-      setup(true)
+      setup({ isTeamPlan: false })
       const { container } = render(<TeamPlanFeedbackBanner />, {
         wrapper: wrapper('/gh/codecov'),
       })

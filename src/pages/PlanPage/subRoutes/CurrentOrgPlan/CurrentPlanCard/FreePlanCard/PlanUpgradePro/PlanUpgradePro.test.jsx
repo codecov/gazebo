@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { BillingRate, Plans } from 'shared/utils/billing'
+
 import PlanUpgradePro from './PlanUpgradePro'
 
 vi.mock('../ProPlanSubheading', () => ({ default: () => 'Pro Subheading' }))
@@ -14,7 +16,7 @@ vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
 const plansWithoutSentryOptions = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -26,8 +28,8 @@ const plansWithoutSentryOptions = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
-    billingRate: 'monthly',
+    value: Plans.USERS_PR_INAPPM,
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 789,
     benefits: [
       'Configurable # of users',
@@ -39,8 +41,8 @@ const plansWithoutSentryOptions = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappy',
-    billingRate: 'annually',
+    value: Plans.USERS_PR_INAPPY,
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 456,
     benefits: [
       'Configurable # of users',
@@ -55,7 +57,7 @@ const plansWithoutSentryOptions = [
 const plansWithSentryOptions = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -67,8 +69,8 @@ const plansWithSentryOptions = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
-    billingRate: 'monthly',
+    value: Plans.USERS_PR_INAPPM,
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -80,8 +82,8 @@ const plansWithSentryOptions = [
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappy',
-    billingRate: 'annually',
+    value: Plans.USERS_PR_INAPPY,
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -93,7 +95,7 @@ const plansWithSentryOptions = [
   },
   {
     marketingName: 'Sentry',
-    value: 'users-sentrym',
+    value: Plans.USERS_SENTRYM,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: ['Includes 5 seats', 'Unlimited public repositories'],
@@ -101,7 +103,7 @@ const plansWithSentryOptions = [
   },
   {
     marketingName: 'Sentry',
-    value: 'users-sentryy',
+    value: Plans.USERS_SENTRYY,
     billingRate: null,
     baseUnitPrice: 123,
     benefits: ['Includes 5 seats', 'Unlimited private repositories'],

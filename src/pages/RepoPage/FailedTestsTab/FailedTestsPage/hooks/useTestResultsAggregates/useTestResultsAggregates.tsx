@@ -3,16 +3,19 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
-import { RepoNotFoundErrorSchema } from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
 import Api from 'shared/api'
-import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
+import { Plans } from 'shared/utils/billing'
 
 const TestResultsAggregatesSchema = z.object({
   owner: z
     .object({
       plan: z
         .object({
-          value: z.string(),
+          value: z.nativeEnum(Plans),
+          isFreePlan: z.boolean(),
+          isTeamPlan: z.boolean(),
         })
         .nullable(),
       repository: z.discriminatedUnion('__typename', [
@@ -54,6 +57,8 @@ const query = `
     owner(username: $owner) {
       plan {
         value
+        isFreePlan
+        isTeamPlan
       }
       repository: repository(name: $repo) {
         __typename
@@ -110,31 +115,31 @@ export const useTestResultsAggregates = ({
           interval,
         },
       }).then((res) => {
+        const callingFn = 'useTestResultsAggregates'
         const parsedData = TestResultsAggregatesSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useTestResultsAggregates - 404 Failed to parse data',
-            error: parsedData.error,
-          } satisfies NetworkErrorObject)
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedData.error },
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useTestResultsAggregates - 404 Not found error',
-          } satisfies NetworkErrorObject)
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn },
+          })
         }
 
         return {
           testResultsAggregates:
             data?.owner?.repository?.testAnalytics?.testResultsAggregates,
-          plan: data?.owner?.plan?.value,
+          planName: data?.owner?.plan?.value,
+          isFreePlan: data?.owner?.plan?.isFreePlan,
+          isTeamPlan: data?.owner?.plan?.isTeamPlan,
           private: data?.owner?.repository?.private,
           defaultBranch: data?.owner?.repository?.defaultBranch,
         }

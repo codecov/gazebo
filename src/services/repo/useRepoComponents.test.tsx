@@ -5,8 +5,6 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import A from 'ui/A'
-
 import { useRepoComponents } from './useRepoComponents'
 
 const queryClient = new QueryClient({
@@ -76,7 +74,7 @@ describe('ComponentMeasurements', () => {
     isNotFoundError = false,
   } = {}) {
     server.use(
-      graphql.query('ComponentMeasurements', (info) => {
+      graphql.query('ComponentMeasurements', () => {
         if (isSchemaInvalid) {
           return HttpResponse.json({})
         }
@@ -133,9 +131,7 @@ describe('ComponentMeasurements', () => {
               after: '2021-09-01',
               before: '2021-09-30',
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         await waitFor(() =>
@@ -166,17 +162,16 @@ describe('ComponentMeasurements', () => {
             after: '2021-09-01',
             before: '2021-09-30',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 404,
-          data: {},
-          dev: 'useRepoComponents - 404 failed to parse',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useRepoComponents - Parsing Error',
+            status: 400,
+          })
+        )
       )
     })
   })
@@ -200,17 +195,16 @@ describe('ComponentMeasurements', () => {
             after: '2021-09-01',
             before: '2021-09-30',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 404,
-          data: {},
-          dev: 'useRepoComponents - 404 NotFoundError',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useRepoComponents - Not Found Error',
+            status: 404,
+          })
+        )
       )
     })
   })
@@ -234,31 +228,16 @@ describe('ComponentMeasurements', () => {
             after: '2021-09-01',
             before: '2021-09-30',
           }),
-        {
-          wrapper,
-        }
+        { wrapper }
       )
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 403,
-          data: {
-            detail: (
-              <p>
-                Activation is required to view this repo, please{' '}
-                <A
-                  to={{ pageName: 'membersTab' }}
-                  hook="activate-members"
-                  isExternal={false}
-                >
-                  click here{' '}
-                </A>{' '}
-                to activate your account.
-              </p>
-            ),
-          },
-          dev: 'useRepoComponents - 403 OwnerNotActivatedError',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useRepoComponents - Owner Not Activated',
+            status: 403,
+          })
+        )
       )
     })
   })

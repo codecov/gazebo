@@ -203,7 +203,7 @@ describe('TitleFlags', () => {
   interface SetupArgs {
     isIntersecting?: boolean
     noNextPage?: boolean
-    backfillData?: {}
+    backfillData?: object
   }
 
   function setup(
@@ -234,7 +234,7 @@ describe('TitleFlags', () => {
 
         return HttpResponse.json({ data: mockFirstResponse })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: backfillData })
       })
     )
@@ -248,8 +248,12 @@ describe('TitleFlags', () => {
 
       render(<TitleFlags />, { wrapper })
 
-      const select = await screen.findByText('All flags')
+      const select = await screen.findByRole('button', {
+        name: 'Filter by flags',
+      })
       expect(select).toBeInTheDocument()
+
+      await waitFor(() => expect(select).not.toHaveAttribute('disabled'))
       await user.click(select)
 
       const flag1 = await screen.findByText('flag-1')

@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
@@ -6,6 +10,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
+
+import { Plans } from 'shared/utils/billing'
 
 import Access from './Access'
 
@@ -29,13 +35,12 @@ const mockSignedInUser = {
       student: false,
       studentCreatedAt: null,
       studentUpdatedAt: null,
-      customerIntent: 'PERSONAL',
     },
     trackingMetadata: {
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: 'users-basic',
+      plan: Plans.USERS_DEVELOPER,
       staff: false,
       hasYaml: false,
       bot: null,
@@ -79,31 +84,32 @@ const mockSessionInfo = {
 }
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-    },
-  },
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 let testLocation: ReturnType<typeof useLocation>
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/account/gh/janedoe/access') =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Suspense fallback={<p>loading</p>}>
-          <Route path="/account/:provider/:owner/access">{children}</Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
-        </Suspense>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Suspense fallback={<p>loading</p>}>
+            <Route path="/account/:provider/:owner/access">{children}</Route>
+            <Route
+              path="*"
+              render={({ location }) => {
+                testLocation = location
+                return null
+              }}
+            />
+          </Suspense>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 const server = setupServer()
@@ -113,6 +119,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -125,13 +132,13 @@ describe('AccessTab', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('MySessions', (info) => {
+      graphql.query('MySessions', () => {
         return HttpResponse.json({ data: mockSessionInfo })
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: mockSignedInUser })
       }),
-      graphql.mutation('DeleteSession', (info) => {
+      graphql.mutation('DeleteSession', () => {
         return HttpResponse.json({ data: {} })
       })
     )

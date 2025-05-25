@@ -1,8 +1,8 @@
 import isUndefined from 'lodash/isUndefined'
 import { useMemo, useState } from 'react'
 
-import { useLocationParams } from 'services/navigation'
-import { usePullComponents } from 'services/pull'
+import { useLocationParams } from 'services/navigation/useLocationParams'
+import { usePullComponents } from 'services/pull/usePullComponents'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 
@@ -25,7 +25,7 @@ function ComponentsSelector() {
   })
 
   const components = useMemo(() => {
-    return data?.pull?.compareWithBase.__typename === 'Comparison'
+    return data?.pull?.compareWithBase?.__typename === 'Comparison'
       ? data?.pull?.compareWithBase?.componentComparisons
       : []
   }, [data])
@@ -42,7 +42,7 @@ function ComponentsSelector() {
     try {
       const regex = new RegExp(componentSearch, 'i')
       return Array.from(names).filter((name: string) => regex.test(name))
-    } catch (e) {
+    } catch (_e) {
       return Array.from(names).filter((name: string) =>
         name.toLowerCase().includes(componentSearch.toLowerCase())
       )
@@ -56,7 +56,7 @@ function ComponentsSelector() {
   return (
     <div className="w-full sm:w-60">
       <MultiSelect
-        // @ts-expect-error
+        // @ts-expect-error - MultiSelect hasn't been typed yet
         disabled={false}
         dataMarketing="coverage-tab-component-multi-select"
         hook="coverage-tab-component-multi-select"
@@ -65,12 +65,12 @@ function ComponentsSelector() {
         resourceName="component"
         isLoading={isLoading}
         selectedItemsOverride={selectedComponents}
-        onChange={(components: String[]) => {
+        onChange={(components: string[]) => {
           setSelectedComponents(components)
           updateParams({ components })
         }}
         onSearch={(term: string) => setComponentSearch(term)}
-        renderSelected={(selectedItems: String[]) => (
+        renderSelected={(selectedItems: string[]) => (
           <span className="flex items-center gap-2">
             <Icon variant="solid" name="database" />
             {selectedItems.length === 0 ? (

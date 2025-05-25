@@ -1,39 +1,43 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
+import { SelfHostedCurrentUserQueryOpts } from 'services/selfHosted/SelfHostedCurrentUserQueryOpts'
+import { SelfHostedSeatsConfigQueryOpts } from 'services/selfHosted/SelfHostedSeatsConfigQueryOpts'
+
 import { useSelfActivationMutation } from './useSelfActivationMutation'
 
-const queryClient = new QueryClient({
-  logger: {
-    error: () => {},
-  },
-  defaultOptions: {
-    retry: false,
-  },
+const queryClientV5 = new QueryClientV5({
+  logger: { error: () => {} },
+  defaultOptions: { retry: false },
 })
-const server = setupServer()
 
 const wrapper =
   (initialEntries = '/gh') =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProviderV5 client={queryClientV5}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <Route path="/:provider">{children}</Route>
       </MemoryRouter>
-    </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
+const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
-beforeEach(() => {
-  queryClient.clear()
+
+afterEach(() => {
+  queryClientV5.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -42,25 +46,22 @@ describe('useSelfActivationMutation', () => {
   describe('on a successful call', () => {
     describe('user can activate themselves', () => {
       beforeEach(() => {
-        queryClient.setQueryData(['Seats'], {
-          data: {
-            config: {
-              seatsUsed: 0,
-              seatsLimit: 10,
-            },
-          },
-        })
+        queryClientV5.setQueryData(
+          SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey,
+          { data: { config: { seatsUsed: 0, seatsLimit: 10 } } }
+        )
 
-        queryClient.setQueryData(['SelfHostedCurrentUser'], {
-          activated: false,
-        })
+        queryClientV5.setQueryData(
+          SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey,
+          { activated: false }
+        )
 
         const mockUser = {
           activated: false,
         }
 
         server.use(
-          http.get('/internal/users/current', (info) => {
+          http.get('/internal/users/current', () => {
             return HttpResponse.json(mockUser)
           }),
           http.patch('/internal/users/current', async (info) => {
@@ -75,21 +76,27 @@ describe('useSelfActivationMutation', () => {
 
       it('updates query data', async () => {
         const { result } = renderHook(
-          () => useSelfActivationMutation({ queryClient, canChange: true }),
+          () => useSelfActivationMutation({ canChange: true }),
           { wrapper: wrapper() }
         )
 
         act(() => result.current.mutate(true))
 
         await waitFor(() =>
-          expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+          expect(
+            queryClientV5.getQueryData(
+              SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey
+            )
+          ).toStrictEqual({
             data: { config: { seatsUsed: 1, seatsLimit: 10 } },
           })
         )
 
         await waitFor(() =>
           expect(
-            queryClient.getQueryData(['SelfHostedCurrentUser'])
+            queryClientV5.getQueryData(
+              SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey
+            )
           ).toStrictEqual({ activated: true })
         )
       })
@@ -97,25 +104,22 @@ describe('useSelfActivationMutation', () => {
 
     describe('user can deactivate themselves', () => {
       beforeEach(() => {
-        queryClient.setQueryData(['Seats'], {
-          data: {
-            config: {
-              seatsUsed: 1,
-              seatsLimit: 10,
-            },
-          },
-        })
+        queryClientV5.setQueryData(
+          SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey,
+          { data: { config: { seatsUsed: 1, seatsLimit: 10 } } }
+        )
 
-        queryClient.setQueryData(['SelfHostedCurrentUser'], {
-          activated: true,
-        })
+        queryClientV5.setQueryData(
+          SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey,
+          { activated: true }
+        )
 
         const mockUser = {
           activated: true,
         }
 
         server.use(
-          http.get('/internal/users/current', (info) => {
+          http.get('/internal/users/current', () => {
             return HttpResponse.json(mockUser)
           }),
           http.patch('/internal/users/current', async (info) => {
@@ -129,21 +133,27 @@ describe('useSelfActivationMutation', () => {
 
       it('updates query data', async () => {
         const { result } = renderHook(
-          () => useSelfActivationMutation({ queryClient, canChange: true }),
+          () => useSelfActivationMutation({ canChange: true }),
           { wrapper: wrapper() }
         )
 
         act(() => result.current.mutate(false))
 
         await waitFor(() =>
-          expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+          expect(
+            queryClientV5.getQueryData(
+              SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey
+            )
+          ).toStrictEqual({
             data: { config: { seatsUsed: 0, seatsLimit: 10 } },
           })
         )
 
         await waitFor(() =>
           expect(
-            queryClient.getQueryData(['SelfHostedCurrentUser'])
+            queryClientV5.getQueryData(
+              SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey
+            )
           ).toStrictEqual({ activated: false })
         )
       })
@@ -151,25 +161,22 @@ describe('useSelfActivationMutation', () => {
 
     describe('user cannot change their status', () => {
       beforeEach(() => {
-        queryClient.setQueryData(['Seats'], {
-          data: {
-            config: {
-              seatsUsed: 10,
-              seatsLimit: 10,
-            },
-          },
-        })
+        queryClientV5.setQueryData(
+          SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey,
+          { data: { config: { seatsUsed: 10, seatsLimit: 10 } } }
+        )
 
-        queryClient.setQueryData(['SelfHostedCurrentUser'], {
-          activated: false,
-        })
+        queryClientV5.setQueryData(
+          SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey,
+          { activated: false }
+        )
 
         const mockUser = {
           activated: false,
         }
 
         server.use(
-          http.get('/internal/users/current', (info) => {
+          http.get('/internal/users/current', () => {
             return HttpResponse.json(mockUser)
           }),
           http.patch('/internal/users/current', async (info) => {
@@ -184,21 +191,27 @@ describe('useSelfActivationMutation', () => {
 
       it('does not change the query data', async () => {
         const { result } = renderHook(
-          () => useSelfActivationMutation({ queryClient, canChange: false }),
+          () => useSelfActivationMutation({ canChange: false }),
           { wrapper: wrapper() }
         )
 
         act(() => result.current.mutate(false))
 
         await waitFor(() =>
-          expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+          expect(
+            queryClientV5.getQueryData(
+              SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey
+            )
+          ).toStrictEqual({
             data: { config: { seatsUsed: 10, seatsLimit: 10 } },
           })
         )
 
         await waitFor(() =>
           expect(
-            queryClient.getQueryData(['SelfHostedCurrentUser'])
+            queryClientV5.getQueryData(
+              SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey
+            )
           ).toStrictEqual({ activated: false })
         )
       })
@@ -207,28 +220,25 @@ describe('useSelfActivationMutation', () => {
 
   describe('on an unsuccessful call', () => {
     beforeEach(() => {
-      queryClient.setQueryData(['Seats'], {
-        data: {
-          config: {
-            seatsUsed: 1,
-            seatsLimit: 10,
-          },
-        },
-      })
+      queryClientV5.setQueryData(
+        SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey,
+        { data: { config: { seatsUsed: 1, seatsLimit: 10 } } }
+      )
 
-      queryClient.setQueryData(['SelfHostedCurrentUser'], {
-        activated: true,
-      })
+      queryClientV5.setQueryData(
+        SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey,
+        { activated: true }
+      )
 
       const mockUser = {
         activated: true,
       }
 
       server.use(
-        http.get('/internal/users/current', (req, res, ctx) => {
+        http.get('/internal/users/current', () => {
           return HttpResponse.json(mockUser)
         }),
-        http.patch('/internal/users/current', (req, res, ctx) => {
+        http.patch('/internal/users/current', () => {
           return HttpResponse.json({}, { status: 400 })
         })
       )
@@ -236,14 +246,18 @@ describe('useSelfActivationMutation', () => {
 
     it('reverts to old query data', async () => {
       const { result } = renderHook(
-        () => useSelfActivationMutation({ queryClient, canChange: true }),
+        () => useSelfActivationMutation({ canChange: true }),
         { wrapper: wrapper() }
       )
 
       act(() => result.current.mutate(false))
 
       await waitFor(() =>
-        expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+        expect(
+          queryClientV5.getQueryData(
+            SelfHostedSeatsConfigQueryOpts({ provider: 'gh' }).queryKey
+          )
+        ).toStrictEqual({
           data: { config: { seatsUsed: 1, seatsLimit: 10 } },
         })
       )
@@ -251,7 +265,9 @@ describe('useSelfActivationMutation', () => {
       await waitFor(() => result.current.isError)
       await waitFor(() =>
         expect(
-          queryClient.getQueryData(['SelfHostedCurrentUser'])
+          queryClientV5.getQueryData(
+            SelfHostedCurrentUserQueryOpts({ provider: 'gh' }).queryKey
+          )
         ).toStrictEqual({ activated: true })
       )
     })

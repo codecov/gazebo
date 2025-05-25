@@ -1,7 +1,9 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
 import { usePlanUpdatedNotification } from 'pages/PlanPage/context'
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { Provider } from 'shared/api/helpers'
 import { getScheduleStart } from 'shared/plan/ScheduledPlanDetails/ScheduledPlanDetails'
 import A from 'ui/A'
 import { Alert } from 'ui/Alert'
@@ -9,13 +11,14 @@ import { Alert } from 'ui/Alert'
 import AccountOrgs from './AccountOrgs'
 import BillingDetails from './BillingDetails'
 import CurrentPlanCard from './CurrentPlanCard'
-import { useEnterpriseAccountDetails } from './hooks/useEnterpriseAccountDetails'
 import InfoAlertCancellation from './InfoAlertCancellation'
 import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 import LatestInvoiceCard from './LatestInvoiceCard'
+import { EnterpriseAccountDetailsQueryOpts } from './queries/EnterpriseAccountDetailsQueryOpts'
+import { useCurrentOrgPlanPageData } from './useCurrentOrgPlanPageData'
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 
@@ -25,21 +28,41 @@ function CurrentOrgPlan() {
     provider,
     owner,
   })
-  const { data: enterpriseDetails } = useEnterpriseAccountDetails({
+
+  const { data } = useCurrentOrgPlanPageData({
     provider,
     owner,
   })
 
+  const { data: enterpriseDetails } = useSuspenseQueryV5(
+    EnterpriseAccountDetailsQueryOpts({
+      provider,
+      owner,
+    })
+  )
+
+  const hasUnverifiedPaymentMethods =
+    !!data?.billing?.unverifiedPaymentMethods?.length
+
+  // awaitingInitialPaymentMethodVerification is true if the
+  // customer needs to verify a delayed notification payment method
+  // like ACH for their first subscription
+  const awaitingInitialPaymentMethodVerification =
+    !accountDetails?.subscriptionDetail?.defaultPaymentMethod &&
+    hasUnverifiedPaymentMethods
+
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
-  const isDelinquent = accountDetails?.delinquent
+  const isDelinquent =
+    accountDetails?.delinquent && !awaitingInitialPaymentMethodVerification
   const scheduleStart = scheduledPhase
     ? getScheduleStart(scheduledPhase)
     : undefined
 
   const shouldRenderBillingDetails =
-    (accountDetails?.planProvider !== 'github' &&
+    !awaitingInitialPaymentMethodVerification &&
+    ((accountDetails?.planProvider !== 'github' &&
       !accountDetails?.rootOrganization) ||
-    accountDetails?.usesInvoice
+      accountDetails?.usesInvoice)
 
   const planUpdatedNotification = usePlanUpdatedNotification()
 
@@ -52,16 +75,20 @@ function CurrentOrgPlan() {
           subscriptionDetail={accountDetails?.subscriptionDetail}
         />
       ) : null}
-      <InfoMessageStripeCallback />
+      <InfoMessageStripeCallback
+        awaitingInitialPaymentMethodVerification={
+          awaitingInitialPaymentMethodVerification
+        }
+      />
       {isDelinquent ? <DelinquentAlert /> : null}
-      {accountDetails?.plan ? (
+      {data?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
           {planUpdatedNotification.alertOption &&
           !planUpdatedNotification.isCancellation ? (
             <Alert variant={planUpdatedNotification.alertOption}>
               {scheduleStart && scheduledPhase?.quantity ? (
                 <>
-                  <Alert.Title>Plan successfully updated.</Alert.Title>
+                  <Alert.Title>Plan successfully updated</Alert.Title>
                   <Alert.Description>
                     The start date is {scheduleStart} with a monthly
                     subscription for {scheduledPhase.quantity} seats.
@@ -108,7 +135,7 @@ const AccountUsageAlert = ({
         <Alert.Title>Your account is using 100% of its seats</Alert.Title>
         <Alert.Description>
           You might want to add more seats for your team to ensure availability.{' '}
-          {/* @ts-expect-error */}
+          {/* @ts-expect-error - A hasn't been typed yet */}
           <A to={{ pageName: 'enterpriseSupport' }}>Contact support</A> to
           update your plan.
         </Alert.Description>
@@ -120,7 +147,7 @@ const AccountUsageAlert = ({
         <Alert.Title>Your account is using 90% of its seats</Alert.Title>
         <Alert.Description>
           You might want to add more seats for your team to ensure availability.{' '}
-          {/* @ts-expect-error */}
+          {/* @ts-expect-error - A hasn't been typed yet */}
           <A to={{ pageName: 'enterpriseSupport' }}>Contact support</A> to
           update your plan.
         </Alert.Description>
@@ -137,7 +164,8 @@ const DelinquentAlert = () => {
       <Alert variant={'error'}>
         <Alert.Title>Your most recent payment failed</Alert.Title>
         <Alert.Description>
-          Please try a different card or contact support at support@codecov.io.
+          Please try a different payment method or contact support at
+          support@codecov.io.
         </Alert.Description>
       </Alert>
       <br />

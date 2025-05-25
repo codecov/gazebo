@@ -5,11 +5,11 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 
 import DetailsSection from './DetailsSection'
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -33,6 +33,10 @@ beforeEach(() => {
   server.resetHandlers()
 })
 
+afterEach(() => {
+  vi.clearAllMocks()
+})
+
 afterAll(() => {
   server.close()
 })
@@ -43,7 +47,7 @@ describe('DetailsSection', () => {
     const mutate = vi.fn()
     const addNotification = vi.fn()
 
-    useAddNotification.mockReturnValue(addNotification)
+    vi.mocked(useAddNotification).mockReturnValue(addNotification)
     server.use(
       graphql.mutation('UpdateProfile', (info) => {
         mutate(info.variables)
@@ -52,15 +56,23 @@ describe('DetailsSection', () => {
           data: {
             updateProfile: {
               me: {
-                username: 'donald duck',
                 email: info.variables.input.email
                   ? info.variables.input.email
                   : 'donald@duck.com',
-                name: info.variables.input.name
-                  ? info.variables.input.name
-                  : 'donald duck',
-                avatarUrl: 'http://127.0.0.1/avatar-url',
-                onboardingCompleted: false,
+                onboardingCompleted: true,
+                privateAccess: null,
+                businessEmail: null,
+                user: {
+                  name: info.variables.input.name
+                    ? info.variables.input.name
+                    : 'donald duck',
+                  username: 'donald duck',
+                  avatarUrl: 'http://127.0.0.1/avatar-url',
+                  avatar: 'http://127.0.0.1/avatar-url',
+                  student: false,
+                  studentCreatedAt: null,
+                  studentUpdatedAt: null,
+                },
               },
             },
           },
@@ -218,10 +230,15 @@ describe('DetailsSection', () => {
         )
       })
     })
-
     describe('when mutation is not successful', () => {
       it('adds an error notification', async () => {
         const { user, addNotification } = setup()
+        server.use(
+          graphql.mutation('UpdateProfile', () => {
+            return HttpResponse.error()
+          })
+        )
+
         render(<DetailsSection name="donald duck" email="donald@duck.com" />, {
           wrapper,
         })

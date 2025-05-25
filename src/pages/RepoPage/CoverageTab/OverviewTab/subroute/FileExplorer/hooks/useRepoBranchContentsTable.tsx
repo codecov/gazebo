@@ -2,14 +2,13 @@ import qs, { ParsedQs } from 'qs'
 import { useMemo } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoBranchContents } from 'services/pathContents/branch/dir'
-import { PathContentDir, PathContentFile } from 'services/pathContents/pull/dir'
 import { useRepoOverview } from 'services/repo'
 import { displayTypeParameter } from 'shared/ContentsTable/constants'
 import BranchDirEntry from 'shared/ContentsTable/TableEntries/BranchEntries/BranchDirEntry'
 import BranchFileEntry from 'shared/ContentsTable/TableEntries/BranchEntries/BranchFileEntry'
-import { adjustListIfUpDir } from 'shared/ContentsTable/utils'
+import { adjustListIfUpDir, Row } from 'shared/ContentsTable/utils'
 import { useTreePaths } from 'shared/treePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
@@ -68,7 +67,7 @@ export function useRepoBranchContentsTable(sortItem?: {
 
   const urlPath = pathParam || ''
   // useLocationParams needs to be updated to have full types
-  // @ts-expect-error
+  // @ts-expect-error - type issues with useLocationParams
   const isSearching = !!params?.search
   const selectedDisplayType = determineDisplayType(
     queryParams?.displayType,
@@ -98,7 +97,13 @@ export function useRepoBranchContentsTable(sortItem?: {
     selectedDisplayType,
   ])
 
-  const { data: branchData, isLoading } = useRepoBranchContents({
+  const {
+    data: branchData,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useRepoBranchContents({
     provider,
     owner,
     repo,
@@ -110,100 +115,95 @@ export function useRepoBranchContentsTable(sortItem?: {
     },
   })
 
-  const indicationRange = branchData?.indicationRange
-
   const { treePaths } = useTreePaths()
 
   const finalizedTableRows = useMemo(() => {
-    const tableData = branchData?.results
+    if (branchData?.pages?.[0]?.pathContentsType !== 'PathContentConnection') {
+      return []
+    }
 
+    const tableData = branchData?.pages?.flatMap((page) => page?.results) ?? []
     if (!tableData?.length) {
       return []
     }
 
-    const rawTableRows = tableData.map(
-      (result: PathContentFile | PathContentDir) => {
-        let name
-        if (result?.__typename === 'PathContentDir') {
-          name = (
-            <BranchDirEntry
-              name={result.name}
-              branch={branch}
-              urlPath={urlPath}
-            />
-          )
-        } else if (result?.__typename === 'PathContentFile') {
-          name = (
-            <BranchFileEntry
-              name={result.name}
-              urlPath={urlPath}
-              branch={branch}
-              path={result.path}
-              displayType={selectedDisplayType}
-              isCriticalFile={result.isCriticalFile}
-            />
-          )
-        }
-        const lines = result.lines.toString()
-        const hits = result.hits.toString()
-        const partials = result.partials.toString()
-        const misses = result.misses.toString()
-        const coverage = (
-          <CoverageProgress
-            amount={result?.percentCovered}
-            color={determineProgressColor({
-              coverage: result.percentCovered,
-              lowerRange: indicationRange?.lowerRange || 0,
-              upperRange: indicationRange?.upperRange || 100,
-            })}
+    const indicationRange = branchData?.pages?.[0]?.indicationRange ?? {
+      lowerRange: 0,
+      upperRange: 100,
+    }
+
+    const rawTableRows = tableData.map((result) => {
+      if (!result) return null
+      let name
+      if (result.__typename === 'PathContentDir') {
+        name = (
+          <BranchDirEntry
+            name={result.name}
+            branch={branch}
+            urlPath={urlPath}
           />
         )
-
-        return {
-          name,
-          lines,
-          hits,
-          partials,
-          misses,
-          coverage,
-        }
+      } else if (result.__typename === 'PathContentFile') {
+        name = (
+          <BranchFileEntry
+            name={result.name}
+            urlPath={urlPath}
+            branch={branch}
+            path={result.path}
+            displayType={selectedDisplayType}
+          />
+        )
       }
-    )
+      const lines = result.lines.toString()
+      const hits = result.hits.toString()
+      const partials = result.partials.toString()
+      const misses = result.misses.toString()
+      const coverage = (
+        <CoverageProgress
+          amount={result.percentCovered}
+          color={determineProgressColor({
+            coverage: result.percentCovered,
+            lowerRange: indicationRange.lowerRange,
+            upperRange: indicationRange.upperRange,
+          })}
+        />
+      )
 
-    const adjustedTableData = adjustListIfUpDir({
-      treePaths,
-      displayType: selectedDisplayType,
-      rawTableRows,
+      return {
+        name,
+        lines,
+        hits,
+        partials,
+        misses,
+        coverage,
+      }
     })
 
-    return adjustedTableData
-  }, [
-    branchData?.results,
-    branch,
-    indicationRange,
-    treePaths,
-    urlPath,
-    selectedDisplayType,
-  ])
+    return adjustListIfUpDir({
+      treePaths,
+      displayType: selectedDisplayType,
+      rawTableRows: rawTableRows as Row[],
+    })
+  }, [branchData?.pages, branch, treePaths, urlPath, selectedDisplayType])
 
   return {
     data: finalizedTableRows ?? [],
-    indicationRange: branchData?.indicationRange,
+    indicationRange: branchData?.pages?.[0]?.indicationRange,
     // useLocationParams needs to be updated to have full types
-    // @ts-expect-error
-    hasFlagsSelected: params?.flags ? params?.flags?.length > 0 : false,
-    // @ts-expect-error
-    hasComponentsSelected: params?.components
-      ? // useLocationParams needs to be updated to have full types
-        // @ts-expect-error
-        params?.components?.length > 0
-      : false,
+    // @ts-expect-error - params is not defined
+    hasFlagsSelected: params?.flags?.length > 0,
+    // @ts-expect-error - params is not defined
+    hasComponentsSelected: params?.components?.length > 0,
     isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     branch,
     isSearching,
     isMissingHeadReport:
-      branchData?.pathContentsType === CommitErrorTypes.MISSING_HEAD_REPORT,
-    pathContentsType: branchData?.pathContentsType,
+      branchData?.pages?.[0]?.pathContentsType ===
+      CommitErrorTypes.MISSING_HEAD_REPORT,
+    pathContentsType: branchData?.pages?.[0]?.pathContentsType,
     urlPath,
   }
 }

@@ -46,7 +46,7 @@ describe('useInvoices', () => {
 
   function setup(hasError = false) {
     server.use(
-      graphql.query('Invoices', (info) => {
+      graphql.query('Invoices', () => {
         if (hasError) {
           return HttpResponse.json({ data: {} })
         }
@@ -79,13 +79,21 @@ describe('useInvoices', () => {
         vi.restoreAllMocks()
       })
 
-      it('fails to parse if bad data', async () => {
+      it('throws a 400', async () => {
         setup(true)
         const { result } = renderHook(() => useInvoices({ provider, owner }), {
           wrapper: wrapper(),
         })
 
         await waitFor(() => expect(result.current.error).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              dev: 'useInvoices - Parsing Error',
+              status: 400,
+            })
+          )
+        )
       })
     })
   })

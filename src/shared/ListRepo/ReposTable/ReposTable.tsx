@@ -1,3 +1,4 @@
+import { useInfiniteQuery as useInfiniteQueryV5 } from '@tanstack/react-queryV5'
 import {
   flexRender,
   getCoreRowModel,
@@ -7,23 +8,26 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { OrderingDirection, useRepos } from 'services/repos'
-import { TierNames, useTier } from 'services/tier'
+import {
+  OrderingDirection,
+  ReposQueryOpts,
+} from 'services/repos/ReposQueryOpts'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { useOwner, useUser } from 'services/user'
-import { ActiveContext } from 'shared/context'
 import { DEMO_REPO, formatDemoRepos, isNotNull } from 'shared/utils/demo'
+import { getFilteredRecentlyVisitedRepo } from 'shared/utils/getFilteredRecentlyVisitedRepo'
+import { transformStringToLocalStorageKey } from 'shared/utils/transformStringToLocalStorageKey'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
 import { getReposColumnsHelper } from './getReposColumnsHelper'
 
-import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
 
 interface URLParams {
@@ -113,19 +117,10 @@ const ReposTable = ({
   })
   const isCurrentUserPartOfOrg = ownerData?.isCurrentUserPartOfOrg
 
-  const { data: tierName } = useTier({
+  const { data: isTeamPlan } = useIsTeamPlan({
     provider,
     owner,
   })
-  const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
-
-  const repoDisplay = useContext(ActiveContext)
-  const activated =
-    repoDisplayOptions[
-      repoDisplay
-        .replace(/\s/g, '_')
-        .toUpperCase() as keyof typeof repoDisplayOptions
-    ]?.status
 
   // fetch owner repos
   const {
@@ -134,37 +129,84 @@ const ReposTable = ({
     hasNextPage,
     isLoading: isReposLoading,
     isFetchingNextPage,
-  } = useRepos({
-    provider,
-    owner,
-    activated,
-    sortItem: getOrderingDirection(sorting),
-    term: searchValue,
-    repoNames: filterValues,
-    isPublic: shouldDisplayPublicReposOnly,
-  })
+  } = useInfiniteQueryV5(
+    ReposQueryOpts({
+      provider,
+      owner,
+      sortItem: getOrderingDirection(sorting),
+      term: searchValue,
+      repoNames: filterValues,
+      isPublic: isTeamPlan === true ? true : null,
+    })
+  )
 
   // fetch demo repo(s)
-  const { data: demoReposData } = useRepos({
-    provider: DEMO_REPO.provider,
-    owner: DEMO_REPO.owner,
-    activated,
-    repoNames: [DEMO_REPO.repo],
-  })
+  const { data: demoReposData } = useInfiniteQueryV5(
+    ReposQueryOpts({
+      provider: DEMO_REPO.provider,
+      owner: DEMO_REPO.owner,
+      repoNames: [DEMO_REPO.repo],
+    })
+  )
+
+  const recentlyVisitedRepoName = localStorage.getItem(
+    `${transformStringToLocalStorageKey(owner)}_recently_visited`
+  )
+
+  const { data: recentlyVisitedRepoData } = useInfiniteQueryV5(
+    ReposQueryOpts({
+      provider,
+      owner,
+      repoNames: recentlyVisitedRepoName ? [recentlyVisitedRepoName] : [],
+    })
+  )
 
   const isMyOwnerPage = currentUser?.user?.username === owner
-  const includeDemo = mayIncludeDemo && !config.IS_SELF_HOSTED && isMyOwnerPage
 
   const tableData = useMemo(() => {
     const repos =
       reposData?.pages.flatMap((page) => page?.repos).filter(isNotNull) ?? []
 
+    const configuredRepos = repos.reduce(
+      (acc, repo) => (repo.coverageEnabled ? acc + 1 : acc),
+      0
+    )
+
+    const includeDemo =
+      mayIncludeDemo &&
+      !config.IS_SELF_HOSTED &&
+      isMyOwnerPage &&
+      configuredRepos < 2
+
     const demoRepos = includeDemo
       ? formatDemoRepos(demoReposData, searchValue)
       : []
 
-    return [...demoRepos, ...repos]
-  }, [reposData?.pages, demoReposData, includeDemo, searchValue])
+    const filteredRecentlyVisitedRepo = getFilteredRecentlyVisitedRepo(
+      recentlyVisitedRepoData?.pages[0]?.repos,
+      searchValue,
+      owner
+    )
+    // only filter out the recently visited repo from the repos list if we are including it
+    const filteredRepos = filteredRecentlyVisitedRepo
+      ? repos.filter((repo) => recentlyVisitedRepoName !== repo.name)
+      : repos
+
+    return [
+      ...demoRepos,
+      ...(filteredRecentlyVisitedRepo ? [filteredRecentlyVisitedRepo] : []),
+      ...filteredRepos,
+    ]
+  }, [
+    reposData?.pages,
+    demoReposData,
+    searchValue,
+    isMyOwnerPage,
+    mayIncludeDemo,
+    recentlyVisitedRepoData,
+    recentlyVisitedRepoName,
+    owner,
+  ])
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -174,8 +216,7 @@ const ReposTable = ({
 
   const table = useReactTable({
     columns: getReposColumnsHelper({
-      inactive: repoDisplay === repoDisplayOptions.NOT_CONFIGURED.text,
-      isCurrentUserPartOfOrg: isCurrentUserPartOfOrg,
+      isCurrentUserPartOfOrg: !!isCurrentUserPartOfOrg,
       owner,
     }),
     getCoreRowModel: getCoreRowModel(),
@@ -185,6 +226,8 @@ const ReposTable = ({
     },
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    enableSortingRemoval: false,
+    manualSorting: true,
   })
 
   if (!isReposLoading && isEmpty(tableData)) {

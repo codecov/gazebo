@@ -1,56 +1,54 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation as useMutationV5,
+  useQueryClient as useQueryClientV5,
+} from '@tanstack/react-queryV5'
 import z from 'zod'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { Provider } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
+
+import { OktaConfigQueryOpts } from '../queries/OktaConfigQueryOpts'
 
 const TOAST_DURATION = 10000
 
 const query = `
-  mutation SaveOktaConfig($input: SaveOktaConfigInput!) {
-    saveOktaConfig(input: $input) {
-      error {
-        __typename
-        ... on UnauthorizedError {
-          message
-          __typename
-        }
-        ... on ValidationError {
-          message
-          __typename
-        }
-        ... on UnauthenticatedError {
-          __typename
-          message
-        }
+mutation SaveOktaConfig($input: SaveOktaConfigInput!) {
+  saveOktaConfig(input: $input) {
+    error {
+      __typename
+      ... on UnauthorizedError {
+        message
+      }
+      ... on ValidationError {
+        message
+      }
+      ... on UnauthenticatedError {
+        message
       }
     }
   }
-`
+}`
+
+const ErrorUnionSchema = z.discriminatedUnion('__typename', [
+  z.object({
+    __typename: z.literal('UnauthorizedError'),
+    message: z.string(),
+  }),
+  z.object({
+    __typename: z.literal('ValidationError'),
+    message: z.string(),
+  }),
+  z.object({
+    __typename: z.literal('UnauthenticatedError'),
+    message: z.string(),
+  }),
+])
 
 const ResponseSchema = z.object({
-  saveOktaConfig: z
-    .object({
-      error: z
-        .union([
-          z.object({
-            __typename: z.literal('UnauthorizedError'),
-            message: z.string(),
-          }),
-          z.object({
-            __typename: z.literal('ValidationError'),
-            message: z.string(),
-          }),
-          z.object({
-            __typename: z.literal('UnauthenticatedError'),
-            message: z.string(),
-          }),
-        ])
-        .nullable(),
-    })
-    .nullable(),
+  saveOktaConfig: z.object({ error: ErrorUnionSchema.nullable() }).nullable(),
 })
 
 export const SaveOktaConfigMessage = () => (
@@ -64,7 +62,7 @@ export const SaveOktaConfigMessage = () => (
 )
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 
@@ -78,9 +76,9 @@ type MutationFnParams = {
 
 export const useUpdateOktaConfig = ({ provider, owner }: URLParams) => {
   const addToast = useAddNotification()
-  const queryClient = useQueryClient()
+  const queryClientV5 = useQueryClientV5()
 
-  return useMutation({
+  return useMutationV5({
     mutationFn: ({
       clientId,
       clientSecret,
@@ -105,28 +103,23 @@ export const useUpdateOktaConfig = ({ provider, owner }: URLParams) => {
       })
     },
     onSuccess: ({ data }) => {
+      const callingFn = 'useUpdateOktaConfig'
       const parsedData = ResponseSchema.safeParse(data)
+
       if (!parsedData.success) {
-        return Promise.reject({
-          status: 404,
-          data: {},
-          dev: 'useUpdateOktaConfig - 404 failed to parse',
-        } satisfies NetworkErrorObject)
+        return rejectNetworkError({
+          errorName: 'Parsing Error',
+          errorDetails: { callingFn, error: parsedData.error },
+        })
       }
 
       const error = parsedData.data.saveOktaConfig?.error
       if (error) {
-        if (
-          error.__typename === 'ValidationError' ||
-          error.__typename === 'UnauthorizedError' ||
-          error.__typename === 'UnauthenticatedError'
-        ) {
-          addToast({
-            type: 'error',
-            text: <SaveOktaConfigMessage />,
-            disappearAfter: TOAST_DURATION,
-          })
-        }
+        addToast({
+          type: 'error',
+          text: <SaveOktaConfigMessage />,
+          disappearAfter: TOAST_DURATION,
+        })
       } else {
         addToast({
           type: 'success',
@@ -143,7 +136,9 @@ export const useUpdateOktaConfig = ({ provider, owner }: URLParams) => {
       })
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['GetOktaConfig'])
+      queryClientV5.invalidateQueries(
+        OktaConfigQueryOpts({ provider, username: owner })
+      )
     },
     retry: false,
   })

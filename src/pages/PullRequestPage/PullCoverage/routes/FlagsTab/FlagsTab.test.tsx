@@ -4,14 +4,13 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { PullComparison } from 'services/pull'
+import { PullComparison } from 'services/pull/usePull'
 import { UploadTypeEnum } from 'shared/utils/commit'
 
 import FlagsTab from './FlagsTab'
 
 const mockImpactedFiles = [
   {
-    isCriticalFile: true,
     missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',

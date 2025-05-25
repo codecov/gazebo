@@ -73,11 +73,7 @@ const mockOwnerNotActivated = {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
@@ -112,7 +108,7 @@ describe('usePullBundleHeadList', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullBundleHeadList', (info) => {
+      graphql.query('PullBundleHeadList', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockRepoNotFound })
         } else if (isOwnerNotActivatedError) {
@@ -125,7 +121,7 @@ describe('usePullBundleHeadList', () => {
 
         return HttpResponse.json({ data: mockPullBundleList })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockRepoOverview })
       })
     )
@@ -225,6 +221,7 @@ describe('usePullBundleHeadList', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullBundleHeadList - Not Found Error',
             status: 404,
           })
         )
@@ -259,6 +256,7 @@ describe('usePullBundleHeadList', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullBundleHeadList - Owner Not Activated',
             status: 403,
           })
         )
@@ -276,7 +274,7 @@ describe('usePullBundleHeadList', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -293,7 +291,8 @@ describe('usePullBundleHeadList', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'usePullBundleHeadList - Parsing Error',
+            status: 400,
           })
         )
       )

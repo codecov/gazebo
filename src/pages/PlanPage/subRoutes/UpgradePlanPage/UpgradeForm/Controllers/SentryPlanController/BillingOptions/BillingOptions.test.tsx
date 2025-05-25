@@ -6,65 +6,67 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import BillingOptions from './BillingOptions'
 
-const availablePlans = [
-  {
-    marketingName: 'Basic',
-    value: 'users-basic',
-    billingRate: null,
-    baseUnitPrice: 0,
-    benefits: [
-      'Up to 5 users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-    ],
-    monthlyUploadLimit: 250,
-    trialDays: null,
-    quantity: 1,
-  },
-  {
-    marketingName: 'Sentry Pro Team',
-    value: 'users-sentrym',
-    billingRate: 'monthly',
-    baseUnitPrice: 12,
-    benefits: [
-      'Includes 5 seats',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-    trialDays: 14,
-    quantity: 10,
-  },
-  {
-    marketingName: 'Sentry Pro Team',
-    value: 'users-sentryy',
-    billingRate: 'annually',
-    baseUnitPrice: 10,
-    benefits: [
-      'Includes 5 seats',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-    trialDays: 14,
-    quantity: 10,
-  },
-]
+const freePlan = {
+  marketingName: 'Basic',
+  value: Plans.USERS_DEVELOPER,
+  billingRate: null,
+  baseUnitPrice: 0,
+  benefits: [
+    'Up to 1 user',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+  ],
+  monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
+}
+
+const sentryProTeamMonthly = {
+  marketingName: 'Sentry Pro Team',
+  value: Plans.USERS_SENTRYM,
+  billingRate: BillingRate.MONTHLY,
+  baseUnitPrice: 12,
+  benefits: [
+    'Includes 5 seats',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: true,
+}
+
+const sentryProTeamYearly = {
+  marketingName: 'Sentry Pro Team',
+  value: Plans.USERS_SENTRYY,
+  billingRate: BillingRate.ANNUALLY,
+  baseUnitPrice: 10,
+  benefits: [
+    'Includes 5 seats',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: true,
+}
+
+const availablePlans = [freePlan, sentryProTeamMonthly, sentryProTeamYearly]
 
 const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'annual',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Sentry',
   monthlyUploadLimit: 250,
-  value: 'test-plan',
+  value: Plans.USERS_SENTRYY,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -72,6 +74,12 @@ const mockPlanDataResponse = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: true,
+  isSentryPlan: true,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const server = setupServer()
@@ -103,10 +111,10 @@ afterAll(() => {
 describe('BillingOptions', () => {
   function setup() {
     server.use(
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({ data: { owner: { availablePlans } } })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: { hasPrivateRepos: true, plan: mockPlanDataResponse },
@@ -128,7 +136,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_SENTRYY}
+            newPlan={sentryProTeamYearly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -154,7 +162,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_SENTRYY}
+            newPlan={sentryProTeamYearly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -177,7 +185,7 @@ describe('BillingOptions', () => {
 
           render(
             <BillingOptions
-              newPlan={Plans.USERS_SENTRYY}
+              newPlan={sentryProTeamYearly}
               setFormValue={mockSetFormValue}
             />,
             {
@@ -194,7 +202,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              Plans.USERS_SENTRYM
+              sentryProTeamMonthly
             )
           )
         })
@@ -207,7 +215,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_SENTRYM}
+            newPlan={sentryProTeamMonthly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -231,7 +239,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_SENTRYM}
+            newPlan={sentryProTeamMonthly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -254,7 +262,7 @@ describe('BillingOptions', () => {
 
           render(
             <BillingOptions
-              newPlan={Plans.USERS_SENTRYM}
+              newPlan={sentryProTeamMonthly}
               setFormValue={mockSetFormValue}
             />,
             {
@@ -271,7 +279,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              Plans.USERS_SENTRYY
+              sentryProTeamYearly
             )
           )
         })

@@ -1,6 +1,10 @@
 import React from 'react'
 import { useParams } from 'react-router'
 
+import {
+  ADMIN_TOKEN_NOT_REQUIRED_BANNER,
+  MEMBER_TOKEN_NOT_REQUIRED_BANNER,
+} from 'pages/AccountSettings/tabs/OrgUploadToken/TokenlessSection'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
@@ -13,7 +17,7 @@ interface UseParams {
 
 const AdminTokenNotRequiredBanner: React.FC = () => {
   return (
-    <TopBanner localStorageKey="admin-token-not-required-banner">
+    <TopBanner localStorageKey={ADMIN_TOKEN_NOT_REQUIRED_BANNER}>
       <TopBanner.Start>
         <p className="items-center gap-1 md:flex">
           <span className="flex items-center gap-1 font-semibold">
@@ -41,7 +45,7 @@ const AdminTokenNotRequiredBanner: React.FC = () => {
 
 const MemberTokenNotRequiredBanner: React.FC = () => {
   return (
-    <TopBanner localStorageKey="member-token-not-required-banner">
+    <TopBanner localStorageKey={MEMBER_TOKEN_NOT_REQUIRED_BANNER}>
       <TopBanner.Start>
         <p className="items-center gap-1 md:flex">
           <span className="flex items-center gap-1 font-semibold">

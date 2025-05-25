@@ -5,12 +5,10 @@ import {
 import isArray from 'lodash/isArray'
 import { z } from 'zod'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BranchSchema = z.object({
@@ -37,16 +35,18 @@ const GetBranchesSchema = z.object({
       repository: z.discriminatedUnion('__typename', [
         z.object({
           __typename: z.literal('Repository'),
-          branches: z.object({
-            edges: z.array(
-              z
-                .object({
-                  node: BranchSchema,
-                })
-                .nullable()
-            ),
-            pageInfo: PageInfoSchema,
-          }),
+          branches: z
+            .object({
+              edges: z.array(
+                z
+                  .object({
+                    node: BranchSchema,
+                  })
+                  .nullable()
+              ),
+              pageInfo: PageInfoSchema,
+            })
+            .nullable(),
         }),
         RepoNotFoundErrorSchema,
         RepoOwnerNotActivatedErrorSchema,
@@ -55,41 +55,40 @@ const GetBranchesSchema = z.object({
     .nullable(),
 })
 
-const query = `
-  query GetBranches(
-    $owner: String!
-    $repo: String!
-    $after: String
-    $filters: BranchesSetFilters
-  ) {
-    owner(username: $owner) {
-      repository(name: $repo) {
-        __typename
-        ... on Repository {
-          branches(first: 20, after: $after, filters: $filters) {
-            edges {
-              node {
-                name
-                head {
-                  commitid
-                }
+const query = `query GetBranches(
+  $owner: String!
+  $repo: String!
+  $after: String
+  $filters: BranchesSetFilters
+) {
+  owner(username: $owner) {
+    repository(name: $repo) {
+      __typename
+      ... on Repository {
+        branches(first: 20, after: $after, filters: $filters) {
+          edges {
+            node {
+              name
+              head {
+                commitid
               }
             }
-            pageInfo {
-              hasNextPage
-              endCursor
-            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
-        ... on NotFoundError {
-          message
-        }
-        ... on OwnerNotActivatedError {
-          message
-        }
+      }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
       }
     }
-  }`
+  }
+}`
 
 type GetBranchesReturn = { branches: Branch[]; pageInfo: PageInfo | null }
 
@@ -140,45 +139,44 @@ export function useBranches({
           after: pageParam,
         },
       }).then((res) => {
+        const callingFn = 'useBranches'
         const parsedData = GetBranchesSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useBranches - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedData.error },
+          })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useBranches - 404 NotFoundError',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>
                   Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
+                  {/* @ts-expect-error - A hasn't been typed yet */}
                   <A to={{ pageName: 'membersTab' }}>click here </A> to activate
                   your account.
                 </p>
               ),
             },
-            dev: 'useBranches - 403 OwnerNotActivatedError',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         const edges = data?.owner?.repository?.branches?.edges
-        let branches: Branch[] = []
+        const branches: Branch[] = []
         if (isArray(edges)) {
           for (const edge of edges) {
             if (edge?.node) {

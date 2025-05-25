@@ -3,6 +3,8 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
+import { BillingRate, Plans } from 'shared/utils/billing'
+
 import { usePlanData } from './usePlanData'
 
 const mockTrialData = {
@@ -10,10 +12,10 @@ const mockTrialData = {
   plan: {
     baseUnitPrice: 10,
     benefits: [],
-    billingRate: 'monthly',
-    marketingName: 'Users Basic',
+    billingRate: BillingRate.MONTHLY,
+    marketingName: 'Users Developer',
     monthlyUploadLimit: 250,
-    value: 'users-basic',
+    value: Plans.USERS_DEVELOPER,
     trialStatus: 'ONGOING',
     trialStartDate: '2023-01-01T08:55:25',
     trialEndDate: '2023-01-10T08:55:25',
@@ -21,14 +23,20 @@ const mockTrialData = {
     pretrialUsersCount: 0,
     planUserCount: 1,
     hasSeatsLeft: true,
+    isEnterprisePlan: false,
+    isFreePlan: true,
+    isProPlan: false,
+    isSentryPlan: false,
+    isTeamPlan: false,
+    isTrialPlan: false,
   },
   pretrialPlan: {
     baseUnitPrice: 10,
     benefits: [],
-    billingRate: 'monthly',
-    marketingName: 'Users Basic',
+    billingRate: BillingRate.MONTHLY,
+    marketingName: 'Users Developer',
     monthlyUploadLimit: 250,
-    value: 'users-basic',
+    value: Plans.USERS_DEVELOPER,
   },
 }
 
@@ -57,7 +65,7 @@ afterAll(() => {
 describe('usePlanData', () => {
   function setup({ trialData }: { trialData: any }) {
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({ data: { owner: { ...trialData } } })
       })
     )
@@ -83,25 +91,31 @@ describe('usePlanData', () => {
             plan: {
               baseUnitPrice: 10,
               benefits: [],
-              billingRate: 'monthly',
-              marketingName: 'Users Basic',
-              monthlyUploadLimit: 250,
-              value: 'users-basic',
-              trialStatus: 'ONGOING',
-              trialStartDate: '2023-01-01T08:55:25',
-              trialEndDate: '2023-01-10T08:55:25',
-              trialTotalDays: 0,
-              pretrialUsersCount: 0,
-              planUserCount: 1,
+              billingRate: BillingRate.MONTHLY,
               hasSeatsLeft: true,
+              isEnterprisePlan: false,
+              isFreePlan: true,
+              isProPlan: false,
+              isSentryPlan: false,
+              isTeamPlan: false,
+              isTrialPlan: false,
+              marketingName: 'Users Developer',
+              monthlyUploadLimit: 250,
+              planUserCount: 1,
+              pretrialUsersCount: 0,
+              trialEndDate: '2023-01-10T08:55:25',
+              trialStartDate: '2023-01-01T08:55:25',
+              trialStatus: 'ONGOING',
+              trialTotalDays: 0,
+              value: Plans.USERS_DEVELOPER,
             },
             pretrialPlan: {
               baseUnitPrice: 10,
               benefits: [],
-              billingRate: 'monthly',
-              marketingName: 'Users Basic',
+              billingRate: BillingRate.MONTHLY,
+              marketingName: 'Users Developer',
               monthlyUploadLimit: 250,
-              value: 'users-basic',
+              value: Plans.USERS_DEVELOPER,
             },
           })
         )
@@ -127,14 +141,34 @@ describe('usePlanData', () => {
             }),
           { wrapper }
         )
-
-        await waitFor(() => expect(result.current.isError).toBeTruthy())
-        await waitFor(() =>
-          expect(result.current.error).toEqual(
-            expect.objectContaining({ status: 404 })
-          )
-        )
+        await waitFor(() => {
+          expect(result.current.data).toStrictEqual({})
+        })
       })
+    })
+  })
+
+  describe('when the data is not valid', () => {
+    it('throws a 400', async () => {
+      setup({ trialData: { hasPrivateRepos: 'string' } })
+      const { result } = renderHook(
+        () =>
+          usePlanData({
+            provider: 'gh',
+            owner: 'codecov',
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'usePlanData - Parsing Error',
+            status: 400,
+          })
+        )
+      )
     })
   })
 })

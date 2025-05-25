@@ -1,12 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { TrialStatuses } from 'services/account'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import HeaderBanners from './HeaderBanners'
 
@@ -28,10 +29,10 @@ const wrapper = ({ children }) => (
 const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: 'test-plan',
+  value: Plans.USERS_PR_INAPPM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -39,6 +40,12 @@ const mockPlanDataResponse = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const mockPlanDataResponseNoUploadLimit = {
@@ -66,7 +73,7 @@ describe('HeaderBanners', () => {
   }) {
     config.IS_SELF_HOSTED = isSelfHosted
     server.use(
-      graphql.query('OwnerPageData', (info) => {
+      graphql.query('OwnerPageData', () => {
         if (hasReachedLimit) {
           return HttpResponse.json({
             data: { owner: { numberOfUploads: 252 } },
@@ -83,7 +90,7 @@ describe('HeaderBanners', () => {
           data: { owner: { numberOfUploads: 230 } },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -93,7 +100,7 @@ describe('HeaderBanners', () => {
           },
         })
       }),
-      http.get('/internal/gh/codecov/account-details/', (info) => {
+      http.get('/internal/gh/codecov/account-details/', () => {
         return HttpResponse.json({ integrationId })
       })
     )
@@ -193,16 +200,13 @@ describe('HeaderBanners', () => {
         hasReachedLimit: true,
       })
       server.use(
-        graphql.query('GetPlanData', (req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.data({
-              owner: {
-                hasPrivateRepos: true,
-                plan: mockPlanDataResponseNoUploadLimit,
-              },
-            })
-          )
+        graphql.query('GetPlanData', () => {
+          return HttpResponse.json({
+            owner: {
+              hasPrivateRepos: true,
+              plan: mockPlanDataResponseNoUploadLimit,
+            },
+          })
         })
       )
     })
@@ -218,29 +222,6 @@ describe('HeaderBanners', () => {
 
       const banner = screen.queryByText('Upload limit')
       expect(banner).not.toBeInTheDocument()
-    })
-  })
-
-  describe('user does not have gh app installed', () => {
-    beforeEach(() => {
-      setup({
-        integrationId: null,
-      })
-    })
-
-    it('displays github app config banner', async () => {
-      render(
-        <HeaderBanners
-          provider="gh"
-          owner={{ username: 'codecov', isCurrentUserPartOfOrg: true }}
-        />,
-        { wrapper }
-      )
-
-      await waitFor(() => {
-        const banner = screen.getByText("Codecov's GitHub app")
-        return expect(banner).toBeInTheDocument()
-      })
     })
   })
 
@@ -266,7 +247,7 @@ describe('HeaderBanners', () => {
 
   describe('error in api response', () => {
     server.use(
-      http.get('/internal/gh/codecov/account-details/', (info) => {
+      http.get('/internal/gh/codecov/account-details/', () => {
         return HttpResponse.error(404)
       })
     )

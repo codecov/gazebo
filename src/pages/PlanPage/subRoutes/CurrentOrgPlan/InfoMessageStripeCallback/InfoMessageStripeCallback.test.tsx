@@ -12,9 +12,14 @@ const wrapper =
 
 describe('InfoMessageStripeCallback', () => {
   describe('when rendering without success or cancel in the url', () => {
-    const { container } = render(<InfoMessageStripeCallback />, {
-      wrapper: wrapper('/account/gh/codecov'),
-    })
+    const { container } = render(
+      <InfoMessageStripeCallback
+        awaitingInitialPaymentMethodVerification={false}
+      />,
+      {
+        wrapper: wrapper('/account/gh/codecov'),
+      }
+    )
 
     it('doesnt render anything', () => {
       expect(container).toBeEmptyDOMElement()
@@ -23,13 +28,33 @@ describe('InfoMessageStripeCallback', () => {
 
   describe('when rendering with success in the url', () => {
     it('renders a success message', async () => {
-      render(<InfoMessageStripeCallback />, {
-        wrapper: wrapper('/account/gh/codecov?success'),
-      })
+      render(
+        <InfoMessageStripeCallback
+          awaitingInitialPaymentMethodVerification={false}
+        />,
+        {
+          wrapper: wrapper('/account/gh/codecov?success'),
+        }
+      )
 
       await expect(
-        screen.getByText(/Subscription Update Successful/)
+        screen.getByText(/Plan successfully updated./)
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('when awaitingInitialPaymentMethodVerification is true', () => {
+    it('does not enders a success message even at ?success', async () => {
+      const { container } = render(
+        <InfoMessageStripeCallback
+          awaitingInitialPaymentMethodVerification={true}
+        />,
+        {
+          wrapper: wrapper('/account/gh/codecov?success'),
+        }
+      )
+
+      expect(container).toBeEmptyDOMElement()
     })
   })
 })

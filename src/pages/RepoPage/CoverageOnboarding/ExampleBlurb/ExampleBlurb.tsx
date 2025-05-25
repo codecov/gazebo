@@ -3,22 +3,23 @@ import A from 'ui/A'
 const ExampleBlurb = () => {
   return (
     <div data-testid="example-blurb">
-      &#128193; See an example{' '}
+      &#128193; View a{' '}
       <A
-        to={{ pageName: 'codecovExampleWorkflow' }}
+        to={{ pageName: 'codecovExampleJSCircleCIWorkflow' }}
         isExternal
         hook="codecov-workflow-intro"
       >
-        repo here
+        JavaScript config.yml example
       </A>{' '}
-      and{' '}
+      and see{' '}
       <A
-        to={{ pageName: 'codecovActionRepo' }}
+        to={{ pageName: 'codecovExampleJSCircleCIWorkflowSteps' }}
         isExternal
         hook="codecov-cli-intro"
       >
-        our CLI.
+        the setup on CircleCI
       </A>
+      .
     </div>
   )
 }

@@ -1,13 +1,14 @@
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import { useParams } from 'react-router-dom'
 
-import { getProviderCommitURL, getProviderPullURL } from 'shared/utils'
 import { formatTimeToNow } from 'shared/utils/dates'
+import { getProviderCommitURL, getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
 import CIStatusLabel from 'ui/CIStatus'
 import Icon from 'ui/Icon'
 import TruncatedMessage from 'ui/TruncatedMessage/TruncatedMessage'
 
-import { useCommitHeaderData } from './hooks'
+import { CommitHeaderDataQueryOpts } from './queries/CommitHeaderDataQueryOpts'
 
 import PullLabel from '../PullLabel'
 
@@ -15,13 +16,14 @@ function HeaderDefault() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const shortSHA = commitSha?.slice(0, 7)
 
-  const { data: headerData } = useCommitHeaderData({
-    provider,
-    owner,
-    repo,
-    commitId: commitSha,
-  })
-
+  const { data: headerData } = useSuspenseQueryV5(
+    CommitHeaderDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      commitId: commitSha,
+    })
+  )
   const providerPullUrl = getProviderPullURL({
     provider,
     owner,

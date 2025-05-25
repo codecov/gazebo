@@ -3,16 +3,21 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
+import { Plans } from 'shared/utils/billing'
+
 import { useInfiniteTestResults } from './useInfiniteTestResults'
 
 const mockTestResults = {
   owner: {
     plan: {
-      value: 'users-enterprisem',
+      value: Plans.USERS_ENTERPRISEM,
+      isFreePlan: false,
+      isTeamPlan: false,
     },
     repository: {
       __typename: 'Repository',
       private: false,
+      isFirstPullRequest: false,
       defaultBranch: 'main',
       testAnalytics: {
         testResults: {
@@ -78,7 +83,9 @@ const mockNotFoundError = {
       message: 'Repository not found',
     },
     plan: {
-      value: 'users-enterprisem',
+      value: Plans.USERS_ENTERPRISEM,
+      isFreePlan: false,
+      isTeamPlan: false,
     },
   },
 }
@@ -86,7 +93,9 @@ const mockNotFoundError = {
 const mockOwnerNotActivatedError = {
   owner: {
     plan: {
-      value: 'users-enterprisem',
+      value: Plans.USERS_ENTERPRISEM,
+      isFreePlan: false,
+      isTeamPlan: false,
     },
     repository: {
       __typename: 'OwnerNotActivatedError',
@@ -136,7 +145,7 @@ describe('useInfiniteTestResults', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetTestResults', (info) => {
+      graphql.query('GetTestResults', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -233,7 +242,7 @@ describe('useInfiniteTestResults', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -260,8 +269,8 @@ describe('useInfiniteTestResults', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useInfiniteTestResults - Not Found Error',
               status: 404,
-              dev: 'useInfiniteTestResults - 404 Not found error',
             })
           )
         )
@@ -269,7 +278,7 @@ describe('useInfiniteTestResults', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -296,8 +305,8 @@ describe('useInfiniteTestResults', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'useInfiniteTestResults - Owner Not Activated',
               status: 403,
-              dev: 'useInfiniteTestResults - 403 Owner not activated',
             })
           )
         )
@@ -305,7 +314,7 @@ describe('useInfiniteTestResults', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
+      const oldConsoleError = console.error
 
       beforeEach(() => {
         console.error = () => null
@@ -332,8 +341,8 @@ describe('useInfiniteTestResults', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
-              dev: 'useInfiniteTestResults - 404 Failed to parse data',
+              dev: 'useInfiniteTestResults - Parsing Error',
+              status: 400,
             })
           )
         )

@@ -1,11 +1,11 @@
 import testsPRComment from 'assets/svg/onboardingTests/testsPRComment.svg'
 import testsPRCommentDark from 'assets/svg/onboardingTests/testsPRCommentDark.svg'
 import testsRunning from 'assets/svg/onboardingTests/testsRunning.svg'
-import { Theme, useThemeContext } from 'shared/ThemeContext'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import { ExpandableSection } from 'ui/ExpandableSection/ExpandableSection'
+import LightDarkImg from 'ui/LightDarkImg'
 
 import { FrameworkTabsCard } from '../FrameworkTabsCard'
 
@@ -37,7 +37,7 @@ const JobsScript = `jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
         with:
@@ -51,7 +51,7 @@ const JobsScript = `jobs:
           pytest --cov --junitxml=junit.xml
       # Copy and paste the codecov/test-results-action here
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: \${{ secrets.CODECOV_TOKEN }}
       - name: Upload test results to Codecov
@@ -103,11 +103,6 @@ function Step2() {
 }
 
 function Step3() {
-  const { theme } = useThemeContext()
-
-  const testPRsImageSource =
-    theme === Theme.LIGHT ? testsPRComment : testsPRCommentDark
-
   return (
     <div>
       <Card>
@@ -134,10 +129,11 @@ function Step3() {
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content>
-          <img
-            src={testPRsImageSource.toString()}
+          <LightDarkImg
+            src={testsPRComment.toString()}
             alt="Tests in PR comment"
             className="w-full"
+            darkSrc={testsPRCommentDark.toString()}
           />
         </ExpandableSection.Content>
       </ExpandableSection>
@@ -157,7 +153,7 @@ function Step4() {
           tests result on the following areas:
         </p>
         <ul className="list-inside list-disc">
-          <li>Github pull request comment</li>
+          <li>GitHub pull request comment</li>
           <li>Failed tests dashboard here.</li>
         </ul>
       </Card.Content>

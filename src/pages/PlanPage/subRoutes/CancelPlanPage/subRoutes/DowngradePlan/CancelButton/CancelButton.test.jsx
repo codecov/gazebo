@@ -28,16 +28,16 @@ vi.mock('./useBarecancel', async () => {
   }
 })
 
-vi.mock('services/account', async () => {
-  const actual = await vi.importActual('services/account')
+vi.mock('services/account/useCancelPlan', async () => {
+  const actual = await vi.importActual('services/account/useCancelPlan')
   return {
     ...actual,
     useCancelPlan: mocks.useCancelPlan,
   }
 })
 
-vi.mock('services/toastNotification', async () => {
-  const actual = await vi.importActual('services/toastNotification')
+vi.mock('services/toastNotification/context', async () => {
+  const actual = await vi.importActual('services/toastNotification/context')
   return {
     ...actual,
     useAddNotification: mocks.useAddNotification,

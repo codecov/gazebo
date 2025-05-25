@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
+import { useBranches } from 'services/branches/useBranches'
 import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
 import { useBranchSelector } from '../hooks'
@@ -21,6 +21,9 @@ export function useSummary() {
     owner,
   })
 
+  const branchFilters = branchSearchTerm
+    ? { searchValue: branchSearchTerm }
+    : undefined
   const {
     data: branchList,
     isFetching: branchListIsFetching,
@@ -30,7 +33,7 @@ export function useSummary() {
     repo,
     owner,
     provider,
-    filters: { searchValue: branchSearchTerm },
+    filters: branchFilters,
     opts: {
       suspense: false,
     },

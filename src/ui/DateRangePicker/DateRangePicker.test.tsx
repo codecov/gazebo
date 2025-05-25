@@ -22,7 +22,7 @@ class ResizeObserverMock {
 global.window.ResizeObserver = ResizeObserverMock
 
 describe('DateRangePicker', () => {
-  function setup(addedProps?: {}) {
+  function setup(addedProps?: object) {
     const mockOnChange = vi.fn()
     const user = userEvent.setup()
 

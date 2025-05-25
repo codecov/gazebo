@@ -5,8 +5,6 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import A from 'ui/A'
-
 import { useComponentsBackfilled } from './index'
 
 const queryClient = new QueryClient({
@@ -56,7 +54,7 @@ const dataReturned = {
 describe('useComponentsBackfilled', () => {
   function setup({ isSchemaValid = true } = {}) {
     server.use(
-      graphql.query('BackfillComponentMemberships', (info) => {
+      graphql.query('BackfillComponentMemberships', () => {
         if (!isSchemaValid) {
           return HttpResponse.json({})
         }
@@ -101,11 +99,12 @@ describe('useComponentsBackfilled', () => {
       })
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 404,
-          data: {},
-          dev: 'useComponentsBackfilled - 404 failed to parse',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useComponentsBackfilled - Parsing Error',
+            status: 400,
+          })
+        )
       )
     })
   })
@@ -122,7 +121,7 @@ describe('useComponentsBackfilled', () => {
 
     beforeEach(() => {
       server.use(
-        graphql.query('BackfillComponentMemberships', (info) => {
+        graphql.query('BackfillComponentMemberships', () => {
           return HttpResponse.json({
             data: {
               owner: {
@@ -143,11 +142,12 @@ describe('useComponentsBackfilled', () => {
       })
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 404,
-          data: {},
-          dev: 'useComponentsBackfilled - 404 NotFoundError',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useComponentsBackfilled - Not Found Error',
+            status: 404,
+          })
+        )
       )
     })
   })
@@ -164,7 +164,7 @@ describe('useComponentsBackfilled', () => {
 
     beforeEach(() => {
       server.use(
-        graphql.query('BackfillComponentMemberships', (info) => {
+        graphql.query('BackfillComponentMemberships', () => {
           return HttpResponse.json({
             data: {
               owner: {
@@ -185,25 +185,12 @@ describe('useComponentsBackfilled', () => {
       })
 
       await waitFor(() =>
-        expect(result.current.error).toEqual({
-          status: 403,
-          data: {
-            detail: (
-              <p>
-                Activation is required to view this repo, please{' '}
-                <A
-                  to={{ pageName: 'membersTab' }}
-                  hook="activate-members"
-                  isExternal={false}
-                >
-                  click here{' '}
-                </A>{' '}
-                to activate your account.
-              </p>
-            ),
-          },
-          dev: 'useComponentsBackfilled - 403 OwnerNotActivatedError',
-        })
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            dev: 'useComponentsBackfilled - Owner Not Activated',
+            status: 403,
+          })
+        )
       )
     })
   })

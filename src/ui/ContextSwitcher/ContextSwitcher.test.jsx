@@ -5,10 +5,14 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import config, { DEFAULT_GH_APP } from 'config'
+
+import { eventTracker } from 'services/events/events'
 import { useImage } from 'services/image'
 
 import ContextSwitcher from './ContextSwitcher'
 
+vi.mock('services/events/events')
 vi.mock('services/image')
 const mocks = vi.hoisted(() => ({
   useIntersection: vi.fn(),
@@ -41,12 +45,12 @@ afterAll(() => {
 })
 
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh/test-owner') =>
   ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <Switch>
-          <Route path="/:provider" exact>
+          <Route path="/:provider/:owner" exact>
             <div>Click away</div>
             {children}
           </Route>
@@ -72,15 +76,12 @@ describe('ContextSwitcher', () => {
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     afterEach(() => {
       vi.clearAllMocks()
     })
 
     it('does not render the listed items initially', () => {
+      setup()
       render(
         <ContextSwitcher
           activeContext={{
@@ -117,9 +118,7 @@ describe('ContextSwitcher', () => {
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       expect(screen.queryByRole('listbox')).toHaveClass('hidden')
@@ -169,9 +168,7 @@ describe('ContextSwitcher', () => {
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const button = await screen.findByRole('button', { expanded: false })
@@ -223,14 +220,13 @@ describe('ContextSwitcher', () => {
           ]}
           currentUser={{
             defaultOrgUsername: 'spotify',
+            username: 'laudna',
           }}
           src="imageUrl"
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
       const button = await screen.findByRole(
@@ -239,7 +235,9 @@ describe('ContextSwitcher', () => {
       )
       await user.click(button)
 
-      const laudnaUsers = await screen.findAllByText('laudna')
+      const laudnaUsers = await screen.findAllByText(
+        "laudna's personal organization"
+      )
       expect(laudnaUsers.length).toBe(2)
 
       const codecovOwner = await screen.findByText('codecov')
@@ -251,15 +249,13 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when rendered with no active context', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     afterEach(() => {
       vi.clearAllMocks()
     })
 
     it('renders manage access restrictions', async () => {
+      setup()
+      config.GH_APP = 'codecov'
       render(
         <ContextSwitcher
           activeContext={{
@@ -296,12 +292,12 @@ describe('ContextSwitcher', () => {
           isLoading={false}
           error={null}
         />,
-        {
-          wrapper: wrapper(),
-        }
+        { wrapper: wrapper() }
       )
 
-      const installCopy = await screen.findByText(/Install Codecov GitHub app/)
+      const installCopy = await screen.findByText(
+        /To add another organization, install Codecov GitHub App/
+      )
       expect(installCopy).toBeInTheDocument()
       expect(installCopy).toHaveAttribute(
         'href',
@@ -688,6 +684,204 @@ describe('ContextSwitcher', () => {
           expect(mutate).not.toHaveBeenCalled()
         })
       })
+    })
+  })
+
+  describe('when the owner does not exist', () => {
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
+    it('renders the owner url param', async () => {
+      setup()
+      render(
+        <ContextSwitcher
+          activeContext={undefined}
+          contexts={[
+            {
+              owner: {
+                username: 'codecov',
+                avatarUrl: 'https://github.com/codecov.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        { wrapper: wrapper() }
+      )
+
+      const button = screen.getByRole('button')
+      expect(button).toHaveTextContent('test-owner')
+    })
+  })
+
+  describe('when install gh app button is clicked', () => {
+    it('tracks a Button Clicked event', async () => {
+      const { user } = setup()
+      render(
+        <ContextSwitcher
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'http://127.0.0.1/avatar-url',
+              },
+              pageName: 'provider',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'http://127.0.0.1/avatar-url',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'codecov',
+                avatarUrl: 'http://127.0.0.1/avatar-url',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'codecov',
+          }}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      const button = await screen.findByRole('button', { expanded: false })
+      await user.click(button)
+
+      const appButton = await screen.findByText(
+        'To add another organization, install Codecov GitHub App'
+      )
+      await user.click(appButton)
+
+      expect(eventTracker().track).toHaveBeenCalledWith({
+        type: 'Button Clicked',
+        properties: {
+          buttonName: 'Install GitHub App',
+          buttonLocation: 'Org selector',
+        },
+      })
+    })
+  })
+
+  describe('when on self-hosted', () => {
+    beforeEach(() => {
+      config.IS_SELF_HOSTED = true
+      config.GH_APP = 'codecov'
+      setup()
+    })
+
+    afterEach(() => {
+      config.GH_APP = DEFAULT_GH_APP
+      vi.clearAllMocks()
+    })
+
+    it('renders the custom app link if set', async () => {
+      config.GH_APP = 'custom-app'
+      render(
+        <ContextSwitcher
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://github.com/laudna.png?size=40',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'https://github.com/spotify.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      const installCopy = await screen.findByText(
+        /To add another organization, install Codecov GitHub App/
+      )
+      expect(installCopy).toBeInTheDocument()
+      expect(installCopy).toHaveAttribute(
+        'href',
+        'https://github.com/apps/custom-app/installations/new'
+      )
+      expect(installCopy).not.toHaveAttribute(
+        'href',
+        'https://github.com/apps/codecov/installations/new'
+      )
+    })
+
+    it('renders no link if custom app env var is not set', async () => {
+      config.IS_SELF_HOSTED = true
+      render(
+        <ContextSwitcher
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://github.com/laudna.png?size=40',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'https://github.com/spotify.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      const installCopy = screen.queryByText(/Install Codecov GitHub app/)
+      expect(installCopy).not.toBeInTheDocument()
     })
   })
 })

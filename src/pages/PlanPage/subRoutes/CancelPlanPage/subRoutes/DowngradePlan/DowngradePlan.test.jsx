@@ -1,9 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { http, HttpResponse } from 'msw'
+import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { TrialStatuses } from 'services/account/usePlanData'
+import { Plans } from 'shared/utils/billing'
 
 import DowngradePlan from './DowngradePlan'
 
@@ -13,12 +16,39 @@ const mockAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
-    value: 'users-inappm',
+    value: Plans.USERS_PR_INAPPM,
   },
   activatedUserCount: 2,
   inactiveUserCount: 1,
   subscriptionDetail: {
     currentPeriodEnd: 1638614662,
+  },
+}
+
+const mockPlanData = {
+  owner: {
+    hasPrivateRepos: true,
+    plan: {
+      isEnterprisePlan: false,
+      isFreePlan: true,
+      isProPlan: false,
+      isSentryPlan: false,
+      isTeamPlan: false,
+      isTrialPlan: false,
+      baseUnitPrice: 10,
+      benefits: [],
+      billingRate: 'monthly',
+      marketingName: 'Users Developer',
+      monthlyUploadLimit: 250,
+      value: Plans.USERS_DEVELOPER,
+      trialStatus: TrialStatuses.NOT_STARTED,
+      trialStartDate: '',
+      trialEndDate: '',
+      trialTotalDays: 0,
+      pretrialUsersCount: 0,
+      planUserCount: 5,
+      hasSeatsLeft: false,
+    },
   },
 }
 
@@ -53,8 +83,11 @@ afterAll(() => {
 describe('DowngradePlan', () => {
   function setup() {
     server.use(
-      http.all('/internal/gh/codecov/account-details', (info) => {
+      http.all('/internal/gh/codecov/account-details', () => {
         return HttpResponse.json(mockAccountDetails)
+      }),
+      graphql.query('GetPlanData', () => {
+        return HttpResponse.json(mockPlanData)
       })
     )
   }

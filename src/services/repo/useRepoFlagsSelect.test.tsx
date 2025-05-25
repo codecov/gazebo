@@ -8,11 +8,7 @@ import { type MockInstance } from 'vitest'
 import { useRepoFlagsSelect } from './useRepoFlagsSelect'
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
@@ -52,27 +48,11 @@ afterAll(() => {
 })
 
 const initialData = [
-  {
-    node: {
-      name: 'flag1',
-      percentCovered: 93.26,
-    },
-  },
-  {
-    node: {
-      name: 'flag2',
-      percentCovered: 92.72,
-    },
-  },
+  { node: { name: 'flag1', percentCovered: 93.26 } },
+  { node: { name: 'flag2', percentCovered: 92.72 } },
 ]
 
-const invalidData = [
-  {
-    node: {
-      defaultBranch: 'main',
-    },
-  },
-]
+const invalidData = [{ node: { defaultBranch: 'main' } }]
 
 const mockNotFoundError = {
   owner: {
@@ -93,16 +73,7 @@ const mockOwnerNotActivatedError = {
 }
 
 const expectedInitialData = [{ name: 'flag1' }, { name: 'flag2' }]
-
-const nextPageData = [
-  {
-    node: {
-      name: 'flag3',
-      percentCovered: 92.95,
-    },
-  },
-]
-
+const nextPageData = [{ node: { name: 'flag3', percentCovered: 92.95 } }]
 const expectedNextPageData = [{ name: 'flag3' }]
 
 describe('FlagsSelect', () => {
@@ -141,7 +112,7 @@ describe('FlagsSelect', () => {
         }
         return HttpResponse.json({ data: dataReturned })
       }),
-      graphql.query('PullFlagsSelect', (info) => {
+      graphql.query('PullFlagsSelect', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: invalidData })
         } else if (isOwnerNotActivatedError) {
@@ -158,12 +129,8 @@ describe('FlagsSelect', () => {
                 compareWithBase: {
                   __typename: 'Comparison',
                   flagComparisons: [
-                    {
-                      name: 'unit',
-                    },
-                    {
-                      name: 'unit-latest-uploader',
-                    },
+                    { name: 'unit' },
+                    { name: 'unit-latest-uploader' },
                   ],
                 },
               },
@@ -210,7 +177,8 @@ describe('FlagsSelect', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'fetchRepoFlags - Parsing Error',
+              status: 400,
             })
           )
         )
@@ -225,9 +193,8 @@ describe('FlagsSelect', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'fetchRepoFlags - Not Found Error',
               status: 404,
-              data: {},
-              dev: 'useRepoFlagsSelect - 404 NotFoundError',
             })
           )
         )
@@ -242,8 +209,8 @@ describe('FlagsSelect', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'fetchRepoFlags - Owner Not Activated',
               status: 403,
-              dev: 'useRepoFlagsSelect - 403 OwnerNotActivatedError',
             })
           )
         )
@@ -307,7 +274,8 @@ describe('FlagsSelect', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'fetchRepoFlagsForPull - Parsing Error',
+              status: 400,
             })
           )
         )
@@ -322,9 +290,8 @@ describe('FlagsSelect', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'fetchRepoFlagsForPull - Not Found Error',
               status: 404,
-              data: {},
-              dev: 'useRepoFlagsSelect - 404 NotFoundError',
             })
           )
         )
@@ -339,8 +306,8 @@ describe('FlagsSelect', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'fetchRepoFlagsForPull - Owner Not Activated',
               status: 403,
-              dev: 'useRepoFlagsSelect - 403 OwnerNotActivatedError',
             })
           )
         )

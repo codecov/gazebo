@@ -12,7 +12,7 @@ import {
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
 import qs from 'qs'
-import { Fragment, lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { Fragment, Suspense, useEffect, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -25,7 +25,7 @@ import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
-const PullFileDiff = lazy(() => import('../PullFileDiff'))
+import PullFileDiff from '../PullFileDiff'
 
 const columnHelper = createColumnHelper<ImpactedFile>()
 
@@ -88,7 +88,7 @@ function getColumns({ pullId }: { pullId: string }) {
                 variant="solid"
               />
             </span>
-            {/* @ts-expect-error */}
+            {/* @ts-expect-error - A hasn't been typed yet */}
             <A
               to={{
                 pageName: 'pullFileView',
@@ -97,11 +97,6 @@ function getColumns({ pullId }: { pullId: string }) {
             >
               {headName}
             </A>
-            {row.original?.isCriticalFile && (
-              <span className="ml-2 rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
-                Critical File
-              </span>
-            )}
           </div>
         )
       },

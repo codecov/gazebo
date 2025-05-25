@@ -12,8 +12,8 @@ const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
 }))
 
-vi.mock('services/toastNotification', async () => {
-  const actual = await vi.importActual('services/toastNotification')
+vi.mock('services/toastNotification/context', async () => {
+  const actual = await vi.importActual('services/toastNotification/context')
   return {
     ...actual,
     useAddNotification: mocks.useAddNotification,
@@ -56,7 +56,7 @@ describe('StaticAnalysisToken', () => {
     mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({
           data: { me: { id: 1, trackingMetadata: { ownerid: 1 } } },
         })

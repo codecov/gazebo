@@ -16,6 +16,9 @@ vi.mock('./MetricsSection/MetricsSection', () => ({
 vi.mock('./FailedTestsTable/FailedTestsTable', () => ({
   default: () => 'Failed Tests Table',
 }))
+vi.mock('./FailedTestsErrorBanner/FailedTestsErrorBanner', () => ({
+  default: () => 'Failed Tests Error Banner',
+}))
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -63,7 +66,7 @@ afterAll(() => {
 describe('FailedTestsPage', () => {
   function setup() {
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({})
       })
     )
@@ -76,9 +79,11 @@ describe('FailedTestsPage', () => {
     const selectorSection = screen.getByText(/Selector Section/)
     const metricSection = screen.getByText(/Metrics Section/)
     const table = screen.getByText(/Failed Tests Table/)
+    const errorBanner = screen.getByText(/Failed Tests Error Banner/)
 
     expect(selectorSection).toBeInTheDocument()
     expect(metricSection).toBeInTheDocument()
     expect(table).toBeInTheDocument()
+    expect(errorBanner).toBeInTheDocument()
   })
 })

@@ -68,7 +68,7 @@ describe('useTestResultsFlags', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query('GetTestResultsFlags', (info) => {
+      graphql.query('GetTestResultsFlags', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {
@@ -116,8 +116,8 @@ describe('useTestResultsFlags', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useTestResultsFlags - 404 Failed to parse data',
+            dev: 'useTestResultsFlags - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -143,8 +143,8 @@ describe('useTestResultsFlags', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useTestResultsFlags - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )

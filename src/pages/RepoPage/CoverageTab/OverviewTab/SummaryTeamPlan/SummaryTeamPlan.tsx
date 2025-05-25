@@ -42,7 +42,7 @@ const SummaryTeamPlan = () => {
               <Select
                 dataMarketing="branch-selector-repo-page"
                 {...branchSelectorProps}
-                /*// @ts-ignore */
+                // @ts-expect-error - Select hasn't been typed yet
                 ariaName="select branch"
                 onChange={onChangeHandler}
                 variant="gray"

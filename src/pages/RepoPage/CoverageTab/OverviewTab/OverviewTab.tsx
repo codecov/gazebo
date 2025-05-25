@@ -1,24 +1,26 @@
-import { lazy, Suspense } from 'react'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
+import { Suspense } from 'react'
 import { Switch, useParams } from 'react-router-dom'
+
+import config from 'config'
 
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
-import { useRepo } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useRepo, useRepoOverview } from 'services/repo'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import { cn } from 'shared/utils/cn'
 import Spinner from 'ui/Spinner'
 import { ToggleElement } from 'ui/ToggleElement'
 
 import FirstPullRequestBanner from './FirstPullRequestBanner'
-import { useCoverageTabData } from './hooks/useCoverageTabData'
+import { CoverageTabDataQueryOpts } from './queries/CoverageTabDataQueryOpts'
+import CoverageChart from './subroute/CoverageChart'
+import FileExplorer from './subroute/FileExplorer'
+import FileViewer from './subroute/Fileviewer'
+import Sunburst from './subroute/Sunburst'
 import Summary from './Summary'
 import SummaryTeamPlan from './SummaryTeamPlan'
-
-const FileViewer = lazy(() => import('./subroute/Fileviewer'))
-const FileExplorer = lazy(() => import('./subroute/FileExplorer'))
-const CoverageChart = lazy(() => import('./subroute/CoverageChart'))
-const Sunburst = lazy(() => import('./subroute/Sunburst'))
 
 const MAX_FILE_COUNT = 200_000
 
@@ -43,26 +45,39 @@ function CoverageOverviewTab() {
     repo,
   })
 
-  const { data: tierName } = useTier({ provider, owner })
+  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
-  const { data } = useCoverageTabData({
+  const { data: repoOverview } = useRepoOverview({
     provider,
-    owner,
     repo,
-    branch: branch,
+    owner,
+    opts: {
+      enabled: !branch,
+    },
   })
+
+  const branchName = branch ?? repoOverview?.defaultBranch
+
+  const { data } = useSuspenseQueryV5(
+    CoverageTabDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch: branchName,
+    })
+  )
 
   const fileCount = data?.branch?.head?.coverageAnalytics?.totals?.fileCount
   const withinFileCount =
     typeof fileCount === 'number' && fileCount <= MAX_FILE_COUNT
 
   let displaySunburst = false
-  if (withinFileCount) {
+  // only enable sunburst when both cases are met
+  if (withinFileCount && config.SUNBURST_ENABLED) {
     displaySunburst = true
   }
 
-  const showTeamSummary =
-    tierName === TierNames.TEAM && repoData?.repository?.private
+  const showTeamSummary = isTeamPlan && repoData?.repository?.private
 
   return (
     <div className="mx-4 flex flex-col gap-4 divide-y border-solid border-ds-gray-secondary pt-4 sm:mx-0">

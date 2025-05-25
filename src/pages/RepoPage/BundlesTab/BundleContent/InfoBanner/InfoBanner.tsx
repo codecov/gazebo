@@ -23,7 +23,7 @@ const NoSelectedBundleContent: React.FC = () => {
 }
 
 interface InfoBannerProps {
-  branch?: string
+  branch: string | null
   bundle?: string
 }
 

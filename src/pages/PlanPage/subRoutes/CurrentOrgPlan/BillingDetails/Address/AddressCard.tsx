@@ -4,7 +4,7 @@ import { z } from 'zod'
 import {
   BillingDetailsSchema,
   SubscriptionDetailSchema,
-} from 'services/account'
+} from 'services/account/useAccountDetails'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
@@ -40,7 +40,7 @@ function AddressCard({
       {!isFormOpen && (
         <>
           <div className="flex justify-between">
-            <h4 className="font-semibold">Cardholder name</h4>
+            <h4 className="font-semibold">Full name</h4>
             <A
               variant="semibold"
               onClick={() => setIsFormOpen(true)}

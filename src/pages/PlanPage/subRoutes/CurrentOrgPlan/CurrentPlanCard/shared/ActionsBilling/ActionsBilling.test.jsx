@@ -5,7 +5,8 @@ import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import ActionsBilling from './ActionsBilling'
 
@@ -24,7 +25,7 @@ vi.mock('shared/useRedirect', async () => {
 const allPlans = [
   {
     marketingName: 'Basic',
-    value: 'users-basic',
+    value: Plans.USERS_DEVELOPER,
     billingRate: null,
     baseUnitPrice: 0,
     benefits: [
@@ -33,11 +34,13 @@ const allPlans = [
       'Unlimited private repositories',
     ],
     monthlyUploadLimit: 250,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
-    billingRate: 'monthly',
+    value: Plans.USERS_PR_INAPPM,
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -46,11 +49,13 @@ const allPlans = [
       'Priorty Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-pr-inappy',
-    billingRate: 'annually',
+    value: Plans.USERS_PR_INAPPY,
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -59,11 +64,13 @@ const allPlans = [
       'Priorty Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisem',
-    billingRate: 'monthly',
+    value: Plans.USERS_ENTERPRISEM,
+    billingRate: BillingRate.MONTHLY,
     baseUnitPrice: 12,
     benefits: [
       'Configurable # of users',
@@ -72,11 +79,13 @@ const allPlans = [
       'Priorty Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
   {
     marketingName: 'Pro Team',
-    value: 'users-enterprisey',
-    billingRate: 'annually',
+    value: Plans.USERS_ENTERPRISEY,
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: [
       'Configurable # of users',
@@ -85,6 +94,8 @@ const allPlans = [
       'Priorty Support',
     ],
     monthlyUploadLimit: null,
+    isTeamPlan: false,
+    isSentryPlan: false,
   },
 ]
 
@@ -94,8 +105,10 @@ const sentryPlans = [
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     monthlyUploadLimit: null,
-    value: 'users-sentrym',
-    billingRate: 'monthly',
+    value: Plans.USERS_SENTRYM,
+    billingRate: BillingRate.MONTHLY,
+    isTeamPlan: false,
+    isSentryPlan: true,
   },
 ]
 
@@ -105,7 +118,7 @@ const mockedFreeAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: 'users-basic',
+    value: Plans.USERS_DEVELOPER,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
@@ -117,7 +130,7 @@ const mockedProAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: 'users-basic',
+    value: Plans.USERS_PR_INAPPM,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
@@ -129,7 +142,7 @@ const sentryMockedAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: 'users-sentrym',
+    value: Plans.USERS_SENTRYM,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
@@ -141,7 +154,7 @@ const mockTrialAccountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 9,
-    value: 'users-trial',
+    value: Plans.USERS_TRIAL,
   },
   activatedUserCount: 5,
   inactiveUserCount: 1,
@@ -151,10 +164,10 @@ const mockTrialData = {
   plan: {
     baseUnitPrice: 10,
     benefits: [],
-    billingRate: 'monthly',
-    marketingName: 'Users Basic',
+    billingRate: BillingRate.MONTHLY,
+    marketingName: 'Users Developer',
     monthlyUploadLimit: 250,
-    value: 'users-basic',
+    value: Plans.USERS_DEVELOPER,
     trialStatus: 'ONGOING',
     trialStartDate: '2023-01-01T08:55:25',
     trialEndDate: '2023-01-10T08:55:25',
@@ -162,6 +175,12 @@ const mockTrialData = {
     pretrialUsersCount: 0,
     planUserCount: 1,
     hasSeatsLeft: true,
+    isEnterprisePlan: false,
+    isFreePlan: true,
+    isProPlan: false,
+    isSentryPlan: false,
+    isTeamPlan: false,
+    isTrialPlan: false,
   },
 }
 
@@ -197,10 +216,12 @@ describe('Actions Billing', () => {
       accountDetails = mockedFreeAccountDetails,
       plans = allPlans,
       trialPlanData = mockTrialData,
+      hasPrivateRepos = true,
     } = {
       accountDetails: mockedFreeAccountDetails,
       plans: allPlans,
       trialPlanData: mockTrialData,
+      hasPrivateRepos: true,
     }
   ) {
     const user = userEvent.setup()
@@ -211,14 +232,30 @@ describe('Actions Billing', () => {
     }))
 
     server.use(
-      http.get('/internal/gh/critical-role/account-details/', (info) => {
+      http.get('/internal/gh/critical-role/account-details/', () => {
         return HttpResponse.json(accountDetails)
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({ data: { owner: { availablePlans: plans } } })
       }),
-      graphql.query('GetPlanData', (info) => {
-        return HttpResponse.json({ data: { owner: trialPlanData } })
+      graphql.query('GetPlanData', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              plan: {
+                ...trialPlanData.plan,
+                value: accountDetails.plan.value,
+                isFreePlan: accountDetails.plan.value === Plans.USERS_DEVELOPER,
+                isTeamPlan:
+                  accountDetails.plan.value === Plans.USERS_TEAMM ||
+                  accountDetails.plan.value === Plans.USERS_TEAMY,
+                isTrialPlan: accountDetails.plan.value === Plans.USERS_TRIAL,
+                isSentryPlan: accountDetails.plan.value === Plans.USERS_SENTRYM,
+              },
+              hasPrivateRepos,
+            },
+          },
+        })
       }),
       graphql.mutation('startTrial', (info) => {
         mockMutationVars(info.variables)
@@ -236,12 +273,12 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
-            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
             },
           },
+          hasPrivateRepos: true,
         })
 
         render(<ActionsBilling />, { wrapper })
@@ -257,12 +294,12 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
-            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
             },
           },
+          hasPrivateRepos: true,
         })
 
         render(<ActionsBilling />, { wrapper })
@@ -283,12 +320,12 @@ describe('Actions Billing', () => {
             accountDetails: mockedFreeAccountDetails,
             plans: allPlans,
             trialPlanData: {
-              hasPrivateRepos: true,
               plan: {
                 ...mockTrialData.plan,
                 trialStatus: TrialStatuses.NOT_STARTED,
               },
             },
+            hasPrivateRepos: true,
           })
 
           render(<ActionsBilling />, { wrapper })
@@ -316,12 +353,12 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
-            hasPrivateRepos: false,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
             },
           },
+          hasPrivateRepos: false,
         })
 
         render(<ActionsBilling />, { wrapper })
@@ -337,12 +374,12 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
-            hasPrivateRepos: false,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
             },
           },
+          hasPrivateRepos: false,
         })
 
         render(<ActionsBilling />, { wrapper })
@@ -364,12 +401,12 @@ describe('Actions Billing', () => {
           accountDetails: mockTrialAccountDetails,
           plans: allPlans,
           trialPlanData: {
-            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.ONGOING,
             },
           },
+          hasPrivateRepos: true,
         })
 
         render(<ActionsBilling />, { wrapper })

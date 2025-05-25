@@ -10,8 +10,8 @@ const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
 }))
 
-vi.mock('services/toastNotification', async () => {
-  const actual = await vi.importActual('services/toastNotification')
+vi.mock('services/toastNotification/context', async () => {
+  const actual = await vi.importActual('services/toastNotification/context')
   return {
     ...actual,
     useAddNotification: mocks.useAddNotification,
@@ -47,7 +47,7 @@ describe('useRepoActivation', () => {
 
   function setup({ failMutation = false } = {}) {
     server.use(
-      http.patch('/internal/github/codecov/repos/codecov-client/', (info) => {
+      http.patch('/internal/github/codecov/repos/codecov-client/', () => {
         mutate()
 
         if (failMutation) {

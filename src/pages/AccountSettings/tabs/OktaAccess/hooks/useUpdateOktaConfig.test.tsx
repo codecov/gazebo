@@ -1,32 +1,35 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type Mock } from 'vitest'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 
 import {
   SaveOktaConfigMessage,
   useUpdateOktaConfig,
 } from './useUpdateOktaConfig'
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 const mockedToastNotification = useAddNotification as Mock
 
-const queryClient = new QueryClient({
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper =
   (initialEntries = '/gh/codecov'): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProviderV5 client={queryClientV5}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <Route path="/:provider/:owner">{children}</Route>
       </MemoryRouter>
-    </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 const provider = 'gh'
@@ -48,7 +51,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -63,14 +66,14 @@ describe('useUpdateOktaConfig', () => {
     mockedToastNotification.mockReturnValue(addToast)
 
     server.use(
-      graphql.mutation(`SaveOktaConfig`, (info) => {
+      graphql.mutation(`SaveOktaConfig`, () => {
         return HttpResponse.json({ data: response })
       })
     )
   }
 
   describe('when calling the mutation', () => {
-    let consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     afterAll(() => {
       consoleSpy.mockRestore()

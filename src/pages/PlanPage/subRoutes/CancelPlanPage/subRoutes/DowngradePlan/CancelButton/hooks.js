@@ -1,7 +1,7 @@
 import { useHistory, useParams } from 'react-router-dom'
 
-import { useCancelPlan } from 'services/account'
-import { useAddNotification } from 'services/toastNotification'
+import { useCancelPlan } from 'services/account/useCancelPlan'
+import { useAddNotification } from 'services/toastNotification/context'
 
 import { useBarecancel } from './useBarecancel'
 

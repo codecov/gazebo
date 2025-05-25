@@ -15,7 +15,6 @@ const commitid = 'sha123'
 const mockImpactedFile = {
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
-  isCriticalFile: false,
   isNewFile: false,
   isRenamedFile: false,
   isDeletedFile: false,
@@ -30,6 +29,7 @@ const mockImpactedFile = {
   },
   changeCoverage: 0,
   segments: {
+    __typename: 'SegmentComparisons',
     results: [
       {
         header: '-0,0 +1,45',
@@ -145,7 +145,7 @@ describe('useComparisonForCommitAndParent', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('ImpactedFileComparedWithParent', (info) => {
+      graphql.query('ImpactedFileComparedWithParent', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -187,7 +187,6 @@ describe('useComparisonForCommitAndParent', () => {
               coverage: 100,
             },
             headName: 'flag1/file.js',
-            isCriticalFile: false,
             isDeletedFile: false,
             isNewFile: false,
             isRenamedFile: false,
@@ -195,6 +194,7 @@ describe('useComparisonForCommitAndParent', () => {
               coverage: 100,
             },
             segments: {
+              __typename: 'SegmentComparisons',
               results: [
                 {
                   hasUnintendedChanges: false,
@@ -272,7 +272,8 @@ describe('useComparisonForCommitAndParent', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'useComparisonForCommitAndParent - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -296,6 +297,7 @@ describe('useComparisonForCommitAndParent', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useComparisonForCommitAndParent - Not Found Error',
             status: 404,
           })
         )
@@ -320,6 +322,7 @@ describe('useComparisonForCommitAndParent', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useComparisonForCommitAndParent - Owner Not Activated',
             status: 403,
           })
         )

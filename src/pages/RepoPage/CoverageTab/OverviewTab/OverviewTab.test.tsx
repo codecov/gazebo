@@ -1,11 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { type Mock } from 'vitest'
 
-import { TierNames, TTierNames } from 'services/tier'
+import config from 'config'
 
 import CoverageOverviewTab from './OverviewTab'
 
@@ -14,6 +18,8 @@ declare global {
     ResizeObserver: unknown
   }
 }
+
+vi.mock('config')
 
 vi.mock('recharts', async () => {
   const OriginalModule = await vi.importActual('recharts')
@@ -32,22 +38,6 @@ vi.mock('./Summary', () => ({ default: () => 'Summary' }))
 vi.mock('./SummaryTeamPlan', () => ({ default: () => 'SummaryTeamPlan' }))
 vi.mock('./subroute/Sunburst', () => ({ default: () => 'Sunburst' }))
 vi.mock('./subroute/Fileviewer', () => ({ default: () => 'FileViewer' }))
-
-const mockRepoSettings = (isPrivate = false) => ({
-  owner: {
-    isCurrentUserPartOfOrg: true,
-    repository: {
-      defaultBranch: 'master',
-      private: isPrivate,
-      uploadToken: 'token',
-      graphToken: 'token',
-      yaml: 'yaml',
-      bot: {
-        username: 'test',
-      },
-    },
-  },
-})
 
 const mockRepo = (isPrivate = false, isFirstPullRequest = false) => ({
   owner: {
@@ -266,8 +256,29 @@ const mockBackfillFlag = {
   },
 }
 
+const mockRepoSettingsTeamData = (isPrivate = false) => ({
+  owner: {
+    isCurrentUserPartOfOrg: null,
+    repository: {
+      __typename: 'Repository',
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+      activated: true,
+    },
+  },
+})
+
 const server = setupServer()
 const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
 
@@ -276,19 +287,21 @@ const wrapper: (
 ) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/gh/codecov/cool-repo/tree/main']) =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/blob/:ref/:path+',
-            '/:provider/:owner/:repo',
-          ]}
-          exact={true}
-        >
-          {children}
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/blob/:ref/:path+',
+              '/:provider/:owner/:repo',
+            ]}
+            exact={true}
+          >
+            <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -296,7 +309,6 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
-  let resizeObserverMock: Mock
   /**
    * ResizeObserver is not available, so we have to create a mock to avoid error coming
    * from `react-resize-detector`.
@@ -305,7 +317,7 @@ beforeEach(() => {
    * This mock also allow us to use {@link notifyResizeObserverChange} to fire changes
    * from inside our test.
    */
-  resizeObserverMock = vi.fn().mockImplementation((callback) => {
+  const resizeObserverMock = vi.fn().mockImplementation(() => {
     return {
       observe: vi.fn(),
       unobserve: vi.fn(),
@@ -313,14 +325,16 @@ beforeEach(() => {
     }
   })
 
-  // @ts-ignore
+  // @ts-expect-error - deleting so we can override with the mock
   delete window.ResizeObserver
 
   window.ResizeObserver = resizeObserverMock
 })
 
 afterEach(() => {
+  vi.clearAllMocks()
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -331,75 +345,79 @@ afterAll(() => {
 interface SetupArgs {
   isFirstPullRequest?: boolean
   isPrivate?: boolean
-  tierValue?: TTierNames
+  isTeamPlan?: boolean
   fileCount?: number
+  sunburstEnabled?: boolean
 }
 
 describe('Coverage overview tab', () => {
   function setup({
     isFirstPullRequest = false,
     isPrivate = false,
-    tierValue = TierNames.PRO,
+    isTeamPlan = false,
     fileCount = 10,
+    sunburstEnabled = true,
   }: SetupArgs) {
+    config.SUNBURST_ENABLED = sunburstEnabled
+
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({
           data: mockRepo(isPrivate, isFirstPullRequest),
         })
       }),
-      graphql.query('GetBranches', (info) => {
+      graphql.query('GetBranches', () => {
         return HttpResponse.json({ data: branchesMock })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({
           data: {
             owner: { repository: { ...branchMock } },
           },
         })
       }),
-      graphql.query('BranchContents', (info) => {
+      graphql.query('BranchContents', () => {
         return HttpResponse.json({ data: branchesContentsMock })
       }),
-      graphql.query('RepoConfig', (info) => {
+      graphql.query('RepoConfig', () => {
         return HttpResponse.json({ data: repoConfigMock })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: overviewMock })
       }),
-      graphql.query('GetRepoCoverage', (info) => {
+      graphql.query('GetRepoCoverage', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('GetBranchCoverageMeasurements', (info) => {
+      graphql.query('GetBranchCoverageMeasurements', () => {
         return HttpResponse.json({ data: mockBranchMeasurements })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillFlag })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: tierValue } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
-        return HttpResponse.json({ data: mockRepoSettings(isPrivate) })
+      graphql.query('GetRepoSettingsTeam', () => {
+        return HttpResponse.json({ data: mockRepoSettingsTeamData(isPrivate) })
       }),
-      graphql.query('CoverageTabData', (info) => {
+      graphql.query('CoverageTabData', () => {
         return HttpResponse.json({ data: mockCoverageTabData(fileCount) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       }),
-      graphql.query('GetBranchComponents', (info) => {
+      graphql.query('GetBranchComponents', () => {
         return HttpResponse.json({ data: mockBranchComponents })
       }),
-      graphql.query('FlagsSelect', (info) => {
+      graphql.query('FlagsSelect', () => {
         return HttpResponse.json({ data: mockFlagSelect })
       }),
-      http.get('/internal/:provider/:owner/:repo/coverage/tree', (info) => {
+      http.get('/internal/:provider/:owner/:repo/coverage/tree', () => {
         return HttpResponse.json({ data: treeMock })
       }),
-      http.post('/internal/charts/:provider/:owner/coverage/:repo', (info) => {
+      http.post('/internal/charts/:provider/:owner/coverage/:repo', () => {
         return HttpResponse.json({ data: {} })
       })
     )
@@ -415,37 +433,73 @@ describe('Coverage overview tab', () => {
       wrapper: wrapper(['/gh/test-org/repoName']),
     })
 
-    const summary = screen.getByText(/Summary/)
+    const summary = await screen.findByText(/Summary/)
     expect(summary).toBeInTheDocument()
   })
 
-  describe('file count is under 200_000', () => {
-    it('renders the sunburst chart', async () => {
-      setup({ fileCount: 100 })
-      render(<CoverageOverviewTab />, {
-        wrapper: wrapper(['/gh/test-org/repoName']),
+  describe('rendering sunburst', () => {
+    describe('file count is under 200_000', () => {
+      describe('sunburst is enabled', () => {
+        it('renders the sunburst chart', async () => {
+          setup({ fileCount: 100, sunburstEnabled: true })
+          render(<CoverageOverviewTab />, {
+            wrapper: wrapper(['/gh/test-org/repoName']),
+          })
+
+          const hideChart = await screen.findByText(/Hide charts/)
+          expect(hideChart).toBeInTheDocument()
+
+          const sunburst = await screen.findByText('Sunburst')
+          expect(sunburst).toBeInTheDocument()
+        })
       })
 
-      const hideChart = await screen.findByText(/Hide charts/)
-      expect(hideChart).toBeInTheDocument()
+      describe('sunburst is disabled', () => {
+        it('does not render the sunburst chart', async () => {
+          setup({ fileCount: 100, sunburstEnabled: false })
+          render(<CoverageOverviewTab />, {
+            wrapper: wrapper(['/gh/test-org/repoName']),
+          })
 
-      const sunburst = await screen.findByText('Sunburst')
-      expect(sunburst).toBeInTheDocument()
+          const hideChart = await screen.findByText(/Hide charts/)
+          expect(hideChart).toBeInTheDocument()
+
+          const sunburst = screen.queryByText('Sunburst')
+          await waitFor(() => expect(sunburst).not.toBeInTheDocument())
+        })
+      })
     })
-  })
 
-  describe('file count is above 200_000', () => {
-    it('does not render the sunburst chart', async () => {
-      setup({ fileCount: 200_000 })
-      render(<CoverageOverviewTab />, {
-        wrapper: wrapper(['/gh/test-org/repoName']),
+    describe('file count is above 200_000', () => {
+      describe('sunburst is enabled', () => {
+        it('does not render the sunburst chart', async () => {
+          setup({ fileCount: 500_000, sunburstEnabled: true })
+          render(<CoverageOverviewTab />, {
+            wrapper: wrapper(['/gh/test-org/repoName']),
+          })
+
+          const hideChart = await screen.findByText(/Hide charts/)
+          expect(hideChart).toBeInTheDocument()
+
+          const sunburst = screen.queryByText('Sunburst')
+          await waitFor(() => expect(sunburst).not.toBeInTheDocument())
+        })
       })
 
-      const hideChart = await screen.findByText(/Hide charts/)
-      expect(hideChart).toBeInTheDocument()
+      describe('sunburst is disabled', () => {
+        it('does not render the sunburst chart', async () => {
+          setup({ fileCount: 500_000, sunburstEnabled: false })
+          render(<CoverageOverviewTab />, {
+            wrapper: wrapper(['/gh/test-org/repoName']),
+          })
 
-      const sunburst = screen.queryByText('Sunburst')
-      expect(sunburst).not.toBeInTheDocument()
+          const hideChart = await screen.findByText(/Hide charts/)
+          expect(hideChart).toBeInTheDocument()
+
+          const sunburst = screen.queryByText('Sunburst')
+          await waitFor(() => expect(sunburst).not.toBeInTheDocument())
+        })
+      })
     })
   })
 
@@ -461,7 +515,7 @@ describe('Coverage overview tab', () => {
 
   describe('when the repo is private and org is on team plan', () => {
     it('renders team summary', async () => {
-      setup({ isPrivate: true, tierValue: TierNames.TEAM })
+      setup({ isPrivate: true, isTeamPlan: true })
 
       render(<CoverageOverviewTab />, {
         wrapper: wrapper(['/gh/test-org/repoName']),
@@ -472,7 +526,7 @@ describe('Coverage overview tab', () => {
     })
 
     it('does not render coverage chart', async () => {
-      setup({ isPrivate: true, tierValue: TierNames.TEAM })
+      setup({ isPrivate: true, isTeamPlan: true })
 
       render(<CoverageOverviewTab />, {
         wrapper: wrapper(['/gh/test-org/repoName']),

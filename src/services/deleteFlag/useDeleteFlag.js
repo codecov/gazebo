@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import Api from 'shared/api'
 
 export function useDeleteFlag() {
@@ -44,7 +44,7 @@ export function useDeleteFlag() {
         queryClient.invalidateQueries('RepoFlags')
       }
     },
-    onError: (e) => {
+    onError: (_e) => {
       addToast({
         type: 'error',
         text: 'There was an error deleting your flag',

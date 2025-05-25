@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import RawFileViewer from './RawFileViewer'
@@ -53,7 +54,7 @@ window.scrollTo = scrollToMock
 window.scrollX = 100
 
 class ResizeObserverMock {
-  callback = (x: any) => null
+  callback = (_x: any) => null
 
   constructor(callback: any) {
     this.callback = callback
@@ -118,13 +119,12 @@ afterAll(() => {
 
 interface SetupArgs {
   content?: string | null
-  owner?: {} | null
-  coverage?: {} | null
-  isCriticalFile?: boolean
+  owner?: object | null
+  coverage?: object | null
 }
 
 describe('RawFileViewer', () => {
-  function setup({ content, owner, coverage, isCriticalFile }: SetupArgs) {
+  function setup({ content, owner, coverage }: SetupArgs) {
     mocks.useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: vi.fn(),
@@ -132,10 +132,10 @@ describe('RawFileViewer', () => {
     }))
 
     server.use(
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: { owner } })
       }),
-      graphql.query('CoverageForFile', (info) => {
+      graphql.query('CoverageForFile', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -148,7 +148,6 @@ describe('RawFileViewer', () => {
                     components: [],
                     coverageFile: {
                       hashedPath: 'hashed-path',
-                      isCriticalFile,
                       content,
                       coverage,
                       totals: {
@@ -187,8 +186,7 @@ describe('RawFileViewer', () => {
         { line: 17, coverage: 'M' },
         { line: 21, coverage: 'H' },
       ]
-      const isCriticalFile = false
-      setup({ content, owner, coverage, isCriticalFile })
+      setup({ content, owner, coverage })
     })
 
     describe('getting data from ref', () => {
@@ -258,67 +256,6 @@ describe('RawFileViewer', () => {
     })
   })
 
-  describe('when the file is labeled critical', () => {
-    beforeEach(() => {
-      const content =
-        'function add(a, b) {\n    return a + b;\n}\n\nfunction subtract(a, b) {\n    return a - b;\n}\n\nfunction multiply(a, b) {\n    return a * b;\n}\n\nfunction divide(a, b) {\n    if (b !== 0) {\n        return a / b;\n    } else {\n        return 0\n    }\n}\n\nmodule.exports = {add, subtract, multiply, divide};'
-      const owner = {
-        username: 'criticalrole',
-        isCurrentUserPartOfOrg: true,
-      }
-      const coverage = [
-        { line: 1, coverage: 'H' },
-        { line: 2, coverage: 'H' },
-        { line: 5, coverage: 'H' },
-        { line: 6, coverage: 'H' },
-        { line: 9, coverage: 'H' },
-        { line: 10, coverage: 'H' },
-        { line: 13, coverage: 'M' },
-        { line: 14, coverage: 'P' },
-        { line: 15, coverage: 'M' },
-        { line: 16, coverage: 'M' },
-        { line: 17, coverage: 'M' },
-        { line: 21, coverage: 'H' },
-      ]
-      const isCriticalFile = true
-      setup({ content, owner, coverage, isCriticalFile })
-    })
-
-    it('renders the FileViewer Header, CriticalFileLabel, CodeRenderer Header, and VirtualFileRenderer', async () => {
-      render(
-        <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
-        { wrapper: wrapper() }
-      )
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      const toggleHeader = await screen.findByText(/The FileViewer/)
-      expect(toggleHeader).toBeInTheDocument()
-
-      const criticalFile = await screen.findByText(/critical file/i)
-      expect(criticalFile).toBeInTheDocument()
-
-      const codeRenderer = await screen.findByText(
-        /The Progress Header for CodeRenderer/
-      )
-      expect(codeRenderer).toBeInTheDocument()
-
-      await waitFor(() =>
-        expect(
-          screen.queryByText(
-            /There was a problem getting the source code from your provider./
-          )
-        ).not.toBeInTheDocument()
-      )
-
-      const virtualFileRenderer = await screen.findByTestId(
-        'virtual-file-renderer'
-      )
-      expect(virtualFileRenderer).toBeInTheDocument()
-    })
-  })
-
   describe('when there is no coverage data to be shown', () => {
     beforeEach(() => {
       const content =
@@ -328,8 +265,7 @@ describe('RawFileViewer', () => {
         isCurrentUserPartOfOrg: true,
       }
       const coverage = null
-      const isCriticalFile = false
-      setup({ content, owner, coverage, isCriticalFile })
+      setup({ content, owner, coverage })
     })
 
     it('renders the Fileviewer Header, CodeRenderer Header, and VirtualFileRenderer', async () => {
@@ -424,14 +360,18 @@ describe('RawFileViewer', () => {
       expect(errorMessage).toBeInTheDocument()
     })
 
-    it('renders a login link', async () => {
+    it('renders a login link with redirect to path', async () => {
       render(
         <RawFileViewer title="The FileViewer" commit="cool-commit-sha" />,
         { wrapper: wrapper() }
       )
+
+      const queryString = qs.stringify({
+        to: '/gh/codecov/cool-repo/blob/branch-name/a/file.js',
+      })
       const link = await screen.findByText(/logging in/)
       expect(link).toBeVisible()
-      expect(link).toHaveAttribute('href', '/login')
+      expect(link).toHaveAttribute('href', `/login?${queryString}`)
     })
   })
 

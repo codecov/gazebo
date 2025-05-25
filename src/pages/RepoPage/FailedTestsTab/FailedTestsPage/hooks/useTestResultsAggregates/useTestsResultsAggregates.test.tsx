@@ -5,6 +5,8 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { MockInstance } from 'vitest'
 
+import { Plans } from 'shared/utils/billing'
+
 import { useTestResultsAggregates } from './useTestResultsAggregates'
 
 const queryClient = new QueryClient({
@@ -41,7 +43,7 @@ const mockNotFoundError = {
       message: 'repo not found',
     },
     plan: {
-      value: 'users-basic',
+      value: Plans.USERS_DEVELOPER,
     },
   },
 }
@@ -52,7 +54,9 @@ const mockIncorrectResponse = {
       invalid: 'invalid',
     },
     plan: {
-      value: 'users-basic',
+      value: Plans.USERS_DEVELOPER,
+      isFreePlan: true,
+      isTeamPlan: false,
     },
   },
 }
@@ -60,7 +64,9 @@ const mockIncorrectResponse = {
 const mockResponse = {
   owner: {
     plan: {
-      value: 'users-basic',
+      value: Plans.USERS_DEVELOPER,
+      isFreePlan: true,
+      isTeamPlan: false,
     },
     repository: {
       __typename: 'Repository',
@@ -90,7 +96,7 @@ describe('useTestResultsAggregates', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query('GetTestResultsAggregates', (info) => {
+      graphql.query('GetTestResultsAggregates', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {
@@ -126,7 +132,9 @@ describe('useTestResultsAggregates', () => {
               totalSkips: 20,
               totalSkipsPercentChange: 0,
             },
-            plan: 'users-basic',
+            planName: Plans.USERS_DEVELOPER,
+            isFreePlan: true,
+            isTeamPlan: false,
             private: true,
             defaultBranch: 'main',
           })
@@ -154,8 +162,8 @@ describe('useTestResultsAggregates', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useTestResultsAggregates - 404 Failed to parse data',
+            dev: 'useTestResultsAggregates - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -181,8 +189,8 @@ describe('useTestResultsAggregates', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: {},
+            dev: 'useTestResultsAggregates - Parsing Error',
+            status: 400,
           })
         )
       )

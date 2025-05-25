@@ -10,8 +10,8 @@ const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
 }))
 
-vi.mock('services/toastNotification', async () => {
-  const original = await vi.importActual('services/toastNotification')
+vi.mock('services/toastNotification/context', async () => {
+  const original = await vi.importActual('services/toastNotification/context')
   return {
     ...original,
     useAddNotification: mocks.useAddNotification,
@@ -75,7 +75,7 @@ describe('useSentryToken', () => {
     const mockRemoveItem = vi.spyOn(window.localStorage.__proto__, 'removeItem')
 
     server.use(
-      graphql.mutation('SendSentryToken', (info) => {
+      graphql.mutation('SendSentryToken', () => {
         if (isValidationError) {
           return HttpResponse.json({
             data: {

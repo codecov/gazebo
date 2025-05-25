@@ -25,7 +25,7 @@ const mockSingularImpactedFilesData = {
             isNewFile: true,
             isRenamedFile: false,
             isDeletedFile: false,
-            isCriticalFile: false,
+
             headCoverage: {
               percentCovered: 90.23,
             },
@@ -84,7 +84,7 @@ describe('NameColumn', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('ImpactedFileComparison', (info) => {
+      graphql.query('ImpactedFileComparison', () => {
         return HttpResponse.json({ data: mockSingularImpactedFilesData })
       })
     )
@@ -140,7 +140,7 @@ describe('NameColumn', () => {
           fileLabel: 'New',
           headName: 'file A',
           hashedPath: 'hashed-path',
-          isCriticalFile: false,
+
           segments: [
             {
               header: '@@ -0,0 1,45 @@',

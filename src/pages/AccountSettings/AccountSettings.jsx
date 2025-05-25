@@ -6,9 +6,8 @@ import config from 'config'
 import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
-import { usePlanData } from 'services/account'
+import { usePlanData } from 'services/account/usePlanData'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
-import { isEnterprisePlan } from 'shared/utils/billing'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
@@ -34,7 +33,7 @@ function AccountSettings() {
   const { data: currentUser } = useUser()
 
   const { data } = usePlanData({ provider, owner })
-  const viewOktaAccess = isEnterprisePlan(data?.plan?.value)
+  const viewOktaAccess = data?.plan?.isEnterprisePlan
 
   const isViewingPersonalSettings =
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()

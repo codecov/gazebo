@@ -1,90 +1,134 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import config from 'config'
+
+import { eventTracker } from 'services/events/events'
+import { Provider } from 'shared/api/helpers'
 
 import SyncButton from './SyncButton'
 
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/sync']}>
-    <Route path="/sync">{children}</Route>
-  </MemoryRouter>
-)
+vi.mock('services/events/events')
+
+vi.mock('config')
+config.API_URL = 'secret-api-url'
+
+const { location } = window
+beforeEach(() => {
+  Object.defineProperty(window, 'location', {
+    value: { ...location, protocol: 'http:', host: 'secret-api-url' },
+  })
+})
+
+afterEach(() => {
+  Object.defineProperty(window, 'location', { value: location })
+})
+
+const wrapper =
+  (initialEntries = '/sync'): React.FC<React.PropsWithChildren> =>
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path="/sync">{children}</Route>
+    </MemoryRouter>
+  )
+
+interface Case {
+  provider: Provider
+  name: string
+  redirectTo: string
+}
+
+const cases: Case[] = [
+  {
+    provider: 'gh',
+    name: 'GitHub',
+    redirectTo: 'http://secret-api-url/gh',
+  },
+  {
+    provider: 'ghe',
+    name: 'GitHub Enterprise',
+    redirectTo: 'http://secret-api-url/ghe',
+  },
+  {
+    provider: 'gl',
+    name: 'GitLab',
+    redirectTo: 'http://secret-api-url/gl',
+  },
+  {
+    provider: 'gle',
+    name: 'GitLab Enterprise',
+    redirectTo: 'http://secret-api-url/gle',
+  },
+  {
+    provider: 'bb',
+    name: 'Bitbucket',
+    redirectTo: 'http://secret-api-url/bb',
+  },
+
+  {
+    provider: 'bbs',
+    name: 'Bitbucket Server',
+    redirectTo: 'http://secret-api-url/bbs',
+  },
+]
 
 describe('SyncButton', () => {
-  describe('provider is set to gh', () => {
+  describe.each(cases)('$name', ({ name, provider, redirectTo }) => {
     it('renders sync button', () => {
-      render(<SyncButton provider="gh" />, { wrapper })
-
-      const link = screen.getByRole('link', { name: /Sync with Github/ })
-
-      const expectedRedirect = encodeURIComponent('http://localhost:3000/gh')
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', `/login/gh?to=${expectedRedirect}`)
-    })
-  })
-
-  describe('provider is set to gl', () => {
-    it('renders sync button', () => {
-      render(<SyncButton provider="gl" />, { wrapper })
-
-      const link = screen.getByRole('link', { name: /Sync with Gitlab/ })
-
-      const expectedRedirect = encodeURIComponent('http://localhost:3000/gl')
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', `/login/gl?to=${expectedRedirect}`)
-    })
-  })
-
-  describe('provider is set to bb', () => {
-    it('renders sync button', () => {
-      render(<SyncButton provider="bb" />, { wrapper })
-
-      const link = screen.getByRole('link', { name: /Sync with BitBucket/ })
-
-      const expectedRedirect = encodeURIComponent('http://localhost:3000/bb')
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', `/login/bb?to=${expectedRedirect}`)
-    })
-  })
-
-  describe('provider is set to ghe', () => {
-    it('renders sync button', () => {
-      render(<SyncButton provider="ghe" />, { wrapper })
+      render(<SyncButton provider={provider} />, { wrapper: wrapper() })
 
       const link = screen.getByRole('link', {
-        name: /Sync with Github Enterprise/,
+        name: new RegExp(`Sync with ${name}`),
       })
 
-      const expectedRedirect = encodeURIComponent('http://localhost:3000/ghe')
+      const queryString = qs.stringify(
+        { to: redirectTo },
+        { addQueryPrefix: true }
+      )
+      const expectedRedirect = `secret-api-url/login/${provider}${queryString}`
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', `/login/ghe?to=${expectedRedirect}`)
+      expect(link).toHaveAttribute('href', expectedRedirect)
     })
   })
 
-  describe('provider is set to gle', () => {
-    it('renders sync button', () => {
-      render(<SyncButton provider="gle" />, { wrapper })
+  it('emits event on click', () => {
+    console.error = () => {} // silence error about navigation on click
+    render(<SyncButton provider="gh" />, { wrapper: wrapper() })
 
-      const link = screen.getByRole('link', {
-        name: /Sync with Gitlab Enterprise/,
-      })
+    const link = screen.getByRole('link', { name: /Sync with GitHub/ })
 
-      const expectedRedirect = encodeURIComponent('http://localhost:3000/gle')
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', `/login/gle?to=${expectedRedirect}`)
+    act(() => link.click())
+
+    expect(eventTracker().track).toHaveBeenCalledWith({
+      type: 'Button Clicked',
+      properties: {
+        buttonName: 'Sync',
+        buttonLocation: 'Sync Provider Page',
+        loginProvider: 'GitHub',
+      },
     })
   })
 
-  describe('provider is set to bbs', () => {
-    it('renders sync button', () => {
-      render(<SyncButton provider="bbs" />, { wrapper })
-
-      const link = screen.getByRole('link', {
-        name: /Sync with BitBucket Server/,
+  describe('when a to param is provided', () => {
+    it('appends the to param to the redirect url', () => {
+      render(<SyncButton provider="gh" />, {
+        wrapper: wrapper('/sync?to=/test'),
       })
 
-      const expectedRedirect = encodeURIComponent('http://localhost:3000/bbs')
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', `/login/bbs?to=${expectedRedirect}`)
+      const redirectQueryString = qs.stringify(
+        { to: '/test' },
+        { addQueryPrefix: true }
+      )
+      const queryString = qs.stringify(
+        { to: `http://secret-api-url/gh${redirectQueryString}` },
+        { addQueryPrefix: true }
+      )
+      const link = screen.getByRole('link', { name: /Sync with GitHub/ })
+      expect(link).toHaveAttribute(
+        'href',
+        `secret-api-url/login/gh${queryString}`
+      )
     })
   })
 })

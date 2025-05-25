@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { z } from 'zod'
 
-import { SubscriptionDetailSchema } from 'services/account'
+import { SubscriptionDetailSchema } from 'services/account/useAccountDetails'
 
 import InfoAlertCancellation from './InfoAlertCancellation'
 
@@ -19,20 +19,15 @@ const subscriptionDetail = {
 } as z.infer<typeof SubscriptionDetailSchema>
 
 describe('InfoAlertCancellation', () => {
-  describe('when the subscription isnt cancelled', () => {
+  describe('when the subscription is not cancelled', () => {
     const subDetail = {
       ...subscriptionDetail,
       cancelAtPeriodEnd: false,
     } as z.infer<typeof SubscriptionDetailSchema>
 
-    it('doesnt render anything', () => {
+    it('does not render anything', () => {
       const { container } = render(
-        <InfoAlertCancellation
-          subscriptionDetail={subDetail}
-          // @ts-expect-error
-          provider="gh"
-          owner="codecov"
-        />
+        <InfoAlertCancellation subscriptionDetail={subDetail} />
       )
       expect(container).toBeEmptyDOMElement()
     })
@@ -45,14 +40,7 @@ describe('InfoAlertCancellation', () => {
     } as z.infer<typeof SubscriptionDetailSchema>
 
     it('renders a message that your subscription is cancelling', () => {
-      render(
-        <InfoAlertCancellation
-          subscriptionDetail={subDetail}
-          // @ts-expect-error
-          provider="gh"
-          owner="codecov"
-        />
-      )
+      render(<InfoAlertCancellation subscriptionDetail={subDetail} />)
       expect(screen.getByText(/Cancellation confirmation/)).toBeInTheDocument()
       expect(
         screen.getByText(/Your account will return to the/)
@@ -62,13 +50,7 @@ describe('InfoAlertCancellation', () => {
 
   describe('when the subscription is cancelled and refunded taking account immediately', () => {
     it('renders a message that your subscription is cancelled and refunded', () => {
-      render(
-        <InfoAlertCancellation
-          // @ts-expect-error
-          provider="gh"
-          owner="codecov"
-        />
-      )
+      render(<InfoAlertCancellation />)
       expect(screen.getByText(/Cancellation confirmation/)).toBeInTheDocument()
       expect(
         screen.getByText(

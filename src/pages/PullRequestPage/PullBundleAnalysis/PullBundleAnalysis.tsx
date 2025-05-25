@@ -1,6 +1,8 @@
-import { lazy, Suspense } from 'react'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
+import { Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { CachedBundleContentBanner } from 'shared/CachedBundleContentBanner/CachedBundleContentBanner'
 import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import { ReportUploadType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
@@ -8,13 +10,13 @@ import Spinner from 'ui/Spinner'
 import BundleMessage from './BundleMessage'
 import EmptyTable from './EmptyTable'
 import FirstPullBanner from './FirstPullBanner'
+import PullBundleComparisonTable from './PullBundleComparisonTable'
+import PullBundleHeadTable from './PullBundleHeadTable'
 
-import { TBundleAnalysisComparisonResult, usePullPageData } from '../hooks'
-
-const PullBundleComparisonTable = lazy(
-  () => import('./PullBundleComparisonTable')
-)
-const PullBundleHeadTable = lazy(() => import('./PullBundleHeadTable'))
+import {
+  PullPageDataQueryOpts,
+  TBundleAnalysisComparisonResult,
+} from '../queries/PullPageDataQueryOpts'
 
 interface URLParams {
   provider: string
@@ -31,12 +33,14 @@ const Loader = () => (
 
 interface BundleContentProps {
   bundleCompareType?: TBundleAnalysisComparisonResult
-  headHasBundle?: boolean
+  headHasBundle: boolean
+  hasCachedBundle: boolean
 }
 
 const BundleContent: React.FC<BundleContentProps> = ({
   bundleCompareType,
   headHasBundle,
+  hasCachedBundle,
 }) => {
   if (bundleCompareType === 'FirstPullRequest') {
     return (
@@ -72,9 +76,12 @@ const BundleContent: React.FC<BundleContentProps> = ({
   }
 
   return (
-    <Suspense fallback={<Loader />}>
-      <PullBundleComparisonTable />
-    </Suspense>
+    <>
+      {hasCachedBundle ? <CachedBundleContentBanner /> : null}
+      <Suspense fallback={<Loader />}>
+        <PullBundleComparisonTable />
+      </Suspense>
+    </>
   )
 }
 
@@ -82,25 +89,36 @@ const PullBundleAnalysis: React.FC = () => {
   const { provider, owner, repo, pullId } = useParams<URLParams>()
 
   // we can set team plan true here because we don't care about the fields it will skip - tho we should really stop doing this and just return null on the API if they're on a team plan so we can save on requests made
-  const { data } = usePullPageData({
-    provider,
-    owner,
-    repo,
-    pullId,
-    isTeamPlan: true,
-  })
+  const { data } = useSuspenseQueryV5(
+    PullPageDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      pullId,
+      isTeamPlan: true,
+    })
+  )
 
   const bundleCompareType =
     data?.pull?.bundleAnalysisCompareWithBase?.__typename
-  const headHasBundle =
+
+  let headHasBundle = false
+  let hasCachedBundle = false
+  if (
     data?.pull?.head?.bundleAnalysis?.bundleAnalysisReport?.__typename ===
     'BundleAnalysisReport'
+  ) {
+    headHasBundle = true
+    hasCachedBundle =
+      data?.pull?.head?.bundleAnalysis?.bundleAnalysisReport?.isCached
+  }
 
   if (data?.coverageEnabled && data?.bundleAnalysisEnabled) {
     return (
       <BundleContent
         bundleCompareType={bundleCompareType}
         headHasBundle={headHasBundle}
+        hasCachedBundle={hasCachedBundle}
       />
     )
   }
@@ -113,6 +131,7 @@ const PullBundleAnalysis: React.FC = () => {
       <BundleContent
         bundleCompareType={bundleCompareType}
         headHasBundle={headHasBundle}
+        hasCachedBundle={hasCachedBundle}
       />
     </>
   )

@@ -2,10 +2,12 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import { eventTracker } from 'services/events/events'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { Provider } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
-const TypeProjectsSchema = z.array(
+export const TypeProjectsSchema = z.array(
   z.union([
     z.literal('PERSONAL'),
     z.literal('YOUR_ORG'),
@@ -14,7 +16,7 @@ const TypeProjectsSchema = z.array(
   ])
 )
 
-const GoalsSchema = z.array(
+export const GoalsSchema = z.array(
   z.union([
     z.literal('STARTING_WITH_TESTS'),
     z.literal('IMPROVE_COVERAGE'),
@@ -41,7 +43,6 @@ const MeSchema = z.object({
     student: z.boolean(),
     studentCreatedAt: z.string().nullable(),
     studentUpdatedAt: z.string().nullable(),
-    customerIntent: z.string().nullable(),
   }),
   trackingMetadata: z.object({
     service: z.string(),
@@ -94,7 +95,6 @@ fragment CurrentUserFragment on Me {
     student
     studentCreatedAt
     studentUpdatedAt
-    customerIntent
   }
   trackingMetadata {
     service
@@ -121,7 +121,7 @@ fragment CurrentUserFragment on Me {
 `
 
 interface URLParams {
-  provider: string
+  provider: Provider
 }
 
 interface UseUserArgs {
@@ -134,7 +134,6 @@ interface UseUserArgs {
 
 export function useUser({ options }: UseUserArgs = {}) {
   const { provider } = useParams<URLParams>()
-
   const query = `
     query CurrentUser {
       me {
@@ -148,14 +147,21 @@ export function useUser({ options }: UseUserArgs = {}) {
     queryKey: ['currentUser', provider, query],
     queryFn: ({ signal }) =>
       Api.graphql({ provider, query, signal }).then((res) => {
+        const callingFn = 'useUser'
         const parsedRes = UserSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useUser - 404 failed to parse',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedRes.error },
+          })
+        }
+
+        if (parsedRes.data.me?.trackingMetadata.ownerid) {
+          eventTracker().identify({
+            userOwnerId: parsedRes.data.me.trackingMetadata.ownerid,
+            provider,
+          })
         }
 
         return parsedRes.data.me

@@ -3,8 +3,8 @@ import { useLayoutEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { useSetCrumbs } from 'pages/PlanPage/context'
-import { useNavLinks } from 'services/navigation'
-import { useAddNotification } from 'services/toastNotification'
+import { useNavLinks } from 'services/navigation/useNavLinks'
+import { useAddNotification } from 'services/toastNotification/context'
 import Api from 'shared/api'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -72,7 +72,7 @@ function SpecialOffer() {
           Yes, I&apos;d like 6 months with 30% discount
         </Button>
         <A variant="black" to={{ pageName: 'downgradePlanPage' }}>
-          No thanks, I&apos;ll proceed to the basic plan
+          No thanks, I&apos;ll proceed to the developers plan
           <Icon name="chevronRight" variant="solid" size="sm" />
         </A>
       </div>

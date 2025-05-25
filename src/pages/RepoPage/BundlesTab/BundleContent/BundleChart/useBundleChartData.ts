@@ -1,8 +1,11 @@
+import { useQuery as useQueryV5 } from '@tanstack/react-queryV5'
 import { useMemo, useRef } from 'react'
 
-import { useBundleTrendData } from 'services/bundleAnalysis'
-import { BUNDLE_TREND_REPORT_TYPES } from 'services/bundleAnalysis/useBundleTrendData'
-import { useLocationParams } from 'services/navigation'
+import {
+  BUNDLE_TREND_REPORT_TYPES,
+  BundleTrendDataQueryOpts,
+} from 'services/bundleAnalysis/BundleTrendDataQueryOpts'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoOverview } from 'services/repo'
 import { findBundleMultiplier } from 'shared/utils/bundleAnalysis'
 import { createTimeSeriesQueryVars, Trend } from 'shared/utils/timeseriesCharts'
@@ -65,23 +68,24 @@ export function useBundleChartData({
           'UNKNOWN_SIZE',
         ]
 
-  const { data: trendData, isLoading } = useBundleTrendData({
-    provider,
-    owner,
-    repo,
-    branch,
-    bundle,
-    interval: queryVars.interval,
-    after: queryVars.after,
-    before: queryVars.before,
-    // this will be replaced once we have filtering by types implemented
-    filters: {
-      assetTypes: assetTypes,
-      // temp removing while we don't have filtering by types implemented
-      // loadTypes: loadTypes,
-    },
+  const { data: trendData, isLoading } = useQueryV5({
+    ...BundleTrendDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      interval: queryVars.interval,
+      after: queryVars.after,
+      before: queryVars.before,
+      // this will be replaced once we have filtering by types implemented
+      filters: {
+        assetTypes: assetTypes,
+        // temp removing while we don't have filtering by types implemented
+        // loadTypes: loadTypes,
+      },
+    }),
     enabled: !!overview?.oldestCommitAt,
-    suspense: false,
   })
 
   const mergedData = useMemo(() => {

@@ -2,8 +2,7 @@ import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
-import { useLocationParams } from 'services/navigation'
-import { isFreePlan, isTeamPlan } from 'shared/utils/billing'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { cn } from 'shared/utils/cn'
 import { formatTimeFromSeconds } from 'shared/utils/dates'
 import Badge from 'ui/Badge'
@@ -226,7 +225,7 @@ const AverageFlakeRateCard = ({
         ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
-        The average flake rate across all branches.
+        The average flake rate on your default branch.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -276,7 +275,7 @@ const TotalFailuresCard = ({
         ) : null}
       </MetricCard.Content>
       <MetricCard.Description>
-        The number of test failures across all branches.
+        The number of test failures on your default branch.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -340,7 +339,7 @@ interface URLParams {
 }
 
 const getDecodedBranch = (branch?: string) =>
-  !!branch ? decodeURIComponent(branch) : undefined
+  branch ? decodeURIComponent(branch) : undefined
 
 export const historicalTrendToCopy = (interval?: MeasurementInterval) => {
   switch (interval) {
@@ -369,8 +368,7 @@ function MetricsSection() {
     interval: queryParams?.historicalTrend as MeasurementInterval,
   })
   const disabledFlakeAggregates =
-    (isTeamPlan(testResults?.plan) || isFreePlan(testResults?.plan)) &&
-    testResults?.private
+    (testResults?.isTeamPlan || testResults?.isFreePlan) && testResults?.private
   const { data: flakeAggregates } = useFlakeAggregates({
     interval: queryParams?.historicalTrend as MeasurementInterval,
     opts: {
@@ -426,10 +424,10 @@ function MetricsSection() {
           <div
             className={cn(
               'grid',
-              !!flakeAggregates ? 'grid-cols-4' : 'grid-cols-2'
+              flakeAggregates ? 'grid-cols-4' : 'grid-cols-2'
             )}
           >
-            {!!flakeAggregates ? (
+            {flakeAggregates ? (
               <>
                 <TotalFlakyTestsCard
                   flakeCount={flakeAggregates?.flakeCount}

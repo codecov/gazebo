@@ -7,7 +7,7 @@ import {
   TIME_OPTION_KEY,
   TIME_OPTION_VALUES,
 } from 'pages/RepoPage/shared/constants'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepo, useRepoComponents } from 'services/repo'
 
 const getSortByDirection = (isDesc: boolean) => (isDesc ? 'DESC' : 'ASC')
@@ -56,7 +56,7 @@ function useRepoComponentsTable(isDesc = false) {
   const { after, interval } = createMeasurementVariables(
     // @ts-expect-error Need to type useLocationParams
     params?.historicalTrend
-      ? // @ts-expect-error
+      ? // @ts-expect-error - useLocationParams has type issues
         params.historicalTrend
       : TIME_OPTION_VALUES.LAST_3_MONTHS,
     repoData?.repository?.oldestCommitAt ?? undefined
@@ -64,7 +64,7 @@ function useRepoComponentsTable(isDesc = false) {
 
   const { data, isLoading } = useRepoComponents({
     // @ts-expect-error Need to type useLocationParams
-    filters: Boolean(params?.components?.length)
+    filters: params?.components?.length
       ? // @ts-expect-error Need to type useLocationParams
         { components: params?.components }
       : {},

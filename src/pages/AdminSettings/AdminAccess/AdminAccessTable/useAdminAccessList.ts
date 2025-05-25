@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 
 const RequestSchema = z.object({
   count: z.number(),
@@ -23,21 +23,29 @@ const RequestSchema = z.object({
 })
 
 export const useAdminAccessList = () => {
-  const { data, ...rest } = useInfiniteQuery({
+  const {
+    data,
+    error,
+    isLoading,
+    isError,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
     queryKey: ['AdminAccessList'],
     queryFn: ({ pageParam = 1, signal }) =>
       Api.get({
         path: `/users?is_admin=true&page=${pageParam}`,
         signal,
       }).then((res) => {
+        const callingFn = 'useAdminAccessList'
         const parsedData = RequestSchema.safeParse(res)
 
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useAdminAccessList - 404 schema parsing failed',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedData.error },
+          })
         }
         return parsedData.data
       }),
@@ -55,6 +63,11 @@ export const useAdminAccessList = () => {
       () => data?.pages.flatMap((page) => page.results) ?? [],
       [data?.pages]
     ),
-    ...rest,
+    error,
+    isLoading,
+    isError,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
   }
 }

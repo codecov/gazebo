@@ -30,7 +30,7 @@ const accountDetails = {
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
-    value: 'users-inappm',
+    value: Plans.USERS_INAPPM,
   },
   activatedUserCount: 2,
   inactiveUserCount: 1,
@@ -80,7 +80,7 @@ describe('useCancelPlan', () => {
       await waitFor(() =>
         expect(mockBody).toHaveBeenCalledWith({
           plan: {
-            value: Plans.USERS_BASIC,
+            value: Plans.USERS_DEVELOPER,
           },
         })
       )

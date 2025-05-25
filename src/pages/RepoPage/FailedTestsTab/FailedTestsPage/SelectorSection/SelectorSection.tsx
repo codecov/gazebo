@@ -7,7 +7,7 @@ import {
   MeasurementTimeOption,
   MeasurementTimeOptions,
 } from 'pages/RepoPage/shared/constants'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
@@ -36,7 +36,7 @@ export const defaultQueryParams = {
 }
 
 const getDecodedBranch = (branch?: string) =>
-  !!branch ? decodeURIComponent(branch) : undefined
+  branch ? decodeURIComponent(branch) : undefined
 
 function SelectorSection() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)

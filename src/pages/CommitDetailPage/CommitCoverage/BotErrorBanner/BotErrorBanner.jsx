@@ -1,17 +1,17 @@
 import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
-import { providerToName } from 'shared/utils'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 
 export const ProvidersEnum = Object.freeze({
-  Github: 'Github',
-  Gitlab: 'Gitlab',
-  BitBucket: 'BitBucket',
+  Github: 'GitHub',
+  Gitlab: 'GitLab',
+  Bitbucket: 'Bitbucket',
 })
 
 function useProviderSetting() {
@@ -28,7 +28,7 @@ function useProviderSetting() {
   const ghWithNoApp =
     !accountDetails?.integrationId && provider === ProvidersEnum.Github
 
-  const bbProvider = provider === ProvidersEnum.BitBucket
+  const bbProvider = provider === ProvidersEnum.Bitbucket
   const glProvider = provider === ProvidersEnum.Gitlab
 
   return { ghWithNoApp, bbProvider, glProvider, ghWithApp }
@@ -83,7 +83,7 @@ const BotErrorHeading = () => {
 
   if (ghWithApp) {
     return (
-      <p className="font-semibold">There was an issue with the Github app</p>
+      <p className="font-semibold">There was an issue with the GitHub app</p>
     )
   }
 

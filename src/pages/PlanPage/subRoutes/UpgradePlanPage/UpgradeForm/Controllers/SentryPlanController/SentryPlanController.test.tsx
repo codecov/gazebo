@@ -6,8 +6,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import SentryPlanController from './SentryPlanController'
 
@@ -15,8 +15,8 @@ const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
 }))
 
-vi.mock('services/toastNotification', async () => {
-  const actual = await vi.importActual('services/toastNotification')
+vi.mock('services/toastNotification/context', async () => {
+  const actual = await vi.importActual('services/toastNotification/context')
   return {
     ...actual,
     useAddNotification: mocks.useAddNotification,
@@ -26,7 +26,7 @@ vi.mock('@stripe/react-stripe-js')
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: 'users-basic',
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -35,12 +35,14 @@ const basicPlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const sentryPlanMonth = {
   marketingName: 'Sentry Pro',
-  value: 'users-sentrym',
-  billingRate: 'monthly',
+  value: Plans.USERS_SENTRYM,
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 12,
   benefits: [
     'Includes 5 seats',
@@ -51,12 +53,14 @@ const sentryPlanMonth = {
   monthlyUploadLimit: null,
   trialDays: 14,
   quantity: 10,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
 
 const sentryPlanYear = {
   marketingName: 'Sentry Pro',
-  value: 'users-sentryy',
-  billingRate: 'annually',
+  value: Plans.USERS_SENTRYY,
+  billingRate: BillingRate.ANNUALLY,
   baseUnitPrice: 10,
   benefits: [
     'Includes 5 seats',
@@ -67,7 +71,10 @@ const sentryPlanYear = {
   monthlyUploadLimit: null,
   trialDays: 14,
   quantity: 21,
+  isTeamPlan: false,
+  isSentryPlan: true,
 }
+
 const mockAccountDetailsBasic = {
   plan: basicPlan,
   activatedUserCount: 1,
@@ -103,10 +110,10 @@ const mockAccountDetailsSentryYearly = {
 const mockPlanDataResponseMonthly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro',
   monthlyUploadLimit: 2500,
-  value: 'test-plan',
+  value: Plans.USERS_SENTRYM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -114,15 +121,21 @@ const mockPlanDataResponseMonthly = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: true,
+  isSentryPlan: true,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const mockPlanDataResponseYearly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'yearly',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Pro',
   monthlyUploadLimit: 2500,
-  value: 'test-plan',
+  value: Plans.USERS_SENTRYY,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -130,6 +143,12 @@ const mockPlanDataResponseYearly = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: true,
+  isSentryPlan: true,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -177,8 +196,8 @@ interface SetupArgs {
 
 describe('SentryPlanController', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC, monthlyPlan = true }: SetupArgs = {
-      planValue: Plans.USERS_BASIC,
+    { planValue = Plans.USERS_DEVELOPER, monthlyPlan = true }: SetupArgs = {
+      planValue: Plans.USERS_DEVELOPER,
       monthlyPlan: true,
     }
   ) {
@@ -187,8 +206,8 @@ describe('SentryPlanController', () => {
     mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, (info) => {
-        if (planValue === Plans.USERS_BASIC) {
+      http.get(`/internal/gh/codecov/account-details/`, () => {
+        if (planValue === Plans.USERS_DEVELOPER) {
           return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_SENTRYM) {
           return HttpResponse.json(mockAccountDetailsSentryMonthly)
@@ -196,10 +215,10 @@ describe('SentryPlanController', () => {
           return HttpResponse.json(mockAccountDetailsSentryYearly)
         }
       }),
-      http.patch('/internal/gh/codecov/account-details/', async (info) => {
+      http.patch('/internal/gh/codecov/account-details/', async () => {
         return HttpResponse.json({ success: false })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -208,7 +227,7 @@ describe('SentryPlanController', () => {
           },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         const planResponse = monthlyPlan
           ? mockPlanDataResponseMonthly
           : mockPlanDataResponseYearly
@@ -226,7 +245,7 @@ describe('SentryPlanController', () => {
       const props = {
         setFormValue: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_SENTRYM,
+        newPlan: sentryPlanMonth,
         seats: 10,
         errors: { seats: { message: '' } },
       }
@@ -284,7 +303,7 @@ describe('SentryPlanController', () => {
       const props = {
         setFormValue: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_SENTRYY,
+        newPlan: sentryPlanYear,
         seats: 5,
         errors: { seats: { message: '' } },
       }

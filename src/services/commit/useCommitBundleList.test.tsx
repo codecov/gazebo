@@ -19,40 +19,24 @@ const mockCommitBundleListData = {
                 name: 'bundle.js',
                 changeType: 'added',
                 bundleChange: {
-                  loadTime: {
-                    threeG: 3,
-                  },
-                  size: {
-                    uncompress: 1,
-                  },
+                  loadTime: { threeG: 3 },
+                  size: { uncompress: 1 },
                 },
                 bundleData: {
-                  loadTime: {
-                    threeG: 4,
-                  },
-                  size: {
-                    uncompress: 2,
-                  },
+                  loadTime: { threeG: 4 },
+                  size: { uncompress: 2 },
                 },
               },
               {
                 name: 'bundle.css',
                 changeType: 'removed',
                 bundleChange: {
-                  loadTime: {
-                    threeG: 7,
-                  },
-                  size: {
-                    uncompress: 5,
-                  },
+                  loadTime: { threeG: 7 },
+                  size: { uncompress: 5 },
                 },
                 bundleData: {
-                  loadTime: {
-                    threeG: 8,
-                  },
-                  size: {
-                    uncompress: 6,
-                  },
+                  loadTime: { threeG: 8 },
+                  size: { uncompress: 6 },
                 },
               },
             ],
@@ -89,11 +73,7 @@ const mockOwnerNotActivatedError = {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
@@ -128,7 +108,7 @@ describe('useCommitBundleList', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('CommitBundleList', (info) => {
+      graphql.query('CommitBundleList', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -168,40 +148,24 @@ describe('useCommitBundleList', () => {
                   name: 'bundle.js',
                   changeType: 'added',
                   bundleChange: {
-                    loadTime: {
-                      threeG: 3,
-                    },
-                    size: {
-                      uncompress: 1,
-                    },
+                    loadTime: { threeG: 3 },
+                    size: { uncompress: 1 },
                   },
                   bundleData: {
-                    loadTime: {
-                      threeG: 4,
-                    },
-                    size: {
-                      uncompress: 2,
-                    },
+                    loadTime: { threeG: 4 },
+                    size: { uncompress: 2 },
                   },
                 },
                 {
                   name: 'bundle.css',
                   changeType: 'removed',
                   bundleChange: {
-                    loadTime: {
-                      threeG: 7,
-                    },
-                    size: {
-                      uncompress: 5,
-                    },
+                    loadTime: { threeG: 7 },
+                    size: { uncompress: 5 },
                   },
                   bundleData: {
-                    loadTime: {
-                      threeG: 8,
-                    },
-                    size: {
-                      uncompress: 6,
-                    },
+                    loadTime: { threeG: 8 },
+                    size: { uncompress: 6 },
                   },
                 },
               ],
@@ -247,7 +211,7 @@ describe('useCommitBundleList', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -264,8 +228,8 @@ describe('useCommitBundleList', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: {},
+            dev: 'useCommitBundleList - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -300,8 +264,8 @@ describe('useCommitBundleList', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitBundleList - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )
@@ -336,6 +300,7 @@ describe('useCommitBundleList', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitBundleList - Owner Not Activated',
             status: 403,
           })
         )

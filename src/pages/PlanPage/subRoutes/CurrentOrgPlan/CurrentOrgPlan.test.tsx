@@ -1,37 +1,32 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { z } from 'zod'
 
 import { PlanUpdatedPlanNotificationContext } from 'pages/PlanPage/context'
-import { AccountDetailsSchema } from 'services/account'
+import { AccountDetailsSchema } from 'services/account/useAccountDetails'
+import { Plans } from 'shared/utils/billing'
 import { AlertOptions, type AlertOptionsType } from 'ui/Alert'
 
 import CurrentOrgPlan from './CurrentOrgPlan'
-import { useEnterpriseAccountDetails } from './hooks/useEnterpriseAccountDetails'
+import { EnterpriseAccountDetailsRequestSchema } from './queries/EnterpriseAccountDetailsQueryOpts'
 
 vi.mock('./BillingDetails', () => ({ default: () => 'BillingDetails' }))
 vi.mock('./CurrentPlanCard', () => ({ default: () => 'CurrentPlanCard' }))
 vi.mock('./LatestInvoiceCard', () => ({ default: () => 'LatestInvoiceCard' }))
 vi.mock('./AccountOrgs', () => ({ default: () => 'AccountOrgs' }))
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-})
-
 const mockedAccountDetails = {
   planProvider: 'github',
   rootOrganization: {},
-  plan: {
-    value: 'users-free',
-  },
   usesInvoice: false,
 } as z.infer<typeof AccountDetailsSchema>
 
@@ -80,6 +75,14 @@ const mockEnterpriseAccountDetailsHundredPercent = {
   },
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+
 const alertOptionWrapperCreator = (
   alertOptionString: AlertOptionsType | '',
   isCancellation?: boolean
@@ -87,19 +90,23 @@ const alertOptionWrapperCreator = (
   const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
     <MemoryRouter initialEntries={['/billing/gh/codecov']}>
       <Route path="/billing/:provider/:owner">
-        <QueryClientProvider client={queryClient}>
-          <PlanUpdatedPlanNotificationContext.Provider
-            value={{
-              updatedNotification: {
-                alertOption: alertOptionString,
-                isCancellation,
-              },
-              setUpdatedNotification: noop,
-            }}
-          >
-            {children}
-          </PlanUpdatedPlanNotificationContext.Provider>
-        </QueryClientProvider>
+        <QueryClientProviderV5 client={queryClientV5}>
+          <QueryClientProvider client={queryClient}>
+            <Suspense fallback={<div>Loading</div>}>
+              <PlanUpdatedPlanNotificationContext.Provider
+                value={{
+                  updatedNotification: {
+                    alertOption: alertOptionString,
+                    isCancellation,
+                  },
+                  setUpdatedNotification: noop,
+                }}
+              >
+                {children}
+              </PlanUpdatedPlanNotificationContext.Provider>
+            </Suspense>
+          </QueryClientProvider>
+        </QueryClientProviderV5>
       </Route>
     </MemoryRouter>
   )
@@ -111,18 +118,25 @@ const wrapper = alertOptionWrapperCreator(AlertOptions.SUCCESS)
 const noUpdatedPlanWrapper = alertOptionWrapperCreator('')
 const cancellationPlanWrapper = alertOptionWrapperCreator('', true)
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 interface SetupArgs {
   accountDetails?: z.infer<typeof AccountDetailsSchema>
-  enterpriseAccountDetails?: ReturnType<
-    typeof useEnterpriseAccountDetails
-  >['data']
+  enterpriseAccountDetails?: z.infer<
+    typeof EnterpriseAccountDetailsRequestSchema
+  >
 }
 
 describe('CurrentOrgPlan', () => {
@@ -131,12 +145,24 @@ describe('CurrentOrgPlan', () => {
     enterpriseAccountDetails = mockNoEnterpriseAccount,
   }: SetupArgs) {
     server.use(
-      graphql.query('EnterpriseAccountDetails', () =>
-        HttpResponse.json({ data: enterpriseAccountDetails })
-      ),
-      http.get('/internal/:provider/:owner/account-details', () =>
-        HttpResponse.json(accountDetails)
-      )
+      graphql.query('EnterpriseAccountDetails', () => {
+        return HttpResponse.json({ data: enterpriseAccountDetails })
+      }),
+      graphql.query('CurrentOrgPlanPageData', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              plan: { value: Plans.USERS_PR_INAPPM },
+              billing: {
+                unverifiedPaymentMethods: [],
+              },
+            },
+          },
+        })
+      }),
+      http.get('/internal/:provider/:owner/account-details', () => {
+        return HttpResponse.json(accountDetails)
+      })
     )
   }
 
@@ -167,15 +193,7 @@ describe('CurrentOrgPlan', () => {
   describe('when plan update success banner should be shown', () => {
     it('renders banner for plan successfully updated', async () => {
       setup({
-        accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: 'monthly',
-            marketingName: 'Pro',
-            quantity: 39,
-            value: 'users-pr-inappm',
-          },
-        } as z.infer<typeof AccountDetailsSchema>,
+        accountDetails: {} as z.infer<typeof AccountDetailsSchema>,
       })
 
       render(<CurrentOrgPlan />, { wrapper })
@@ -186,13 +204,6 @@ describe('CurrentOrgPlan', () => {
     it('renders banner for plan successfully updated with scheduled details', async () => {
       setup({
         accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: 'monthly',
-            marketingName: 'Pro',
-            quantity: 39,
-            value: 'users-pr-inappm',
-          },
           scheduleDetail: {
             scheduledPhase: {
               quantity: 34,
@@ -203,7 +214,7 @@ describe('CurrentOrgPlan', () => {
         } as z.infer<typeof AccountDetailsSchema>,
       })
       render(<CurrentOrgPlan />, { wrapper })
-      const updatedAlert = await screen.findByText('Plan successfully updated.')
+      const updatedAlert = await screen.findByText('Plan successfully updated')
       expect(updatedAlert).toBeInTheDocument()
       expect(
         screen.getByText(/with a monthly subscription for 34 seats/)
@@ -212,22 +223,14 @@ describe('CurrentOrgPlan', () => {
 
     it('does not render banner when no recent update made', async () => {
       setup({
-        accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: 'monthly',
-            marketingName: 'Pro',
-            quantity: 39,
-            value: 'users-pr-inappm',
-          },
-        } as z.infer<typeof AccountDetailsSchema>,
+        accountDetails: {} as z.infer<typeof AccountDetailsSchema>,
       })
       render(<CurrentOrgPlan />, { wrapper: noUpdatedPlanWrapper })
       const currentPlanCard = await screen.findByText(/CurrentPlanCard/i)
       expect(currentPlanCard).toBeInTheDocument()
 
       expect(
-        screen.queryByText('Plan successfully updated.')
+        screen.queryByText('Plan successfully updated')
       ).not.toBeInTheDocument()
     })
   })
@@ -236,13 +239,6 @@ describe('CurrentOrgPlan', () => {
     it('renders when subscription detail data is available', async () => {
       setup({
         accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: 'monthly',
-            marketingName: 'Pro',
-            quantity: 39,
-            value: 'users-pr-inappm',
-          },
           subscriptionDetail: {
             cancelAtPeriodEnd: true,
             currentPeriodEnd: 1722631954,
@@ -265,13 +261,6 @@ describe('CurrentOrgPlan', () => {
           accountDetails: {
             planProvider: 'gitlab',
             rootOrganization: null,
-            plan: {
-              value: 'users-free',
-              baseUnitPrice: 12,
-              benefits: ['a', 'b'],
-              billingRate: '1',
-              marketingName: 'bob',
-            },
             usesInvoice: false,
           } as z.infer<typeof AccountDetailsSchema>,
         })
@@ -301,13 +290,6 @@ describe('CurrentOrgPlan', () => {
           accountDetails: {
             planProvider: 'github',
             rootOrganization: {},
-            plan: {
-              value: 'users-free',
-              baseUnitPrice: 12,
-              benefits: ['a', 'b'],
-              billingRate: '1',
-              marketingName: 'bob',
-            },
             usesInvoice: true,
           } as z.infer<typeof AccountDetailsSchema>,
         })
@@ -336,7 +318,9 @@ describe('CurrentOrgPlan', () => {
   describe('when plan value is not provided', () => {
     beforeEach(() => {
       setup({
-        accountDetails: { ...mockedAccountDetails, plan: null },
+        accountDetails: mockedAccountDetails as z.infer<
+          typeof AccountDetailsSchema
+        >,
       })
     })
 
@@ -374,7 +358,7 @@ describe('CurrentOrgPlan', () => {
       )
       expect(paymentFailed).toBeInTheDocument()
       const contactSupport = await screen.findByText(
-        'Please try a different card or contact support at support@codecov.io.'
+        'Please try a different payment method or contact support at support@codecov.io.'
       )
       expect(contactSupport).toBeInTheDocument()
     })
@@ -401,8 +385,8 @@ describe('CurrentOrgPlan', () => {
         setup({
           enterpriseAccountDetails: mockEnterpriseAccountDetailsHundredPercent,
         })
-
         render(<CurrentOrgPlan />, { wrapper })
+
         const banner = await screen.findByText(
           /Your account is using 100% of its seats/
         )

@@ -1,17 +1,16 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import { useRepoSettingsTeam } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import LoadingLogo from 'ui/LoadingLogo'
 
+import ComponentsTab from './ComponentsTab'
 import { CoverageTabNavigator } from './CoverageTabNavigator'
+import FlagsTab from './FlagsTab'
 import OverviewTab from './OverviewTab'
-
-const FlagsTab = lazy(() => import('./FlagsTab'))
-const ComponentsTab = lazy(() => import('./ComponentsTab'))
 
 const path = '/:provider/:owner/:repo'
 
@@ -28,14 +27,13 @@ interface URLParams {
 
 function CoverageTab() {
   const { provider, owner } = useParams<URLParams>()
-  const { data: tierData } = useTier({
+  const { data: isTeamPlan } = useIsTeamPlan({
     owner,
     provider,
   })
   const { data: repoSettings } = useRepoSettingsTeam()
 
-  const hideNavigator =
-    tierData === TierNames.TEAM && repoSettings?.repository?.private
+  const hideNavigator = isTeamPlan && repoSettings?.repository?.private
 
   return (
     <div className="flex flex-col gap-2 divide-y">

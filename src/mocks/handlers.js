@@ -8,6 +8,7 @@ import {
   flagsSelectHandler,
 } from 'services/repo/mocks'
 import { randomUsersHandler } from 'services/users/mocks'
+import { Plans } from 'shared/utils/billing'
 
 export const handlers = [
   repoCoverageHandler,
@@ -19,7 +20,7 @@ export const handlers = [
 ]
 
 // pr page that never is left hanging in a "no files covered" when its stuck in a pending state
-graphql.query('CurrentUser', (info) => {
+graphql.query('CurrentUser', () => {
   return HttpResponse.json({
     data: {
       me: {
@@ -42,7 +43,7 @@ graphql.query('CurrentUser', (info) => {
           service: 'github',
           ownerid: 3456556,
           serviceId: '87824812',
-          plan: 'users-basic',
+          plan: Plans.USERS_DEVELOPER,
           staff: true,
           hasYaml: false,
           bot: null,
@@ -64,7 +65,7 @@ graphql.query('CurrentUser', (info) => {
   })
 })
 
-graphql.query('DetailOwner', (info) => {
+graphql.query('DetailOwner', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -79,7 +80,7 @@ graphql.query('DetailOwner', (info) => {
   })
 })
 
-graphql.query('DetailOwner2', (info) => {
+graphql.query('DetailOwner2', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -94,7 +95,7 @@ graphql.query('DetailOwner2', (info) => {
   })
 })
 
-graphql.query('PullPageData', (info) => {
+graphql.query('PullPageData', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -119,7 +120,7 @@ graphql.query('PullPageData', (info) => {
   })
 })
 
-graphql.query('PullHeadData', (info) => {
+graphql.query('PullHeadData', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -138,7 +139,7 @@ graphql.query('PullHeadData', (info) => {
   })
 })
 
-graphql.query('Pull', (info) => {
+graphql.query('Pull', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -222,7 +223,7 @@ graphql.query('Pull', (info) => {
   })
 })
 
-graphql.query('Pull2', (info) => {
+graphql.query('Pull2', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -306,7 +307,7 @@ graphql.query('Pull2', (info) => {
   })
 })
 
-graphql.query('GetCommits', (info) => {
+graphql.query('GetCommits', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -322,11 +323,11 @@ graphql.query('GetCommits', (info) => {
   })
 })
 
-graphql.query('CurrentUser', (info) => {
+graphql.query('CurrentUser', () => {
   return HttpResponse.json({ data: {} })
 })
 
-graphql.query('CommitDropdownSummary', (info) => {
+graphql.query('CommitDropdownSummary', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -347,7 +348,7 @@ graphql.query('CommitDropdownSummary', (info) => {
   })
 })
 
-graphql.query('PullDropdownSummary', (info) => {
+graphql.query('PullDropdownSummary', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -368,7 +369,7 @@ graphql.query('PullDropdownSummary', (info) => {
   })
 })
 
-graphql.query('CommitBADropdownSummary', (info) => {
+graphql.query('CommitBADropdownSummary', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -389,7 +390,7 @@ graphql.query('CommitBADropdownSummary', (info) => {
   })
 })
 
-graphql.query('PullBADropdownSummary', (info) => {
+graphql.query('PullBADropdownSummary', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -411,7 +412,7 @@ graphql.query('PullBADropdownSummary', (info) => {
   })
 })
 
-graphql.query('CommitBundleList', (info) => {
+graphql.query('CommitBundleList', () => {
   return HttpResponse.json({
     data: {
       owner: {
@@ -448,7 +449,7 @@ graphql.query('CommitBundleList', (info) => {
   })
 })
 
-graphql.query('PullBundleComparisonList', (info) => {
+graphql.query('PullBundleComparisonList', () => {
   return HttpResponse.json({
     data: {
       owner: {

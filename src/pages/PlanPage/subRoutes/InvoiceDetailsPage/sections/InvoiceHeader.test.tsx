@@ -2,7 +2,9 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import { z } from 'zod'
 
-import { InvoiceSchema } from 'services/account'
+import { InvoiceSchema } from 'services/account/useInvoices'
+import { ThemeContextProvider } from 'shared/ThemeContext/ThemeContext'
+import { Plans } from 'shared/utils/billing'
 
 import InvoiceHeader from './InvoiceHeader'
 
@@ -45,7 +47,7 @@ const mockInvoice = ({ status = 'paid' } = {}) => {
         amount: -9449,
         currency: 'usd',
         period: { end: 1610473200, start: 1609298708 },
-        value: 'users-pr-inappm',
+        value: Plans.USERS_PR_INAPPM,
         quantity: 19,
       },
       {
@@ -53,16 +55,16 @@ const mockInvoice = ({ status = 'paid' } = {}) => {
         amount: 72000,
         currency: 'usd',
         period: { end: 1640834708, start: 1609298708 },
-        value: 'users-pr-inappy',
+        value: Plans.USERS_PR_INAPPY,
         quantity: 6,
       },
       {
         description: null,
         amount: 72000,
         currency: 'usd',
-        // @ts-expect-error
+        // @ts-expect-error - only using properties that are present for the test
         period: { end: null, start: null },
-        value: 'same period doesnt render date',
+        value: null,
         quantity: 1,
       },
     ],
@@ -113,9 +115,11 @@ const accountDetails = ({ collectionMethod = '' } = {}) => {
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/plan/gh/invoices/9']}>
     <Switch>
-      <Route path="/plan/:provider/invoices/:id" exact>
-        {children}
-      </Route>
+      <ThemeContextProvider>
+        <Route path="/plan/:provider/invoices/:id" exact>
+          {children}
+        </Route>
+      </ThemeContextProvider>
     </Switch>
   </MemoryRouter>
 )
@@ -126,7 +130,7 @@ describe('Invoice Header', () => {
       render(
         <InvoiceHeader
           invoice={mockInvoice()}
-          // @ts-expect-error
+          // @ts-expect-error - using reduced types for testing
           accountDetails={accountDetails()}
         />,
         {
@@ -165,7 +169,7 @@ describe('Invoice Header', () => {
       render(
         <InvoiceHeader
           invoice={mockInvoice({ status: 'draft' })}
-          // @ts-expect-error
+          // @ts-expect-error - using reduced types for testing
           accountDetails={accountDetails()}
         />,
         {
@@ -183,7 +187,7 @@ describe('Invoice Header', () => {
       render(
         <InvoiceHeader
           invoice={mockInvoice()}
-          // @ts-expect-error
+          // @ts-expect-error - using reduced types for testing
           accountDetails={accountDetails({ collectionMethod: 'send_invoice' })}
         />,
         {

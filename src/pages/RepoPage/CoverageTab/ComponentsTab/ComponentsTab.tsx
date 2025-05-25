@@ -3,7 +3,7 @@ import { Redirect, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useRepoSettingsTeam } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 
 import BackfillBanners from './BackfillBanners/BackfillBanners'
 import { useRepoBackfillingStatus } from './BackfillBanners/useRepoBackfillingStatus'
@@ -38,7 +38,7 @@ interface URLParams {
 
 function ComponentsTab() {
   const { provider, owner, repo } = useParams<URLParams>()
-  const { data: tierData } = useTier({ owner, provider })
+  const { data: isTeamPlan } = useIsTeamPlan({ owner, provider })
   const { data: repoSettings } = useRepoSettingsTeam()
 
   const {
@@ -48,7 +48,7 @@ function ComponentsTab() {
     isTimescaleEnabled,
   } = useRepoBackfillingStatus()
 
-  if (tierData === TierNames.TEAM && repoSettings?.repository?.private) {
+  if (isTeamPlan && repoSettings?.repository?.private) {
     return <Redirect to={`/${provider}/${owner}/${repo}`} />
   }
 

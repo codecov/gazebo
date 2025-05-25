@@ -3,10 +3,8 @@ import { z } from 'zod'
 
 import { OrderingDirection } from 'types'
 
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import { DisplayType } from 'shared/ContentsTable/constants'
 
 const pathContentsFiltersParam = [
@@ -65,7 +63,6 @@ const CoverageForFileSchema = z.object({
       coverageFile: z
         .object({
           hashedPath: z.string(),
-          isCriticalFile: z.boolean().nullish(),
           content: z.string().nullish(),
           coverage: CoverageSchema.nullish(),
           totals: z
@@ -149,7 +146,6 @@ fragment CoverageForFile on Commit {
     }
     coverageFile(path: $path, flags: $flags, components: $components) {
       hashedPath
-      isCriticalFile
       content
       coverage {
         line

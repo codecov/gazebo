@@ -32,7 +32,7 @@ const EXCLUDE_FROM_COVERAGE = [
 ]
 
 const VitestConfig = defineConfig((config) => {
-  const reporters = ['basic']
+  const reporters = ['default']
   if (process.env.ENABLE_TEST_REPORTER) {
     reporters.push(['junit', { outputFile: 'reports/junit/junit.xml' }])
   }

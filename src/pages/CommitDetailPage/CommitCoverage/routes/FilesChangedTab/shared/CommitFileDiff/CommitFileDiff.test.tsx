@@ -1,12 +1,17 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { type MockInstance } from 'vitest'
 
-import { ImpactedFileType } from 'services/comparison'
+import { ImpactedFileWithSegmentsUnionType } from 'services/comparison/useComparisonForCommitAndParent'
 
 import CommitFileDiff from './CommitFileDiff'
 
@@ -44,7 +49,7 @@ window.scrollTo = scrollToMock
 window.scrollY = 100
 
 class ResizeObserverMock {
-  callback = (x: any) => null
+  callback = (_x: any) => null
 
   constructor(callback: any) {
     this.callback = callback
@@ -70,7 +75,7 @@ class ResizeObserverMock {
 }
 global.window.ResizeObserver = ResizeObserverMock
 
-const baseMock = (impactedFile: ImpactedFileType | null) => {
+const baseMock = (impactedFile: ImpactedFileWithSegmentsUnionType | null) => {
   if (!impactedFile) {
     return { owner: null }
   }
@@ -92,8 +97,7 @@ const baseMock = (impactedFile: ImpactedFileType | null) => {
   }
 }
 
-const mockImpactedFile = {
-  isCriticalFile: false,
+const mockImpactedFile: ImpactedFileWithSegmentsUnionType = {
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
   isNewFile: false,
@@ -110,6 +114,7 @@ const mockImpactedFile = {
   },
   changeCoverage: 0,
   segments: {
+    __typename: 'SegmentComparisons',
     results: [
       {
         header: '-0,0 +1,45',
@@ -187,19 +192,24 @@ const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={[
-        '/gh/codecov/gazebo/commit/123sha/folder/subfolder/file.js',
-      ]}
-    >
-      <Route path="/:provider/:owner/:repo/commit/:commit">
-        <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter
+        initialEntries={[
+          '/gh/codecov/gazebo/commit/123sha/folder/subfolder/file.js',
+        ]}
+      >
+        <Route path="/:provider/:owner/:repo/commit/:commit">
+          <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -208,6 +218,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -216,7 +227,7 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  impactedFile?: ImpactedFileType | null
+  impactedFile?: ImpactedFileWithSegmentsUnionType | null
   bundleAnalysisEnabled?: boolean
 }
 
@@ -237,10 +248,10 @@ describe('CommitFileDiff', () => {
     }))
 
     server.use(
-      graphql.query('ImpactedFileComparedWithParent', (info) => {
+      graphql.query('ImpactedFileComparedWithParent', () => {
         return HttpResponse.json({ data: baseMock(impactedFile) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview(bundleAnalysisEnabled) })
       })
     )
@@ -288,7 +299,7 @@ describe('CommitFileDiff', () => {
     beforeEach(() => {
       const impactedFile = {
         ...mockImpactedFile,
-        isCriticalFile: false,
+
         isNewFile: true,
       }
       setup({ impactedFile })
@@ -334,22 +345,6 @@ describe('CommitFileDiff', () => {
     })
   })
 
-  describe('a critical file', () => {
-    beforeEach(() => {
-      const impactedFile = {
-        ...mockImpactedFile,
-        isCriticalFile: true,
-      }
-      setup({ impactedFile })
-    })
-    it('renders a critical file label', async () => {
-      render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
-
-      const criticalFile = await screen.findByText(/Critical File/i)
-      expect(criticalFile).toBeInTheDocument()
-    })
-  })
-
   describe('when there is no data', () => {
     let consoleSpy: MockInstance
 
@@ -365,19 +360,62 @@ describe('CommitFileDiff', () => {
       setup({ impactedFile: null })
       render(<CommitFileDiff path={'random/path'} />, { wrapper })
 
-      const criticalFile = await screen.findByText(
+      const errorMessage = await screen.findByText(
         /There was a problem getting the source code from your provider. Unable to show line by line coverage/i
       )
-      expect(criticalFile).toBeInTheDocument()
+      expect(errorMessage).toBeInTheDocument()
     })
 
-    it('renders a login link', async () => {
+    it('renders a login link with redirect to path', async () => {
       setup({ impactedFile: null })
       render(<CommitFileDiff path={'random/path'} />, { wrapper })
 
+      const queryString = qs.stringify({
+        to: '/gh/codecov/gazebo/commit/123sha/folder/subfolder/file.js',
+      })
       const link = await screen.findByText(/logging in/)
       expect(link).toBeVisible()
-      expect(link).toHaveAttribute('href', '/login')
+      expect(link).toHaveAttribute('href', `/login?${queryString}`)
+    })
+  })
+
+  describe('when segments union type returned error', () => {
+    describe('when provider error', () => {
+      it('renders a error display message', async () => {
+        const impactedFileWithProviderError = {
+          ...mockImpactedFile,
+          segments: {
+            __typename: 'ProviderError',
+            message: 'Error fetching data from the provider',
+          },
+        } as ImpactedFileWithSegmentsUnionType
+        setup({ impactedFile: impactedFileWithProviderError })
+        render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+        const errorMessage = await screen.findByText(
+          /There was a problem getting the source code from your provider. Unable to show line by line coverage/i
+        )
+        expect(errorMessage).toBeInTheDocument()
+      })
+    })
+
+    describe('when path error', () => {
+      it('renders a error display message for path error', async () => {
+        const impactedFileWithPathError = {
+          ...mockImpactedFile,
+          segments: {
+            __typename: 'UnknownPath',
+            message: 'Unknown path',
+          },
+        } as ImpactedFileWithSegmentsUnionType
+        setup({ impactedFile: impactedFileWithPathError })
+        render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+        const errorMessage = await screen.findByText(
+          /There was a problem getting the source code from your provider by path for/i
+        )
+        expect(errorMessage).toBeInTheDocument()
+      })
     })
   })
 
@@ -431,9 +469,12 @@ describe('CommitFileDiff', () => {
     describe('when segment is an empty array', () => {
       const impactedFile = {
         ...mockImpactedFile,
-        isCriticalFile: false,
+
         headName: 'flag1/file.js',
-        segments: { results: [] },
+        segments: {
+          __typename: 'SegmentComparisons',
+          results: [],
+        } as ImpactedFileWithSegmentsUnionType['segments'],
       }
 
       it('does not render information on the code renderer', async () => {

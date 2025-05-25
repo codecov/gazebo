@@ -2,19 +2,16 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
-import {
-  FirstPullRequestSchema,
-  MissingBaseCommitSchema,
-  MissingBaseReportSchema,
-  MissingComparisonSchema,
-  MissingHeadCommitSchema,
-  MissingHeadReportSchema,
-} from 'services/comparison'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+import { FirstPullRequestSchema } from 'services/comparison/schemas/FirstPullRequest'
+import { MissingBaseCommitSchema } from 'services/comparison/schemas/MissingBaseCommit'
+import { MissingBaseReportSchema } from 'services/comparison/schemas/MissingBaseReport'
+import { MissingComparisonSchema } from 'services/comparison/schemas/MissingComparison'
+import { MissingHeadCommitSchema } from 'services/comparison/schemas/MissingHeadCommit'
+import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const query = `
@@ -72,24 +69,26 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   pull: z
     .object({
-      compareWithBase: z.discriminatedUnion('__typename', [
-        z.object({
-          __typename: z.literal('Comparison'),
-          componentComparisons: z
-            .array(
-              z.object({
-                name: z.string(),
-              })
-            )
-            .nullable(),
-        }),
-        FirstPullRequestSchema,
-        MissingBaseCommitSchema,
-        MissingBaseReportSchema,
-        MissingComparisonSchema,
-        MissingHeadCommitSchema,
-        MissingHeadReportSchema,
-      ]),
+      compareWithBase: z
+        .discriminatedUnion('__typename', [
+          z.object({
+            __typename: z.literal('Comparison'),
+            componentComparisons: z
+              .array(
+                z.object({
+                  name: z.string(),
+                })
+              )
+              .nullable(),
+          }),
+          FirstPullRequestSchema,
+          MissingBaseCommitSchema,
+          MissingBaseReportSchema,
+          MissingComparisonSchema,
+          MissingHeadCommitSchema,
+          MissingHeadReportSchema,
+        ])
+        .nullable(),
     })
     .nullable(),
 })
@@ -155,31 +154,29 @@ export function usePullComponents({
           pullId: parseInt(pullId, 10),
         },
       }).then((res) => {
+        const callingFn = 'usePullComponents'
         const parsedData = PullComponentsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: {
-              message: 'Error parsing pull components selector data',
-            },
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {
-              message: 'Repo not found',
-            },
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn },
           })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>
@@ -198,9 +195,7 @@ export function usePullComponents({
           })
         }
 
-        return {
-          pull: data?.owner?.repository?.pull,
-        }
+        return { pull: data?.owner?.repository?.pull }
       }),
     ...options,
   })

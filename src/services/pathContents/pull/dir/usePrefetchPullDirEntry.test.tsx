@@ -29,12 +29,18 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 const server = setupServer()
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const mockData = {
   owner: {
@@ -55,7 +61,7 @@ const mockData = {
               {
                 __typename: 'PathContentDir',
                 name: 'src',
-                path: null,
+                path: 'src',
                 hits: 4,
                 misses: 2,
                 partials: 1,
@@ -95,7 +101,7 @@ describe('usePrefetchPullDirEntry', () => {
     ownerNotActivated = false,
   }) {
     server.use(
-      graphql.query('PullPathContents', (info) => {
+      graphql.query('PullPathContents', () => {
         if (invalidSchema) {
           return HttpResponse.json({ data: {} })
         } else if (repositoryNotFound) {
@@ -108,17 +114,10 @@ describe('usePrefetchPullDirEntry', () => {
     )
   }
 
-  beforeEach(async () => {
-    setup({})
-  })
-
   it('returns runPrefetch function', () => {
+    setup({})
     const { result } = renderHook(
-      () =>
-        usePrefetchPullDirEntry({
-          pullId: 'pullasdf',
-          path: 'src',
-        }),
+      () => usePrefetchPullDirEntry({ pullId: 'pullasdf', path: 'src' }),
       { wrapper }
     )
 
@@ -127,12 +126,9 @@ describe('usePrefetchPullDirEntry', () => {
   })
 
   it('queries the api', async () => {
+    setup({})
     const { result } = renderHook(
-      () =>
-        usePrefetchPullDirEntry({
-          pullId: 'pullasdf',
-          path: 'src',
-        }),
+      () => usePrefetchPullDirEntry({ pullId: 'pullasdf', path: 'src' }),
       { wrapper }
     )
 
@@ -151,7 +147,7 @@ describe('usePrefetchPullDirEntry', () => {
         {
           __typename: 'PathContentDir',
           name: 'src',
-          path: null,
+          path: 'src',
           percentCovered: 40.0,
           hits: 4,
           misses: 2,
@@ -165,11 +161,7 @@ describe('usePrefetchPullDirEntry', () => {
   it('fails to parse bad schema', async () => {
     setup({ invalidSchema: true })
     const { result } = renderHook(
-      () =>
-        usePrefetchPullDirEntry({
-          pullId: 'pullasdf',
-          path: 'src',
-        }),
+      () => usePrefetchPullDirEntry({ pullId: 'pullasdf', path: 'src' }),
       { wrapper }
     )
 
@@ -185,8 +177,8 @@ describe('usePrefetchPullDirEntry', () => {
     await waitFor(() =>
       expect(queryClient.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
-          status: 404,
-          dev: 'usePrefetchPullDirEntry - 404 schema parsing failed',
+          dev: 'usePrefetchPullDirEntry - Parsing Error',
+          status: 400,
         })
       )
     )
@@ -195,11 +187,7 @@ describe('usePrefetchPullDirEntry', () => {
   it('rejects on repository not found error', async () => {
     setup({ repositoryNotFound: true })
     const { result } = renderHook(
-      () =>
-        usePrefetchPullDirEntry({
-          pullId: 'pullasdf',
-          path: 'src',
-        }),
+      () => usePrefetchPullDirEntry({ pullId: 'pullasdf', path: 'src' }),
       { wrapper }
     )
 
@@ -215,8 +203,8 @@ describe('usePrefetchPullDirEntry', () => {
     await waitFor(() =>
       expect(queryClient.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
+          dev: 'usePrefetchPullDirEntry - Not Found Error',
           status: 404,
-          dev: 'usePrefetchPullDirEntry - 404 NotFoundError',
         })
       )
     )
@@ -225,11 +213,7 @@ describe('usePrefetchPullDirEntry', () => {
   it('rejects on owner not activated error', async () => {
     setup({ ownerNotActivated: true })
     const { result } = renderHook(
-      () =>
-        usePrefetchPullDirEntry({
-          pullId: 'pullasdf',
-          path: 'src',
-        }),
+      () => usePrefetchPullDirEntry({ pullId: 'pullasdf', path: 'src' }),
       { wrapper }
     )
 
@@ -245,8 +229,8 @@ describe('usePrefetchPullDirEntry', () => {
     await waitFor(() =>
       expect(queryClient.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
+          dev: 'usePrefetchPullDirEntry - Owner Not Activated',
           status: 403,
-          dev: 'usePrefetchPullDirEntry - 403 OwnerNotActivatedError',
         })
       )
     )

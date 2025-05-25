@@ -32,7 +32,7 @@ afterAll(() => server.close())
 describe('TokensTeam', () => {
   function setup() {
     server.use(
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -43,7 +43,6 @@ describe('TokensTeam', () => {
                 defaultBranch: 'master',
                 private: true,
                 uploadToken: 'upload token',
-                profilingToken: 'profiling token',
                 staticAnalysisToken: 'static analysis token',
                 graphToken: 'graph token',
                 yaml: 'yaml',

@@ -1,7 +1,9 @@
-import cs from 'classnames'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import capitalize from 'lodash/capitalize'
 import { useParams } from 'react-router-dom'
 
+import { Provider } from 'shared/api/helpers'
+import { cn } from 'shared/utils/cn'
 import { formatTimeToNow } from 'shared/utils/dates'
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
@@ -9,12 +11,12 @@ import CIStatusLabel from 'ui/CIStatus'
 import Icon from 'ui/Icon'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import { usePullHeadDataTeam } from './hooks'
+import { PullHeadDataTeamQueryOpts } from './queries/PullHeadDataTeamQueryOpts'
 
 import { pullStateToColor } from '../constants'
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
   repo: string
   pullId: string
@@ -22,7 +24,9 @@ interface URLParams {
 
 function HeaderTeam() {
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { data } = usePullHeadDataTeam({ provider, owner, repo, pullId })
+  const { data } = useSuspenseQueryV5(
+    PullHeadDataTeamQueryOpts({ provider, owner, repo, pullId })
+  )
 
   const pull = data?.pull
   let percentCovered = null
@@ -38,8 +42,8 @@ function HeaderTeam() {
             {pull?.title}
             {pull?.state ? (
               <span
-                className={cs(
-                  'text-white font-bold px-3 py-0.5 text-xs rounded',
+                className={cn(
+                  'rounded px-3 py-0.5 text-xs font-bold text-white',
                   pullStateToColor[pull?.state]
                 )}
               >

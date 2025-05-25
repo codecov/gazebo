@@ -1,14 +1,15 @@
-import { useQuery } from '@tanstack/react-query'
+import {
+  queryOptions as queryOptionsV5,
+  useSuspenseQuery as useSuspenseQueryV5,
+} from '@tanstack/react-queryV5'
 import { z } from 'zod'
 
-import { MissingHeadReportSchema } from 'services/comparison'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-  useRepoOverview,
-} from 'services/repo'
+import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
+import { useRepoOverview } from 'services/repo'
+import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
+import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
 import Api from 'shared/api/api'
-import { NetworkErrorObject, rejectNetworkError } from 'shared/api/helpers'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
 const BundleDataSchema = z.object({
@@ -120,42 +121,27 @@ query BundleSummary(
   }
 }`
 
-interface UseBundleSummaryArgs {
+interface BundleSummaryQueryOptsArgs {
   provider: string
   owner: string
   repo: string
-  branch?: string
+  branch: string | null | undefined
   bundle: string
   filters?: {
     reportGroups?: string[]
     loadTypes?: string[]
   }
-  opts?: {
-    enabled?: boolean
-  }
 }
 
-export const useBundleSummary = ({
+export const BundleSummaryQueryOpts = ({
   provider,
   owner,
   repo,
-  branch: branchParam,
+  branch,
   bundle,
-  filters = {},
-  opts = {},
-}: UseBundleSummaryArgs) => {
-  const { data: overview } = useRepoOverview({
-    provider,
-    owner,
-    repo,
-    opts: {
-      enabled: !branchParam,
-    },
-  })
-
-  const branch = branchParam ?? overview?.defaultBranch
-
-  return useQuery({
+  filters,
+}: BundleSummaryQueryOptsArgs) =>
+  queryOptionsV5({
     queryKey: ['BundleSummary', provider, owner, repo, branch, bundle, filters],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -164,42 +150,40 @@ export const useBundleSummary = ({
         signal,
         variables: { owner, repo, branch, bundle, filters },
       }).then((res) => {
+        const callingFn = 'BundleSummaryQueryOpts'
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return rejectNetworkError({
-            status: 404,
-            data: {},
-            dev: 'useBundleSummary - 404 Failed to parse data',
-            error: parsedData.error,
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedData.error },
           })
         }
 
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useBundleSummary - 404 Not found error',
-          } satisfies NetworkErrorObject)
+          return rejectNetworkError({
+            errorName: 'Not Found Error',
+            errorDetails: { callingFn },
+          })
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
+          return rejectNetworkError({
+            errorName: 'Owner Not Activated',
+            errorDetails: { callingFn },
             data: {
               detail: (
                 <p>
                   Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
+                  {/* @ts-expect-error - A hasn't been typed yet */}
                   <A to={{ pageName: 'membersTab' }}>click here </A> to activate
                   your account.
                 </p>
               ),
             },
-            dev: 'useBundleSummary - 403 Owner not activated',
-          } satisfies NetworkErrorObject)
+          })
         }
 
         let bundleSummary = null
@@ -214,6 +198,47 @@ export const useBundleSummary = ({
 
         return { bundleSummary }
       }),
-    enabled: opts?.enabled,
   })
+
+interface UseBundleSummaryArgs {
+  provider: string
+  owner: string
+  repo: string
+  branch?: string
+  bundle: string
+  filters?: {
+    reportGroups?: string[]
+    loadTypes?: string[]
+  }
+}
+
+export const useBundleSummary = ({
+  provider,
+  owner,
+  repo,
+  branch: branchParam,
+  bundle,
+  filters = {},
+}: UseBundleSummaryArgs) => {
+  const { data: overview } = useRepoOverview({
+    provider,
+    owner,
+    repo,
+    opts: {
+      enabled: !branchParam,
+    },
+  })
+
+  const branch = branchParam ?? overview?.defaultBranch
+
+  return useSuspenseQueryV5(
+    BundleSummaryQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      filters,
+    })
+  )
 }

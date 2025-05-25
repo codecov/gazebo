@@ -1,7 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileViewer from './FileViewer'
@@ -21,7 +26,7 @@ window.scrollTo = scrollToMock
 window.scrollY = 100
 
 class ResizeObserverMock {
-  callback = (x) => null
+  callback = (_x) => null
 
   constructor(callback) {
     this.callback = callback
@@ -60,7 +65,7 @@ const mockCoverage = {
       components: [],
       coverageFile: {
         hashedPath: 'hashed-path',
-        isCriticalFile: false,
+
         content:
           'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
         coverage: [
@@ -85,10 +90,21 @@ const mockPullData = {
   repository: {
     __typename: 'Repository',
     private: true,
+    coverageEnabled: true,
+    bundleAnalysisEnabled: true,
     pull: {
       pullId: 1,
+      commits: {
+        totalCount: 11,
+      },
       head: {
         commitid: '123',
+        bundleAnalysis: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+            isCached: false,
+          },
+        },
       },
       compareWithBase: {
         __typename: 'Comparison',
@@ -98,27 +114,35 @@ const mockPullData = {
         componentComparisonsCount: 6,
         directChangedFilesCount: 0,
       },
+      bundleAnalysisCompareWithBase: {
+        __typename: 'BundleAnalysisComparison',
+      },
     },
   },
 }
 
+const server = setupServer()
 const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+const queryClientV5 = new QueryClientV5({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper =
   (
     initialEntries = ['/gh/codecov/cool-repo/pull/123/blob/directory/file.js']
   ) =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/pull/:pullId/blob/:path+">
-          {children}
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/pull/:pullId/blob/:path+">
+            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -126,6 +150,7 @@ beforeAll(() => {
 })
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 afterAll(() => {
@@ -135,34 +160,33 @@ afterAll(() => {
 describe('FileViewer', () => {
   function setup() {
     server.use(
-      graphql.query('DetailOwner', (req, res, ctx) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: { owner: mockOwner } })
       }),
-      graphql.query('CoverageForFile', (req, res, ctx) => {
+      graphql.query('CoverageForFile', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockCoverage } },
         })
       }),
-      graphql.query('PullPageData', (req, res, ctx) => {
+      graphql.query('PullPageData', () => {
         return HttpResponse.json({ data: { owner: mockPullData } })
       }),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: { owner: null } })
       })
     )
   }
 
   describe('rendering component', () => {
-    beforeEach(() => setup())
-
     describe('displaying the tree path', () => {
       it('displays repo link', async () => {
+        setup()
         render(<FileViewer />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'cool-repo' })
@@ -174,6 +198,7 @@ describe('FileViewer', () => {
       })
 
       it('displays directory link', async () => {
+        setup()
         render(<FileViewer />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'directory' })
@@ -185,6 +210,7 @@ describe('FileViewer', () => {
       })
 
       it('displays file name', async () => {
+        setup()
         render(<FileViewer />, { wrapper: wrapper() })
 
         const fileName = await screen.findByText('file.js')
@@ -192,6 +218,7 @@ describe('FileViewer', () => {
       })
 
       it('renders ComponentsSelector', async () => {
+        setup()
         render(<FileViewer />, { wrapper: wrapper() })
 
         const selector = await screen.findByText('ComponentsSelector')
@@ -201,6 +228,7 @@ describe('FileViewer', () => {
 
     describe('displaying the file viewer', () => {
       it('sets the correct url link', async () => {
+        setup()
         render(<FileViewer />, { wrapper: wrapper() })
 
         const copyLink = await screen.findByRole('link', {

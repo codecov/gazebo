@@ -34,7 +34,7 @@ function ResyncButton() {
           isExternal={true}
           className="inline underline"
         >
-          Github rate limits.
+          GitHub rate limits.
         </A>
       </div>
     )

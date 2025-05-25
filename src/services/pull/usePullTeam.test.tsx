@@ -14,16 +14,13 @@ const mockCompareData = {
         compareWithBase: {
           __typename: 'Comparison',
           state: 'processed',
-          patchTotals: {
-            coverage: 100,
-          },
+          patchTotals: { coverage: 100 },
           impactedFiles: {
             __typename: 'ImpactedFiles',
             results: [
               {
                 headName: 'src/App.tsx',
                 missesCount: 0,
-                isCriticalFile: false,
                 patchCoverage: { coverage: 100 },
               },
             ],
@@ -43,16 +40,13 @@ const mockPullData = {
         compareWithBase: {
           __typename: 'Comparison',
           state: 'pending',
-          patchTotals: {
-            coverage: 100,
-          },
+          patchTotals: { coverage: 100 },
           impactedFiles: {
             __typename: 'ImpactedFiles',
             results: [
               {
                 headName: 'src/App.jsx',
                 missesCount: 0,
-                isCriticalFile: false,
                 patchCoverage: {
                   coverage: 100,
                 },
@@ -132,7 +126,7 @@ describe('usePullTeam', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetPullTeam', (info) => {
+      graphql.query('GetPullTeam', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -145,7 +139,7 @@ describe('usePullTeam', () => {
           return HttpResponse.json({ data: mockPullData })
         }
       }),
-      graphql.query('GetPullCompareTotalsTeam', (info) => {
+      graphql.query('GetPullCompareTotalsTeam', () => {
         return HttpResponse.json({ data: mockCompareData })
       })
     )
@@ -182,16 +176,11 @@ describe('usePullTeam', () => {
                   {
                     headName: 'src/App.tsx',
                     missesCount: 0,
-                    isCriticalFile: false,
-                    patchCoverage: {
-                      coverage: 100,
-                    },
+                    patchCoverage: { coverage: 100 },
                   },
                 ],
               },
-              patchTotals: {
-                coverage: 100,
-              },
+              patchTotals: { coverage: 100 },
               state: 'processed',
             },
             pullId: 10,
@@ -256,8 +245,8 @@ describe('usePullTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullTeam - Not Found Error',
             status: 404,
-            dev: 'usePullTeam - 404 not found',
           })
         )
       )
@@ -293,8 +282,8 @@ describe('usePullTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'usePullTeam - Owner Not Activated',
             status: 403,
-            dev: 'usePullTeam - 403 owner not activated',
           })
         )
       )
@@ -311,7 +300,7 @@ describe('usePullTeam', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
@@ -330,8 +319,8 @@ describe('usePullTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'usePullTeam - 404 failed to parse',
+            dev: 'usePullTeam - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -343,10 +332,10 @@ describe('usePullTeam polling', () => {
   function setup() {
     let nbCallCompare = 0
     server.use(
-      graphql.query(`GetPullTeam`, (info) => {
+      graphql.query(`GetPullTeam`, () => {
         return HttpResponse.json({ data: mockPullData })
       }),
-      graphql.query(`GetPullCompareTotalsTeam`, (info) => {
+      graphql.query(`GetPullCompareTotalsTeam`, () => {
         nbCallCompare++
 
         if (nbCallCompare < 9) {
@@ -406,7 +395,6 @@ describe('usePullTeam polling', () => {
                   {
                     headName: 'src/App.tsx',
                     missesCount: 0,
-                    isCriticalFile: false,
                     patchCoverage: {
                       coverage: 100,
                     },

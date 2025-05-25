@@ -46,11 +46,7 @@ const mockOwnerNotActivatedError = {
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
@@ -89,7 +85,7 @@ describe('useCommitComponents', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('CommitComponents', (info) => {
+      graphql.query('CommitComponents', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isOwnerNotActivatedError) {
@@ -139,7 +135,7 @@ describe('useCommitComponents', () => {
       consoleSpy.mockRestore()
     })
 
-    it('throws a 404', async () => {
+    it('throws a 400', async () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(() => useCommitComponents(), { wrapper })
 
@@ -147,10 +143,8 @@ describe('useCommitComponents', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            data: {
-              message: 'Error parsing commit components data',
-            },
+            dev: 'useCommitComponents - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -178,10 +172,8 @@ describe('useCommitComponents', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitComponents - Not Found Error',
             status: 404,
-            data: {
-              message: 'Repo not found',
-            },
           })
         )
       )
@@ -209,6 +201,7 @@ describe('useCommitComponents', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useCommitComponents - Owner Not Activated',
             status: 403,
           })
         )

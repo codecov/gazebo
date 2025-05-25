@@ -50,7 +50,6 @@ const mockTreeData = {
             name: 'file.js',
             path: 'a/b/c/file.js',
             percentCovered: 100.0,
-            isCriticalFile: false,
           },
         ],
       },
@@ -90,7 +89,7 @@ afterAll(() => {
 describe('CommitDetailFileExplorer', () => {
   function setup() {
     server.use(
-      graphql.query('CommitPathContents', (info) => {
+      graphql.query('CommitPathContents', () => {
         return HttpResponse.json({ data: mockTreeData })
       })
     )

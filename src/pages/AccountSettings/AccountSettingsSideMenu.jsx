@@ -2,9 +2,8 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { usePlanData } from 'services/account'
+import { usePlanData } from 'services/account/usePlanData'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
-import { isEnterprisePlan } from 'shared/utils/billing'
 import Sidemenu from 'ui/Sidemenu'
 
 function defaultLinks({ internalAccessTab, viewOktaAccess }) {
@@ -66,7 +65,7 @@ function AccountSettingsSideMenu() {
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
   const { data } = usePlanData({ provider, owner })
-  const viewOktaAccess = isEnterprisePlan(data?.plan?.value)
+  const viewOktaAccess = data?.plan?.isEnterprisePlan
 
   const links = generateLinks({
     isAdmin,

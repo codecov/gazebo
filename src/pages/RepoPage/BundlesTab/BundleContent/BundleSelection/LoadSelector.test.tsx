@@ -1,4 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
@@ -33,22 +37,8 @@ const mockBranches = {
   __typename: 'Repository',
   branches: {
     edges: [
-      {
-        node: {
-          name: 'branch-1',
-          head: {
-            commitid: 'asdf123',
-          },
-        },
-      },
-      {
-        node: {
-          name: 'main',
-          head: {
-            commitid: '321fdsa',
-          },
-        },
-      },
+      { node: { name: 'branch-1', head: { commitid: 'asdf123' } } },
+      { node: { name: 'main', head: { commitid: '321fdsa' } } },
     ],
     pageInfo: {
       hasNextPage: false,
@@ -77,12 +67,10 @@ const mockBranchBundles = (noBundles = false) => ({
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      suspense: true,
-    },
-  },
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 let testLocation: ReturnType<typeof useLocation>
@@ -91,26 +79,30 @@ const wrapper =
     initialEntries = '/gh/codecov/test-repo/bundles/test-branch'
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/bundles/:branch/:bundle',
-            '/:provider/:owner/:repo/bundles/:branch',
-            '/:provider/:owner/:repo/bundles/',
-          ]}
-        >
-          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-        </Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
-    </QueryClientProvider>
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Suspense fallback={<p>Loading</p>}>
+            <Route
+              path={[
+                '/:provider/:owner/:repo/bundles/:branch/:bundle',
+                '/:provider/:owner/:repo/bundles/:branch',
+                '/:provider/:owner/:repo/bundles/',
+              ]}
+            >
+              {children}
+            </Route>
+            <Route
+              path="*"
+              render={({ location }) => {
+                testLocation = location
+                return null
+              }}
+            />
+          </Suspense>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
   )
 
 beforeAll(() => {
@@ -119,6 +111,7 @@ beforeAll(() => {
 
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -135,7 +128,7 @@ describe('LoadSelector', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -145,7 +138,7 @@ describe('LoadSelector', () => {
           },
         })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -154,12 +147,12 @@ describe('LoadSelector', () => {
           },
         })
       }),
-      graphql.query('GetBranches', (info) => {
+      graphql.query('GetBranches', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockBranches } },
         })
       }),
-      graphql.query('BranchBundlesNames', (info) => {
+      graphql.query('BranchBundlesNames', () => {
         return HttpResponse.json({ data: mockBranchBundles(noBundles) })
       })
     )

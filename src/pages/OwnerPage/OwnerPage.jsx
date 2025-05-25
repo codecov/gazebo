@@ -4,13 +4,16 @@ import { useHistory, useParams } from 'react-router-dom'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
-import { useSentryToken } from 'services/account'
-import { useLocationParams } from 'services/navigation'
-import { renderToast } from 'services/toast'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useSentryToken } from 'services/account/useSentryToken'
+import { useLocationParams } from 'services/navigation/useLocationParams'
+import { renderToast } from 'services/toast/renderToast'
 import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
 
 import HeaderBanners from './HeaderBanners'
+import { useOnboardingContainer } from './OnboardingContainerContext/context'
+import OnboardingOrg from './OnboardingOrg'
 import Tabs from './Tabs'
 
 export const LOCAL_STORAGE_USER_STARTED_TRIAL_KEY = 'user-started-trial'
@@ -36,7 +39,7 @@ const useSentryTokenRedirect = ({ ownerData }) => {
 }
 
 function OwnerPage() {
-  const { provider } = useParams()
+  const { owner, provider } = useParams()
   const { data: ownerData } = useOwnerPageData()
   const { params } = useLocationParams({
     repoDisplay: 'All',
@@ -46,6 +49,8 @@ function OwnerPage() {
   const userStartedTrial = localStorage.getItem(
     LOCAL_STORAGE_USER_STARTED_TRIAL_KEY
   )
+
+  const { showOnboardingContainer } = useOnboardingContainer()
 
   useEffect(() => {
     if (userStartedTrial) {
@@ -62,6 +67,17 @@ function OwnerPage() {
     }
   }, [userStartedTrial])
 
+  // TODO: refactor this to add a gql field for the integration id used to determine if the org has a GH app
+  const { data: accountDetails } = useAccountDetails({
+    provider,
+    owner,
+    opts: {
+      enabled: !!ownerData?.isCurrentUserPartOfOrg,
+    },
+  })
+
+  const hasGhApp = !!accountDetails?.integrationId
+
   if (!ownerData) {
     return <NotFound />
   }
@@ -74,11 +90,15 @@ function OwnerPage() {
         </SilentNetworkErrorWrapper>
       </Suspense>
       <div>
-        {ownerData?.isCurrentUserPartOfOrg && (
+        {showOnboardingContainer ? <OnboardingOrg /> : null}
+        {ownerData?.isCurrentUserPartOfOrg ? (
           <Tabs owner={ownerData} provider={provider} />
-        )}
+        ) : null}
         <ActiveContext.Provider value={params?.repoDisplay}>
-          <ListRepo canRefetch={ownerData?.isCurrentUserPartOfOrg} />
+          <ListRepo
+            canRefetch={!!ownerData?.isCurrentUserPartOfOrg}
+            hasGhApp={hasGhApp}
+          />
         </ActiveContext.Provider>
       </div>
     </div>

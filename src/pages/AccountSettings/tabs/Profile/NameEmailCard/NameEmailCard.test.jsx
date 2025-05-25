@@ -4,11 +4,11 @@ import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 
 import NameEmailCard from './NameEmailCard'
 
-vi.mock('services/toastNotification')
+vi.mock('services/toastNotification/context')
 
 const currentUser = {
   name: 'donald duck',
@@ -60,7 +60,18 @@ describe('NameEmailCard', () => {
               updateProfile: {
                 me: {
                   email: json.variables.input.email || '',
-                  user: { name: json.variables.input.name || '' },
+                  privateAccess: null,
+                  onboardingCompleted: true,
+                  businessEmail: null,
+                  user: {
+                    name: json.variables.input.name || '',
+                    username: 'test',
+                    avatarUrl: 'http://127.0.0.1/avatar-url',
+                    avatar: 'http://127.0.0.1/avatar-url',
+                    student: false,
+                    studentCreatedAt: null,
+                    studentUpdatedAt: null,
+                  },
                 },
               },
             },

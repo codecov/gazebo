@@ -157,7 +157,7 @@ describe('ComponentsTable', () => {
     const fetchNextPage = vi.fn()
 
     server.use(
-      graphql.query('ComponentMeasurements', (info) => {
+      graphql.query('ComponentMeasurements', () => {
         if (noData) {
           return HttpResponse.json({ data: mockEmptyComponentMeasurements })
         }
@@ -170,10 +170,10 @@ describe('ComponentsTable', () => {
 
         return HttpResponse.json({ data: mockedComponentMeasurements })
       }),
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockGetRepo })
       }),
-      graphql.query('RepoConfig', (info) => {
+      graphql.query('RepoConfig', () => {
         return HttpResponse.json({ data: mockRepoConfig })
       })
     )
@@ -197,7 +197,7 @@ describe('ComponentsTable', () => {
       const components = await screen.findByText('Components')
       expect(components).toBeInTheDocument()
 
-      const coverage = await screen.findByText('Coverage %')
+      const coverage = await screen.findByText('Last aggregated coverage %')
       expect(coverage).toBeInTheDocument()
 
       const trend = await screen.findByText('Historical Trend')

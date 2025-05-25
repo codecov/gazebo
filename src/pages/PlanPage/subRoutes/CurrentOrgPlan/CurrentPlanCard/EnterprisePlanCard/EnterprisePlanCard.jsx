@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import { planPropType } from 'services/account'
+import { planPropType } from 'services/account/propTypes'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import A from 'ui/A'

@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { rejectNetworkError } from 'shared/api/rejectNetworkError'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 export const TrialStatuses = {
   NOT_STARTED: 'NOT_STARTED',
@@ -10,13 +12,15 @@ export const TrialStatuses = {
   CANNOT_TRIAL: 'CANNOT_TRIAL',
 } as const
 
+export type TrialStatus = (typeof TrialStatuses)[keyof typeof TrialStatuses]
+
 const PlanSchema = z.object({
   baseUnitPrice: z.number(),
   benefits: z.array(z.string()),
-  billingRate: z.string().nullable(),
+  billingRate: z.nativeEnum(BillingRate).nullish(),
   marketingName: z.string(),
   monthlyUploadLimit: z.number().nullable(),
-  value: z.string(),
+  value: z.nativeEnum(Plans),
   pretrialUsersCount: z.number().nullable(),
   trialEndDate: z.string().nullable(),
   trialStatus: z.nativeEnum(TrialStatuses),
@@ -24,6 +28,12 @@ const PlanSchema = z.object({
   trialTotalDays: z.number().nullable(),
   planUserCount: z.number().nullable(),
   hasSeatsLeft: z.boolean(),
+  isEnterprisePlan: z.boolean(),
+  isFreePlan: z.boolean(),
+  isProPlan: z.boolean(),
+  isTeamPlan: z.boolean(),
+  isTrialPlan: z.boolean(),
+  isSentryPlan: z.boolean(),
 })
 
 export type Plan = z.infer<typeof PlanSchema>
@@ -31,7 +41,7 @@ export type Plan = z.infer<typeof PlanSchema>
 const PretrialPlanSchema = z.object({
   baseUnitPrice: z.number(),
   benefits: z.array(z.string()),
-  billingRate: z.string().nullable(),
+  billingRate: z.nativeEnum(BillingRate).nullish(),
   marketingName: z.string(),
   monthlyUploadLimit: z.number().nullable(),
   value: z.string(),
@@ -43,7 +53,7 @@ export const PlanDataSchema = z
   .object({
     owner: z
       .object({
-        hasPrivateRepos: z.boolean(),
+        hasPrivateRepos: z.boolean().nullish(),
         plan: PlanSchema.nullish(),
         pretrialPlan: PretrialPlanSchema.nullish(),
       })
@@ -77,6 +87,12 @@ export const query = `
         trialTotalDays
         planUserCount
         hasSeatsLeft
+        isEnterprisePlan
+        isFreePlan
+        isProPlan
+        isSentryPlan
+        isTeamPlan
+        isTrialPlan
       }
       pretrialPlan {
         baseUnitPrice
@@ -102,12 +118,13 @@ export const usePlanData = ({ provider, owner, opts }: UsePlanDataArgs) =>
           owner,
         },
       }).then((res) => {
+        const callingFn = 'usePlanData'
         const parsedRes = PlanDataSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return Promise.reject({
-            status: 404,
-            data: null,
+          return rejectNetworkError({
+            errorName: 'Parsing Error',
+            errorDetails: { callingFn, error: parsedRes.error },
           })
         }
 

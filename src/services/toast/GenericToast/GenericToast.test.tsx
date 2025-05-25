@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import GenericToast from './GenericToast'
+import { GenericToast } from './GenericToast'
 
 describe('GenericToast', () => {
   it('renders the title', () => {

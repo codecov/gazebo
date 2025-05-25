@@ -1,10 +1,8 @@
 import { useParams } from 'react-router-dom'
 
-import {
-  useAccountDetails,
-  useAvailablePlans,
-  usePlanData,
-} from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import { usePlanData } from 'services/account/usePlanData'
 import BenefitList from 'shared/plan/BenefitList'
 import { findSentryPlans } from 'shared/utils/billing'
 import { SENTRY_PRICE, shouldRenderCancelLink } from 'shared/utils/upgradeForm'
@@ -18,11 +16,9 @@ function SentryPlanDetails() {
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { sentryPlanYear } = findSentryPlans({ plans })
 
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const cancelAtPeriodEnd =
     accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
   const trialStatus = planData?.plan?.trialStatus
-
   return (
     <div className="h-fit border md:w-[280px]">
       <h3 className="p-4 font-semibold">
@@ -50,7 +46,11 @@ function SentryPlanDetails() {
         </div>
         {/* TODO_UPGRADE_FORM: Note that there never was schedules shown here like it is in the pro plan details page. This
         is a bug imo and needs to be here in a future ticket */}
-        {shouldRenderCancelLink(cancelAtPeriodEnd, plan, trialStatus) && (
+        {shouldRenderCancelLink({
+          cancelAtPeriodEnd,
+          plan: planData?.plan,
+          trialStatus,
+        }) && (
           <A
             to={{ pageName: 'cancelOrgPlan' }}
             variant="black"

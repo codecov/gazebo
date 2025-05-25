@@ -1,13 +1,14 @@
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { Provider } from 'shared/api/helpers'
 
 import AddressCard from './Address/AddressCard'
 import EmailAddress from './EmailAddress'
 import PaymentCard from './PaymentCard'
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
 }
 
@@ -29,7 +30,7 @@ function BillingDetails() {
       <EmailAddress />
       <PaymentCard
         // @ts-expect-error - TODO fix this once we update PaymentCard to TS
-        subscriptionDetail={subscriptionDetail}
+        accountDetails={accountDetails}
         provider={provider}
         owner={owner}
       />

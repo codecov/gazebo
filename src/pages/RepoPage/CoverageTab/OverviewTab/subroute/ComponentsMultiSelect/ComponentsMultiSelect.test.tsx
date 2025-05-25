@@ -158,7 +158,7 @@ describe('ComponentsMultiSelect', () => {
 
         return HttpResponse.json({ data: mockComponentsResponse(components) })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -168,17 +168,17 @@ describe('ComponentsMultiSelect', () => {
           },
         })
       }),
-      graphql.query('GetBranch', (info) => {
+      graphql.query('GetBranch', () => {
         return HttpResponse.json({
           data: {
             owner: { repository: { __typename: 'Repository', ...mockBranch } },
           },
         })
       }),
-      graphql.query('GetBranches', (info) => {
+      graphql.query('GetBranches', () => {
         return HttpResponse.json({ data: branchesMock })
       }),
-      graphql.query('GetRepoCoverage', (info) => {
+      graphql.query('GetRepoCoverage', () => {
         return HttpResponse.json({
           data: { owner: { repository: mockRepoCoverage } },
         })
@@ -194,8 +194,12 @@ describe('ComponentsMultiSelect', () => {
 
       render(<ComponentsMultiSelect />, { wrapper })
 
-      const select = await screen.findByText('All components')
+      const select = await screen.findByRole('button', {
+        name: 'Select components to show',
+      })
       expect(select).toBeInTheDocument()
+
+      await waitFor(() => expect(select).not.toHaveAttribute('disabled'))
       await user.click(select)
 
       const component1 = await screen.findByText('component-1')

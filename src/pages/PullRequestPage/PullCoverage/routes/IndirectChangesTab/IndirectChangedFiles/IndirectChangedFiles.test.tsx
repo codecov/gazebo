@@ -5,7 +5,7 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { PullComparison } from 'services/pull'
+import { PullComparison } from 'services/pull/usePull'
 import { UploadTypeEnum } from 'shared/utils/commit'
 
 import IndirectChangedFiles from './IndirectChangedFiles'
@@ -14,7 +14,6 @@ vi.mock('../PullFileDiff', () => ({ default: () => 'FileDiff Component' }))
 
 const mockImpactedFiles = [
   {
-    isCriticalFile: true,
     missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
@@ -130,7 +129,7 @@ const mockSingularImpactedFilesData = {
             isNewFile: true,
             isRenamedFile: false,
             isDeletedFile: false,
-            isCriticalFile: false,
+
             headCoverage: {
               percentCovered: 90.23,
             },
@@ -217,19 +216,19 @@ describe('IndirectChangedFiles', () => {
         mockVars(info.variables)
         return HttpResponse.json({ data: mockPull(overrideComparison) })
       }),
-      graphql.query('ImpactedFileComparison', (info) =>
+      graphql.query('ImpactedFileComparison', () =>
         HttpResponse.json({ data: mockSingularImpactedFilesData })
       ),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       }),
-      graphql.query('PullComponentsSelector', (info) => {
+      graphql.query('PullComponentsSelector', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: { owner: null } })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({ data: { owner: null } })
       })
     )
@@ -310,14 +309,8 @@ describe('IndirectChangedFiles', () => {
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
         )
 
-        const link = await screen.findByRole('link', {
-          name: 'flag1/mafs.js',
-        })
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute(
-          'href',
-          '/gh/test-org/test-repo/pull/2510/blob/flag1/mafs.js'
-        )
+        const text = await screen.findByText('flag1/mafs.js')
+        expect(text).toBeInTheDocument()
       })
 
       it('renders change coverage', async () => {
@@ -329,65 +322,6 @@ describe('IndirectChangedFiles', () => {
 
         const changeCoverage = await screen.findByText(/44.85%/i)
         expect(changeCoverage).toBeInTheDocument()
-      })
-
-      it('renders critical file label', async () => {
-        render(<IndirectChangedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const criticalFileLabel = await screen.findByText(/Critical file/i)
-        expect(criticalFileLabel).toBeInTheDocument()
-      })
-
-      it('does not render the critical file label', async () => {
-        setup({
-          state: 'complete',
-          __typename: 'Comparison',
-          flagComparisons: [],
-          patchTotals: {
-            percentCovered: 92.12,
-          },
-          baseTotals: {
-            percentCovered: 98.25,
-          },
-          headTotals: {
-            percentCovered: 78.33,
-          },
-          impactedFiles: {
-            __typename: 'ImpactedFiles',
-            results: [
-              {
-                isCriticalFile: false,
-                missesCount: 3,
-                fileName: 'mafs.js',
-                headName: 'flag1/mafs.js',
-                baseCoverage: {
-                  percentCovered: 45.38,
-                },
-                headCoverage: {
-                  percentCovered: 90.23,
-                },
-                patchCoverage: {
-                  percentCovered: 27.43,
-                },
-                changeCoverage: 41,
-              },
-            ],
-          },
-          changeCoverage: 38.94,
-          hasDifferentNumberOfHeadAndBaseReports: true,
-        })
-        render(<IndirectChangedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const criticalFileLabel = screen.queryByText(/Critical file/i)
-        expect(criticalFileLabel).not.toBeInTheDocument()
       })
     })
   })
@@ -405,7 +339,7 @@ describe('IndirectChangedFiles', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const nameExpander = await screen.findByTestId('name-expand')
+      const nameExpander = await screen.findByTestId('file-diff-expand')
       await user.click(nameExpander)
 
       const fileDiff = await screen.findByText('FileDiff Component')
@@ -432,7 +366,6 @@ describe('IndirectChangedFiles', () => {
           __typename: 'ImpactedFiles',
           results: [
             {
-              isCriticalFile: true,
               missesCount: 3,
               fileName: 'mafs.js',
               headName: 'flag1/mafs.js',

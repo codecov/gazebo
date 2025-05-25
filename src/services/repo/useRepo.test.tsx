@@ -83,7 +83,7 @@ describe('useRepo', () => {
     isOwnerNotActivatedError?: boolean
   }) {
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         if (failedToParseError) {
           return HttpResponse.json({ data: {} })
         } else if (isOwnerNotActivatedError) {
@@ -185,8 +185,8 @@ describe('useRepo', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useRepo - 404 failed to parse',
+            dev: 'useRepo - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -218,8 +218,8 @@ describe('useRepo', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useRepo - Not Found Error',
             status: 404,
-            dev: 'useRepo - 404 NotFoundError',
           })
         )
       )

@@ -5,8 +5,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import FileExplorer from './FileExplorer'
 
 const queryClient = new QueryClient({
@@ -99,7 +97,6 @@ const mockListData = {
               partials: 0,
               lines: 10,
               percentCovered: 90.0,
-              isCriticalFile: false,
             },
           ],
         },
@@ -141,7 +138,6 @@ const mockTreeData = {
               partials: 0,
               lines: 10,
               percentCovered: 90.0,
-              isCriticalFile: false,
             },
           ],
           __typename: 'PathContents',
@@ -252,7 +248,7 @@ describe('FileExplorer', () => {
 
     // Mock so the components selector will be populated
     server.use(
-      graphql.query('PullComponentsSelector', (info) => {
+      graphql.query('PullComponentsSelector', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -277,7 +273,7 @@ describe('FileExplorer', () => {
 
     // Mock so the flags selector will be populated
     server.use(
-      graphql.query('PullFlagsSelect', (info) => {
+      graphql.query('PullFlagsSelect', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -298,18 +294,18 @@ describe('FileExplorer', () => {
           },
         })
       }),
-      graphql.query('BackfillFlagMemberships', (info) => {
+      graphql.query('BackfillFlagMemberships', () => {
         return HttpResponse.json({ data: mockBackfillData })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: TierNames.PRO } } },
+          data: { owner: { plan: { isTeamPlan: false } } },
         })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({ data: mockRepoSettings })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -427,7 +423,7 @@ describe('FileExplorer', () => {
           const links = await within(table).findAllByRole('link')
           expect(links[1]).toHaveAttribute(
             'href',
-            '/gh/codecov/cool-repo/pull/123/tree/a/b/c/src'
+            '/gh/codecov/cool-repo/pull/123/tree/a/b/c/src?dropdown=coverage'
           )
         })
       })
@@ -444,7 +440,7 @@ describe('FileExplorer', () => {
           const links = await within(table).findAllByRole('link')
           expect(links[2]).toHaveAttribute(
             'href',
-            '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js'
+            '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js?dropdown=coverage'
           )
         })
       })
@@ -508,7 +504,7 @@ describe('FileExplorer', () => {
           const links = await within(table).findAllByRole('link')
           expect(links[0]).toHaveAttribute(
             'href',
-            '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js'
+            '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js?dropdown=coverage'
           )
         })
       })

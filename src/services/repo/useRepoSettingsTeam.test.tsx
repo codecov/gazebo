@@ -78,7 +78,7 @@ describe('useRepoSettingsTeam', () => {
     isUnsuccessfulParseError = false,
   }) {
     server.use(
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         if (isNotFoundError) {
           return HttpResponse.json({ data: mockNotFoundError })
         } else if (isUnsuccessfulParseError) {
@@ -141,8 +141,8 @@ describe('useRepoSettingsTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'useRepoSettingsTeam - 404 schema parsing failed',
+            dev: 'useRepoSettingsTeam - Parsing Error',
+            status: 400,
           })
         )
       )
@@ -168,8 +168,8 @@ describe('useRepoSettingsTeam', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
+            dev: 'useRepoSettingsTeam - Not Found Error',
             status: 404,
-            data: {},
           })
         )
       )

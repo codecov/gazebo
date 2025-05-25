@@ -1,9 +1,11 @@
-import { lazy, Suspense } from 'react'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
+import { Suspense } from 'react'
 import { Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import { useBranchBundleSummary } from 'services/bundleAnalysis'
+import { BranchBundleSummaryQueryOpts } from 'services/bundleAnalysis/BranchBundleSummaryQueryOpts'
+import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 import { ToggleElement } from 'ui/ToggleElement'
 
@@ -12,10 +14,9 @@ import { EmptyTable as AssetEmptyTable } from './AssetsTable/EmptyTable'
 import { BundleChart } from './BundleChart'
 import { BundleDetails, NoDetails } from './BundleDetails'
 import BundleSelection from './BundleSelection'
+import ErrorBanner from './ErrorBanner'
 import InfoBanner from './InfoBanner'
 import { TrendDropdown } from './TrendDropdown'
-
-const ErrorBanner = lazy(() => import('./ErrorBanner'))
 
 interface URLParams {
   provider: string
@@ -32,9 +33,30 @@ const Loader = () => (
 )
 
 const BundleContent: React.FC = () => {
-  const { provider, owner, repo, branch, bundle } = useParams<URLParams>()
+  const {
+    provider,
+    owner,
+    repo,
+    branch: branchParam,
+    bundle,
+  } = useParams<URLParams>()
 
-  const { data } = useBranchBundleSummary({ provider, owner, repo, branch })
+  const { data: repoOverview } = useRepoOverview({
+    provider,
+    repo,
+    owner,
+  })
+
+  const branch = branchParam ?? repoOverview?.defaultBranch ?? null
+
+  const { data } = useSuspenseQueryV5(
+    BranchBundleSummaryQueryOpts({
+      provider,
+      owner,
+      repo,
+      branch,
+    })
+  )
 
   const bundleType =
     data?.branch?.head?.bundleAnalysis?.bundleAnalysisReport?.__typename
@@ -49,14 +71,16 @@ const BundleContent: React.FC = () => {
         {bundleType === 'BundleAnalysisReport' ? (
           <Switch>
             <SentryRoute path="/:provider/:owner/:repo/bundles/:branch/:bundle">
-              <ToggleElement
-                showButtonContent="Show chart"
-                hideButtonContent="Hide chart"
-                localStorageKey="is-bundle-chart-hidden"
-                toggleRowElement={<TrendDropdown />}
-              >
-                <BundleChart />
-              </ToggleElement>
+              {data.config.isTimescaleEnabled ? (
+                <ToggleElement
+                  showButtonContent="Show chart"
+                  hideButtonContent="Hide chart"
+                  localStorageKey="is-bundle-chart-hidden"
+                  toggleRowElement={<TrendDropdown />}
+                >
+                  <BundleChart />
+                </ToggleElement>
+              ) : null}
               <Suspense fallback={<Loader />}>
                 <AssetsTable />
               </Suspense>

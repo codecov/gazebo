@@ -5,7 +5,7 @@ import qs, { ParsedQs } from 'qs'
 import { useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { PullSchemaType, usePull } from 'services/pull'
+import { PullSchemaType, usePull } from 'services/pull/usePull'
 
 const orderingDirection = Object.freeze({
   desc: 'DESC',
@@ -97,7 +97,6 @@ function transformIndirectChangesData(pull: PullSchemaType | null | undefined) {
           hasHeadOrPatchCoverage,
           headName: impactedFile?.headName,
           fileName: impactedFile?.fileName,
-          isCriticalFile: impactedFile?.isCriticalFile,
           pullId: pull?.pullId,
         }
       }

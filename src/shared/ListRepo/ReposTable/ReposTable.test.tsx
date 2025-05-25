@@ -1,5 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
+import {
   render,
   screen,
   waitFor,
@@ -12,17 +16,10 @@ import { setupServer } from 'msw/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-import { ActiveContext } from 'shared/context'
+import { transformStringToLocalStorageKey } from 'shared/utils/transformStringToLocalStorageKey'
 
 import ReposTable from './ReposTable'
 
-import { repoDisplayOptions } from '../ListRepo'
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-const server = setupServer()
 const mockRepositories = (
   {
     coverageEnabled = true,
@@ -96,6 +93,79 @@ const mockRepositories = (
   },
 ]
 
+const mockInactiveRepositories = (
+  {
+    coverageEnabled = true,
+    bundleAnalysisEnabled = true,
+  }: {
+    coverageEnabled?: boolean
+    bundleAnalysisEnabled?: boolean
+  } = {
+    coverageEnabled: true,
+    bundleAnalysisEnabled: true,
+  }
+) => [
+  {
+    node: {
+      private: false,
+      activated: false,
+      author: {
+        username: 'owner1',
+      },
+      name: 'Repo name 1',
+      latestCommitAt: subDays(new Date(), 3).toISOString(),
+      coverageAnalytics: {
+        percentCovered: null,
+        lines: null,
+      },
+      active: false,
+      updatedAt: '2020-08-25T16:36:19.67986800:00',
+      repositoryConfig: null,
+      coverageEnabled,
+      bundleAnalysisEnabled,
+    },
+  },
+  {
+    node: {
+      private: true,
+      activated: false,
+      author: {
+        username: 'owner1',
+      },
+      name: 'Repo name 2',
+      latestCommitAt: subDays(new Date(), 2).toISOString(),
+      coverageAnalytics: {
+        percentCovered: null,
+        lines: null,
+      },
+      active: false,
+      updatedAt: '2020-08-25T16:36:19.67986800:00',
+      repositoryConfig: null,
+      coverageEnabled,
+      bundleAnalysisEnabled,
+    },
+  },
+  {
+    node: {
+      private: true,
+      activated: false,
+      author: {
+        username: 'owner1',
+      },
+      name: 'Repo name 3',
+      latestCommitAt: null,
+      active: false,
+      coverageAnalytics: {
+        lines: null,
+      },
+      updatedAt: '2020-08-25T16:36:19.67986800:00',
+      repositoryConfig: null,
+      coverageEnabled,
+      bundleAnalysisEnabled,
+    },
+  },
+]
+
 const mockRepoConfig = {
   owner: {
     repository: {
@@ -125,7 +195,6 @@ const mockUser = {
       student: false,
       studentCreatedAt: null,
       studentUpdatedAt: null,
-      customerIntent: 'PERSONAL',
     },
     trackingMetadata: {
       service: 'github',
@@ -151,51 +220,56 @@ const mockUser = {
   },
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
+const wrapper =
+  (
+    url: string = '/gl',
+    path: string = '/:provider'
+  ): React.FC<React.PropsWithChildren> =>
+  ({ children }) => (
+    <QueryClientProviderV5 client={queryClientV5}>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[url]}>
+          <Route path={path}>{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </QueryClientProviderV5>
+  )
+
+const server = setupServer()
 beforeAll(() => {
   server.listen()
   console.error = () => {}
 })
 afterEach(() => {
   queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 afterAll(() => server.close)
-
-const wrapper =
-  (
-    repoDisplay: string,
-    url: string = '/gl',
-    path: string = '/:provider'
-  ): React.FC<React.PropsWithChildren> =>
-  ({ children }) => (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[url]}>
-        <Route path={path}>
-          <ActiveContext.Provider value={repoDisplay}>
-            {children}
-          </ActiveContext.Provider>
-        </Route>
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
 
 interface SetupArgs {
   edges?: any[]
   isCurrentUserPartOfOrg?: boolean
   privateAccess?: boolean
-  tierValue?: string
+  isTeamPlan?: boolean
 }
 
 describe('ReposTable', () => {
   function setup({
     edges = [],
     isCurrentUserPartOfOrg = true,
-    tierValue = TierNames.PRO,
+    isTeamPlan = false,
   }: SetupArgs) {
     const reposForOwnerMock = vi.fn()
     const myReposMock = vi.fn()
     server.use(
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
           data: { owner: { isCurrentUserPartOfOrg } },
         })
@@ -261,17 +335,17 @@ describe('ReposTable', () => {
           },
         })
       }),
-      graphql.query('OwnerTier', (info) => {
+      graphql.query('IsTeamPlan', () => {
         return HttpResponse.json({
-          data: { owner: { plan: { tierName: tierValue } } },
+          data: { owner: { plan: { isTeamPlan } } },
         })
       }),
-      graphql.query('RepoConfig', (info) => {
+      graphql.query('RepoConfig', () => {
         return HttpResponse.json({
           data: { owner: { repository: { repositoryConfig: mockRepoConfig } } },
         })
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: mockUser })
       })
     )
@@ -282,7 +356,7 @@ describe('ReposTable', () => {
     it('renders table name header', async () => {
       setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       const header = await screen.findByText(/Name/)
@@ -292,7 +366,7 @@ describe('ReposTable', () => {
     it('renders table coverage header', async () => {
       setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       const header = await screen.findByText(/Test coverage/)
@@ -302,7 +376,7 @@ describe('ReposTable', () => {
     it('renders table last updated header', async () => {
       setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       const header = await screen.findByText(/Last updated/)
@@ -312,7 +386,7 @@ describe('ReposTable', () => {
     it('renders table tracked lines header', async () => {
       setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       const header = await screen.findByText(/Tracked lines/)
@@ -324,7 +398,7 @@ describe('ReposTable', () => {
     it('renders table repo name', async () => {
       setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       const buttons = await screen.findAllByText(/Repo name/)
@@ -335,7 +409,7 @@ describe('ReposTable', () => {
       it('links to /:organization/:owner/:repo', async () => {
         setup({ edges: mockRepositories() })
         render(<ReposTable searchValue="" owner="" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const repo1 = await screen.findByRole('link', {
@@ -363,7 +437,7 @@ describe('ReposTable', () => {
           }),
         })
         render(<ReposTable searchValue="" owner="" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const repo1 = await screen.findByRole('link', {
@@ -385,7 +459,7 @@ describe('ReposTable', () => {
     it('renders last updated column', async () => {
       setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       expect(await screen.findByText(/3 days ago/)).toBeTruthy()
@@ -399,7 +473,7 @@ describe('ReposTable', () => {
     it('renders coverage column', async () => {
       setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       expect(await screen.findByText(/43\.00/)).toBeTruthy()
@@ -413,7 +487,7 @@ describe('ReposTable', () => {
     it('renders tracked lines column', async () => {
       setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       expect(await screen.findByText('99')).toBeTruthy()
@@ -427,7 +501,7 @@ describe('ReposTable', () => {
     it('renders handles null coverage', async () => {
       setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       expect(await screen.findByText(/No data/)).toBeTruthy()
@@ -438,7 +512,7 @@ describe('ReposTable', () => {
 
   describe('when rendered with coverage enabled and bundle enabled as false', () => {
     describe('user belongs to org', () => {
-      beforeEach(() => {
+      it('links to /:organization/:owner/:repo/new', async () => {
         setup({
           edges: [
             {
@@ -503,11 +577,9 @@ describe('ReposTable', () => {
             },
           ],
         })
-      })
 
-      it('links to /:organization/:owner/:repo/new', async () => {
         render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const repo1 = await screen.findByRole('link', {
@@ -526,9 +598,73 @@ describe('ReposTable', () => {
         expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3/new')
       })
 
-      it('renders configure repo copy', async () => {
+      it('renders configure repo copy for no coverage unactivated repos', async () => {
+        setup({
+          edges: [
+            {
+              node: {
+                private: false,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 1',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: null,
+                  lines: null,
+                },
+                active: false,
+                repositoryConfig: null,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
+              },
+            },
+            {
+              node: {
+                private: true,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 2',
+                latestCommitAt: subDays(new Date(), 2).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: null,
+                  lines: null,
+                },
+                active: false,
+                repositoryConfig: null,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
+              },
+            },
+            {
+              node: {
+                private: true,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 3',
+                latestCommitAt: subDays(new Date(), 5).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: null,
+                  lines: null,
+                },
+                active: false,
+                repositoryConfig: null,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
+              },
+            },
+          ],
+        })
         render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const setupRepo = await screen.findAllByRole('link', {
@@ -542,16 +678,14 @@ describe('ReposTable', () => {
     })
 
     describe('user does not belongs to org', () => {
-      beforeEach(() => {
+      it('does not link to configure repo from repo name', async () => {
         setup({
           isCurrentUserPartOfOrg: false,
           edges: mockRepositories(),
         })
-      })
 
-      it('does not link to configure repo from repo name', async () => {
         render(<ReposTable searchValue="" owner="" />, {
-          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const repo1 = await screen.findByText('Repo name 1')
@@ -565,8 +699,13 @@ describe('ReposTable', () => {
       })
 
       it('does not show configure repo link', async () => {
+        setup({
+          isCurrentUserPartOfOrg: false,
+          edges: mockInactiveRepositories(),
+        })
+
         render(<ReposTable searchValue="" owner="" />, {
-          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
+          wrapper: wrapper(),
         })
 
         const notConfiguredCopy = await screen.findAllByText('Inactive')
@@ -578,17 +717,17 @@ describe('ReposTable', () => {
     })
   })
 
-  describe('when user is in team tier', () => {
+  describe('when user is in team plan', () => {
     beforeEach(() => {
       setup({
-        tierValue: TierNames.TEAM,
+        isTeamPlan: true,
         edges: mockRepositories(),
       })
     })
 
     it('only renders public repos', async () => {
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
       const buttons = await screen.findAllByText(/Repo name/)
       expect(buttons.length).toBe(1)
@@ -602,7 +741,7 @@ describe('ReposTable', () => {
         edges: mockRepositories(),
       })
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       const header = await screen.findByText(/Name/)
@@ -633,7 +772,7 @@ describe('ReposTable', () => {
       })
 
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       const header = await screen.findByText(/Test coverage/)
@@ -663,7 +802,7 @@ describe('ReposTable', () => {
       })
 
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       const header = await screen.findByText(/Last updated/)
@@ -699,7 +838,7 @@ describe('ReposTable', () => {
 
     it('renders no repos detected', async () => {
       render(<ReposTable searchValue="" owner="" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        wrapper: wrapper(),
       })
 
       expect(
@@ -722,7 +861,7 @@ describe('ReposTable', () => {
 
     it('renders no results found', async () => {
       render(<ReposTable searchValue="something" owner="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
+        wrapper: wrapper(),
       })
 
       const noResultsFound = await screen.findByText(/No results found/)
@@ -760,7 +899,7 @@ describe('ReposTable', () => {
 
     it('fetches additional pages', async () => {
       render(<ReposTable searchValue="" owner="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
+        wrapper: wrapper(),
       })
 
       const loading = await screen.findByText('Loading')
@@ -843,7 +982,7 @@ describe('ReposTable', () => {
 
     it('renders all repos', async () => {
       render(<ReposTable searchValue="" owner="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
+        wrapper: wrapper(),
       })
 
       await waitFor(() => queryClient.isFetching())
@@ -855,7 +994,7 @@ describe('ReposTable', () => {
 
     it('renders inactive copy for inactive repos', async () => {
       render(<ReposTable searchValue="" owner="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
+        wrapper: wrapper(),
       })
 
       expect(await screen.findByText(/Inactive/)).toBeTruthy()
@@ -865,7 +1004,7 @@ describe('ReposTable', () => {
 
     it('renders deactivated for inactive repos', async () => {
       render(<ReposTable searchValue="" owner="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
+        wrapper: wrapper(),
       })
 
       expect(await screen.findByText(/Deactivated/)).toBeTruthy()
@@ -913,53 +1052,13 @@ describe('ReposTable', () => {
                 name: 'Repo name 1',
                 latestCommitAt: subDays(new Date(), 3).toISOString(),
                 coverageAnalytics: {
-                  percentCovered: 0,
+                  percentCovered: 10,
                   lines: 123,
                 },
                 active: true,
                 updatedAt: '2020-08-25T16:36:19.67986800:00',
                 repositoryConfig: null,
-                coverageEnabled: false,
-                bundleAnalysisEnabled: false,
-              },
-            },
-            {
-              node: {
-                private: true,
-                activated: true,
-                author: {
-                  username: 'owner1',
-                },
-                name: 'Repo name 2',
-                latestCommitAt: subDays(new Date(), 2).toISOString(),
-                coverageAnalytics: {
-                  percentCovered: 100,
-                  lines: 123,
-                },
-                active: true,
-                updatedAt: '2020-08-25T16:36:19.67986800:00',
-                repositoryConfig: null,
-                coverageEnabled: false,
-                bundleAnalysisEnabled: false,
-              },
-            },
-            {
-              node: {
-                private: true,
-                activated: false,
-                author: {
-                  username: 'owner1',
-                },
-                name: 'Repo name 3',
-                latestCommitAt: subDays(new Date(), 5).toISOString(),
-                coverageAnalytics: {
-                  percentCovered: null,
-                  lines: 123,
-                },
-                active: false,
-                updatedAt: '2020-08-25T16:36:19.67986800:00',
-                repositoryConfig: null,
-                coverageEnabled: false,
+                coverageEnabled: true,
                 bundleAnalysisEnabled: false,
               },
             },
@@ -994,22 +1093,217 @@ describe('ReposTable', () => {
 
     it('shows demo repo and your repos when on your owner page', async () => {
       render(<ReposTable searchValue="" owner="owner1" mayIncludeDemo />, {
-        wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
+        wrapper: wrapper('/github/owner1', '/:provider/:owner'),
       })
-      const links = await screen.findAllByText(/Repo name/)
-      expect(links.length).toBe(3)
       const demoLink = await screen.findAllByText(/Codecov demo/)
       expect(demoLink.length).toBe(1)
+      const links = await screen.findAllByText(/Repo name/)
+      expect(links.length).toBe(1)
     })
 
     it('shows demo repo when search term includes it', async () => {
       render(<ReposTable searchValue="dem" owner="owner1" mayIncludeDemo />, {
-        wrapper: wrapper('', '/github/owner1', '/:provider/:owner'),
+        wrapper: wrapper('/github/owner1', '/:provider/:owner'),
       })
       const repo = screen.queryByText(/Repo name/)
       expect(repo).not.toBeInTheDocument()
       const demoLink = await screen.findAllByText(/Codecov demo/)
       expect(demoLink.length).toBe(1)
+    })
+
+    it('hides demo repo when user has 2 or more repos configured', async () => {
+      server.use(
+        graphql.query('ReposForOwner', async (info) => {
+          const demoRepo = [
+            {
+              node: {
+                private: false,
+                activated: true,
+                author: {
+                  username: 'codecov',
+                },
+                name: 'gazebo',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: 0,
+                  lines: 123,
+                },
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+              },
+            },
+          ]
+
+          const myRepos = [
+            {
+              node: {
+                private: false,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 1',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: 10,
+                  lines: 123,
+                },
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: false,
+              },
+            },
+            {
+              node: {
+                private: false,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 1',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: 0,
+                  lines: 123,
+                },
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: false,
+              },
+            },
+          ]
+
+          let reposToReturn = myRepos.filter(
+            (repo) =>
+              !info.variables.filters.term ||
+              repo.node.name.includes(info.variables.filters.term)
+          )
+
+          if (info.variables.owner === 'codecov') {
+            reposToReturn = demoRepo
+          }
+
+          return HttpResponse.json({
+            data: {
+              owner: {
+                repositories: {
+                  edges: reposToReturn,
+                  pageInfo: {
+                    hasNextPage: false,
+                    endCursor: '3',
+                  },
+                },
+              },
+            },
+          })
+        })
+      )
+      render(<ReposTable searchValue="" owner="owner1" mayIncludeDemo />, {
+        wrapper: wrapper('/github/owner1', '/:provider/:owner'),
+      })
+      const links = await screen.findAllByText(/Repo name/)
+      expect(links.length).toBe(2)
+      const demoLink = screen.queryAllByText(/Codecov demo/)
+      expect(demoLink.length).toBe(0)
+    })
+  })
+
+  describe('handles recently visited repo', () => {
+    beforeEach(() => {
+      setup({})
+      localStorage.clear()
+      localStorage.setItem(
+        `${transformStringToLocalStorageKey('owner1')}_recently_visited`,
+        'gazebo'
+      )
+      server.use(
+        graphql.query('ReposForOwner', async (info) => {
+          const recentlyVisitedRepo = [
+            {
+              node: {
+                private: false,
+                activated: true,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'gazebo',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: 0,
+                  lines: 123,
+                },
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+              },
+            },
+          ]
+
+          const myRepos = [
+            {
+              node: {
+                private: false,
+                activated: false,
+                author: {
+                  username: 'owner1',
+                },
+                name: 'Repo name 1',
+                latestCommitAt: subDays(new Date(), 3).toISOString(),
+                coverageAnalytics: {
+                  percentCovered: 10,
+                  lines: 123,
+                },
+                active: true,
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                repositoryConfig: null,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: false,
+              },
+            },
+          ]
+
+          let reposToReturn = myRepos.filter(
+            (repo) =>
+              !info.variables.filters.term ||
+              repo.node.name.includes(info.variables.filters.term)
+          )
+
+          if (info.variables.filters.repoNames) {
+            reposToReturn = recentlyVisitedRepo
+          }
+
+          return HttpResponse.json({
+            data: {
+              owner: {
+                repositories: {
+                  edges: reposToReturn,
+                  pageInfo: {
+                    hasNextPage: false,
+                    endCursor: '3',
+                  },
+                },
+              },
+            },
+          })
+        })
+      )
+    })
+
+    it('shows recently visited repo', async () => {
+      render(<ReposTable searchValue="" owner="owner1" />, {
+        wrapper: wrapper('/github/owner1', '/:provider/:owner'),
+      })
+      const recentlyVisitedRepo = await screen.findByText(/Recently visited/)
+      expect(recentlyVisitedRepo).toBeInTheDocument()
     })
   })
 })

@@ -1,22 +1,19 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
-import { IndividualPlan } from 'services/account'
-import { isSentryPlan, isTeamPlan } from 'shared/utils/billing'
+import { IndividualPlan } from 'services/account/useAvailablePlans'
 
 import ProPlanController from './ProPlanController'
 import SentryPlanController from './SentryPlanController'
 import TeamPlanController from './TeamPlanController'
 
-import { NewPlanType } from '../constants'
 import { UpgradeFormFields } from '../UpgradeForm'
 
 interface BillingControlsProps {
   seats: number
-  newPlan: NewPlanType
-  selectedPlan: NewPlanType
+  newPlan?: IndividualPlan
   register: UseFormRegister<UpgradeFormFields>
   setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (plan: IndividualPlan) => void
+  setSelectedPlan: (plan?: IndividualPlan) => void
   errors?: {
     seats?: {
       message?: string
@@ -29,11 +26,10 @@ const Controller: React.FC<BillingControlsProps> = ({
   errors,
   newPlan,
   register,
-  selectedPlan,
   setFormValue,
   setSelectedPlan,
 }) => {
-  if (isTeamPlan(selectedPlan)) {
+  if (newPlan?.isTeamPlan) {
     return (
       <TeamPlanController
         newPlan={newPlan}
@@ -44,7 +40,7 @@ const Controller: React.FC<BillingControlsProps> = ({
         errors={errors}
       />
     )
-  } else if (isSentryPlan(selectedPlan)) {
+  } else if (newPlan?.isSentryPlan) {
     return (
       <SentryPlanController
         newPlan={newPlan}

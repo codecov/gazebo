@@ -59,15 +59,65 @@ export default defineConfig((config) => {
   return {
     server: {
       port: 3000,
+      headers: {
+        'Document-Policy': 'js-profiling',
+      },
+    },
+    preview: {
+      port: 3000,
+      headers: {
+        'Document-Policy': 'js-profiling',
+      },
     },
     build: {
       outDir: 'build',
       sourcemap: runSentryPlugin,
       rollupOptions: {
         output: {
-          entryFileNames: 'assets/[name].[hash:22].js',
-          chunkFileNames: 'assets/[name].[hash:22].js',
-          assetFileNames: 'assets/[name].[hash:22][extname]',
+          entryFileNames: 'assets/[name].[hash:21].js',
+          chunkFileNames: 'assets/[name].[hash:21].js',
+          assetFileNames: 'assets/[name].[hash:21][extname]',
+          manualChunks: {
+            vendor_recharts: ['recharts'],
+            vendor_sentry: ['@sentry/react'],
+            vendor_amplitude: ['@amplitude/analytics-browser'],
+            vendor_date_fns: ['date-fns'],
+            vendor_icons_developer: ['/src/ui/Icon/svg/developer'],
+            vendor_icons_outline: ['/src/ui/Icon/svg/outline'],
+            vendor_icons_solid: ['/src/ui/Icon/svg/solid'],
+            vendor_react: ['react', 'react-dom', 'react/jsx-runtime'],
+            vendor_react_router: [
+              'react-router',
+              'react-router-dom',
+              'react-router-dom-v5-compat',
+            ],
+            vendor_radix_ui: [
+              '@radix-ui/react-accordion',
+              '@radix-ui/react-checkbox',
+              '@radix-ui/react-collapsible',
+              '@radix-ui/react-dropdown-menu',
+              '@radix-ui/react-label',
+              '@radix-ui/react-popover',
+              '@radix-ui/react-radio-group',
+              '@radix-ui/react-tooltip',
+            ],
+            vendor_lodash: [
+              'lodash/get',
+              'lodash/isEqual',
+              'lodash/isNull',
+              'lodash/isNil',
+              'lodash/isEmpty',
+              'lodash/isString',
+              'lodash/isNumber',
+              'lodash/isBoolean',
+              'lodash/isUndefined',
+              'lodash/isArray',
+              'lodash/gt',
+              'lodash/omit',
+              'lodash/flatMap',
+              'lodash/groupBy',
+            ],
+          },
         },
       },
     },

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
-import { MissingHeadReportSchema } from 'services/comparison'
-import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
+import { MissingHeadReportSchema } from 'services/comparison/schemas/MissingHeadReport'
+import { UnknownFlagsSchema } from 'services/impactedFiles/schemas/UnknownFlags'
 
 const MissingCoverageSchema = z.object({
   __typename: z.literal('MissingCoverage'),
@@ -25,13 +25,12 @@ const RepositoryConfigSchema = z.object({
 const PathContentFileSchema = z.object({
   __typename: z.literal('PathContentFile'),
   name: z.string(),
-  path: z.string().nullable(),
+  path: z.string(),
   hits: z.number(),
   misses: z.number(),
   partials: z.number(),
   lines: z.number(),
   percentCovered: z.number(),
-  isCriticalFile: z.boolean(),
 })
 
 export type PathContentFile = z.infer<typeof PathContentFileSchema>
@@ -39,7 +38,7 @@ export type PathContentFile = z.infer<typeof PathContentFileSchema>
 const PathContentDirSchema = z.object({
   __typename: z.literal('PathContentDir'),
   name: z.string(),
-  path: z.string().nullable(),
+  path: z.string(),
   hits: z.number(),
   misses: z.number(),
   partials: z.number(),
@@ -115,9 +114,6 @@ export const query = `
                     name
                     path
                     percentCovered
-                    ... on PathContentFile {
-                      isCriticalFile
-                    }
                   }
                 }
                 ... on UnknownPath {

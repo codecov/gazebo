@@ -2,10 +2,11 @@ import { useQueryClient } from '@tanstack/react-query'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 import { Component, useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import config from 'config'
 
+import { useUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
 
@@ -14,6 +15,12 @@ import upsideDownUmbrella from './assets/error-upsidedown-umbrella.svg'
 import styles from './NetworkErrorBoundary.module.css'
 
 const errorToUI = {
+  400: {
+    illustration: upsideDownUmbrella,
+    title: 'Bad Request',
+    description: null,
+    showDocs: true,
+  },
   401: {
     illustration: openUmbrella,
     title: <a href="/login">Please log in.</a>,
@@ -61,11 +68,11 @@ const graphQLErrorToUI = {
   },
 }
 
-export const NetworkErrorMessage = () => {
+export const DocErrorMessage = ({ capitalize = true }) => {
   if (config.IS_SELF_HOSTED) {
     return (
-      <p className="my-4 px-3 sm:px-0">
-        Please see{' '}
+      <>
+        {capitalize ? 'Please' : 'please'} see{' '}
         <A
           rel="noreferrer"
           className="text-ds-blue-default"
@@ -76,13 +83,13 @@ export const NetworkErrorMessage = () => {
           our docs
         </A>{' '}
         for common support.
-      </p>
+      </>
     )
   }
 
   return (
-    <p className="my-4 px-3 sm:px-0">
-      Check on{' '}
+    <>
+      {capitalize ? 'Check' : 'check'} on{' '}
       <A
         rel="noreferrer"
         className="text-ds-blue-default"
@@ -103,13 +110,40 @@ export const NetworkErrorMessage = () => {
         our docs
       </A>{' '}
       for common support.
+    </>
+  )
+}
+
+DocErrorMessage.propTypes = {
+  capitalize: PropTypes.bool,
+}
+
+export const NetworkErrorMessage = ({ statusCode }) => {
+  if (statusCode === 404) {
+    return (
+      <p className="my-4 max-w-2xl px-3 text-center sm:px-0">
+        To view private repositories ensure you are logged in, you can also{' '}
+        <DocErrorMessage capitalize={false} />
+      </p>
+    )
+  }
+
+  return (
+    <p className="my-4 max-w-2xl px-3 text-center sm:px-0">
+      <DocErrorMessage capitalize={true} />
     </p>
   )
 }
 
-function ResetHandler({ logoutUser = false, reset }) {
+NetworkErrorMessage.propTypes = {
+  statusCode: PropTypes.number,
+}
+
+function ResetHandler({ logoutUser = false, reset, statusCode }) {
   const queryClient = useQueryClient()
   const history = useHistory()
+  const location = useLocation()
+  const { data: user } = useUser()
 
   useEffect(() => {
     let unMounted = false
@@ -142,10 +176,19 @@ function ResetHandler({ logoutUser = false, reset }) {
   }
 
   return (
-    <div className="my-4">
+    <div className="my-4 flex items-center gap-2">
       <Button onClick={logoutUser ? handleSignOut : handleReset}>
         {logoutUser ? 'Return to login' : 'Return to previous page'}
       </Button>
+      {/* if the user is logged in, we don't want to show the login button */}
+      {statusCode === 404 && !user ? (
+        <Button
+          variant="primary"
+          to={{ pageName: 'login', options: { to: location.pathname } }}
+        >
+          Login
+        </Button>
+      ) : null}
     </div>
   )
 }
@@ -153,6 +196,7 @@ function ResetHandler({ logoutUser = false, reset }) {
 ResetHandler.propTypes = {
   reset: PropTypes.func,
   logoutUser: PropTypes.bool,
+  statusCode: PropTypes.number,
 }
 
 class NetworkErrorBoundary extends Component {
@@ -205,8 +249,11 @@ class NetworkErrorBoundary extends Component {
           src={illustration}
         />
         <h1 className="mt-6 text-2xl">{title}</h1>
-        <NetworkErrorMessage />
-        <ResetHandler reset={this.resetErrorBoundary} />
+        <NetworkErrorMessage statusCode={this.state.error.status} />
+        <ResetHandler
+          reset={this.resetErrorBoundary}
+          statusCode={this.state.error.status}
+        />
       </article>
     )
   }
@@ -224,13 +271,14 @@ class NetworkErrorBoundary extends Component {
         />
         <h1 className="mt-6 text-2xl">{title}</h1>
         {description ? <p className="mt-2">{description(data)}</p> : null}
-        {showDocs ? <NetworkErrorMessage /> : null}
+        {showDocs ? <NetworkErrorMessage statusCode={status} /> : null}
         <p>
           <strong>Error {status}</strong>
         </p>
         <ResetHandler
           logoutUser={status === 429}
           reset={this.resetErrorBoundary}
+          statusCode={status}
         />
       </article>
     )

@@ -7,7 +7,7 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { ImpactedFileType } from 'services/commit'
+import { ImpactedFileType } from 'services/commit/useCommit'
 
 import FilesChangedTable from './FilesChangedTable'
 
@@ -116,7 +116,6 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: 'src/index2.py',
-          isCriticalFile: false,
           baseCoverage: {
             coverage: 62.5,
           },
@@ -134,14 +133,8 @@ describe('FilesChangedTable', () => {
       const { queryClient } = setup(mockData)
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
 
-      const link = await screen.findByRole('link', {
-        name: 'src/index2.py',
-      })
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute(
-        'href',
-        '/gh/vax/keyleth/commit/123/blob/src/index2.py'
-      )
+      const text = await screen.findByText('src/index2.py')
+      expect(text).toBeInTheDocument()
     })
 
     it('renders coverage', async () => {
@@ -175,7 +168,6 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: '',
-          isCriticalFile: false,
           baseCoverage: null,
           headCoverage: null,
           patchCoverage: null,
@@ -206,7 +198,6 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: '',
-          isCriticalFile: false,
           baseCoverage: null,
           headCoverage: {
             coverage: 67,
@@ -301,7 +292,6 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: 'src/index2.py',
-          isCriticalFile: false,
           baseCoverage: {
             coverage: 62.5,
           },
@@ -335,7 +325,6 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: '',
-          isCriticalFile: false,
           baseCoverage: null,
           headCoverage: null,
           patchCoverage: null,
@@ -352,58 +341,6 @@ describe('FilesChangedTable', () => {
     })
   })
 
-  describe('highlights critical files', () => {
-    it('renders critical file', async () => {
-      const { queryClient } = setup({
-        __typename: 'ImpactedFiles',
-        results: [
-          {
-            headName: 'src/main.rs',
-            isCriticalFile: true,
-            baseCoverage: {
-              coverage: 40.0,
-            },
-            headCoverage: {
-              coverage: 50.0,
-            },
-            patchCoverage: {
-              coverage: 100.0,
-            },
-          },
-        ],
-      })
-      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
-
-      const criticalFile = await screen.findByText(/Critical file/)
-      expect(criticalFile).toBeInTheDocument()
-    })
-
-    it('renders non-critical file', async () => {
-      const { queryClient } = setup({
-        __typename: 'ImpactedFiles',
-        results: [
-          {
-            headName: 'src/main.rs',
-            isCriticalFile: false,
-            baseCoverage: {
-              coverage: 40.0,
-            },
-            headCoverage: {
-              coverage: 50.0,
-            },
-            patchCoverage: {
-              coverage: 100.0,
-            },
-          },
-        ],
-      })
-      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
-
-      const criticalFile = screen.queryByText(/Critical file/)
-      expect(criticalFile).not.toBeInTheDocument()
-    })
-  })
-
   describe('highlights deleted files', () => {
     it('renders deleted file', async () => {
       const { queryClient } = setup({
@@ -411,7 +348,6 @@ describe('FilesChangedTable', () => {
         results: [
           {
             headName: 'src/main.rs',
-            isCriticalFile: false,
             baseCoverage: null,
             headCoverage: null,
             patchCoverage: null,
@@ -430,7 +366,6 @@ describe('FilesChangedTable', () => {
         results: [
           {
             headName: 'src/main.rs',
-            isCriticalFile: false,
             baseCoverage: {
               coverage: 40.0,
             },
@@ -456,7 +391,6 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: 'src/index2.py',
-          isCriticalFile: false,
           baseCoverage: {
             coverage: 62.5,
           },
@@ -501,7 +435,6 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: 'src/index2.py',
-          isCriticalFile: false,
           baseCoverage: {
             coverage: 62.5,
           },
@@ -547,7 +480,6 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: 'src/index2.py',
-          isCriticalFile: false,
           baseCoverage: {
             coverage: 62.5,
           },
@@ -560,7 +492,6 @@ describe('FilesChangedTable', () => {
         },
         {
           headName: 'src/index3.py',
-          isCriticalFile: false,
           baseCoverage: {
             coverage: 64.5,
           },

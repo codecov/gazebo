@@ -6,12 +6,16 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { eventTracker } from 'services/events/events'
+import { ThemeContextProvider } from 'shared/ThemeContext'
+
 import GitHubActions from './GitHubActions'
 
 const mocks = vi.hoisted(() => ({
   useFlags: vi.fn(),
 }))
 
+vi.mock('services/events/events')
 vi.mock('shared/featureFlags', async () => {
   const actual = await vi.importActual('shared/featureFlags')
   return {
@@ -45,6 +49,31 @@ const mockGetOrgUploadToken = {
   },
 }
 
+const mockGetUploadTokenRequired = {
+  owner: {
+    orgUploadToken: 'org-token-asdf-1234',
+    uploadTokenRequired: true,
+    isAdmin: true,
+  },
+}
+
+const mockDetailOwner = {
+  owner: {
+    ownerid: 1234,
+    username: 'codecov',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/1234?v=4',
+    isCurrentUserPartOfOrg: true,
+    isAdmin: true,
+  },
+}
+
+const mockRegenerateOrgUploadToken = {
+  regenerateOrgUploadToken: {
+    error: null,
+    orgUploadToken: 'new-org-token-asdf-1234',
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -58,14 +87,16 @@ const server = setupServer()
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new']}>
-      <Route
-        path={[
-          '/:provider/:owner/:repo/new',
-          '/:provider/:owner/:repo/new/other-ci',
-        ]}
-      >
-        <Suspense fallback={null}>{children}</Suspense>
-      </Route>
+      <ThemeContextProvider>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/new',
+            '/:provider/:owner/:repo/new/other-ci',
+          ]}
+        >
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+      </ThemeContextProvider>
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -90,351 +121,52 @@ describe('GitHubActions', () => {
       newRepoFlag: hasOrgUploadToken,
     })
 
-    const mockMetricMutationVariables = vi.fn()
-    const mockGetItem = vi.spyOn(window.localStorage.__proto__, 'getItem')
-    mockGetItem.mockReturnValue(null)
-
     server.use(
-      graphql.query('GetRepo', (info) => {
+      graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockGetRepo })
       }),
-      graphql.query('GetOrgUploadToken', (info) => {
+      graphql.query('GetOrgUploadToken', () => {
         return HttpResponse.json({ data: mockGetOrgUploadToken })
       }),
-      graphql.mutation('storeEventMetric', (info) => {
-        mockMetricMutationVariables(info?.variables)
-        return HttpResponse.json({ data: { storeEventMetric: null } })
+      graphql.query('GetUploadTokenRequired', () => {
+        return HttpResponse.json({ data: mockGetUploadTokenRequired })
+      }),
+      graphql.query('DetailOwner', () => {
+        return HttpResponse.json({ data: mockDetailOwner })
+      }),
+      graphql.mutation('regenerateOrgUploadToken', () => {
+        return HttpResponse.json({ data: mockRegenerateOrgUploadToken })
       })
     )
     const user = userEvent.setup()
 
-    return { mockMetricMutationVariables, user }
+    return { user }
   }
 
-  describe('step one', () => {
-    it('renders header', async () => {
-      setup({})
+  describe('when Go is selected', () => {
+    it('updates example yaml', async () => {
+      const { user } = setup({})
       render(<GitHubActions />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 2/ })
-      expect(header).toBeInTheDocument()
-    })
+      const selector = await screen.findByRole('combobox')
+      expect(selector).toBeInTheDocument()
 
-    it('renders framework blurb', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
+      await user.click(selector)
 
-      const blurb = await screen.findByText(
-        /Select your testing framework below/
+      const go = await screen.findByText('Go')
+      expect(go).toBeInTheDocument()
+
+      await user.click(go)
+
+      const trigger = await screen.findByText((content) =>
+        content.startsWith('Your final GitHub Actions workflow')
       )
-      expect(blurb).toBeInTheDocument()
-    })
+      expect(trigger).toBeInTheDocument()
 
-    it('renders install step', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
+      await user.click(trigger)
 
-      const text = await screen.findByText(
-        'Install requirements in your terminal:'
-      )
-      expect(text).toBeInTheDocument()
-
-      const command = await screen.findByText('npm install --save-dev jest')
-      expect(command).toBeInTheDocument()
-    })
-
-    it('renders run step', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
-
-      const text = await screen.findByText(
-        'In a GitHub Action, run tests and generate a coverage report:'
-      )
-      expect(text).toBeInTheDocument()
-
-      const command = await screen.findByText('npx jest --coverage')
-      expect(command).toBeInTheDocument()
-    })
-
-    describe('framework selector', () => {
-      it('renders', async () => {
-        setup({})
-        render(<GitHubActions />, { wrapper })
-
-        const selector = await screen.findByRole('combobox')
-        expect(selector).toBeInTheDocument()
-      })
-
-      describe('when clicked', () => {
-        it('renders dropdown', async () => {
-          const { user } = setup({})
-          render(<GitHubActions />, { wrapper })
-
-          const selector = await screen.findByRole('combobox')
-          expect(selector).toBeInTheDocument()
-
-          let vitest = screen.queryByText('Vitest')
-          let pytest = screen.queryByText('Pytest')
-          let go = screen.queryByText('Go')
-          expect(vitest).not.toBeInTheDocument()
-          expect(pytest).not.toBeInTheDocument()
-          expect(go).not.toBeInTheDocument()
-
-          await user.click(selector)
-
-          vitest = await screen.findByText('Vitest')
-          pytest = await screen.findByText('Pytest')
-          go = await screen.findByText('Go')
-          expect(vitest).toBeInTheDocument()
-          expect(pytest).toBeInTheDocument()
-          expect(go).toBeInTheDocument()
-        })
-      })
-
-      describe('when Go is selected', () => {
-        it('does not render install step', async () => {
-          const { user } = setup({})
-          render(<GitHubActions />, { wrapper })
-
-          const selector = await screen.findByRole('combobox')
-          expect(selector).toBeInTheDocument()
-
-          await user.click(selector)
-
-          const go = await screen.findByText('Go')
-          expect(go).toBeInTheDocument()
-
-          await user.click(go)
-
-          const install = screen.queryByText(
-            'Install requirements in your terminal:'
-          )
-          expect(install).not.toBeInTheDocument()
-        })
-
-        it('updates run step', async () => {
-          const { user } = setup({})
-          render(<GitHubActions />, { wrapper })
-
-          const selector = await screen.findByRole('combobox')
-          expect(selector).toBeInTheDocument()
-
-          await user.click(selector)
-
-          const go = await screen.findByText('Go')
-          expect(go).toBeInTheDocument()
-
-          await user.click(go)
-
-          const run = await screen.findByText(
-            'In a GitHub Action, run tests and generate a coverage report:'
-          )
-          expect(run).toBeInTheDocument()
-
-          const command = await screen.findByText(
-            'go test -coverprofile=coverage.txt'
-          )
-          expect(command).toBeInTheDocument()
-        })
-
-        it('updates example yaml', async () => {
-          const { user } = setup({})
-          render(<GitHubActions />, { wrapper })
-
-          const selector = await screen.findByRole('combobox')
-          expect(selector).toBeInTheDocument()
-
-          await user.click(selector)
-
-          const go = await screen.findByText('Go')
-          expect(go).toBeInTheDocument()
-
-          await user.click(go)
-
-          const trigger = await screen.findByText((content) =>
-            content.startsWith('Your final GitHub Actions workflow')
-          )
-          expect(trigger).toBeInTheDocument()
-
-          await user.click(trigger)
-
-          const yaml = await screen.findByText(/go mod download/)
-          expect(yaml).toBeInTheDocument()
-        })
-      })
-    })
-
-    describe('example collapsible', () => {
-      it('renders', async () => {
-        setup({})
-        render(<GitHubActions />, { wrapper })
-
-        const trigger = await screen.findByText((content) =>
-          content.startsWith('Your final GitHub Actions workflow')
-        )
-        expect(trigger).toBeInTheDocument()
-      })
-
-      describe('when the collapsible is open', () => {
-        it('renders example GHA yaml', async () => {
-          const { user } = setup({})
-          render(<GitHubActions />, { wrapper })
-
-          const trigger = await screen.findByText((content) =>
-            content.startsWith('Your final GitHub Actions workflow')
-          )
-          expect(trigger).toBeInTheDocument()
-
-          let example = screen.queryByText(
-            /name: Run tests and upload coverage/
-          )
-          expect(example).not.toBeInTheDocument()
-
-          await user.click(trigger)
-
-          example = await screen.findByText(
-            /name: Run tests and upload coverage/
-          )
-          expect(example).toBeInTheDocument()
-        })
-
-        describe('if using repo token', () => {
-          it('does not show repo slug in yaml', async () => {
-            const { user } = setup({})
-            render(<GitHubActions />, { wrapper })
-
-            const trigger = await screen.findByText((content) =>
-              content.startsWith('Your final GitHub Actions workflow')
-            )
-            expect(trigger).toBeInTheDocument()
-
-            await user.click(trigger)
-
-            const slug = screen.queryByText(/slug: codecov\/cool-repo/)
-            expect(slug).not.toBeInTheDocument()
-          })
-        })
-
-        describe('if using org token', () => {
-          it('shows repo slug in yaml', async () => {
-            const { user } = setup({ hasOrgUploadToken: true })
-            render(<GitHubActions />, { wrapper })
-
-            const trigger = await screen.findByText((content) =>
-              content.startsWith('Your final GitHub Actions workflow')
-            )
-            expect(trigger).toBeInTheDocument()
-
-            await user.click(trigger)
-
-            const slug = await screen.findByText(/slug: codecov\/cool-repo/)
-            expect(slug).toBeInTheDocument()
-          })
-        })
-
-        it('renders learn more blurb', async () => {
-          const { user } = setup({})
-          render(<GitHubActions />, { wrapper })
-
-          const trigger = await screen.findByText((content) =>
-            content.startsWith('Your final GitHub Actions workflow')
-          )
-          expect(trigger).toBeInTheDocument()
-
-          let blurb = screen.queryByText(/about generating coverage reports/)
-          expect(blurb).not.toBeInTheDocument()
-
-          await user.click(trigger)
-
-          blurb = await screen.findByText(/about generating coverage reports/)
-          expect(blurb).toBeInTheDocument()
-        })
-      })
-    })
-  })
-
-  describe('step two', () => {
-    it('renders header', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
-
-      const header = await screen.findByRole('heading', { name: /Step 1/ })
-      expect(header).toBeInTheDocument()
-
-      const repositorySecretLink = await screen.findByRole('link', {
-        name: /repository secret/,
-      })
-      expect(repositorySecretLink).toBeInTheDocument()
-      expect(repositorySecretLink).toHaveAttribute(
-        'href',
-        'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
-      )
-    })
-
-    it('renders body', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
-
-      const body = await screen.findByText(
-        /Admin required to access repo configuration > secrets and variable > actions/
-      )
-      expect(body).toBeInTheDocument()
-    })
-
-    it('renders token key box', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
-
-      const tokenKey = await screen.findByTestId('token-key')
-      expect(tokenKey).toBeInTheDocument()
-    })
-
-    describe('when org upload token exists', () => {
-      it('renders global token copy', async () => {
-        setup({ hasOrgUploadToken: true })
-        render(<GitHubActions />, { wrapper })
-
-        const globalToken = await screen.findByText(/global token/)
-        expect(globalToken).toBeInTheDocument()
-      })
-
-      it('renders org token', async () => {
-        setup({ hasOrgUploadToken: true })
-        render(<GitHubActions />, { wrapper })
-
-        const tokenValue = await screen.findByText('org-token-asdf-1234')
-        expect(tokenValue).toBeInTheDocument()
-      })
-    })
-
-    describe('when org upload token does not exist', () => {
-      it('renders repo token copy', async () => {
-        setup({})
-        render(<GitHubActions />, { wrapper })
-
-        const globalToken = await screen.findByText(/repository token/)
-        expect(globalToken).toBeInTheDocument()
-      })
-
-      it('renders token box', async () => {
-        setup({})
-        render(<GitHubActions />, { wrapper })
-
-        const tokenValue = await screen.findByText('repo-token-jkl;-7890')
-        expect(tokenValue).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('step three', () => {
-    beforeEach(() => setup({}))
-    it('renders body', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const body = await screen.findByText(
-        /Once merged to your default branch,/
-      )
-      expect(body).toBeInTheDocument()
+      const yaml = await screen.findByText(/go mod download/)
+      expect(yaml).toBeInTheDocument()
     })
   })
 
@@ -472,12 +204,12 @@ describe('GitHubActions', () => {
   })
 
   describe('user copies text', () => {
-    it('stores codecov metric', async () => {
-      const { mockMetricMutationVariables } = setup({})
+    it('tracks an event', async () => {
+      setup({ hasOrgUploadToken: true })
       const user = userEvent.setup()
       render(<GitHubActions />, { wrapper })
 
-      // Expand the yaml example dropdown to make that snippet visible
+      // Need to expand the example blurb dropdown
       const trigger = await screen.findByText((content) =>
         content.startsWith('Your final GitHub Actions workflow')
       )
@@ -488,14 +220,15 @@ describe('GitHubActions', () => {
       const copyCommands = await screen.findAllByTestId(
         'clipboard-code-snippet'
       )
-      expect(copyCommands.length).toEqual(5)
+
+      expect(copyCommands.length).toEqual(6)
 
       const promises: Promise<void>[] = []
       copyCommands.forEach((copy) => promises.push(user.click(copy)))
       await Promise.all(promises)
 
       // One of the code-snippets does not have a metric associated with it
-      expect(mockMetricMutationVariables).toHaveBeenCalledTimes(4)
+      expect(eventTracker().track).toHaveBeenCalledTimes(5)
     })
   })
 })

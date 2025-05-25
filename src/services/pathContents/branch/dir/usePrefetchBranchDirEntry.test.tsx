@@ -19,20 +19,27 @@ const mockData = {
       },
       branch: {
         head: {
-          pathContents: {
-            __typename: 'PathContents',
-            results: [
+          deprecatedPathContents: {
+            __typename: 'PathContentConnection',
+            edges: [
               {
-                __typename: 'PathContentDir',
-                name: 'src',
-                path: null,
-                percentCovered: 0.0,
-                hits: 4,
-                misses: 2,
-                lines: 7,
-                partials: 1,
+                node: {
+                  __typename: 'PathContentDir',
+                  name: 'src',
+                  path: 'src',
+                  percentCovered: 0.0,
+                  hits: 4,
+                  misses: 2,
+                  lines: 7,
+                  partials: 1,
+                },
               },
             ],
+            totalCount: 1,
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: null,
+            },
           },
         },
       },
@@ -53,7 +60,7 @@ const mockDataUnknownPath = {
       },
       branch: {
         head: {
-          pathContents: {
+          deprecatedPathContents: {
             message: 'path cannot be found',
             __typename: 'UnknownPath',
           },
@@ -76,7 +83,7 @@ const mockDataMissingCoverage = {
       },
       branch: {
         head: {
-          pathContents: {
+          deprecatedPathContents: {
             message: 'files missing coverage',
             __typename: 'MissingCoverage',
           },
@@ -88,6 +95,7 @@ const mockDataMissingCoverage = {
 
 const mockDataRepositoryNotFound = {
   owner: {
+    username: null,
     repository: {
       __typename: 'NotFoundError',
       message: 'repository not found',
@@ -97,6 +105,7 @@ const mockDataRepositoryNotFound = {
 
 const mockDataOwnerNotActivated = {
   owner: {
+    username: null,
     repository: {
       __typename: 'OwnerNotActivatedError',
       message: 'owner not activated',
@@ -151,7 +160,7 @@ describe('usePrefetchBranchDirEntry', () => {
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('BranchContents', (info) => {
+      graphql.query('BranchContents', () => {
         if (isMissingCoverage) {
           return HttpResponse.json({ data: mockDataMissingCoverage })
         } else if (isUnknownPath) {
@@ -196,26 +205,26 @@ describe('usePrefetchBranchDirEntry', () => {
       ?.at(0) as Array<string>
 
     await waitFor(() =>
-      expect(queryClient?.getQueryData(queryKey)).toEqual(
-        expect.objectContaining({
-          indicationRange: {
-            upperRange: 80,
-            lowerRange: 60,
+      expect(queryClient?.getQueryData(queryKey)).toEqual({
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+        results: [
+          {
+            __typename: 'PathContentDir',
+            name: 'src',
+            path: 'src',
+            percentCovered: 0,
+            hits: 4,
+            misses: 2,
+            lines: 7,
+            partials: 1,
           },
-          results: [
-            {
-              __typename: 'PathContentDir',
-              name: 'src',
-              path: null,
-              percentCovered: 0,
-              hits: 4,
-              misses: 2,
-              lines: 7,
-              partials: 1,
-            },
-          ],
-        })
-      )
+        ],
+        pathContentsType: 'PathContentConnection',
+        __typename: undefined,
+      })
     )
   })
 
@@ -236,15 +245,15 @@ describe('usePrefetchBranchDirEntry', () => {
         ?.at(0) as Array<string>
 
       await waitFor(() =>
-        expect(queryClient?.getQueryData(queryKey)).toEqual(
-          expect.objectContaining({
-            indicationRange: {
-              upperRange: 80,
-              lowerRange: 60,
-            },
-            results: null,
-          })
-        )
+        expect(queryClient?.getQueryData(queryKey)).toEqual({
+          indicationRange: {
+            upperRange: 80,
+            lowerRange: 60,
+          },
+          results: null,
+          pathContentsType: 'MissingCoverage',
+          __typename: undefined,
+        })
       )
     })
   })
@@ -266,21 +275,21 @@ describe('usePrefetchBranchDirEntry', () => {
         ?.at(0) as Array<string>
 
       await waitFor(() =>
-        expect(queryClient?.getQueryData(queryKey)).toEqual(
-          expect.objectContaining({
-            indicationRange: {
-              upperRange: 80,
-              lowerRange: 60,
-            },
-            results: null,
-          })
-        )
+        expect(queryClient?.getQueryData(queryKey)).toEqual({
+          indicationRange: {
+            upperRange: 80,
+            lowerRange: 60,
+          },
+          results: null,
+          pathContentsType: 'UnknownPath',
+          __typename: undefined,
+        })
       )
     })
   })
 
   describe('rejecting request', () => {
-    let oldConsoleError = console.error
+    const oldConsoleError = console.error
 
     beforeEach(() => {
       console.error = () => null
@@ -309,8 +318,8 @@ describe('usePrefetchBranchDirEntry', () => {
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
-            status: 404,
-            dev: 'usePrefetchBranchDirEntry - 404 schema parsing failed',
+            status: 400,
+            dev: 'usePrefetchBranchDirEntry - Parsing Error',
           })
         )
       )
@@ -336,7 +345,7 @@ describe('usePrefetchBranchDirEntry', () => {
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
             status: 404,
-            dev: 'usePrefetchBranchDirEntry - 404 NotFoundError',
+            dev: 'usePrefetchBranchDirEntry - Not Found Error',
           })
         )
       )
@@ -362,7 +371,7 @@ describe('usePrefetchBranchDirEntry', () => {
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
           expect.objectContaining({
             status: 403,
-            dev: 'usePrefetchBranchDirEntry - 403 OwnerNotActivatedError',
+            dev: 'usePrefetchBranchDirEntry - Owner Not Activated',
           })
         )
       )

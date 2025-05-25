@@ -6,49 +6,58 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import BillingOptions from './BillingOptions'
 
-const availablePlans = [
-  {
-    marketingName: 'Basic',
-    value: 'users-basic',
-    billingRate: null,
-    baseUnitPrice: 0,
-    benefits: [
-      'Up to 5 users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-    ],
-    monthlyUploadLimit: 250,
-  },
-  {
-    baseUnitPrice: 5,
-    benefits: ['Up to 10 users'],
-    billingRate: 'monthly',
-    marketingName: 'Team',
-    monthlyUploadLimit: 2500,
-    value: 'users-teamm',
-  },
-  {
-    baseUnitPrice: 4,
-    benefits: ['Up to 10 users'],
-    billingRate: 'annually',
-    marketingName: 'Team',
-    monthlyUploadLimit: 2500,
-    value: 'users-teamy',
-  },
-]
+const freePlan = {
+  marketingName: 'Basic',
+  value: Plans.USERS_DEVELOPER,
+  billingRate: null,
+  baseUnitPrice: 0,
+  benefits: [
+    'Up to 5 users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+  ],
+  monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
+}
+
+const teamPlanMonthly = {
+  baseUnitPrice: 5,
+  benefits: ['Up to 10 users'],
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Team',
+  monthlyUploadLimit: 2500,
+  value: Plans.USERS_TEAMM,
+  isTeamPlan: true,
+  isSentryPlan: false,
+}
+
+const teamPlanYearly = {
+  baseUnitPrice: 4,
+  benefits: ['Up to 10 users'],
+  billingRate: BillingRate.ANNUALLY,
+  marketingName: 'Team',
+  monthlyUploadLimit: 2500,
+  value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
+  isSentryPlan: false,
+}
+
+const availablePlans = [freePlan, teamPlanMonthly, teamPlanYearly]
 
 const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Team',
   monthlyUploadLimit: 250,
-  value: 'test-plan',
+  value: Plans.USERS_TEAMM,
+  isEnterprisePlan: false,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -56,6 +65,11 @@ const mockPlanDataResponse = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: true,
+  isTrialPlan: false,
 }
 
 const server = setupServer()
@@ -87,12 +101,12 @@ afterAll(() => {
 describe('BillingOptions', () => {
   function setup() {
     server.use(
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: { owner: { availablePlans } },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: { hasPrivateRepos: true, plan: mockPlanDataResponse },
@@ -114,7 +128,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_TEAMY}
+            newPlan={teamPlanYearly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -124,7 +138,7 @@ describe('BillingOptions', () => {
 
         const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).toHaveClass('bg-ds-primary-base')
+        await waitFor(() => expect(annualBtn).toHaveClass('bg-ds-primary-base'))
 
         const monthlyBtn = await screen.findByRole('button', {
           name: 'Monthly',
@@ -138,7 +152,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_TEAMY}
+            newPlan={teamPlanYearly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -161,7 +175,7 @@ describe('BillingOptions', () => {
 
           render(
             <BillingOptions
-              newPlan={Plans.USERS_TEAMY}
+              newPlan={teamPlanYearly}
               setFormValue={mockSetFormValue}
             />,
             {
@@ -178,7 +192,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              Plans.USERS_TEAMM
+              teamPlanMonthly
             )
           )
         })
@@ -191,7 +205,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_TEAMM}
+            newPlan={teamPlanMonthly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -215,7 +229,7 @@ describe('BillingOptions', () => {
 
         render(
           <BillingOptions
-            newPlan={Plans.USERS_TEAMM}
+            newPlan={teamPlanMonthly}
             setFormValue={mockSetFormValue}
           />,
           {
@@ -238,7 +252,7 @@ describe('BillingOptions', () => {
 
           render(
             <BillingOptions
-              newPlan={Plans.USERS_TEAMM}
+              newPlan={teamPlanMonthly}
               setFormValue={mockSetFormValue}
             />,
             {
@@ -255,7 +269,7 @@ describe('BillingOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              Plans.USERS_TEAMY
+              teamPlanYearly
             )
           )
         })

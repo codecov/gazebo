@@ -1,10 +1,18 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+} from '@tanstack/react-queryV5'
+import { render, screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import AdminLink from './AdminLink'
+
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper: ({
   initialEntries,
@@ -13,27 +21,23 @@ const wrapper: ({
 }) => React.FC<React.PropsWithChildren> =
   ({ initialEntries = '/gh' }) =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProviderV5 client={queryClientV5}>
       <MemoryRouter initialEntries={[initialEntries]}>
         <Route path="/:provider" exact>
-          {children}
+          <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
         </Route>
       </MemoryRouter>
-    </QueryClientProvider>
+    </QueryClientProviderV5>
   )
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
 
 const server = setupServer()
 beforeAll(() => {
   server.listen()
 })
 
-beforeEach(() => {
+afterEach(() => {
+  queryClientV5.clear()
   server.resetHandlers()
-  queryClient.clear()
 })
 
 afterAll(() => {
@@ -43,7 +47,7 @@ afterAll(() => {
 describe('AdminLink', () => {
   function setup(data = {}) {
     server.use(
-      http.get('/internal/users/current', (info) => {
+      http.get('/internal/users/current', () => {
         return HttpResponse.json(data)
       })
     )
@@ -69,7 +73,7 @@ describe('AdminLink', () => {
   })
 
   describe('user is not an admin', () => {
-    it('renders nothing', () => {
+    it('renders nothing', async () => {
       setup({
         activated: false,
         email: 'codecov@codecov.io',
@@ -80,7 +84,7 @@ describe('AdminLink', () => {
       })
 
       const { container } = render(<AdminLink />, { wrapper: wrapper({}) })
-      expect(container).toBeEmptyDOMElement()
+      await waitFor(() => expect(container).toBeEmptyDOMElement())
     })
   })
 })

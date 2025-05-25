@@ -1,7 +1,8 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient as useQueryClientV5 } from '@tanstack/react-queryV5'
 import without from 'lodash/without'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
+import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
 import { UploadTypeEnum } from 'shared/utils/commit'
 import { formatTimeToNow } from 'shared/utils/dates'
 import { Upload } from 'shared/utils/extractUploads'
@@ -14,6 +15,8 @@ import UploadReference from './UploadReference'
 
 interface UploadProps {
   upload: Upload
+  isSelected?: boolean
+  onSelectChange?: (isSelected: boolean) => void
 }
 
 const UploadItem = ({
@@ -29,10 +32,14 @@ const UploadItem = ({
     name,
     id,
   },
+  isSelected,
+  onSelectChange = () => {},
 }: UploadProps) => {
   const [checked, setChecked] = useState(true)
-  const queryClient = useQueryClient()
+  const queryClientV5 = useQueryClientV5()
   const isCarriedForward = uploadType === UploadTypeEnum.CARRIED_FORWARD
+
+  useEffect(() => setChecked(isSelected ?? true), [isSelected])
 
   return (
     <div className="flex flex-col gap-1 border-r border-ds-gray-secondary px-4 py-2">
@@ -42,15 +49,18 @@ const UploadItem = ({
             checked={checked}
             data-marketing="toggle-upload-hit-count"
             onClick={() => {
+              onSelectChange(!checked)
+              setChecked(!checked)
+
               if (checked && id != null) {
                 // User is unchecking
-                queryClient.setQueryData(
-                  ['IgnoredUploadIds'],
+                queryClientV5.setQueryData(
+                  IgnoredIdsQueryOptions().queryKey,
                   (oldData?: number[]) => [...(oldData ?? []), id]
                 )
               } else if (id != null) {
-                queryClient.setQueryData(
-                  ['IgnoredUploadIds'],
+                queryClientV5.setQueryData(
+                  IgnoredIdsQueryOptions().queryKey,
                   (oldData?: number[]) => without(oldData, id)
                 )
               }
@@ -58,7 +68,6 @@ const UploadItem = ({
               setChecked(!checked)
             }}
           />
-
           <UploadReference ciUrl={ciUrl} name={name} buildCode={buildCode} />
         </div>
         {createdAt && (
@@ -81,7 +90,7 @@ const UploadItem = ({
             <span className="text-xs text-ds-gray-quinary">carry-forward</span>
           )}
         </div>
-        {/* @ts-expect-error */}
+        {/* @ts-expect-error - A hasn't been typed yet */}
         <A href={downloadUrl} hook="download report" download isExternal>
           Download
         </A>

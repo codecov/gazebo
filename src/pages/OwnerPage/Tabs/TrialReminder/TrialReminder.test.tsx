@@ -7,8 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import TrialReminder from './TrialReminder'
 
@@ -28,10 +28,10 @@ const queryClient = new QueryClient({
 const mockResponse = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
   monthlyUploadLimit: 250,
-  value: 'users-basic',
+  value: Plans.USERS_DEVELOPER,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -39,6 +39,10 @@ const mockResponse = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isSentryPlan: false,
+  isProPlan: false,
+  isTrialPlan: false,
 }
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -79,7 +83,7 @@ interface SetupArgs {
 
 describe('TrialReminder', () => {
   function setup({
-    planValue = Plans.USERS_BASIC,
+    planValue = Plans.USERS_DEVELOPER,
     trialStatus = TrialStatuses.CANNOT_TRIAL,
     trialStartDate = '2023-01-01T08:55:25',
     trialEndDate = '2023-01-01T08:55:25',
@@ -90,7 +94,7 @@ describe('TrialReminder', () => {
     mockedConfig.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -101,12 +105,16 @@ describe('TrialReminder', () => {
                 trialStartDate,
                 trialEndDate,
                 value: planValue,
+                isFreePlan: planValue === Plans.USERS_DEVELOPER,
+                isTeamPlan:
+                  planValue === Plans.USERS_TEAMM ||
+                  planValue === Plans.USERS_TEAMY,
               },
             },
           },
         })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
           data: { owner: { isCurrentUserPartOfOrg: userPartOfOrg } },
         })
@@ -127,7 +135,7 @@ describe('TrialReminder', () => {
       describe('user is part of org', () => {
         it('displays trial upgrade link', async () => {
           setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             trialStatus: TrialStatuses.NOT_STARTED,
             trialStartDate: undefined,
             trialEndDate: undefined,
@@ -148,7 +156,7 @@ describe('TrialReminder', () => {
       describe('user is not part of org', () => {
         it('does not display trial upgrade link', async () => {
           setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             trialStatus: TrialStatuses.NOT_STARTED,
             trialStartDate: undefined,
             trialEndDate: undefined,
@@ -248,7 +256,7 @@ describe('TrialReminder', () => {
 
       it('does not display the trial upgrade link', async () => {
         setup({
-          planValue: Plans.USERS_BASIC,
+          planValue: Plans.USERS_DEVELOPER,
           trialStatus: TrialStatuses.ONGOING,
           trialStartDate: '2023-01-01T08:55:25',
           trialEndDate: '2023-01-02T08:55:25',
@@ -277,7 +285,7 @@ describe('TrialReminder', () => {
       describe('user is part of the org', () => {
         it('displays the upgrade link', async () => {
           setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             trialStatus: TrialStatuses.EXPIRED,
             trialStartDate: '2023-01-01T08:55:25',
             trialEndDate: '2023-01-02T08:55:25',
@@ -297,7 +305,7 @@ describe('TrialReminder', () => {
       describe('user is not part of org', () => {
         it('does not display trial upgrade link', async () => {
           setup({
-            planValue: Plans.USERS_BASIC,
+            planValue: Plans.USERS_DEVELOPER,
             trialStatus: TrialStatuses.EXPIRED,
             trialStartDate: '2023-01-01T08:55:25',
             trialEndDate: '2023-01-02T08:55:25',
@@ -391,7 +399,7 @@ describe('TrialReminder', () => {
 
     it('returns nothing', async () => {
       setup({
-        planValue: Plans.USERS_BASIC,
+        planValue: Plans.USERS_DEVELOPER,
         trialStartDate: null,
         trialEndDate: null,
       })
@@ -416,7 +424,7 @@ describe('TrialReminder', () => {
 
     it('renders nothing', async () => {
       setup({
-        planValue: Plans.USERS_BASIC,
+        planValue: Plans.USERS_DEVELOPER,
         trialStatus: TrialStatuses.NOT_STARTED,
         trialStartDate: undefined,
         trialEndDate: undefined,

@@ -6,8 +6,9 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { IndividualPlan } from 'services/account/useAvailablePlans'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import ProPlanController from './ProPlanController'
 
@@ -16,8 +17,8 @@ const mocks = vi.hoisted(() => ({
 }))
 
 vi.mock('@stripe/react-stripe-js')
-vi.mock('services/toastNotification', async () => {
-  const actual = await vi.importActual('services/toastNotification')
+vi.mock('services/toastNotification/context', async () => {
+  const actual = await vi.importActual('services/toastNotification/context')
   return {
     ...actual,
     useAddNotification: mocks.useAddNotification,
@@ -26,7 +27,7 @@ vi.mock('services/toastNotification', async () => {
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: 'users-basic',
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -35,12 +36,14 @@ const basicPlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanMonth = {
   marketingName: 'Pro',
   value: Plans.USERS_PR_INAPPM,
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 12,
   benefits: [
     'Configurable # of users',
@@ -50,12 +53,14 @@ const proPlanMonth = {
   ],
   quantity: 10,
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const proPlanYear = {
   marketingName: 'Pro',
   value: Plans.USERS_PR_INAPPY,
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   baseUnitPrice: 10,
   benefits: [
     'Configurable # of users',
@@ -65,15 +70,19 @@ const proPlanYear = {
   ],
   monthlyUploadLimit: null,
   quantity: 13,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const trialPlan = {
   marketingName: 'Pro Trial Team',
-  value: 'users-trial',
+  value: Plans.USERS_TRIAL,
   billingRate: null,
   baseUnitPrice: 12,
   benefits: ['Configurable # of users', 'Unlimited repos'],
   monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const mockAccountDetailsBasic = {
@@ -117,10 +126,10 @@ const mockAccountDetailsTrial = {
 const mockPlanDataResponseMonthly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: 'test-plan',
+  value: Plans.USERS_PR_INAPPM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -128,15 +137,21 @@ const mockPlanDataResponseMonthly = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isProPlan: true,
+  isFreePlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const mockPlanDataResponseYearly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'yearly',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  value: 'test-plan',
+  value: Plans.USERS_PR_INAPPY,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -144,6 +159,12 @@ const mockPlanDataResponseYearly = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isProPlan: true,
+  isFreePlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -184,15 +205,15 @@ const wrapper: WrapperClosure =
   )
 
 interface SetupArgs {
-  planValue: string
+  planValue: IndividualPlan
   errorDetails?: string
   monthlyPlan?: boolean
 }
 
 describe('ProPlanController', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC, monthlyPlan = true }: SetupArgs = {
-      planValue: Plans.USERS_BASIC,
+    { planValue = basicPlan, monthlyPlan = true }: SetupArgs = {
+      planValue: basicPlan,
       monthlyPlan: true,
     }
   ) {
@@ -202,21 +223,21 @@ describe('ProPlanController', () => {
     mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, (info) => {
-        if (planValue === Plans.USERS_BASIC) {
+      http.get(`/internal/gh/codecov/account-details/`, () => {
+        if (planValue.value === Plans.USERS_DEVELOPER) {
           return HttpResponse.json(mockAccountDetailsBasic)
-        } else if (planValue === Plans.USERS_PR_INAPPM) {
+        } else if (planValue.value === Plans.USERS_PR_INAPPM) {
           return HttpResponse.json(mockAccountDetailsProMonthly)
-        } else if (planValue === Plans.USERS_PR_INAPPY) {
+        } else if (planValue.value === Plans.USERS_PR_INAPPY) {
           return HttpResponse.json(mockAccountDetailsProYearly)
-        } else if (planValue === Plans.USERS_TRIAL) {
+        } else if (planValue.value === Plans.USERS_TRIAL) {
           return HttpResponse.json(mockAccountDetailsTrial)
         }
       }),
-      http.patch('/internal/gh/codecov/account-details/', async (info) => {
+      http.patch('/internal/gh/codecov/account-details/', async () => {
         return HttpResponse.json({ success: false })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -225,7 +246,7 @@ describe('ProPlanController', () => {
           },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         const planResponse = monthlyPlan
           ? mockPlanDataResponseMonthly
           : mockPlanDataResponseYearly
@@ -249,12 +270,12 @@ describe('ProPlanController', () => {
       const props = {
         setFormValue: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_PR_INAPPM,
+        newPlan: proPlanMonth,
         seats: 10,
         errors: { seats: { message: '' } },
       }
       it('renders monthly option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
@@ -262,7 +283,7 @@ describe('ProPlanController', () => {
       })
 
       it('renders annual option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -270,7 +291,7 @@ describe('ProPlanController', () => {
       })
 
       it('renders monthly option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
@@ -279,7 +300,7 @@ describe('ProPlanController', () => {
       })
 
       it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
+        setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$120/)
@@ -291,13 +312,13 @@ describe('ProPlanController', () => {
       const props = {
         setFormValue: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_PR_INAPPY,
+        newPlan: proPlanYear,
         seats: 13,
         errors: { seats: { message: '' } },
       }
 
       it('renders monthly option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
+        setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
@@ -305,7 +326,7 @@ describe('ProPlanController', () => {
       })
 
       it('renders annual option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
+        setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -313,7 +334,7 @@ describe('ProPlanController', () => {
       })
 
       it('renders annual option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
+        setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -322,7 +343,7 @@ describe('ProPlanController', () => {
       })
 
       it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
+        setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$130/)

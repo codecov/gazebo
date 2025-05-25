@@ -1,19 +1,21 @@
-import { lazy, Suspense } from 'react'
+import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
+import { Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { CachedBundleContentBanner } from 'shared/CachedBundleContentBanner/CachedBundleContentBanner'
 import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import { ReportUploadType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
 
 import BundleMessage from './BundleMessage'
+import CommitBundleAnalysisTable from './CommitBundleAnalysisTable'
 import EmptyTable from './EmptyTable'
 import FirstPullBanner from './FirstPullBanner'
 
-import { TBundleAnalysisComparisonResult, useCommitPageData } from '../hooks'
-
-const CommitBundleAnalysisTable = lazy(
-  () => import('./CommitBundleAnalysisTable')
-)
+import {
+  CommitPageDataQueryOpts,
+  TBundleAnalysisComparisonResult,
+} from '../queries/CommitPageDataQueryOpts'
 
 interface URLParams {
   provider: string
@@ -30,9 +32,13 @@ const Loader = () => (
 
 interface BundleContentProps {
   bundleCompareType?: TBundleAnalysisComparisonResult
+  hasCachedBundle: boolean
 }
 
-const BundleContent: React.FC<BundleContentProps> = ({ bundleCompareType }) => {
+const BundleContent: React.FC<BundleContentProps> = ({
+  bundleCompareType,
+  hasCachedBundle,
+}) => {
   if (bundleCompareType === 'FirstPullRequest') {
     return (
       <>
@@ -55,30 +61,49 @@ const BundleContent: React.FC<BundleContentProps> = ({ bundleCompareType }) => {
   }
 
   return (
-    <Suspense fallback={<Loader />}>
-      <CommitBundleAnalysisTable />
-    </Suspense>
+    <>
+      {hasCachedBundle ? <CachedBundleContentBanner /> : null}
+      <Suspense fallback={<Loader />}>
+        <CommitBundleAnalysisTable />
+      </Suspense>
+    </>
   )
 }
 
 const CommitBundleAnalysis: React.FC = () => {
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
-  const { data: commitPageData } = useCommitPageData({
-    provider,
-    owner,
-    repo,
-    commitId: commitSha,
-  })
+  const { data: commitPageData } = useSuspenseQueryV5(
+    CommitPageDataQueryOpts({
+      provider,
+      owner,
+      repo,
+      commitId: commitSha,
+    })
+  )
 
   const bundleCompareType =
     commitPageData?.commit?.bundleAnalysis?.bundleAnalysisCompareWithParent
       ?.__typename
 
+  let hasCachedBundle = false
+  if (
+    commitPageData?.commit?.bundleAnalysis?.bundleAnalysisReport?.__typename ===
+    'BundleAnalysisReport'
+  ) {
+    hasCachedBundle =
+      commitPageData?.commit?.bundleAnalysis?.bundleAnalysisReport?.isCached
+  }
+
   if (
     commitPageData?.coverageEnabled &&
     commitPageData?.bundleAnalysisEnabled
   ) {
-    return <BundleContent bundleCompareType={bundleCompareType} />
+    return (
+      <BundleContent
+        bundleCompareType={bundleCompareType}
+        hasCachedBundle={hasCachedBundle}
+      />
+    )
   }
 
   return (
@@ -86,7 +111,10 @@ const CommitBundleAnalysis: React.FC = () => {
       <p className="flex w-full items-center gap-2 bg-ds-gray-primary px-2 py-4 text-base">
         <BundleMessage />
       </p>
-      <BundleContent bundleCompareType={bundleCompareType} />
+      <BundleContent
+        bundleCompareType={bundleCompareType}
+        hasCachedBundle={hasCachedBundle}
+      />
     </>
   )
 }

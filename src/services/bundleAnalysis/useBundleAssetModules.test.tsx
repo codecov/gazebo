@@ -1,10 +1,18 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  QueryClientProvider as QueryClientProviderV5,
+  QueryClient as QueryClientV5,
+  useQuery as useQueryV5,
+} from '@tanstack/react-queryV5'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { type MockInstance } from 'vitest'
 
-import { useBundleAssetModules } from './useBundleAssetModules'
+import {
+  BundleAssetModulesQueryOpts,
+  useBundleAssetModules,
+} from './useBundleAssetModules'
 
 const mockBundleAssetModules = {
   owner: {
@@ -84,16 +92,14 @@ const mockOwnerNotActivated = {
 }
 
 const server = setupServer()
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+const queryClientV5 = new QueryClientV5({
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProviderV5 client={queryClientV5}>
+    <Suspense fallback={<div>Loading</div>}>{children}</Suspense>
+  </QueryClientProviderV5>
 )
 
 beforeAll(() => {
@@ -102,7 +108,7 @@ beforeAll(() => {
 
 afterEach(() => {
   vi.resetAllMocks()
-  queryClient.clear()
+  queryClientV5.clear()
   server.resetHandlers()
 })
 
@@ -237,14 +243,16 @@ describe('useBranchBundleSummary', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useBundleAssetModules({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'bundle1',
-            asset: 'asset1',
-          }),
+          useQueryV5(
+            BundleAssetModulesQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'bundle1',
+              asset: 'asset1',
+            })
+          ),
         { wrapper }
       )
 
@@ -274,14 +282,16 @@ describe('useBranchBundleSummary', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useBundleAssetModules({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'bundle1',
-            asset: 'asset1',
-          }),
+          useQueryV5(
+            BundleAssetModulesQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'bundle1',
+              asset: 'asset1',
+            })
+          ),
         { wrapper }
       )
 
@@ -311,14 +321,16 @@ describe('useBranchBundleSummary', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useBundleAssetModules({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'main',
-            bundle: 'bundle1',
-            asset: 'asset1',
-          }),
+          useQueryV5(
+            BundleAssetModulesQueryOpts({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'codecov',
+              branch: 'main',
+              bundle: 'bundle1',
+              asset: 'asset1',
+            })
+          ),
         { wrapper }
       )
 
@@ -326,7 +338,8 @@ describe('useBranchBundleSummary', () => {
       await waitFor(() =>
         expect(result.current.error).toEqual(
           expect.objectContaining({
-            status: 404,
+            dev: 'BundleAssetModulesQueryOpts - Parsing Error',
+            status: 400,
           })
         )
       )

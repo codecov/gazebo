@@ -34,19 +34,12 @@ afterAll(() => {
 
 const mockImpactedFiles = [
   {
-    isCriticalFile: true,
     missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
-    baseCoverage: {
-      percentCovered: 45.38,
-    },
-    headCoverage: {
-      percentCovered: 90.23,
-    },
-    patchCoverage: {
-      percentCovered: 27.43,
-    },
+    baseCoverage: { percentCovered: 45.38 },
+    headCoverage: { percentCovered: 90.23 },
+    patchCoverage: { percentCovered: 27.43 },
     changeCoverage: 41,
   },
 ]
@@ -78,15 +71,9 @@ const pull = {
           state: 'complete',
           __typename: 'Comparison',
           flagComparisons: [],
-          patchTotals: {
-            percentCovered: 92.12,
-          },
-          baseTotals: {
-            percentCovered: 98.25,
-          },
-          headTotals: {
-            percentCovered: 78.33,
-          },
+          patchTotals: { percentCovered: 92.12 },
+          baseTotals: { percentCovered: 98.25 },
+          headTotals: { percentCovered: 78.33 },
           impactedFiles: {
             __typename: 'ImpactedFiles',
             results: mockImpactedFiles,
@@ -106,25 +93,15 @@ const pull = {
             'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
           state: 'complete',
           commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-          coverageAnalytics: {
-            totals: {
-              percentCovered: 78.33,
-            },
-          },
-          uploads: {
-            totalCount: 4,
-            edges: [],
-          },
+          coverageAnalytics: { totals: { percentCovered: 78.33 } },
+          uploads: { totalCount: 4, edges: [] },
         },
         updatestamp: '2024-01-12T12:56:18.912860',
         behindBy: 82367894,
         behindByCommit: '1798hvs8ofhn',
         comparedTo: {
           commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
-          uploads: {
-            totalCount: 1,
-            edges: [],
-          },
+          uploads: { totalCount: 1, edges: [] },
         },
       },
     },
@@ -138,21 +115,18 @@ const repo = 'gazebo'
 describe('usePull', () => {
   afterEach(() => queryClient.clear())
 
-  function setup(data: {}) {
+  function setup(data: object) {
     server.use(
-      graphql.query('Pull', (info) => {
+      graphql.query('Pull', () => {
         return HttpResponse.json({ data })
       })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup(pull)
-    })
-
     describe('when data is loaded', () => {
       it('returns the data', async () => {
+        setup(pull)
         const { result } = renderHook(
           () => usePull({ provider, owner, repo, pullId: '2510' }),
           { wrapper }
@@ -182,9 +156,7 @@ describe('usePull', () => {
                 branchName:
                   'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
                 commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-                coverageAnalytics: {
-                  totals: { percentCovered: 78.33 },
-                },
+                coverageAnalytics: { totals: { percentCovered: 78.33 } },
                 uploads: { totalCount: 4, edges: [] },
               },
               commits: {
@@ -210,7 +182,6 @@ describe('usePull', () => {
                   __typename: 'ImpactedFiles',
                   results: [
                     {
-                      isCriticalFile: true,
                       missesCount: 3,
                       fileName: 'mafs.js',
                       headName: 'flag1/mafs.js',
@@ -263,8 +234,8 @@ describe('usePull', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'usePull - Owner Not Activated',
               status: 403,
-              dev: 'usePull - 403 owner not activated',
             })
           )
         )
@@ -303,8 +274,8 @@ describe('usePull', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
+              dev: 'usePull - Not Found Error',
               status: 404,
-              dev: 'usePull - 404 not found',
             })
           )
         )
@@ -395,8 +366,8 @@ describe('usePull', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
-              dev: 'usePull - 404 failed to parse',
+              dev: 'usePull - Parsing Error',
+              status: 400,
             })
           )
         )

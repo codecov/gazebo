@@ -1,17 +1,17 @@
+import { useQuery as useQueryV5 } from '@tanstack/react-queryV5'
 import { Fragment, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
-import { useIgnoredIds } from 'pages/CommitDetailPage/hooks/useIgnoredIds'
+import { IgnoredIdsQueryOptions } from 'pages/CommitDetailPage/queries/IgnoredIdsQueryOptions'
 import {
   ImpactedFileType,
   useComparisonForCommitAndParent,
 } from 'services/comparison/useComparisonForCommitAndParent'
 import { transformImpactedFileToDiff } from 'services/comparison/utils'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
-import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import {
   CoverageValue,
   LineData,
@@ -68,7 +68,7 @@ function DiffRenderer({
   const { commitFileDiff } = useNavLinks()
   const { provider, owner, repo, commit } = useParams<URLParams>()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { data: ignoredUploadIds } = useIgnoredIds()
+  const { data: ignoredUploadIds } = useQueryV5(IgnoredIdsQueryOptions())
 
   const fileDiff = useMemo(() => {
     const transformedData = transformImpactedFileToDiff(impactedFile)
@@ -88,7 +88,6 @@ function DiffRenderer({
 
   return (
     <>
-      {fileDiff?.isCriticalFile && <CriticalFileLabel variant="borderTop" />}
       {fileDiff?.segments?.map((segment, segmentIndex) => {
         return (
           <Fragment key={`${fileDiff?.headName}-${segmentIndex}`}>
@@ -123,6 +122,8 @@ function DiffRenderer({
 }
 
 function ErrorDisplayMessage() {
+  const location = useLocation()
+
   return (
     <p className="border border-solid border-ds-gray-tertiary p-4">
       There was a problem getting the source code from your provider. Unable to
@@ -133,6 +134,7 @@ function ErrorDisplayMessage() {
         <A
           to={{
             pageName: 'login',
+            options: { to: location.pathname },
           }}
           hook={undefined}
           isExternal={undefined}
@@ -140,6 +142,37 @@ function ErrorDisplayMessage() {
           logging in
         </A>{' '}
         again to refresh your credentials.
+      </span>
+    </p>
+  )
+}
+
+function UnknownPathErrorDisplayMessage({ path }: { path: string }) {
+  const location = useLocation()
+
+  return (
+    <p className="border border-solid border-ds-gray-tertiary p-4">
+      There was a problem getting the source code from your provider by path
+      for: <strong>{path}</strong>. Unable to show line by line coverage.
+      <br />
+      <span>
+        If you continue to experience this issue, please try{' '}
+        <A
+          to={{ pageName: 'login', options: { to: location.pathname } }}
+          hook={undefined}
+          isExternal={undefined}
+        >
+          logging in
+        </A>{' '}
+        again to refresh your credentials. Otherwise, please visit our{' '}
+        <A
+          to={{ pageName: 'pathFixing', options: { to: location.pathname } }}
+          hook={undefined}
+          isExternal={undefined}
+        >
+          Path Fixing
+        </A>{' '}
+        documentation for troubleshooting tips.
       </span>
     </p>
   )
@@ -169,11 +202,28 @@ function CommitFileDiff({ path }: CommitFileDiffProps) {
     opts: { enabled: !!path },
   })
 
-  if (!comparisonData || !comparisonData?.impactedFile || !path) {
+  const segments = comparisonData?.impactedFile?.segments
+
+  if (
+    !comparisonData ||
+    !comparisonData?.impactedFile ||
+    !path ||
+    !segments ||
+    segments?.__typename === 'ProviderError'
+  ) {
     return <ErrorDisplayMessage />
   }
 
-  return <DiffRenderer impactedFile={comparisonData.impactedFile} path={path} />
+  if (segments?.__typename === 'UnknownPath') {
+    return <UnknownPathErrorDisplayMessage path={path} />
+  }
+
+  const impactedFileWithSegments = {
+    ...comparisonData.impactedFile,
+    segments,
+  }
+
+  return <DiffRenderer impactedFile={impactedFileWithSegments} path={path} />
 }
 
 export default CommitFileDiff

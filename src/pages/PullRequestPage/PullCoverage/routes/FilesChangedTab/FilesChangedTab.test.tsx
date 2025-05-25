@@ -4,8 +4,6 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-
 import FilesChangedTab from './FilesChangedTab'
 
 vi.mock('./FilesChanged', () => ({ default: () => 'FilesChanged' }))
@@ -15,22 +13,6 @@ vi.mock('./FilesChanged/TableTeam', () => ({
 vi.mock('../ComponentsSelector', () => ({
   default: () => 'ComponentsSelector',
 }))
-
-const mockTeamTier = {
-  owner: {
-    plan: {
-      tierName: TierNames.TEAM,
-    },
-  },
-}
-
-const mockProTier = {
-  owner: {
-    plan: {
-      tierName: TierNames.PRO,
-    },
-  },
-}
 
 const mockCompareData = {
   owner: {
@@ -50,7 +32,7 @@ const mockCompareData = {
               {
                 headName: 'src/App.tsx',
                 missesCount: 0,
-                isCriticalFile: false,
+
                 patchCoverage: { coverage: 100 },
               },
             ],
@@ -102,24 +84,20 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  planValue: (typeof TierNames)[keyof typeof TierNames]
+  isTeamPlan: boolean
   privateRepo: boolean
 }
 
 describe('FilesChangedTab', () => {
-  function setup({ planValue, privateRepo }: SetupArgs) {
+  function setup({ isTeamPlan, privateRepo }: SetupArgs) {
     server.use(
-      graphql.query('OwnerTier', (info) => {
-        if (planValue === TierNames.TEAM) {
-          return HttpResponse.json({ data: mockTeamTier })
-        }
-
-        return HttpResponse.json({ data: mockProTier })
+      graphql.query('IsTeamPlan', () => {
+        return HttpResponse.json({ data: { owner: { plan: { isTeamPlan } } } })
       }),
-      graphql.query('GetPullTeam', (info) => {
+      graphql.query('GetPullTeam', () => {
         return HttpResponse.json({ data: mockCompareData })
       }),
-      graphql.query('GetRepoSettingsTeam', (info) => {
+      graphql.query('GetRepoSettingsTeam', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -140,20 +118,20 @@ describe('FilesChangedTab', () => {
           },
         })
       }),
-      graphql.query('GetRepoOverview', (info) => {
+      graphql.query('GetRepoOverview', () => {
         return HttpResponse.json({ data: mockOverview })
       })
     )
   }
 
   describe.each`
-    planValue          | privateRepo
-    ${TierNames.BASIC} | ${true}
-    ${TierNames.BASIC} | ${false}
-    ${TierNames.TEAM}  | ${false}
-  `('renders the full files changed table', ({ planValue, privateRepo }) => {
-    it(`planValue: ${planValue}, privateRepo: ${privateRepo}`, async () => {
-      setup({ planValue, privateRepo })
+    isTeamPlan | privateRepo
+    ${false}   | ${true}
+    ${false}   | ${false}
+    ${true}    | ${false}
+  `('renders the full files changed table', ({ isTeamPlan, privateRepo }) => {
+    it(`isTeamPlan: ${isTeamPlan}, privateRepo: ${privateRepo}`, async () => {
+      setup({ isTeamPlan, privateRepo })
       render(<FilesChangedTab />, { wrapper })
 
       const table = await screen.findByText('FilesChanged')
@@ -162,11 +140,11 @@ describe('FilesChangedTab', () => {
   })
 
   describe.each`
-    planValue         | privateRepo
-    ${TierNames.TEAM} | ${true}
-  `('renders the team files changed table', ({ planValue, privateRepo }) => {
-    it(`planValue: ${planValue}, privateRepo: ${privateRepo}`, async () => {
-      setup({ planValue, privateRepo })
+    isTeamPlan | privateRepo
+    ${true}    | ${true}
+  `('renders the team files changed table', ({ isTeamPlan, privateRepo }) => {
+    it(`isTeamPlan: ${isTeamPlan}, privateRepo: ${privateRepo}`, async () => {
+      setup({ isTeamPlan, privateRepo })
       render(<FilesChangedTab />, { wrapper })
 
       const table = await screen.findByText('TeamFilesChanged')
@@ -177,7 +155,7 @@ describe('FilesChangedTab', () => {
   describe('when impacted files is rendered', () => {
     it('renders ComponentsSelector', async () => {
       setup({
-        planValue: TierNames.BASIC,
+        isTeamPlan: false,
         privateRepo: true,
       })
       render(<FilesChangedTab />, { wrapper })

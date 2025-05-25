@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { ALL_BRANCHES } from 'services/navigation'
+import { ALL_BRANCHES } from 'services/navigation/useNavLinks'
 import { useRepo, useRepoOverview } from 'services/repo'
 import Badge from 'ui/Badge'
 import TabNavigation from 'ui/TabNavigation'

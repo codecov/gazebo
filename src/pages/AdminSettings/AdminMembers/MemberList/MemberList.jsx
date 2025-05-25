@@ -1,11 +1,11 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
 
-const MemberTable = lazy(() => import('./MemberTable'))
+import MemberTable from './MemberTable'
 
 const ActivationStates = Object.freeze({
   ALL_USERS: { value: 'All Users' },

@@ -29,7 +29,6 @@ const wrapper = ({ children }) => (
 
 const mockImpactedFiles = [
   {
-    isCriticalFile: true,
     missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
@@ -173,7 +172,7 @@ afterAll(() => server.close())
 describe('IndirectChangesTab', () => {
   function setup({ overrideComparison, headState } = {}) {
     server.use(
-      graphql.query('Pull', (info) => {
+      graphql.query('Pull', () => {
         return HttpResponse.json({
           data: mockPull({ overrideComparison, headState }),
         })

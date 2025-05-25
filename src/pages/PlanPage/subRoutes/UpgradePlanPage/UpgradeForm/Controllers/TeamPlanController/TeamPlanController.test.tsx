@@ -6,8 +6,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
-import { Plans } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 import { UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE } from 'shared/utils/upgradeForm'
 
 import TeamPlanController from './TeamPlanController'
@@ -16,8 +16,8 @@ const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
 }))
 
-vi.mock('services/toastNotification', async () => {
-  const actual = await vi.importActual('services/toastNotification')
+vi.mock('services/toastNotification/context', async () => {
+  const actual = await vi.importActual('services/toastNotification/context')
   return {
     ...actual,
     useAddNotification: mocks.useAddNotification,
@@ -28,7 +28,7 @@ vi.mock('@stripe/react-stripe-js')
 
 const basicPlan = {
   marketingName: 'Basic',
-  value: 'users-basic',
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -37,36 +37,42 @@ const basicPlan = {
     'Unlimited private repositories',
   ],
   monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const teamPlanMonth = {
   baseUnitPrice: 5,
   benefits: ['Up to 10 users'],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamm',
+  value: Plans.USERS_TEAMM,
   quantity: 10,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const teamPlanYear = {
   baseUnitPrice: 4,
   benefits: ['Up to 10 users'],
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
-  value: 'users-teamy',
-  quantity: 5,
+  value: Plans.USERS_TEAMY,
+  isTeamPlan: true,
+  isSentryPlan: false,
 }
 
 const proPlanYear = {
   value: Plans.USERS_PR_INAPPY,
   baseUnitPrice: 10,
   benefits: ['asdf'],
-  billingRate: 'annually',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Pro',
   monthlyUploadLimit: null,
-  quantity: 5,
+  isTeamPlan: false,
+  isSentryPlan: false,
 }
 
 const mockAccountDetailsBasic = {
@@ -104,10 +110,10 @@ const mockAccountDetailsTeamYearly = {
 const mockPlanDataResponseMonthly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'monthly',
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 2500,
-  value: 'test-plan',
+  value: Plans.USERS_PR_INAPPM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -115,15 +121,21 @@ const mockPlanDataResponseMonthly = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const mockPlanDataResponseYearly = {
   baseUnitPrice: 10,
   benefits: [],
-  billingRate: 'yearly',
+  billingRate: BillingRate.ANNUALLY,
   marketingName: 'Pro Team',
   monthlyUploadLimit: 2500,
-  value: 'test-plan',
+  value: Plans.USERS_PR_INAPPY,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -131,6 +143,12 @@ const mockPlanDataResponseYearly = {
   pretrialUsersCount: 0,
   planUserCount: 1,
   hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const queryClient = new QueryClient({
@@ -178,8 +196,8 @@ interface SetupArgs {
 
 describe('TeamPlanController', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC, monthlyPlan = true }: SetupArgs = {
-      planValue: Plans.USERS_BASIC,
+    { planValue = Plans.USERS_DEVELOPER, monthlyPlan = true }: SetupArgs = {
+      planValue: Plans.USERS_DEVELOPER,
       monthlyPlan: true,
     }
   ) {
@@ -188,8 +206,8 @@ describe('TeamPlanController', () => {
     mocks.useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, (info) => {
-        if (planValue === Plans.USERS_BASIC) {
+      http.get(`/internal/gh/codecov/account-details/`, () => {
+        if (planValue === Plans.USERS_DEVELOPER) {
           return HttpResponse.json(mockAccountDetailsBasic)
         } else if (planValue === Plans.USERS_TEAMM) {
           return HttpResponse.json(mockAccountDetailsTeamMonthly)
@@ -200,7 +218,7 @@ describe('TeamPlanController', () => {
       http.patch('/internal/gh/codecov/account-details/', async () => {
         return HttpResponse.json({ success: false })
       }),
-      graphql.query('GetAvailablePlans', (info) => {
+      graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({
           data: {
             owner: {
@@ -214,7 +232,7 @@ describe('TeamPlanController', () => {
           },
         })
       }),
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         const planResponse = monthlyPlan
           ? mockPlanDataResponseMonthly
           : mockPlanDataResponseYearly
@@ -233,7 +251,7 @@ describe('TeamPlanController', () => {
         setFormValue: vi.fn(),
         setSelectedPlan: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_TEAMM,
+        newPlan: teamPlanMonth,
         seats: 10,
         errors: { seats: { message: '' } },
       }
@@ -294,7 +312,7 @@ describe('TeamPlanController', () => {
         setFormValue,
         setSelectedPlan,
         register: vi.fn(),
-        newPlan: Plans.USERS_TEAMM,
+        newPlan: teamPlanMonth,
         seats: 12,
         errors: {
           seats: {
@@ -338,11 +356,9 @@ describe('TeamPlanController', () => {
           expect(setSelectedPlan).toHaveBeenCalledWith(
             expect.objectContaining({ value: Plans.USERS_PR_INAPPY })
           )
-          expect(setFormValue).toHaveBeenCalledWith(
-            'newPlan',
-            Plans.USERS_PR_INAPPY,
-            { shouldValidate: true }
-          )
+          expect(setFormValue).toHaveBeenCalledWith('newPlan', proPlanYear, {
+            shouldValidate: true,
+          })
         })
       })
     })
@@ -352,7 +368,7 @@ describe('TeamPlanController', () => {
         setFormValue: vi.fn(),
         setSelectedPlan: vi.fn(),
         register: vi.fn(),
-        newPlan: Plans.USERS_TEAMY,
+        newPlan: teamPlanYear,
         seats: 5,
         errors: { seats: { message: '' } },
       }

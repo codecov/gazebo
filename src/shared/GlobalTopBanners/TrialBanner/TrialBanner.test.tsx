@@ -8,7 +8,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { TrialStatuses } from 'services/account'
+import { TrialStatuses } from 'services/account/usePlanData'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import TrialBanner from './TrialBanner'
 
@@ -16,8 +17,8 @@ vi.mock('config')
 
 const proPlanMonth = {
   marketingName: 'Pro Team',
-  value: 'users-pr-inappm',
-  billingRate: 'monthly',
+  value: Plans.USERS_PR_INAPPM,
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 12,
   benefits: [
     'Configurable # of users',
@@ -29,12 +30,18 @@ const proPlanMonth = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: true,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const trialPlan = {
   marketingName: 'Trial Team',
-  value: 'users-trial',
-  billingRate: 'monthly',
+  value: Plans.USERS_TRIAL,
+  billingRate: BillingRate.MONTHLY,
   baseUnitPrice: 12,
   benefits: [
     'Configurable # of users',
@@ -46,11 +53,18 @@ const trialPlan = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: true,
 }
 
 const basicPlan = {
+  isEnterprisePlan: false,
   marketingName: 'Basic',
-  value: 'users-basic',
+  value: Plans.USERS_DEVELOPER,
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
@@ -62,6 +76,11 @@ const basicPlan = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  isFreePlan: true,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
 }
 
 const queryClient = new QueryClient()
@@ -121,7 +140,7 @@ describe('TrialBanner', () => {
     config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
-      graphql.query('GetPlanData', (info) => {
+      graphql.query('GetPlanData', () => {
         let plan: any = basicPlan
 
         if (isTrialPlan) {
@@ -148,12 +167,18 @@ describe('TrialBanner', () => {
                 pretrialUsersCount: plan.pretrialUsersCount,
                 planUserCount: plan.planUserCount,
                 hasSeatsLeft: true,
+                isEnterprisePlan: plan.isEnterprisePlan,
+                isFreePlan: plan.isFreePlan,
+                isProPlan: plan.isProPlan,
+                isTeamPlan: plan.isTeamPlan,
+                isTrialPlan: plan.isTrialPlan,
+                isSentryPlan: plan.isSentryPlan,
               },
             },
           },
         })
       }),
-      graphql.query('DetailOwner', (info) => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
           data: { owner: { isCurrentUserPartOfOrg } },
         })

@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { eventTracker } from 'services/events/events'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
@@ -8,12 +9,12 @@ import BannerHeading from 'ui/Banner/BannerHeading'
 
 const GithubConfigBanner = () => {
   const { provider } = useParams()
-  const isGh = providerToName(provider) === 'Github'
+  const isGh = providerToName(provider) === 'GitHub'
 
   if (!isGh) return null
 
   return (
-    <div>
+    <div className="mb-2 mt-4">
       <Banner>
         <BannerHeading>
           <h2 className="flex justify-center gap-2 font-semibold">
@@ -21,6 +22,15 @@ const GithubConfigBanner = () => {
             <A
               data-testid="codecovGithubApp-link"
               to={{ pageName: 'codecovGithubAppSelectTarget' }}
+              onClick={() =>
+                eventTracker().track({
+                  type: 'Button Clicked',
+                  properties: {
+                    buttonName: 'Install GitHub App',
+                    buttonLocation: 'Configure GitHub app banner',
+                  },
+                })
+              }
             >
               Codecov&apos;s GitHub app
             </A>

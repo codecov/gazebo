@@ -273,7 +273,7 @@ function VirtualFileRendererComponent({
       data-testid="virtual-file-renderer"
       style={{ tabSize: '8' }}
       ref={virtualCodeRendererRef}
-      className="relative w-full overflow-x-auto border border-solid  border-ds-gray-tertiary"
+      className="relative w-full overflow-x-auto border border-solid border-ds-gray-tertiary"
     >
       {/**
        * This text area is used to store the code content and is used to sync

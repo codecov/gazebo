@@ -44,7 +44,7 @@ afterAll(() => {
 describe('BotErrorBanner', () => {
   function setup({ integrationId } = { integrationId: null }) {
     server.use(
-      http.get('/internal/:provider/codecov/account-details/', (info) => {
+      http.get('/internal/:provider/codecov/account-details/', () => {
         return HttpResponse.json({ integrationId })
       })
     )
@@ -59,7 +59,7 @@ describe('BotErrorBanner', () => {
       })
 
       const title = await screen.findByText(
-        'There was an issue with the Github app'
+        'There was an issue with the GitHub app'
       )
       expect(title).toBeInTheDocument()
     })

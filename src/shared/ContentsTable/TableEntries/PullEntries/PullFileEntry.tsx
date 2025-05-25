@@ -7,7 +7,6 @@ import FileEntry from '../BaseEntries/FileEntry'
 interface PullFileEntryProps {
   commitSha: string
   path: string
-  isCriticalFile: boolean
   name: string
   displayType: DisplayType
   urlPath: string
@@ -17,7 +16,6 @@ interface PullFileEntryProps {
 function PullFileEntry({
   commitSha,
   path,
-  isCriticalFile,
   name,
   urlPath,
   displayType,
@@ -34,13 +32,12 @@ function PullFileEntry({
   return (
     <FileEntry
       urlPath={urlPath}
-      isCriticalFile={isCriticalFile}
       name={name}
       displayType={displayType}
       path={path}
       runPrefetch={runPrefetch}
       pageName="pullFileView"
-      queryParams={{ flags }}
+      queryParams={{ flags, dropdown: 'coverage' }}
     />
   )
 }

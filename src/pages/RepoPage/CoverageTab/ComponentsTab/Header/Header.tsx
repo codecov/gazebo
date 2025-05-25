@@ -5,7 +5,7 @@ import {
   TimeOption,
   TimeOptions,
 } from 'pages/RepoPage/shared/constants'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useComponentsBackfilled } from 'services/repo'
 import { useRepoComponentsSelect } from 'services/repo/useRepoComponentsSelect'
 import A from 'ui/A'
@@ -69,7 +69,7 @@ const Header = ({
             {data?.componentsCount}
           </p>
           <p className="text-xs">
-            {/* @ts-expect-error */}
+            {/* @ts-expect-error - A hasn't been typed yet */}
             <A to={{ pageName: 'components' }}>Learn more</A>
           </p>
         </div>

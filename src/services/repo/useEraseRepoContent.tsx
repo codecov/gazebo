@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
-import { useAddNotification } from 'services/toastNotification'
+import { useAddNotification } from 'services/toastNotification/context'
 import Api from 'shared/api'
 
 const query = `
-  mutation EraseRepository($repoName: String!) {
-    eraseRepository(input: { repoName: $repoName }) {
+  mutation EraseRepository($owner: String!, $repoName: String!) {
+    eraseRepository(input: { owner: $owner, repoName: $repoName }) {
       error {
         ... on UnauthorizedError {
           message
@@ -28,7 +28,7 @@ interface URLParams {
   repo: string
 }
 
-export const useEraseRepoContent = () => {
+export const useEraseRepo = () => {
   const { provider, owner, repo } = useParams<URLParams>()
   const queryClient = useQueryClient()
   const addToast = useAddNotification()
@@ -49,12 +49,12 @@ export const useEraseRepoContent = () => {
       if (error) {
         addToast({
           type: 'error',
-          text: "We were unable to erase this repo's content",
+          text: 'We were unable to erase this repository',
         })
       } else {
         addToast({
           type: 'success',
-          text: 'Repo coverage content erased successfully',
+          text: 'Repository erased successfully',
         })
       }
       queryClient.invalidateQueries(['GetRepo'])
@@ -63,7 +63,7 @@ export const useEraseRepoContent = () => {
     onError: () => {
       addToast({
         type: 'error',
-        text: "We were unable to erase this repo's content",
+        text: 'We were unable to erase this repository',
       })
     },
     retry: false,

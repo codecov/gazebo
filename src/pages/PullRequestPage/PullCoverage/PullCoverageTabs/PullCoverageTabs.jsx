@@ -6,10 +6,10 @@ import {
   pullTreeviewString,
 } from 'pages/PullRequestPage/utils'
 import { useRepoOverview } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useIsTeamPlan } from 'services/useIsTeamPlan'
 import TabNavigation from 'ui/TabNavigation'
 
-import { useTabsCounts } from './hooks'
+import { useTabsCounts } from './useTabsCounts'
 
 function PullCoverageTabs() {
   const { provider, owner, repo, pullId } = useParams()
@@ -28,7 +28,7 @@ function PullCoverageTabs() {
     repo,
   })
 
-  const { data: tierData, isLoading } = useTier({ provider, owner })
+  const { data: isTeamPlan, isLoading } = useIsTeamPlan({ provider, owner })
   const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
   const flags = searchParams?.flags ?? []
 
@@ -51,7 +51,7 @@ function PullCoverageTabs() {
     return null
   }
 
-  if (tierData === TierNames.TEAM && overview?.private) {
+  if (isTeamPlan && overview?.private) {
     return (
       <TabNavigation
         tabs={[

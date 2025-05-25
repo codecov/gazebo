@@ -4,6 +4,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import Admin from './Admin'
 
 vi.mock('./DetailsSection', () => ({ default: () => 'DetailsSection' }))
@@ -12,7 +14,7 @@ vi.mock('./GithubIntegrationSection', () => ({
   default: () => 'GithubIntegrationSection',
 }))
 vi.mock('./ManageAdminCard', () => ({ default: () => 'ManageAdminCard' }))
-vi.mock('./DeletionCard', () => ({ default: () => 'DeletionCard' }))
+vi.mock('../DeletionCard', () => ({ default: () => 'DeletionCard' }))
 
 const user = {
   me: {
@@ -32,13 +34,12 @@ const user = {
       student: false,
       studentCreatedAt: null,
       studentUpdatedAt: null,
-      customerIntent: 'PERSONAL',
     },
     trackingMetadata: {
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: 'users-basic',
+      plan: Plans.USERS_DEVELOPER,
       staff: false,
       hasYaml: false,
       bot: null,
@@ -88,7 +89,7 @@ afterAll(() => {
 describe('AdminTab', () => {
   function setup() {
     server.use(
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: user })
       })
     )

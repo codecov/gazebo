@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
+import { Fragment, Suspense, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -24,7 +24,7 @@ import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
-const CommitFileDiff = lazy(() => import('../shared/CommitFileDiff'))
+import CommitFileDiff from '../shared/CommitFileDiff'
 
 const columnHelper = createColumnHelper<ImpactedFile>()
 
@@ -86,7 +86,7 @@ function getColumns({ commitId }: { commitId: string }) {
                 variant="solid"
               />
             </span>
-            {/* @ts-expect-error */}
+            {/* @ts-expect-error - A hasn't been typed yet */}
             <A
               to={{
                 pageName: 'commitFileDiff',

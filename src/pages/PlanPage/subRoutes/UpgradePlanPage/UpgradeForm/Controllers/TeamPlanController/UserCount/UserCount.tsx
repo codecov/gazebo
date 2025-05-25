@@ -1,7 +1,8 @@
 import isNumber from 'lodash/isNumber'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { Provider } from 'shared/api/helpers'
 
 interface StudentTextProps {
   activatedStudents?: number
@@ -42,7 +43,7 @@ const UserText: React.FC<UserTextProps> = ({
 }
 
 const UserCount: React.FC = () => {
-  const { provider, owner } = useParams<{ provider: string; owner: string }>()
+  const { provider, owner } = useParams<{ provider: Provider; owner: string }>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
 
   const activatedStudentCount = accountDetails?.activatedStudentCount

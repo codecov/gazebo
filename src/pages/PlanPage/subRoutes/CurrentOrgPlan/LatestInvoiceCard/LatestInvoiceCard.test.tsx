@@ -2,15 +2,15 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import { z } from 'zod'
 
-import { InvoiceSchema } from 'services/account'
+import { InvoiceSchema } from 'services/account/useInvoices'
 
 import LatestInvoiceCard from './LatestInvoiceCard'
 
 const mocks = vi.hoisted(() => ({
   useInvoices: vi.fn(),
 }))
-vi.mock('services/account', async () => {
-  const actual = await vi.importActual('services/account')
+vi.mock('services/account/useInvoices', async () => {
+  const actual = await vi.importActual('services/account/useInvoices')
   return {
     ...actual,
     useInvoices: mocks.useInvoices,

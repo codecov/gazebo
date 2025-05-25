@@ -8,7 +8,14 @@ import { type Mock } from 'vitest'
 
 import config from 'config'
 
+import {
+  OnboardingContainerProvider,
+  useOnboardingContainer,
+} from 'pages/OwnerPage/OnboardingContainerContext/context'
+import { LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER } from 'pages/OwnerPage/OnboardingOrg/constants'
+import { eventTracker } from 'services/events/events'
 import { useImage } from 'services/image'
+import { Plans } from 'shared/utils/billing'
 
 import UserDropdown from './UserDropdown'
 
@@ -30,13 +37,12 @@ const mockUser = {
       student: false,
       studentCreatedAt: null,
       studentUpdatedAt: null,
-      customerIntent: 'PERSONAL',
     },
     trackingMetadata: {
       service: 'github',
       ownerid: 123,
       serviceId: '123',
-      plan: 'users-basic',
+      plan: Plans.USERS_DEVELOPER,
       staff: false,
       hasYaml: false,
       bot: null,
@@ -59,6 +65,7 @@ const mockUser = {
 vi.mock('services/image')
 vi.mock('config')
 vi.mock('js-cookie')
+vi.mock('services/events/events')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -73,14 +80,16 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
       <MemoryRouter initialEntries={[initialEntries]}>
         <Switch>
           <Route path="/:provider" exact>
-            {children}
-            <Route
-              path="*"
-              render={({ location }) => {
-                testLocation = location
-                return null
-              }}
-            />
+            <OnboardingContainerProvider>
+              {children}
+              <Route
+                path="*"
+                render={({ location }) => {
+                  testLocation = location
+                  return null
+                }}
+              />
+            </OnboardingContainerProvider>
           </Route>
         </Switch>
       </MemoryRouter>
@@ -109,13 +118,14 @@ describe('UserDropdown', () => {
       error: null,
     })
     config.IS_SELF_HOSTED = selfHosted
+    config.GH_APP = 'codecov'
     config.API_URL = ''
 
     server.use(
-      http.post('/logout', (info) => {
+      http.post('/logout', () => {
         return HttpResponse.json({}, { status: 205 })
       }),
-      graphql.query('CurrentUser', (info) => {
+      graphql.query('CurrentUser', () => {
         return HttpResponse.json({ data: mockUser })
       })
     )
@@ -156,7 +166,9 @@ describe('UserDropdown', () => {
 
         const link = screen.getByText('Settings')
         expect(link).toBeVisible()
-        expect(link).toHaveAttribute('href', '/account/gh/janedoe')
+        await waitFor(() =>
+          expect(link).toHaveAttribute('href', '/account/gh/janedoe')
+        )
       })
 
       it('shows sign out button', async () => {
@@ -211,6 +223,39 @@ describe('UserDropdown', () => {
           'href',
           'https://github.com/apps/codecov/installations/new'
         )
+      })
+
+      describe('when app access link is clicked', () => {
+        it('tracks a Button Clicked event', async () => {
+          const { user } = setup()
+          render(<UserDropdown />, {
+            wrapper: wrapper(),
+          })
+
+          expect(
+            screen.queryByText('Install Codecov app')
+          ).not.toBeInTheDocument()
+
+          const openSelect = await screen.findByTestId('user-dropdown-trigger')
+          await user.click(openSelect)
+
+          const link = screen.getByText('Install Codecov app')
+          expect(link).toBeVisible()
+          expect(link).toHaveAttribute(
+            'href',
+            'https://github.com/apps/codecov/installations/new'
+          )
+
+          await user.click(link)
+
+          expect(eventTracker().track).toHaveBeenCalledWith({
+            type: 'Button Clicked',
+            properties: {
+              buttonName: 'Install GitHub App',
+              buttonLocation: 'User dropdown',
+            },
+          })
+        })
       })
     })
   })
@@ -281,6 +326,55 @@ describe('UserDropdown', () => {
         expect(
           screen.queryByText('Install Codecov app')
         ).not.toBeInTheDocument()
+      })
+    })
+  })
+  describe('toggle onboarding container', () => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+      localStorage.clear()
+    })
+
+    it('changes onboarding container visibility when clicking the toggle button', async () => {
+      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
+
+      const TestComponent = () => {
+        const { showOnboardingContainer } = useOnboardingContainer()
+        return (
+          <div data-testid="context-value">
+            {String(showOnboardingContainer)}
+          </div>
+        )
+      }
+
+      const { user } = setup()
+      render(
+        <>
+          <UserDropdown />
+          <TestComponent />
+        </>,
+        { wrapper: wrapper(`/gh`) }
+      )
+
+      // Check initial state
+      expect(screen.getByTestId('context-value')).toHaveTextContent('false')
+
+      // Open the dropdown
+      const trigger = screen.getByTestId('user-dropdown-trigger')
+      await user.click(trigger)
+
+      // Click the toggle button
+      const toggleButton = screen.getByText('Show getting started')
+      await user.click(toggleButton)
+
+      // Verify localStorage was called with the correct value
+      expect(setItemSpy).toHaveBeenCalledWith(
+        LOCAL_STORAGE_SHOW_ONBOARDING_CONTAINER,
+        'true'
+      )
+
+      await waitFor(() => {
+        expect(screen.getByTestId('context-value')).toHaveTextContent('true')
       })
     })
   })

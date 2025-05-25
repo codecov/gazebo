@@ -14,7 +14,6 @@ vi.mock('./FilesChangedTable', () => ({ default: () => 'Files Changed Table' }))
 
 const mockImpactedFiles = [
   {
-    isCriticalFile: true,
     missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
@@ -31,7 +30,7 @@ const mockImpactedFiles = [
   },
   {
     missesCount: 0,
-    isCriticalFile: true,
+
     fileName: 'quarg.js',
     headName: 'flag2/quarg.js',
     baseCoverage: {
@@ -187,7 +186,7 @@ afterAll(() => server.close())
 describe('FilesChanged', () => {
   function setup({ overrideComparison, headState } = {}) {
     server.use(
-      graphql.query('Pull', (info) => {
+      graphql.query('Pull', () => {
         return HttpResponse.json({
           data: mockPull({ overrideComparison, headState }),
         })

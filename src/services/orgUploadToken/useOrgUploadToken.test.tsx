@@ -50,7 +50,7 @@ describe('useOrgUploadToken', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetOrgUploadToken', (info) => {
+      graphql.query('GetOrgUploadToken', () => {
         if (isUnsuccessfulParseError) {
           return HttpResponse.json({ data: mockUnsuccessfulParseError })
         } else if (isNullOwner) {
@@ -127,7 +127,8 @@ describe('useOrgUploadToken', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual(
             expect.objectContaining({
-              status: 404,
+              dev: 'useOrgUploadToken - Parsing Error',
+              status: 400,
             })
           )
         )

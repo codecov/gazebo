@@ -1,15 +1,12 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense } from 'react'
 import { Switch, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
-import {
-  EVENT_METRICS,
-  useStoreCodecovEventMetric,
-} from 'services/codecovEventMetrics'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepo } from 'services/repo'
+import { Provider } from 'shared/api/helpers'
 import { useRedirect } from 'shared/useRedirect'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
@@ -24,7 +21,7 @@ import ViteOnboarding from './ViteOnboarding'
 import WebpackOnboarding from './WebpackOnboarding'
 
 interface URLParams {
-  provider: string
+  provider: Provider
   owner: string
   repo: string
 }
@@ -68,7 +65,7 @@ const getInitialBundler = (path: string, urls: BundlerOptionUrls) => {
 }
 
 interface BundlerSelectorProps {
-  provider: string
+  provider: Provider
   owner: string
   repo: string
 }
@@ -199,15 +196,6 @@ const BundleOnboarding: React.FC = () => {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
   const { hardRedirect } = useRedirect({ href: `/${provider}` })
-  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
-
-  useEffect(() => {
-    storeEventMetric({
-      owner,
-      event: EVENT_METRICS.VISITED_PAGE,
-      jsonPayload: { page: 'Bundle Onboarding' },
-    })
-  }, [storeEventMetric, owner])
 
   // if no upload token redirect
   if (!data?.repository?.uploadToken) {

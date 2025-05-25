@@ -1,15 +1,14 @@
 import { Fragment, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation/useNavLinks'
 import {
   PullImpactedFile,
   useSingularImpactedFileComparison,
-} from 'services/pull'
+} from 'services/pull/useSingularImpactedFileComparison'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
-import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import {
   type CoverageValue,
   type LineData,
@@ -73,9 +72,6 @@ function DiffRenderer({
   }
   return (
     <>
-      {impactedFile?.isCriticalFile && (
-        <CriticalFileLabel variant="borderTop" />
-      )}
       {fileDiff?.map((segment, segmentIndex) => {
         return (
           <Fragment key={`${impactedFile?.headName}-${segmentIndex}`}>
@@ -110,6 +106,8 @@ function DiffRenderer({
 }
 
 function ErrorDisplayMessage() {
+  const location = useLocation()
+
   return (
     <p className="border border-solid border-ds-gray-tertiary p-4">
       There was a problem getting the source code from your provider. Unable to
@@ -118,9 +116,7 @@ function ErrorDisplayMessage() {
       <span>
         If you continue to experience this issue, please try{' '}
         <A
-          to={{
-            pageName: 'login',
-          }}
+          to={{ pageName: 'login', options: { to: location.pathname } }}
           hook={undefined}
           isExternal={undefined}
         >
