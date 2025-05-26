@@ -24,14 +24,14 @@ RUN             curl -s -o windows/codecov.exe https://uploader.codecov.io/lates
 RUN             curl -s -o windows/codecov.exe.SHA256SUM https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM 
 RUN             curl -s -o windows/codecov.exe.SHA256SUM.sig https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM.sig
 
-RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM 
-RUN             gpg --verify alpine/codecov.SHA256SUM.sig alpine/codecov.SHA256SUM 
-RUN             gpg --verify macos/codecov.SHA256SUM.sig macos/codecov.SHA256SUM 
-RUN             gpg --verify windows/codecov.exe.SHA256SUM.sig windows/codecov.exe.SHA256SUM 
-RUN             cd linux && sha256sum -c codecov.SHA256SUM && cd .. 
-RUN             cd alpine && sha256sum -c codecov.SHA256SUM && cd ..
-RUN             cd macos && sha256sum -c codecov.SHA256SUM && cd ..
-RUN             cd windows && sha256sum -c codecov.exe.SHA256SUM
+RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM
+RUN             gpg --verify alpine/codecov.SHA256SUM.sig alpine/codecov.SHA256SUM && \
+  gpg --verify macos/codecov.SHA256SUM.sig macos/codecov.SHA256SUM && \
+  gpg --verify windows/codecov.exe.SHA256SUM.sig windows/codecov.exe.SHA256SUM && \
+  cd linux && sha256sum -c codecov.SHA256SUM && cd .. && \
+  cd alpine && sha256sum -c codecov.SHA256SUM && cd .. && \
+  cd macos && sha256sum -c codecov.SHA256SUM && cd .. && \
+  cd windows && sha256sum -c codecov.exe.SHA256SUM
 
 COPY            docker/index.html /tmp/uploader
 
@@ -76,13 +76,12 @@ RUN  addgroup -S application \
 
 COPY --chown=codecov:application docker/start-nginx.sh /usr/bin/start-nginx
 
-RUN chown -R codecov:application /var/www/app 
-RUN chown -R codecov:application /run 
-RUN chown -R codecov:application /var/lib/nginx 
-RUN chown -R codecov:application /var/log/nginx 
-RUN chmod +x /usr/bin/start-nginx 
-RUN chown codecov:application /etc/nginx/nginx.conf
-
+RUN chown -R codecov:application /var/www/app && \
+  chown -R codecov:application /run && \
+  chown -R codecov:application /var/lib/nginx && \
+  chown -R codecov:application /var/log/nginx && \
+  chmod +x /usr/bin/start-nginx && \
+  chown codecov:application /etc/nginx/nginx.conf
 # Switch to use a non-root user from here on
 USER codecov
 
