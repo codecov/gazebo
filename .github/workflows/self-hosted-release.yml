@@ -6,6 +6,9 @@ on:
       - main
     types: [closed]
 
+permissions:
+  contents: read
+
 jobs:
   create-release:
     name: Tag Release ${{ github.head_ref }} and Push Docker image to Docker Hub
