@@ -24,8 +24,10 @@ RUN             curl -s -o windows/codecov.exe https://uploader.codecov.io/lates
 RUN             curl -s -o windows/codecov.exe.SHA256SUM https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM 
 RUN             curl -s -o windows/codecov.exe.SHA256SUM.sig https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM.sig
 
-RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM
-RUN             gpg --verify alpine/codecov.SHA256SUM.sig alpine/codecov.SHA256SUM && \
+# This gpg command is required for the next RUN to work. Something about gpg-agent I'd guess, but this seems to resolve it.
+RUN             gpg --list-keys 
+RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM && \ 
+  gpg --verify alpine/codecov.SHA256SUM.sig alpine/codecov.SHA256SUM && \
   gpg --verify macos/codecov.SHA256SUM.sig macos/codecov.SHA256SUM && \
   gpg --verify windows/codecov.exe.SHA256SUM.sig windows/codecov.exe.SHA256SUM && \
   cd linux && sha256sum -c codecov.SHA256SUM && cd .. && \
