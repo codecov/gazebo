@@ -11,18 +11,18 @@ RUN             mkdir uploader && \
   mkdir uploader/windows
 
 WORKDIR         /tmp/uploader
-RUN             curl -s -o linux/codecov https://uploader.codecov.io/latest/linux/codecov 
-RUN             curl -s -o linux/codecov.SHA256SUM https://uploader.codecov.io/latest/linux/codecov.SHA256SUM 
-RUN             curl -s -o linux/codecov.SHA256SUM.sig https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig 
-RUN             curl -s -o alpine/codecov https://uploader.codecov.io/latest/alpine/codecov 
-RUN             curl -s -o alpine/codecov.SHA256SUM https://uploader.codecov.io/latest/alpine/codecov.SHA256SUM 
-RUN             curl -s -o alpine/codecov.SHA256SUM.sig https://uploader.codecov.io/latest/alpine/codecov.SHA256SUM.sig 
-RUN             curl -s -o macos/codecov https://uploader.codecov.io/latest/macos/codecov 
-RUN             curl -s -o macos/codecov.SHA256SUM https://uploader.codecov.io/latest/macos/codecov.SHA256SUM 
-RUN             curl -s -o macos/codecov.SHA256SUM.sig https://uploader.codecov.io/latest/macos/codecov.SHA256SUM.sig 
-RUN             curl -s -o windows/codecov.exe https://uploader.codecov.io/latest/windows/codecov.exe 
-RUN             curl -s -o windows/codecov.exe.SHA256SUM https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM 
-RUN             curl -s -o windows/codecov.exe.SHA256SUM.sig https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM.sig
+RUN             curl -s -o linux/codecov https://uploader.codecov.io/latest/linux/codecov && \
+  curl -s -o linux/codecov.SHA256SUM https://uploader.codecov.io/latest/linux/codecov.SHA256SUM && \
+  curl -s -o linux/codecov.SHA256SUM.sig https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
+  curl -s -o alpine/codecov https://uploader.codecov.io/latest/alpine/codecov && \
+  curl -s -o alpine/codecov.SHA256SUM https://uploader.codecov.io/latest/alpine/codecov.SHA256SUM && \
+  curl -s -o alpine/codecov.SHA256SUM.sig https://uploader.codecov.io/latest/alpine/codecov.SHA256SUM.sig && \
+  curl -s -o macos/codecov https://uploader.codecov.io/latest/macos/codecov && \
+  curl -s -o macos/codecov.SHA256SUM https://uploader.codecov.io/latest/macos/codecov.SHA256SUM && \
+  curl -s -o macos/codecov.SHA256SUM.sig https://uploader.codecov.io/latest/macos/codecov.SHA256SUM.sig && \
+  curl -s -o windows/codecov.exe https://uploader.codecov.io/latest/windows/codecov.exe && \
+  curl -s -o windows/codecov.exe.SHA256SUM https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM && \
+  curl -s -o windows/codecov.exe.SHA256SUM.sig https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM.sig
 
 # This gpg command is required for the next RUN to work. Something about gpg-agent I'd guess, but this seems to resolve it.
 RUN             gpg --list-keys 
