@@ -2,7 +2,7 @@
 FROM            alpine:3.21 as uploader
 USER            root
 WORKDIR         /tmp
-RUN             apk -U add gnupg curl
+RUN             apk -U add gpg gpg-agent curl
 RUN             curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
 RUN             mkdir uploader && \
   mkdir uploader/linux && \
@@ -24,8 +24,9 @@ RUN             curl -s -o linux/codecov https://uploader.codecov.io/latest/linu
   curl -s -o windows/codecov.exe.SHA256SUM https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM && \
   curl -s -o windows/codecov.exe.SHA256SUM.sig https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM.sig
 
-# This gpg command is required for the next RUN to work. Something about gpg-agent I'd guess, but this seems to resolve it.
-RUN             gpg --list-keys 
+# Not sure why this lock isn't getting cleared, but we need to manually clear 
+# this lock or the next RUN will hang indefinitely waiting for it.
+RUN             rm /root/.gnupg/public-keys.d/pubring.db.lock
 RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM && \ 
   gpg --verify alpine/codecov.SHA256SUM.sig alpine/codecov.SHA256SUM && \
   gpg --verify macos/codecov.SHA256SUM.sig macos/codecov.SHA256SUM && \
