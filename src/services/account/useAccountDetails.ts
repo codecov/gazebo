@@ -93,6 +93,8 @@ export const SubscriptionDetailSchema = z
     currentPeriodEnd: z.number(),
     customer: z
       .object({
+        address: AddressSchema.nullable(),
+        email: z.string().nullable(),
         id: z.string(),
         discount: z
           .object({
@@ -102,7 +104,7 @@ export const SubscriptionDetailSchema = z
             expires: z.number().nullable(),
           })
           .nullish(),
-        email: z.string(),
+        name: z.string().nullable(),
       })
       .nullable(),
     defaultPaymentMethod: PaymentMethodSchema.nullable(),
