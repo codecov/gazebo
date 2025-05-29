@@ -54,7 +54,7 @@ export function useNavLinks() {
       isExternalLink: true,
     },
     login: {
-      text: 'Login',
+      text: 'Log in',
       path: ({ to }: { to?: string } = {}) => {
         const query = qs.stringify({ to }, { addQueryPrefix: true })
 

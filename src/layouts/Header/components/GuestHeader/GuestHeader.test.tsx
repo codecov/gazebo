@@ -147,7 +147,7 @@ describe('GuestHeader', () => {
       render(<GuestHeader />, { wrapper })
 
       const queryString = qs.stringify({ to: '/gh' })
-      const login = screen.queryByText('Login')
+      const login = screen.queryByText('Log in')
       expect(login).toBeInTheDocument()
       expect(login).toHaveAttribute('href', `/?${queryString}`)
     })

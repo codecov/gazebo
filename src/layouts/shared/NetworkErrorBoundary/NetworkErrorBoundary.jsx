@@ -178,7 +178,7 @@ function ResetHandler({ logoutUser = false, reset, statusCode }) {
   return (
     <div className="my-4 flex items-center gap-2">
       <Button onClick={logoutUser ? handleSignOut : handleReset}>
-        {logoutUser ? 'Return to login' : 'Return to previous page'}
+        {logoutUser ? 'Return to log in' : 'Return to previous page'}
       </Button>
       {/* if the user is logged in, we don't want to show the login button */}
       {statusCode === 404 && !user ? (
@@ -186,7 +186,7 @@ function ResetHandler({ logoutUser = false, reset, statusCode }) {
           variant="primary"
           to={{ pageName: 'login', options: { to: location.pathname } }}
         >
-          Login
+          Log in
         </Button>
       ) : null}
     </div>
