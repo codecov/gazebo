@@ -51,7 +51,7 @@ describe('LoginButton', () => {
         }),
       })
 
-      const bitbucket = screen.getByText(/Login with Bitbucket/i)
+      const bitbucket = screen.getByText(/Log in with Bitbucket/i)
       expect(bitbucket).toBeInTheDocument()
     })
   })
@@ -65,7 +65,7 @@ describe('LoginButton', () => {
         }),
       })
 
-      const github = screen.getByText(/Login with GitHub/i)
+      const github = screen.getByText(/Log in with GitHub/i)
       expect(github).toBeInTheDocument()
     })
   })
@@ -79,7 +79,7 @@ describe('LoginButton', () => {
         }),
       })
 
-      const gitlab = screen.getByText(/Login with GitLab/i)
+      const gitlab = screen.getByText(/Log in with GitLab/i)
       expect(gitlab).toBeInTheDocument()
     })
   })
@@ -93,7 +93,7 @@ describe('LoginButton', () => {
         }),
       })
 
-      const sentry = screen.getByText(/Login with Sentry/i)
+      const sentry = screen.getByText(/Log in with Sentry/i)
       expect(sentry).toBeInTheDocument()
     })
   })
@@ -106,7 +106,7 @@ describe('LoginButton', () => {
       }),
     })
 
-    const github = screen.getByText(/Login with GitHub/i)
+    const github = screen.getByText(/Log in with GitHub/i)
     expect(github).toBeInTheDocument()
 
     act(() => github.click())
@@ -134,7 +134,7 @@ describe('LoginButton', () => {
       to: `http://secret-api-url/gh?${redirectQueryString}`,
     })
 
-    const github = screen.getByText(/Login with GitHub/i)
+    const github = screen.getByText(/Log in with GitHub/i)
     expect(github).toHaveAttribute(
       'href',
       `secret-api-url/login/gh?${toQueryString}`
