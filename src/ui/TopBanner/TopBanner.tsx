@@ -37,6 +37,13 @@ const topBannerContext = z.object({
   localStorageKey: z.string().optional(),
   setHideBanner: z.function().args(z.boolean()).returns(z.void()),
 })
+// TESTING: changing lines to get coverage change
+//
+//
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const sampleFunction = () => {
+  return 'test'
+}
 
 type TopBannerContextValue = z.infer<typeof topBannerContext>
 
