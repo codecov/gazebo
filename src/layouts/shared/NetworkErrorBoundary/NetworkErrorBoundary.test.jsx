@@ -396,7 +396,7 @@ describe('NetworkErrorBoundary', () => {
           await user.type(textBox, 'fail')
 
           const queryString = qs.stringify({ to: '/gh/codecov' })
-          const loginButton = await screen.findByText(/Login/)
+          const loginButton = await screen.findByText(/Log in/)
           expect(loginButton).toBeInTheDocument()
           expect(loginButton).toHaveAttribute('href', `/login?${queryString}`)
         })
@@ -415,7 +415,7 @@ describe('NetworkErrorBoundary', () => {
           const notFound = await screen.findByText(/Not found/)
           expect(notFound).toBeInTheDocument()
 
-          const loginButton = screen.queryByText(/Login/)
+          const loginButton = screen.queryByText(/Log in/)
           expect(loginButton).not.toBeInTheDocument()
         })
       })
@@ -459,7 +459,7 @@ describe('NetworkErrorBoundary', () => {
           await user.type(textBox, 'fail')
 
           const queryString = qs.stringify({ to: '/gh/codecov' })
-          const loginButton = await screen.findByText(/Login/)
+          const loginButton = await screen.findByText(/Log in/)
           expect(loginButton).toBeInTheDocument()
           expect(loginButton).toHaveAttribute('href', `/?${queryString}`)
         })
@@ -478,7 +478,7 @@ describe('NetworkErrorBoundary', () => {
           const notFound = await screen.findByText(/Not found/)
           expect(notFound).toBeInTheDocument()
 
-          const loginButton = screen.queryByText(/Login/)
+          const loginButton = screen.queryByText(/Log in/)
           expect(loginButton).not.toBeInTheDocument()
         })
       })
@@ -517,7 +517,7 @@ describe('NetworkErrorBoundary', () => {
       const textBox = await screen.findByRole('textbox')
       await user.type(textBox, 'fail')
 
-      const button = await screen.findByText('Return to login')
+      const button = await screen.findByText('Return to log in')
       expect(button).toBeInTheDocument()
 
       await user.click(button)

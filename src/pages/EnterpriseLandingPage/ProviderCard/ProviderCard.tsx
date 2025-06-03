@@ -44,7 +44,7 @@ const ExternalProviderButton: React.FC<ExternalProviderButtonProps> = ({
         options: { provider: provider?.externalKey, to },
       }}
     >
-      Login via {provider.name}
+      Log in via {provider.name}
     </Button>
   )
 }
@@ -77,7 +77,7 @@ const InternalProviderButton: React.FC<InternalProviderButtonProps> = ({
         options: { provider: provider.selfHostedKey, to },
       }}
     >
-      Login via {provider.selfHostedName}
+      Log in via {provider.selfHostedName}
     </Button>
   )
 }

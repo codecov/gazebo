@@ -57,7 +57,7 @@ describe('LoginPage', () => {
       render(<LoginPage />, { wrapper: wrapper('/login') })
 
       const githubLink = screen.getByRole('link', {
-        name: /login with github/i,
+        name: /Log in with github/i,
       })
       expect(githubLink).toBeInTheDocument()
     })
@@ -66,7 +66,7 @@ describe('LoginPage', () => {
       render(<LoginPage />, { wrapper: wrapper('/login') })
 
       const sentryLink = screen.getByRole('link', {
-        name: /login with sentry/i,
+        name: /Log in with sentry/i,
       })
       expect(sentryLink).toBeInTheDocument()
     })
@@ -75,7 +75,7 @@ describe('LoginPage', () => {
       render(<LoginPage />, { wrapper: wrapper('/login') })
 
       const gitlabLink = screen.getByRole('link', {
-        name: /login with gitlab/i,
+        name: /Log in with gitlab/i,
       })
       expect(gitlabLink).toBeInTheDocument()
     })
@@ -84,7 +84,7 @@ describe('LoginPage', () => {
       render(<LoginPage />, { wrapper: wrapper('/login') })
 
       const bitBucketLink = screen.getByRole('link', {
-        name: /login with bitbucket/i,
+        name: /Log in with bitbucket/i,
       })
       expect(bitBucketLink).toBeInTheDocument()
     })
@@ -97,7 +97,7 @@ describe('LoginPage', () => {
       render(<LoginPage />, { wrapper: wrapper('/login/gh') })
 
       const githubLink = screen.getByRole('link', {
-        name: /login with github/i,
+        name: /Log in with github/i,
       })
       expect(githubLink).toBeInTheDocument()
     })
