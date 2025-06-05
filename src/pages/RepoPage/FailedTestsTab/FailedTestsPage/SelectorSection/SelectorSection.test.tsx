@@ -10,6 +10,15 @@ import { ErrorCodeEnum } from 'shared/utils/commit'
 
 import SelectorSection from './SelectorSection'
 
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+
+  return {
+    ...actual,
+    useFlags: vi.fn(() => ({ allBranchesEnabled: false })),
+  }
+})
+
 const mockRepoOverview = {
   owner: {
     isCurrentUserActivated: true,
@@ -178,11 +187,14 @@ describe('SelectorSection', () => {
     })
   })
 
-  describe('when on default branch', () => {
+  describe.each([
+    ['default branch', 'main'],
+    ['all branches', 'All%20branches'],
+  ])('when on %s', (_, encodedBranch) => {
     it('has all four selectors', async () => {
       setup()
       render(<SelectorSection />, {
-        wrapper: wrapper('/gh/owner/repo/tests/main'),
+        wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
       })
 
       const branchSelector = await screen.findByText('Branch Context')
@@ -198,7 +210,7 @@ describe('SelectorSection', () => {
     it('has 60 day retention link', async () => {
       setup()
       render(<SelectorSection />, {
-        wrapper: wrapper('/gh/owner/repo/tests/main'),
+        wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
       })
 
       const link = await screen.findByRole('link')
