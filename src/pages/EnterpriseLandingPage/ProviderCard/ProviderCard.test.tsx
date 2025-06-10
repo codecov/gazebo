@@ -101,7 +101,7 @@ describe('ProviderCard', () => {
         })
 
         const element = screen.getByRole('link', {
-          name: `Login via ${name}`,
+          name: `Log in via ${name}`,
         })
         expect(element).toBeInTheDocument()
         expect(element).toHaveAttribute('href', `secret-api-url${to}`)
@@ -158,7 +158,7 @@ describe('ProviderCard', () => {
             )
 
             const element = screen.getByRole('link', {
-              name: `Login via ${name}`,
+              name: `Log in via ${name}`,
             })
             expect(element).toBeInTheDocument()
             expect(element).toHaveAttribute(

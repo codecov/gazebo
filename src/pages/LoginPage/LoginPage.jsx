@@ -17,7 +17,7 @@ function LoginPage() {
 
   return (
     <div className="flex h-full flex-col items-center justify-center">
-      <h1 className="mb-4	text-3xl">Login to Codecov</h1>
+      <h1 className="mb-4	text-3xl">Log in to Codecov</h1>
       <p>You&apos;ll be taken to your provider to authenticate</p>
       <div className="mx-auto mt-6 w-96">
         <div className="mb-4">
