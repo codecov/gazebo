@@ -1,9 +1,4 @@
-import {
-  formatDistanceToNow,
-  fromUnixTime,
-  intervalToDuration,
-  parseISO,
-} from 'date-fns'
+import { formatDistanceToNow, fromUnixTime, parseISO } from 'date-fns'
 
 export function formatTimeToNow(date?: string | number | null) {
   if (!date) return null
@@ -16,19 +11,35 @@ export function formatTimeToNow(date?: string | number | null) {
 }
 
 export const formatTimeFromSeconds = (totalSeconds?: number | null) => {
-  if (totalSeconds === 0) return '0s'
-  if (!totalSeconds) return 'N/A'
+  if (totalSeconds === 0) {
+    return '0s'
+  }
+  if (totalSeconds == null || totalSeconds < 0) {
+    return 'N/A'
+  }
 
-  const duration = intervalToDuration({ start: 0, end: totalSeconds * 1000 })
+  const days = Math.floor(totalSeconds / 86400)
+  const hours = Math.floor((totalSeconds % 86400) / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = Math.floor(totalSeconds % 60)
 
-  const { days, hours, minutes, seconds } = duration
+  const timeParts = []
+  if (days > 0) {
+    timeParts.push(`${days}d`)
+  }
+  if (hours > 0) {
+    timeParts.push(`${hours}h`)
+  }
+  if (minutes > 0) {
+    timeParts.push(`${minutes}m`)
+  }
+  if (seconds > 0) {
+    timeParts.push(`${seconds}s`)
+  }
 
-  return [
-    days ? `${days}d` : '',
-    hours ? `${hours}h` : '',
-    minutes ? `${minutes}m` : '',
-    seconds ? `${seconds}s` : '',
-  ]
-    .filter(Boolean)
-    .join(' ')
+  if (timeParts.length === 0 && totalSeconds > 0) {
+    return '<1s'
+  }
+
+  return timeParts.join(' ')
 }
