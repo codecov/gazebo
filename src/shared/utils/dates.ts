@@ -14,14 +14,21 @@ export const formatTimeFromSeconds = (totalSeconds?: number | null) => {
   if (totalSeconds === 0) {
     return '0s'
   }
+
   if (totalSeconds == null || totalSeconds < 0) {
     return 'N/A'
   }
 
-  const days = Math.floor(totalSeconds / 86400)
-  const hours = Math.floor((totalSeconds % 86400) / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-  const seconds = Math.floor(totalSeconds % 60)
+  const SECONDS_PER_DAY = 86400
+  const SECONDS_PER_HOUR = 3600
+  const SECONDS_PER_MINUTE = 60
+
+  const days = Math.floor(totalSeconds / SECONDS_PER_DAY)
+  const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR)
+  const minutes = Math.floor(
+    (totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE
+  )
+  const seconds = Math.floor(totalSeconds % SECONDS_PER_MINUTE)
 
   const timeParts = []
   if (days > 0) {
@@ -37,7 +44,7 @@ export const formatTimeFromSeconds = (totalSeconds?: number | null) => {
     timeParts.push(`${seconds}s`)
   }
 
-  if (timeParts.length === 0 && totalSeconds > 0) {
+  if (timeParts.length === 0) {
     return '<1s'
   }
 

@@ -38,4 +38,8 @@ describe('formatTimeFromSeconds', () => {
   it('returns the correct time format when totalSeconds is a float', () => {
     expect(formatTimeFromSeconds(12901948.144373389)).toBe('149d 7h 52m 28s')
   })
+
+  it('returns the correct time format when totalSeconds is less than 1', () => {
+    expect(formatTimeFromSeconds(0.5)).toBe('<1s')
+  })
 })
