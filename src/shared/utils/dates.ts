@@ -1,5 +1,9 @@
 import { formatDistanceToNow, fromUnixTime, parseISO } from 'date-fns'
 
+const SECONDS_PER_DAY = 86400
+const SECONDS_PER_HOUR = 3600
+const SECONDS_PER_MINUTE = 60
+
 export function formatTimeToNow(date?: string | number | null) {
   if (!date) return null
 
@@ -11,17 +15,9 @@ export function formatTimeToNow(date?: string | number | null) {
 }
 
 export const formatTimeFromSeconds = (totalSeconds?: number | null) => {
-  if (totalSeconds === 0) {
-    return '0s'
-  }
-
-  if (totalSeconds == null || totalSeconds < 0) {
-    return 'N/A'
-  }
-
-  const SECONDS_PER_DAY = 86400
-  const SECONDS_PER_HOUR = 3600
-  const SECONDS_PER_MINUTE = 60
+  if (totalSeconds == null || totalSeconds < 0) return 'N/A'
+  if (totalSeconds === 0) return '0s'
+  if (totalSeconds < 1) return '<1s'
 
   const days = Math.floor(totalSeconds / SECONDS_PER_DAY)
   const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR)
@@ -42,10 +38,6 @@ export const formatTimeFromSeconds = (totalSeconds?: number | null) => {
   }
   if (seconds > 0) {
     timeParts.push(`${seconds}s`)
-  }
-
-  if (timeParts.length === 0) {
-    return '<1s'
   }
 
   return timeParts.join(' ')
