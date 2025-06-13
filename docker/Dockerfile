@@ -24,10 +24,10 @@ RUN             curl -s -o linux/codecov https://uploader.codecov.io/latest/linu
   curl -s -o windows/codecov.exe.SHA256SUM https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM && \
   curl -s -o windows/codecov.exe.SHA256SUM.sig https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM.sig
 
-# Not sure why this lock isn't getting cleared, but we need to manually clear 
+# Not sure why this lock isn't getting cleared, but we need to manually clear
 # this lock or the next RUN will hang indefinitely waiting for it.
 RUN             rm /root/.gnupg/public-keys.d/pubring.db.lock
-RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM && \ 
+RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM && \
   gpg --verify alpine/codecov.SHA256SUM.sig alpine/codecov.SHA256SUM && \
   gpg --verify macos/codecov.SHA256SUM.sig macos/codecov.SHA256SUM && \
   gpg --verify windows/codecov.exe.SHA256SUM.sig windows/codecov.exe.SHA256SUM && \
@@ -64,7 +64,6 @@ ENV BUILD_ID $COMMIT_SHA
 ENV BUILD_VERSION $VERSION
 ENV CODECOV_BASE_HOST=codecov.io
 ENV CODECOV_API_HOST=api.codecov.io
-ENV CODECOV_API_PORT=443
 # Install packages and remove default server definition
 RUN apk --no-cache add curl nginx gettext
 
