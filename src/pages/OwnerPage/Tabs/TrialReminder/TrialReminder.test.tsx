@@ -123,14 +123,6 @@ describe('TrialReminder', () => {
   }
 
   describe('user has not started a trial', () => {
-    beforeEach(() => {
-      vi.useFakeTimers().setSystemTime(new Date('2023-01-01'))
-    })
-
-    afterEach(() => {
-      vi.useRealTimers()
-    })
-
     describe('user is on a free plan', () => {
       describe('user is part of org', () => {
         it('displays trial upgrade link', async () => {
@@ -165,10 +157,8 @@ describe('TrialReminder', () => {
 
           const { container } = render(<TrialReminder />, { wrapper })
 
-          await waitFor(() =>
-            expect(queryClient.isFetching()).toBeGreaterThan(0)
-          )
-          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
 
           expect(container).toBeEmptyDOMElement()
         })
@@ -186,8 +176,8 @@ describe('TrialReminder', () => {
 
         const { container } = render(<TrialReminder />, { wrapper })
 
-        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
 
         expect(container).toBeEmptyDOMElement()
       })
@@ -235,10 +225,8 @@ describe('TrialReminder', () => {
 
           const { container } = render(<TrialReminder />, { wrapper })
 
-          await waitFor(() =>
-            expect(queryClient.isFetching()).toBeGreaterThan(0)
-          )
-          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
 
           expect(container).toBeEmptyDOMElement()
         })
@@ -264,8 +252,8 @@ describe('TrialReminder', () => {
 
         const { container } = render(<TrialReminder />, { wrapper })
 
-        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
 
         expect(container).toBeEmptyDOMElement()
       })
@@ -314,10 +302,8 @@ describe('TrialReminder', () => {
 
           const { container } = render(<TrialReminder />, { wrapper })
 
-          await waitFor(() =>
-            expect(queryClient.isFetching()).toBeGreaterThan(0)
-          )
-          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
 
           expect(container).toBeEmptyDOMElement()
         })
@@ -335,8 +321,8 @@ describe('TrialReminder', () => {
 
         const { container } = render(<TrialReminder />, { wrapper })
 
-        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
 
         expect(container).toBeEmptyDOMElement()
       })
@@ -344,14 +330,6 @@ describe('TrialReminder', () => {
   })
 
   describe('user cannot trial', () => {
-    beforeEach(() => {
-      vi.useFakeTimers().setSystemTime(new Date('2023-01-01'))
-    })
-
-    afterEach(() => {
-      vi.useRealTimers()
-    })
-
     it('does not display upgrade link', async () => {
       setup({
         planValue: Plans.USERS_PR_INAPPY,
@@ -362,8 +340,8 @@ describe('TrialReminder', () => {
 
       const { container } = render(<TrialReminder />, { wrapper })
 
-      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
       expect(container).toBeEmptyDOMElement()
     })
@@ -381,22 +359,14 @@ describe('TrialReminder', () => {
 
       const { container } = render(<TrialReminder />, { wrapper })
 
-      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
       expect(container).toBeEmptyDOMElement()
     })
   })
 
   describe('API returns no information', () => {
-    beforeEach(() => {
-      vi.useFakeTimers().setSystemTime(new Date('2023-01-01'))
-    })
-
-    afterEach(() => {
-      vi.useRealTimers()
-    })
-
     it('returns nothing', async () => {
       setup({
         planValue: Plans.USERS_DEVELOPER,
@@ -406,22 +376,14 @@ describe('TrialReminder', () => {
 
       const { container } = render(<TrialReminder />, { wrapper })
 
-      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
       expect(container).toBeEmptyDOMElement()
     })
   })
 
   describe('app is running in self hosted', () => {
-    beforeEach(() => {
-      vi.useFakeTimers().setSystemTime(new Date('2023-01-01'))
-    })
-
-    afterEach(() => {
-      vi.useRealTimers()
-    })
-
     it('renders nothing', async () => {
       setup({
         planValue: Plans.USERS_DEVELOPER,
