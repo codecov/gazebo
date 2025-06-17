@@ -43,7 +43,6 @@ export const OrderingParameter = {
 export const TestResultsFilterParameter = {
   FLAKY_TESTS: 'FLAKY_TESTS',
   FAILED_TESTS: 'FAILED_TESTS',
-  SLOWEST_TESTS: 'SLOWEST_TESTS',
   SKIPPED_TESTS: 'SKIPPED_TESTS',
 } as const
 
