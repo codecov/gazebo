@@ -22,7 +22,8 @@ const DeleteFlagModal = ({ isOpen, closeModal, flagName }: Props) => {
         <p>
           This will remove the <span className="font-semibold">{flagName}</span>{' '}
           flag from the reports in app. You will also need to remove this flag
-          in your CI and codecov.yaml to stop uploads.
+          in your CI and codecov.yaml to stop uploads.{' '}
+          <span className="font-semibold">This action cannot be undone.</span>
         </p>
       }
       footer={
