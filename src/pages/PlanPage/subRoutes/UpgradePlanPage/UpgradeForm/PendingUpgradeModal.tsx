@@ -3,7 +3,7 @@ import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import Modal from 'ui/Modal'
 
-interface UpgradeModalProps {
+interface PendingUpgradeModalProps {
   isOpen: boolean
   onClose: () => void
   onConfirm: () => void
@@ -11,13 +11,13 @@ interface UpgradeModalProps {
   isUpgrading?: boolean
 }
 
-const UpgradeFormModal = ({
+const PendingUpgradeModal = ({
   isOpen,
   onClose,
   onConfirm,
   url,
   isUpgrading = false,
-}: UpgradeModalProps) => (
+}: PendingUpgradeModalProps) => (
   <Modal
     isOpen={isOpen}
     onClose={onClose}
@@ -60,6 +60,7 @@ const UpgradeFormModal = ({
         <Button
           hook="confirm-upgrade"
           variant="primary"
+          type="submit"
           onClick={onConfirm}
           disabled={isUpgrading}
         >
@@ -70,4 +71,4 @@ const UpgradeFormModal = ({
   />
 )
 
-export default UpgradeFormModal
+export default PendingUpgradeModal
