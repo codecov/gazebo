@@ -141,13 +141,5 @@ describe('TableHeader', () => {
       const headerTitle = screen.getByText('Skipped tests (50.0K)')
       expect(headerTitle).toBeInTheDocument()
     })
-
-    it('renders the slowest tests header title', () => {
-      render(<TableHeader totalCount={50000} isDefaultBranch />, {
-        wrapper: wrapper('/gh/codecov/cool-repo/tests?parameter=SLOWEST_TESTS'),
-      })
-      const headerTitle = screen.getByText('Slowest tests (50.0K)')
-      expect(headerTitle).toBeInTheDocument()
-    })
   })
 })

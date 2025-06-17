@@ -95,60 +95,6 @@ const TotalTestsRunTimeCard = ({
   )
 }
 
-const SlowestTestsCard = ({
-  slowestTests,
-  slowestTestsPercentChange,
-  slowestTestsDuration,
-  isSelected,
-  updateParams,
-}: {
-  slowestTests?: number
-  slowestTestsPercentChange?: number | null
-  slowestTestsDuration?: number | null
-  isSelected: boolean
-  updateParams: (newParams: {
-    parameter: TestResultsFilterParameterType | ''
-  }) => void
-}) => {
-  return (
-    <MetricCard>
-      <MetricCard.Header>
-        <MetricCard.Title className="flex items-center gap-2">
-          Slowest tests
-          <TooltipWithIcon>
-            Lists the tests that take more than the 95th percentile run time to
-            complete. Showing a max of 100 tests.
-          </TooltipWithIcon>
-        </MetricCard.Title>
-      </MetricCard.Header>
-
-      <MetricCard.Content>
-        <button
-          className={cn('text-ds-blue-default hover:underline', {
-            'font-semibold': isSelected,
-          })}
-          onClick={() => {
-            updateParams({
-              parameter: isSelected
-                ? ''
-                : TestResultsFilterParameter.SLOWEST_TESTS,
-            })
-          }}
-        >
-          {slowestTests}
-        </button>
-        {slowestTestsPercentChange ? (
-          <PercentBadge value={slowestTestsPercentChange} />
-        ) : null}
-      </MetricCard.Content>
-      <MetricCard.Description>
-        The slowest {slowestTests} tests take{' '}
-        {formatTimeFromSeconds(slowestTestsDuration)} to run.
-      </MetricCard.Description>
-    </MetricCard>
-  )
-}
-
 const TotalFlakyTestsCard = ({
   flakeCount,
   flakeCountPercentChange,
@@ -393,29 +339,13 @@ function MetricsSection() {
           <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
             Improve CI Run Efficiency
           </p>
-          <div className="grid grid-cols-2">
-            <TotalTestsRunTimeCard
-              totalDuration={aggregates?.totalDuration}
-              totalDurationPercentChange={
-                aggregates?.totalDurationPercentChange
-              }
-              intervalCopy={historicalTrendToCopy(
-                queryParams?.historicalTrend as MeasurementInterval
-              )}
-            />
-            <SlowestTestsCard
-              slowestTests={aggregates?.totalSlowTests}
-              slowestTestsPercentChange={
-                aggregates?.totalSlowTestsPercentChange
-              }
-              slowestTestsDuration={aggregates?.slowestTestsDuration}
-              updateParams={updateParams}
-              isSelected={
-                queryParams?.parameter ===
-                TestResultsFilterParameter.SLOWEST_TESTS
-              }
-            />
-          </div>
+          <TotalTestsRunTimeCard
+            totalDuration={aggregates?.totalDuration}
+            totalDurationPercentChange={aggregates?.totalDurationPercentChange}
+            intervalCopy={historicalTrendToCopy(
+              queryParams?.historicalTrend as MeasurementInterval
+            )}
+          />
         </div>
         <div className="flex flex-col gap-3">
           <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">

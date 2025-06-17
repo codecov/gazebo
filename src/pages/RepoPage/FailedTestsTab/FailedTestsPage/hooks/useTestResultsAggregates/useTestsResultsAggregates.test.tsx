@@ -76,10 +76,6 @@ const mockResponse = {
         testResultsAggregates: {
           totalDuration: 1.0,
           totalDurationPercentChange: 25.0,
-          slowestTestsDuration: 111.11,
-          slowestTestsDurationPercentChange: 0.0,
-          totalSlowTests: 2,
-          totalSlowTestsPercentChange: 15.1,
           totalFails: 1,
           totalFailsPercentChange: 100.0,
           totalSkips: 20,
@@ -123,12 +119,8 @@ describe('useTestResultsAggregates', () => {
             testResultsAggregates: {
               totalDuration: 1,
               totalDurationPercentChange: 25,
-              slowestTestsDuration: 111.11,
-              slowestTestsDurationPercentChange: 0,
               totalFails: 1,
               totalFailsPercentChange: 100,
-              totalSlowTests: 2,
-              totalSlowTestsPercentChange: 15.1,
               totalSkips: 20,
               totalSkipsPercentChange: 0,
             },

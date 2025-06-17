@@ -31,10 +31,6 @@ const mockAggResponse = (
         testResultsAggregates: {
           totalDuration: 1490,
           totalDurationPercentChange: 25.0,
-          slowestTestsDuration: 111.11,
-          slowestTestsDurationPercentChange: 0.0,
-          totalSlowTests: 12,
-          totalSlowTestsPercentChange: 15.1,
           totalFails: 1,
           totalFailsPercentChange: 100.0,
           totalSkips: 20,
@@ -176,63 +172,6 @@ describe('MetricsSection', () => {
       expect(title).toBeInTheDocument()
       expect(context).toBeInTheDocument()
       expect(description).toBeInTheDocument()
-    })
-
-    describe('slowest tests card', () => {
-      it('renders slowest tests card', async () => {
-        setup()
-        render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
-        })
-
-        const title = await screen.findByText('Slowest tests')
-        const context = await screen.findByText(12)
-        const description = await screen.findByText(
-          'The slowest 12 tests take 1m 51s to run.'
-        )
-
-        expect(title).toBeInTheDocument()
-        expect(context).toBeInTheDocument()
-        expect(description).toBeInTheDocument()
-      })
-
-      it('can update the location params on button click', async () => {
-        const { user } = setup()
-        render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
-        })
-        const select = await screen.findByText('12')
-        expect(select).toBeInTheDocument()
-        await user.click(select)
-
-        expect(testLocation?.state).toStrictEqual({
-          parameter: TestResultsFilterParameter.SLOWEST_TESTS,
-          flags: [],
-          historicalTrend: '',
-          term: '',
-          testSuites: [],
-        })
-      })
-
-      it('removes the location param on second button click', async () => {
-        const { user } = setup()
-        render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
-        })
-        const select = await screen.findByText('12')
-        expect(select).toBeInTheDocument()
-
-        await user.click(select)
-        await user.click(select)
-
-        expect(testLocation?.state).toStrictEqual({
-          parameter: '',
-          flags: [],
-          historicalTrend: '',
-          term: '',
-          testSuites: [],
-        })
-      })
     })
 
     describe('flaky tests card', () => {
