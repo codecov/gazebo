@@ -10,21 +10,24 @@ import {
 } from 'services/account/useAvailablePlans'
 import { usePlanData } from 'services/account/usePlanData'
 import { useUnverifiedPaymentMethods } from 'services/account/useUnverifiedPaymentMethods'
+import { useOwner } from 'services/user'
 import { Provider } from 'shared/api/helpers'
-import { canApplySentryUpgrade, getNextBillingDate } from 'shared/utils/billing'
+import { canApplySentryUpgrade } from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
   getSchema,
   MIN_NB_SEATS_PRO,
   MIN_SENTRY_SEATS,
 } from 'shared/utils/upgradeForm'
+import Avatar from 'ui/Avatar'
+import { Card } from 'ui/Card'
 
 import Controller from './Controllers/Controller'
 import { useUpgradeControls } from './hooks'
+import PendingUpgradeModal from './PendingUpgradeModal'
+import { PersonalOrgWarning } from './PersonalOrgWarning'
 import PlanTypeOptions from './PlanTypeOptions'
-import UpdateBlurb from './UpdateBlurb/UpdateBlurb'
 import UpdateButton from './UpdateButton'
-import UpgradeFormModal from './UpgradeFormModal'
 
 type URLParams = {
   provider: Provider
@@ -43,6 +46,7 @@ export type UpgradeFormFields = {
 
 function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const { provider, owner } = useParams<URLParams>()
+  const { data: ownerData } = useOwner({ username: owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
@@ -51,7 +55,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
     owner,
   })
   const { upgradePlan } = useUpgradeControls()
-  const [showModal, setShowModal] = useState(false)
+  const [showPendingUpgradeModal, setShowPendingUpgradeModal] = useState(false)
   const [formData, setFormData] = useState<UpgradeFormFields>()
   const [isUpgrading, setIsUpgrading] = useState(false)
   const isSentryUpgrade = canApplySentryUpgrade({
@@ -106,7 +110,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const onSubmit = handleSubmit((data) => {
     if (awaitingInitialPaymentMethodVerification) {
       setFormData(data)
-      setShowModal(true)
+      setShowPendingUpgradeModal(true)
     } else {
       setIsUpgrading(true)
       upgradePlan(data)
@@ -114,47 +118,54 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   })
 
   return (
-    <form
-      className="flex flex-col gap-6 border p-4 text-ds-gray-default md:w-2/3"
-      onSubmit={onSubmit}
-    >
-      <div className="flex flex-col gap-1">
-        <h3 className="font-semibold">Organization</h3>
-        <span>{owner}</span>
-      </div>
-      <PlanTypeOptions
-        setFormValue={setFormValue}
-        setSelectedPlan={setSelectedPlan}
-        newPlan={newPlan}
-      />
-      <Controller
-        setSelectedPlan={setSelectedPlan}
-        newPlan={newPlan}
-        seats={seats}
-        setFormValue={setFormValue}
-        register={register}
-        errors={errors}
-      />
-      <UpdateBlurb
-        currentPlan={planData?.plan}
-        newPlan={newPlan}
-        seats={Number(seats)}
-        nextBillingDate={getNextBillingDate(accountDetails)!}
-      />
-      <UpdateButton isValid={isValid} newPlan={newPlan} seats={seats} />
-      {showModal && formData && (
-        <UpgradeFormModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          onConfirm={() => {
-            setIsUpgrading(true)
-            upgradePlan(formData)
-          }}
-          url={unverifiedPaymentMethods?.[0]?.hostedVerificationUrl || ''}
-          isUpgrading={isUpgrading}
-        />
-      )}
-    </form>
+    <Card className="flex-1 bg-transparent">
+      <Card.Header>
+        <div className="flex flex-col gap-1">
+          <h3 className="text-xl font-semibold">Organization</h3>
+          <div className="flex gap-2">
+            <Avatar user={ownerData} />
+            <span className="text-base">{owner}</span>
+          </div>
+        </div>
+      </Card.Header>
+      <Card.Content>
+        <form className="flex flex-col gap-6 text-ds-gray-default">
+          <PlanTypeOptions
+            setFormValue={setFormValue}
+            setSelectedPlan={setSelectedPlan}
+            newPlan={newPlan}
+          />
+          <Controller
+            setSelectedPlan={setSelectedPlan}
+            newPlan={newPlan}
+            seats={seats}
+            setFormValue={setFormValue}
+            register={register}
+            errors={errors}
+          />
+          <PersonalOrgWarning />
+          <UpdateButton
+            isValid={isValid}
+            newPlan={newPlan}
+            seats={seats}
+            onSubmit={onSubmit}
+            isLoading={isUpgrading}
+          />
+          {showPendingUpgradeModal && formData ? (
+            <PendingUpgradeModal
+              isOpen={showPendingUpgradeModal}
+              onClose={() => setShowPendingUpgradeModal(false)}
+              onConfirm={() => {
+                setIsUpgrading(true)
+                upgradePlan(formData)
+              }}
+              url={unverifiedPaymentMethods?.[0]?.hostedVerificationUrl || ''}
+              isUpgrading={isUpgrading}
+            />
+          ) : null}
+        </form>
+      </Card.Content>
+    </Card>
   )
 }
 

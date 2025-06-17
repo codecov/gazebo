@@ -1,16 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import UpgradeFormModal from './UpgradeFormModal'
+import PendingUpgradeModal from './PendingUpgradeModal'
 
-describe('UpgradeFormModal', () => {
+describe('PendingUpgradeModal', () => {
   const mockOnClose = vi.fn()
   const mockOnConfirm = vi.fn()
   const mockUrl = 'https://verify.stripe.com'
 
   const setup = (isUpgrading = false) => {
     return render(
-      <UpgradeFormModal
+      <PendingUpgradeModal
         isOpen={true}
         onClose={mockOnClose}
         onConfirm={mockOnConfirm}

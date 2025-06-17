@@ -40,20 +40,21 @@ const UpdateBlurb = ({
 
   return (
     <div>
-      <h3 className="pb-2 font-semibold">Review your plan changes</h3>
-      {diffPlanType && (
-        <li className="pl-2">{`You are changing from the ${
-          currentIsFree ? 'Developer' : currentIsTeam ? 'Team' : 'Pro'
-        } plan to the [${selectedIsTeam ? 'Team' : 'Pro'} plan]`}</li>
-      )}
-      {diffSeats && (
-        <li className="pl-2">{`You are changing seats from ${currentPlan?.planUserCount} to [${seats}]`}</li>
-      )}
-      {diffBillingType && !currentIsFree && (
-        <li className="pl-2">{`You are changing your billing cycle from ${
-          currentIsAnnual ? 'Annual' : 'Monthly'
-        } to [${currentIsAnnual ? 'Monthly' : 'Annual'}]`}</li>
-      )}
+      <ul className="list-inside list-disc">
+        {diffPlanType && (
+          <li className="pl-2">{`You are changing from the ${
+            currentIsFree ? 'Developer' : currentIsTeam ? 'Team' : 'Pro'
+          } plan to the [${selectedIsTeam ? 'Team' : 'Pro'} plan]`}</li>
+        )}
+        {diffSeats && (
+          <li className="pl-2">{`You are changing seats from ${currentPlan?.planUserCount} to [${seats}]`}</li>
+        )}
+        {diffBillingType && !currentIsFree && (
+          <li className="pl-2">{`You are changing your billing cycle from ${
+            currentIsAnnual ? 'Annual' : 'Monthly'
+          } to [${currentIsAnnual ? 'Monthly' : 'Annual'}]`}</li>
+        )}
+      </ul>
       <br />
 
       <h3 className="font-medium">
