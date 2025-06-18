@@ -74,7 +74,7 @@ const TotalTestsRunTimeCard = ({
   return (
     <MetricCard>
       <MetricCard.Header>
-        <MetricCard.Title className="flex items-center gap-2">
+        <MetricCard.Title className="flex items-center gap-2 text-lg">
           Total test run time
           <TooltipWithIcon>
             The total time it takes to run all your tests.
@@ -82,7 +82,7 @@ const TotalTestsRunTimeCard = ({
         </MetricCard.Title>
       </MetricCard.Header>
 
-      <MetricCard.Content>
+      <MetricCard.Content className="text-2xl">
         {formatTimeFromSeconds(totalDuration)}
         {totalDurationPercentChange ? (
           <PercentBadge value={totalDurationPercentChange} />
@@ -90,60 +90,6 @@ const TotalTestsRunTimeCard = ({
       </MetricCard.Content>
       <MetricCard.Description>
         The cumulative CI time spent running tests over the last {intervalCopy}.
-      </MetricCard.Description>
-    </MetricCard>
-  )
-}
-
-const SlowestTestsCard = ({
-  slowestTests,
-  slowestTestsPercentChange,
-  slowestTestsDuration,
-  isSelected,
-  updateParams,
-}: {
-  slowestTests?: number
-  slowestTestsPercentChange?: number | null
-  slowestTestsDuration?: number | null
-  isSelected: boolean
-  updateParams: (newParams: {
-    parameter: TestResultsFilterParameterType | ''
-  }) => void
-}) => {
-  return (
-    <MetricCard>
-      <MetricCard.Header>
-        <MetricCard.Title className="flex items-center gap-2">
-          Slowest tests
-          <TooltipWithIcon>
-            Lists the tests that take more than the 95th percentile run time to
-            complete. Showing a max of 100 tests.
-          </TooltipWithIcon>
-        </MetricCard.Title>
-      </MetricCard.Header>
-
-      <MetricCard.Content>
-        <button
-          className={cn('text-ds-blue-default hover:underline', {
-            'font-semibold': isSelected,
-          })}
-          onClick={() => {
-            updateParams({
-              parameter: isSelected
-                ? ''
-                : TestResultsFilterParameter.SLOWEST_TESTS,
-            })
-          }}
-        >
-          {slowestTests}
-        </button>
-        {slowestTestsPercentChange ? (
-          <PercentBadge value={slowestTestsPercentChange} />
-        ) : null}
-      </MetricCard.Content>
-      <MetricCard.Description>
-        The slowest {slowestTests} tests take{' '}
-        {formatTimeFromSeconds(slowestTestsDuration)} to run.
       </MetricCard.Description>
     </MetricCard>
   )
@@ -165,7 +111,7 @@ const TotalFlakyTestsCard = ({
   return (
     <MetricCard>
       <MetricCard.Header>
-        <MetricCard.Title className="flex items-center gap-2">
+        <MetricCard.Title className="flex items-center gap-2 text-lg">
           Flaky tests
           <TooltipWithIcon>
             The number of tests that transition from fail to pass or pass to
@@ -173,7 +119,7 @@ const TotalFlakyTestsCard = ({
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
-      <MetricCard.Content>
+      <MetricCard.Content className="text-2xl">
         <button
           className={cn('text-ds-blue-default hover:underline', {
             'font-semibold': isSelected,
@@ -209,7 +155,7 @@ const AverageFlakeRateCard = ({
   return (
     <MetricCard>
       <MetricCard.Header>
-        <MetricCard.Title className="flex items-center gap-2">
+        <MetricCard.Title className="flex items-center gap-2 text-lg">
           Avg. flake rate
           <TooltipWithIcon>
             The percentage of tests that flake, based on how many times a test
@@ -218,7 +164,7 @@ const AverageFlakeRateCard = ({
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
-      <MetricCard.Content>
+      <MetricCard.Content className="text-2xl">
         {flakeRate?.toFixed(2)}%
         {flakeRatePercentChange ? (
           <PercentBadge value={flakeRatePercentChange} />
@@ -247,7 +193,7 @@ const TotalFailuresCard = ({
   return (
     <MetricCard>
       <MetricCard.Header>
-        <MetricCard.Title className="flex items-center gap-2">
+        <MetricCard.Title className="flex items-center gap-2 text-lg">
           Cumulative Failures
           <TooltipWithIcon>
             The sum of all test failures, incremented each time any test has
@@ -255,7 +201,7 @@ const TotalFailuresCard = ({
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
-      <MetricCard.Content>
+      <MetricCard.Content className="text-2xl">
         <button
           className={cn('text-ds-blue-default hover:underline', {
             'font-semibold': isSelected,
@@ -297,7 +243,7 @@ const TotalSkippedTestsCard = ({
   return (
     <MetricCard>
       <MetricCard.Header>
-        <MetricCard.Title className="flex items-center gap-2">
+        <MetricCard.Title className="flex items-center gap-2 text-lg">
           Skipped tests
           <TooltipWithIcon>
             The number of tests that were skipped.
@@ -305,7 +251,7 @@ const TotalSkippedTestsCard = ({
         </MetricCard.Title>
       </MetricCard.Header>
 
-      <MetricCard.Content>
+      <MetricCard.Content className="text-2xl">
         <button
           className={cn('text-ds-blue-default hover:underline', {
             'font-semibold': isSelected,
@@ -388,86 +334,55 @@ function MetricsSection() {
   return (
     <>
       <hr />
-      <div className="overflow-x-auto overflow-y-hidden md:flex">
-        <div className="mb-6 flex flex-col gap-3 border-r-2 md:mb-0">
-          <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
-            Improve CI Run Efficiency
-          </p>
-          <div className="grid grid-cols-2">
-            <TotalTestsRunTimeCard
-              totalDuration={aggregates?.totalDuration}
-              totalDurationPercentChange={
-                aggregates?.totalDurationPercentChange
-              }
-              intervalCopy={historicalTrendToCopy(
-                queryParams?.historicalTrend as MeasurementInterval
-              )}
-            />
-            <SlowestTestsCard
-              slowestTests={aggregates?.totalSlowTests}
-              slowestTestsPercentChange={
-                aggregates?.totalSlowTestsPercentChange
-              }
-              slowestTestsDuration={aggregates?.slowestTestsDuration}
+      <div
+        className={cn(
+          'my-5 flex flex-col gap-5 overflow-x-auto overflow-y-hidden md:flex-row',
+          {
+            'gap-[40px]': !flakeAggregates,
+            'justify-between': flakeAggregates,
+          }
+        )}
+      >
+        <TotalTestsRunTimeCard
+          totalDuration={aggregates?.totalDuration}
+          totalDurationPercentChange={aggregates?.totalDurationPercentChange}
+          intervalCopy={historicalTrendToCopy(
+            queryParams?.historicalTrend as MeasurementInterval
+          )}
+        />
+        {flakeAggregates ? (
+          <>
+            <TotalFlakyTestsCard
+              flakeCount={flakeAggregates?.flakeCount}
+              flakeCountPercentChange={flakeAggregates?.flakeCountPercentChange}
               updateParams={updateParams}
               isSelected={
                 queryParams?.parameter ===
-                TestResultsFilterParameter.SLOWEST_TESTS
+                TestResultsFilterParameter.FLAKY_TESTS
               }
             />
-          </div>
-        </div>
-        <div className="flex flex-col gap-3">
-          <p className="pl-4 text-xs font-semibold text-ds-gray-quaternary">
-            Improve Test Performance
-          </p>
-          <div
-            className={cn(
-              'grid',
-              flakeAggregates ? 'grid-cols-4' : 'grid-cols-2'
-            )}
-          >
-            {flakeAggregates ? (
-              <>
-                <TotalFlakyTestsCard
-                  flakeCount={flakeAggregates?.flakeCount}
-                  flakeCountPercentChange={
-                    flakeAggregates?.flakeCountPercentChange
-                  }
-                  updateParams={updateParams}
-                  isSelected={
-                    queryParams?.parameter ===
-                    TestResultsFilterParameter.FLAKY_TESTS
-                  }
-                />
-                <AverageFlakeRateCard
-                  flakeRate={flakeAggregates?.flakeRate}
-                  flakeRatePercentChange={
-                    flakeAggregates?.flakeRatePercentChange
-                  }
-                />
-              </>
-            ) : null}
-            <TotalFailuresCard
-              totalFails={aggregates?.totalFails}
-              totalFailsPercentChange={aggregates?.totalFailsPercentChange}
-              updateParams={updateParams}
-              isSelected={
-                queryParams?.parameter ===
-                TestResultsFilterParameter.FAILED_TESTS
-              }
+            <AverageFlakeRateCard
+              flakeRate={flakeAggregates?.flakeRate}
+              flakeRatePercentChange={flakeAggregates?.flakeRatePercentChange}
             />
-            <TotalSkippedTestsCard
-              totalSkips={aggregates?.totalSkips}
-              totalSkipsPercentChange={aggregates?.totalSkipsPercentChange}
-              updateParams={updateParams}
-              isSelected={
-                queryParams?.parameter ===
-                TestResultsFilterParameter.SKIPPED_TESTS
-              }
-            />
-          </div>
-        </div>
+          </>
+        ) : null}
+        <TotalFailuresCard
+          totalFails={aggregates?.totalFails}
+          totalFailsPercentChange={aggregates?.totalFailsPercentChange}
+          updateParams={updateParams}
+          isSelected={
+            queryParams?.parameter === TestResultsFilterParameter.FAILED_TESTS
+          }
+        />
+        <TotalSkippedTestsCard
+          totalSkips={aggregates?.totalSkips}
+          totalSkipsPercentChange={aggregates?.totalSkipsPercentChange}
+          updateParams={updateParams}
+          isSelected={
+            queryParams?.parameter === TestResultsFilterParameter.SKIPPED_TESTS
+          }
+        />
       </div>
     </>
   )
