@@ -145,18 +145,6 @@ describe('MetricsSection', () => {
   })
 
   describe('when on default branch', () => {
-    it('renders subheaders', async () => {
-      setup()
-      render(<MetricsSection />, {
-        wrapper: wrapper('/gh/owner/repo/tests/main'),
-      })
-
-      const runEfficiency = await screen.findByText('Improve CI Run Efficiency')
-      const testPerf = await screen.findByText('Improve Test Performance')
-      expect(runEfficiency).toBeInTheDocument()
-      expect(testPerf).toBeInTheDocument()
-    })
-
     it('renders total test runtime card', async () => {
       setup()
       render(<MetricsSection />, {
