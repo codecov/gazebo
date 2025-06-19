@@ -6,6 +6,19 @@ import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import TableHeader from './TableHeader'
 
+const mocks = vi.hoisted(() => ({
+  useFlags: vi.fn(() => ({ allBranchesEnabled: false })),
+}))
+
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+
+  return {
+    ...actual,
+    useFlags: mocks.useFlags,
+  }
+})
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true, retry: false } },
 })
@@ -36,9 +49,10 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
     </QueryClientProvider>
   )
 
-describe('TableHeader', () => {
+describe.each([true, false])('TableHeader', (allBranchesEnabled) => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mocks.useFlags.mockReturnValue({ allBranchesEnabled })
   })
 
   it('renders the TableHeader component', () => {

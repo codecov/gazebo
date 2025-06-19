@@ -13,6 +13,7 @@ import { useInView } from 'react-intersection-observer'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
+import { ALL_BRANCHES } from 'services/navigation/useNavLinks'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -225,7 +226,8 @@ const FailedTestsTable = () => {
     },
   })
 
-  const isDefaultBranch = testData?.defaultBranch === branch
+  const isDefaultBranch =
+    testData?.defaultBranch === branch || ALL_BRANCHES === branch
   const isTeamOrFreePlan = testData?.isTeamPlan || testData?.isFreePlan
   // Only show flake rate column when on default branch for pro / enterprise plans or public repos
   const hideFlakeRate =
@@ -296,6 +298,8 @@ const FailedTestsTable = () => {
   }, [fetchNextPage, inView, hasNextPage])
 
   if (testData?.isFirstPullRequest && testData.totalCount === 0) {
+    const defaultBranch = testData?.defaultBranch ?? 'default'
+
     return (
       <div className="flex flex-col gap-2">
         <TableHeader
@@ -306,7 +310,8 @@ const FailedTestsTable = () => {
         <div className="mt-4 text-center text-ds-gray-quinary">
           <p>No data yet</p>
           <p>
-            To see data for the main branch, merge your PR into the main branch.
+            To see data for the {defaultBranch} branch, merge your PR into the{' '}
+            {defaultBranch} branch.
           </p>
         </div>
       </div>

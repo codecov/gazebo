@@ -12,6 +12,15 @@ import MetricsSection, { historicalTrendToCopy } from './MetricsSection'
 
 import { TestResultsFilterParameter } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
 
+vi.mock('shared/featureFlags', async () => {
+  const actual = await vi.importActual('shared/featureFlags')
+
+  return {
+    ...actual,
+    useFlags: vi.fn(() => ({ allBranchesEnabled: false })),
+  }
+})
+
 const mockAggResponse = (
   planValue: PlanName = Plans.USERS_ENTERPRISEM,
   isPrivate = false
@@ -148,11 +157,14 @@ describe('MetricsSection', () => {
     })
   })
 
-  describe('when on default branch', () => {
+  describe.each([
+    ['default branch', 'main'],
+    ['all branches', 'All%20branches'],
+  ])('when on %s', (_, encodedBranch) => {
     it('renders subheaders', async () => {
       setup()
       render(<MetricsSection />, {
-        wrapper: wrapper('/gh/owner/repo/tests/main'),
+        wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
       })
 
       const runEfficiency = await screen.findByText('Improve CI Run Efficiency')
@@ -164,7 +176,7 @@ describe('MetricsSection', () => {
     it('renders total test runtime card', async () => {
       setup()
       render(<MetricsSection />, {
-        wrapper: wrapper('/gh/owner/repo/tests/main'),
+        wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
       })
 
       const title = await screen.findByText('Total test run time')
@@ -182,7 +194,7 @@ describe('MetricsSection', () => {
       it('renders slowest tests card', async () => {
         setup()
         render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
+          wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
         })
 
         const title = await screen.findByText('Slowest tests')
@@ -199,7 +211,7 @@ describe('MetricsSection', () => {
       it('can update the location params on button click', async () => {
         const { user } = setup()
         render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
+          wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
         })
         const select = await screen.findByText('12')
         expect(select).toBeInTheDocument()
@@ -217,7 +229,7 @@ describe('MetricsSection', () => {
       it('removes the location param on second button click', async () => {
         const { user } = setup()
         render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
+          wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
         })
         const select = await screen.findByText('12')
         expect(select).toBeInTheDocument()
@@ -239,7 +251,7 @@ describe('MetricsSection', () => {
       it('renders total flaky tests card', async () => {
         setup()
         render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
+          wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
         })
 
         const title = await screen.findByText('Flaky tests')
@@ -256,7 +268,7 @@ describe('MetricsSection', () => {
       it('can update the location params on button click', async () => {
         const { user } = setup()
         render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
+          wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
         })
         const select = await screen.findByText(88)
         expect(select).toBeInTheDocument()
@@ -274,7 +286,7 @@ describe('MetricsSection', () => {
       it('removes the location param on second button click', async () => {
         const { user } = setup()
         render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
+          wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
         })
         const select = await screen.findByText(88)
         expect(select).toBeInTheDocument()
@@ -313,7 +325,7 @@ describe('MetricsSection', () => {
       it('renders total failures card', async () => {
         setup()
         render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
+          wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
         })
 
         const title = await screen.findByText('Cumulative Failures')
@@ -330,7 +342,7 @@ describe('MetricsSection', () => {
       it('can update the location params on button click', async () => {
         const { user } = setup()
         render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
+          wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
         })
         const select = await screen.findByText(1)
         expect(select).toBeInTheDocument()
@@ -370,7 +382,7 @@ describe('MetricsSection', () => {
       it('renders total skips card', async () => {
         setup()
         render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
+          wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
         })
 
         const title = await screen.findByText('Skipped tests')
@@ -387,7 +399,7 @@ describe('MetricsSection', () => {
       it('can update the location params on button click', async () => {
         const { user } = setup()
         render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
+          wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
         })
         const select = await screen.findByText(20)
         expect(select).toBeInTheDocument()
@@ -405,7 +417,7 @@ describe('MetricsSection', () => {
       it('removes the location param on second button click', async () => {
         const { user } = setup()
         render(<MetricsSection />, {
-          wrapper: wrapper('/gh/owner/repo/tests/main'),
+          wrapper: wrapper(`/gh/owner/repo/tests/${encodedBranch}`),
         })
         const select = await screen.findByText(20)
         expect(select).toBeInTheDocument()

@@ -3,6 +3,7 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation/useLocationParams'
+import { ALL_BRANCHES } from 'services/navigation/useNavLinks'
 import { cn } from 'shared/utils/cn'
 import { formatTimeFromSeconds } from 'shared/utils/dates'
 import Badge from 'ui/Badge'
@@ -379,7 +380,10 @@ function MetricsSection() {
   const decodedBranch = getDecodedBranch(branch)
   const selectedBranch = decodedBranch ?? testResults?.defaultBranch ?? ''
 
-  if (selectedBranch !== testResults?.defaultBranch) {
+  if (
+    selectedBranch !== testResults?.defaultBranch &&
+    selectedBranch !== ALL_BRANCHES
+  ) {
     return null
   }
 
