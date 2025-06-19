@@ -2,6 +2,7 @@ import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
 import { IndividualPlan } from 'services/account/useAvailablePlans'
 import { MIN_SENTRY_SEATS } from 'shared/utils/upgradeForm'
+import { Card } from 'ui/Card'
 import TextInput from 'ui/TextInput'
 
 import BillingOptions from './BillingOptions'
@@ -31,34 +32,43 @@ const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
 }) => {
   return (
     <>
-      <div className="flex flex-col gap-2">
-        <BillingOptions newPlan={newPlan} setFormValue={setFormValue} />
-      </div>
-      <div className="flex flex-col gap-2 xl:w-5/12">
-        <div className="w-1/2">
-          <TextInput
-            data-cy="seats"
-            dataMarketing="plan-pricing-seats"
-            {...register('seats')}
-            id="nb-seats"
-            size={20}
-            type="number"
-            label="Enter seat count"
-            min={MIN_SENTRY_SEATS}
-          />
+      <Card.Content>
+        <div className="flex flex-col gap-2">
+          <BillingOptions newPlan={newPlan} setFormValue={setFormValue} />
         </div>
-        <UserCount />
-      </div>
-      <PriceCallout
-        seats={seats}
-        newPlan={newPlan}
-        setFormValue={setFormValue}
-      />
-      {errors?.seats && (
-        <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
-          {errors?.seats?.message}
-        </p>
-      )}
+      </Card.Content>
+      <hr />
+      <Card.Content>
+        <div className="flex flex-col gap-2 xl:w-5/12">
+          <label htmlFor="nb-seats" className="font-semibold">
+            Step 3: Enter seat count
+          </label>
+          <div className="w-1/4">
+            <TextInput
+              data-cy="seats"
+              dataMarketing="plan-pricing-seats"
+              {...register('seats')}
+              id="nb-seats"
+              size={20}
+              type="number"
+              min={MIN_SENTRY_SEATS}
+            />
+          </div>
+          <UserCount />
+        </div>
+      </Card.Content>
+      <Card.Content>
+        <PriceCallout
+          seats={seats}
+          newPlan={newPlan}
+          setFormValue={setFormValue}
+        />
+        {errors?.seats && (
+          <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
+            {errors?.seats?.message}
+          </p>
+        )}
+      </Card.Content>
     </>
   )
 }

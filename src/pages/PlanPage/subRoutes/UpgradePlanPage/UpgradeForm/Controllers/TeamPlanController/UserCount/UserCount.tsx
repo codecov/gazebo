@@ -35,9 +35,11 @@ const UserText: React.FC<UserTextProps> = ({
   activatedUserCount,
   inactiveUserCount,
 }) => {
+  const hasOneMember = activatedUserCount + inactiveUserCount === 1
   return (
     <p>
-      Your organization has {activatedUserCount + inactiveUserCount} members.
+      Your organization has {activatedUserCount + inactiveUserCount} member
+      {hasOneMember ? '' : 's'}.
     </p>
   )
 }

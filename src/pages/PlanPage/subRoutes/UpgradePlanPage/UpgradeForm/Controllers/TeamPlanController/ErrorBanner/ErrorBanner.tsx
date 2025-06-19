@@ -6,10 +6,12 @@ import {
   useAvailablePlans,
 } from 'services/account/useAvailablePlans'
 import { usePlanData } from 'services/account/usePlanData'
+import { useLocationParams } from 'services/navigation/useLocationParams'
 import {
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
+  TierNames,
 } from 'shared/utils/billing'
 import { UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE } from 'shared/utils/upgradeForm'
 
@@ -33,6 +35,7 @@ export default function ErrorBanner({
   setSelectedPlan,
 }: ErrorBannerProps) {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
+  const { updateParams } = useLocationParams({ plan: null })
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ provider, owner })
   const { proPlanYear } = findProPlans({ plans })
@@ -57,6 +60,8 @@ export default function ErrorBanner({
             setFormValue('newPlan', yearlyProPlan, {
               shouldValidate: true,
             })
+            // without this line, the tier selector won't update
+            updateParams({ plan: TierNames.PRO })
           }}
         >
           Upgrade to Pro

@@ -198,6 +198,8 @@ describe('UpdateButton', () => {
           isValid: true,
           newPlan: proPlanYearly,
           seats: 3,
+          onSubmit: () => {},
+          isLoading: false,
         }
 
         render(<UpdateButton {...props} />, {
@@ -218,6 +220,8 @@ describe('UpdateButton', () => {
           isValid: true,
           newPlan: proPlanYearly,
           seats: 27,
+          onSubmit: () => {},
+          isLoading: false,
         }
 
         render(<UpdateButton {...props} />, {
@@ -238,6 +242,8 @@ describe('UpdateButton', () => {
           isValid: false,
           newPlan: proPlanYearly,
           seats: 6,
+          onSubmit: () => {},
+          isLoading: false,
         }
 
         render(<UpdateButton {...props} />, {
@@ -258,6 +264,8 @@ describe('UpdateButton', () => {
           isValid: true,
           newPlan: proPlanMonthly,
           seats: 4,
+          onSubmit: () => {},
+          isLoading: false,
         }
 
         render(<UpdateButton {...props} />, {

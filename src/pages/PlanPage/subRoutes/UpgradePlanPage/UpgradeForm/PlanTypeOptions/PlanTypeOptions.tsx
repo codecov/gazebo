@@ -17,7 +17,7 @@ import {
   TierNames,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
-import { OptionButton } from 'ui/OptionButton/OptionButton'
+import { RadioTileGroup } from 'ui/RadioTileGroup'
 
 import { TierName } from '../constants'
 import { usePlanParams } from '../hooks/usePlanParams'
@@ -68,13 +68,12 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   if (hasTeamPlans) {
     return (
       <div className="flex w-fit flex-col gap-2">
-        <h3 className="font-semibold">Choose a plan</h3>
+        <h3 className="font-semibold">Step 1: Choose a plan</h3>
         <div className="inline-flex items-center gap-2">
-          <OptionButton
-            type="button"
-            active={planOption}
-            onChange={({ text }) => {
-              if (text === TierName.PRO) {
+          <RadioTileGroup
+            value={planOption}
+            onValueChange={(value) => {
+              if (value === TierName.PRO) {
                 if (monthlyPlan) {
                   setSelectedPlan(monthlyProPlan)
                   setFormValue('newPlan', monthlyProPlan)
@@ -94,17 +93,14 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
                 updateParams({ plan: TierNames.TEAM })
               }
             }}
-            options={
-              [
-                {
-                  text: TierName.PRO,
-                },
-                {
-                  text: TierName.TEAM,
-                },
-              ] as const
-            }
-          />
+          >
+            <RadioTileGroup.Item value={TierName.PRO} className="w-32">
+              <RadioTileGroup.Label>{TierName.PRO}</RadioTileGroup.Label>
+            </RadioTileGroup.Item>
+            <RadioTileGroup.Item value={TierName.TEAM} className="w-32">
+              <RadioTileGroup.Label>{TierName.TEAM}</RadioTileGroup.Label>
+            </RadioTileGroup.Item>
+          </RadioTileGroup>
           {planOption === TierName.TEAM && (
             <p>Up to {TEAM_PLAN_MAX_ACTIVE_USERS} users</p>
           )}
