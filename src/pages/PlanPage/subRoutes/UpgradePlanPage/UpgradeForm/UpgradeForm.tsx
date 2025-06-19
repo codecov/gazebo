@@ -123,7 +123,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
         <div className="flex flex-col gap-1">
           <h3 className="font-semibold">Organization</h3>
           <div className="flex items-center gap-2">
-            <Avatar user={ownerData} />
+            <Avatar user={ownerData} border="dark" />
             {owner}
           </div>
         </div>
