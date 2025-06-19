@@ -9,6 +9,7 @@ import { Provider } from 'shared/api/helpers'
 import { getNextBillingDate } from 'shared/utils/billing'
 import Avatar from 'ui/Avatar'
 import Button from 'ui/Button'
+import Checkbox from 'ui/Checkbox'
 import Modal from 'ui/Modal'
 
 import { PersonalOrgWarning } from '../PersonalOrgWarning'
@@ -31,6 +32,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
 }) => {
   const { provider, owner } = useParams<{ provider: Provider; owner: string }>()
   const [showConfirmationModal, setShowConfirmationModal] = useState(false)
+  const [confirmationIsChecked, setConfirmationIsChecked] = useState(false)
   const { data: ownerData } = useOwner({ username: owner })
   const { data: planData } = usePlanData({ provider, owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
@@ -67,10 +69,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
         body={
           <div className="flex flex-col gap-4 px-4 py-2">
             <div className="inline-flex items-center gap-1">
-              By proceeding, you are making the following changes to{' '}
-              <Avatar user={ownerData} className="size-4" />
-              <span className="font-bold text-ds-pink-default">{owner}</span>
-              &apos;s plan:
+              By proceeding, you are making the following changes to your plan:
             </div>
             <UpdateBlurb
               currentPlan={planData?.plan}
@@ -79,6 +78,24 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
               nextBillingDate={getNextBillingDate(accountDetails)!}
             />
             <PersonalOrgWarning />
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="upgrade-confirmation-checkbox"
+                checked={confirmationIsChecked}
+                onClick={() => setConfirmationIsChecked(!confirmationIsChecked)}
+              />
+              <label
+                className="flex flex-wrap items-center"
+                htmlFor="upgrade-confirmation-checkbox"
+              >
+                I accept the changes to
+                <div className="flex items-center gap-1 pl-1">
+                  <Avatar user={ownerData} className="size-4" border="dark" />
+                  <span className="font-bold">{owner}</span>
+                </div>
+                &apos;s plan.
+              </label>
+            </div>
             <div className="flex justify-end gap-2">
               <Button
                 type="button"
@@ -92,6 +109,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
                 type="submit"
                 hook="submit-upgrade"
                 variant="primary"
+                disabled={!confirmationIsChecked}
                 onClick={() => {
                   onSubmit()
                   setShowConfirmationModal(false)
