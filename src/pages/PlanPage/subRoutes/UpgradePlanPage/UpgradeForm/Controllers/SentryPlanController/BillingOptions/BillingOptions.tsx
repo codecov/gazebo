@@ -8,7 +8,7 @@ import {
 } from 'services/account/useAvailablePlans'
 import { usePlanData } from 'services/account/usePlanData'
 import { BillingRate, findSentryPlans } from 'shared/utils/billing'
-import { OptionButton } from 'ui/OptionButton/OptionButton'
+import { RadioTileGroup } from 'ui/RadioTileGroup'
 
 import { OptionPeriod, TimePeriods } from '../../../constants'
 import { UpgradeFormFields } from '../../../UpgradeForm'
@@ -65,31 +65,27 @@ const BillingControls: React.FC<BillingControlsProps> = ({
 
   return (
     <div className="flex w-fit flex-col gap-2">
-      <h3 className="font-semibold">Choose a billing cycle</h3>
+      <h3 className="font-semibold">Step 2: Choose a billing cycle</h3>
       <div className="inline-flex items-center gap-2">
-        <OptionButton
-          type="button"
-          active={option}
-          onChange={({ text }) => {
-            if (text === TimePeriods.ANNUAL) {
+        <RadioTileGroup
+          value={option}
+          onValueChange={(value: OptionPeriod) => {
+            if (value === TimePeriods.ANNUAL) {
               setFormValue('newPlan', sentryPlanYear)
             } else {
               setFormValue('newPlan', sentryPlanMonth)
             }
 
-            setOption(text)
+            setOption(value)
           }}
-          options={
-            [
-              {
-                text: TimePeriods.ANNUAL,
-              },
-              {
-                text: TimePeriods.MONTHLY,
-              },
-            ] as const
-          }
-        />
+        >
+          <RadioTileGroup.Item value={TimePeriods.ANNUAL} className="w-32">
+            <RadioTileGroup.Label>{TimePeriods.ANNUAL}</RadioTileGroup.Label>
+          </RadioTileGroup.Item>
+          <RadioTileGroup.Item value={TimePeriods.MONTHLY} className="w-32">
+            <RadioTileGroup.Label>{TimePeriods.MONTHLY}</RadioTileGroup.Label>
+          </RadioTileGroup.Item>
+        </RadioTileGroup>
         <p>
           <span className="font-semibold">${baseUnitPrice}</span> per
           seat/month, billed {billingRate}

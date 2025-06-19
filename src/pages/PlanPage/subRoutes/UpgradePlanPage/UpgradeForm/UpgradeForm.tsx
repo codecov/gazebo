@@ -121,28 +121,31 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
     <Card className="flex-1 bg-transparent">
       <Card.Header>
         <div className="flex flex-col gap-1">
-          <h3 className="text-xl font-semibold">Organization</h3>
-          <div className="flex gap-2">
+          <h3 className="font-semibold">Organization</h3>
+          <div className="flex items-center gap-2">
             <Avatar user={ownerData} />
-            <span className="text-base">{owner}</span>
+            {owner}
           </div>
         </div>
       </Card.Header>
-      <Card.Content>
-        <form className="flex flex-col gap-6 text-ds-gray-default">
+      <form className="text-ds-gray-default">
+        <Card.Content>
           <PlanTypeOptions
             setFormValue={setFormValue}
             setSelectedPlan={setSelectedPlan}
             newPlan={newPlan}
           />
-          <Controller
-            setSelectedPlan={setSelectedPlan}
-            newPlan={newPlan}
-            seats={seats}
-            setFormValue={setFormValue}
-            register={register}
-            errors={errors}
-          />
+        </Card.Content>
+        <hr />
+        <Controller
+          setSelectedPlan={setSelectedPlan}
+          newPlan={newPlan}
+          seats={seats}
+          setFormValue={setFormValue}
+          register={register}
+          errors={errors}
+        />
+        <Card.Content className="flex flex-col gap-6 pb-6">
           <PersonalOrgWarning />
           <UpdateButton
             isValid={isValid}
@@ -163,8 +166,8 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
               isUpgrading={isUpgrading}
             />
           ) : null}
-        </form>
-      </Card.Content>
+        </Card.Content>
+      </form>
     </Card>
   )
 }
