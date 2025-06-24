@@ -1,9 +1,8 @@
-import {
-  formatDistanceToNow,
-  fromUnixTime,
-  intervalToDuration,
-  parseISO,
-} from 'date-fns'
+import { formatDistanceToNow, fromUnixTime, parseISO } from 'date-fns'
+
+const SECONDS_PER_DAY = 86400
+const SECONDS_PER_HOUR = 3600
+const SECONDS_PER_MINUTE = 60
 
 export function formatTimeToNow(date?: string | number | null) {
   if (!date) return null
@@ -16,19 +15,30 @@ export function formatTimeToNow(date?: string | number | null) {
 }
 
 export const formatTimeFromSeconds = (totalSeconds?: number | null) => {
+  if (totalSeconds == null || totalSeconds < 0) return 'N/A'
   if (totalSeconds === 0) return '0s'
-  if (!totalSeconds) return 'N/A'
+  if (totalSeconds < 1) return '<1s'
 
-  const duration = intervalToDuration({ start: 0, end: totalSeconds * 1000 })
+  const days = Math.floor(totalSeconds / SECONDS_PER_DAY)
+  const hours = Math.floor((totalSeconds % SECONDS_PER_DAY) / SECONDS_PER_HOUR)
+  const minutes = Math.floor(
+    (totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE
+  )
+  const seconds = Math.floor(totalSeconds % SECONDS_PER_MINUTE)
 
-  const { days, hours, minutes, seconds } = duration
+  const timeParts = []
+  if (days > 0) {
+    timeParts.push(`${days}d`)
+  }
+  if (hours > 0) {
+    timeParts.push(`${hours}h`)
+  }
+  if (minutes > 0) {
+    timeParts.push(`${minutes}m`)
+  }
+  if (seconds > 0) {
+    timeParts.push(`${seconds}s`)
+  }
 
-  return [
-    days ? `${days}d` : '',
-    hours ? `${hours}h` : '',
-    minutes ? `${minutes}m` : '',
-    seconds ? `${seconds}s` : '',
-  ]
-    .filter(Boolean)
-    .join(' ')
+  return timeParts.join(' ')
 }

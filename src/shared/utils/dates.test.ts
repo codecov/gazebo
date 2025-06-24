@@ -34,4 +34,24 @@ describe('formatTimeFromSeconds', () => {
   it('returns the correct time format when totalSeconds is greater than 0', () => {
     expect(formatTimeFromSeconds(3661)).toBe('1h 1m 1s')
   })
+
+  it('returns the correct time format when totalSeconds is a float', () => {
+    expect(formatTimeFromSeconds(12901948.144373389)).toBe('149d 7h 52m 28s')
+  })
+
+  it('returns the correct time format when totalSeconds is less than 1', () => {
+    expect(formatTimeFromSeconds(0.5)).toBe('<1s')
+  })
+
+  it('returns "N/A" when totalSeconds is negative', () => {
+    expect(formatTimeFromSeconds(-1)).toBe('N/A')
+  })
+
+  it('returns only minutes when totalSeconds is an exact number of minutes', () => {
+    expect(formatTimeFromSeconds(120)).toBe('2m')
+  })
+
+  it('handles float values that round down', () => {
+    expect(formatTimeFromSeconds(59.999)).toBe('59s')
+  })
 })
