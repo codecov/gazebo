@@ -70,6 +70,7 @@ function WorkflowYMLStep({
                 },
               })
             }
+            // this is a comment
           >
             {workflowYMLConfig}
           </CodeSnippet>
