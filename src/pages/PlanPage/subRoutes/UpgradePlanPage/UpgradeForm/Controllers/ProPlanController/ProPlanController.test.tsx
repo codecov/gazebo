@@ -278,7 +278,7 @@ describe('ProPlanController', () => {
         setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -286,7 +286,7 @@ describe('ProPlanController', () => {
         setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -294,9 +294,9 @@ describe('ProPlanController', () => {
         setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toBeChecked()
       })
 
       it('has the price for the year', async () => {
@@ -321,7 +321,7 @@ describe('ProPlanController', () => {
         setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -329,7 +329,7 @@ describe('ProPlanController', () => {
         setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -337,9 +337,9 @@ describe('ProPlanController', () => {
         setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toBeChecked()
       })
 
       it('has the price for the year', async () => {
