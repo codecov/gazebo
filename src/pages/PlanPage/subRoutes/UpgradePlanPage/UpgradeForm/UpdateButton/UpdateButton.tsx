@@ -81,6 +81,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
             <div className="flex items-center gap-2">
               <Checkbox
                 id="upgrade-confirmation-checkbox"
+                data-testid="upgrade-confirmation-checkbox"
                 checked={confirmationIsChecked}
                 onClick={() => setConfirmationIsChecked(!confirmationIsChecked)}
               />
@@ -111,8 +112,8 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
                 variant="primary"
                 disabled={!confirmationIsChecked}
                 onClick={() => {
-                  onSubmit()
                   setShowConfirmationModal(false)
+                  onSubmit()
                 }}
               >
                 {planData?.plan?.isFreePlan ? 'Proceed to checkout' : 'Update'}

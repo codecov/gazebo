@@ -124,7 +124,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
           <h3 className="font-semibold">Organization</h3>
           <div className="flex items-center gap-2">
             <Avatar user={ownerData} border="dark" />
-            {owner}
+            <h4>{owner}</h4>
           </div>
         </div>
       </Card.Header>
