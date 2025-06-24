@@ -78,10 +78,18 @@ const BillingControls: React.FC<BillingControlsProps> = ({
             setOption(value)
           }}
         >
-          <RadioTileGroup.Item value={TimePeriods.ANNUAL} className="w-32">
+          <RadioTileGroup.Item
+            value={TimePeriods.ANNUAL}
+            className="w-32"
+            data-testid="radio-annual"
+          >
             <RadioTileGroup.Label>{TimePeriods.ANNUAL}</RadioTileGroup.Label>
           </RadioTileGroup.Item>
-          <RadioTileGroup.Item value={TimePeriods.MONTHLY} className="w-32">
+          <RadioTileGroup.Item
+            value={TimePeriods.MONTHLY}
+            className="w-32"
+            data-testid="radio-monthly"
+          >
             <RadioTileGroup.Label>{TimePeriods.MONTHLY}</RadioTileGroup.Label>
           </RadioTileGroup.Item>
         </RadioTileGroup>
