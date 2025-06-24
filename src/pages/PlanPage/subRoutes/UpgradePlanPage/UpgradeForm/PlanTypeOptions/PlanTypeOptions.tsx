@@ -57,7 +57,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const monthlyPlan = newPlan?.billingRate === BillingRate.MONTHLY
 
   let planOption = null
-  if ((hasTeamPlans && planParam === TierNames.TEAM) || newPlan?.isTeamPlan) {
+  if (hasTeamPlans && planParam === TierNames.TEAM) {
     planOption = TierName.TEAM
   } else {
     planOption = TierName.PRO
@@ -94,10 +94,18 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
               }
             }}
           >
-            <RadioTileGroup.Item value={TierName.PRO} className="w-32">
+            <RadioTileGroup.Item
+              value={TierName.PRO}
+              className="w-32"
+              data-testid="radio-pro"
+            >
               <RadioTileGroup.Label>{TierName.PRO}</RadioTileGroup.Label>
             </RadioTileGroup.Item>
-            <RadioTileGroup.Item value={TierName.TEAM} className="w-32">
+            <RadioTileGroup.Item
+              value={TierName.TEAM}
+              className="w-32"
+              data-testid="radio-team"
+            >
               <RadioTileGroup.Label>{TierName.TEAM}</RadioTileGroup.Label>
             </RadioTileGroup.Item>
           </RadioTileGroup>
