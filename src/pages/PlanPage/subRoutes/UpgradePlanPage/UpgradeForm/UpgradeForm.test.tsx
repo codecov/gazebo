@@ -9,6 +9,7 @@ import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
+import ResizeObserver from 'resize-observer-polyfill'
 
 import { accountDetailsParsedObj } from 'services/account/mocks'
 import { IndividualPlan } from 'services/account/useAvailablePlans'
@@ -16,6 +17,8 @@ import { TrialStatuses } from 'services/account/usePlanData'
 import { BillingRate, Plans } from 'shared/utils/billing'
 
 import UpgradeForm from './UpgradeForm'
+
+global.ResizeObserver = ResizeObserver
 
 const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
@@ -230,6 +233,49 @@ const mockPlanDataResponse = {
   isSentryPlan: false,
 }
 
+const mockUser = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
+    user: {
+      name: 'Jane Doe',
+      username: 'janedoe',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: Plans.USERS_DEVELOPER,
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
+    },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -300,6 +346,7 @@ type SetupArgs = {
   planUserCount?: number
   hasUnverifiedPaymentMethods?: boolean
   subscriptionHasDefaultPaymentMethod?: boolean
+  isPersonalOrg?: boolean
 }
 
 describe('UpgradeForm', () => {
@@ -314,6 +361,7 @@ describe('UpgradeForm', () => {
     planUserCount = 1,
     hasUnverifiedPaymentMethods = false,
     subscriptionHasDefaultPaymentMethod = true,
+    isPersonalOrg = false,
   }: SetupArgs) {
     const addNotification = vi.fn()
     const user = userEvent.setup()
@@ -433,7 +481,27 @@ describe('UpgradeForm', () => {
             },
           },
         })
-      })
+      }),
+      graphql.query('CurrentUser', () =>
+        HttpResponse.json({
+          data: mockUser,
+        })
+      ),
+      graphql.query('DetailOwner', () =>
+        HttpResponse.json({
+          data: {
+            owner: {
+              orgUploadToken: '9a9f1bb6-43e9-4766-b48b-aa16b449fbb1',
+              ownerid: 5537,
+              username: isPersonalOrg ? 'janedoe' : 'codecov',
+              avatarUrl:
+                'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+              isCurrentUserPartOfOrg: true,
+              isAdmin: true,
+            },
+          },
+        })
+      )
     )
 
     return { addNotification, user, patchRequest }
@@ -446,7 +514,7 @@ describe('UpgradeForm', () => {
         selectedPlan: proPlanYear,
       }
 
-      it('shows modal when form is submitted', async () => {
+      it('shows unverified payment method modal when form is submitted', async () => {
         const { user } = setup({
           planValue: Plans.USERS_DEVELOPER,
           hasUnverifiedPaymentMethods: true,
@@ -458,6 +526,15 @@ describe('UpgradeForm', () => {
           name: /Proceed to checkout/,
         })
         await user.click(proceedToCheckoutButton)
+
+        const confirmCheckoutCheckbox = await screen.findByTestId(
+          'upgrade-confirmation-checkbox'
+        )
+        await user.click(confirmCheckoutCheckbox)
+
+        const confirmCheckoutButton =
+          await screen.findByTestId('submit-upgrade')
+        await user.click(confirmCheckoutButton)
 
         const modal = await screen.findByText(
           /Are you sure you want to abandon this upgrade and start a new one/,
@@ -482,7 +559,17 @@ describe('UpgradeForm', () => {
         const proceedToCheckoutButton = await screen.findByRole('button', {
           name: /Proceed to checkout/,
         })
+
         await user.click(proceedToCheckoutButton)
+
+        const confirmCheckoutCheckbox = await screen.findByTestId(
+          'upgrade-confirmation-checkbox'
+        )
+        await user.click(confirmCheckoutCheckbox)
+
+        const confirmCheckoutButton =
+          await screen.findByTestId('submit-upgrade')
+        await user.click(confirmCheckoutButton)
 
         const modal = screen.queryByText(
           /Are you sure you want to abandon this upgrade and start a new one/,
@@ -513,7 +600,7 @@ describe('UpgradeForm', () => {
         setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -521,7 +608,7 @@ describe('UpgradeForm', () => {
         setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -529,9 +616,9 @@ describe('UpgradeForm', () => {
         setup({ planValue: Plans.USERS_DEVELOPER, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toBeChecked()
       })
 
       it('has the price for the year', async () => {
@@ -587,9 +674,9 @@ describe('UpgradeForm', () => {
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+          const optionBtn = await screen.findByTestId('radio-pro')
           expect(optionBtn).toBeInTheDocument()
-          expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          expect(optionBtn).toBeChecked()
         })
 
         it('renders team option button', async () => {
@@ -599,9 +686,7 @@ describe('UpgradeForm', () => {
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const optionBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const optionBtn = await screen.findByTestId('radio-team')
           expect(optionBtn).toBeInTheDocument()
         })
 
@@ -613,9 +698,7 @@ describe('UpgradeForm', () => {
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            const teamOption = await screen.findByRole('button', {
-              name: 'Team',
-            })
+            const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
 
             const auxiliaryText = await screen.findByText(/Up to 10 users/)
@@ -629,9 +712,7 @@ describe('UpgradeForm', () => {
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            const teamOption = await screen.findByRole('button', {
-              name: 'Team',
-            })
+            const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
             expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           })
@@ -643,9 +724,7 @@ describe('UpgradeForm', () => {
           const { user } = setup({ planValue: Plans.USERS_DEVELOPER })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const monthOption = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
+          const monthOption = await screen.findByTestId('radio-monthly')
           await user.click(monthOption)
 
           const price = screen.getByText(/\$48/)
@@ -668,7 +747,17 @@ describe('UpgradeForm', () => {
           const proceedToCheckoutButton = await screen.findByRole('button', {
             name: /Proceed to checkout/,
           })
+
           await user.click(proceedToCheckoutButton)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() =>
             expect(patchRequest).toHaveBeenCalledWith({
@@ -691,15 +780,23 @@ describe('UpgradeForm', () => {
           await user.type(input, '{backspace}{backspace}{backspace}')
           await user.type(input, '20')
 
-          const optionBtn = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
+          const optionBtn = await screen.findByTestId('radio-monthly')
           await user.click(optionBtn)
 
           const proceedToCheckoutButton = await screen.findByRole('button', {
             name: /Proceed to checkout/,
           })
+
           await user.click(proceedToCheckoutButton)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() =>
             expect(patchRequest).toHaveBeenCalledWith({
@@ -725,7 +822,17 @@ describe('UpgradeForm', () => {
           const proceedToCheckoutButton = await screen.findByRole('button', {
             name: /Proceed to checkout/,
           })
+
           await user.click(proceedToCheckoutButton)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => !queryClient.isMutating())
@@ -753,7 +860,17 @@ describe('UpgradeForm', () => {
           const proceedToCheckoutButton = await screen.findByRole('button', {
             name: /Proceed to checkout/,
           })
+
           await user.click(proceedToCheckoutButton)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())
@@ -783,7 +900,17 @@ describe('UpgradeForm', () => {
           const proceedToCheckoutButton = await screen.findByRole('button', {
             name: /Proceed to checkout/,
           })
+
           await user.click(proceedToCheckoutButton)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())
@@ -819,7 +946,7 @@ describe('UpgradeForm', () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -827,7 +954,7 @@ describe('UpgradeForm', () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -835,9 +962,9 @@ describe('UpgradeForm', () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toBeChecked()
       })
 
       it('renders the seat input with 10 seats (existing subscription)', async () => {
@@ -912,9 +1039,7 @@ describe('UpgradeForm', () => {
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const annualOption = await screen.findByRole('button', {
-            name: 'Annual',
-          })
+          const annualOption = await screen.findByTestId('radio-annual')
           await user.click(annualOption)
 
           const price = screen.getByText(/\$100/)
@@ -930,9 +1055,9 @@ describe('UpgradeForm', () => {
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+          const optionBtn = await screen.findByTestId('radio-pro')
           expect(optionBtn).toBeInTheDocument()
-          expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          expect(optionBtn).toBeChecked()
         })
 
         it('renders team option button', async () => {
@@ -942,9 +1067,7 @@ describe('UpgradeForm', () => {
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const optionBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const optionBtn = await screen.findByTestId('radio-team')
           expect(optionBtn).toBeInTheDocument()
         })
 
@@ -956,9 +1079,7 @@ describe('UpgradeForm', () => {
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            const teamOption = await screen.findByRole('button', {
-              name: 'Team',
-            })
+            const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
 
             const auxiliaryText = await screen.findByText(/Up to 10 users/)
@@ -972,9 +1093,7 @@ describe('UpgradeForm', () => {
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            const teamOption = await screen.findByRole('button', {
-              name: 'Team',
-            })
+            const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
             expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           })
@@ -998,6 +1117,15 @@ describe('UpgradeForm', () => {
           })
           await user.click(update)
 
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
+
           await waitFor(() =>
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
@@ -1019,15 +1147,22 @@ describe('UpgradeForm', () => {
           await user.type(input, '{backspace}{backspace}{backspace}')
           await user.type(input, '20')
 
-          const optionBtn = await screen.findByRole('button', {
-            name: 'Annual',
-          })
+          const optionBtn = await screen.findByTestId('radio-annual')
           await user.click(optionBtn)
 
           const update = await screen.findByRole('button', {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() =>
             expect(patchRequest).toHaveBeenCalledWith({
@@ -1059,6 +1194,15 @@ describe('UpgradeForm', () => {
           })
           await user.click(update)
 
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
+
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())
           await waitFor(() => !queryClient.isMutating())
@@ -1088,6 +1232,15 @@ describe('UpgradeForm', () => {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())
@@ -1123,7 +1276,7 @@ describe('UpgradeForm', () => {
         setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -1131,7 +1284,7 @@ describe('UpgradeForm', () => {
         setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -1139,9 +1292,9 @@ describe('UpgradeForm', () => {
         setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toBeChecked()
       })
 
       it('renders the seat input with 13 seats (existing subscription)', async () => {
@@ -1231,9 +1384,7 @@ describe('UpgradeForm', () => {
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const monthlyOption = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
+          const monthlyOption = await screen.findByTestId('radio-monthly')
           await user.click(monthlyOption)
 
           const price = screen.getByText(/\$156/)
@@ -1250,9 +1401,9 @@ describe('UpgradeForm', () => {
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+          const optionBtn = await screen.findByTestId('radio-pro')
           expect(optionBtn).toBeInTheDocument()
-          expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          expect(optionBtn).toBeChecked()
         })
 
         it('renders team option button', async () => {
@@ -1263,9 +1414,7 @@ describe('UpgradeForm', () => {
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const optionBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const optionBtn = await screen.findByTestId('radio-team')
           expect(optionBtn).toBeInTheDocument()
         })
 
@@ -1278,9 +1427,7 @@ describe('UpgradeForm', () => {
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            const teamOption = await screen.findByRole('button', {
-              name: 'Team',
-            })
+            const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
 
             const auxiliaryText = await screen.findByText(/Up to 10 users/)
@@ -1294,9 +1441,7 @@ describe('UpgradeForm', () => {
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-            const teamOption = await screen.findByRole('button', {
-              name: 'Team',
-            })
+            const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
             expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           })
@@ -1321,6 +1466,15 @@ describe('UpgradeForm', () => {
           })
           await user.click(update)
 
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
+
           await waitFor(() =>
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
@@ -1343,15 +1497,22 @@ describe('UpgradeForm', () => {
           await user.type(input, '{backspace}{backspace}{backspace}')
           await user.type(input, '20')
 
-          const optionBtn = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
+          const optionBtn = await screen.findByTestId('radio-monthly')
           await user.click(optionBtn)
 
           const update = await screen.findByRole('button', {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() =>
             expect(patchRequest).toHaveBeenCalledWith({
@@ -1379,6 +1540,15 @@ describe('UpgradeForm', () => {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => !queryClient.isMutating())
@@ -1408,6 +1578,15 @@ describe('UpgradeForm', () => {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())
@@ -1439,6 +1618,15 @@ describe('UpgradeForm', () => {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())
@@ -1496,7 +1684,7 @@ describe('UpgradeForm', () => {
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -1507,7 +1695,7 @@ describe('UpgradeForm', () => {
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -1519,9 +1707,9 @@ describe('UpgradeForm', () => {
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toBeChecked()
       })
 
       it('renders the seat input with 21 seats (existing subscription)', async () => {
@@ -1620,9 +1808,7 @@ describe('UpgradeForm', () => {
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const monthlyOption = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
+          const monthlyOption = await screen.findByTestId('radio-monthly')
           await user.click(monthlyOption)
 
           const price = screen.getByText(/\$221/)
@@ -1649,6 +1835,15 @@ describe('UpgradeForm', () => {
           })
           await user.click(update)
 
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
+
           await waitFor(() =>
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
@@ -1672,15 +1867,22 @@ describe('UpgradeForm', () => {
           await user.type(input, '{backspace}{backspace}{backspace}')
           await user.type(input, '7')
 
-          const optionBtn = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
+          const optionBtn = await screen.findByTestId('radio-monthly')
           await user.click(optionBtn)
 
           const update = await screen.findByRole('button', {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() =>
             expect(patchRequest).toHaveBeenCalledWith({
@@ -1709,6 +1911,15 @@ describe('UpgradeForm', () => {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => !queryClient.isMutating())
@@ -1739,6 +1950,15 @@ describe('UpgradeForm', () => {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())
@@ -1771,6 +1991,15 @@ describe('UpgradeForm', () => {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())
@@ -1814,9 +2043,7 @@ describe('UpgradeForm', () => {
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const teamOption = await screen.findByRole('button', {
-          name: 'Team',
-        })
+        const teamOption = await screen.findByTestId('radio-team')
         await user.click(teamOption)
 
         const auxiliaryText = await screen.findByText(/Up to 10 users/)
@@ -1831,7 +2058,7 @@ describe('UpgradeForm', () => {
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -1843,7 +2070,7 @@ describe('UpgradeForm', () => {
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -1855,9 +2082,9 @@ describe('UpgradeForm', () => {
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toBeChecked()
       })
 
       it('renders the seat input with 5 seats (existing subscription)', async () => {
@@ -1972,9 +2199,7 @@ describe('UpgradeForm', () => {
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const monthlyOption = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
+          const monthlyOption = await screen.findByTestId('radio-monthly')
           await user.click(monthlyOption)
 
           const price = screen.getByText(/\$10/)
@@ -1996,15 +2221,22 @@ describe('UpgradeForm', () => {
           await user.type(input, '{backspace}{backspace}{backspace}')
           await user.type(input, '8')
 
-          const teamOption = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamOption = await screen.findByTestId('radio-team')
           await user.click(teamOption)
 
           const update = await screen.findByRole('button', {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() =>
             expect(patchRequest).toHaveBeenCalledWith({
@@ -2029,15 +2261,22 @@ describe('UpgradeForm', () => {
           await user.type(input, '{backspace}{backspace}{backspace}')
           await user.type(input, '7')
 
-          const optionBtn = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
+          const optionBtn = await screen.findByTestId('radio-monthly')
           await user.click(optionBtn)
 
           const update = await screen.findByRole('button', {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() =>
             expect(patchRequest).toHaveBeenCalledWith({
@@ -2066,6 +2305,15 @@ describe('UpgradeForm', () => {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => !queryClient.isMutating())
@@ -2096,6 +2344,15 @@ describe('UpgradeForm', () => {
             name: /Update/,
           })
           await user.click(update)
+
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())
@@ -2128,6 +2385,14 @@ describe('UpgradeForm', () => {
             name: /Update/,
           })
           await user.click(update)
+          const confirmCheckoutCheckbox = await screen.findByTestId(
+            'upgrade-confirmation-checkbox'
+          )
+          await user.click(confirmCheckoutCheckbox)
+
+          const confirmCheckoutButton =
+            await screen.findByTestId('submit-upgrade')
+          await user.click(confirmCheckoutButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())
@@ -2176,6 +2441,54 @@ describe('UpgradeForm', () => {
           )
           expect(error).not.toBeInTheDocument()
         })
+      })
+    })
+
+    describe('user is upgrading personal org', () => {
+      const props = {
+        setSelectedPlan: vi.fn(),
+        selectedPlan: {
+          value: Plans.USERS_PR_INAPPY,
+        } as IndividualPlan,
+      }
+
+      it('shows personal org warning', async () => {
+        setup({
+          isPersonalOrg: true,
+        })
+        render(<UpgradeForm {...props} />, {
+          wrapper: wrapper(['/gh/janedoe']),
+        })
+
+        const personalOrgWarning = await screen.findByText(
+          /You're about to upgrade your personal organization/
+        )
+        expect(personalOrgWarning).toBeInTheDocument()
+      })
+    })
+
+    describe('user is not upgrading personal org', () => {
+      const props = {
+        setSelectedPlan: vi.fn(),
+        selectedPlan: {
+          value: Plans.USERS_PR_INAPPY,
+        } as IndividualPlan,
+      }
+
+      it('does not show personal org warning', async () => {
+        setup({
+          isPersonalOrg: false,
+        })
+        render(<UpgradeForm {...props} />, {
+          wrapper: wrapper(),
+        })
+
+        const _ = await screen.findByText(/codecov/)
+
+        const personalOrgWarning = screen.queryByText(
+          /You're about to upgrade your personal organization/
+        )
+        expect(personalOrgWarning).not.toBeInTheDocument()
       })
     })
   })

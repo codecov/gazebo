@@ -259,7 +259,7 @@ describe('TeamPlanController', () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -267,7 +267,7 @@ describe('TeamPlanController', () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -275,9 +275,9 @@ describe('TeamPlanController', () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toBeChecked()
       })
 
       it('has the monthly price for', async () => {
@@ -377,7 +377,7 @@ describe('TeamPlanController', () => {
         setup({ planValue: Plans.USERS_TEAMY })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -385,7 +385,7 @@ describe('TeamPlanController', () => {
         setup({ planValue: Plans.USERS_TEAMY, monthlyPlan: false })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
       })
 
@@ -393,9 +393,9 @@ describe('TeamPlanController', () => {
         setup({ planValue: Plans.USERS_TEAMY, monthlyPlan: false })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toBeChecked()
       })
 
       it('has the price for the year', async () => {

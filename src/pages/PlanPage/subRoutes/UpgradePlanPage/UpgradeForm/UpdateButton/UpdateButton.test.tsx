@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, HttpResponse } from 'msw'
+import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -137,6 +137,24 @@ describe('UpdateButton', () => {
     }
   ) {
     server.use(
+      graphql.query('DetailOwner', () =>
+        HttpResponse.json({
+          data: {
+            owner: {
+              orgUploadToken: '9a9f1bb6-43e9-4766-b48b-aa16b449fbb1',
+              ownerid: 5537,
+              username: 'codecov',
+              avatarUrl:
+                'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+              isCurrentUserPartOfOrg: true,
+              isAdmin: true,
+            },
+          },
+        })
+      ),
+      http.get('/internal/gh/codecov/account-details/', () =>
+        HttpResponse.json({})
+      ),
       graphql.query(`GetPlanData`, () => {
         const planChunk = {
           trialStatus: TrialStatuses.NOT_STARTED,
@@ -198,6 +216,8 @@ describe('UpdateButton', () => {
           isValid: true,
           newPlan: proPlanYearly,
           seats: 3,
+          onSubmit: () => {},
+          isLoading: false,
         }
 
         render(<UpdateButton {...props} />, {
@@ -218,6 +238,8 @@ describe('UpdateButton', () => {
           isValid: true,
           newPlan: proPlanYearly,
           seats: 27,
+          onSubmit: () => {},
+          isLoading: false,
         }
 
         render(<UpdateButton {...props} />, {
@@ -238,6 +260,8 @@ describe('UpdateButton', () => {
           isValid: false,
           newPlan: proPlanYearly,
           seats: 6,
+          onSubmit: () => {},
+          isLoading: false,
         }
 
         render(<UpdateButton {...props} />, {
@@ -258,6 +282,8 @@ describe('UpdateButton', () => {
           isValid: true,
           newPlan: proPlanMonthly,
           seats: 4,
+          onSubmit: () => {},
+          isLoading: false,
         }
 
         render(<UpdateButton {...props} />, {

@@ -267,17 +267,13 @@ describe('PlanTypeOptions', () => {
           }
         )
 
-        const proBtn = await screen.findByRole('button', {
-          name: 'Pro',
-        })
+        const proBtn = await screen.findByTestId('radio-pro')
         expect(proBtn).toBeInTheDocument()
-        expect(proBtn).toHaveClass('bg-ds-primary-base')
+        expect(proBtn).toBeChecked()
 
-        const teamBtn = await screen.findByRole('button', {
-          name: 'Team',
-        })
+        const teamBtn = await screen.findByTestId('radio-team')
         expect(teamBtn).toBeInTheDocument()
-        expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(teamBtn).not.toBeChecked()
       })
 
       describe('plan param is set to team', () => {
@@ -299,17 +295,13 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
+          const proBtn = await screen.findByTestId('radio-pro')
           expect(proBtn).toBeInTheDocument()
-          expect(proBtn).not.toHaveClass('bg-ds-primary-base')
+          expect(proBtn).not.toBeChecked()
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
-          expect(teamBtn).toHaveClass('bg-ds-primary-base')
+          expect(teamBtn).toBeChecked()
         })
       })
 
@@ -332,9 +324,7 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
@@ -367,83 +357,13 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
               qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
-            )
-          )
-        })
-      })
-
-      describe('user clicks Pro button', () => {
-        it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_DEVELOPER,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={basicPlan}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(mockSetFormValue).toHaveBeenCalledWith(
-              'newPlan',
-              sentryPlanYear
-            )
-          )
-          await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
-          )
-        })
-
-        it('sets plan query param to pro', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_DEVELOPER,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={basicPlan}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })
@@ -469,17 +389,13 @@ describe('PlanTypeOptions', () => {
           }
         )
 
-        const proBtn = await screen.findByRole('button', {
-          name: 'Pro',
-        })
+        const proBtn = await screen.findByTestId('radio-pro')
         expect(proBtn).toBeInTheDocument()
-        expect(proBtn).toHaveClass('bg-ds-primary-base')
+        expect(proBtn).toBeChecked()
 
-        const teamBtn = await screen.findByRole('button', {
-          name: 'Team',
-        })
+        const teamBtn = await screen.findByTestId('radio-team')
         expect(teamBtn).toBeInTheDocument()
-        expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(teamBtn).not.toBeChecked()
       })
 
       describe('user clicks Team button', () => {
@@ -501,9 +417,7 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
@@ -536,83 +450,13 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
               qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
-            )
-          )
-        })
-      })
-
-      describe('user clicks Pro button', () => {
-        it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_SENTRYY,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={sentryPlanYear}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(mockSetFormValue).toHaveBeenCalledWith(
-              'newPlan',
-              sentryPlanYear
-            )
-          )
-          await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
-          )
-        })
-
-        it('sets plan query param to pro', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_SENTRYY,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={sentryPlanYear}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })
@@ -638,17 +482,13 @@ describe('PlanTypeOptions', () => {
           }
         )
 
-        const teamBtn = await screen.findByRole('button', {
-          name: 'Team',
-        })
-        expect(teamBtn).toBeInTheDocument()
-        expect(teamBtn).toHaveClass('bg-ds-primary-base')
-
-        const proBtn = await screen.findByRole('button', {
-          name: 'Pro',
-        })
+        const proBtn = await screen.findByTestId('radio-pro')
         expect(proBtn).toBeInTheDocument()
-        expect(proBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(proBtn).toBeChecked()
+
+        const teamBtn = await screen.findByTestId('radio-team')
+        expect(teamBtn).toBeInTheDocument()
+        expect(teamBtn).not.toBeChecked()
       })
 
       describe('plan param is set to pro', () => {
@@ -670,17 +510,13 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
+          const proBtn = await screen.findByTestId('radio-pro')
           expect(proBtn).toBeInTheDocument()
-          expect(proBtn).not.toHaveClass('bg-ds-primary-base')
+          expect(proBtn).toBeChecked()
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
-          expect(teamBtn).toHaveClass('bg-ds-primary-base')
+          expect(teamBtn).not.toBeChecked()
         })
       })
 
@@ -703,9 +539,7 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
@@ -738,83 +572,13 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
               qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
-            )
-          )
-        })
-      })
-
-      describe('user clicks Pro button', () => {
-        it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TEAMY,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={teamPlanYear}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(mockSetFormValue).toHaveBeenCalledWith(
-              'newPlan',
-              sentryPlanYear
-            )
-          )
-          await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
-          )
-        })
-
-        it('sets plan query param to pro', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TEAMY,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={teamPlanYear}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })
@@ -840,17 +604,13 @@ describe('PlanTypeOptions', () => {
           }
         )
 
-        const proBtn = await screen.findByRole('button', {
-          name: 'Pro',
-        })
+        const proBtn = await screen.findByTestId('radio-pro')
         expect(proBtn).toBeInTheDocument()
-        expect(proBtn).toHaveClass('bg-ds-primary-base')
+        expect(proBtn).toBeChecked()
 
-        const teamBtn = await screen.findByRole('button', {
-          name: 'Team',
-        })
+        const teamBtn = await screen.findByTestId('radio-team')
         expect(teamBtn).toBeInTheDocument()
-        expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(teamBtn).not.toBeChecked()
       })
 
       describe('user clicks Team button', () => {
@@ -872,9 +632,7 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
@@ -907,83 +665,13 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
               qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
-            )
-          )
-        })
-      })
-
-      describe('user clicks Pro button', () => {
-        it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={trialPlan}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(mockSetFormValue).toHaveBeenCalledWith(
-              'newPlan',
-              sentryPlanYear
-            )
-          )
-          await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
-          )
-        })
-
-        it('sets plan query param to pro', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={trialPlan}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })
@@ -1011,17 +699,13 @@ describe('PlanTypeOptions', () => {
           }
         )
 
-        const proBtn = await screen.findByRole('button', {
-          name: 'Pro',
-        })
+        const proBtn = await screen.findByTestId('radio-pro')
         expect(proBtn).toBeInTheDocument()
-        expect(proBtn).toHaveClass('bg-ds-primary-base')
+        expect(proBtn).toBeChecked()
 
-        const teamBtn = await screen.findByRole('button', {
-          name: 'Team',
-        })
+        const teamBtn = await screen.findByTestId('radio-team')
         expect(teamBtn).toBeInTheDocument()
-        expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(teamBtn).not.toBeChecked()
       })
 
       describe('user clicks Team button', () => {
@@ -1043,9 +727,7 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
@@ -1078,83 +760,13 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
               qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
-            )
-          )
-        })
-      })
-
-      describe('user clicks Pro button', () => {
-        it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_DEVELOPER,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={basicPlan}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(mockSetFormValue).toHaveBeenCalledWith(
-              'newPlan',
-              proPlanYear
-            )
-          )
-          await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
-          )
-        })
-
-        it('sets plan query param to pro', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_DEVELOPER,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={basicPlan}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })
@@ -1180,17 +792,13 @@ describe('PlanTypeOptions', () => {
           }
         )
 
-        const proBtn = await screen.findByRole('button', {
-          name: 'Pro',
-        })
+        const proBtn = await screen.findByTestId('radio-pro')
         expect(proBtn).toBeInTheDocument()
-        expect(proBtn).toHaveClass('bg-ds-primary-base')
+        expect(proBtn).toBeChecked()
 
-        const teamBtn = await screen.findByRole('button', {
-          name: 'Team',
-        })
+        const teamBtn = await screen.findByTestId('radio-team')
         expect(teamBtn).toBeInTheDocument()
-        expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(teamBtn).not.toBeChecked()
       })
 
       describe('user clicks Team button', () => {
@@ -1212,9 +820,7 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
@@ -1247,9 +853,7 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
@@ -1260,78 +864,10 @@ describe('PlanTypeOptions', () => {
           )
         })
       })
-
-      describe('user clicks Pro button', () => {
-        it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_PR_INAPPY,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={proPlanYear}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(mockSetFormValue).toHaveBeenCalledWith(
-              'newPlan',
-              proPlanYear
-            )
-          )
-          await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
-          )
-        })
-
-        it('sets plan query param to pro', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_PR_INAPPY,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={proPlanYear}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
-            )
-          )
-        })
-      })
     })
 
     describe('when plan is team yearly', () => {
-      it('renders Team button as "selected"', async () => {
+      it('renders Pro button as "selected"', async () => {
         const { mockSetFormValue, mockSetSelectedPlan } = setup({
           planValue: Plans.USERS_TEAMY,
           hasSentryPlans: false,
@@ -1349,17 +885,13 @@ describe('PlanTypeOptions', () => {
           }
         )
 
-        const proBtn = await screen.findByRole('button', {
-          name: 'Pro',
-        })
+        const proBtn = await screen.findByTestId('radio-pro')
         expect(proBtn).toBeInTheDocument()
-        expect(proBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(proBtn).toBeChecked()
 
-        const teamBtn = await screen.findByRole('button', {
-          name: 'Team',
-        })
+        const teamBtn = await screen.findByTestId('radio-team')
         expect(teamBtn).toBeInTheDocument()
-        expect(teamBtn).toHaveClass('bg-ds-primary-base')
+        expect(teamBtn).not.toBeChecked()
       })
 
       describe('plan param is set to team', () => {
@@ -1381,17 +913,13 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
+          const proBtn = await screen.findByTestId('radio-pro')
           expect(proBtn).toBeInTheDocument()
-          expect(proBtn).not.toHaveClass('bg-ds-primary-base')
+          expect(proBtn).not.toBeChecked()
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
-          expect(teamBtn).toHaveClass('bg-ds-primary-base')
+          expect(teamBtn).toBeChecked()
         })
       })
 
@@ -1414,9 +942,7 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
@@ -1449,83 +975,13 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
           await waitFor(() =>
             expect(testLocation.search).toEqual(
               qs.stringify({ plan: 'team' }, { addQueryPrefix: true })
-            )
-          )
-        })
-      })
-
-      describe('user clicks Pro button', () => {
-        it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TEAMY,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={teamPlanYear}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(mockSetFormValue).toHaveBeenCalledWith(
-              'newPlan',
-              proPlanYear
-            )
-          )
-          await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
-          )
-        })
-
-        it('sets plan query param to pro', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TEAMY,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={teamPlanYear}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
             )
           )
         })
@@ -1551,17 +1007,13 @@ describe('PlanTypeOptions', () => {
           }
         )
 
-        const proBtn = await screen.findByRole('button', {
-          name: 'Pro',
-        })
+        const proBtn = await screen.findByTestId('radio-pro')
         expect(proBtn).toBeInTheDocument()
-        expect(proBtn).toHaveClass('bg-ds-primary-base')
+        expect(proBtn).toBeChecked()
 
-        const teamBtn = await screen.findByRole('button', {
-          name: 'Team',
-        })
+        const teamBtn = await screen.findByTestId('radio-team')
         expect(teamBtn).toBeInTheDocument()
-        expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(teamBtn).not.toBeChecked()
       })
 
       describe('user clicks Team button', () => {
@@ -1583,9 +1035,7 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
@@ -1618,9 +1068,7 @@ describe('PlanTypeOptions', () => {
             }
           )
 
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
+          const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
           await user.click(teamBtn)
 
@@ -1631,78 +1079,10 @@ describe('PlanTypeOptions', () => {
           )
         })
       })
-
-      describe('user clicks Pro button', () => {
-        it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={trialPlan}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(mockSetFormValue).toHaveBeenCalledWith(
-              'newPlan',
-              proPlanYear
-            )
-          )
-          await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
-          )
-        })
-
-        it('sets plan query param to pro', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={trialPlan}
-            />,
-            {
-              wrapper: wrapper(),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          await user.click(proBtn)
-
-          await waitFor(() =>
-            expect(testLocation.search).toEqual(
-              qs.stringify({ plan: 'pro' }, { addQueryPrefix: true })
-            )
-          )
-        })
-      })
     })
   })
-  describe('when plan is team plan monthly', () => {
-    it('keeps monthly selection when updating to pro plan', async () => {
+  describe('when plan is monthly', () => {
+    it('keeps monthly selection when changing plans', async () => {
       const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
         planValue: Plans.USERS_TEAMM,
         hasSentryPlans: false,
@@ -1720,17 +1100,15 @@ describe('PlanTypeOptions', () => {
         }
       )
 
-      const proBtn = await screen.findByRole('button', {
-        name: 'Pro',
-      })
+      const proBtn = await screen.findByTestId('radio-team')
       expect(proBtn).toBeInTheDocument()
       await user.click(proBtn)
 
       await waitFor(() =>
-        expect(mockSetFormValue).toHaveBeenCalledWith('newPlan', proPlanMonth)
+        expect(mockSetFormValue).toHaveBeenCalledWith('newPlan', teamPlanMonth)
       )
       await waitFor(() =>
-        expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanMonth)
+        expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
       )
     })
   })
