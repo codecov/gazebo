@@ -31,6 +31,7 @@ const node1 = {
   failureRate: 0.1,
   flakeRate: 0.0,
   avgDuration: 10,
+  totalDuration: 100,
   totalFailCount: 5,
   totalFlakyFailCount: 14,
   totalPassCount: 6,
@@ -44,6 +45,7 @@ const node2 = {
   failureRate: 0.2,
   flakeRate: 0.2,
   avgDuration: 20,
+  totalDuration: 200,
   totalFailCount: 8,
   totalFlakyFailCount: 15,
   totalPassCount: 9,
@@ -57,6 +59,7 @@ const node3 = {
   failureRate: 0.3,
   flakeRate: 0.1,
   avgDuration: 30,
+  totalDuration: 300,
   totalFailCount: 11,
   totalFlakyFailCount: 16,
   totalPassCount: 12,
@@ -289,6 +292,9 @@ describe('FailedTestsTable', () => {
       const durationColumn = await screen.findByText('Avg. duration')
       expect(durationColumn).toBeInTheDocument()
 
+      const totalDurationColumn = await screen.findByText('Total duration')
+      expect(totalDurationColumn).toBeInTheDocument()
+
       const failureRateColumn = await screen.findByText('Failure rate')
       expect(failureRateColumn).toBeInTheDocument()
 
@@ -328,6 +334,9 @@ describe('FailedTestsTable', () => {
 
       const durationColumn = await screen.findByText('10.000s')
       expect(durationColumn).toBeInTheDocument()
+
+      const totalDurationColumn = await screen.findByText('100.000s')
+      expect(totalDurationColumn).toBeInTheDocument()
 
       const failureRateColumn = await screen.findByText('10.00%')
       expect(failureRateColumn).toBeInTheDocument()
@@ -396,6 +405,9 @@ describe('FailedTestsTable', () => {
         const durationColumn = await screen.findByText('10.000s')
         expect(durationColumn).toBeInTheDocument()
 
+        const totalDurationColumn = await screen.findByText('100.000s')
+        expect(totalDurationColumn).toBeInTheDocument()
+
         const failureRateColumn = await screen.findByText('10.00%')
         expect(failureRateColumn).toBeInTheDocument()
 
@@ -453,6 +465,40 @@ describe('FailedTestsTable', () => {
             ordering: {
               direction: OrderingDirection.ASC,
               parameter: OrderingParameter.AVG_DURATION,
+            },
+          })
+        )
+      })
+    })
+
+    it('can sort on total duration column', async () => {
+      const { user, mockVariables } = setup({ noEntries: true })
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(),
+      })
+
+      const totalDurationColumn = await screen.findByText('Total duration')
+      await user.click(totalDurationColumn)
+
+      await waitFor(() => {
+        expect(mockVariables).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.DESC,
+              parameter: OrderingParameter.TOTAL_DURATION,
+            },
+          })
+        )
+      })
+
+      await user.click(totalDurationColumn)
+
+      await waitFor(() => {
+        expect(mockVariables).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.ASC,
+              parameter: OrderingParameter.TOTAL_DURATION,
             },
           })
         )

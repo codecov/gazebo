@@ -71,6 +71,10 @@ export function getSortingOption(
       parameter = OrderingParameter.AVG_DURATION
     }
 
+    if (state.id === 'totalDuration') {
+      parameter = OrderingParameter.TOTAL_DURATION
+    }
+
     if (state.id === 'failureRate') {
       parameter = OrderingParameter.FAILURE_RATE
     }
@@ -95,6 +99,7 @@ export function getSortingOption(
 
 const isNumericValue = (value: string) =>
   value === 'avgDuration' ||
+  value === 'totalDuration' ||
   value === 'failureRate' ||
   value === 'commitsFailed' ||
   value === 'flakeRate'
@@ -102,6 +107,7 @@ const isNumericValue = (value: string) =>
 interface FailedTestsColumns {
   name: string
   avgDuration: number | null
+  totalDuration: number | null
   failureRate: number | null
   flakeRate?: React.ReactNode
   commitsFailed: number | null
@@ -124,6 +130,10 @@ const getColumns = ({
     }),
     columnHelper.accessor('avgDuration', {
       header: () => 'Avg. duration',
+      cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
+    }),
+    columnHelper.accessor('totalDuration', {
+      header: () => 'Total duration',
       cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
     }),
     columnHelper.accessor('failureRate', {
@@ -262,6 +272,7 @@ const FailedTestsTable = () => {
       return {
         name: result.name,
         avgDuration: result.avgDuration,
+        totalDuration: result.totalDuration,
         failureRate: result.failureRate,
         flakeRate: FlakeRateContent,
         commitsFailed: result.commitsFailed,
@@ -335,7 +346,8 @@ const FailedTestsTable = () => {
       <div className="tableui">
         <table>
           <colgroup>
-            <col className="w-full @sm/table:w-5/12" />
+            <col className="w-full @sm/table:w-4/12" />
+            <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
