@@ -2444,7 +2444,7 @@ describe('UpgradeForm', () => {
       })
     })
 
-    describe.only('user is upgrading personal org', () => {
+    describe('user is upgrading personal org', () => {
       const props = {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
@@ -2467,7 +2467,7 @@ describe('UpgradeForm', () => {
       })
     })
 
-    describe.only('user is not upgrading personal org', () => {
+    describe('user is not upgrading personal org', () => {
       const props = {
         setSelectedPlan: vi.fn(),
         selectedPlan: {
