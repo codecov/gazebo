@@ -2443,5 +2443,53 @@ describe('UpgradeForm', () => {
         })
       })
     })
+
+    describe.only('user is upgrading personal org', () => {
+      const props = {
+        setSelectedPlan: vi.fn(),
+        selectedPlan: {
+          value: Plans.USERS_PR_INAPPY,
+        } as IndividualPlan,
+      }
+
+      it('shows personal org warning', async () => {
+        setup({
+          isPersonalOrg: true,
+        })
+        render(<UpgradeForm {...props} />, {
+          wrapper: wrapper(['/gh/janedoe']),
+        })
+
+        const personalOrgWarning = await screen.findByText(
+          /You're about to upgrade your personal organization/
+        )
+        expect(personalOrgWarning).toBeInTheDocument()
+      })
+    })
+
+    describe.only('user is not upgrading personal org', () => {
+      const props = {
+        setSelectedPlan: vi.fn(),
+        selectedPlan: {
+          value: Plans.USERS_PR_INAPPY,
+        } as IndividualPlan,
+      }
+
+      it('does not show personal org warning', async () => {
+        setup({
+          isPersonalOrg: false,
+        })
+        render(<UpgradeForm {...props} />, {
+          wrapper: wrapper(),
+        })
+
+        const _ = await screen.findByText(/codecov/)
+
+        const personalOrgWarning = screen.queryByText(
+          /You're about to upgrade your personal organization/
+        )
+        expect(personalOrgWarning).not.toBeInTheDocument()
+      })
+    })
   })
 })
