@@ -164,6 +164,7 @@ describe('TermsOfService', () => {
           externalId: '',
           owners: null,
           termsAgreement: false,
+          defaultOrg: null,
         },
       })
     )
@@ -239,6 +240,7 @@ describe('TermsOfService', () => {
           externalId: '1234',
           owners: null,
           termsAgreement: false,
+          defaultOrg: null,
         },
       })
 
@@ -313,6 +315,7 @@ describe('TermsOfService', () => {
           externalId: '1234',
           owners: null,
           name: 'Chetney',
+          defaultOrg: null,
         },
       },
       [expectPageIsReady],
@@ -332,6 +335,7 @@ describe('TermsOfService', () => {
           name: 'Chetney',
           externalId: '1234',
           owners: null,
+          defaultOrg: null,
         },
       },
       [expectPageIsReady],
@@ -353,6 +357,7 @@ describe('TermsOfService', () => {
           name: 'Chetney',
           externalId: '1234',
           owners: null,
+          defaultOrg: null,
         },
       },
       [expectPageIsReady],
@@ -375,6 +380,7 @@ describe('TermsOfService', () => {
           externalId: '1234',
           owners: null,
           email: '',
+          defaultOrg: null,
         },
       },
       [expectPageIsReady],
@@ -402,6 +408,7 @@ describe('TermsOfService', () => {
           name: 'Chetney',
           externalId: '1234',
           owners: null,
+          defaultOrg: null,
         },
       },
       [expectPageIsReady],
@@ -420,6 +427,7 @@ describe('TermsOfService', () => {
           name: '',
           externalId: '1234',
           owners: null,
+          defaultOrg: null,
         },
       },
       [expectPageIsReady],
@@ -452,6 +460,7 @@ describe('TermsOfService', () => {
           name: '',
           externalId: '1234',
           owners: null,
+          defaultOrg: null,
         },
       },
       [expectPageIsReady],
@@ -479,6 +488,7 @@ describe('TermsOfService', () => {
           name: '',
           externalId: '1234',
           owners: null,
+          defaultOrg: null,
         },
       },
       [expectPageIsReady],
@@ -510,6 +520,7 @@ describe('TermsOfService', () => {
               username: 'chetney',
             },
           ],
+          defaultOrg: 'chetney',
         },
       },
       [expectRedirectTo, '/gh/codecov/cool-repo'],
@@ -570,6 +581,7 @@ describe('TermsOfService', () => {
             externalId: '',
             owners: null,
             termsAgreement: false,
+            defaultOrg: null,
           },
         })
         const removeFromDom = vi.fn()
@@ -596,6 +608,7 @@ describe('TermsOfService', () => {
             externalId: '',
             owners: null,
             termsAgreement: false,
+            defaultOrg: null,
           },
         })
         config.SENTRY_DSN = 'dsn'
@@ -622,6 +635,7 @@ describe('TermsOfService', () => {
               externalId: '',
               owners: null,
               termsAgreement: false,
+              defaultOrg: null,
             },
           })
           config.SENTRY_DSN = 'dsn'
