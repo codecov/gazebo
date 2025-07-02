@@ -17,6 +17,7 @@ export const Plans = {
   USERS_PR_INAPPY: 'users-pr-inappy',
   USERS_SENTRYM: 'users-sentrym',
   USERS_SENTRYY: 'users-sentryy',
+  USERS_SENTRYMERGE: 'sentry-merge',
   USERS_TEAMM: 'users-teamm',
   USERS_TEAMY: 'users-teamy',
   USERS_ENTERPRISEM: 'users-enterprisem',
