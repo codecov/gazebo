@@ -23,7 +23,8 @@ const createMockedInternalUser = (
   name: null,
   externalId: null,
   termsAgreement: false,
-  owners: owner !== undefined ? [owner] : [],
+  owners: owner != null ? [owner] : [],
+  defaultOrg: owner != null ? owner.username : null,
 })
 
 const server = setupServer()
@@ -202,7 +203,17 @@ describe('SyncProviderPage', () => {
 
     describe('user does not have a service', () => {
       it('redirects user to /', async () => {
-        setup({ user: createMockedInternalUser(null) })
+        setup({
+          user: createMockedInternalUser({
+            name: 'noservice',
+            service: '',
+            username: 'noservice',
+            avatarUrl: 'http://127.0.0.1/cool-user-avatar',
+            integrationId: null,
+            ownerid: 123,
+            stats: null,
+          }),
+        })
 
         render(<SyncProviderPage />, { wrapper })
 
