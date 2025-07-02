@@ -155,6 +155,7 @@ const internalUserNoSyncedProviders = {
   externalId: '123',
   termsAgreement: null,
   owners: [],
+  defaultOrg: null,
 }
 
 const internalUserHasSyncedProviders = {
@@ -173,6 +174,7 @@ const internalUserHasSyncedProviders = {
       stats: null,
     },
   ],
+  defaultOrg: 'cool-owner',
 }
 
 const internalUserWithSignedTOS = {
@@ -190,6 +192,7 @@ const internalUserWithSignedTOS = {
       stats: null,
     },
   ],
+  defaultOrg: 'cool-owner',
   termsAgreement: true,
 }
 
@@ -208,6 +211,7 @@ const internalUserWithUnsignedTOS = {
       stats: null,
     },
   ],
+  defaultOrg: 'cool-owner',
   termsAgreement: false,
 }
 

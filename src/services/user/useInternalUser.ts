@@ -29,6 +29,7 @@ const InternalUserSchema = z
     externalId: z.string().nullable(),
     owners: z.array(OwnerSchema).nullable(),
     termsAgreement: z.boolean().nullable(),
+    defaultOrg: z.string().nullable(),
   })
   .nullable()
 

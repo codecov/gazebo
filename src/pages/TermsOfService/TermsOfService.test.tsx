@@ -68,6 +68,7 @@ const mockedUserData = {
   externalId: null,
   owners: null,
   termsAgreement: false,
+  defaultOrg: null,
 }
 
 const mocks = vi.hoisted(() => ({
