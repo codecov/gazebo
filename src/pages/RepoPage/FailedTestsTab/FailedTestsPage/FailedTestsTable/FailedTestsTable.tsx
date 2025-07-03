@@ -133,7 +133,7 @@ const getColumns = ({
       cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
     }),
     columnHelper.accessor('totalDuration', {
-      header: () => 'Total duration',
+      header: () => 'Time spent',
       cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
     }),
     columnHelper.accessor('failureRate', {
@@ -155,7 +155,7 @@ const getColumns = ({
   ]
 
   if (!hideFlakeRate) {
-    baseColumns.splice(3, 0, {
+    baseColumns.splice(4, 0, {
       accessorKey: 'flakeRate',
       header: () => (
         <div className="flex items-center gap-1">
@@ -346,12 +346,19 @@ const FailedTestsTable = () => {
       <div className="tableui">
         <table>
           <colgroup>
-            <col className="w-full @sm/table:w-4/12" />
+            <col className="w-full @sm/table:w-5/12" />
             <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
-            <col className="@sm/table:w-1/12" />
+            {!hideFlakeRate ? (
+              <>
+                <col className="@sm/table:w-1/12" />
+                <col className="@sm/table:w-2/12" />
+              </>
+            ) : (
+              <col className="@sm/table:w-3/12" />
+            )}
           </colgroup>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -364,9 +371,7 @@ const FailedTestsTable = () => {
                   >
                     <div
                       className={cs('flex gap-1', {
-                        'flex-row-reverse': !['name', 'updatedAt'].includes(
-                          header.id
-                        ),
+                        'flex-row-reverse': header.id !== 'name',
                       })}
                     >
                       {flexRender(
@@ -404,9 +409,7 @@ const FailedTestsTable = () => {
                           }
                         : {})}
                       className={cs({
-                        'text-right': !['name', 'updatedAt'].includes(
-                          cell.column.id
-                        ),
+                        'text-right': cell.column.id !== 'name',
                         'max-w-1 break-words': cell.column.id === 'name',
                       })}
                     >

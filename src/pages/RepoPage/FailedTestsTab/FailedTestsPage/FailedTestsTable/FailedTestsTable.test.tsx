@@ -292,7 +292,7 @@ describe('FailedTestsTable', () => {
       const durationColumn = await screen.findByText('Avg. duration')
       expect(durationColumn).toBeInTheDocument()
 
-      const totalDurationColumn = await screen.findByText('Total duration')
+      const totalDurationColumn = await screen.findByText('Time spent')
       expect(totalDurationColumn).toBeInTheDocument()
 
       const failureRateColumn = await screen.findByText('Failure rate')
@@ -471,13 +471,13 @@ describe('FailedTestsTable', () => {
       })
     })
 
-    it('can sort on total duration column', async () => {
+    it('can sort on time spent column', async () => {
       const { user, mockVariables } = setup({ noEntries: true })
       render(<FailedTestsTable />, {
         wrapper: wrapper(),
       })
 
-      const totalDurationColumn = await screen.findByText('Total duration')
+      const totalDurationColumn = await screen.findByText('Time spent')
       await user.click(totalDurationColumn)
 
       await waitFor(() => {
