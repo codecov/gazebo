@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import qs from 'qs'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useLocation, useParams } from 'react-router-dom'
 
@@ -237,9 +237,16 @@ const FailedTestsTable = () => {
 
   const isDefaultBranch = testData?.defaultBranch === branch
   const isTeamOrFreePlan = testData?.isTeamPlan || testData?.isFreePlan
-  // Only show flake rate column when on default branch for pro / enterprise plans or public repos
-  const hideFlakeRate =
-    (isTeamOrFreePlan && testData?.private) || (!!branch && !isDefaultBranch)
+
+  const stableHideFlakeRate = useRef<boolean>(false)
+
+  if (testData && !isLoading && !isFetchingNextPage) {
+    const newHideFlakeRate =
+      (isTeamOrFreePlan && testData?.private) || (!!branch && !isDefaultBranch)
+    stableHideFlakeRate.current = newHideFlakeRate
+  }
+
+  const hideFlakeRate = stableHideFlakeRate.current
 
   const tableData = useMemo(() => {
     if (!testData?.testResults) return []
