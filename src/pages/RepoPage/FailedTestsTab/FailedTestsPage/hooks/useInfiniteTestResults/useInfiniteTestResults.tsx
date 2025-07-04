@@ -187,7 +187,7 @@ interface UseTestResultsArgs {
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
     private: boolean | null
     planName: PlanName | null
-    isFreePlan: boolean
+    isFreePlan: boolean | null
     defaultBranch: string | null
     totalCount: number | null
     isFirstPullRequest: boolean | null
