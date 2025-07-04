@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import qs from 'qs'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useLocation, useParams } from 'react-router-dom'
 
@@ -235,18 +235,30 @@ const FailedTestsTable = () => {
     },
   })
 
-  const isDefaultBranch = testData?.defaultBranch === branch
-  const isTeamOrFreePlan = testData?.isTeamPlan || testData?.isFreePlan
+  const [isDefaultBranch, setIsDefaultBranch] = useState(false)
+  const [isTeamOrFreePlan, setIsTeamOrFreePlan] = useState(false)
+  const [isPrivate, setIsPrivate] = useState(false)
 
-  const stableHideFlakeRate = useRef<boolean>(false)
+  useEffect(() => {
+    if (testData?.defaultBranch) {
+      setIsDefaultBranch(testData.defaultBranch === branch)
+    }
+  }, [testData?.defaultBranch, branch])
 
-  if (testData && !isLoading && !isFetchingNextPage) {
-    const newHideFlakeRate =
-      (isTeamOrFreePlan && testData?.private) || (!!branch && !isDefaultBranch)
-    stableHideFlakeRate.current = newHideFlakeRate
-  }
+  useEffect(() => {
+    if (testData?.isTeamPlan !== null && testData?.isFreePlan !== null) {
+      setIsTeamOrFreePlan(testData?.isTeamPlan || testData?.isFreePlan)
+    }
+  }, [testData?.isTeamPlan, testData?.isFreePlan])
 
-  const hideFlakeRate = stableHideFlakeRate.current
+  useEffect(() => {
+    if (testData?.private !== null) {
+      setIsPrivate(testData?.private)
+    }
+  }, [testData?.private])
+
+  const hideFlakeRate =
+    (isTeamOrFreePlan && isPrivate) || (!!branch && !isDefaultBranch)
 
   const tableData = useMemo(() => {
     if (!testData?.testResults) return []
