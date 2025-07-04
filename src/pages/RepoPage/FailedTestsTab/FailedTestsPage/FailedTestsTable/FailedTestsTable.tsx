@@ -71,6 +71,10 @@ export function getSortingOption(
       parameter = OrderingParameter.AVG_DURATION
     }
 
+    if (state.id === 'totalDuration') {
+      parameter = OrderingParameter.TOTAL_DURATION
+    }
+
     if (state.id === 'failureRate') {
       parameter = OrderingParameter.FAILURE_RATE
     }
@@ -95,6 +99,7 @@ export function getSortingOption(
 
 const isNumericValue = (value: string) =>
   value === 'avgDuration' ||
+  value === 'totalDuration' ||
   value === 'failureRate' ||
   value === 'commitsFailed' ||
   value === 'flakeRate'
@@ -102,6 +107,7 @@ const isNumericValue = (value: string) =>
 interface FailedTestsColumns {
   name: string
   avgDuration: number | null
+  totalDuration: number | null
   failureRate: number | null
   flakeRate?: React.ReactNode
   commitsFailed: number | null
@@ -126,6 +132,10 @@ const getColumns = ({
       header: () => 'Avg. duration',
       cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
     }),
+    columnHelper.accessor('totalDuration', {
+      header: () => 'Time spent',
+      cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
+    }),
     columnHelper.accessor('failureRate', {
       header: () => 'Failure rate',
       cell: (info) => {
@@ -145,7 +155,7 @@ const getColumns = ({
   ]
 
   if (!hideFlakeRate) {
-    baseColumns.splice(3, 0, {
+    baseColumns.splice(4, 0, {
       accessorKey: 'flakeRate',
       header: () => (
         <div className="flex items-center gap-1">
@@ -225,11 +235,30 @@ const FailedTestsTable = () => {
     },
   })
 
-  const isDefaultBranch = testData?.defaultBranch === branch
-  const isTeamOrFreePlan = testData?.isTeamPlan || testData?.isFreePlan
-  // Only show flake rate column when on default branch for pro / enterprise plans or public repos
+  const [isDefaultBranch, setIsDefaultBranch] = useState(false)
+  const [isTeamOrFreePlan, setIsTeamOrFreePlan] = useState(false)
+  const [isPrivate, setIsPrivate] = useState(false)
+
+  useEffect(() => {
+    if (testData?.defaultBranch) {
+      setIsDefaultBranch(testData.defaultBranch === branch)
+    }
+  }, [testData?.defaultBranch, branch])
+
+  useEffect(() => {
+    if (testData?.isTeamPlan !== null && testData?.isFreePlan !== null) {
+      setIsTeamOrFreePlan(testData?.isTeamPlan || testData?.isFreePlan)
+    }
+  }, [testData?.isTeamPlan, testData?.isFreePlan])
+
+  useEffect(() => {
+    if (testData?.private !== null) {
+      setIsPrivate(testData?.private)
+    }
+  }, [testData?.private])
+
   const hideFlakeRate =
-    (isTeamOrFreePlan && testData?.private) || (!!branch && !isDefaultBranch)
+    (isTeamOrFreePlan && isPrivate) || (!!branch && !isDefaultBranch)
 
   const tableData = useMemo(() => {
     if (!testData?.testResults) return []
@@ -262,6 +291,7 @@ const FailedTestsTable = () => {
       return {
         name: result.name,
         avgDuration: result.avgDuration,
+        totalDuration: result.totalDuration,
         failureRate: result.failureRate,
         flakeRate: FlakeRateContent,
         commitsFailed: result.commitsFailed,
@@ -340,6 +370,14 @@ const FailedTestsTable = () => {
             <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
+            {!hideFlakeRate ? (
+              <>
+                <col className="@sm/table:w-1/12" />
+                <col className="@sm/table:w-2/12" />
+              </>
+            ) : (
+              <col className="@sm/table:w-3/12" />
+            )}
           </colgroup>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -352,9 +390,7 @@ const FailedTestsTable = () => {
                   >
                     <div
                       className={cs('flex gap-1', {
-                        'flex-row-reverse': !['name', 'updatedAt'].includes(
-                          header.id
-                        ),
+                        'flex-row-reverse': header.id !== 'name',
                       })}
                     >
                       {flexRender(
@@ -392,9 +428,7 @@ const FailedTestsTable = () => {
                           }
                         : {})}
                       className={cs({
-                        'text-right': !['name', 'updatedAt'].includes(
-                          cell.column.id
-                        ),
+                        'text-right': cell.column.id !== 'name',
                         'max-w-1 break-words': cell.column.id === 'name',
                       })}
                     >
