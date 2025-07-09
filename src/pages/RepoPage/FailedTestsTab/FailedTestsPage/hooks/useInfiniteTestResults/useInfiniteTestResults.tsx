@@ -21,6 +21,7 @@ const TestResultSchema = z.object({
   failureRate: z.number().nullable(),
   flakeRate: z.number().nullable(),
   avgDuration: z.number().nullable(),
+  totalDuration: z.number().nullable(),
   totalFailCount: z.number(),
   totalFlakyFailCount: z.number(),
   totalSkipCount: z.number(),
@@ -34,6 +35,7 @@ export const OrderingDirection = {
 
 export const OrderingParameter = {
   AVG_DURATION: 'AVG_DURATION',
+  TOTAL_DURATION: 'TOTAL_DURATION',
   FLAKE_RATE: 'FLAKE_RATE',
   FAILURE_RATE: 'FAILURE_RATE',
   COMMITS_WHERE_FAIL: 'COMMITS_WHERE_FAIL',
@@ -133,6 +135,7 @@ query GetTestResults(
               node {
                 updatedAt
                 avgDuration
+                totalDuration
                 name
                 failureRate
                 flakeRate
@@ -184,7 +187,7 @@ interface UseTestResultsArgs {
     pageInfo: { endCursor: string | null; hasNextPage: boolean }
     private: boolean | null
     planName: PlanName | null
-    isFreePlan: boolean
+    isFreePlan: boolean | null
     defaultBranch: string | null
     totalCount: number | null
     isFirstPullRequest: boolean | null
@@ -284,8 +287,8 @@ export const useInfiniteTestResults = ({
             0,
           private: data?.owner?.repository?.private ?? null,
           planName: data?.owner?.plan?.value ?? null,
-          isFreePlan: data?.owner?.plan?.isFreePlan ?? false,
-          isTeamPlan: data?.owner?.plan?.isTeamPlan ?? false,
+          isFreePlan: data?.owner?.plan?.isFreePlan ?? null,
+          isTeamPlan: data?.owner?.plan?.isTeamPlan ?? null,
           defaultBranch: data?.owner?.repository?.defaultBranch ?? null,
           isFirstPullRequest:
             data?.owner?.repository?.isFirstPullRequest ?? null,
@@ -310,8 +313,8 @@ export const useInfiniteTestResults = ({
       totalCount: data?.pages?.[0]?.totalCount ?? 0,
       private: data?.pages?.[0]?.private ?? null,
       planName: data?.pages?.[0]?.planName ?? null,
-      isFreePlan: data?.pages?.[0]?.isFreePlan ?? false,
-      isTeamPlan: data?.pages?.[0]?.isTeamPlan ?? false,
+      isFreePlan: data?.pages?.[0]?.isFreePlan ?? null,
+      isTeamPlan: data?.pages?.[0]?.isTeamPlan ?? null,
       defaultBranch: data?.pages?.[0]?.defaultBranch ?? null,
       isFirstPullRequest: data?.pages?.[0]?.isFirstPullRequest ?? null,
     },
