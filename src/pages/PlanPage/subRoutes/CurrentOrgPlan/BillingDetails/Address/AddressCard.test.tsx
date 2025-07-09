@@ -380,12 +380,12 @@ describe('AddressCard', () => {
   })
 
   describe('when there is an error in the form', () => {
-    it('renders the error', async () => {
+    it('renders the error when the error is an instance of Error', async () => {
       const { user } = setup()
       const randomError = 'not a valid address'
       mocks.useUpdateBillingAddress.mockReturnValue({
         mutate: vi.fn(),
-        error: randomError,
+        error: new Error(randomError),
       })
       render(
         <AddressCard
@@ -398,7 +398,36 @@ describe('AddressCard', () => {
 
       await user.click(screen.getByTestId('edit-address'))
 
-      expect(screen.getByText(randomError)).toBeInTheDocument()
+      expect(
+        screen.getByText((content, _element) => content.includes(randomError))
+      ).toBeInTheDocument()
+    })
+
+    it('renders the error when the error is an instance of BillingApiError', async () => {
+      const { user } = setup()
+      const stripeError = 'Your card has expired'
+      mocks.useUpdateBillingAddress.mockReturnValue({
+        mutate: vi.fn(),
+        error: {
+          data: {
+            detail: stripeError,
+          },
+        },
+      })
+      render(
+        <AddressCard
+          subscriptionDetail={subscriptionDetail}
+          provider="gh"
+          owner="codecov"
+        />,
+        { wrapper }
+      )
+
+      await user.click(screen.getByTestId('edit-address'))
+
+      expect(
+        screen.getByText((content, _element) => content.includes(stripeError))
+      ).toBeInTheDocument()
     })
   })
 
