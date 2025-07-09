@@ -9,7 +9,7 @@ interface useUpdateBillingAddressParams {
 
 interface useUpdateBillingAddressReturn {
   reset: () => void
-  error: null | Error
+  error: null | Error | BillingApiError
   isLoading: boolean
   mutate: (variables: any, data: any) => void
   data: undefined | unknown
@@ -27,6 +27,12 @@ interface Address {
 interface AddressInfo {
   name: string
   address: Address
+}
+
+export interface BillingApiError {
+  data: {
+    detail: string
+  }
 }
 
 export function useUpdateBillingAddress({
