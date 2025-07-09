@@ -356,6 +356,9 @@ const FailedTestsTable = () => {
     )
   }
 
+  // 20 / 50 for name, so we can have 30 "parts" left since it's LCM of 5 and 6 which is the possible num of columns
+  const widthFraction = hideFlakeRate ? 6 / 50 : 5 / 50
+
   return (
     <>
       <TableHeader
@@ -365,18 +368,18 @@ const FailedTestsTable = () => {
       <div className="tableui">
         <table>
           <colgroup>
-            <col className="w-full @sm/table:w-5/12" />
-            <col className="@sm/table:w-1/12" />
-            <col className="@sm/table:w-1/12" />
-            <col className="@sm/table:w-1/12" />
-            <col className="@sm/table:w-1/12" />
+            <col style={{ width: `${(20 / 50) * 100}%` }} />
+            <col style={{ width: `${widthFraction * 100}%` }} />
+            <col style={{ width: `${widthFraction * 100}%` }} />
+            <col style={{ width: `${widthFraction * 100}%` }} />
+            <col style={{ width: `${widthFraction * 100}%` }} />
             {!hideFlakeRate ? (
               <>
-                <col className="@sm/table:w-1/12" />
-                <col className="@sm/table:w-2/12" />
+                <col style={{ width: `${widthFraction * 100}%` }} />
+                <col style={{ width: `${widthFraction * 100}%` }} />
               </>
             ) : (
-              <col className="@sm/table:w-3/12" />
+              <col style={{ width: `${widthFraction * 100}%` }} />
             )}
           </colgroup>
           <thead>
@@ -390,7 +393,9 @@ const FailedTestsTable = () => {
                   >
                     <div
                       className={cs('flex gap-1', {
-                        'flex-row-reverse': header.id !== 'name',
+                        'flex-row-reverse': !['name', 'updatedAt'].includes(
+                          header.id
+                        ),
                       })}
                     >
                       {flexRender(
@@ -428,7 +433,9 @@ const FailedTestsTable = () => {
                           }
                         : {})}
                       className={cs({
-                        'text-right': cell.column.id !== 'name',
+                        'text-right': !['name', 'updatedAt'].includes(
+                          cell.column.id
+                        ),
                         'max-w-1 break-words': cell.column.id === 'name',
                       })}
                     >
