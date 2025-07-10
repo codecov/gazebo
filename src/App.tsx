@@ -45,7 +45,7 @@ const HomePageRedirect = () => {
   if (internalUser && internalUser.owners) {
     const service = internalUser.owners[0]?.service
     const defaultOrg = internalUser.defaultOrg
-    redirectURL = `/${service}/${defaultOrg ? defaultOrg : ''}`
+    redirectURL = `/${service}/${defaultOrg ? defaultOrg : internalUser.owners[0]?.username}`
 
     if (setupAction) {
       // eslint-disable-next-line camelcase
