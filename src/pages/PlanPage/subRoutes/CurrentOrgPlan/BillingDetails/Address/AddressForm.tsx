@@ -3,7 +3,10 @@ import cs from 'classnames'
 import { z } from 'zod'
 
 import { AddressSchema } from 'services/account/useAccountDetails'
-import { useUpdateBillingAddress } from 'services/account/useUpdateBillingAddress'
+import {
+  BillingApiError,
+  useUpdateBillingAddress,
+} from 'services/account/useUpdateBillingAddress'
 import { Theme, useThemeContext } from 'shared/ThemeContext'
 import Button from 'ui/Button'
 
@@ -50,7 +53,6 @@ function AddressForm({
     mutate: updateAddress,
     isLoading,
     error,
-    reset,
   } = useUpdateBillingAddress({
     provider,
     owner,
@@ -69,8 +71,6 @@ function AddressForm({
       updateAddress(newAddressObj.value, { onSuccess: closeForm })
     }
   }
-
-  const showError = error && !reset
 
   return (
     <form onSubmit={submit} aria-label="form">
@@ -95,7 +95,9 @@ function AddressForm({
               },
             }}
           />
-          <p className="mt-1 text-ds-primary-red">{showError && error}</p>
+          <p className="mt-1 text-ds-primary-red">
+            {error && getErrorMessage(error)}
+          </p>
         </div>
         <div className="flex gap-1">
           <Button
@@ -121,6 +123,25 @@ function AddressForm({
       </div>
     </form>
   )
+}
+
+export const getErrorMessage = (
+  error: Error | BillingApiError
+): string | undefined => {
+  if (!error) return undefined
+
+  if (error instanceof Error) {
+    if (error.message) {
+      return `Could not save billing address: ${error.message}`
+    }
+    return 'Could not save billing address. Please contact support at support@codecov.io for assistance.'
+  }
+
+  if (error.data?.detail) {
+    return `Could not save billing address: ${error.data.detail}`
+  }
+
+  return 'Could not save billing address due to an unknown error. Please contact support at support@codecov.io for assistance.'
 }
 
 export default AddressForm
