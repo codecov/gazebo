@@ -134,14 +134,14 @@ export const getErrorMessage = (
     if (error.message) {
       return `Could not save billing address: ${error.message}`
     }
-    return 'Could not save billing address. Please contact support for assistance.'
+    return 'Could not save billing address. Please contact support at support@codecov.io for assistance.'
   }
 
   if (error.data?.detail) {
     return `Could not save billing address: ${error.data.detail}`
   }
 
-  return 'Could not save billing address due to an unknown error. Please contact support for assistance.'
+  return 'Could not save billing address due to an unknown error. Please contact support at support@codecov.io for assistance.'
 }
 
 export default AddressForm
