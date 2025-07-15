@@ -242,7 +242,7 @@ jobs:
       - name: Upload coverage to Production
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
-          codecovcli -u ${{ secrets.CODECOV_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error --name "VITEST-${{ matrix.runner-index }}" --verbose
+          codecovcli --verbose -u ${{ secrets.CODECOV_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error --name "VITEST-${{ matrix.runner-index }}"
 
       - name: Upload coverage to Staging
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
