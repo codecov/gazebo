@@ -54,8 +54,9 @@ const columns = [
                 side="right"
                 className="w-64 rounded-md bg-ds-gray-primary p-3 text-xs text-ds-gray-octonary"
               >
-                The average coverage percentage over the selected time period.
-                This is not the coverage percentage as of this moment.
+                This is the average flag coverage over the selected time period.
+                To view current coverage % for a given flag, navigate to the
+                Overview tab and filter by flag.
                 <Tooltip.Arrow className="size-4 fill-gray-100" />
               </Tooltip.Content>
             </Tooltip.Portal>
