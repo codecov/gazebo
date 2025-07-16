@@ -252,7 +252,7 @@ describe('FlagsTable', () => {
       const flags = await screen.findByText('Flags')
       expect(flags).toBeInTheDocument()
 
-      const coverage = await screen.findByText('Coverage %')
+      const coverage = await screen.findByText('Average coverage %')
       expect(coverage).toBeInTheDocument()
 
       const trend = await screen.findByText('Trend')
