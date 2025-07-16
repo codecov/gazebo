@@ -55,7 +55,7 @@ const columns = [
                 className="w-64 rounded-md bg-ds-gray-primary p-3 text-xs text-ds-gray-octonary"
               >
                 This is the average flag coverage over the selected time period.
-                To view current coverage % for a given flag, navigate to the
+                To view current coverage % for a given flag, navigate to the{' '}
                 <A
                   to={{ pageName: 'overview' }}
                   hook="overview-tab"
