@@ -56,7 +56,14 @@ const columns = [
               >
                 This is the average flag coverage over the selected time period.
                 To view current coverage % for a given flag, navigate to the
-                Overview tab and filter by flag.
+                <A
+                  to={{ pageName: 'overview' }}
+                  hook="overview-tab"
+                  isExternal={false}
+                >
+                  Overview tab
+                </A>{' '}
+                and filter by flag.
                 <Tooltip.Arrow className="size-4 fill-gray-100" />
               </Tooltip.Content>
             </Tooltip.Portal>
