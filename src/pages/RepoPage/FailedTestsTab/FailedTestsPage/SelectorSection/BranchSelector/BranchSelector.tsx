@@ -65,24 +65,17 @@ const BranchSelector = () => {
       enabled: !!decodedBranch,
     },
   })
-
   const selection: BranchSelection = searchBranchValue?.branch
     ? {
         name: searchBranchValue.branch.name,
         value: searchBranchValue.branch.name,
         head: searchBranchValue.branch.head,
       }
-    : branch
-      ? {
-          name: 'Select branch',
-          value: branch,
-          head: null,
-        }
-      : {
-          name: 'All branches',
-          value: '',
-          head: null,
-        }
+    : {
+        name: branch ? 'Select branch' : 'All branches',
+        value: branch || '',
+        head: null,
+      }
 
   const sortedBranchList = useMemo(() => {
     if (!branchList?.branches?.length) return []
@@ -128,7 +121,7 @@ const BranchSelector = () => {
           onChange={(item: BranchSelection) => {
             history.push(
               failedTestsLink.path({
-                branch: encodeURIComponent(item?.value),
+                branch: encodeURIComponent(item.value),
               })
             )
           }}

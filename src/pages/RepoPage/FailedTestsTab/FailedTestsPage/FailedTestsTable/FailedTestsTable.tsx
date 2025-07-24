@@ -235,13 +235,13 @@ const FailedTestsTable = () => {
     },
   })
 
-  const [isDefaultBranch, setIsDefaultBranch] = useState(false)
+  const [showResetButton, setShowResetButton] = useState(false)
   const [isTeamOrFreePlan, setIsTeamOrFreePlan] = useState(false)
   const [isPrivate, setIsPrivate] = useState(false)
 
   useEffect(() => {
     if (testData?.defaultBranch) {
-      setIsDefaultBranch(testData.defaultBranch === branch)
+      setShowResetButton(testData.defaultBranch === branch || !branch)
     }
   }, [testData?.defaultBranch, branch])
 
@@ -258,7 +258,7 @@ const FailedTestsTable = () => {
   }, [testData?.private])
 
   const hideFlakeRate =
-    (isTeamOrFreePlan && isPrivate) || (!!branch && !isDefaultBranch)
+    (isTeamOrFreePlan && isPrivate) || (!!branch && !showResetButton)
 
   const tableData = useMemo(() => {
     if (!testData?.testResults) return []
@@ -325,12 +325,16 @@ const FailedTestsTable = () => {
     }
   }, [fetchNextPage, inView, hasNextPage])
 
-  if (testData?.isFirstPullRequest && testData.totalCount === 0) {
+  if (
+    testData?.isFirstPullRequest &&
+    testData.totalCount === 0 &&
+    branch === testData?.defaultBranch
+  ) {
     return (
       <div className="flex flex-col gap-2">
         <TableHeader
           totalCount={testData?.totalCount}
-          isDefaultBranch={isDefaultBranch}
+          showResetButton={showResetButton}
         />
         <hr />
         <div className="mt-4 text-center text-ds-gray-quinary">
@@ -344,12 +348,12 @@ const FailedTestsTable = () => {
     )
   }
 
-  if (testData.totalCount === 0 && !isLoading && !!branch) {
+  if (testData.totalCount === 0 && !isLoading) {
     return (
       <div className="flex flex-col gap-2">
         <TableHeader
           totalCount={testData?.totalCount}
-          isDefaultBranch={isDefaultBranch}
+          showResetButton={showResetButton}
         />
         <hr />
         <p className="mt-4 text-center">No test results found</p>
@@ -364,7 +368,7 @@ const FailedTestsTable = () => {
     <>
       <TableHeader
         totalCount={testData?.totalCount}
-        isDefaultBranch={isDefaultBranch}
+        showResetButton={showResetButton}
       />
       <div className="tableui">
         <table>
