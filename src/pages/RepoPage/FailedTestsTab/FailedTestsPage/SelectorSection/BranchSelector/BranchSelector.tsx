@@ -15,6 +15,14 @@ interface URLParams {
   branch?: string
 }
 
+type Head = { commitid: string } | null
+
+interface BranchSelection {
+  name: string
+  value: string
+  head: Head
+}
+
 const getDecodedBranch = (branch?: string) =>
   branch ? decodeURIComponent(branch) : undefined
 
@@ -46,50 +54,60 @@ const BranchSelector = () => {
   })
 
   const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
 
   const { data: searchBranchValue } = useBranch({
     provider,
     owner,
     repo,
-    branch: selectedBranch,
+    branch: decodedBranch,
     opts: {
-      queryKey: ['GetSelectedBranch', provider, owner, repo, selectedBranch],
-      enabled: !!selectedBranch,
+      queryKey: ['GetSelectedBranch', provider, owner, repo, decodedBranch],
+      enabled: !!decodedBranch,
     },
   })
 
-  let selection = searchBranchValue?.branch
-  if (!selection) {
-    selection = {
-      name: 'Select branch',
-      head: null,
-    }
-  }
-
-  if (
-    selectedBranch === overview?.defaultBranch &&
-    !branch &&
-    selection.head !== null
-  ) {
-    history.push(
-      failedTestsLink.path({ branch: encodeURIComponent(selection?.name) })
-    )
-  }
+  const selection: BranchSelection = searchBranchValue?.branch
+    ? {
+        name: searchBranchValue.branch.name,
+        value: searchBranchValue.branch.name,
+        head: searchBranchValue.branch.head,
+      }
+    : branch
+      ? {
+          name: 'Select branch',
+          value: branch,
+          head: null,
+        }
+      : {
+          name: 'All branches',
+          value: '',
+          head: null,
+        }
 
   const sortedBranchList = useMemo(() => {
-    if (!branchList?.branches) return []
+    if (!branchList?.branches?.length) return []
 
-    if (overview?.defaultBranch) {
-      return [
-        // Pins the default branch to the top of the list always, filters it from results otherwise
-        { name: overview.defaultBranch, head: null },
-        ...branchList.branches.filter(
-          (branch) => branch.name !== overview.defaultBranch
-        ),
-      ]
+    const allBranches = { name: 'All branches', value: '', head: null as Head }
+    const defaultBranch = overview?.defaultBranch
+      ? {
+          name: overview.defaultBranch,
+          value: overview.defaultBranch,
+          head: null as Head,
+        }
+      : undefined
+    const branches = branchList.branches
+      .filter((branch) => branch.name !== defaultBranch?.name)
+      .map((branch) => ({
+        name: branch.name,
+        value: branch.name,
+        head: branch.head,
+      }))
+
+    if (defaultBranch) {
+      return [allBranches, defaultBranch, ...branches]
     }
-    return branchList.branches
+
+    return [allBranches, ...branches]
   }, [overview?.defaultBranch, branchList.branches])
 
   return (
@@ -107,9 +125,11 @@ const BranchSelector = () => {
           ariaName="test results branch selector"
           items={sortedBranchList}
           value={selection}
-          onChange={(item: Branch) => {
+          onChange={(item: BranchSelection) => {
             history.push(
-              failedTestsLink.path({ branch: encodeURIComponent(item?.name) })
+              failedTestsLink.path({
+                branch: encodeURIComponent(item?.value),
+              })
             )
           }}
           variant="gray"

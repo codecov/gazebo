@@ -336,7 +336,8 @@ const FailedTestsTable = () => {
         <div className="mt-4 text-center text-ds-gray-quinary">
           <p>No data yet</p>
           <p>
-            To see data for the main branch, merge your PR into the main branch.
+            To see data for the {testData?.defaultBranch} branch, merge your PR
+            into the {testData?.defaultBranch} branch.
           </p>
         </div>
       </div>

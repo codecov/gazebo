@@ -77,7 +77,7 @@ function SelectorSection() {
   })
 
   const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
+  const selectedBranch = decodedBranch ?? ''
 
   const timeValue = MeasurementTimeOptions.find(
     // @ts-expect-error need to type out useLocationParams
@@ -91,7 +91,7 @@ function SelectorSection() {
   return (
     <div className="flex flex-1 flex-col gap-2 md:flex-row md:justify-between md:gap-0">
       <BranchSelector />
-      {selectedBranch === overview?.defaultBranch ? (
+      {selectedBranch === overview?.defaultBranch || selectedBranch === '' ? (
         <>
           <div className="flex flex-col gap-1 px-4">
             <h3 className="text-sm font-semibold text-ds-gray-octonary">

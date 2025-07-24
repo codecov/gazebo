@@ -134,6 +134,7 @@ interface SetupArgs {
   hasNextPage?: boolean
   nullOverview?: boolean
   nullHead?: boolean
+  nullBranch?: boolean
 }
 
 describe('BranchSelector', () => {
@@ -142,10 +143,12 @@ describe('BranchSelector', () => {
       hasNextPage = false,
       nullOverview = false,
       nullHead = false,
+      nullBranch = false,
     }: SetupArgs = {
       hasNextPage: false,
       nullOverview: false,
       nullHead: false,
+      nullBranch: false,
     }
   ) {
     const user = userEvent.setup()
@@ -180,6 +183,16 @@ describe('BranchSelector', () => {
         let branch = 'main'
         if (info.variables?.branch) {
           branch = info.variables?.branch
+        }
+
+        if (nullBranch) {
+          return HttpResponse.json({
+            data: {
+              owner: {
+                repository: { __typename: 'Repository', branch: null },
+              },
+            },
+          })
         }
 
         let mockedBranch = mockBranch(branch)
@@ -241,7 +254,7 @@ describe('BranchSelector', () => {
         wrapper: wrapper(queryClient),
       })
 
-      const dropDownBtn = await screen.findByText('main')
+      const dropDownBtn = await screen.findByText('All branches')
       expect(dropDownBtn).toBeInTheDocument()
     })
   })
@@ -255,7 +268,7 @@ describe('BranchSelector', () => {
         })
 
         await waitFor(() =>
-          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/tests/main')
+          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/tests')
         )
       })
 
@@ -286,7 +299,7 @@ describe('BranchSelector', () => {
         await user.click(select)
 
         const options = screen.getAllByRole('option')
-        expect(options[0]).toHaveTextContent('main')
+        expect(options[0]).toHaveTextContent('All branches')
       })
 
       it('navigates to the selected branch', async () => {
@@ -367,7 +380,7 @@ describe('BranchSelector', () => {
         wrapper: wrapper(queryClient),
       })
 
-      const select = await screen.findByText('main')
+      const select = await screen.findByText('All branches')
       await user.click(select)
 
       const input = await screen.findByRole('combobox')
@@ -383,9 +396,13 @@ describe('BranchSelector', () => {
     it('displays select a branch in the button', async () => {
       const { queryClient } = setup({
         nullOverview: true,
+        nullBranch: true,
       })
       render(<BranchSelector />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(
+          queryClient,
+          '/gh/codecov/test-repo/tests/nonexistent-branch'
+        ),
       })
 
       const select = await screen.findByRole('button', {
