@@ -316,7 +316,7 @@ describe('MetricsSection', () => {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
 
-        const title = await screen.findByText('Cumulative Failures')
+        const title = await screen.findByText('Failed test runs')
         const context = await screen.findByText(1)
         const description = await screen.findByText(
           'The number of test failures on your default branch.'
@@ -373,7 +373,7 @@ describe('MetricsSection', () => {
           wrapper: wrapper('/gh/owner/repo/tests/main'),
         })
 
-        const title = await screen.findByText('Skipped tests')
+        const title = await screen.findByText('Skipped test runs')
         const context = await screen.findByText(20)
         const description = await screen.findByText(
           'The number of skipped tests in your test suite.'
