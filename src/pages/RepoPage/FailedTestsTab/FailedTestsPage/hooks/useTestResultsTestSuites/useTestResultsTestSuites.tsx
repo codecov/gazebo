@@ -20,7 +20,7 @@ const TestResultsTestSuitesSchema = z.object({
                   latestUploadError: z
                     .object({
                       errorCode: z.nativeEnum(ErrorCodeEnum),
-                      errorMessage: z.string(),
+                      errorMessage: z.string().nullable(),
                     })
                     .nullable(),
                 })

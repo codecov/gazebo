@@ -43,6 +43,23 @@ const subscriptionDetail = {
   cancelAtPeriodEnd: false,
 } as z.infer<typeof SubscriptionDetailSchema>
 
+const subscriptionDetailWithCustomer = {
+  currentPeriodEnd: 1606851492,
+  cancelAtPeriodEnd: false,
+  defaultPaymentMethod: null,
+  customer: {
+    address: {
+      line1: '456 Main St.',
+      line2: null,
+      city: 'San Francisco',
+      country: 'US',
+      state: 'CA',
+      postalCode: '12345',
+    },
+    name: 'Bob Smith Jr.',
+  },
+} as z.infer<typeof SubscriptionDetailSchema>
+
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <ThemeContextProvider>{children}</ThemeContextProvider>
 )
@@ -97,14 +114,14 @@ describe('AddressCard', () => {
     })
   })
 
-  describe(`when the user doesn't have billing details`, () => {
+  describe(`when the user doesn't have billing details or customer`, () => {
     it('renders an error message', () => {
       render(
         <AddressCard
           // @ts-expect-error weird param funkiness
           subscriptionDetail={{
-            ...subscriptionDetail,
             defaultPaymentMethod: null,
+            customer: null,
           }}
           provider="gh"
           owner="codecov"
@@ -126,8 +143,8 @@ describe('AddressCard', () => {
           <AddressCard
             // @ts-expect-error weird param funkiness
             subscriptionDetail={{
-              ...subscriptionDetail,
               defaultPaymentMethod: null,
+              customer: null,
             }}
             provider="gh"
             owner="codecov"
@@ -152,8 +169,8 @@ describe('AddressCard', () => {
           <AddressCard
             // @ts-expect-error weird param funkiness
             subscriptionDetail={{
-              ...subscriptionDetail,
               defaultPaymentMethod: null,
+              customer: null,
             }}
             provider="gh"
             owner="codecov"
@@ -229,6 +246,23 @@ describe('AddressCard', () => {
       expect(screen.getByText('Billing address')).toBeInTheDocument()
       expect(screen.queryByText(/null/)).not.toBeInTheDocument()
       expect(screen.getByText('12345')).toBeInTheDocument()
+    })
+
+    it('can render information from the customer', () => {
+      render(
+        <AddressCard
+          subscriptionDetail={subscriptionDetailWithCustomer}
+          provider="gh"
+          owner="codecov"
+        />,
+        { wrapper }
+      )
+
+      expect(screen.getByText('Full name')).toBeInTheDocument()
+      expect(screen.getByText('Bob Smith Jr.')).toBeInTheDocument()
+      expect(screen.getByText('Billing address')).toBeInTheDocument()
+      expect(screen.getByText('456 Main St.')).toBeInTheDocument()
+      expect(screen.getByText('San Francisco, CA 12345')).toBeInTheDocument()
     })
 
     it('renders the card holder information', () => {
@@ -346,12 +380,12 @@ describe('AddressCard', () => {
   })
 
   describe('when there is an error in the form', () => {
-    it('renders the error', async () => {
+    it('renders the error when the error is an instance of Error', async () => {
       const { user } = setup()
       const randomError = 'not a valid address'
       mocks.useUpdateBillingAddress.mockReturnValue({
         mutate: vi.fn(),
-        error: randomError,
+        error: new Error(randomError),
       })
       render(
         <AddressCard
@@ -364,7 +398,36 @@ describe('AddressCard', () => {
 
       await user.click(screen.getByTestId('edit-address'))
 
-      expect(screen.getByText(randomError)).toBeInTheDocument()
+      expect(
+        screen.getByText((content, _element) => content.includes(randomError))
+      ).toBeInTheDocument()
+    })
+
+    it('renders the error when the error is an instance of BillingApiError', async () => {
+      const { user } = setup()
+      const stripeError = 'Your card has expired'
+      mocks.useUpdateBillingAddress.mockReturnValue({
+        mutate: vi.fn(),
+        error: {
+          data: {
+            detail: stripeError,
+          },
+        },
+      })
+      render(
+        <AddressCard
+          subscriptionDetail={subscriptionDetail}
+          provider="gh"
+          owner="codecov"
+        />,
+        { wrapper }
+      )
+
+      await user.click(screen.getByTestId('edit-address'))
+
+      expect(
+        screen.getByText((content, _element) => content.includes(stripeError))
+      ).toBeInTheDocument()
     })
   })
 

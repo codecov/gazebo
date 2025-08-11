@@ -63,6 +63,8 @@ const subscriptionDetail: z.infer<typeof SubscriptionDetailSchema> = {
   customer: {
     id: 'cust_123',
     email: 'test@example.com',
+    address: null,
+    name: null,
   },
   latestInvoice: null,
   taxIds: [],

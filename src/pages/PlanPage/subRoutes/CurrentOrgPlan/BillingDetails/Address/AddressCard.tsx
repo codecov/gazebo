@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { z } from 'zod'
 
 import {
-  BillingDetailsSchema,
+  AddressSchema,
   SubscriptionDetailSchema,
 } from 'services/account/useAccountDetails'
 import A from 'ui/A'
@@ -23,15 +23,20 @@ function AddressCard({
   owner,
 }: AddressCardProps) {
   const [isFormOpen, setIsFormOpen] = useState(false)
-  const billingDetails =
-    subscriptionDetail?.defaultPaymentMethod?.billingDetails
+  const address =
+    subscriptionDetail?.defaultPaymentMethod?.billingDetails?.address ||
+    subscriptionDetail?.customer?.address
+
+  const name =
+    subscriptionDetail?.defaultPaymentMethod?.billingDetails?.name ||
+    subscriptionDetail?.customer?.name
 
   return (
     <div className="flex flex-col gap-2 border-t p-4">
       {isFormOpen && (
         <AddressForm
-          name={billingDetails?.name || ''}
-          address={billingDetails?.address}
+          name={name || ''}
+          address={address}
           provider={provider}
           owner={owner}
           closeForm={() => setIsFormOpen(false)}
@@ -52,7 +57,8 @@ function AddressCard({
             </A>
           </div>
           <BillingInner
-            billingDetails={billingDetails}
+            address={address}
+            name={name}
             setIsFormOpen={setIsFormOpen}
           />
         </>
@@ -62,27 +68,22 @@ function AddressCard({
 }
 
 interface BillingInnerProps {
-  billingDetails?: z.infer<typeof BillingDetailsSchema>
+  address?: z.infer<typeof AddressSchema> | null
+  name?: string | null
   setIsFormOpen: (val: boolean) => void
 }
 
-function BillingInner({ billingDetails, setIsFormOpen }: BillingInnerProps) {
-  if (billingDetails) {
+function BillingInner({ address, name, setIsFormOpen }: BillingInnerProps) {
+  if (address) {
     return (
       <div>
-        <p>{`${billingDetails.name ?? 'N/A'}`}</p>
+        <p>{`${name ?? 'N/A'}`}</p>
         <br />
         <h4 className="mb-2 font-semibold">Billing address</h4>
-        <p>{`${billingDetails.address?.line1 ?? ''} ${
-          billingDetails.address?.line2 ?? ''
-        }`}</p>
+        <p>{`${address?.line1 ?? ''} ${address?.line2 ?? ''}`}</p>
         <p>
-          {billingDetails.address?.city
-            ? `${billingDetails.address?.city}, `
-            : ''}
-          {`${billingDetails.address?.state ?? ''} ${
-            billingDetails.address?.postalCode ?? ''
-          }`}
+          {address?.city ? `${address?.city}, ` : ''}
+          {`${address?.state ?? ''} ${address?.postalCode ?? ''}`}
         </p>
       </div>
     )

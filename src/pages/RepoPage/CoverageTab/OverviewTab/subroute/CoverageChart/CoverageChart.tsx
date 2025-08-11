@@ -86,7 +86,7 @@ function CoverageChart() {
   return (
     <ChartContainer
       config={chartConfig}
-      className="max-h-[250px] min-h-[200px] w-full xl:max-h-[380px]"
+      className="h-[250px] w-full xl:h-[380px] 2xl:h-[500px]"
     >
       <AreaChart
         accessibilityLayer

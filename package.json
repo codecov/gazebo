@@ -85,7 +85,7 @@
     "react-router-dom": "^5.2.1",
     "react-router-dom-v5-compat": "^6.15.0",
     "react-use": "^17.2.4",
-    "recharts": "^2.12.7",
+    "recharts": "^2.15.3",
     "tailwind-merge": "^2.3.0",
     "zod": "^3.21.4"
   },
@@ -180,7 +180,7 @@
   },
   "volta": {
     "node": "22.11.0",
-    "yarn": "4.9.1"
+    "yarn": "4.9.2"
   },
   "resolutions": {
     "react-refresh": "^0.14.0",
@@ -190,6 +190,6 @@
     "path-to-regexp@^1.7.0": "^1.9.0",
     "path-to-regexp@^6.2.0": "^6.3.0"
   },
-  "packageManager": "yarn@4.9.1",
+  "packageManager": "yarn@4.9.2",
   "engineStrict": false
 }

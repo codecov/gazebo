@@ -248,10 +248,9 @@ const TotalFailuresCard = ({
     <MetricCard>
       <MetricCard.Header>
         <MetricCard.Title className="flex items-center gap-2">
-          Cumulative Failures
+          Failed test runs
           <TooltipWithIcon>
-            The sum of all test failures, incremented each time any test has
-            failed.
+            The number of individual runs of tests that failed.
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>
@@ -298,9 +297,9 @@ const TotalSkippedTestsCard = ({
     <MetricCard>
       <MetricCard.Header>
         <MetricCard.Title className="flex items-center gap-2">
-          Skipped tests
+          Skipped test runs
           <TooltipWithIcon>
-            The number of tests that were skipped.
+            The number of individual runs of tests that were skipped.
           </TooltipWithIcon>
         </MetricCard.Title>
       </MetricCard.Header>

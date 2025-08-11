@@ -47,6 +47,7 @@ describe('useInternalUser', () => {
           externalId: '1234',
           termsAgreement: false,
           owners: [],
+          defaultOrg: null,
         })
       })
     )
@@ -64,6 +65,7 @@ describe('useInternalUser', () => {
           externalId: '1234',
           owners: [],
           termsAgreement: false,
+          defaultOrg: null,
         })
       )
     })

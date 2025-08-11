@@ -81,7 +81,7 @@ function GuestHeader() {
               data-testid="login-link"
               hook="guest-header-login-link"
             >
-              Login
+              Log in
             </Button>
           ) : (
             <div
@@ -96,7 +96,7 @@ function GuestHeader() {
                 data-testid="login-link"
                 hook="guest-header-login-link"
               >
-                Login
+                Log in
               </A>
               <Button
                 to={{ pageName: 'freeTrial' }}

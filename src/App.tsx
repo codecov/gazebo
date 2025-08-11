@@ -2,7 +2,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import qs from 'qs'
 import { lazy } from 'react'
 import { Toaster } from 'react-hot-toast'
-import { Redirect, Switch, useParams } from 'react-router-dom'
+import { Redirect, Switch } from 'react-router-dom'
 
 import config from 'config'
 
@@ -13,8 +13,7 @@ import EnterpriseLoginLayout from 'layouts/EnterpriseLoginLayout'
 import LoginLayout from 'layouts/LoginLayout'
 import { useLocationParams } from 'services/navigation/useLocationParams'
 import { ToastNotificationProvider } from 'services/toastNotification/context'
-import { useInternalUser, useUser } from 'services/user'
-import { isProvider } from 'shared/api/helpers'
+import { useInternalUser } from 'services/user'
 import 'ui/Table/Table.css'
 import 'ui/FileList/FileList.css'
 import { ThemeContextProvider } from 'shared/ThemeContext'
@@ -33,45 +32,29 @@ const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage'))
 const SyncProviderPage = lazy(() => import('./pages/SyncProviderPage'))
 
-interface URLParams {
-  provider: string
-}
-
 const HomePageRedirect = () => {
-  const { provider } = useParams<URLParams>()
-  const { data: currentUser } = useUser()
   const { data: internalUser } = useInternalUser({})
   const { params } = useLocationParams()
   // @ts-expect-error useLocationParams needs to be typed
   const { setup_action: setupAction, to } = params
+  // create a query params object to be added to the redirect URL
+  const queryParams: Record<string, string> = {}
 
   let redirectURL = '/login'
 
   if (internalUser && internalUser.owners) {
     const service = internalUser.owners[0]?.service
-    const username = internalUser.owners[0]?.username
-    redirectURL = `/${service}/${username}`
-    if (to === 'plan') {
-      redirectURL = '/plan' + redirectURL
-    }
-  }
-
-  // create a query params object to be added to the redirect URL
-  const queryParams: Record<string, string> = {}
-
-  // only redirect if we have a provider and it's a valid provider and the user is logged in
-  if (provider && isProvider(provider) && currentUser) {
-    // set the redirect URL to the owner's default org or the user's username
-    const defaultOrg =
-      currentUser.owner?.defaultOrgUsername ?? currentUser.user?.username
-    redirectURL = `/${provider}/${defaultOrg}`
+    const defaultOrg = internalUser.defaultOrg
+    redirectURL = `/${service}/${defaultOrg ? defaultOrg : internalUser.owners[0]?.username}`
 
     if (setupAction) {
       // eslint-disable-next-line camelcase
       queryParams.setup_action = setupAction
     }
-    // ensure that we only redirect if the user is not setting up the action and we don't want to redirect if we're already redirecting to the plan page
-    else if (to && to !== 'plan') {
+
+    if (to === 'plan') {
+      redirectURL = '/plan' + redirectURL
+    } else if (to) {
       redirectURL = to
     }
   }

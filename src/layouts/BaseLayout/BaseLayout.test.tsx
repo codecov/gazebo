@@ -60,6 +60,7 @@ const mockUser = {
     },
   ],
   termsAgreement: true,
+  defaultOrg: 'cool-username',
 }
 
 const mockUserNoTermsAgreement = {
@@ -133,6 +134,7 @@ const internalUserNoSyncedProviders = {
   externalId: '123',
   termsAgreement: true,
   owners: [],
+  defaultOrg: null,
 }
 
 const internalUserHasSyncedProviders = {
@@ -150,6 +152,7 @@ const internalUserHasSyncedProviders = {
       service: 'github',
     },
   ],
+  defaultOrg: 'cool-username',
   termsAgreement: true,
 }
 

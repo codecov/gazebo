@@ -54,7 +54,7 @@ const ProcessingTimeoutBanner = () => (
 const UnsupportedFormatBanner = ({
   errorMessage,
 }: {
-  errorMessage: string
+  errorMessage: string | null
 }) => (
   <Banner variant="warning">
     <BannerHeading>

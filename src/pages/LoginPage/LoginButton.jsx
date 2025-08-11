@@ -43,7 +43,7 @@ function LoginButton({ provider }) {
         className="mx-4 w-6"
         src={providerImage}
       />
-      Login with {providerName}
+      Log in with {providerName}
     </a>
   )
 }

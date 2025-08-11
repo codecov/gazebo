@@ -1,8 +1,8 @@
 # syntax = docker/dockerfile:1.3
-FROM            alpine:3.17 as uploader
+FROM            alpine:3.21 as uploader
 USER            root
 WORKDIR         /tmp
-RUN             apk -U add gnupg curl
+RUN             apk -U add gpg gpg-agent curl
 RUN             curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
 RUN             mkdir uploader && \
   mkdir uploader/linux && \
@@ -24,6 +24,9 @@ RUN             curl -s -o linux/codecov https://uploader.codecov.io/latest/linu
   curl -s -o windows/codecov.exe.SHA256SUM https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM && \
   curl -s -o windows/codecov.exe.SHA256SUM.sig https://uploader.codecov.io/latest/windows/codecov.exe.SHA256SUM.sig
 
+# Not sure why this lock isn't getting cleared, but we need to manually clear
+# this lock or the next RUN will hang indefinitely waiting for it.
+RUN             rm /root/.gnupg/public-keys.d/pubring.db.lock
 RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM && \
   gpg --verify alpine/codecov.SHA256SUM.sig alpine/codecov.SHA256SUM && \
   gpg --verify macos/codecov.SHA256SUM.sig macos/codecov.SHA256SUM && \
@@ -35,7 +38,7 @@ RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM
 
 COPY            docker/index.html /tmp/uploader
 
-FROM node:22-alpine3.20 as build
+FROM node:22-alpine3.21 as build
 ARG REACT_APP_ENV_ARG
 ARG REACT_APP_CODECOV_VERSION
 ENV REACT_APP_ENV=$REACT_APP_ENV_ARG
@@ -50,7 +53,7 @@ RUN yarn install
 RUN yarn build && rm -f build/mockServiceWorker.js
 
 
-FROM alpine:3.17
+FROM alpine:3.21
 ARG REACT_APP_CODECOV_VERSION
 ARG ENVIRONMENT
 ARG COMMIT_SHA
@@ -61,7 +64,6 @@ ENV BUILD_ID $COMMIT_SHA
 ENV BUILD_VERSION $VERSION
 ENV CODECOV_BASE_HOST=codecov.io
 ENV CODECOV_API_HOST=api.codecov.io
-ENV CODECOV_API_PORT=443
 # Install packages and remove default server definition
 RUN apk --no-cache add curl nginx gettext
 
@@ -76,12 +78,12 @@ RUN  addgroup -S application \
 
 COPY --chown=codecov:application docker/start-nginx.sh /usr/bin/start-nginx
 
-RUN chown -R codecov.application /var/www/app && \
-  chown -R codecov.application /run && \
-  chown -R codecov.application /var/lib/nginx && \
-  chown -R codecov.application /var/log/nginx && \
+RUN chown -R codecov:application /var/www/app && \
+  chown -R codecov:application /run && \
+  chown -R codecov:application /var/lib/nginx && \
+  chown -R codecov:application /var/log/nginx && \
   chmod +x /usr/bin/start-nginx && \
-  chown codecov.application /etc/nginx/nginx.conf
+  chown codecov:application /etc/nginx/nginx.conf
 # Switch to use a non-root user from here on
 USER codecov
 

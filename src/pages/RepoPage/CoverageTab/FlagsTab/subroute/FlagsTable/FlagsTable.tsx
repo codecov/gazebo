@@ -18,6 +18,7 @@ import A from 'ui/A'
 import CoverageProgress from 'ui/CoverageProgress'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
+import { Tooltip } from 'ui/Tooltip'
 
 import DeleteFlagModal from './DeleteFlagModal'
 import useRepoFlagsTable from './hooks'
@@ -38,7 +39,38 @@ const columns = [
     cell: ({ renderValue }) => renderValue(),
   }),
   columnHelper.accessor('coverage', {
-    header: () => 'Coverage %',
+    header: () => (
+      <div className="flex items-center gap-1">
+        Average coverage %
+        <Tooltip delayDuration={0} skipDelayDuration={100}>
+          <Tooltip.Root>
+            <Tooltip.Trigger>
+              <div className="text-ds-gray-tertiary dark:text-ds-gray-quinary">
+                <Icon name="informationCircle" size="sm" />
+              </div>
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content
+                side="right"
+                className="w-64 rounded-md bg-ds-gray-primary p-3 text-xs text-ds-gray-octonary"
+              >
+                This is the average flag coverage over the selected time period.
+                To view current coverage % for a given flag, navigate to the{' '}
+                <A
+                  to={{ pageName: 'overview' }}
+                  hook="overview-tab"
+                  isExternal={false}
+                >
+                  Overview tab
+                </A>{' '}
+                and filter by flag.
+                <Tooltip.Arrow className="size-4 fill-gray-100" />
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </Tooltip>
+      </div>
+    ),
     cell: ({ renderValue }) => renderValue(),
     enableSorting: false,
   }),

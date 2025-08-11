@@ -153,15 +153,13 @@ describe('BillingOptions', () => {
           }
         )
 
-        const annualBtn = await screen.findByRole('button', { name: 'Annual' })
+        const annualBtn = await screen.findByTestId('radio-annual')
         expect(annualBtn).toBeInTheDocument()
-        await waitFor(() => expect(annualBtn).toHaveClass('bg-ds-primary-base'))
+        await waitFor(() => expect(annualBtn).toBeChecked())
 
-        const monthlyBtn = await screen.findByRole('button', {
-          name: 'Monthly',
-        })
+        const monthlyBtn = await screen.findByTestId('radio-monthly')
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(monthlyBtn).not.toBeChecked()
       })
 
       it('renders annual pricing scheme', async () => {
@@ -200,9 +198,7 @@ describe('BillingOptions', () => {
             }
           )
 
-          const monthlyBtn = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
+          const monthlyBtn = await screen.findByTestId('radio-monthly')
           expect(monthlyBtn).toBeInTheDocument()
           await user.click(monthlyBtn)
 
@@ -230,15 +226,13 @@ describe('BillingOptions', () => {
           }
         )
 
-        const annualBtn = await screen.findByRole('button', { name: 'Annual' })
+        const annualBtn = await screen.findByTestId('radio-annual')
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(annualBtn).not.toBeChecked()
 
-        const monthlyBtn = await screen.findByRole('button', {
-          name: 'Monthly',
-        })
+        const monthlyBtn = await screen.findByTestId('radio-monthly')
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).toHaveClass('bg-ds-primary-base')
+        expect(monthlyBtn).toBeChecked()
       })
 
       it('renders correct pricing scheme', async () => {
@@ -277,9 +271,7 @@ describe('BillingOptions', () => {
             }
           )
 
-          const annualBtn = await screen.findByRole('button', {
-            name: 'Annual',
-          })
+          const annualBtn = await screen.findByTestId('radio-annual')
           expect(annualBtn).toBeInTheDocument()
           await user.click(annualBtn)
 

@@ -13,7 +13,6 @@ import { type Mock, vi } from 'vitest'
 import config from 'config'
 
 import { useLocationParams } from 'services/navigation/useLocationParams'
-import { Plans } from 'shared/utils/billing'
 
 import App from './App'
 
@@ -60,55 +59,13 @@ const internalUser = {
       integrationId: null,
       name: null,
       ownerid: 123,
-      service: 'cool-service',
+      service: 'gh',
       stats: null,
       username: 'cool-guy',
     },
   ],
+  defaultOrg: 'codecov',
   termsAgreement: true,
-}
-
-const user = {
-  me: {
-    owner: {
-      defaultOrgUsername: 'codecov',
-    },
-    email: 'jane.doe@codecov.io',
-    privateAccess: true,
-    onboardingCompleted: true,
-    businessEmail: 'jane.doe@codecov.io',
-    termsAgreement: true,
-    user: {
-      name: 'Jane Doe',
-      username: 'janedoe',
-      avatarUrl: 'http://127.0.0.1/avatar-url',
-      avatar: 'http://127.0.0.1/avatar-url',
-      student: false,
-      studentCreatedAt: null,
-      studentUpdatedAt: null,
-    },
-    trackingMetadata: {
-      service: 'github',
-      ownerid: 123,
-      serviceId: '123',
-      plan: Plans.USERS_DEVELOPER,
-      staff: false,
-      hasYaml: false,
-      bot: null,
-      delinquent: null,
-      didTrial: null,
-      planProvider: null,
-      planUserCount: 1,
-      createdAt: 'timestamp',
-      updatedAt: 'timestamp',
-      profile: {
-        createdAt: 'timestamp',
-        otherGoal: null,
-        typeProjects: [],
-        goals: [],
-      },
-    },
-  },
 }
 
 const mockRepoOverview = {
@@ -198,7 +155,6 @@ afterAll(() => {
 
 describe('App', () => {
   function setup({
-    hasLoggedInUser,
     hasSession,
   }: {
     hasLoggedInUser?: boolean
@@ -218,12 +174,6 @@ describe('App', () => {
       graphql.query('DetailOwner', () =>
         HttpResponse.json({ data: { owner: 'codecov' } })
       ),
-      graphql.query('CurrentUser', () => {
-        if (hasLoggedInUser) {
-          return HttpResponse.json({ data: user })
-        }
-        HttpResponse.json({ data: {} })
-      }),
       graphql.query('GetPlanData', () => {
         return HttpResponse.json({ data: {} })
       }),
@@ -436,7 +386,7 @@ describe('App', () => {
     'cloud routing',
     ({ testLabel, pathname, expected }) => {
       beforeEach(() => {
-        setup({ hasLoggedInUser: true, hasSession: true })
+        setup({ hasSession: true })
       })
 
       it(`renders the ${testLabel} page`, async () => {
@@ -620,7 +570,7 @@ describe('App', () => {
     ({ testLabel, pathname, expected }) => {
       beforeEach(() => {
         config.IS_SELF_HOSTED = true
-        setup({ hasLoggedInUser: true, hasSession: true })
+        setup({ hasSession: true })
       })
 
       it(`renders the ${testLabel} page`, async () => {
@@ -637,7 +587,7 @@ describe('App', () => {
 
   describe('user not logged in', () => {
     it('redirects to login', async () => {
-      setup({ hasLoggedInUser: true, hasSession: false })
+      setup({ hasSession: false })
       render(<App />, { wrapper: wrapper(['*']) })
       await waitFor(() => expect(testLocation.pathname).toBe('/login'))
     })
@@ -645,24 +595,22 @@ describe('App', () => {
 
   describe('user has session, not logged in', () => {
     it('redirects to session default', async () => {
-      setup({ hasLoggedInUser: false, hasSession: true })
+      setup({ hasSession: true })
 
       render(<App />, { wrapper: wrapper(['/blah']) })
-      await waitFor(() =>
-        expect(testLocation.pathname).toBe('/cool-service/cool-guy')
-      )
+      await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
     })
 
     it('redirects to plan page if to param === plan', async () => {
       mockedUseLocationParams.mockReturnValue({
         params: { to: 'plan' },
       })
-      setup({ hasLoggedInUser: false, hasSession: true })
+      setup({ hasSession: true })
 
       render(<App />, { wrapper: wrapper(['/blah']) })
 
       await waitFor(() =>
-        expect(testLocation.pathname).toBe('/plan/cool-service/cool-guy')
+        expect(testLocation.pathname).toBe('/plan/gh/codecov')
       )
     })
   })
@@ -673,7 +621,7 @@ describe('App', () => {
         mockedUseLocationParams.mockReturnValue({
           params: { setup_action: 'install' },
         })
-        setup({ hasLoggedInUser: true, hasSession: true })
+        setup({ hasSession: true })
         render(<App />, { wrapper: wrapper(['/gh?setup_action=install']) })
 
         await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
@@ -687,7 +635,7 @@ describe('App', () => {
         mockedUseLocationParams.mockReturnValue({
           params: { to: '/gh/codecov/test-app/pull/123' },
         })
-        setup({ hasLoggedInUser: true, hasSession: true })
+        setup({ hasSession: true })
 
         render(<App />, { wrapper: wrapper(['/gh']) })
 
@@ -706,7 +654,7 @@ describe('App', () => {
           })
           // after redirecting the param should be removed
           .mockReturnValue({ params: {} })
-        setup({ hasLoggedInUser: true, hasSession: true })
+        setup({ hasSession: true })
 
         render(<App />, {
           wrapper: wrapper(['/gh?to=/gh/path/does/not/exist']),
