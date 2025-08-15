@@ -12,10 +12,9 @@ const EraseRepoModal = ({ closeModal, eraseRepo, isLoading, showModal }) => {
       body={
         <p>
           This will erase the repository, including all of its contents. This
-          action is irreversible and if you proceed, you will permanently erase
-          any historical code coverage in Codecov for this repository. The
-          repository itself will be re-created when resync-ing the organization
-          contents.
+          action is irreversible and will permanently erase any historical code
+          coverage in Codecov for this repository. The repository will be
+          recreated when resyncing the organization.
         </p>
       }
       footer={
