@@ -1,5 +1,6 @@
 import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import isNumber from 'lodash/isNumber'
+import pluralize from 'pluralize'
 import { useParams } from 'react-router-dom'
 
 import { PlanPageDataQueryOpts } from 'pages/PlanPage/queries/PlanPageDataQueryOpts'
@@ -34,6 +35,7 @@ function PaidPlanCard() {
   const benefits = plan?.benefits
   const baseUnitPrice = plan?.baseUnitPrice
   const seats = plan?.planUserCount
+  const freeSeats = plan?.freeSeatCount ?? 0
   const numberOfUploads = ownerData?.numberOfUploads
 
   return (
@@ -41,7 +43,12 @@ function PaidPlanCard() {
       <div className="flex justify-between p-4">
         <div>
           <h2 className="font-semibold">{marketingName} plan</h2>
-          <span className="text-ds-gray-quinary">Current plan</span>
+          <span className="text-ds-gray-quinary">
+            Current plan
+            {freeSeats
+              ? ` (${freeSeats} free ${pluralize('seat', freeSeats)} included)`
+              : ''}
+          </span>
         </div>
         <ActionsBilling />
       </div>
@@ -64,6 +71,9 @@ function PaidPlanCard() {
             {seats ? (
               <p className="text-xs text-ds-gray-senary">
                 plan has {seats} seats
+                {freeSeats && seats - freeSeats > 0
+                  ? ` with ${seats - freeSeats} paid`
+                  : ''}
               </p>
             ) : null}
           </div>

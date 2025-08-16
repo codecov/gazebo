@@ -1,3 +1,4 @@
+import pluralize from 'pluralize'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account/useAccountDetails'
@@ -74,6 +75,9 @@ function Activation() {
         activated members of{' '}
         <span className="text-lg font-semibold">{planQuantity}</span> available
         seats{' '}
+        {planData?.plan?.freeSeatCount
+          ? `(${planData?.plan?.freeSeatCount} free ${pluralize('seat', planData?.plan?.freeSeatCount)} included) `
+          : ''}
         {accountDetails && (
           <ChangePlanLink
             accountDetails={accountDetails}

@@ -91,7 +91,7 @@ function CurrentOrgPlan() {
                   <Alert.Title>Plan successfully updated</Alert.Title>
                   <Alert.Description>
                     The start date is {scheduleStart} with a monthly
-                    subscription for {scheduledPhase.quantity} seats.
+                    subscription for {scheduledPhase.quantity} paid seats.
                   </Alert.Description>
                 </>
               ) : (

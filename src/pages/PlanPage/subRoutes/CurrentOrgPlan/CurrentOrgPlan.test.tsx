@@ -217,7 +217,7 @@ describe('CurrentOrgPlan', () => {
       const updatedAlert = await screen.findByText('Plan successfully updated')
       expect(updatedAlert).toBeInTheDocument()
       expect(
-        screen.getByText(/with a monthly subscription for 34 seats/)
+        screen.getByText(/with a monthly subscription for 34 paid seats/)
       ).toBeInTheDocument()
     })
 

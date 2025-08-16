@@ -14,6 +14,7 @@ const planChunk = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 2,
+  freeSeatCount: 0,
   isEnterprisePlan: false,
   isFreePlan: false,
   isSentryPlan: false,

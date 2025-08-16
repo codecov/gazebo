@@ -109,9 +109,7 @@ describe('PriceCallout', () => {
 
     const mockAccountDetails = {
       subscriptionDetail: {
-        latestInvoice: {
-          periodEnd: periodEnd,
-        },
+        currentPeriodEnd: periodEnd,
       },
     }
 

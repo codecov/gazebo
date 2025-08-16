@@ -2,7 +2,16 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { accountDetailsPropType } from 'services/account/propTypes'
-import { formatTimestampToCalendarDate } from 'shared/utils/billing'
+import { usePlanData } from 'services/account/usePlanData'
+import {
+  BillingRate,
+  formatNumberToUSD,
+  formatTimestampToCalendarDate,
+} from 'shared/utils/billing'
+import {
+  calculatePriceProPlan,
+  calculatePriceTeamPlan,
+} from 'shared/utils/upgradeForm'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
@@ -10,11 +19,29 @@ import Icon from 'ui/Icon'
 import BankInformation from './BankInformation'
 import CardInformation from './CardInformation'
 import PaymentMethodForm from './PaymentMethodForm'
+
 function PaymentCard({ accountDetails, provider, owner }) {
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const { data: planData } = usePlanData({
+    provider,
+    owner,
+  })
   const subscriptionDetail = accountDetails?.subscriptionDetail
   const card = subscriptionDetail?.defaultPaymentMethod?.card
   const usBankAccount = subscriptionDetail?.defaultPaymentMethod?.usBankAccount
+  const isPerYear = planData?.plan?.billingRate === BillingRate.ANNUALLY
+  let seats =
+    (planData?.plan?.planUserCount ?? 0) - (planData?.plan?.freeSeatCount ?? 0)
+  seats = seats > 0 ? seats : 0
+  const billPrice = planData?.plan?.isProPlan
+    ? calculatePriceProPlan({
+        seats,
+        baseUnitPrice: planData?.plan?.baseUnitPrice ?? 0,
+      })
+    : calculatePriceTeamPlan({
+        seats,
+        baseUnitPrice: planData?.plan?.baseUnitPrice ?? 0,
+      })
 
   let nextBillingDisplayDate = null
   if (!subscriptionDetail?.cancelAtPeriodEnd) {
@@ -22,6 +49,9 @@ function PaymentCard({ accountDetails, provider, owner }) {
       subscriptionDetail?.currentPeriodEnd
     )
   }
+  const nextBillPrice = formatNumberToUSD(
+    isPerYear ? billPrice * 12 : billPrice
+  )
 
   return (
     <div className="flex flex-col gap-3 border-t p-4">
@@ -45,7 +75,11 @@ function PaymentCard({ accountDetails, provider, owner }) {
           accountDetails={accountDetails}
         />
       ) : card ? (
-        <CardInformation card={card} subscriptionDetail={subscriptionDetail} />
+        <CardInformation
+          card={card}
+          subscriptionDetail={subscriptionDetail}
+          nextBillPrice={nextBillPrice}
+        />
       ) : usBankAccount ? (
         <BankInformation
           usBankAccount={usBankAccount}
