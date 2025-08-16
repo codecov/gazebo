@@ -1,14 +1,54 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account/usePlanData'
 import { ThemeContextProvider } from 'shared/ThemeContext'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import PaymentCard from './PaymentCard'
 
 const queryClient = new QueryClient()
+
+const mockedAccountDetails = {
+  plan: {
+    marketingName: 'Pro Team',
+    baseUnitPrice: 12,
+    benefits: ['Configurable # of users', 'Unlimited repos'],
+    quantity: 9,
+    value: Plans.USERS_DEVELOPER,
+  },
+  activatedUserCount: 5,
+  inactiveUserCount: 1,
+}
+
+const mockPlanData = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
+  monthlyUploadLimit: 250,
+  value: Plans.USERS_DEVELOPER,
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 4,
+  freeSeatCount: 1,
+  hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
+}
+
+const server = setupServer()
 
 const mocks = vi.hoisted(() => ({
   useUpdatePaymentMethod: vi.fn(),
@@ -35,9 +75,18 @@ vi.mock('services/account/useCreateStripeSetupIntent', async () => {
   }
 })
 
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
+  server.resetHandlers()
   queryClient.clear()
   vi.clearAllMocks()
+})
+
+afterAll(() => {
+  server.close()
 })
 
 const subscriptionDetail = {
@@ -102,16 +151,40 @@ vi.mock('@stripe/react-stripe-js', () => {
 })
 
 describe('PaymentCard', () => {
-  function setup() {
+  function setup(
+    trialStatus = TrialStatuses.NOT_STARTED,
+    planValue = mockedAccountDetails.plan.value,
+    isEnterprisePlan = false
+  ) {
     const user = userEvent.setup()
+
+    server.use(
+      graphql.query('GetPlanData', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              hasPrivateRepos: true,
+              plan: {
+                ...mockPlanData,
+                trialStatus,
+                value: planValue,
+                isEnterprisePlan,
+              },
+            },
+          },
+        })
+      })
+    )
 
     return { user }
   }
 
   describe(`when the user doesn't have any accountDetails`, () => {
     it('renders the set payment method message', () => {
+      setup()
       render(
-        <PaymentCard accountDetails={null} provider="gh" owner="codecov" />
+        <PaymentCard accountDetails={null} provider="gh" owner="codecov" />,
+        { wrapper }
       )
 
       expect(
@@ -124,6 +197,7 @@ describe('PaymentCard', () => {
 
   describe(`when the user doesn't have any payment method`, () => {
     it('renders an error message', () => {
+      setup()
       render(
         <PaymentCard
           accountDetails={{
@@ -203,6 +277,7 @@ describe('PaymentCard', () => {
 
   describe('when the user have a card', () => {
     it('renders the card', () => {
+      setup()
       render(
         <PaymentCard
           accountDetails={accountDetails}
@@ -217,6 +292,7 @@ describe('PaymentCard', () => {
     })
 
     it('renders the next billing', () => {
+      setup()
       render(
         <PaymentCard
           accountDetails={accountDetails}
@@ -228,10 +304,27 @@ describe('PaymentCard', () => {
 
       expect(screen.getByText(/December 1, 2020/)).toBeInTheDocument()
     })
+
+    it('renders the next billing price', async () => {
+      setup()
+      render(
+        <PaymentCard
+          accountDetails={accountDetails}
+          provider="gh"
+          owner="codecov"
+        />,
+        { wrapper }
+      )
+
+      await waitFor(() => {
+        expect(screen.getByText(/for \$30.00/)).toBeInTheDocument()
+      })
+    })
   })
 
   describe('when the user has a US bank account', () => {
     it('renders the bank account details', () => {
+      setup()
       const testAccountDetails = {
         ...accountDetails,
         subscriptionDetail: {
@@ -254,6 +347,7 @@ describe('PaymentCard', () => {
 
   describe('when the subscription is set to expire', () => {
     it(`doesn't render the next billing`, () => {
+      setup()
       render(
         <PaymentCard
           accountDetails={{

@@ -31,6 +31,7 @@ const mockPlanBasic = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  freeSeatCount: 0,
   hasSeatsLeft: true,
 }
 
@@ -53,6 +54,7 @@ const mockPlanPro = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 4,
+  freeSeatCount: 0,
   hasSeatsLeft: true,
 }
 
@@ -75,6 +77,7 @@ const mockPlanTrialing = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 4,
+  freeSeatCount: 0,
   hasSeatsLeft: true,
 }
 

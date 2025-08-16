@@ -5706,6 +5706,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/pluralize@npm:^0.0.33":
+  version: 0.0.33
+  resolution: "@types/pluralize@npm:0.0.33"
+  checksum: 10c0/24899caf85b79dd291a6b6e9b9f3b67b452b18d578d0ac0d531a705bf5ee0361d9386ea1f8532c64de9e22c6e9606c5497787bb5e31bd299c487980436c59785
+  languageName: node
+  linkType: hard
+
 "@types/prismjs@npm:^1.26.4":
   version: 1.26.4
   resolution: "@types/prismjs@npm:1.26.4"
@@ -9128,6 +9135,7 @@ __metadata:
     "@types/js-cookie": "npm:3.0.6"
     "@types/lodash": "npm:4.17.6"
     "@types/node": "npm:^22.9.0"
+    "@types/pluralize": "npm:^0.0.33"
     "@types/prismjs": "npm:^1.26.4"
     "@types/prop-types": "npm:15.7.12"
     "@types/qs": "npm:6.9.15"

@@ -253,11 +253,9 @@ describe('getNextBillingDate', () => {
   describe('there is a valid timestamp', () => {
     it('returns formatted timestamp', () => {
       const value = getNextBillingDate({
+        // @ts-expect-error - we're just testing this property we can ignore the other properties
         subscriptionDetail: {
-          // @ts-expect-error - we're just testing this property we can ignore the other properties
-          latestInvoice: {
-            periodEnd: 1660000000,
-          },
+          currentPeriodEnd: 1660000000,
         },
       })
 
