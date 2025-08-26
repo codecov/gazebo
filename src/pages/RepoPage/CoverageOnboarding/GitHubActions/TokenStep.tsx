@@ -113,12 +113,14 @@ interface OrgOrRepoTokenSelectorProps {
   isUsingGlobalToken: boolean
   handleValueChange: (value: string) => void
   hasOrgUploadToken: boolean
+  isCurrentUser: boolean
 }
 
 function OrgOrRepoTokenSelector({
   isUsingGlobalToken,
   handleValueChange,
   hasOrgUploadToken,
+  isCurrentUser,
 }: OrgOrRepoTokenSelectorProps) {
   const { owner } = useParams<URLParams>()
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
@@ -131,16 +133,18 @@ function OrgOrRepoTokenSelector({
         name="token-selection"
         onValueChange={handleValueChange}
       >
-        <RadioTileGroup.Item
-          value={TOKEN_OPTIONS.GLOBAL}
-          data-testid="global-token-radio"
-        >
-          <RadioTileGroup.Label>Global upload token</RadioTileGroup.Label>
-          <RadioTileGroup.Description>
-            Use it for uploading coverage reports across all your
-            organization&apos;s repositories.
-          </RadioTileGroup.Description>
-        </RadioTileGroup.Item>
+        {!isCurrentUser && (
+          <RadioTileGroup.Item
+            value={TOKEN_OPTIONS.GLOBAL}
+            data-testid="global-token-radio"
+          >
+            <RadioTileGroup.Label>Global upload token</RadioTileGroup.Label>
+            <RadioTileGroup.Description>
+              Use it for uploading coverage reports across all your
+              organization&apos;s repositories.
+            </RadioTileGroup.Description>
+          </RadioTileGroup.Item>
+        )}
         <RadioTileGroup.Item
           value={TOKEN_OPTIONS.REPO}
           data-testid="repo-token-radio"
@@ -151,7 +155,7 @@ function OrgOrRepoTokenSelector({
           </RadioTileGroup.Description>
         </RadioTileGroup.Item>
       </RadioTileGroup>
-      {isUsingGlobalToken && !hasOrgUploadToken && (
+      {isUsingGlobalToken && !hasOrgUploadToken && !isCurrentUser && (
         <>
           <div className="flex items-center justify-between pb-3.5 pt-7">
             <p className="font-semibold">Generate a global upload token</p>
@@ -237,6 +241,7 @@ interface TokenStepSectionProps {
   showAddTokenStep: boolean
   showTokenSelector: boolean
   framework: Framework
+  isCurrentUser: boolean
 }
 
 function TokenStepSection({
@@ -245,6 +250,7 @@ function TokenStepSection({
   showAddTokenStep,
   showTokenSelector,
   framework,
+  isCurrentUser,
 }: TokenStepSectionProps) {
   const { provider, owner } = useParams<URLParams>()
   const { data: uploadTokenRequiredData } = useUploadTokenRequired({
@@ -280,6 +286,7 @@ function TokenStepSection({
               isUsingGlobalToken={isUsingGlobalToken}
               handleValueChange={handleValueChange}
               hasOrgUploadToken={!!orgUploadToken}
+              isCurrentUser={isCurrentUser}
             />
           </Card.Content>
         </Card>

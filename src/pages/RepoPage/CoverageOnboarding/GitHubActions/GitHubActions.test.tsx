@@ -8,6 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { eventTracker } from 'services/events/events'
 import { ThemeContextProvider } from 'shared/ThemeContext'
+import { Plans } from 'shared/utils/billing'
 
 import GitHubActions from './GitHubActions'
 
@@ -74,6 +75,49 @@ const mockRegenerateOrgUploadToken = {
   },
 }
 
+const mockCurrentUser = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
+    user: {
+      name: 'Jane Doe',
+      username: 'janedoe',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: Plans.USERS_DEVELOPER,
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
+    },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -133,6 +177,9 @@ describe('GitHubActions', () => {
       }),
       graphql.query('DetailOwner', () => {
         return HttpResponse.json({ data: mockDetailOwner })
+      }),
+      graphql.query('CurrentUser', () => {
+        return HttpResponse.json({ data: mockCurrentUser })
       }),
       graphql.mutation('regenerateOrgUploadToken', () => {
         return HttpResponse.json({ data: mockRegenerateOrgUploadToken })
