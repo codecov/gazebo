@@ -40,7 +40,7 @@ function GitHubActions() {
   // Update token selection based on user ownership when currentUser data loads
   useEffect(() => {
     if (currentUser) {
-      setIsUsingGlobalToken(false)
+      setIsUsingGlobalToken(!isCurrentUser)
     }
   }, [currentUser, isCurrentUser])
   const { data: repoData } = useRepo({ provider, owner, repo })
