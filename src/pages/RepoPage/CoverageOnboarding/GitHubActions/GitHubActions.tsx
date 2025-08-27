@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken/useOrgUploadToken'
 import { useRepo } from 'services/repo'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
+import { useUser } from 'services/user'
 import { Provider } from 'shared/api/helpers'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
@@ -31,8 +32,17 @@ function GitHubActions() {
     provider,
     owner,
   })
+  const { data: currentUser } = useUser()
+  const isCurrentUser = currentUser?.user.username === owner
 
   const [isUsingGlobalToken, setIsUsingGlobalToken] = useState<boolean>(true)
+
+  // Update token selection based on user ownership when currentUser data loads
+  useEffect(() => {
+    if (currentUser) {
+      setIsUsingGlobalToken(!isCurrentUser)
+    }
+  }, [currentUser, isCurrentUser])
   const { data: repoData } = useRepo({ provider, owner, repo })
   const repoUploadToken = repoData?.repository?.uploadToken ?? ''
   const previouslyGeneratedOrgToken = useRef<string | null | undefined>()
@@ -79,6 +89,7 @@ function GitHubActions() {
         showAddTokenStep={showAddTokenStep}
         showTokenSelector={showTokenSelector}
         framework={framework}
+        isCurrentUser={isCurrentUser}
       />
       <WorkflowYMLStep
         framework={framework}
