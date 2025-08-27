@@ -120,7 +120,7 @@ function OrgOrRepoTokenSelector({
   handleValueChange,
   hasOrgUploadToken,
 }: OrgOrRepoTokenSelectorProps) {
-  const { owner } = useParams<URLParams>()
+  const { owner, repo } = useParams<URLParams>()
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
   const { regenerateToken, isLoading } = useGenerateOrgUploadToken()
 
@@ -147,7 +147,7 @@ function OrgOrRepoTokenSelector({
         >
           <RadioTileGroup.Label>Repository token</RadioTileGroup.Label>
           <RadioTileGroup.Description>
-            Use it for uploading coverage reports in the enigma repository.
+            Use it for uploading coverage reports in the {repo} repository.
           </RadioTileGroup.Description>
         </RadioTileGroup.Item>
       </RadioTileGroup>
