@@ -320,6 +320,62 @@ describe('PaymentCard', () => {
         expect(screen.getByText(/for \$30.00/)).toBeInTheDocument()
       })
     })
+
+    describe('nextBillPrice calculation', () => {
+      it('calculates monthly billing price correctly', async () => {
+        // Test with monthly billing: baseUnitPrice 10, 3 paid seats = $30.00
+        setup()
+        render(
+          <PaymentCard
+            accountDetails={accountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$30.00/)).toBeInTheDocument()
+        })
+      })
+
+      it('calculates annual billing price correctly', async () => {
+        // Test with annual billing: baseUnitPrice 10, 3 paid seats × 12 = $360.00
+        server.use(
+          graphql.query('GetPlanData', () => {
+            return HttpResponse.json({
+              data: {
+                owner: {
+                  hasPrivateRepos: true,
+                  plan: {
+                    ...mockPlanData,
+                    billingRate: BillingRate.ANNUALLY,
+                    baseUnitPrice: 10,
+                    planUserCount: 6,
+                    freeSeatCount: 2,
+                    isProPlan: false,
+                    isTeamPlan: true,
+                  },
+                },
+              },
+            })
+          })
+        )
+
+        render(
+          <PaymentCard
+            accountDetails={accountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$480.00/)).toBeInTheDocument()
+        })
+      })
+    })
   })
 
   describe('when the user has a US bank account', () => {
