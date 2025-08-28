@@ -10,6 +10,7 @@ import {
 } from 'shared/utils/billing'
 import {
   calculatePriceProPlan,
+  calculatePriceSentryPlan,
   calculatePriceTeamPlan,
 } from 'shared/utils/upgradeForm'
 import A from 'ui/A'
@@ -38,10 +39,15 @@ function PaymentCard({ accountDetails, provider, owner }) {
         seats,
         baseUnitPrice: planData?.plan?.baseUnitPrice ?? 0,
       })
-    : calculatePriceTeamPlan({
-        seats,
-        baseUnitPrice: planData?.plan?.baseUnitPrice ?? 0,
-      })
+    : planData?.plan?.isTeamPlan
+      ? calculatePriceTeamPlan({
+          seats,
+          baseUnitPrice: planData?.plan?.baseUnitPrice ?? 0,
+        })
+      : calculatePriceSentryPlan({
+          seats,
+          baseUnitPrice: planData?.plan?.baseUnitPrice ?? 0,
+        })
 
   let nextBillingDisplayDate = null
   if (!subscriptionDetail?.cancelAtPeriodEnd) {
