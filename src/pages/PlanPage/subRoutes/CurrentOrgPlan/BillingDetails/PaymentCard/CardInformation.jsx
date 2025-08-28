@@ -33,7 +33,7 @@ const cardBrand = {
   },
 }
 
-function CardInformation({ subscriptionDetail, card }) {
+function CardInformation({ subscriptionDetail, card, nextBillPrice }) {
   const typeCard = cardBrand[card?.brand] ?? cardBrand?.fallback
   let nextBilling = null
 
@@ -61,7 +61,11 @@ function CardInformation({ subscriptionDetail, card }) {
       {nextBilling && (
         <p className="text-sm text-ds-gray-quinary">
           Your next billing date is{' '}
-          <span className="text-ds-gray-octonary">{nextBilling}</span>.
+          <span className="text-ds-gray-octonary">
+            {nextBilling}
+            {nextBillPrice ? ` for ${nextBillPrice}` : ''}
+          </span>
+          .
         </p>
       )}
     </div>
@@ -76,6 +80,7 @@ CardInformation.propTypes = {
     expMonth: PropTypes.number.isRequired,
     expYear: PropTypes.number.isRequired,
   }).isRequired,
+  nextBillPrice: PropTypes.string,
 }
 
 export default CardInformation

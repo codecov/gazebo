@@ -228,9 +228,11 @@ const mockPlanDataResponse = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 10,
+  freeSeatCount: 0,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
   isSentryPlan: false,
+  isFreePlan: false,
 }
 
 const mockUser = {
@@ -460,6 +462,7 @@ describe('UpgradeForm', () => {
                 value: planValue,
                 planUserCount,
               },
+              pretrialPlan: null,
             },
           },
         })
@@ -2151,7 +2154,7 @@ describe('UpgradeForm', () => {
         expect(update).toBeDisabled()
 
         const error = screen.getByText(
-          /Team plan is only available for 10 seats or fewer./
+          /Team plan is only available for 10 paid seats or fewer./
         )
         expect(error).toBeInTheDocument()
       })
