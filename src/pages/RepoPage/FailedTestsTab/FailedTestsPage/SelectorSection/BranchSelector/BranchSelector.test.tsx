@@ -235,27 +235,29 @@ describe('BranchSelector', () => {
       expect(branchContext).toBeInTheDocument()
     })
 
-    it('renders default branch as selected branch', async () => {
+    it('renders all branches as default selected option', async () => {
       const { queryClient } = setup()
       render(<BranchSelector />, {
         wrapper: wrapper(queryClient),
       })
 
-      const dropDownBtn = await screen.findByText('main')
+      const dropDownBtn = await screen.findByText('All Branches')
       expect(dropDownBtn).toBeInTheDocument()
     })
   })
 
   describe('navigating branches', () => {
     describe('user lands on the page', () => {
-      it('redirects to the default branch', async () => {
+      it('redirects to all branches', async () => {
         const { queryClient } = setup()
         render(<BranchSelector />, {
           wrapper: wrapper(queryClient),
         })
 
         await waitFor(() =>
-          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/tests/main')
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/test-repo/tests/All Branches'
+          )
         )
       })
 
@@ -274,7 +276,7 @@ describe('BranchSelector', () => {
     })
 
     describe('user selects a branch', () => {
-      it('shows default branch as first option in dropdown', async () => {
+      it('shows all branches as first option in dropdown', async () => {
         const { queryClient, user } = setup()
         render(<BranchSelector />, {
           wrapper: wrapper(queryClient),
@@ -286,7 +288,8 @@ describe('BranchSelector', () => {
         await user.click(select)
 
         const options = screen.getAllByRole('option')
-        expect(options[0]).toHaveTextContent('main')
+        expect(options[0]).toHaveTextContent('All Branches')
+        expect(options[1]).toHaveTextContent('main')
       })
 
       it('navigates to the selected branch', async () => {
@@ -367,7 +370,7 @@ describe('BranchSelector', () => {
         wrapper: wrapper(queryClient),
       })
 
-      const select = await screen.findByText('main')
+      const select = await screen.findByText('All Branches')
       await user.click(select)
 
       const input = await screen.findByRole('combobox')
@@ -392,7 +395,7 @@ describe('BranchSelector', () => {
         name: 'test results branch selector',
       })
 
-      expect(select).toHaveTextContent('Select branch')
+      expect(select).toHaveTextContent('All Branches')
     })
   })
 })

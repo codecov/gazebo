@@ -96,13 +96,22 @@ interface URLParams {
 
 export const useTestResultsAggregates = ({
   interval,
+  branch,
 }: {
   interval?: MeasurementInterval
+  branch?: string | null
 }) => {
   const { provider, owner, repo } = useParams<URLParams>()
 
   return useQuery({
-    queryKey: ['GetTestResultsAggregates', provider, owner, repo, interval],
+    queryKey: [
+      'GetTestResultsAggregates',
+      provider,
+      owner,
+      repo,
+      interval,
+      branch,
+    ],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -112,6 +121,7 @@ export const useTestResultsAggregates = ({
           provider,
           owner,
           repo,
+          branch,
           interval,
         },
       }).then((res) => {

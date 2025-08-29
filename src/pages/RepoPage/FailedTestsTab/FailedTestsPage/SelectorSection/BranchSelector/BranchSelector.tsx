@@ -15,6 +15,8 @@ interface URLParams {
   branch?: string
 }
 
+export const ALL_BRANCHES = 'All Branches'
+
 const getDecodedBranch = (branch?: string) =>
   branch ? decodeURIComponent(branch) : undefined
 
@@ -46,7 +48,7 @@ const BranchSelector = () => {
   })
 
   const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
+  const selectedBranch = decodedBranch ?? ALL_BRANCHES
 
   const { data: searchBranchValue } = useBranch({
     provider,
@@ -62,16 +64,12 @@ const BranchSelector = () => {
   let selection = searchBranchValue?.branch
   if (!selection) {
     selection = {
-      name: 'Select branch',
+      name: ALL_BRANCHES,
       head: null,
     }
   }
 
-  if (
-    selectedBranch === overview?.defaultBranch &&
-    !branch &&
-    selection.head !== null
-  ) {
+  if (selectedBranch === ALL_BRANCHES && !branch) {
     history.push(
       failedTestsLink.path({ branch: encodeURIComponent(selection?.name) })
     )
@@ -83,6 +81,7 @@ const BranchSelector = () => {
     if (overview?.defaultBranch) {
       return [
         // Pins the default branch to the top of the list always, filters it from results otherwise
+        { name: ALL_BRANCHES, head: null },
         { name: overview.defaultBranch, head: null },
         ...branchList.branches.filter(
           (branch) => branch.name !== overview.defaultBranch
