@@ -376,9 +376,12 @@ function MetricsSection() {
   })
 
   const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? testResults?.defaultBranch ?? ''
+  const selectedBranch = decodedBranch
 
-  if (selectedBranch !== testResults?.defaultBranch) {
+  if (
+    selectedBranch !== undefined &&
+    selectedBranch !== testResults?.defaultBranch
+  ) {
     return null
   }
 

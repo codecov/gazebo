@@ -41,7 +41,7 @@ export interface UseBranchArgs {
   provider: string
   owner: string
   repo: string
-  branch: string
+  branch?: string
   opts?: UseQueryOptions<{ branch: Branch }>
 }
 
@@ -76,9 +76,15 @@ export const useBranch = ({
   opts,
 }: UseBranchArgs) =>
   useQuery({
-    queryKey: ['GetBranch', provider, owner, repo, branch, query],
-    queryFn: ({ signal }) =>
-      Api.graphql({
+    queryKey: ['GetBranch', { provider, owner, repo, branch, query }],
+    queryFn: ({ signal }) => {
+      if (!branch) {
+        return {
+          branch: null,
+        }
+      }
+
+      return Api.graphql({
         provider,
         query,
         signal,
@@ -127,6 +133,7 @@ export const useBranch = ({
         return {
           branch: data?.owner?.repository?.branch ?? null,
         }
-      }),
-    ...(!!opts && opts),
+      })
+    },
+    ...(opts || {}),
   })

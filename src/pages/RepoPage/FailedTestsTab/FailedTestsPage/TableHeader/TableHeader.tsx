@@ -10,7 +10,7 @@ import { defaultQueryParams } from '../SelectorSection'
 
 interface TableHeaderProps {
   totalCount: number
-  isDefaultBranch: boolean
+  showResetButton: boolean
 }
 
 const getHeaderTitle = (parameter: keyof typeof TestResultsFilterParameter) => {
@@ -21,7 +21,7 @@ const getHeaderTitle = (parameter: keyof typeof TestResultsFilterParameter) => {
 
 const TableHeader: React.FC<TableHeaderProps> = ({
   totalCount,
-  isDefaultBranch,
+  showResetButton,
 }) => {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   // @ts-expect-error, useLocationParams needs to be updated to have full types
@@ -54,7 +54,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
             setSearchValue={handleSearchChange}
             data-testid="search-input-failed-tests"
           />
-          {isDefaultBranch ? (
+          {showResetButton && (
             <Button
               disabled={isParamsDefault}
               to={undefined}
@@ -68,7 +68,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
             >
               Reset to default
             </Button>
-          ) : null}
+          )}
         </div>
       </div>
     </>
