@@ -17,6 +17,7 @@ import {
 } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
 import { useTestResultsAggregates } from '../hooks/useTestResultsAggregates'
 import { defaultQueryParams } from '../SelectorSection'
+import { ALL_BRANCHES } from '../SelectorSection/BranchSelector/BranchSelector'
 
 const PercentBadge = ({ value }: { value: number }) => {
   let variant: 'success' | 'danger' = 'success'
@@ -363,22 +364,29 @@ function MetricsSection() {
     depth: 1,
   })
 
+  const decodedBranch = getDecodedBranch(branch)
+  const selectedBranch = decodedBranch ?? ALL_BRANCHES
+  const selectedBranchAPIValue =
+    selectedBranch === ALL_BRANCHES ? null : selectedBranch
+
   const { data: testResults } = useTestResultsAggregates({
     interval: queryParams?.historicalTrend as MeasurementInterval,
+    branch: selectedBranchAPIValue,
   })
   const disabledFlakeAggregates =
     (testResults?.isTeamPlan || testResults?.isFreePlan) && testResults?.private
   const { data: flakeAggregates } = useFlakeAggregates({
     interval: queryParams?.historicalTrend as MeasurementInterval,
+    branch: selectedBranchAPIValue,
     opts: {
       enabled: !disabledFlakeAggregates,
     },
   })
 
-  const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? testResults?.defaultBranch ?? ''
-
-  if (selectedBranch !== testResults?.defaultBranch) {
+  if (
+    selectedBranch !== testResults?.defaultBranch &&
+    selectedBranch !== ALL_BRANCHES
+  ) {
     return null
   }
 

@@ -15,6 +15,7 @@ import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 
 import BranchSelector from './BranchSelector'
+import { ALL_BRANCHES } from './BranchSelector/BranchSelector'
 
 import { TestResultsFilterParameterType } from '../hooks/useInfiniteTestResults/useInfiniteTestResults'
 import { useTestResultsFlags } from '../hooks/useTestResultsFlags/useTestResultsFlags'
@@ -91,7 +92,8 @@ function SelectorSection() {
   return (
     <div className="flex flex-1 flex-col gap-2 md:flex-row md:justify-between md:gap-0">
       <BranchSelector />
-      {selectedBranch === overview?.defaultBranch ? (
+      {selectedBranch === overview?.defaultBranch ||
+      selectedBranch === ALL_BRANCHES ? (
         <>
           <div className="flex flex-col gap-1 px-4">
             <h3 className="text-sm font-semibold text-ds-gray-octonary">
