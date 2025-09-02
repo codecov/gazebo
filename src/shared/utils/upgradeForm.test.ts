@@ -166,6 +166,26 @@ describe('getDefaultValuesUpgradeForm', () => {
       })
     })
 
+    it('returns correct seats when free seats are present', () => {
+      const data = getDefaultValuesUpgradeForm({
+        accountDetails,
+        selectedPlan: proPlanYear,
+        plans: [teamPlanMonth],
+        plan: {
+          billingRate: BillingRate.MONTHLY,
+          value: Plans.USERS_TEAMM,
+          planUserCount: 5,
+          freeSeatCount: 2,
+          isTeamPlan: true,
+        } as Plan,
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: { value: Plans.USERS_TEAMM },
+        seats: 3,
+      })
+    })
+
     it('returns pro sentry plan if user is sentry upgrade', () => {
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
@@ -212,6 +232,56 @@ describe('getDefaultValuesUpgradeForm', () => {
         planUserCount: 2,
       },
       seats: 2,
+    })
+  })
+
+  describe('quantity calculation edge cases', () => {
+    it('returns 0 when planUserCount is null', () => {
+      const data = getDefaultValuesUpgradeForm({
+        accountDetails,
+        selectedPlan: proPlanYear,
+        plans: [proPlanYear],
+        plan: {
+          billingRate: BillingRate.MONTHLY,
+          value: Plans.USERS_PR_INAPPM,
+          planUserCount: null,
+        } as unknown as Plan,
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: {
+          value: Plans.USERS_PR_INAPPM,
+          billingRate: BillingRate.MONTHLY,
+          planUserCount: null,
+        },
+        // extractSeats() will be passed quantity: 0, but returns min plan seats
+        seats: 2,
+      })
+    })
+
+    it('handles case where freeSeatCount equals planUserCount', () => {
+      const data = getDefaultValuesUpgradeForm({
+        accountDetails,
+        selectedPlan: proPlanYear,
+        plans: [proPlanYear],
+        plan: {
+          billingRate: BillingRate.MONTHLY,
+          value: Plans.USERS_PR_INAPPM,
+          planUserCount: 3,
+          freeSeatCount: 3,
+        } as Plan,
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: {
+          value: Plans.USERS_PR_INAPPM,
+          billingRate: BillingRate.MONTHLY,
+          planUserCount: 3,
+          freeSeatCount: 3,
+        },
+        // extractSeats() will be passed quantity: 0, but returns min plan seats
+        seats: 2,
+      })
     })
   })
 })

@@ -235,7 +235,10 @@ export const getDefaultValuesUpgradeForm = ({
   }
 
   const seats = extractSeats({
-    quantity: plan?.planUserCount ?? 0,
+    // free seats are included in planUserCount but we want to use the paid number
+    quantity: plan?.planUserCount
+      ? plan?.planUserCount - (plan?.freeSeatCount ?? 0)
+      : 0,
     activatedUserCount,
     inactiveUserCount,
     trialStatus,
