@@ -28,7 +28,6 @@ import {
   historicalTrendToCopy,
   TooltipWithIcon,
 } from '../MetricsSection/MetricsSection'
-import { ALL_BRANCHES } from '../SelectorSection/BranchSelector/BranchSelector'
 import { TableHeader } from '../TableHeader'
 
 const getDecodedBranch = (branch?: string) =>
@@ -211,13 +210,6 @@ const FailedTestsTable = () => {
     testSuites = queryParams?.testSuites
   }
 
-  const decodedBranch =
-    branch && getDecodedBranch(branch) === ALL_BRANCHES
-      ? null
-      : branch
-        ? getDecodedBranch(branch)
-        : undefined
-
   const {
     data: testData,
     fetchNextPage,
@@ -230,7 +222,7 @@ const FailedTestsTable = () => {
     repo,
     ordering: getSortingOption(sorting),
     filters: {
-      branch: decodedBranch,
+      branch: branch ? getDecodedBranch(branch) : null,
       flags: flags as string[],
       // eslint-disable-next-line camelcase
       test_suites: testSuites as string[],

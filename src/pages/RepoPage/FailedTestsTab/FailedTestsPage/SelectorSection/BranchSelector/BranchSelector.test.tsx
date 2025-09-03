@@ -248,16 +248,14 @@ describe('BranchSelector', () => {
 
   describe('navigating branches', () => {
     describe('user lands on the page', () => {
-      it('redirects to all branches', async () => {
+      it('redirects to /tests', async () => {
         const { queryClient } = setup()
         render(<BranchSelector />, {
           wrapper: wrapper(queryClient),
         })
 
         await waitFor(() =>
-          expect(testLocation.pathname).toBe(
-            '/gh/codecov/test-repo/tests/All Branches'
-          )
+          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/tests')
         )
       })
 

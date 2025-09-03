@@ -52,6 +52,7 @@ const query = `
   query GetTestResultsAggregates(
     $owner: String!
     $repo: String!
+    $branch: String
     $interval: MeasurementInterval
   ) {
     owner(username: $owner) {
@@ -66,7 +67,7 @@ const query = `
             private
             defaultBranch
             testAnalytics {
-              testResultsAggregates(interval: $interval) {
+              testResultsAggregates(branch: $branch, interval: $interval) {
                 totalDuration
                 totalDurationPercentChange
                 slowestTestsDuration

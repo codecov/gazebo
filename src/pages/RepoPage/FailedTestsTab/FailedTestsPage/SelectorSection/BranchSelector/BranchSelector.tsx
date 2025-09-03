@@ -47,17 +47,16 @@ const BranchSelector = () => {
     },
   })
 
-  const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? ALL_BRANCHES
+  const decodedBranch = getDecodedBranch(branch) ?? ''
 
   const { data: searchBranchValue } = useBranch({
     provider,
     owner,
     repo,
-    branch: selectedBranch,
+    branch: decodedBranch,
     opts: {
-      queryKey: ['GetSelectedBranch', provider, owner, repo, selectedBranch],
-      enabled: !!selectedBranch,
+      queryKey: ['GetSelectedBranch', provider, owner, repo, decodedBranch],
+      enabled: !!decodedBranch,
     },
   })
 
@@ -67,12 +66,6 @@ const BranchSelector = () => {
       name: ALL_BRANCHES,
       head: null,
     }
-  }
-
-  if (selectedBranch === ALL_BRANCHES && !branch) {
-    history.push(
-      failedTestsLink.path({ branch: encodeURIComponent(selection?.name) })
-    )
   }
 
   const sortedBranchList = useMemo(() => {
@@ -108,7 +101,12 @@ const BranchSelector = () => {
           value={selection}
           onChange={(item: Branch) => {
             history.push(
-              failedTestsLink.path({ branch: encodeURIComponent(item?.name) })
+              failedTestsLink.path({
+                branch:
+                  item?.name === ALL_BRANCHES
+                    ? ''
+                    : encodeURIComponent(item?.name),
+              })
             )
           }}
           variant="gray"
