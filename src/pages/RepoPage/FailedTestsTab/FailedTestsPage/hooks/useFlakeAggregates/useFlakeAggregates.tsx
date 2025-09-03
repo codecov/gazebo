@@ -36,6 +36,7 @@ const query = `
   query GetFlakeAggregates(
     $owner: String!
     $repo: String!
+    $branch: String
     $interval: MeasurementInterval
   ) {
     owner(username: $owner) {
@@ -43,7 +44,7 @@ const query = `
         __typename
         ... on Repository {
             testAnalytics {
-              flakeAggregates(interval: $interval) {
+              flakeAggregates(branch: $branch, interval: $interval) {
                 flakeCount
                 flakeCountPercentChange
                 flakeRate
