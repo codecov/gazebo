@@ -170,7 +170,7 @@ interface UseTestResultsArgs {
   owner: string
   repo: string
   filters?: {
-    branch?: string
+    branch?: string | null
     flags?: string[]
     interval?: MeasurementInterval
     parameter?: TestResultsFilterParameterType

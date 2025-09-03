@@ -363,22 +363,27 @@ function MetricsSection() {
     depth: 1,
   })
 
+  const decodedBranch = getDecodedBranch(branch)
+  const selectedBranch = decodedBranch ?? null
+
   const { data: testResults } = useTestResultsAggregates({
     interval: queryParams?.historicalTrend as MeasurementInterval,
+    branch: selectedBranch,
   })
   const disabledFlakeAggregates =
     (testResults?.isTeamPlan || testResults?.isFreePlan) && testResults?.private
   const { data: flakeAggregates } = useFlakeAggregates({
     interval: queryParams?.historicalTrend as MeasurementInterval,
+    branch: selectedBranch,
     opts: {
       enabled: !disabledFlakeAggregates,
     },
   })
 
-  const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? testResults?.defaultBranch ?? ''
-
-  if (selectedBranch !== testResults?.defaultBranch) {
+  if (
+    selectedBranch !== testResults?.defaultBranch &&
+    selectedBranch !== null
+  ) {
     return null
   }
 
