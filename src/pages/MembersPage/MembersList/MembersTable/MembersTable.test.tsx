@@ -126,6 +126,7 @@ const mockPlanData = {
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  freeSeatCount: 0,
 }
 
 const server = setupServer()

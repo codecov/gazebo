@@ -27,6 +27,7 @@ const PlanSchema = z.object({
   trialStartDate: z.string().nullable(),
   trialTotalDays: z.number().nullable(),
   planUserCount: z.number().nullable(),
+  freeSeatCount: z.number().nullable(),
   hasSeatsLeft: z.boolean(),
   isEnterprisePlan: z.boolean(),
   isFreePlan: z.boolean(),
@@ -86,6 +87,7 @@ export const query = `
         trialStartDate
         trialTotalDays
         planUserCount
+        freeSeatCount
         hasSeatsLeft
         isEnterprisePlan
         isFreePlan

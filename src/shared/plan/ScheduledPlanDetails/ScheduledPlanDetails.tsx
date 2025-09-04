@@ -26,7 +26,7 @@ function ScheduledPlanDetails({
         Start date {scheduleStart}
       </p>
       <p className="text-ds-gray-senary">
-        {plan} with {quantity} seats
+        {plan} with {quantity} paid seats
       </p>
     </div>
   )

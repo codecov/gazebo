@@ -44,6 +44,7 @@ const mockPlanData = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 9,
+  freeSeatCount: 2,
   hasSeatsLeft: true,
 }
 
@@ -138,6 +139,15 @@ describe('Activation', () => {
 
       const availableSeats = await screen.findByText(/available seats/)
       expect(availableSeats).toBeInTheDocument()
+    })
+
+    it('displays number of plan free seats', async () => {
+      setup()
+
+      render(<Activation />, { wrapper: wrapper() })
+
+      const freeSeats = await screen.findByText(/2 free seats included/)
+      expect(freeSeats).toBeInTheDocument()
     })
 
     it('displays change plan link', async () => {

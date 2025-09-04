@@ -96,6 +96,7 @@ const mockPlanBasic = {
   monthlyUploadLimit: 2500,
   hasSeatsLeft: true,
   planUserCount: 1,
+  freeSeatCount: 0,
   isFreePlan: true,
   isTeamPlan: false,
 }
@@ -109,6 +110,7 @@ const mockPlanProMonthly = {
   monthlyUploadLimit: 2500,
   hasSeatsLeft: true,
   planUserCount: 4,
+  freeSeatCount: 0,
   isFreePlan: false,
   isTeamPlan: false,
 }
@@ -122,6 +124,7 @@ const mockPlanTeamMonthly = {
   monthlyUploadLimit: 2500,
   hasSeatsLeft: true,
   planUserCount: 3,
+  freeSeatCount: 0,
   isFreePlan: false,
   isTeamPlan: true,
 }
