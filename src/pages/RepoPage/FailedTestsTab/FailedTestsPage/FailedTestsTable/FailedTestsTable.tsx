@@ -222,7 +222,7 @@ const FailedTestsTable = () => {
     repo,
     ordering: getSortingOption(sorting),
     filters: {
-      branch: branch ? getDecodedBranch(branch) : undefined,
+      branch: branch ? getDecodedBranch(branch) : null,
       flags: flags as string[],
       // eslint-disable-next-line camelcase
       test_suites: testSuites as string[],

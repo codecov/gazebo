@@ -15,6 +15,8 @@ interface URLParams {
   branch?: string
 }
 
+export const ALL_BRANCHES = 'All Branches'
+
 const getDecodedBranch = (branch?: string) =>
   branch ? decodeURIComponent(branch) : undefined
 
@@ -45,36 +47,25 @@ const BranchSelector = () => {
     },
   })
 
-  const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
+  const decodedBranch = getDecodedBranch(branch) ?? ''
 
   const { data: searchBranchValue } = useBranch({
     provider,
     owner,
     repo,
-    branch: selectedBranch,
+    branch: decodedBranch,
     opts: {
-      queryKey: ['GetSelectedBranch', provider, owner, repo, selectedBranch],
-      enabled: !!selectedBranch,
+      queryKey: ['GetSelectedBranch', provider, owner, repo, decodedBranch],
+      enabled: !!decodedBranch,
     },
   })
 
   let selection = searchBranchValue?.branch
   if (!selection) {
     selection = {
-      name: 'Select branch',
+      name: ALL_BRANCHES,
       head: null,
     }
-  }
-
-  if (
-    selectedBranch === overview?.defaultBranch &&
-    !branch &&
-    selection.head !== null
-  ) {
-    history.push(
-      failedTestsLink.path({ branch: encodeURIComponent(selection?.name) })
-    )
   }
 
   const sortedBranchList = useMemo(() => {
@@ -83,6 +74,7 @@ const BranchSelector = () => {
     if (overview?.defaultBranch) {
       return [
         // Pins the default branch to the top of the list always, filters it from results otherwise
+        { name: ALL_BRANCHES, head: null },
         { name: overview.defaultBranch, head: null },
         ...branchList.branches.filter(
           (branch) => branch.name !== overview.defaultBranch
@@ -109,7 +101,12 @@ const BranchSelector = () => {
           value={selection}
           onChange={(item: Branch) => {
             history.push(
-              failedTestsLink.path({ branch: encodeURIComponent(item?.name) })
+              failedTestsLink.path({
+                branch:
+                  item?.name === ALL_BRANCHES
+                    ? ''
+                    : encodeURIComponent(item?.name),
+              })
             )
           }}
           variant="gray"
