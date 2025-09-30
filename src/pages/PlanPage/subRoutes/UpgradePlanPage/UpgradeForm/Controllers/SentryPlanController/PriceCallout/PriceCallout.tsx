@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
+import { MONTHS_PER_YEAR } from 'pages/PlanPage/subRoutes/CurrentOrgPlan/BillingDetails/BillingDetails'
 import { useAccountDetails } from 'services/account/useAccountDetails'
 import {
   IndividualPlan,
@@ -64,14 +65,15 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           <span className="font-semibold">
             {formatNumberToUSD(perYearPrice)}
           </span>
-          /month billed annually at {formatNumberToUSD(perYearPrice * 12)}
+          /month billed annually at{' '}
+          {formatNumberToUSD(perYearPrice * MONTHS_PER_YEAR)}
         </p>
         <p>
           &#127881; You{' '}
           <span className="font-semibold">
             save{' '}
             {formatNumberToUSD(
-              nonBundledCost + (perMonthPrice - perYearPrice) * 12
+              nonBundledCost + (perMonthPrice - perYearPrice) * MONTHS_PER_YEAR
             )}
           </span>{' '}
           with the Sentry bundle plan
@@ -110,7 +112,9 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
               , save an{' '}
               <span className="font-semibold">
                 additional{' '}
-                {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
+                {formatNumberToUSD(
+                  (perMonthPrice - perYearPrice) * MONTHS_PER_YEAR
+                )}
               </span>{' '}
               a year with annual billing
               {nextBillingDate && (

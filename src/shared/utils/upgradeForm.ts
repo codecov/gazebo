@@ -16,6 +16,7 @@ export const MIN_NB_SEATS_PRO = 2
 export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
 export const TEAM_PLAN_MAX_ACTIVE_USERS = 10
+export const MONTHS_PER_YEAR = 12
 
 export const UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE = `Team plan is only available for ${TEAM_PLAN_MAX_ACTIVE_USERS} paid seats or fewer.`
 
@@ -194,7 +195,9 @@ export const calculateSentryNonBundledCost = ({
   baseUnitPrice = 0,
 }: {
   baseUnitPrice?: number
-}) => MIN_SENTRY_SEATS * baseUnitPrice * 12 - SENTRY_PRICE * 12
+}) =>
+  MIN_SENTRY_SEATS * baseUnitPrice * MONTHS_PER_YEAR -
+  SENTRY_PRICE * MONTHS_PER_YEAR
 
 export const getDefaultValuesUpgradeForm = ({
   accountDetails,
