@@ -141,7 +141,7 @@ function getPlans() {
       baseUnitPrice: 6,
       monthlyUploadLimit: null,
       benefits: [
-        'Up to 10 users',
+        'Up to 10 paid users',
         'Unlimited repositories',
         '2500 repositories',
         'Patch coverage analysis',
@@ -157,7 +157,7 @@ function getPlans() {
       baseUnitPrice: 5,
       monthlyUploadLimit: null,
       benefits: [
-        'Up to 10 users',
+        'Up to 10 paid users',
         'Unlimited repositories',
         '2500 repositories',
         'Patch coverage analysis',
@@ -383,7 +383,7 @@ describe('findTeamPlans', () => {
       baseUnitPrice: 6,
       monthlyUploadLimit: null,
       benefits: [
-        'Up to 10 users',
+        'Up to 10 paid users',
         'Unlimited repositories',
         '2500 repositories',
         'Patch coverage analysis',
@@ -407,7 +407,7 @@ describe('findTeamPlans', () => {
       baseUnitPrice: 5,
       monthlyUploadLimit: null,
       benefits: [
-        'Up to 10 users',
+        'Up to 10 paid users',
         'Unlimited repositories',
         '2500 repositories',
         'Patch coverage analysis',

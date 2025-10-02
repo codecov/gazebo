@@ -42,7 +42,7 @@ const proPlanYear = {
 
 const teamPlanYear = {
   baseUnitPrice: 5,
-  benefits: ['Up to 10 users'],
+  benefits: ['Up to 10 paid users'],
   billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
@@ -54,7 +54,7 @@ const teamPlanYear = {
 
 const teamPlanMonth = {
   baseUnitPrice: 5,
-  benefits: ['Up to 10 users'],
+  benefits: ['Up to 10 paid users'],
   billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
@@ -66,7 +66,7 @@ const teamPlanMonth = {
 
 const freePlan = {
   baseUnitPrice: 5,
-  benefits: ['Up to 10 users'],
+  benefits: ['Up to 10 paid users'],
   billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,

@@ -17,7 +17,7 @@ vi.mock('shared/plan/ScheduledPlanDetails', () => ({
 
 const teamPlanMonth = {
   baseUnitPrice: 6,
-  benefits: ['Up to 10 users'],
+  benefits: ['Up to 10 paid users'],
   billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
@@ -28,7 +28,7 @@ const teamPlanMonth = {
 
 const teamPlanYear = {
   baseUnitPrice: 5,
-  benefits: ['Up to 10 users'],
+  benefits: ['Up to 10 paid users'],
   billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,

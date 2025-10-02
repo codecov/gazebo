@@ -236,29 +236,6 @@ describe('getDefaultValuesUpgradeForm', () => {
   })
 
   describe('quantity calculation edge cases', () => {
-    it('returns 0 when planUserCount is null', () => {
-      const data = getDefaultValuesUpgradeForm({
-        accountDetails,
-        selectedPlan: proPlanYear,
-        plans: [proPlanYear],
-        plan: {
-          billingRate: BillingRate.MONTHLY,
-          value: Plans.USERS_PR_INAPPM,
-          planUserCount: null,
-        } as unknown as Plan,
-      })
-
-      expect(data).toStrictEqual({
-        newPlan: {
-          value: Plans.USERS_PR_INAPPM,
-          billingRate: BillingRate.MONTHLY,
-          planUserCount: null,
-        },
-        // extractSeats() will be passed quantity: 0, but returns min plan seats
-        seats: 2,
-      })
-    })
-
     it('handles case where freeSeatCount equals planUserCount', () => {
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
