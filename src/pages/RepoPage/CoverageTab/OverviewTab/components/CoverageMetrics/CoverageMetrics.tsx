@@ -22,13 +22,10 @@ export function CoverageMetrics({
     return null
   }
 
-  // Complex calculation: Sort files by coverage percentage (ascending)
-  // and filter out files below threshold
   const sortedFiles = files
     .filter((file) => file.coverage < threshold)
     .sort((a, b) => a.coverage - b.coverage)
 
-  // Complex calculation: Calculate aggregate statistics
   const statistics = {
     totalFiles: files.length,
     lowCoverageFiles: sortedFiles.length,
@@ -39,7 +36,6 @@ export function CoverageMetrics({
     totalMisses: files.reduce((sum, file) => sum + file.misses, 0),
   }
 
-  // Complex calculation: Group files by coverage ranges
   const coverageDistribution = files.reduce(
     (acc, file) => {
       if (file.coverage < 25) {
