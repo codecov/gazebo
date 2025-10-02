@@ -26,7 +26,6 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
     return null
   }
 
-  // Complex calculation: Transform test results into chart data by date
   const chartData = results.reduce((acc: ChartDataPoint[], result) => {
     const date = new Date(result.timestamp).toLocaleDateString()
     const existing = acc.find((item) => item.date === date)
@@ -47,13 +46,11 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
     return acc
   }, [])
 
-  // Complex calculation: Find top 10 slowest tests
   const slowestTests = results
     .filter((result) => result.status !== 'skipped')
     .sort((a, b) => b.duration - a.duration)
     .slice(0, 10)
 
-  // Complex calculation: Calculate statistics per branch
   const branchStats = results.reduce(
     (
       acc: Record<
@@ -65,30 +62,32 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
       if (!acc[result.branch]) {
         acc[result.branch] = { total: 0, failed: 0, avgDuration: 0 }
       }
-      acc[result.branch].total++
-      if (result.status === 'failed') {
-        acc[result.branch].failed++
+      const branchData = acc[result.branch]
+      if (branchData) {
+        branchData.total++
+        if (result.status === 'failed') {
+          branchData.failed++
+        }
+        branchData.avgDuration =
+          (branchData.avgDuration * (branchData.total - 1) + result.duration) /
+          branchData.total
       }
-      acc[result.branch].avgDuration =
-        (acc[result.branch].avgDuration * (acc[result.branch].total - 1) +
-          result.duration) /
-        acc[result.branch].total
       return acc
     },
     {}
   )
 
-  // Complex calculation: Calculate flakiness score for each test
   const flakinessScores = results.reduce(
     (acc: Record<string, number>, result) => {
       if (!acc[result.name]) {
         acc[result.name] = 0
       }
-      // Count status changes as flakiness indicator
       const testResults = results.filter((r) => r.name === result.name)
       let statusChanges = 0
       for (let i = 1; i < testResults.length; i++) {
-        if (testResults[i].status !== testResults[i - 1].status) {
+        const current = testResults.at(i)
+        const previous = testResults.at(i - 1)
+        if (current && previous && current.status !== previous.status) {
           statusChanges++
         }
       }
