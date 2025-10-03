@@ -174,6 +174,7 @@ const mockTrialData = {
     trialTotalDays: 0,
     pretrialUsersCount: 0,
     planUserCount: 1,
+    freeSeatCount: 0,
     hasSeatsLeft: true,
     isEnterprisePlan: false,
     isFreePlan: true,

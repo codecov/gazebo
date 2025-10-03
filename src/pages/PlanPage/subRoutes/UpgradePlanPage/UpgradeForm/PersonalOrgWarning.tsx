@@ -12,9 +12,6 @@ export function PersonalOrgWarning() {
   const { data } = useUser()
   const username = data?.user.username
 
-  console.log('owner', owner)
-  console.log('username', username)
-
   if (owner !== username) {
     return null
   }

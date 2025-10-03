@@ -47,6 +47,7 @@ const mockPlanData = {
       trialTotalDays: 0,
       pretrialUsersCount: 0,
       planUserCount: 5,
+      freeSeatCount: 0,
       hasSeatsLeft: false,
     },
   },

@@ -1,14 +1,54 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { graphql, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account/usePlanData'
 import { ThemeContextProvider } from 'shared/ThemeContext'
-import { Plans } from 'shared/utils/billing'
+import { BillingRate, Plans } from 'shared/utils/billing'
 
 import PaymentCard from './PaymentCard'
 
 const queryClient = new QueryClient()
+
+const mockedAccountDetails = {
+  plan: {
+    marketingName: 'Pro Team',
+    baseUnitPrice: 12,
+    benefits: ['Configurable # of users', 'Unlimited repos'],
+    quantity: 9,
+    value: Plans.USERS_DEVELOPER,
+  },
+  activatedUserCount: 5,
+  inactiveUserCount: 1,
+}
+
+const mockPlanData = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Developer',
+  monthlyUploadLimit: 250,
+  value: Plans.USERS_DEVELOPER,
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 4,
+  freeSeatCount: 1,
+  hasSeatsLeft: true,
+  isEnterprisePlan: false,
+  isFreePlan: false,
+  isProPlan: false,
+  isSentryPlan: false,
+  isTeamPlan: false,
+  isTrialPlan: false,
+}
+
+const server = setupServer()
 
 const mocks = vi.hoisted(() => ({
   useUpdatePaymentMethod: vi.fn(),
@@ -35,9 +75,18 @@ vi.mock('services/account/useCreateStripeSetupIntent', async () => {
   }
 })
 
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
+  server.resetHandlers()
   queryClient.clear()
   vi.clearAllMocks()
+})
+
+afterAll(() => {
+  server.close()
 })
 
 const subscriptionDetail = {
@@ -102,16 +151,42 @@ vi.mock('@stripe/react-stripe-js', () => {
 })
 
 describe('PaymentCard', () => {
-  function setup() {
-    const user = userEvent.setup()
+  function setup({
+    trialStatus = TrialStatuses.NOT_STARTED,
+    planValue = mockedAccountDetails.plan.value,
+    isEnterprisePlan = false,
+    isTeamPlan = true,
+  }) {
+    const user = userEvent.setup({})
+
+    server.use(
+      graphql.query('GetPlanData', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              hasPrivateRepos: true,
+              plan: {
+                ...mockPlanData,
+                trialStatus,
+                value: planValue,
+                isEnterprisePlan,
+                isTeamPlan,
+              },
+            },
+          },
+        })
+      })
+    )
 
     return { user }
   }
 
   describe(`when the user doesn't have any accountDetails`, () => {
     it('renders the set payment method message', () => {
+      setup({})
       render(
-        <PaymentCard accountDetails={null} provider="gh" owner="codecov" />
+        <PaymentCard accountDetails={null} provider="gh" owner="codecov" />,
+        { wrapper }
       )
 
       expect(
@@ -124,6 +199,7 @@ describe('PaymentCard', () => {
 
   describe(`when the user doesn't have any payment method`, () => {
     it('renders an error message', () => {
+      setup({})
       render(
         <PaymentCard
           accountDetails={{
@@ -148,7 +224,7 @@ describe('PaymentCard', () => {
 
     describe('when the user clicks on Set card', () => {
       it(`doesn't render the card anymore`, async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(
           <PaymentCard
             accountDetails={{
@@ -174,7 +250,7 @@ describe('PaymentCard', () => {
       })
 
       it('renders the form', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(
           <PaymentCard
             accountDetails={{
@@ -203,6 +279,7 @@ describe('PaymentCard', () => {
 
   describe('when the user have a card', () => {
     it('renders the card', () => {
+      setup({})
       render(
         <PaymentCard
           accountDetails={accountDetails}
@@ -217,6 +294,7 @@ describe('PaymentCard', () => {
     })
 
     it('renders the next billing', () => {
+      setup({})
       render(
         <PaymentCard
           accountDetails={accountDetails}
@@ -228,10 +306,337 @@ describe('PaymentCard', () => {
 
       expect(screen.getByText(/December 1, 2020/)).toBeInTheDocument()
     })
+
+    it('renders the next billing price', async () => {
+      setup({})
+      render(
+        <PaymentCard
+          accountDetails={accountDetails}
+          provider="gh"
+          owner="codecov"
+        />,
+        { wrapper }
+      )
+
+      await waitFor(() => {
+        expect(screen.getByText(/for \$30.00/)).toBeInTheDocument()
+      })
+    })
+
+    describe('Pro Plan pricing', () => {
+      it('calculates Pro plan monthly billing correctly', async () => {
+        // Pro plan: baseUnitPrice 12, 4 paid seats = $48.00
+        server.use(
+          graphql.query('GetPlanData', () => {
+            return HttpResponse.json({
+              data: {
+                owner: {
+                  hasPrivateRepos: true,
+                  plan: {
+                    ...mockPlanData,
+                    billingRate: BillingRate.MONTHLY,
+                    baseUnitPrice: 12,
+                    planUserCount: 5,
+                    freeSeatCount: 1,
+                    isProPlan: true,
+                    isTeamPlan: false,
+                    isSentryPlan: false,
+                  },
+                },
+              },
+            })
+          })
+        )
+
+        render(
+          <PaymentCard
+            accountDetails={accountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$48.00/)).toBeInTheDocument()
+        })
+      })
+
+      it('calculates Pro plan annual billing correctly', async () => {
+        // Pro plan: baseUnitPrice 10, 3 paid seats × 12 = $360.00
+        server.use(
+          graphql.query('GetPlanData', () => {
+            return HttpResponse.json({
+              data: {
+                owner: {
+                  hasPrivateRepos: true,
+                  plan: {
+                    ...mockPlanData,
+                    billingRate: BillingRate.ANNUALLY,
+                    baseUnitPrice: 10,
+                    planUserCount: 4,
+                    freeSeatCount: 1,
+                    isProPlan: true,
+                    isTeamPlan: false,
+                    isSentryPlan: false,
+                  },
+                },
+              },
+            })
+          })
+        )
+
+        render(
+          <PaymentCard
+            accountDetails={accountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$360.00/)).toBeInTheDocument()
+        })
+      })
+    })
+
+    describe('Team Plan pricing', () => {
+      it('calculates Team plan monthly billing correctly', async () => {
+        // Team plan: baseUnitPrice 6, 8 paid seats = $48.00
+        server.use(
+          graphql.query('GetPlanData', () => {
+            return HttpResponse.json({
+              data: {
+                owner: {
+                  hasPrivateRepos: true,
+                  plan: {
+                    ...mockPlanData,
+                    billingRate: BillingRate.MONTHLY,
+                    baseUnitPrice: 6,
+                    planUserCount: 10,
+                    freeSeatCount: 2,
+                    isProPlan: false,
+                    isTeamPlan: true,
+                    isSentryPlan: false,
+                  },
+                },
+              },
+            })
+          })
+        )
+
+        render(
+          <PaymentCard
+            accountDetails={accountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$48.00/)).toBeInTheDocument()
+        })
+      })
+
+      it('calculates Team plan annual billing correctly', async () => {
+        // Team plan: baseUnitPrice 5, 7 paid seats × 12 = $420.00
+        server.use(
+          graphql.query('GetPlanData', () => {
+            return HttpResponse.json({
+              data: {
+                owner: {
+                  hasPrivateRepos: true,
+                  plan: {
+                    ...mockPlanData,
+                    billingRate: BillingRate.ANNUALLY,
+                    baseUnitPrice: 5,
+                    planUserCount: 9,
+                    freeSeatCount: 2,
+                    isProPlan: false,
+                    isTeamPlan: true,
+                    isSentryPlan: false,
+                  },
+                },
+              },
+            })
+          })
+        )
+
+        render(
+          <PaymentCard
+            accountDetails={accountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$420.00/)).toBeInTheDocument()
+        })
+      })
+    })
+
+    describe('Sentry Plan pricing', () => {
+      it('calculates Sentry plan monthly billing with 5 or fewer seats correctly', async () => {
+        // Sentry plan: 5 seats = $29.00 (base price)
+        server.use(
+          graphql.query('GetPlanData', () => {
+            return HttpResponse.json({
+              data: {
+                owner: {
+                  hasPrivateRepos: true,
+                  plan: {
+                    ...mockPlanData,
+                    billingRate: BillingRate.MONTHLY,
+                    baseUnitPrice: 12,
+                    planUserCount: 5,
+                    freeSeatCount: 0,
+                    isProPlan: false,
+                    isTeamPlan: false,
+                    isSentryPlan: true,
+                  },
+                },
+              },
+            })
+          })
+        )
+
+        render(
+          <PaymentCard
+            accountDetails={accountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$29.00/)).toBeInTheDocument()
+        })
+      })
+
+      it('calculates Sentry plan monthly billing with more than 5 seats correctly', async () => {
+        // Sentry plan: 5 seats included + 3 additional seats × $12 = $29 + $36 = $65.00
+        server.use(
+          graphql.query('GetPlanData', () => {
+            return HttpResponse.json({
+              data: {
+                owner: {
+                  hasPrivateRepos: true,
+                  plan: {
+                    ...mockPlanData,
+                    billingRate: BillingRate.MONTHLY,
+                    baseUnitPrice: 12,
+                    planUserCount: 8,
+                    freeSeatCount: 0,
+                    isProPlan: false,
+                    isTeamPlan: false,
+                    isSentryPlan: true,
+                  },
+                },
+              },
+            })
+          })
+        )
+
+        render(
+          <PaymentCard
+            accountDetails={accountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$65.00/)).toBeInTheDocument()
+        })
+      })
+
+      it('calculates Sentry plan annual billing with 5 or fewer seats correctly', async () => {
+        // Sentry plan: 5 seats × 12 months = $29 × 12 = $348.00
+        server.use(
+          graphql.query('GetPlanData', () => {
+            return HttpResponse.json({
+              data: {
+                owner: {
+                  hasPrivateRepos: true,
+                  plan: {
+                    ...mockPlanData,
+                    billingRate: BillingRate.ANNUALLY,
+                    baseUnitPrice: 10,
+                    planUserCount: 5,
+                    freeSeatCount: 0,
+                    isProPlan: false,
+                    isTeamPlan: false,
+                    isSentryPlan: true,
+                  },
+                },
+              },
+            })
+          })
+        )
+
+        render(
+          <PaymentCard
+            accountDetails={accountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$348.00/)).toBeInTheDocument()
+        })
+      })
+
+      it('calculates Sentry plan annual billing with more than 5 seats correctly', async () => {
+        // Sentry plan: (5 seats included + 2 additional seats × $10) × 12 = ($29 + $20) × 12 = $588.00
+        server.use(
+          graphql.query('GetPlanData', () => {
+            return HttpResponse.json({
+              data: {
+                owner: {
+                  hasPrivateRepos: true,
+                  plan: {
+                    ...mockPlanData,
+                    billingRate: BillingRate.ANNUALLY,
+                    baseUnitPrice: 10,
+                    planUserCount: 7,
+                    freeSeatCount: 0,
+                    isProPlan: false,
+                    isTeamPlan: false,
+                    isSentryPlan: true,
+                  },
+                },
+              },
+            })
+          })
+        )
+
+        render(
+          <PaymentCard
+            accountDetails={accountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$588.00/)).toBeInTheDocument()
+        })
+      })
+    })
   })
 
   describe('when the user has a US bank account', () => {
     it('renders the bank account details', () => {
+      setup({})
       const testAccountDetails = {
         ...accountDetails,
         subscriptionDetail: {
@@ -254,6 +659,7 @@ describe('PaymentCard', () => {
 
   describe('when the subscription is set to expire', () => {
     it(`doesn't render the next billing`, () => {
+      setup({})
       render(
         <PaymentCard
           accountDetails={{
@@ -275,7 +681,7 @@ describe('PaymentCard', () => {
 
   describe('when the user clicks on Edit card', () => {
     it(`doesn't render the card anymore`, async () => {
-      const { user } = setup()
+      const { user } = setup({})
       const updatePaymentMethod = vi.fn()
       mocks.useUpdatePaymentMethod.mockReturnValue({
         mutate: updatePaymentMethod,
@@ -296,7 +702,7 @@ describe('PaymentCard', () => {
     })
 
     it('renders the form', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       const updatePaymentMethod = vi.fn()
       mocks.useUpdatePaymentMethod.mockReturnValue({
         mutate: updatePaymentMethod,
@@ -317,7 +723,7 @@ describe('PaymentCard', () => {
 
     describe('when submitting', () => {
       it('calls the service to update the card', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         const updatePaymentMethod = vi.fn()
         mocks.useUpdatePaymentMethod.mockReturnValue({
           mutate: updatePaymentMethod,
@@ -344,7 +750,7 @@ describe('PaymentCard', () => {
 
     describe('when the user clicks on cancel', () => {
       it(`doesn't render the form anymore`, async () => {
-        const { user } = setup()
+        const { user } = setup({})
         mocks.useUpdatePaymentMethod.mockReturnValue({
           mutate: vi.fn(),
           isLoading: false,
@@ -370,7 +776,7 @@ describe('PaymentCard', () => {
 
   describe('when there is an error in the form', () => {
     it('renders the error', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       const randomError = 'not rich enough'
       mocks.useUpdatePaymentMethod.mockReturnValue({
         mutate: vi.fn(),
@@ -399,7 +805,7 @@ describe('PaymentCard', () => {
 
   describe('when the form is loading', () => {
     it('has the error and save button disabled', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       mocks.useUpdatePaymentMethod.mockReturnValue({
         mutate: vi.fn(),
         isLoading: true,

@@ -1,8 +1,18 @@
 import PropTypes from 'prop-types'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { accountDetailsPropType } from 'services/account/propTypes'
-import { formatTimestampToCalendarDate } from 'shared/utils/billing'
+import { usePlanData } from 'services/account/usePlanData'
+import {
+  BillingRate,
+  formatNumberToUSD,
+  formatTimestampToCalendarDate,
+} from 'shared/utils/billing'
+import {
+  calculatePriceProPlan,
+  calculatePriceSentryPlan,
+  calculatePriceTeamPlan,
+} from 'shared/utils/upgradeForm'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
@@ -10,18 +20,61 @@ import Icon from 'ui/Icon'
 import BankInformation from './BankInformation'
 import CardInformation from './CardInformation'
 import PaymentMethodForm from './PaymentMethodForm'
+
+import { MONTHS_PER_YEAR } from '../BillingDetails'
 function PaymentCard({ accountDetails, provider, owner }) {
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const { data: planData } = usePlanData({
+    provider,
+    owner,
+  })
   const subscriptionDetail = accountDetails?.subscriptionDetail
   const card = subscriptionDetail?.defaultPaymentMethod?.card
   const usBankAccount = subscriptionDetail?.defaultPaymentMethod?.usBankAccount
-
   let nextBillingDisplayDate = null
   if (!subscriptionDetail?.cancelAtPeriodEnd) {
     nextBillingDisplayDate = formatTimestampToCalendarDate(
       subscriptionDetail?.currentPeriodEnd
     )
   }
+  const scheduledPhaseQuantity =
+    accountDetails?.scheduleDetail?.scheduledPhase?.quantity
+
+  const nextBillPrice = useMemo(() => {
+    const isPerYear = planData?.plan?.billingRate === BillingRate.ANNUALLY
+    let seats =
+      scheduledPhaseQuantity ??
+      (planData?.plan?.planUserCount ?? 0) -
+        (planData?.plan?.freeSeatCount ?? 0)
+    seats = Math.max(seats, 0)
+    const planBaseUnitPrice = planData?.plan?.baseUnitPrice ?? 0
+    const billPrice = planData?.plan?.isProPlan
+      ? calculatePriceProPlan({
+          seats,
+          baseUnitPrice: planBaseUnitPrice,
+        })
+      : planData?.plan?.isTeamPlan
+        ? calculatePriceTeamPlan({
+            seats,
+            baseUnitPrice: planBaseUnitPrice,
+          })
+        : calculatePriceSentryPlan({
+            seats,
+            baseUnitPrice: planBaseUnitPrice,
+          })
+
+    return formatNumberToUSD(
+      isPerYear ? billPrice * MONTHS_PER_YEAR : billPrice
+    )
+  }, [
+    planData?.plan?.billingRate,
+    planData?.plan?.baseUnitPrice,
+    planData?.plan?.planUserCount,
+    planData?.plan?.freeSeatCount,
+    planData?.plan?.isProPlan,
+    planData?.plan?.isTeamPlan,
+    scheduledPhaseQuantity,
+  ])
 
   return (
     <div className="flex flex-col gap-3 border-t p-4">
@@ -45,7 +98,11 @@ function PaymentCard({ accountDetails, provider, owner }) {
           accountDetails={accountDetails}
         />
       ) : card ? (
-        <CardInformation card={card} subscriptionDetail={subscriptionDetail} />
+        <CardInformation
+          card={card}
+          subscriptionDetail={subscriptionDetail}
+          nextBillPrice={nextBillPrice}
+        />
       ) : usBankAccount ? (
         <BankInformation
           usBankAccount={usBankAccount}

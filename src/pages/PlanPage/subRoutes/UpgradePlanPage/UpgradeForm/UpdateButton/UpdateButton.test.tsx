@@ -90,12 +90,13 @@ afterAll(() => {
 const mockPlanBasic = {
   value: Plans.USERS_DEVELOPER,
   baseUnitPrice: 4,
-  benefits: ['Up to 10 users'],
+  benefits: ['Up to 10 paid users'],
   billingRate: 'annually',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   hasSeatsLeft: true,
   planUserCount: 1,
+  freeSeatCount: 0,
   isFreePlan: true,
   isTeamPlan: false,
 }
@@ -103,12 +104,13 @@ const mockPlanBasic = {
 const mockPlanProMonthly = {
   value: Plans.USERS_PR_INAPPM,
   baseUnitPrice: 4,
-  benefits: ['Up to 10 users'],
+  benefits: ['Up to 10 paid users'],
   billingRate: 'annually',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   hasSeatsLeft: true,
   planUserCount: 4,
+  freeSeatCount: 0,
   isFreePlan: false,
   isTeamPlan: false,
 }
@@ -116,12 +118,13 @@ const mockPlanProMonthly = {
 const mockPlanTeamMonthly = {
   value: Plans.USERS_TEAMM,
   baseUnitPrice: 4,
-  benefits: ['Up to 10 users'],
+  benefits: ['Up to 10 paid users'],
   billingRate: 'annually',
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   hasSeatsLeft: true,
   planUserCount: 3,
+  freeSeatCount: 0,
   isFreePlan: false,
   isTeamPlan: true,
 }

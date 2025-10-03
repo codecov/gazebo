@@ -31,6 +31,7 @@ const mockPlanBasic = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  freeSeatCount: 0,
   hasSeatsLeft: true,
 }
 
@@ -53,6 +54,7 @@ const mockPlanPro = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 4,
+  freeSeatCount: 0,
   hasSeatsLeft: true,
 }
 
@@ -75,6 +77,7 @@ const mockPlanTrialing = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 4,
+  freeSeatCount: 0,
   hasSeatsLeft: true,
 }
 
@@ -155,7 +158,7 @@ const mockAvailablePlans = [
   },
   {
     baseUnitPrice: 6,
-    benefits: ['Up to 10 users'],
+    benefits: ['Up to 10 paid users'],
     billingRate: BillingRate.MONTHLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
@@ -165,7 +168,7 @@ const mockAvailablePlans = [
   },
   {
     baseUnitPrice: 5,
-    benefits: ['Up to 10 users'],
+    benefits: ['Up to 10 paid users'],
     billingRate: BillingRate.ANNUALLY,
     marketingName: 'Users Team',
     monthlyUploadLimit: 2500,

@@ -141,7 +141,7 @@ function getPlans() {
       baseUnitPrice: 6,
       monthlyUploadLimit: null,
       benefits: [
-        'Up to 10 users',
+        'Up to 10 paid users',
         'Unlimited repositories',
         '2500 repositories',
         'Patch coverage analysis',
@@ -157,7 +157,7 @@ function getPlans() {
       baseUnitPrice: 5,
       monthlyUploadLimit: null,
       benefits: [
-        'Up to 10 users',
+        'Up to 10 paid users',
         'Unlimited repositories',
         '2500 repositories',
         'Patch coverage analysis',
@@ -253,11 +253,9 @@ describe('getNextBillingDate', () => {
   describe('there is a valid timestamp', () => {
     it('returns formatted timestamp', () => {
       const value = getNextBillingDate({
+        // @ts-expect-error - we're just testing this property we can ignore the other properties
         subscriptionDetail: {
-          // @ts-expect-error - we're just testing this property we can ignore the other properties
-          latestInvoice: {
-            periodEnd: 1660000000,
-          },
+          currentPeriodEnd: 1660000000,
         },
       })
 
@@ -385,7 +383,7 @@ describe('findTeamPlans', () => {
       baseUnitPrice: 6,
       monthlyUploadLimit: null,
       benefits: [
-        'Up to 10 users',
+        'Up to 10 paid users',
         'Unlimited repositories',
         '2500 repositories',
         'Patch coverage analysis',
@@ -409,7 +407,7 @@ describe('findTeamPlans', () => {
       baseUnitPrice: 5,
       monthlyUploadLimit: null,
       benefits: [
-        'Up to 10 users',
+        'Up to 10 paid users',
         'Unlimited repositories',
         '2500 repositories',
         'Patch coverage analysis',

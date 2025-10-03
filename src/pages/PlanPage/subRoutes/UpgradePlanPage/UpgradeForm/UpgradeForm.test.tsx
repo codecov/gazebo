@@ -122,7 +122,7 @@ const sentryPlanYear = {
 
 const teamPlanMonth = {
   baseUnitPrice: 5,
-  benefits: ['Up to 10 users'],
+  benefits: ['Up to 10 paid users'],
   billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
@@ -133,7 +133,7 @@ const teamPlanMonth = {
 
 const teamPlanYear = {
   baseUnitPrice: 4,
-  benefits: ['Up to 10 users'],
+  benefits: ['Up to 10 paid users'],
   billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
@@ -228,9 +228,11 @@ const mockPlanDataResponse = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 10,
+  freeSeatCount: 0,
   hasSeatsLeft: true,
   isEnterprisePlan: false,
   isSentryPlan: false,
+  isFreePlan: false,
 }
 
 const mockUser = {
@@ -460,6 +462,7 @@ describe('UpgradeForm', () => {
                 value: planValue,
                 planUserCount,
               },
+              pretrialPlan: null,
             },
           },
         })
@@ -691,7 +694,7 @@ describe('UpgradeForm', () => {
         })
 
         describe('when updating to a team plan', () => {
-          it('renders up to 10 seats text', async () => {
+          it('renders up to 10 paid users text', async () => {
             const { user } = setup({
               planValue: Plans.USERS_DEVELOPER,
               hasTeamPlans: true,
@@ -701,7 +704,7 @@ describe('UpgradeForm', () => {
             const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
 
-            const auxiliaryText = await screen.findByText(/Up to 10 users/)
+            const auxiliaryText = await screen.findByText(/Up to 10 paid users/)
             expect(auxiliaryText).toBeInTheDocument()
           })
 
@@ -1072,7 +1075,7 @@ describe('UpgradeForm', () => {
         })
 
         describe('when updating to a team plan', () => {
-          it('renders up to 10 seats text', async () => {
+          it('renders up to 10 paid users text', async () => {
             const { user } = setup({
               planValue: Plans.USERS_PR_INAPPM,
               hasTeamPlans: true,
@@ -1082,7 +1085,7 @@ describe('UpgradeForm', () => {
             const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
 
-            const auxiliaryText = await screen.findByText(/Up to 10 users/)
+            const auxiliaryText = await screen.findByText(/Up to 10 paid users/)
             expect(auxiliaryText).toBeInTheDocument()
           })
 
@@ -1419,7 +1422,7 @@ describe('UpgradeForm', () => {
         })
 
         describe('when updating to a team plan', () => {
-          it('renders up to 10 seats text', async () => {
+          it('renders up to 10 paid users text', async () => {
             const { user } = setup({
               planValue: Plans.USERS_PR_INAPPY,
               hasTeamPlans: true,
@@ -1430,7 +1433,7 @@ describe('UpgradeForm', () => {
             const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
 
-            const auxiliaryText = await screen.findByText(/Up to 10 users/)
+            const auxiliaryText = await screen.findByText(/Up to 10 paid users/)
             expect(auxiliaryText).toBeInTheDocument()
           })
 
@@ -2035,7 +2038,7 @@ describe('UpgradeForm', () => {
         expect(ownerTitle).toBeInTheDocument()
       })
 
-      it('renders up to 10 seats text', async () => {
+      it('renders up to 10 paid users text', async () => {
         const { user } = setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
@@ -2046,7 +2049,7 @@ describe('UpgradeForm', () => {
         const teamOption = await screen.findByTestId('radio-team')
         await user.click(teamOption)
 
-        const auxiliaryText = await screen.findByText(/Up to 10 users/)
+        const auxiliaryText = await screen.findByText(/Up to 10 paid users/)
         expect(auxiliaryText).toBeInTheDocument()
       })
 
@@ -2151,7 +2154,7 @@ describe('UpgradeForm', () => {
         expect(update).toBeDisabled()
 
         const error = screen.getByText(
-          /Team plan is only available for 10 seats or fewer./
+          /Team plan is only available for 10 paid seats or fewer./
         )
         expect(error).toBeInTheDocument()
       })

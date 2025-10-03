@@ -12,6 +12,8 @@ interface URLParams {
   owner: string
 }
 
+export const MONTHS_PER_YEAR = 12
+
 function BillingDetails() {
   const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({

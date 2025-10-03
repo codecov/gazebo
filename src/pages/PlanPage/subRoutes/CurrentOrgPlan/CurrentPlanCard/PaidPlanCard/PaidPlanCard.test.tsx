@@ -40,6 +40,7 @@ const mockProPlan = {
   baseUnitPrice: 0,
   benefits: ['Unlimited public repositories', 'Unlimited private repositories'],
   planUserCount: 5,
+  freeSeatCount: 0,
   monthlyUploadLimit: null,
   trialStatus: TrialStatuses.CANNOT_TRIAL,
   trialStartDate: '',
@@ -62,6 +63,7 @@ const mockTeamPlan = {
   baseUnitPrice: 123,
   benefits: ['Team benefits', 'Unlimited private repositories'],
   planUserCount: 8,
+  freeSeatCount: 0,
   monthlyUploadLimit: 2500,
   trialStatus: TrialStatuses.CANNOT_TRIAL,
   trialStartDate: '',
@@ -229,13 +231,15 @@ describe('PaidPlanCard', () => {
       expect(benefitsList).toBeInTheDocument()
     })
 
-    it('renders seats number', async () => {
+    it('renders seats number without free/paid distinction', async () => {
       render(<PaidPlanCard />, {
         wrapper,
       })
 
       const seats = await screen.findByText(/plan has 8 seats/)
       expect(seats).toBeInTheDocument()
+      const seatsWithPaid = screen.queryByText(/plan has 8 seats with \d+ paid/)
+      expect(seatsWithPaid).not.toBeInTheDocument()
     })
 
     it('renders the plan pricing', async () => {
@@ -254,6 +258,45 @@ describe('PaidPlanCard', () => {
 
       const actionsBilling = await screen.findByText(/Actions Billing/)
       expect(actionsBilling).toBeInTheDocument()
+    })
+
+    it('does not renders the free seats number if there are no free seats', () => {
+      render(<PaidPlanCard />, {
+        wrapper,
+      })
+
+      const planValue = screen.queryByText(
+        /Current plan \(\d+ free seats included\)/
+      )
+      expect(planValue).not.toBeInTheDocument()
+      const seats = screen.queryByText(/plan has 8 seats with \d+ free/)
+      expect(seats).not.toBeInTheDocument()
+    })
+  })
+
+  describe('When rendered with free seats', () => {
+    beforeEach(() => {
+      setup({ plan: { ...mockTeamPlan, freeSeatCount: 2 } })
+    })
+
+    it('renders the free seats number', async () => {
+      render(<PaidPlanCard />, {
+        wrapper,
+      })
+
+      const planValue = await screen.findByText(
+        /Current plan \(2 free seats included\)/
+      )
+      expect(planValue).toBeInTheDocument()
+    })
+
+    it('specifies the number of paid seats', async () => {
+      render(<PaidPlanCard />, {
+        wrapper,
+      })
+
+      const seats = await screen.findByText(/plan has 8 seats with 6 paid/)
+      expect(seats).toBeInTheDocument()
     })
   })
 

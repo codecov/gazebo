@@ -131,7 +131,7 @@ export const formatNumberToUSD = (value: number) =>
 export function getNextBillingDate(
   accountDetails?: z.infer<typeof AccountDetailsSchema> | null
 ) {
-  const timestamp = accountDetails?.subscriptionDetail?.latestInvoice?.periodEnd
+  const timestamp = accountDetails?.subscriptionDetail?.currentPeriodEnd
   return timestamp ? format(fromUnixTime(timestamp), 'MMMM do, yyyy') : null
 }
 

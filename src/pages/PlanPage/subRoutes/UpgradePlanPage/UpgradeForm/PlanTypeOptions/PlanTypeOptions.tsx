@@ -110,7 +110,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
             </RadioTileGroup.Item>
           </RadioTileGroup>
           {planOption === TierName.TEAM && (
-            <p>Up to {TEAM_PLAN_MAX_ACTIVE_USERS} users</p>
+            <p>Up to {TEAM_PLAN_MAX_ACTIVE_USERS} paid users</p>
           )}
         </div>
       </div>
