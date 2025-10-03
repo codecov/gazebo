@@ -36,7 +36,7 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
     } else {
       acc.push({
         date,
-        passed: result.status === 'passed' ? 2 : 0,
+        passed: result.status === 'passed' ? 1 : 0,
         failed: result.status === 'failed' ? 1 : 0,
         skipped: result.status === 'skipped' ? 1 : 0,
         totalDuration: result.duration,
