@@ -18,19 +18,16 @@ export function FileExplorerState({
   onPathChange,
 }: FileExplorerStateProps) {
   const [currentPath, setCurrentPath] = useState(initialPath)
-  const [expandedDirs, setExpandedDirs] = useState<string[]>([])
+  const [pathMetadata, setPathMetadata] = useState({
+    path: initialPath,
+    visited: false,
+  })
 
   useEffect(() => {
     if (initialPath) {
-      setCurrentPath(initialPath)
+      setPathMetadata({ path: initialPath, visited: false })
     }
-  }, [initialPath, currentPath])
-
-  useEffect(() => {
-    if (currentPath && !expandedDirs.includes(currentPath)) {
-      setExpandedDirs([...expandedDirs, currentPath])
-    }
-  }, [currentPath, expandedDirs])
+  }, [initialPath, pathMetadata])
 
   useEffect(() => {
     if (onPathChange) {
