@@ -28,7 +28,27 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
 
   const chartDataMap = results.reduce(
     (acc: Record<string, ChartDataPoint>, result) => {
-      const date = new Date(result.timestamp).toLocaleDateString()
+      if (
+        !result.timestamp ||
+        !Number.isFinite(result.timestamp) ||
+        result.timestamp < 0
+      ) {
+        return acc
+      }
+
+      const dateObj = new Date(result.timestamp)
+      if (isNaN(dateObj.getTime())) {
+        return acc
+      }
+
+      if (
+        !result.status ||
+        !['passed', 'failed', 'skipped'].includes(result.status)
+      ) {
+        return acc
+      }
+
+      const date = dateObj.toLocaleDateString()
 
       if (!acc[date]) {
         acc[date] = {
@@ -43,7 +63,11 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
       const dataPoint = acc[date]
       if (dataPoint) {
         dataPoint[result.status]++
-        dataPoint.totalDuration += result.duration
+        const duration =
+          Number.isFinite(result.duration) && result.duration >= 0
+            ? result.duration
+            : 0
+        dataPoint.totalDuration += duration
       }
 
       return acc
@@ -55,6 +79,9 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
 
   const slowestTests = results
     .filter((result) => result.status !== 'skipped')
+    .filter(
+      (result) => Number.isFinite(result.duration) && result.duration >= 0
+    )
     .sort((a, b) => b.duration - a.duration)
     .slice(0, 10)
 
@@ -66,6 +93,10 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
       >,
       result
     ) => {
+      if (!result.branch) {
+        return acc
+      }
+
       if (!acc[result.branch]) {
         acc[result.branch] = { total: 0, failed: 0, avgDuration: 0 }
       }
@@ -75,8 +106,13 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
         if (result.status === 'failed') {
           branchData.failed++
         }
+
+        const duration =
+          Number.isFinite(result.duration) && result.duration >= 0
+            ? result.duration
+            : 0
         branchData.avgDuration =
-          (branchData.avgDuration * (branchData.total - 1) + result.duration) /
+          (branchData.avgDuration * (branchData.total - 1) + duration) /
           branchData.total
       }
       return acc
@@ -84,9 +120,12 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
     {}
   )
 
-  // Group results by test name and calculate flakiness
   const testsByName = results.reduce(
     (acc: Record<string, TestResult[]>, result) => {
+      if (!result.name) {
+        return acc
+      }
+
       if (!acc[result.name]) {
         acc[result.name] = []
       }
@@ -98,8 +137,13 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
 
   const flakinessScores: Record<string, number> = {}
   Object.entries(testsByName).forEach(([testName, testResults]) => {
-    // Sort by timestamp to ensure chronological order
-    const sortedResults = testResults.sort((a, b) => a.timestamp - b.timestamp)
+    if (testResults.length === 0) {
+      return
+    }
+
+    const sortedResults = [...testResults].sort(
+      (a, b) => a.timestamp - b.timestamp
+    )
 
     let statusChanges = 0
     for (let i = 1; i < sortedResults.length; i++) {
@@ -143,7 +187,10 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
                 </div>
               </div>
               <span className="text-sm text-ds-gray-senary">
-                {(point.totalDuration / 1000).toFixed(2)}s
+                {Number.isFinite(point.totalDuration)
+                  ? (point.totalDuration / 1000).toFixed(2)
+                  : '0.00'}
+                s
               </span>
             </div>
           ))}
@@ -160,7 +207,10 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
             >
               <span className="font-mono text-sm">{test.name}</span>
               <span className="text-sm font-semibold text-ds-primary-yellow">
-                {(test.duration / 1000).toFixed(2)}s
+                {Number.isFinite(test.duration)
+                  ? (test.duration / 1000).toFixed(2)
+                  : '0.00'}
+                s
               </span>
             </div>
           ))}
@@ -205,7 +255,13 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
                 <div className="text-ds-primary-red">
                   Failed: {stats.failed}
                 </div>
-                <div>Avg: {stats.avgDuration.toFixed(0)}ms</div>
+                <div>
+                  Avg:{' '}
+                  {Number.isFinite(stats.avgDuration)
+                    ? stats.avgDuration.toFixed(0)
+                    : '0'}
+                  ms
+                </div>
               </div>
             </div>
           ))}
