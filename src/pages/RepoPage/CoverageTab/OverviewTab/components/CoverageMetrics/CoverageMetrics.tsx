@@ -14,6 +14,22 @@ interface CoverageMetricsProps {
   threshold?: number
 }
 
+/**
+ * CoverageMetrics displays comprehensive coverage statistics for a repository.
+ *
+ * This component processes all files in a repository to calculate metrics.
+ * Large repositories commonly have 2,000-10,000+ files, and enterprise repos
+ * can exceed 50,000 files. The component handles the full file list for
+ * accurate statistics rather than paginated subsets.
+ *
+ * Used in:
+ * - RepoPage Coverage Overview Tab (main dashboard)
+ * - PR coverage comparison views
+ * - Commit detail coverage breakdown
+ *
+ * @param files - Complete array of all files with coverage data in the repo
+ * @param threshold - Coverage percentage threshold for highlighting low-coverage files
+ */
 export function CoverageMetrics({
   files,
   threshold = 50,
@@ -22,45 +38,106 @@ export function CoverageMetrics({
     return null
   }
 
+  // Calculate comprehensive statistics in a single pass for efficiency
+  const statistics = files.reduce(
+    (acc, file) => {
+      acc.totalFiles++
+      acc.totalCoverage += file.coverage
+      acc.totalLines += file.lines
+      acc.totalHits += file.hits
+      acc.totalMisses += file.misses
+
+      if (file.coverage < threshold) {
+        acc.lowCoverageFiles++
+      }
+
+      // Distribution buckets
+      if (file.coverage < 25) {
+        acc.distribution['0-25%']++
+      } else if (file.coverage < 50) {
+        acc.distribution['25-50%']++
+      } else if (file.coverage < 75) {
+        acc.distribution['50-75%']++
+      } else {
+        acc.distribution['75-100%']++
+      }
+
+      return acc
+    },
+    {
+      totalFiles: 0,
+      lowCoverageFiles: 0,
+      totalCoverage: 0,
+      totalLines: 0,
+      totalHits: 0,
+      totalMisses: 0,
+      distribution: { '0-25%': 0, '25-50%': 0, '50-75%': 0, '75-100%': 0 },
+    }
+  )
+
+  const averageCoverage = statistics.totalCoverage / statistics.totalFiles
+  const overallCoverageRate =
+    (statistics.totalHits / statistics.totalLines) * 100
+  const coverageDistribution = statistics.distribution
+
   const sortedFiles = files
     .filter((file) => file.coverage < threshold)
     .sort((a, b) => a.coverage - b.coverage)
 
-  const statistics = {
-    totalFiles: files.length,
-    lowCoverageFiles: sortedFiles.length,
-    averageCoverage:
-      files.reduce((sum, file) => sum + file.coverage, 0) / files.length,
-    totalLines: files.reduce((sum, file) => sum + file.lines, 0),
-    totalHits: files.reduce((sum, file) => sum + file.hits, 0),
-    totalMisses: files.reduce((sum, file) => sum + file.misses, 0),
-  }
+  // Calculate directory-level statistics
+  const directoryStats = files.reduce(
+    (
+      acc: Record<
+        string,
+        { files: number; avgCoverage: number; totalLines: number }
+      >,
+      file
+    ) => {
+      const directory = file.path.includes('/')
+        ? file.path.substring(0, file.path.lastIndexOf('/'))
+        : '(root)'
 
-  const coverageDistribution = files.reduce(
-    (acc, file) => {
-      if (file.coverage < 25) {
-        acc['0-25%']++
-      } else if (file.coverage < 50) {
-        acc['25-50%']++
-      } else if (file.coverage < 75) {
-        acc['50-75%']++
-      } else {
-        acc['75-100%']++
+      if (!acc[directory]) {
+        acc[directory] = { files: 0, avgCoverage: 0, totalLines: 0 }
       }
+
+      const dirData = acc[directory]
+      if (dirData) {
+        dirData.files++
+        dirData.avgCoverage =
+          (dirData.avgCoverage * (dirData.files - 1) + file.coverage) /
+          dirData.files
+        dirData.totalLines += file.lines
+      }
+
       return acc
     },
-    { '0-25%': 0, '25-50%': 0, '50-75%': 0, '75-100%': 0 }
+    {}
   )
+
+  // Sort directories by lines of code
+  const topDirectories = Object.entries(directoryStats)
+    .sort(([, a], [, b]) => b.totalLines - a.totalLines)
+    .slice(0, 5)
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         <div className="rounded-lg border border-ds-gray-tertiary p-4">
           <h3 className="text-sm font-medium text-ds-gray-octonary">
             Average Coverage
           </h3>
           <p className="mt-2 text-3xl font-semibold">
-            {statistics.averageCoverage.toFixed(2)}%
+            {averageCoverage.toFixed(2)}%
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-ds-gray-tertiary p-4">
+          <h3 className="text-sm font-medium text-ds-gray-octonary">
+            Overall Rate
+          </h3>
+          <p className="mt-2 text-3xl font-semibold">
+            {overallCoverageRate.toFixed(2)}%
           </p>
         </div>
 
@@ -98,6 +175,38 @@ export function CoverageMetrics({
             >
               <div className="text-xs text-ds-gray-senary">{range}</div>
               <div className="mt-1 text-2xl font-semibold">{count}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="mb-3 text-lg font-semibold">Top Directories by Size</h3>
+        <div className="space-y-2">
+          {topDirectories.map(([directory, stats]) => (
+            <div
+              key={directory}
+              className="flex items-center justify-between rounded border border-ds-gray-tertiary p-3"
+            >
+              <div className="flex-1">
+                <div className="font-mono text-sm">{directory}</div>
+                <div className="mt-1 text-xs text-ds-gray-senary">
+                  {stats.files} files • {stats.totalLines.toLocaleString()}{' '}
+                  lines
+                </div>
+              </div>
+              <div
+                className={cn(
+                  'text-sm font-semibold',
+                  stats.avgCoverage < 50
+                    ? 'text-ds-primary-red'
+                    : stats.avgCoverage < 75
+                      ? 'text-ds-primary-yellow'
+                      : 'text-ds-primary-green'
+                )}
+              >
+                {stats.avgCoverage.toFixed(1)}%
+              </div>
             </div>
           ))}
         </div>
