@@ -26,25 +26,32 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
     return null
   }
 
-  const chartData = results.reduce((acc: ChartDataPoint[], result) => {
-    const date = new Date(result.timestamp).toLocaleDateString()
-    const existing = acc.find((item) => item.date === date)
+  const chartDataMap = results.reduce(
+    (acc: Record<string, ChartDataPoint>, result) => {
+      const date = new Date(result.timestamp).toLocaleDateString()
 
-    if (existing) {
-      existing[result.status]++
-      existing.totalDuration += result.duration
-    } else {
-      acc.push({
-        date,
-        passed: result.status === 'passed' ? 1 : 0,
-        failed: result.status === 'failed' ? 1 : 0,
-        skipped: result.status === 'skipped' ? 1 : 0,
-        totalDuration: result.duration,
-      })
-    }
+      if (!acc[date]) {
+        acc[date] = {
+          date,
+          passed: 0,
+          failed: 0,
+          skipped: 0,
+          totalDuration: 0,
+        }
+      }
 
-    return acc
-  }, [])
+      const dataPoint = acc[date]
+      if (dataPoint) {
+        dataPoint[result.status]++
+        dataPoint.totalDuration += result.duration
+      }
+
+      return acc
+    },
+    {}
+  )
+
+  const chartData = Object.values(chartDataMap)
 
   const slowestTests = results
     .filter((result) => result.status !== 'skipped')
@@ -77,25 +84,33 @@ export function TestResultsChart({ results }: TestResultsChartProps) {
     {}
   )
 
-  const flakinessScores = results.reduce(
-    (acc: Record<string, number>, result) => {
+  // Group results by test name and calculate flakiness
+  const testsByName = results.reduce(
+    (acc: Record<string, TestResult[]>, result) => {
       if (!acc[result.name]) {
-        acc[result.name] = 0
+        acc[result.name] = []
       }
-      const testResults = results.filter((r) => r.name === result.name)
-      let statusChanges = 0
-      for (let i = 1; i < testResults.length; i++) {
-        const current = testResults.at(i)
-        const previous = testResults.at(i - 1)
-        if (current && previous && current.status !== previous.status) {
-          statusChanges++
-        }
-      }
-      acc[result.name] = (statusChanges / testResults.length) * 100
+      acc[result.name]?.push(result)
       return acc
     },
     {}
   )
+
+  const flakinessScores: Record<string, number> = {}
+  Object.entries(testsByName).forEach(([testName, testResults]) => {
+    // Sort by timestamp to ensure chronological order
+    const sortedResults = testResults.sort((a, b) => a.timestamp - b.timestamp)
+
+    let statusChanges = 0
+    for (let i = 1; i < sortedResults.length; i++) {
+      const current = sortedResults[i]
+      const previous = sortedResults[i - 1]
+      if (current && previous && current.status !== previous.status) {
+        statusChanges++
+      }
+    }
+    flakinessScores[testName] = (statusChanges / sortedResults.length) * 100
+  })
 
   const flakyTests = Object.entries(flakinessScores)
     .filter(([, score]) => score > 20)
