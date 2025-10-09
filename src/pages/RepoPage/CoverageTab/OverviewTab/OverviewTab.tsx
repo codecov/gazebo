@@ -138,9 +138,7 @@ function CoverageOverviewTab() {
               localStorageKey="is-coverage-metrics-hidden"
             >
               <div className="mt-4 pl-4">
-                {/* CoverageMetrics receives the full file list from the coverage API
-                    Typical repos have 2,000-10,000 files; enterprise repos can have 50,000+ */}
-                <CoverageMetrics files={[]} threshold={70} />
+                <CoverageMetrics threshold={70} />
               </div>
             </ToggleElement>
           </Suspense>

@@ -10,7 +10,6 @@ interface CoverageFile {
 }
 
 interface CoverageMetricsProps {
-  files: CoverageFile[]
   threshold?: number
 }
 
@@ -27,13 +26,45 @@ interface CoverageMetricsProps {
  * - PR coverage comparison views
  * - Commit detail coverage breakdown
  *
- * @param files - Complete array of all files with coverage data in the repo
  * @param threshold - Coverage percentage threshold for highlighting low-coverage files
  */
-export function CoverageMetrics({
-  files,
-  threshold = 50,
-}: CoverageMetricsProps) {
+
+// TODO: Replace with useCoverageFiles() hook that fetches from the API
+// This sample data generator simulates production data with 5000 files
+const generateSampleFiles = (): CoverageFile[] => {
+  const directories = [
+    'src/pages/RepoPage',
+    'src/services',
+    'src/layouts/Header',
+    'src/ui/Button',
+    'src/shared/utils',
+    'tests/integration',
+  ]
+  const files: CoverageFile[] = []
+
+  for (let i = 0; i < 5000; i++) {
+    const dir = directories[i % directories.length]
+    const coverage = Math.random() * 100
+    const lines = Math.floor(Math.random() * 500) + 50
+    const hits = Math.floor((coverage / 100) * lines)
+
+    files.push({
+      name: `File${i}.tsx`,
+      path: `${dir}/File${i}.tsx`,
+      coverage,
+      lines,
+      hits,
+      misses: lines - hits,
+    })
+  }
+
+  return files
+}
+
+export function CoverageMetrics({ threshold = 50 }: CoverageMetricsProps) {
+  // TODO: Replace generateSampleFiles() with const files = useCoverageFiles()
+  const files = generateSampleFiles()
+
   if (!files || files.length === 0) {
     return null
   }
@@ -75,9 +106,14 @@ export function CoverageMetrics({
     }
   )
 
-  const averageCoverage = statistics.totalCoverage / statistics.totalFiles
+  const averageCoverage =
+    statistics.totalFiles > 0
+      ? statistics.totalCoverage / statistics.totalFiles
+      : 0
   const overallCoverageRate =
-    (statistics.totalHits / statistics.totalLines) * 100
+    statistics.totalLines > 0
+      ? (statistics.totalHits / statistics.totalLines) * 100
+      : 0
   const coverageDistribution = statistics.distribution
 
   const sortedFiles = files
