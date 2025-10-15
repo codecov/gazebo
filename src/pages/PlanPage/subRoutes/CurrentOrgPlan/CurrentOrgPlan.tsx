@@ -70,7 +70,8 @@ function CurrentOrgPlan() {
 
   return (
     <div className="w-full lg:w-4/5">
-      {planUpdatedNotification.isCancellation ? (
+      {planUpdatedNotification.isCancellation ||
+      accountDetails?.subscriptionDetail?.cancelAtPeriodEnd ? (
         <InfoAlertCancellation
           subscriptionDetail={accountDetails?.subscriptionDetail}
         />

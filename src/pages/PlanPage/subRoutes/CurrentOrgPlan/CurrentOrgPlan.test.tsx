@@ -236,7 +236,7 @@ describe('CurrentOrgPlan', () => {
   })
 
   describe('when info message cancellation should be shown', () => {
-    it('renders when subscription detail data is available', async () => {
+    it('renders when subscription has just been canceled', async () => {
       setup({
         accountDetails: {
           subscriptionDetail: {
@@ -246,11 +246,39 @@ describe('CurrentOrgPlan', () => {
         } as z.infer<typeof AccountDetailsSchema>,
       })
 
+      // isCancellation is true to simulate the subscription has just been canceled
       render(<CurrentOrgPlan />, { wrapper: cancellationPlanWrapper })
-      const pendingCancellation = await screen.findByText(
+      const cancellationConfirmation = await screen.findByText(
+        /Cancellation confirmation/
+      )
+      const cancellationTime = await screen.findByText(
         /on August 2nd 2024, 8:52 p.m./
       )
-      expect(pendingCancellation).toBeInTheDocument()
+      expect(cancellationConfirmation).toBeInTheDocument()
+      expect(cancellationTime).toBeInTheDocument()
+    })
+
+    it('renders when cancelAtPeriodEnd is true without having just been canceled', async () => {
+      setup({
+        accountDetails: {
+          subscriptionDetail: {
+            cancelAtPeriodEnd: true,
+            currentPeriodEnd: 1722631954,
+          },
+        } as z.infer<typeof AccountDetailsSchema>,
+      })
+
+      // isCancellation is false to simulate the subscription was previously canceled
+      render(<CurrentOrgPlan />, { wrapper: noUpdatedPlanWrapper })
+      const cancellationConfirmation = await screen.findByText(
+        /Cancellation confirmation/
+      )
+      expect(cancellationConfirmation).toBeInTheDocument()
+      const cancellationTime = await screen.findByText(
+        /on August 2nd 2024, 8:52 p.m./
+      )
+      expect(cancellationConfirmation).toBeInTheDocument()
+      expect(cancellationTime).toBeInTheDocument()
     })
   })
 
