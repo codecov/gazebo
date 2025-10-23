@@ -7,9 +7,6 @@ on:
         description: 'Name of version  (ie 23.9.5)'
         required: true
 
-permissions:
-  contents: write
-
 jobs:
   create-release-pr:
     name: Create PR for Release ${{ github.event.inputs.versionName }}
