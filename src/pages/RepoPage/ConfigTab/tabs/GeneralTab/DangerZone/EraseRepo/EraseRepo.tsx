@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { useEraseRepo } from 'services/repo'
@@ -6,7 +5,12 @@ import Button from 'ui/Button'
 
 import EraseRepoModal from './EraseRepoModal'
 
-function EraseRepoButton({ isLoading, setShowModal }) {
+interface EraseRepoButtonProps {
+  isLoading: boolean
+  setShowModal: (show: boolean) => void
+}
+
+function EraseRepoButton({ isLoading, setShowModal }: EraseRepoButtonProps) {
   if (isLoading) {
     return (
       <div className="font-light italic">
@@ -26,11 +30,6 @@ function EraseRepoButton({ isLoading, setShowModal }) {
   )
 }
 
-EraseRepoButton.propTypes = {
-  setShowModal: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool.isRequired,
-}
-
 function EraseRepo() {
   const [showModal, setShowModal] = useState(false)
   const { mutate: eraseRepo, isLoading } = useEraseRepo()
@@ -41,8 +40,7 @@ function EraseRepo() {
         <h2 className="font-semibold">Erase repository</h2>
         <p className="max-w-md">
           This will erase the repository, including all of its contents. The
-          repository itself will be re-created when resync-ing the organization
-          contents.
+          repository will be recreated when resyncing the organization contents.
         </p>
       </div>
       <div>

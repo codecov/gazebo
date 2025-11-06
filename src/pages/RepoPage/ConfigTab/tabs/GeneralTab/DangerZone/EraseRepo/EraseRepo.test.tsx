@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { delay, graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import EraseRepo from './EraseRepo'
@@ -38,7 +39,7 @@ afterAll(() => {
   server.close()
 })
 
-const wrapper = ({ children }) => (
+const wrapper = ({ children }: { children: ReactNode }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/codecov-client/config']}>
       <Route path="/:provider/:owner/:repo/config">{children}</Route>
@@ -71,12 +72,11 @@ const mockResponse = {
 }
 
 describe('EraseRepository', () => {
-  function setup(
-    { failedMutation = false, isLoading = false, unauthorized = false } = {
-      failedMutation: false,
-      isLoading: false,
-    }
-  ) {
+  function setup({
+    failedMutation = false,
+    isLoading = false,
+    unauthorized = false,
+  } = {}) {
     const user = userEvent.setup()
     const mutate = vi.fn()
     const addNotification = vi.fn()
