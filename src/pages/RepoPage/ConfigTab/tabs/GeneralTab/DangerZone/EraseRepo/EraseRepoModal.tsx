@@ -1,9 +1,19 @@
-import PropTypes from 'prop-types'
-
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-const EraseRepoModal = ({ closeModal, eraseRepo, isLoading, showModal }) => {
+interface EraseRepoModalProps {
+  showModal: boolean
+  closeModal: () => void
+  eraseRepo: () => void
+  isLoading: boolean
+}
+
+const EraseRepoModal = ({
+  closeModal,
+  eraseRepo,
+  isLoading,
+  showModal,
+}: EraseRepoModalProps) => {
   return (
     <Modal
       isOpen={showModal}
@@ -12,9 +22,9 @@ const EraseRepoModal = ({ closeModal, eraseRepo, isLoading, showModal }) => {
       body={
         <p>
           This will erase the repository, including all of its contents. This
-          action is irreversible and will permanently erase any historical code
-          coverage in Codecov for this repository. The repository will be
-          recreated when resyncing the organization.
+          action is irreversible and will permanently erase all data associated
+          with this repository. The repository will be recreated when resyncing
+          the organization.
         </p>
       }
       footer={
@@ -41,13 +51,6 @@ const EraseRepoModal = ({ closeModal, eraseRepo, isLoading, showModal }) => {
       }
     />
   )
-}
-
-EraseRepoModal.propTypes = {
-  showModal: PropTypes.bool.isRequired,
-  closeModal: PropTypes.func.isRequired,
-  eraseRepo: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool.isRequired,
 }
 
 export default EraseRepoModal
