@@ -4,6 +4,7 @@ import { z } from 'zod'
 import Api from 'shared/api'
 import { Provider } from 'shared/api/helpers'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
+import { BillingRate } from 'shared/utils/billing'
 
 const InvoiceSchema = z
   .object({
@@ -145,8 +146,9 @@ export const AccountDetailsSchema = z
         scheduledPhase: z
           .object({
             quantity: z.number(),
-            plan: z.string(),
+            plan: z.string().nullable(),
             startDate: z.number(),
+            billingRate: z.nativeEnum(BillingRate).nullish(),
           })
           .nullable(),
       })

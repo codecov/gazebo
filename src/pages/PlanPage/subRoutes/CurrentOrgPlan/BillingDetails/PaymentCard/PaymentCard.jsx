@@ -37,17 +37,22 @@ function PaymentCard({ accountDetails, provider, owner }) {
       subscriptionDetail?.currentPeriodEnd
     )
   }
-  const scheduledPhaseQuantity =
-    accountDetails?.scheduleDetail?.scheduledPhase?.quantity
+  const {
+    quantity: scheduledPhaseQuantity,
+    billingRate: scheduledPhaseBillingRate,
+    baseUnitPrice: scheduledPhaseBaseUnitPrice,
+  } = accountDetails?.scheduleDetail?.scheduledPhase ?? {}
 
   const nextBillPrice = useMemo(() => {
-    const isPerYear = planData?.plan?.billingRate === BillingRate.ANNUALLY
+    const billingRate = scheduledPhaseBillingRate ?? planData?.plan?.billingRate
+    const isPerYear = billingRate === BillingRate.ANNUALLY
     let seats =
       scheduledPhaseQuantity ??
       (planData?.plan?.planUserCount ?? 0) -
         (planData?.plan?.freeSeatCount ?? 0)
     seats = Math.max(seats, 0)
-    const planBaseUnitPrice = planData?.plan?.baseUnitPrice ?? 0
+    const planBaseUnitPrice =
+      scheduledPhaseBaseUnitPrice ?? planData?.plan?.baseUnitPrice ?? 0
     const billPrice = planData?.plan?.isProPlan
       ? calculatePriceProPlan({
           seats,
@@ -73,6 +78,8 @@ function PaymentCard({ accountDetails, provider, owner }) {
     planData?.plan?.freeSeatCount,
     planData?.plan?.isProPlan,
     planData?.plan?.isTeamPlan,
+    scheduledPhaseBillingRate,
+    scheduledPhaseBaseUnitPrice,
     scheduledPhaseQuantity,
   ])
 

@@ -1,9 +1,13 @@
 import { format, fromUnixTime } from 'date-fns'
 
+import { BillingRateType } from 'shared/utils/billing'
+
 interface ScheduledPhase {
   quantity: number
-  plan: string
+  plan: string | null
   startDate: number
+  billingRate?: BillingRateType | null
+  baseUnitPrice?: number | null
 }
 
 export function getScheduleStart(scheduledPhase: ScheduledPhase): string {
@@ -26,7 +30,7 @@ function ScheduledPlanDetails({
         Start date {scheduleStart}
       </p>
       <p className="text-ds-gray-senary">
-        {plan} with {quantity} paid seats
+        {plan ? `${plan} plan` : 'Plan'} with {quantity} paid seats
       </p>
     </div>
   )

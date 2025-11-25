@@ -39,6 +39,8 @@ export const BillingRate = {
   ANNUALLY: 'annually',
 } as const
 
+export type BillingRateType = (typeof BillingRate)[keyof typeof BillingRate]
+
 export const CollectionMethods = Object.freeze({
   INVOICED_CUSTOMER_METHOD: 'send_invoice',
   AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
