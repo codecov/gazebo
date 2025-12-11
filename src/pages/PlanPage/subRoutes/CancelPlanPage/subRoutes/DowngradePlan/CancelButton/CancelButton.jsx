@@ -1,3 +1,4 @@
+import { format, fromUnixTime } from 'date-fns'
 import PropType from 'prop-types'
 import { useState } from 'react'
 
@@ -5,21 +6,19 @@ import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
 import { useCancel } from './hooks'
-import { cleanupBaremetrics, getEndPeriod } from './utils'
 
 const FALLBACK_PERIOD_TEXT = 'the end of the period'
 
-function CancelButton({
-  customerId,
-  isFreePlan,
-  upComingCancellation,
-  currentPeriodEnd,
-}) {
+function getEndPeriod(unixPeriodEnd) {
+  return (
+    unixPeriodEnd &&
+    format(fromUnixTime(unixPeriodEnd), 'MMMM do yyyy, h:m aaaa')
+  )
+}
+
+function CancelButton({ isFreePlan, upComingCancellation, currentPeriodEnd }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { cancelPlan, baremetricsBlocked, queryIsLoading } = useCancel({
-    customerId,
-    isModalOpen,
-  })
+  const { cancelPlan, queryIsLoading } = useCancel()
 
   const isDisabled = [
     // disable button if
@@ -29,14 +28,7 @@ function CancelButton({
   ].some(Boolean)
   const periodEnd = getEndPeriod(currentPeriodEnd)
 
-  function completeCancellation() {
-    if (baremetricsBlocked) {
-      cancelPlan()
-    }
-  }
-
   function handleOnClose() {
-    cleanupBaremetrics()
     setIsModalOpen(false)
   }
 
@@ -84,12 +76,10 @@ function CancelButton({
               Cancel
             </Button>
             <Button
-              // This ID is needed to render the baremetrics form. DO NOT CHANGE
-              id="barecancel-trigger"
               variant="danger"
               hook="continue-cancellation-button"
               disabled={isDisabled}
-              onClick={completeCancellation}
+              onClick={cancelPlan}
             >
               Confirm Cancellation
             </Button>

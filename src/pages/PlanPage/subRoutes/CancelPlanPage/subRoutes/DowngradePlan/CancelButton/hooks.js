@@ -3,18 +3,11 @@ import { useHistory, useParams } from 'react-router-dom'
 import { useCancelPlan } from 'services/account/useCancelPlan'
 import { useAddNotification } from 'services/toastNotification/context'
 
-import { useBarecancel } from './useBarecancel'
-
-export function useCancel({ customerId, isModalOpen }, options = {}) {
+export function useCancel(options = {}) {
   const addToast = useAddNotification()
   const { provider, owner } = useParams()
   const { push } = useHistory()
   const { mutate, isLoading } = useCancelPlan({ provider, owner })
-  const { baremetricsBlocked } = useBarecancel({
-    customerId,
-    callbackSend: cancelPlan,
-    isModalOpen,
-  })
 
   function sendUserToPlan() {
     push(`/plan/${provider}/${owner}`)
@@ -36,7 +29,6 @@ export function useCancel({ customerId, isModalOpen }, options = {}) {
 
   return {
     cancelPlan,
-    baremetricsBlocked,
     queryIsLoading: isLoading,
   }
 }
