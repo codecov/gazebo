@@ -61,7 +61,6 @@ const subscriptionDetail: z.infer<typeof SubscriptionDetailSchema> = {
   currentPeriodEnd: 1706851492,
   cancelAtPeriodEnd: false,
   customer: {
-    id: 'cust_123',
     email: 'test@example.com',
     address: null,
     name: null,
