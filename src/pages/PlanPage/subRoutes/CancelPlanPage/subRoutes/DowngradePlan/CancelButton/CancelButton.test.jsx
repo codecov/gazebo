@@ -85,9 +85,9 @@ describe('CancelButton', () => {
     it('renders button text', () => {
       render(
         <CancelButton
-          customerId="cus_1n4o328hn4"
+          isFreePlan={false}
           planCost="users-pr-inappy"
-          upComingCancelation={false}
+          upComingCancellation={false}
           currentPeriodEnd={1675361466}
         />,
         { wrapper }
@@ -104,9 +104,9 @@ describe('CancelButton', () => {
       const { user } = setup()
       render(
         <CancelButton
-          customerId="cus_1n4o328hn4"
+          isFreePlan={false}
           planCost="users-pr-inappy"
-          upComingCancelation={false}
+          upComingCancellation={false}
           currentPeriodEnd={1675361466}
         />,
         { wrapper }
@@ -122,9 +122,9 @@ describe('CancelButton', () => {
         const { user } = setup()
         render(
           <CancelButton
-            customerId="cus_1n4o328hn4"
+            isFreePlan={false}
             planCost="users-pr-inappy"
-            upComingCancelation={false}
+            upComingCancellation={false}
             currentPeriodEnd={1675361466}
           />,
           { wrapper }
@@ -144,9 +144,9 @@ describe('CancelButton', () => {
         const { user } = setup()
         render(
           <CancelButton
-            customerId="cus_1n4o328hn4"
+            isFreePlan={false}
             planCost="users-pr-inappy"
-            upComingCancelation={false}
+            upComingCancellation={false}
             currentPeriodEnd={1675361466}
           />,
           { wrapper }
@@ -167,9 +167,9 @@ describe('CancelButton', () => {
       const { mutate, user } = setup(true)
       render(
         <CancelButton
-          customerId="cus_1n4o328hn4"
+          isFreePlan={false}
           planCost="users-pr-inappy"
-          upComingCancelation={false}
+          upComingCancellation={false}
           currentPeriodEnd={1675361466}
         />,
         { wrapper }
@@ -186,9 +186,9 @@ describe('CancelButton', () => {
         const { mutate, addNotification, user } = setup(true)
         render(
           <CancelButton
-            customerId="cus_1n4o328hn4"
+            isFreePlan={false}
             planCost="users-pr-inappy"
-            upComingCancelation={false}
+            upComingCancellation={false}
             currentPeriodEnd={1675361466}
           />,
           { wrapper }
@@ -211,9 +211,9 @@ describe('CancelButton', () => {
         const { mutate, user } = setup(true)
         render(
           <CancelButton
-            customerId="cus_1n4o328hn4"
+            isFreePlan={false}
             planCost="users-pr-inappy"
-            upComingCancelation={false}
+            upComingCancellation={false}
             currentPeriodEnd={1675361466}
           />,
           { wrapper }
