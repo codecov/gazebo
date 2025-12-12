@@ -261,7 +261,6 @@ describe('PlanTypeOptions', () => {
           <PlanTypeOptions
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
-            newPlan={basicPlan}
           />,
           {
             wrapper: wrapper(),
@@ -289,7 +288,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={basicPlan}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=team'),
@@ -318,7 +316,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={basicPlan}
             />,
             {
               wrapper: wrapper(),
@@ -332,11 +329,11 @@ describe('PlanTypeOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              teamPlanYear
+              teamPlanMonth
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
           )
         })
 
@@ -351,7 +348,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={basicPlan}
             />,
             {
               wrapper: wrapper(),
@@ -383,7 +379,6 @@ describe('PlanTypeOptions', () => {
           <PlanTypeOptions
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
-            newPlan={sentryPlanYear}
           />,
           {
             wrapper: wrapper(),
@@ -411,7 +406,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={sentryPlanYear}
             />,
             {
               wrapper: wrapper(),
@@ -425,11 +419,11 @@ describe('PlanTypeOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              teamPlanYear
+              teamPlanMonth
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
           )
         })
 
@@ -444,7 +438,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={sentryPlanYear}
             />,
             {
               wrapper: wrapper(),
@@ -476,7 +469,6 @@ describe('PlanTypeOptions', () => {
           <PlanTypeOptions
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
-            newPlan={teamPlanYear}
           />,
           {
             wrapper: wrapper(),
@@ -504,7 +496,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={teamPlanYear}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=pro'),
@@ -533,7 +524,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={teamPlanYear}
             />,
             {
               wrapper: wrapper(),
@@ -547,11 +537,11 @@ describe('PlanTypeOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              teamPlanYear
+              teamPlanMonth
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
           )
         })
 
@@ -566,7 +556,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={teamPlanYear}
             />,
             {
               wrapper: wrapper(),
@@ -598,7 +587,6 @@ describe('PlanTypeOptions', () => {
           <PlanTypeOptions
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
-            newPlan={trialPlan}
           />,
           {
             wrapper: wrapper(),
@@ -626,7 +614,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={trialPlan}
             />,
             {
               wrapper: wrapper(),
@@ -640,11 +627,11 @@ describe('PlanTypeOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              teamPlanYear
+              teamPlanMonth
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
           )
         })
 
@@ -659,7 +646,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={trialPlan}
             />,
             {
               wrapper: wrapper(),
@@ -693,7 +679,6 @@ describe('PlanTypeOptions', () => {
           <PlanTypeOptions
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
-            newPlan={basicPlan}
           />,
           {
             wrapper: wrapper(),
@@ -721,7 +706,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={basicPlan}
             />,
             {
               wrapper: wrapper(),
@@ -735,11 +719,11 @@ describe('PlanTypeOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              teamPlanYear
+              teamPlanMonth
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
           )
         })
 
@@ -754,7 +738,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={basicPlan}
             />,
             {
               wrapper: wrapper(),
@@ -786,7 +769,6 @@ describe('PlanTypeOptions', () => {
           <PlanTypeOptions
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
-            newPlan={proPlanYear}
           />,
           {
             wrapper: wrapper(),
@@ -814,7 +796,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={proPlanYear}
             />,
             {
               wrapper: wrapper(),
@@ -828,11 +809,11 @@ describe('PlanTypeOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              teamPlanYear
+              teamPlanMonth
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
           )
         })
 
@@ -847,7 +828,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={proPlanYear}
             />,
             {
               wrapper: wrapper(),
@@ -879,7 +859,6 @@ describe('PlanTypeOptions', () => {
           <PlanTypeOptions
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
-            newPlan={teamPlanYear}
           />,
           {
             wrapper: wrapper(),
@@ -907,7 +886,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={teamPlanYear}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=team'),
@@ -936,7 +914,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={teamPlanYear}
             />,
             {
               wrapper: wrapper(),
@@ -950,11 +927,11 @@ describe('PlanTypeOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              teamPlanYear
+              teamPlanMonth
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
           )
         })
 
@@ -969,7 +946,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={teamPlanYear}
             />,
             {
               wrapper: wrapper(),
@@ -1001,7 +977,6 @@ describe('PlanTypeOptions', () => {
           <PlanTypeOptions
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
-            newPlan={trialPlan}
           />,
           {
             wrapper: wrapper(),
@@ -1029,7 +1004,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={trialPlan}
             />,
             {
               wrapper: wrapper(),
@@ -1043,11 +1017,11 @@ describe('PlanTypeOptions', () => {
           await waitFor(() =>
             expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
-              teamPlanYear
+              teamPlanMonth
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
           )
         })
 
@@ -1062,7 +1036,6 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={trialPlan}
             />,
             {
               wrapper: wrapper(),
@@ -1094,7 +1067,6 @@ describe('PlanTypeOptions', () => {
         <PlanTypeOptions
           setFormValue={mockSetFormValue}
           setSelectedPlan={mockSetSelectedPlan}
-          newPlan={teamPlanMonth}
         />,
         {
           wrapper: wrapper(),

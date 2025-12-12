@@ -75,6 +75,17 @@ const proPlanYear = {
   isSentryPlan: false,
 }
 
+const proPlanMonth = {
+  value: Plans.USERS_PR_INAPPM,
+  baseUnitPrice: 12,
+  benefits: ['asdf'],
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Pro',
+  monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
+}
+
 const mockAccountDetailsBasic = {
   plan: basicPlan,
   activatedUserCount: 1,
@@ -229,6 +240,7 @@ describe('TeamPlanController', () => {
                 teamPlanMonth,
                 teamPlanYear,
                 proPlanYear,
+                proPlanMonth,
               ],
             },
           },
@@ -265,12 +277,12 @@ describe('TeamPlanController', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders annual option button', async () => {
+      it('does not renders annual option button', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
-        expect(optionBtn).toBeInTheDocument()
+        const optionBtn = screen.queryByTestId('radio-annual')
+        expect(optionBtn).not.toBeInTheDocument()
       })
 
       it('renders monthly option button as "selected"', async () => {
@@ -290,20 +302,20 @@ describe('TeamPlanController', () => {
         expect(price).toBeInTheDocument()
       })
 
-      it('has the price for the year', async () => {
+      it('does not have the price for the year', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$120/)
-        expect(price).toBeInTheDocument()
+        const price = screen.queryByText(/\$120/)
+        expect(price).not.toBeInTheDocument()
       })
 
-      it('has the switch to annual button', async () => {
+      it('does not have the switch to annual button', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const switchToAnnualLink = await screen.findByText('switch to annual')
-        expect(switchToAnnualLink).toBeInTheDocument()
+        const switchToAnnualLink = screen.queryByText('switch to annual')
+        expect(switchToAnnualLink).not.toBeInTheDocument()
       })
     })
 
@@ -356,9 +368,9 @@ describe('TeamPlanController', () => {
           await user.click(button)
 
           expect(setSelectedPlan).toHaveBeenCalledWith(
-            expect.objectContaining({ value: Plans.USERS_PR_INAPPY })
+            expect.objectContaining({ value: Plans.USERS_PR_INAPPM })
           )
-          expect(setFormValue).toHaveBeenCalledWith('newPlan', proPlanYear, {
+          expect(setFormValue).toHaveBeenCalledWith('newPlan', proPlanMonth, {
             shouldValidate: true,
           })
         })
@@ -383,29 +395,20 @@ describe('TeamPlanController', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders annual option button', async () => {
+      it('does not render annual option button', async () => {
         setup({ planValue: Plans.USERS_TEAMY, monthlyPlan: false })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
-        expect(optionBtn).toBeInTheDocument()
+        const optionBtn = screen.queryByTestId('radio-annual')
+        expect(optionBtn).not.toBeInTheDocument()
       })
 
-      it('renders annual option button as "selected"', async () => {
+      it('does not have the price for the year', async () => {
         setup({ planValue: Plans.USERS_TEAMY, monthlyPlan: false })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
-        expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toBeChecked()
-      })
-
-      it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_TEAMY, monthlyPlan: false })
-        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
-
-        const price = await screen.findByText(/\$60/)
-        expect(price).toBeInTheDocument()
+        const price = screen.queryByText(/\$60/)
+        expect(price).not.toBeInTheDocument()
       })
     })
   })

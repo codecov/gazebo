@@ -133,7 +133,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
           <PlanTypeOptions
             setFormValue={setFormValue}
             setSelectedPlan={setSelectedPlan}
-            newPlan={newPlan}
           />
         </Card.Content>
         <hr />

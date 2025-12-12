@@ -48,13 +48,10 @@ const TeamPlanCard: React.FC = () => {
           <p className="text-xs font-semibold">Pricing</p>
           <div>
             <p className="font-semibold">
-              <span className="text-2xl">${teamPlanYear?.baseUnitPrice}</span>{' '}
+              <span className="text-2xl">${teamPlanMonth?.baseUnitPrice}</span>{' '}
               per user/month
             </p>
-            <p className="text-ds-gray-senary">
-              billed annually, or ${teamPlanMonth?.baseUnitPrice} per user
-              billing monthly
-            </p>
+            <p className="text-ds-gray-senary">billed monthly</p>
           </div>
         </div>
       </div>

@@ -5,7 +5,6 @@ import { AccountDetailsSchema } from 'services/account/useAccountDetails'
 import { IndividualPlan } from 'services/account/useAvailablePlans'
 import { Plan, TrialStatus, TrialStatuses } from 'services/account/usePlanData'
 import {
-  BillingRate,
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
@@ -215,26 +214,21 @@ export const getDefaultValuesUpgradeForm = ({
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
-  const { proPlanYear } = findProPlans({ plans })
-  const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
-  const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
+  const { proPlanMonth } = findProPlans({ plans })
+  const { sentryPlanMonth } = findSentryPlans({ plans })
+  const { teamPlanMonth } = findTeamPlans({ plans })
 
   const isSentryUpgrade = canApplySentryUpgrade({
     isEnterprisePlan: plan?.isEnterprisePlan,
     plans,
   })
 
-  const isMonthlyPlan = plan?.billingRate === BillingRate.MONTHLY
-
-  const isPaidPlan = !!plan?.billingRate // If the plan has a billing rate, it's a paid plan
-
-  let newPlan = proPlanYear
-  if (isSentryUpgrade && !plan?.isSentryPlan) {
-    newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
+  // Ensure we default to monthly plan regardless of current billing cycle
+  let newPlan = proPlanMonth
+  if ((isSentryUpgrade && !plan?.isSentryPlan) || selectedPlan?.isSentryPlan) {
+    newPlan = sentryPlanMonth
   } else if (plan?.isTeamPlan || selectedPlan?.isTeamPlan) {
-    newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
-  } else if (isPaidPlan) {
-    newPlan = plan
+    newPlan = teamPlanMonth
   }
 
   const seats = extractSeats({

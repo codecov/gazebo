@@ -23,7 +23,6 @@ interface Errors {
 
 interface PlanControllerProps {
   seats: number
-  newPlan?: IndividualPlan
   register: UseFormRegister<UpgradeFormFields>
   setFormValue: UseFormSetValue<UpgradeFormFields>
   setSelectedPlan: (plan?: IndividualPlan) => void
@@ -31,7 +30,6 @@ interface PlanControllerProps {
 }
 
 const PlanController: React.FC<PlanControllerProps> = ({
-  newPlan,
   seats,
   setFormValue,
   setSelectedPlan,
@@ -42,7 +40,7 @@ const PlanController: React.FC<PlanControllerProps> = ({
     <>
       <Card.Content>
         <div className="flex flex-col gap-2">
-          <BillingOptions newPlan={newPlan} setFormValue={setFormValue} />
+          <BillingOptions />
         </div>
       </Card.Content>
       <hr />
@@ -67,11 +65,7 @@ const PlanController: React.FC<PlanControllerProps> = ({
         </div>
       </Card.Content>
       <Card.Content>
-        <PriceCallout
-          seats={seats}
-          newPlan={newPlan}
-          setFormValue={setFormValue}
-        />
+        <PriceCallout seats={seats} />
         {errors?.seats?.message ? (
           <ErrorBanner
             errors={errors}

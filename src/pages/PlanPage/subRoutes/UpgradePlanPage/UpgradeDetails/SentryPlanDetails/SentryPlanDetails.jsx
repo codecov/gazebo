@@ -14,7 +14,7 @@ function SentryPlanDetails() {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: planData } = usePlanData({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { sentryPlanYear } = findSentryPlans({ plans })
+  const { sentryPlanMonth } = findSentryPlans({ plans })
 
   const cancelAtPeriodEnd =
     accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
@@ -22,7 +22,7 @@ function SentryPlanDetails() {
   return (
     <div className="h-fit border md:w-[280px]">
       <h3 className="p-4 font-semibold">
-        {sentryPlanYear?.marketingName} plan
+        {sentryPlanMonth?.marketingName} plan
       </h3>
       <hr />
       <div className="flex flex-col gap-6 p-4">
@@ -32,8 +32,8 @@ function SentryPlanDetails() {
             <span className="text-2xl">${SENTRY_PRICE}</span>/month
           </p>
           <p className="text-xs text-ds-gray-senary">
-            over 5 users is ${sentryPlanYear?.baseUnitPrice} per user/month,
-            billed annually
+            over 5 users is ${sentryPlanMonth?.baseUnitPrice} per user/month,
+            billed monthly
           </p>
         </div>
         <div>
@@ -41,7 +41,7 @@ function SentryPlanDetails() {
           <BenefitList
             iconName="check"
             iconColor="text-ds-pink-default"
-            benefits={sentryPlanYear?.benefits}
+            benefits={sentryPlanMonth?.benefits}
           />
         </div>
         {/* TODO_UPGRADE_FORM: Note that there never was schedules shown here like it is in the pro plan details page. This
