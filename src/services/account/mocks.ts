@@ -220,7 +220,6 @@ export const accountDetailsParsedObj = {
     cancelAtPeriodEnd: false,
     currentPeriodEnd: 1636479475,
     customer: {
-      id: 'blahblah',
       discount: {
         name: 'yep',
         percentOff: 25,

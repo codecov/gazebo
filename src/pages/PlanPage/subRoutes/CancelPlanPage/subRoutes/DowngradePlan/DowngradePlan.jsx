@@ -69,7 +69,6 @@ function DowngradePlan() {
           </p>
           {/* This is a weird component that is both a button and a modal, hence why it's imported this way. Defs not a good practice but I feel the overhaul of this component will be for another time */}
           <CancelButton
-            customerId={accountDetails?.subscriptionDetail?.customer?.id}
             isFreePlan={planData?.plan?.isFreePlan}
             upComingCancellation={
               accountDetails?.subscriptionDetail?.cancelAtPeriodEnd

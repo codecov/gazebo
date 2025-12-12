@@ -7,7 +7,6 @@ import CancelButton from './CancelButton'
 
 const mocks = vi.hoisted(() => ({
   useParams: vi.fn(),
-  useBarecancel: vi.fn(),
   useCancelPlan: vi.fn(),
   useAddNotification: vi.fn(),
 }))
@@ -17,14 +16,6 @@ vi.mock('react-router-dom', async () => {
   return {
     ...actual, // import and retain the original functionalities
     useParams: mocks.useParams,
-  }
-})
-
-vi.mock('./useBarecancel', async () => {
-  const actual = await vi.importActual('./useBarecancel')
-  return {
-    ...actual,
-    useBarecancel: mocks.useBarecancel,
   }
 })
 
@@ -72,7 +63,7 @@ const wrapper = ({ children }) => (
 )
 
 describe('CancelButton', () => {
-  function setup(baremetricsBlocked = false) {
+  function setup() {
     const user = userEvent.setup()
     const mutate = vi.fn()
     const addNotification = vi.fn()
@@ -84,7 +75,6 @@ describe('CancelButton', () => {
       mutate,
       onError: vi.fn(),
     })
-    mocks.useBarecancel.mockReturnValue({ baremetricsBlocked })
 
     return { mutate, addNotification, user }
   }
@@ -95,9 +85,9 @@ describe('CancelButton', () => {
     it('renders button text', () => {
       render(
         <CancelButton
-          customerId="cus_1n4o328hn4"
+          isFreePlan={false}
           planCost="users-pr-inappy"
-          upComingCancelation={false}
+          upComingCancellation={false}
           currentPeriodEnd={1675361466}
         />,
         { wrapper }
@@ -114,9 +104,9 @@ describe('CancelButton', () => {
       const { user } = setup()
       render(
         <CancelButton
-          customerId="cus_1n4o328hn4"
+          isFreePlan={false}
           planCost="users-pr-inappy"
-          upComingCancelation={false}
+          upComingCancellation={false}
           currentPeriodEnd={1675361466}
         />,
         { wrapper }
@@ -132,9 +122,9 @@ describe('CancelButton', () => {
         const { user } = setup()
         render(
           <CancelButton
-            customerId="cus_1n4o328hn4"
+            isFreePlan={false}
             planCost="users-pr-inappy"
-            upComingCancelation={false}
+            upComingCancellation={false}
             currentPeriodEnd={1675361466}
           />,
           { wrapper }
@@ -154,9 +144,9 @@ describe('CancelButton', () => {
         const { user } = setup()
         render(
           <CancelButton
-            customerId="cus_1n4o328hn4"
+            isFreePlan={false}
             planCost="users-pr-inappy"
-            upComingCancelation={false}
+            upComingCancellation={false}
             currentPeriodEnd={1675361466}
           />,
           { wrapper }
@@ -170,29 +160,6 @@ describe('CancelButton', () => {
         ).not.toBeInTheDocument()
       })
     })
-
-    describe('when unmounted', () => {
-      it('removes the baremetrics script', async () => {
-        const { user } = setup()
-        const { unmount } = render(
-          <CancelButton
-            customerId="cus_1n4o328hn4"
-            planCost="users-pr-inappy"
-            upComingCancelation={false}
-            currentPeriodEnd={1675361466}
-          />,
-          { wrapper }
-        )
-
-        await user.click(screen.getByTestId('downgrade-button'))
-
-        unmount()
-
-        expect(
-          screen.queryByTestId('baremetrics-script')
-        ).not.toBeInTheDocument()
-      })
-    })
   })
 
   describe('when clicking submit', () => {
@@ -200,9 +167,9 @@ describe('CancelButton', () => {
       const { mutate, user } = setup(true)
       render(
         <CancelButton
-          customerId="cus_1n4o328hn4"
+          isFreePlan={false}
           planCost="users-pr-inappy"
-          upComingCancelation={false}
+          upComingCancellation={false}
           currentPeriodEnd={1675361466}
         />,
         { wrapper }
@@ -219,9 +186,9 @@ describe('CancelButton', () => {
         const { mutate, addNotification, user } = setup(true)
         render(
           <CancelButton
-            customerId="cus_1n4o328hn4"
+            isFreePlan={false}
             planCost="users-pr-inappy"
-            upComingCancelation={false}
+            upComingCancellation={false}
             currentPeriodEnd={1675361466}
           />,
           { wrapper }
@@ -244,9 +211,9 @@ describe('CancelButton', () => {
         const { mutate, user } = setup(true)
         render(
           <CancelButton
-            customerId="cus_1n4o328hn4"
+            isFreePlan={false}
             planCost="users-pr-inappy"
-            upComingCancelation={false}
+            upComingCancellation={false}
             currentPeriodEnd={1675361466}
           />,
           { wrapper }

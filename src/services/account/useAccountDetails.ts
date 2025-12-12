@@ -95,7 +95,6 @@ export const SubscriptionDetailSchema = z
       .object({
         address: AddressSchema.nullable(),
         email: z.string().nullable(),
-        id: z.string(),
         discount: z
           .object({
             name: z.string().nullable(),
