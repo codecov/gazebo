@@ -225,11 +225,17 @@ export const getDefaultValuesUpgradeForm = ({
 
   // Ensure we default to monthly plan regardless of current billing cycle
   let newPlan = proPlanMonth
-  if ((isSentryUpgrade && !plan?.isSentryPlan) || selectedPlan?.isSentryPlan) {
+  if (
+    (isSentryUpgrade && !plan?.isSentryPlan) ||
+    plan?.isSentryPlan ||
+    selectedPlan?.isSentryPlan
+  ) {
     newPlan = sentryPlanMonth
   } else if (plan?.isTeamPlan || selectedPlan?.isTeamPlan) {
     newPlan = teamPlanMonth
   }
+  // Fallback order: preferred monthly plan -> selectedPlan -> plan
+  newPlan = newPlan ?? selectedPlan ?? plan ?? undefined
 
   const seats = extractSeats({
     // free seats are included in planUserCount but we want to use the paid number

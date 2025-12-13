@@ -1113,44 +1113,6 @@ describe('UpgradeForm', () => {
             })
           )
         })
-
-        // it('renders success notification when upgrading seats with yearly plan', async () => {
-        //   const { patchRequest, user } = setup({
-        //     successfulPatchRequest: true,
-        //     planValue: Plans.USERS_PR_INAPPM,
-        //   })
-        //   render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        //   const input = await screen.findByRole('spinbutton')
-        //   await user.type(input, '{backspace}{backspace}{backspace}')
-        //   await user.type(input, '20')
-
-        //   const optionBtn = await screen.findByTestId('radio-annual')
-        //   await user.click(optionBtn)
-
-        //   const update = await screen.findByRole('button', {
-        //     name: /Update/,
-        //   })
-        //   await user.click(update)
-
-        //   const confirmCheckoutCheckbox = await screen.findByTestId(
-        //     'upgrade-confirmation-checkbox'
-        //   )
-        //   await user.click(confirmCheckoutCheckbox)
-
-        //   const confirmCheckoutButton =
-        //     await screen.findByTestId('submit-upgrade')
-        //   await user.click(confirmCheckoutButton)
-
-        //   await waitFor(() =>
-        //     expect(patchRequest).toHaveBeenCalledWith({
-        //       plan: {
-        //         quantity: 20,
-        //         value: Plans.USERS_PR_INAPPY,
-        //       },
-        //     })
-        //   )
-        // })
       })
 
       describe('when the mutation is unsuccessful', () => {
@@ -1773,43 +1735,6 @@ describe('UpgradeForm', () => {
       })
 
       describe('when the mutation is successful', () => {
-        // it('renders success notification when upgrading seats with an annual plan', async () => {
-        //   const { patchRequest, user } = setup({
-        //     successfulPatchRequest: true,
-        //     hasSentryPlans: true,
-        //     planValue: Plans.USERS_SENTRYY,
-        //     monthlyPlan: false,
-        //   })
-        //   render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        //   const input = await screen.findByRole('spinbutton')
-        //   await user.type(input, '{backspace}{backspace}{backspace}')
-        //   await user.type(input, '8')
-
-        //   const update = await screen.findByRole('button', {
-        //     name: /Update/,
-        //   })
-        //   await user.click(update)
-
-        //   const confirmCheckoutCheckbox = await screen.findByTestId(
-        //     'upgrade-confirmation-checkbox'
-        //   )
-        //   await user.click(confirmCheckoutCheckbox)
-
-        //   const confirmCheckoutButton =
-        //     await screen.findByTestId('submit-upgrade')
-        //   await user.click(confirmCheckoutButton)
-
-        //   await waitFor(() =>
-        //     expect(patchRequest).toHaveBeenCalledWith({
-        //       plan: {
-        //         quantity: 8,
-        //         value: Plans.USERS_SENTRYY,
-        //       },
-        //     })
-        //   )
-        // })
-
         it('renders success notification when upgrading seats with a monthly plan', async () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
@@ -2151,46 +2076,6 @@ describe('UpgradeForm', () => {
       })
 
       describe('when the mutation is successful', () => {
-        // it('renders success notification when upgrading seats with an annual plan', async () => {
-        //   const { patchRequest, user } = setup({
-        //     successfulPatchRequest: true,
-        //     hasTeamPlans: true,
-        //     planValue: Plans.USERS_TEAMY,
-        //     monthlyPlan: false,
-        //   })
-        //   render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        //   const input = await screen.findByRole('spinbutton')
-        //   await user.type(input, '{backspace}{backspace}{backspace}')
-        //   await user.type(input, '8')
-
-        //   const teamOption = await screen.findByTestId('radio-team')
-        //   await user.click(teamOption)
-
-        //   const update = await screen.findByRole('button', {
-        //     name: /Update/,
-        //   })
-        //   await user.click(update)
-
-        //   const confirmCheckoutCheckbox = await screen.findByTestId(
-        //     'upgrade-confirmation-checkbox'
-        //   )
-        //   await user.click(confirmCheckoutCheckbox)
-
-        //   const confirmCheckoutButton =
-        //     await screen.findByTestId('submit-upgrade')
-        //   await user.click(confirmCheckoutButton)
-
-        //   await waitFor(() =>
-        //     expect(patchRequest).toHaveBeenCalledWith({
-        //       plan: {
-        //         quantity: 8,
-        //         value: Plans.USERS_TEAMY,
-        //       },
-        //     })
-        //   )
-        // })
-
         it('renders success notification when upgrading seats with a monthly plan', async () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
