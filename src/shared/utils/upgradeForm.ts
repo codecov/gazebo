@@ -236,9 +236,13 @@ export const getDefaultValuesUpgradeForm = ({
     newPlan = teamPlanMonth
   }
   // Fallback order: preferred monthly plan -> selectedPlan if monthly -> plan if monthly -> undefined
-  const fallbackPlan = newPlan ?? selectedPlan ?? plan ?? undefined
   newPlan =
-    fallbackPlan?.billingRate === BillingRate.MONTHLY ? fallbackPlan : undefined
+    newPlan ??
+    (selectedPlan?.billingRate === BillingRate.MONTHLY
+      ? selectedPlan
+      : undefined) ??
+    (plan?.billingRate === BillingRate.MONTHLY ? plan : undefined) ??
+    undefined
 
   const seats = extractSeats({
     // free seats are included in planUserCount but we want to use the paid number
