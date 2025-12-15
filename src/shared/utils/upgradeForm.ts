@@ -5,6 +5,7 @@ import { AccountDetailsSchema } from 'services/account/useAccountDetails'
 import { IndividualPlan } from 'services/account/useAvailablePlans'
 import { Plan, TrialStatus, TrialStatuses } from 'services/account/usePlanData'
 import {
+  BillingRate,
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
@@ -234,8 +235,10 @@ export const getDefaultValuesUpgradeForm = ({
   } else if (plan?.isTeamPlan || selectedPlan?.isTeamPlan) {
     newPlan = teamPlanMonth
   }
-  // Fallback order: preferred monthly plan -> selectedPlan -> plan
-  newPlan = newPlan ?? selectedPlan ?? plan ?? undefined
+  // Fallback order: preferred monthly plan -> selectedPlan if monthly -> plan if monthly -> undefined
+  const fallbackPlan = newPlan ?? selectedPlan ?? plan ?? undefined
+  newPlan =
+    fallbackPlan?.billingRate === BillingRate.MONTHLY ? fallbackPlan : undefined
 
   const seats = extractSeats({
     // free seats are included in planUserCount but we want to use the paid number
