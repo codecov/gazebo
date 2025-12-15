@@ -19,23 +19,23 @@ import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 
 import { TierName } from '../constants'
-import { usePlanParams } from '../hooks/usePlanParams'
 import { UpgradeFormFields } from '../UpgradeForm'
 
 interface PlanTypeOptionsProps {
   setFormValue: UseFormSetValue<UpgradeFormFields>
   setSelectedPlan: (x?: IndividualPlan) => void
+  selectedPlan?: IndividualPlan
 }
 
 const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   setFormValue,
   setSelectedPlan,
+  selectedPlan,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ provider, owner })
   const { proPlanMonth } = findProPlans({ plans })
-  const planParam = usePlanParams()
 
   const { sentryPlanMonth } = findSentryPlans({ plans })
   const { teamPlanMonth } = findTeamPlans({
@@ -49,12 +49,13 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   })
   const monthlyProPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
 
-  let planOption = null
-  if (hasTeamPlans && planParam === TierNames.TEAM) {
-    planOption = TierName.TEAM
-  } else {
-    planOption = TierName.PRO
-  }
+  // Use selectedPlan to determine which option is selected
+  // This keeps it in sync with UpgradePlanPage's logic
+  const planOption = hasTeamPlans
+    ? selectedPlan?.isTeamPlan
+      ? TierName.TEAM
+      : TierName.PRO
+    : TierName.PRO
 
   const { updateParams } = useLocationParams({ plan: planOption })
 
