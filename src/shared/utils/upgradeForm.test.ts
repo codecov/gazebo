@@ -9,6 +9,7 @@ import {
   calculatePriceProPlan,
   calculatePriceTeamPlan,
   calculateSentryNonBundledCost,
+  determineDefaultPlan,
   extractSeats,
   getDefaultValuesUpgradeForm,
   getSchema,
@@ -98,11 +99,276 @@ describe('calculatePriceTeamPlan', () => {
   })
 })
 
+describe('determineDefaultPlan', () => {
+  const proPlanMonth = {
+    value: Plans.USERS_PR_INAPPM,
+    billingRate: BillingRate.MONTHLY,
+  } as Plan
+  const sentryPlanMonth = {
+    value: Plans.USERS_SENTRYM,
+    billingRate: BillingRate.MONTHLY,
+  } as Plan
+  const teamPlanMonth = {
+    value: Plans.USERS_TEAMM,
+    billingRate: BillingRate.MONTHLY,
+  } as Plan
+
+  describe('when selectedPlan is provided', () => {
+    it('returns teamPlanMonth if selectedPlan is Team', () => {
+      const result = determineDefaultPlan({
+        selectedPlan: {
+          value: Plans.USERS_TEAMY,
+          isTeamPlan: true,
+        } as Plan,
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toEqual(teamPlanMonth)
+    })
+
+    it('returns sentryPlanMonth if selectedPlan is Sentry', () => {
+      const result = determineDefaultPlan({
+        selectedPlan: {
+          value: Plans.USERS_SENTRYY,
+          isSentryPlan: true,
+        } as Plan,
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toEqual(sentryPlanMonth)
+    })
+
+    it('returns selectedPlan if it is Pro monthly', () => {
+      const selectedProPlan = {
+        value: Plans.USERS_PR_INAPPM,
+        billingRate: BillingRate.MONTHLY,
+      } as Plan
+
+      const result = determineDefaultPlan({
+        selectedPlan: selectedProPlan,
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toEqual(selectedProPlan)
+    })
+
+    it('does not use selectedPlan if it is annual', () => {
+      const result = determineDefaultPlan({
+        selectedPlan: {
+          value: Plans.USERS_PR_INAPPY,
+          billingRate: BillingRate.ANNUALLY,
+        } as Plan,
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toEqual(proPlanMonth)
+    })
+  })
+
+  describe('when currentPlan is provided', () => {
+    it('returns teamPlanMonth if currentPlan is Team', () => {
+      const result = determineDefaultPlan({
+        currentPlan: {
+          value: Plans.USERS_TEAMY,
+          isTeamPlan: true,
+        } as Plan,
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toEqual(teamPlanMonth)
+    })
+
+    it('returns sentryPlanMonth if currentPlan is Sentry', () => {
+      const result = determineDefaultPlan({
+        currentPlan: {
+          value: Plans.USERS_SENTRYY,
+          isSentryPlan: true,
+        } as Plan,
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toEqual(sentryPlanMonth)
+    })
+  })
+
+  describe('when isSentryUpgrade is true', () => {
+    it('returns sentryPlanMonth if user is not on Sentry plan', () => {
+      const result = determineDefaultPlan({
+        currentPlan: {
+          value: Plans.USERS_PR_INAPPM,
+        } as Plan,
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: true,
+      })
+
+      expect(result).toEqual(sentryPlanMonth)
+    })
+
+    it('does not return sentryPlanMonth if user is already on Sentry plan', () => {
+      const result = determineDefaultPlan({
+        currentPlan: {
+          value: Plans.USERS_SENTRYY,
+          isSentryPlan: true,
+        } as Plan,
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: true,
+      })
+
+      expect(result).toEqual(sentryPlanMonth)
+    })
+  })
+
+  describe('priority order', () => {
+    it('prioritizes selectedPlan Team over currentPlan Team', () => {
+      const result = determineDefaultPlan({
+        selectedPlan: {
+          value: Plans.USERS_TEAMY,
+          isTeamPlan: true,
+        } as Plan,
+        currentPlan: {
+          value: Plans.USERS_TEAMY,
+          isTeamPlan: true,
+        } as Plan,
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toEqual(teamPlanMonth)
+    })
+
+    it('prioritizes selectedPlan Sentry over currentPlan Sentry', () => {
+      const result = determineDefaultPlan({
+        selectedPlan: {
+          value: Plans.USERS_SENTRYY,
+          isSentryPlan: true,
+        } as Plan,
+        currentPlan: {
+          value: Plans.USERS_SENTRYY,
+          isSentryPlan: true,
+        } as Plan,
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toEqual(sentryPlanMonth)
+    })
+
+    it('prioritizes selectedPlan over isSentryUpgrade', () => {
+      const result = determineDefaultPlan({
+        selectedPlan: {
+          value: Plans.USERS_TEAMY,
+          isTeamPlan: true,
+        } as Plan,
+        currentPlan: {
+          value: Plans.USERS_PR_INAPPM,
+        } as Plan,
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: true,
+      })
+
+      expect(result).toEqual(teamPlanMonth)
+    })
+  })
+
+  describe('fallback logic', () => {
+    it('falls back to selectedPlan if monthly when plans are undefined', () => {
+      const selectedProPlan = {
+        value: Plans.USERS_PR_INAPPM,
+        billingRate: BillingRate.MONTHLY,
+      } as Plan
+
+      const result = determineDefaultPlan({
+        selectedPlan: selectedProPlan,
+        plans: [],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toEqual(selectedProPlan)
+    })
+
+    it('falls back to currentPlan if monthly when plans and selectedPlan are undefined', () => {
+      const currentProPlan = {
+        value: Plans.USERS_PR_INAPPM,
+        billingRate: BillingRate.MONTHLY,
+      } as Plan
+
+      const result = determineDefaultPlan({
+        currentPlan: currentProPlan,
+        plans: [],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toEqual(currentProPlan)
+    })
+
+    it('does not fall back to selectedPlan if annual', () => {
+      const result = determineDefaultPlan({
+        selectedPlan: {
+          value: Plans.USERS_PR_INAPPY,
+          billingRate: BillingRate.ANNUALLY,
+        } as Plan,
+        plans: [],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toBeUndefined()
+    })
+
+    it('does not fall back to currentPlan if annual', () => {
+      const result = determineDefaultPlan({
+        currentPlan: {
+          value: Plans.USERS_PR_INAPPY,
+          billingRate: BillingRate.ANNUALLY,
+        } as Plan,
+        plans: [],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toBeUndefined()
+    })
+
+    it('returns undefined if no plans available and no monthly fallbacks', () => {
+      const result = determineDefaultPlan({
+        plans: [],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe('default behavior', () => {
+    it('returns proPlanMonth when no conditions match', () => {
+      const result = determineDefaultPlan({
+        plans: [proPlanMonth, sentryPlanMonth, teamPlanMonth],
+        isSentryUpgrade: false,
+      })
+
+      expect(result).toEqual(proPlanMonth)
+    })
+  })
+})
+
 describe('getDefaultValuesUpgradeForm', () => {
   const accountDetails = {} as z.infer<typeof AccountDetailsSchema>
-  const proPlanMonth = { value: Plans.USERS_PR_INAPPM } as Plan
-  const sentryPlanMonth = { value: Plans.USERS_SENTRYM } as Plan
-  const teamPlanMonth = { value: Plans.USERS_TEAMM } as Plan
+  const proPlanMonth = {
+    value: Plans.USERS_PR_INAPPM,
+    billingRate: BillingRate.MONTHLY,
+  } as Plan
+  const sentryPlanMonth = {
+    value: Plans.USERS_SENTRYM,
+    billingRate: BillingRate.MONTHLY,
+  } as Plan
+  const teamPlanMonth = {
+    value: Plans.USERS_TEAMM,
+    billingRate: BillingRate.MONTHLY,
+  } as Plan
 
   describe('when current plan is basic', () => {
     it('returns pro month plan', () => {
@@ -136,7 +402,10 @@ describe('getDefaultValuesUpgradeForm', () => {
       })
 
       expect(data).toStrictEqual({
-        newPlan: { value: Plans.USERS_SENTRYM },
+        newPlan: {
+          value: Plans.USERS_SENTRYM,
+          billingRate: BillingRate.MONTHLY,
+        },
         seats: 5,
       })
     })
@@ -157,7 +426,7 @@ describe('getDefaultValuesUpgradeForm', () => {
       })
 
       expect(data).toStrictEqual({
-        newPlan: { value: Plans.USERS_TEAMM },
+        newPlan: { value: Plans.USERS_TEAMM, billingRate: BillingRate.MONTHLY },
         seats: 2,
       })
     })
@@ -177,7 +446,7 @@ describe('getDefaultValuesUpgradeForm', () => {
       })
 
       expect(data).toStrictEqual({
-        newPlan: { value: Plans.USERS_TEAMM },
+        newPlan: { value: Plans.USERS_TEAMM, billingRate: BillingRate.MONTHLY },
         seats: 3,
       })
     })
@@ -618,7 +887,10 @@ describe('shouldRenderCancelLink', () => {
   describe('user intended plan is Team', () => {
     it('sets new plan to team monthly', () => {
       const accountDetails = {} as z.infer<typeof AccountDetailsSchema>
-      const teamPlanMonth = { value: Plans.USERS_TEAMM } as Plan
+      const teamPlanMonth = {
+        value: Plans.USERS_TEAMM,
+        billingRate: BillingRate.MONTHLY,
+      } as Plan
       const plans = [
         teamPlanMonth,
         { value: Plans.USERS_TEAMY } as Plan,
@@ -628,7 +900,11 @@ describe('shouldRenderCancelLink', () => {
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
         plans,
-        selectedPlan: { value: Plans.USERS_TEAMY, isTeamPlan: true } as Plan,
+        selectedPlan: {
+          value: Plans.USERS_TEAMY,
+          isTeamPlan: true,
+          billingRate: BillingRate.ANNUALLY,
+        } as Plan,
         plan: {
           billingRate: BillingRate.ANNUALLY,
           value: Plans.USERS_TEAMY,

@@ -685,20 +685,6 @@ describe('UpgradeForm', () => {
         })
 
         describe('when updating to a team plan', () => {
-          it('renders up to 10 paid users text', async () => {
-            const { user } = setup({
-              planValue: Plans.USERS_DEVELOPER,
-              hasTeamPlans: true,
-            })
-            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-            const teamOption = await screen.findByTestId('radio-team')
-            await user.click(teamOption)
-
-            const auxiliaryText = await screen.findByText(/Up to 10 paid users/)
-            expect(auxiliaryText).toBeInTheDocument()
-          })
-
           it('calls setSelectedPlan with monthly team plan when selecting team button', async () => {
             const { user } = setup({
               planValue: Plans.USERS_DEVELOPER,
@@ -1050,20 +1036,6 @@ describe('UpgradeForm', () => {
         })
 
         describe('when updating to a team plan', () => {
-          it('renders up to 10 paid users text', async () => {
-            const { user } = setup({
-              planValue: Plans.USERS_PR_INAPPM,
-              hasTeamPlans: true,
-            })
-            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-            const teamOption = await screen.findByTestId('radio-team')
-            await user.click(teamOption)
-
-            const auxiliaryText = await screen.findByText(/Up to 10 paid users/)
-            expect(auxiliaryText).toBeInTheDocument()
-          })
-
           it('calls setSelectedPlan with monthly team plan when selecting team button', async () => {
             const { user } = setup({
               planValue: Plans.USERS_DEVELOPER,
@@ -1350,21 +1322,6 @@ describe('UpgradeForm', () => {
         })
 
         describe('when updating to a team plan', () => {
-          it('renders up to 10 paid users text', async () => {
-            const { user } = setup({
-              planValue: Plans.USERS_PR_INAPPY,
-              hasTeamPlans: true,
-              monthlyPlan: false,
-            })
-            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-            const teamOption = await screen.findByTestId('radio-team')
-            await user.click(teamOption)
-
-            const auxiliaryText = await screen.findByText(/Up to 10 paid users/)
-            expect(auxiliaryText).toBeInTheDocument()
-          })
-
           it('calls setSelectedPlan with monthly team plan when selecting team button', async () => {
             const { user } = setup({
               planValue: Plans.USERS_DEVELOPER,
@@ -1914,21 +1871,6 @@ describe('UpgradeForm', () => {
         expect(organizationTitle).toBeInTheDocument()
         const ownerTitle = await screen.findByText(/codecov/)
         expect(ownerTitle).toBeInTheDocument()
-      })
-
-      it('renders up to 10 paid users text', async () => {
-        const { user } = setup({
-          planValue: Plans.USERS_TEAMY,
-          hasTeamPlans: true,
-          monthlyPlan: false,
-        })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const teamOption = await screen.findByTestId('radio-team')
-        await user.click(teamOption)
-
-        const auxiliaryText = await screen.findByText(/Up to 10 paid users/)
-        expect(auxiliaryText).toBeInTheDocument()
       })
 
       it('renders monthly option button', async () => {

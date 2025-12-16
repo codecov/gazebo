@@ -42,7 +42,7 @@ const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
             <TextInput
               data-cy="seats"
               dataMarketing="plan-pricing-seats"
-              {...register('seats')}
+              {...register('seats', { valueAsNumber: true })}
               id="nb-seats"
               size={20}
               type="number"

@@ -44,7 +44,7 @@ const ProPlanController: React.FC<ProPlanControllerProps> = ({
             <TextInput
               data-cy="seats"
               dataMarketing="plan-pricing-seats"
-              {...register('seats')}
+              {...register('seats', { valueAsNumber: true })}
               id="nb-seats"
               size={20}
               type="number"

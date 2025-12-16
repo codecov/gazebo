@@ -11,6 +11,7 @@ import {
   shouldDisplayTeamCard,
   TierNames,
 } from 'shared/utils/billing'
+import { determineDefaultPlan } from 'shared/utils/upgradeForm'
 
 import UpgradeDetails from './UpgradeDetails'
 import UpgradeForm from './UpgradeForm'
@@ -35,17 +36,19 @@ function UpgradePlanPage() {
     plans,
   })
 
-  let defaultPaidMonthlyPlan = null
-  if (
-    (hasTeamPlans && planParam === TierNames.TEAM) ||
-    planData?.plan?.isTeamPlan
-  ) {
-    defaultPaidMonthlyPlan = teamPlanMonth
-  } else if (isSentryUpgrade) {
-    defaultPaidMonthlyPlan = sentryPlanMonth
-  } else {
-    defaultPaidMonthlyPlan = proPlanMonth
+  let paramSelectedPlan = null
+  if (hasTeamPlans && planParam === TierNames.TEAM) {
+    paramSelectedPlan = teamPlanMonth
+  } else if (planParam === TierNames.PRO) {
+    paramSelectedPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
   }
+
+  const defaultPaidMonthlyPlan = determineDefaultPlan({
+    selectedPlan: paramSelectedPlan,
+    currentPlan: planData?.plan,
+    plans,
+    isSentryUpgrade,
+  })
 
   const [selectedPlan, setSelectedPlan] = useState(defaultPaidMonthlyPlan)
 

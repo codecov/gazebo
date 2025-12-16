@@ -199,6 +199,56 @@ export const calculateSentryNonBundledCost = ({
   MIN_SENTRY_SEATS * baseUnitPrice * MONTHS_PER_YEAR -
   SENTRY_PRICE * MONTHS_PER_YEAR
 
+/**
+ * Determines the default plan based on explicit selection or current plan.
+ * Priority: selectedPlan Team/Sentry > Sentry eligibility (selectedPlan Sentry OR currentPlan Sentry OR isSentryUpgrade) > currentPlan Team > selectedPlan Pro monthly
+ */
+export const determineDefaultPlan = ({
+  selectedPlan,
+  currentPlan,
+  plans,
+  isSentryUpgrade,
+}: {
+  selectedPlan?: IndividualPlan | null
+  currentPlan?: Plan | null
+  plans?: IndividualPlan[] | null
+  isSentryUpgrade: boolean
+}): IndividualPlan | undefined => {
+  const { proPlanMonth } = findProPlans({ plans })
+  const { sentryPlanMonth } = findSentryPlans({ plans })
+  const { teamPlanMonth } = findTeamPlans({ plans })
+
+  let plan = proPlanMonth
+
+  if (selectedPlan?.isTeamPlan) {
+    plan = teamPlanMonth
+  } else if (
+    selectedPlan?.isSentryPlan ||
+    currentPlan?.isSentryPlan ||
+    (isSentryUpgrade && !currentPlan?.isSentryPlan)
+  ) {
+    plan = sentryPlanMonth
+  } else if (currentPlan?.isTeamPlan) {
+    plan = teamPlanMonth
+  } else if (selectedPlan && selectedPlan.billingRate === BillingRate.MONTHLY) {
+    // selectedPlan is a Pro plan (already checked it's not Team or Sentry above, and currentPlan is not Team or Sentry)
+    plan = selectedPlan
+  }
+
+  // Fallback order if plans aren't available: preferred monthly plan -> selectedPlan if monthly -> currentPlan if monthly -> undefined
+  plan =
+    plan ??
+    (selectedPlan?.billingRate === BillingRate.MONTHLY
+      ? selectedPlan
+      : undefined) ??
+    (currentPlan?.billingRate === BillingRate.MONTHLY
+      ? currentPlan
+      : undefined) ??
+    undefined
+
+  return plan
+}
+
 export const getDefaultValuesUpgradeForm = ({
   accountDetails,
   plans,
@@ -215,34 +265,17 @@ export const getDefaultValuesUpgradeForm = ({
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
-  const { proPlanMonth } = findProPlans({ plans })
-  const { sentryPlanMonth } = findSentryPlans({ plans })
-  const { teamPlanMonth } = findTeamPlans({ plans })
-
   const isSentryUpgrade = canApplySentryUpgrade({
     isEnterprisePlan: plan?.isEnterprisePlan,
     plans,
   })
 
-  // Ensure we default to monthly plan regardless of current billing cycle
-  let newPlan = proPlanMonth
-  if (
-    (isSentryUpgrade && !plan?.isSentryPlan) ||
-    plan?.isSentryPlan ||
-    selectedPlan?.isSentryPlan
-  ) {
-    newPlan = sentryPlanMonth
-  } else if (plan?.isTeamPlan || selectedPlan?.isTeamPlan) {
-    newPlan = teamPlanMonth
-  }
-  // Fallback order: preferred monthly plan -> selectedPlan if monthly -> plan if monthly -> undefined
-  newPlan =
-    newPlan ??
-    (selectedPlan?.billingRate === BillingRate.MONTHLY
-      ? selectedPlan
-      : undefined) ??
-    (plan?.billingRate === BillingRate.MONTHLY ? plan : undefined) ??
-    undefined
+  const newPlan = determineDefaultPlan({
+    selectedPlan,
+    currentPlan: plan,
+    plans,
+    isSentryUpgrade,
+  })
 
   const seats = extractSeats({
     // free seats are included in planUserCount but we want to use the paid number
