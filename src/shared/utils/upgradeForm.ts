@@ -219,14 +219,12 @@ export const determineDefaultPlan = ({
 
   if (selectedPlan?.isTeamPlan) {
     plan = teamPlanMonth
-  } else if (
-    selectedPlan?.isSentryPlan ||
-    currentPlan?.isSentryPlan ||
-    (isSentryUpgrade && !currentPlan?.isSentryPlan)
-  ) {
+  } else if (selectedPlan?.isSentryPlan || currentPlan?.isSentryPlan) {
     plan = sentryPlanMonth
   } else if (currentPlan?.isTeamPlan) {
     plan = teamPlanMonth
+  } else if (isSentryUpgrade && !currentPlan?.isSentryPlan) {
+    plan = sentryPlanMonth
   } else if (selectedPlan && selectedPlan.billingRate === BillingRate.MONTHLY) {
     // selectedPlan is a Pro plan (already checked it's not Team or Sentry above, and currentPlan is not Team or Sentry)
     plan = selectedPlan

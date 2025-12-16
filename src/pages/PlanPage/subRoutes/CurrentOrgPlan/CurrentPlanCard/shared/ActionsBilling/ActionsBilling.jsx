@@ -52,13 +52,7 @@ function PlansActionsBilling() {
   ) {
     return (
       <div className="flex self-start">
-        <Button
-          to={{
-            pageName: 'upgradeOrgPlan',
-            options: { params: { plan: 'pro' } },
-          }}
-          variant="primary"
-        >
+        <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
           {planData?.plan?.isSentryPlan ? 'Manage plan' : 'Upgrade'}
         </Button>
       </div>
@@ -67,13 +61,7 @@ function PlansActionsBilling() {
 
   return (
     <div className="flex self-start">
-      <Button
-        to={{
-          pageName: 'upgradeOrgPlan',
-          options: { params: { plan: 'pro' } },
-        }}
-        variant="primary"
-      >
+      <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
         {planData?.plan?.isFreePlan || planData?.plan?.isTrialPlan
           ? 'Upgrade'
           : 'Manage plan'}
