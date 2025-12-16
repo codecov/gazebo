@@ -185,7 +185,7 @@ export const calculatePriceSentryPlan = ({
   let price = SENTRY_PRICE
 
   if (seats > 5) {
-    price += Math.floor(seats - 5) * baseUnitPrice
+    price += Math.floor(seats - 5) * (baseUnitPrice ?? 0)
   }
 
   return price
@@ -199,10 +199,7 @@ export const calculateSentryNonBundledCost = ({
   MIN_SENTRY_SEATS * baseUnitPrice * MONTHS_PER_YEAR -
   SENTRY_PRICE * MONTHS_PER_YEAR
 
-/**
- * Determines the default plan based on explicit selection or current plan.
- * Priority: selectedPlan Team/Sentry > Sentry eligibility (selectedPlan Sentry OR currentPlan Sentry OR isSentryUpgrade) > currentPlan Team > selectedPlan Pro monthly
- */
+// figures out the default plan to use based on the selected plan, current plan, and isSentryUpgrade
 export const determineDefaultPlan = ({
   selectedPlan,
   currentPlan,
