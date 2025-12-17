@@ -130,14 +130,12 @@ describe('PriceCallout', () => {
   describe('when rendered', () => {
     describe('and seat count is below acceptable range', () => {
       const props = {
-        newPlan: teamPlanYearly,
         seats: 1,
       }
 
       it('does not render calculator', async () => {
-        const { mockSetFormValue } = setup()
-
-        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+        setup()
+        render(<PriceCallout {...props} />, {
           wrapper,
         })
 
@@ -148,14 +146,12 @@ describe('PriceCallout', () => {
 
     describe('and seat count is above acceptable range', () => {
       const props = {
-        newPlan: teamPlanYearly,
         seats: 11,
       }
 
       it('does not render calculator', async () => {
-        const { mockSetFormValue } = setup()
-
-        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+        setup()
+        render(<PriceCallout {...props} />, {
           wrapper,
         })
 
@@ -163,51 +159,24 @@ describe('PriceCallout', () => {
         expect(perMonthPrice).not.toBeInTheDocument()
       })
     })
-    describe('isPerYear is set to true', () => {
+    describe('and seat count is within acceptable range', () => {
       const props = {
-        newPlan: teamPlanYearly,
         seats: 10,
       }
 
       it('displays per month price', async () => {
-        const { mockSetFormValue } = setup()
-
-        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+        setup()
+        render(<PriceCallout {...props} />, {
           wrapper,
         })
 
-        const perMonthPrice = await screen.findByText(/\$40.00/)
+        const perMonthPrice = await screen.findByText(/\$50.00/)
         expect(perMonthPrice).toBeInTheDocument()
       })
 
-      it('displays billed annually at price', async () => {
-        const { mockSetFormValue } = setup()
-
-        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
-          wrapper,
-        })
-
-        const annualPrice = await screen.findByText(
-          /\/month billed annually at \$480.00/
-        )
-        expect(annualPrice).toBeInTheDocument()
-      })
-
-      it('displays how much the user saves', async () => {
-        const { mockSetFormValue } = setup()
-
-        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
-          wrapper,
-        })
-
-        const moneySaved = await screen.findByText(/\$120.00/)
-        expect(moneySaved).toBeInTheDocument()
-      })
-
       it('displays the next billing date', async () => {
-        const { mockSetFormValue } = setup()
-
-        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+        setup()
+        render(<PriceCallout {...props} />, {
           wrapper,
         })
 
@@ -215,81 +184,18 @@ describe('PriceCallout', () => {
         expect(nextBillingDate).toBeInTheDocument()
       })
     })
+    describe('when no current end period date on subscription', () => {
+      it('does not render next billing date info', async () => {
+        const props = {
+          seats: 10,
+        }
 
-    describe('isPerYear is set to false', () => {
-      const props = {
-        newPlan: teamPlanMonthly,
-        seats: 10,
-      }
-
-      it('displays the monthly price', async () => {
-        const { mockSetFormValue } = setup()
-        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+        render(<PriceCallout {...props} />, {
           wrapper,
         })
 
-        const monthlyPrice = await screen.findByText(/\$50.00/)
-        expect(monthlyPrice).toBeInTheDocument()
-      })
-
-      it('displays what the user could save with annual plan', async () => {
-        const { mockSetFormValue } = setup()
-        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
-          wrapper,
-        })
-
-        const savings = await screen.findByText(/\$120.00/)
-        expect(savings).toBeInTheDocument()
-      })
-
-      it('displays the next billing date', async () => {
-        const { mockSetFormValue } = setup()
-
-        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
-          wrapper,
-        })
-
-        const nextBillingDate = await screen.findByText(/next billing date/)
-        expect(nextBillingDate).toBeInTheDocument()
-      })
-
-      describe('user switches to annual plan', () => {
-        it('calls mock set value with pro annual plan', async () => {
-          const { mockSetFormValue, user } = setup()
-          render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
-            wrapper,
-          })
-
-          const switchToAnnual = await screen.findByRole('button', {
-            name: 'switch to annual',
-          })
-          expect(switchToAnnual).toBeInTheDocument()
-
-          await user.click(switchToAnnual)
-
-          expect(mockSetFormValue).toHaveBeenCalledWith(
-            'newPlan',
-            teamPlanYearly
-          )
-        })
-      })
-
-      describe('when no current end period date on subscription', () => {
-        it('does not render next billing date info', async () => {
-          const props = {
-            newPlan: teamPlanMonthly,
-            seats: 10,
-          }
-
-          const { mockSetFormValue } = setup()
-
-          render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
-            wrapper,
-          })
-
-          const nextBillingDate = screen.queryByText(/next billing date/)
-          expect(nextBillingDate).not.toBeInTheDocument()
-        })
+        const nextBillingDate = screen.queryByText(/next billing date/)
+        expect(nextBillingDate).not.toBeInTheDocument()
       })
     })
   })

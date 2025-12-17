@@ -64,6 +64,23 @@ const proPlanYear = {
   isSentryPlan: false,
 }
 
+const proPlanMonth = {
+  marketingName: 'Users Pro',
+  value: Plans.USERS_PR_INAPPM,
+  billingRate: BillingRate.MONTHLY,
+  baseUnitPrice: 12,
+  benefits: [
+    'Configurable # of users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: 250,
+  isTeamPlan: false,
+  isSentryPlan: false,
+  hasSeatsLeft: true,
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -127,6 +144,7 @@ describe('ErrorBanner', () => {
                 teamPlanMonth,
                 teamPlanYear,
                 proPlanYear,
+                proPlanMonth,
               ],
             },
           },
@@ -227,11 +245,11 @@ describe('ErrorBanner', () => {
           await user.click(button)
 
           expect(props.setSelectedPlan).toHaveBeenCalledWith(
-            expect.objectContaining({ value: Plans.USERS_PR_INAPPY })
+            expect.objectContaining({ value: Plans.USERS_PR_INAPPM })
           )
           expect(props.setFormValue).toHaveBeenCalledWith(
             'newPlan',
-            { ...proPlanYear, hasSeatsLeft: undefined },
+            { ...proPlanMonth, hasSeatsLeft: undefined },
             { shouldValidate: true }
           )
         })

@@ -270,6 +270,7 @@ describe('ProPlanDetails', () => {
   }
 
   describe('when rendered', () => {
+    // we still support existing yearly plans
     it('shows pro yearly marketing name', async () => {
       setup({ isSentryPlan: false })
       render(<ProPlanDetails />, { wrapper: wrapper() })
@@ -294,7 +295,7 @@ describe('ProPlanDetails', () => {
 
       render(<ProPlanDetails />, { wrapper: wrapper() })
 
-      const price = await screen.findByText(/\$10/)
+      const price = await screen.findByText(/\$12/)
       expect(price).toBeInTheDocument()
     })
 
@@ -303,9 +304,7 @@ describe('ProPlanDetails', () => {
 
       render(<ProPlanDetails />, { wrapper: wrapper() })
 
-      const disclaimer = await screen.findByText(
-        /billed annually, or \$12 for monthly billing/i
-      )
+      const disclaimer = await screen.findByText(/billed monthly/i)
       expect(disclaimer).toBeInTheDocument()
     })
 

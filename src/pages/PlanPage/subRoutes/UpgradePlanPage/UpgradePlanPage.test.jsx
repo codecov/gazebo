@@ -375,7 +375,7 @@ describe('UpgradePlanPage', () => {
           wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
         })
 
-        const teamPlanPrice = await screen.findByText(/\$5/)
+        const teamPlanPrice = await screen.findByText(/\$6/)
         expect(teamPlanPrice).toBeInTheDocument()
 
         const teamPlanPricingScheme = await screen.findByText(/per user\/month/)

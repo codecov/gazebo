@@ -284,12 +284,12 @@ describe('ProPlanController', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders annual option button', async () => {
+      it('does not render annual option button', async () => {
         setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
-        expect(optionBtn).toBeInTheDocument()
+        const optionBtn = screen.queryByTestId('radio-annual')
+        expect(optionBtn).not.toBeInTheDocument()
       })
 
       it('renders monthly option button as "selected"', async () => {
@@ -301,12 +301,14 @@ describe('ProPlanController', () => {
         expect(optionBtn).toBeChecked()
       })
 
-      it('has the price for the year', async () => {
+      it('has the price for the month', async () => {
         setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$120/)
+        const price = await screen.findByText(/120/)
         expect(price).toBeInTheDocument()
+        const monthly = await screen.findByText(/billed monthly/)
+        expect(monthly).toBeInTheDocument()
       })
     })
 
@@ -327,29 +329,22 @@ describe('ProPlanController', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders annual option button', async () => {
+      it('does not render annual option button', async () => {
         setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
-        expect(optionBtn).toBeInTheDocument()
+        const optionBtn = screen.queryByTestId('radio-annual')
+        expect(optionBtn).not.toBeInTheDocument()
       })
 
-      it('renders annual option button as "selected"', async () => {
+      it('has the price for the month', async () => {
         setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
-        expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toBeChecked()
-      })
-
-      it('has the price for the year', async () => {
-        setup({ planValue: proPlanYear, monthlyPlan: false })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
-
-        const price = await screen.findByText(/\$130/)
+        const price = await screen.findByText(/\$156/)
         expect(price).toBeInTheDocument()
+        const monthly = await screen.findByText(/billed monthly/)
+        expect(monthly).toBeInTheDocument()
       })
     })
   })

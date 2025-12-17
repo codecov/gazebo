@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import githubLogo from 'assets/githublogo.png'
@@ -6,10 +7,10 @@ import { useAvailablePlans } from 'services/account/useAvailablePlans'
 import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import { useStartTrial } from 'services/trial'
 import { canApplySentryUpgrade } from 'shared/utils/billing'
-import A from 'ui/A/A'
+import A from 'ui/A'
 import Button from 'ui/Button'
 
-function PlansActionsBilling() {
+function PlansActionsBilling({ buttonOptions }) {
   const { provider, owner } = useParams()
   const { data: plans } = useAvailablePlans({ provider, owner })
 
@@ -52,7 +53,13 @@ function PlansActionsBilling() {
   ) {
     return (
       <div className="flex self-start">
-        <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
+        <Button
+          to={{
+            pageName: 'upgradeOrgPlan',
+            ...(buttonOptions && { options: buttonOptions }),
+          }}
+          variant="primary"
+        >
           {planData?.plan?.isSentryPlan ? 'Manage plan' : 'Upgrade'}
         </Button>
       </div>
@@ -61,7 +68,13 @@ function PlansActionsBilling() {
 
   return (
     <div className="flex self-start">
-      <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
+      <Button
+        to={{
+          pageName: 'upgradeOrgPlan',
+          ...(buttonOptions && { options: buttonOptions }),
+        }}
+        variant="primary"
+      >
         {planData?.plan?.isFreePlan || planData?.plan?.isTrialPlan
           ? 'Upgrade'
           : 'Manage plan'}
@@ -70,7 +83,11 @@ function PlansActionsBilling() {
   )
 }
 
-function ActionsBilling() {
+PlansActionsBilling.propTypes = {
+  buttonOptions: PropTypes.object,
+}
+
+function ActionsBilling({ buttonOptions }) {
   const { owner, provider } = useParams()
   const { data: accountDetails } = useAccountDetails({ owner, provider })
   const username = accountDetails?.rootOrganization?.username
@@ -116,7 +133,11 @@ function ActionsBilling() {
     )
   }
 
-  return <PlansActionsBilling />
+  return <PlansActionsBilling buttonOptions={buttonOptions} />
 }
 
 export default ActionsBilling
+
+ActionsBilling.propTypes = {
+  buttonOptions: PropTypes.object,
+}

@@ -142,31 +142,6 @@ describe('UpdateBlurb', () => {
       })
     })
 
-    describe('when user has monthly -> yearly plan', () => {
-      it('renders immediate update blurb', async () => {
-        render(
-          <UpdateBlurb
-            newPlan={teamPlanYear}
-            currentPlan={{ ...teamPlanMonth, ...planChunk, planUserCount: 10 }}
-            nextBillingDate={'July 12th, 2024'}
-            seats={10}
-          />,
-          {
-            wrapper: wrapper(),
-          }
-        )
-
-        const billingBlurb = await screen.findByText(
-          'You are changing your billing cycle from Monthly to [Annual]'
-        )
-        const immediateUpdate = await screen.findByText(
-          /Your changes will take effect immediately./
-        )
-        expect(billingBlurb).toBeInTheDocument()
-        expect(immediateUpdate).toBeInTheDocument()
-      })
-    })
-
     describe('when user has increase in seats', () => {
       it('renders immediate update blurb', async () => {
         render(

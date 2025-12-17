@@ -11,6 +11,7 @@ import {
   shouldDisplayTeamCard,
   TierNames,
 } from 'shared/utils/billing'
+import { determineDefaultPlan } from 'shared/utils/upgradeForm'
 
 import UpgradeDetails from './UpgradeDetails'
 import UpgradeForm from './UpgradeForm'
@@ -25,9 +26,9 @@ function UpgradePlanPage() {
   const { data: planData } = usePlanData({ provider, owner })
   const planParam = usePlanParams()
 
-  const { proPlanYear } = findProPlans({ plans })
-  const { sentryPlanYear } = findSentryPlans({ plans })
-  const { teamPlanYear } = findTeamPlans({ plans })
+  const { proPlanMonth } = findProPlans({ plans })
+  const { sentryPlanMonth } = findSentryPlans({ plans })
+  const { teamPlanMonth } = findTeamPlans({ plans })
   const hasTeamPlans = shouldDisplayTeamCard({ plans })
 
   const isSentryUpgrade = canApplySentryUpgrade({
@@ -35,19 +36,21 @@ function UpgradePlanPage() {
     plans,
   })
 
-  let defaultPaidYearlyPlan = null
-  if (
-    (hasTeamPlans && planParam === TierNames.TEAM) ||
-    planData?.plan?.isTeamPlan
-  ) {
-    defaultPaidYearlyPlan = teamPlanYear
-  } else if (isSentryUpgrade) {
-    defaultPaidYearlyPlan = sentryPlanYear
-  } else {
-    defaultPaidYearlyPlan = proPlanYear
+  let paramSelectedPlan = null
+  if (hasTeamPlans && planParam === TierNames.TEAM) {
+    paramSelectedPlan = teamPlanMonth
+  } else if (planParam === TierNames.PRO) {
+    paramSelectedPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
   }
 
-  const [selectedPlan, setSelectedPlan] = useState(defaultPaidYearlyPlan)
+  const defaultPaidMonthlyPlan = determineDefaultPlan({
+    selectedPlan: paramSelectedPlan,
+    currentPlan: planData?.plan,
+    plans,
+    isSentryUpgrade,
+  })
+
+  const [selectedPlan, setSelectedPlan] = useState(defaultPaidMonthlyPlan)
 
   useLayoutEffect(() => {
     setCrumbs([

@@ -230,6 +230,7 @@ describe('SentryPlanDetails', () => {
   }
 
   describe('when rendered', () => {
+    // we still support existing yearly plans but no new ones
     it('renders sentry pro yearly marketing name', async () => {
       setup()
       render(<SentryPlanDetails />, { wrapper: wrapper() })
@@ -264,7 +265,7 @@ describe('SentryPlanDetails', () => {
       render(<SentryPlanDetails />, { wrapper: wrapper() })
 
       const disclaimer = await screen.findByText(
-        /over 5 users is \$10 per user\/month, billed annually/i
+        /over 5 users is \$12 per user\/month, billed monthly/i
       )
       expect(disclaimer).toBeInTheDocument()
     })

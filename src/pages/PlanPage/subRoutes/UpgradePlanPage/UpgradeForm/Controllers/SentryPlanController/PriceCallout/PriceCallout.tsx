@@ -1,52 +1,31 @@
 import { Fragment } from 'react'
-import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
-import { MONTHS_PER_YEAR } from 'pages/PlanPage/subRoutes/CurrentOrgPlan/BillingDetails/BillingDetails'
 import { useAccountDetails } from 'services/account/useAccountDetails'
-import {
-  IndividualPlan,
-  useAvailablePlans,
-} from 'services/account/useAvailablePlans'
+import { useAvailablePlans } from 'services/account/useAvailablePlans'
 import { Provider } from 'shared/api/helpers'
 import {
-  BillingRate,
   findSentryPlans,
   formatNumberToUSD,
   getNextBillingDate,
 } from 'shared/utils/billing'
 import {
   calculatePriceSentryPlan,
-  calculateSentryNonBundledCost,
   MIN_SENTRY_SEATS,
 } from 'shared/utils/upgradeForm'
-import Icon from 'ui/Icon'
-
-import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
-  newPlan?: IndividualPlan
   seats: number
-  setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 
-const PriceCallout: React.FC<PriceCalloutProps> = ({
-  newPlan,
-  seats,
-  setFormValue,
-}) => {
+const PriceCallout: React.FC<PriceCalloutProps> = ({ seats }) => {
   const { provider, owner } = useParams<{ provider: Provider; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
+  const { sentryPlanMonth } = findSentryPlans({ plans })
   const perMonthPrice = calculatePriceSentryPlan({
     seats,
     baseUnitPrice: sentryPlanMonth?.baseUnitPrice,
   })
-  const perYearPrice = calculatePriceSentryPlan({
-    seats,
-    baseUnitPrice: sentryPlanYear?.baseUnitPrice,
-  })
-  const isPerYear = newPlan?.billingRate === BillingRate.ANNUALLY
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
 
@@ -54,85 +33,20 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
     return null
   }
 
-  if (isPerYear) {
-    const nonBundledCost = calculateSentryNonBundledCost({
-      baseUnitPrice: sentryPlanYear?.baseUnitPrice,
-    })
-
-    return (
-      <div className="bg-ds-gray-primary p-4">
-        <p className="pb-3">
-          <span className="font-semibold">
-            {formatNumberToUSD(perYearPrice)}
-          </span>
-          /month billed annually at{' '}
-          {formatNumberToUSD(perYearPrice * MONTHS_PER_YEAR)}
-        </p>
-        <p>
-          &#127881; You{' '}
-          <span className="font-semibold">
-            save{' '}
-            {formatNumberToUSD(
-              nonBundledCost + (perMonthPrice - perYearPrice) * MONTHS_PER_YEAR
-            )}
-          </span>{' '}
-          with the Sentry bundle plan
-          {nextBillingDate && (
-            <Fragment>
-              ,<span className="font-semibold"> next billing date</span> is{' '}
-              {nextBillingDate}
-            </Fragment>
-          )}
-        </p>
-      </div>
-    )
-  }
-
-  const nonBundledCost = calculateSentryNonBundledCost({
-    baseUnitPrice: sentryPlanMonth?.baseUnitPrice,
-  })
   return (
     <div className="bg-ds-gray-primary p-4">
-      <p className="pb-3">
+      <p>
         <span className="font-semibold">
           {formatNumberToUSD(perMonthPrice)}
         </span>
         /month
+        {nextBillingDate && (
+          <Fragment>
+            ,<span className="font-semibold"> next billing date</span> is{' '}
+            {nextBillingDate}
+          </Fragment>
+        )}
       </p>
-      <div className="flex flex-row gap-1">
-        <Icon size="sm" name="lightBulb" variant="solid" />
-        <p>
-          You{' '}
-          <span className="font-semibold">
-            save {formatNumberToUSD(nonBundledCost)}
-          </span>{' '}
-          with the Sentry bundle
-          {seats > 5 && (
-            <>
-              , save an{' '}
-              <span className="font-semibold">
-                additional{' '}
-                {formatNumberToUSD(
-                  (perMonthPrice - perYearPrice) * MONTHS_PER_YEAR
-                )}
-              </span>{' '}
-              a year with annual billing
-              {nextBillingDate && (
-                <Fragment>
-                  ,<span className="font-semibold"> next billing date</span> is{' '}
-                  {nextBillingDate}
-                </Fragment>
-              )}{' '}
-              <button
-                className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-                onClick={() => setFormValue('newPlan', sentryPlanYear)}
-              >
-                switch to annual
-              </button>
-            </>
-          )}
-        </p>
-      </div>
     </div>
   )
 }
