@@ -119,7 +119,8 @@ export const shouldDisplayTeamCard = ({
 }) => {
   const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
 
-  return !isUndefined(teamPlanMonth) && !isUndefined(teamPlanYear)
+  // in case either is not offered anymore, we should still display the card
+  return !isUndefined(teamPlanMonth) || !isUndefined(teamPlanYear)
 }
 
 export const formatNumberToUSD = (value: number) =>
