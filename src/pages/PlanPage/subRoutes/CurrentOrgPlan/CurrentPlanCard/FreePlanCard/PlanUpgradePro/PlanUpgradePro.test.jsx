@@ -8,8 +8,12 @@ import { BillingRate, Plans } from 'shared/utils/billing'
 import PlanUpgradePro from './PlanUpgradePro'
 
 vi.mock('../ProPlanSubheading', () => ({ default: () => 'Pro Subheading' }))
+const mockActionsBilling = vi.fn(() => 'Actions Billing')
 vi.mock('../../shared/ActionsBilling/ActionsBilling', () => ({
-  default: () => 'Actions Billing',
+  default: (props) => {
+    mockActionsBilling(props)
+    return 'Actions Billing'
+  },
 }))
 vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
 
@@ -203,6 +207,21 @@ describe('PlanUpgradePro', () => {
       const actionsBilling = await screen.findByText(/Actions Billing/)
       expect(actionsBilling).toBeInTheDocument()
     })
+
+    it('passes buttonOptions prop to ActionsBilling', async () => {
+      render(
+        <PlanUpgradePro isSentryUpgrade plans={plansWithSentryOptions} />,
+        {
+          wrapper,
+        }
+      )
+
+      const actionsBilling = await screen.findByText(/Actions Billing/)
+      expect(actionsBilling).toBeInTheDocument()
+      expect(mockActionsBilling).toHaveBeenCalledWith({
+        buttonOptions: { params: { plan: 'pro' } },
+      })
+    })
   })
 
   describe('when rendered with pro plan', () => {
@@ -294,6 +313,24 @@ describe('PlanUpgradePro', () => {
 
       const actionsBilling = await screen.findByText(/Actions Billing/)
       expect(actionsBilling).toBeInTheDocument()
+    })
+
+    it('passes buttonOptions prop to ActionsBilling', async () => {
+      render(
+        <PlanUpgradePro
+          isSentryUpgrade={false}
+          plans={plansWithoutSentryOptions}
+        />,
+        {
+          wrapper,
+        }
+      )
+
+      const actionsBilling = await screen.findByText(/Actions Billing/)
+      expect(actionsBilling).toBeInTheDocument()
+      expect(mockActionsBilling).toHaveBeenCalledWith({
+        buttonOptions: { params: { plan: 'pro' } },
+      })
     })
   })
 })

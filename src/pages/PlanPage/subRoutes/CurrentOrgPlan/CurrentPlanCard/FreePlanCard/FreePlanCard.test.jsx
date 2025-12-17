@@ -313,9 +313,11 @@ describe('FreePlanCard', () => {
       })
 
       const link = await screen.findByRole('link', { name: /Upgrade/ })
-
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
+      expect(link).toHaveAttribute(
+        'href',
+        '/plan/bb/critical-role/upgrade?plan=pro'
+      )
     })
 
     it('renders the help message', async () => {
@@ -479,7 +481,7 @@ describe('FreePlanCard', () => {
       expect(upgradeLink).toBeInTheDocument()
       expect(upgradeLink).toHaveAttribute(
         'href',
-        '/plan/bb/critical-role/upgrade'
+        '/plan/bb/critical-role/upgrade?plan=pro'
       )
     })
 
