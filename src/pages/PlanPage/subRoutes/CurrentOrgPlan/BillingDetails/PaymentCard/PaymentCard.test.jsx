@@ -110,6 +110,76 @@ const accountDetails = {
   activatedUserCount: 1,
 }
 
+const scheduledPhaseProYToTeamMAccountDetails = {
+  subscriptionDetail,
+  activatedUserCount: 1,
+  scheduleDetail: {
+    scheduledPhase: {
+      plan: 'Team',
+      baseUnitPrice: 6,
+      billingRate: BillingRate.MONTHLY,
+      quantity: 10,
+      startDate: 1764258944,
+    },
+  },
+}
+
+const scheduledPhaseTeamYToProMAccountDetails = {
+  subscriptionDetail: {
+    defaultPaymentMethod: {
+      card: {
+        brand: 'visa',
+        expMonth: 12,
+        expYear: 2021,
+        last4: '1234',
+      },
+    },
+    plan: {
+      value: Plans.USERS_TEAMY,
+    },
+    currentPeriodEnd: 1606851492,
+    cancelAtPeriodEnd: false,
+  },
+  activatedUserCount: 1,
+  scheduleDetail: {
+    scheduledPhase: {
+      plan: 'Pro',
+      baseUnitPrice: 12,
+      billingRate: BillingRate.MONTHLY,
+      quantity: 7,
+      startDate: 1764258944,
+    },
+  },
+}
+
+const scheduledPhaseTeamYToSentryProMAccountDetails = {
+  subscriptionDetail: {
+    defaultPaymentMethod: {
+      card: {
+        brand: 'visa',
+        expMonth: 12,
+        expYear: 2021,
+        last4: '1234',
+      },
+    },
+    plan: {
+      value: Plans.USERS_TEAMY,
+    },
+    currentPeriodEnd: 1606851492,
+    cancelAtPeriodEnd: false,
+  },
+  activatedUserCount: 1,
+  scheduleDetail: {
+    scheduledPhase: {
+      plan: 'Sentry Pro',
+      baseUnitPrice: 12,
+      billingRate: BillingRate.MONTHLY,
+      quantity: 9,
+      startDate: 1764258944,
+    },
+  },
+}
+
 const usBankSubscriptionDetail = {
   defaultPaymentMethod: {
     usBankAccount: {
@@ -629,6 +699,58 @@ describe('PaymentCard', () => {
 
         await waitFor(() => {
           expect(screen.getByText(/for \$588.00/)).toBeInTheDocument()
+        })
+      })
+    })
+    describe('Scheduled phase pricing', () => {
+      it('calculates the next billing price correctly when switching from Pro to Team', async () => {
+        // Upcoming team monthly plan: baseUnitPrice 6, 10 paid seats = $60.00
+        setup({})
+        render(
+          <PaymentCard
+            accountDetails={scheduledPhaseProYToTeamMAccountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$60.00/)).toBeInTheDocument()
+        })
+      })
+
+      it('calculates the next billing price correctly when switching from Team to Pro', async () => {
+        // Upcoming pro monthly plan: baseUnitPrice 12, 7 paid seats = $84.00
+        setup({})
+        render(
+          <PaymentCard
+            accountDetails={scheduledPhaseTeamYToProMAccountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$84.00/)).toBeInTheDocument()
+        })
+      })
+
+      it('calculates the next billing price correctly when switching from Team to Sentry Pro', async () => {
+        // Upcoming Sentry Pro monthly plan: baseUnitPrice 12, 9 paid seats = $29 + 4 seats x $12 = $77.00
+        setup({})
+        render(
+          <PaymentCard
+            accountDetails={scheduledPhaseTeamYToSentryProMAccountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$77.00/)).toBeInTheDocument()
         })
       })
     })

@@ -34,6 +34,13 @@ export const TierNames = {
   ENTERPRISE: 'enterprise',
 } as const
 
+export const PlanMarketingNames = {
+  DEVELOPER: 'Developer',
+  PRO: 'Pro',
+  SENTRY: 'Sentry Pro',
+  TEAM: 'Team',
+} as const
+
 export const BillingRate = {
   MONTHLY: 'monthly',
   /** @deprecated no longer offering new annual plans */
