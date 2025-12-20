@@ -7,6 +7,7 @@ import {
   BillingRate,
   formatNumberToUSD,
   formatTimestampToCalendarDate,
+  PlanMarketingNames,
 } from 'shared/utils/billing'
 import {
   calculatePriceProPlan,
@@ -22,6 +23,50 @@ import CardInformation from './CardInformation'
 import PaymentMethodForm from './PaymentMethodForm'
 
 import { MONTHS_PER_YEAR } from '../BillingDetails'
+
+const calculateNextBillPrice = ({ planData, scheduledPhase }) => {
+  let isPerYear, seats, baseUnitPrice, calculatePriceFunction
+
+  // use scheduled phase data if it exists as that will be the upcoming plan
+  if (scheduledPhase) {
+    const {
+      baseUnitPrice: scheduledPhaseBaseUnitPrice,
+      billingRate: scheduledPhaseBillingRate,
+      plan: scheduledPhasePlanName,
+      quantity: scheduledPhaseQuantity,
+    } = scheduledPhase
+
+    isPerYear = scheduledPhaseBillingRate === BillingRate.ANNUALLY
+    seats = scheduledPhaseQuantity ?? 0
+    baseUnitPrice = scheduledPhaseBaseUnitPrice ?? 0
+    calculatePriceFunction =
+      scheduledPhasePlanName === PlanMarketingNames.PRO
+        ? calculatePriceProPlan
+        : scheduledPhasePlanName === PlanMarketingNames.TEAM
+          ? calculatePriceTeamPlan
+          : calculatePriceSentryPlan
+  } else {
+    isPerYear = planData?.plan?.billingRate === BillingRate.ANNUALLY
+    seats =
+      (planData?.plan?.planUserCount ?? 0) -
+      (planData?.plan?.freeSeatCount ?? 0)
+    baseUnitPrice = planData?.plan?.baseUnitPrice ?? 0
+    calculatePriceFunction = planData?.plan?.isProPlan
+      ? calculatePriceProPlan
+      : planData?.plan?.isTeamPlan
+        ? calculatePriceTeamPlan
+        : calculatePriceSentryPlan
+  }
+  // make sure seats is not negative
+  seats = Math.max(seats, 0)
+  const billPrice = calculatePriceFunction({
+    seats,
+    baseUnitPrice,
+  })
+
+  return formatNumberToUSD(isPerYear ? billPrice * MONTHS_PER_YEAR : billPrice)
+}
+
 function PaymentCard({ accountDetails, provider, owner }) {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const { data: planData } = usePlanData({
@@ -37,44 +82,15 @@ function PaymentCard({ accountDetails, provider, owner }) {
       subscriptionDetail?.currentPeriodEnd
     )
   }
-  const scheduledPhaseQuantity =
-    accountDetails?.scheduleDetail?.scheduledPhase?.quantity
 
-  const nextBillPrice = useMemo(() => {
-    const isPerYear = planData?.plan?.billingRate === BillingRate.ANNUALLY
-    let seats =
-      scheduledPhaseQuantity ??
-      (planData?.plan?.planUserCount ?? 0) -
-        (planData?.plan?.freeSeatCount ?? 0)
-    seats = Math.max(seats, 0)
-    const planBaseUnitPrice = planData?.plan?.baseUnitPrice ?? 0
-    const billPrice = planData?.plan?.isProPlan
-      ? calculatePriceProPlan({
-          seats,
-          baseUnitPrice: planBaseUnitPrice,
-        })
-      : planData?.plan?.isTeamPlan
-        ? calculatePriceTeamPlan({
-            seats,
-            baseUnitPrice: planBaseUnitPrice,
-          })
-        : calculatePriceSentryPlan({
-            seats,
-            baseUnitPrice: planBaseUnitPrice,
-          })
-
-    return formatNumberToUSD(
-      isPerYear ? billPrice * MONTHS_PER_YEAR : billPrice
-    )
-  }, [
-    planData?.plan?.billingRate,
-    planData?.plan?.baseUnitPrice,
-    planData?.plan?.planUserCount,
-    planData?.plan?.freeSeatCount,
-    planData?.plan?.isProPlan,
-    planData?.plan?.isTeamPlan,
-    scheduledPhaseQuantity,
-  ])
+  const nextBillPrice = useMemo(
+    () =>
+      calculateNextBillPrice({
+        planData,
+        scheduledPhase: accountDetails?.scheduleDetail?.scheduledPhase,
+      }),
+    [planData, accountDetails?.scheduleDetail?.scheduledPhase]
+  )
 
   return (
     <div className="flex flex-col gap-3 border-t p-4">

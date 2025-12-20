@@ -146,6 +146,8 @@ export const AccountDetailsSchema = z
             quantity: z.number(),
             plan: z.string(),
             startDate: z.number(),
+            billingRate: z.string().nullable(),
+            baseUnitPrice: z.number().nullable(),
           })
           .nullable(),
       })
