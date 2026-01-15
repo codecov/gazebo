@@ -32,6 +32,12 @@ then
     sed -i -r "s/[a-zA-Z]+\.BBS_URL/\"${BBS_SCHEME_BASE}:\/\/${BBS_BASE}\"/g" /var/www/app/gazebo/assets/*.js
   fi
 
+  # Inject runtime config via window.configEnv
+  if [[ -n "${CODECOV_GH_APP}" ]]; then
+    echo "Setting GH_APP to ${CODECOV_GH_APP}"
+    sed -i 's|<head>|<head><script>window.configEnv=window.configEnv||{};window.configEnv.GH_APP="'"${CODECOV_GH_APP}"'";</script>|' /var/www/app/gazebo/index.html
+  fi
+
   export DOLLAR='$'
   if [ "$CODECOV_FRONTEND_IPV6_DISABLED" ]; then
     echo 'Codecov frontend ipv6 disabled'
