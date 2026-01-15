@@ -34,10 +34,15 @@ then
 
   # Inject runtime config via window.configEnv
   if [[ -n "${CODECOV_GH_APP}" ]]; then
-    echo "Setting GH_APP to ${CODECOV_GH_APP}"
-    # Base64 encode to safely handle all special characters (sed, JS, HTML)
-    ENCODED_GH_APP=$(printf '%s' "${CODECOV_GH_APP}" | base64 | tr -d '\n')
-    sed -i 's#<head>#<head><script>window.configEnv=window.configEnv||{};window.configEnv.GH_APP=atob("'"${ENCODED_GH_APP}"'");</script>#' /var/www/app/gazebo/index.html
+    # Only inject if not already present (makes this idempotent across container restarts)
+    if ! grep -q 'window.configEnv.GH_APP' /var/www/app/gazebo/index.html; then
+      echo "Setting GH_APP to ${CODECOV_GH_APP}"
+      # Base64 encode to safely handle all special characters (sed, JS, HTML)
+      ENCODED_GH_APP=$(printf '%s' "${CODECOV_GH_APP}" | base64 | tr -d '\n')
+      sed -i 's#<head>#<head><script>window.configEnv=window.configEnv||{};window.configEnv.GH_APP=atob("'"${ENCODED_GH_APP}"'");</script>#' /var/www/app/gazebo/index.html
+    else
+      echo "GH_APP already configured, skipping injection"
+    fi
   fi
 
   export DOLLAR='$'
