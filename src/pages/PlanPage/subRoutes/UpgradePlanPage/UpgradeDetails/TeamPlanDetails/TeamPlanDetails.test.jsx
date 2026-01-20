@@ -197,7 +197,6 @@ describe('TeamPlanDetails', () => {
   }
 
   describe('when rendered', () => {
-    // we still support existing yearly plans but no new ones
     it('shows team yearly marketing name', async () => {
       setup()
       render(<TeamPlanDetails />, { wrapper: wrapper() })
@@ -222,7 +221,7 @@ describe('TeamPlanDetails', () => {
 
       render(<TeamPlanDetails />, { wrapper: wrapper() })
 
-      const price = await screen.findByText(/\$6/)
+      const price = await screen.findByText(/\$5/)
       expect(price).toBeInTheDocument()
     })
 
@@ -231,7 +230,9 @@ describe('TeamPlanDetails', () => {
 
       render(<TeamPlanDetails />, { wrapper: wrapper() })
 
-      const disclaimer = await screen.findByText(/billed monthly/i)
+      const disclaimer = await screen.findByText(
+        /billed annually, or \$6 for monthly billing/i
+      )
       expect(disclaimer).toBeInTheDocument()
     })
 

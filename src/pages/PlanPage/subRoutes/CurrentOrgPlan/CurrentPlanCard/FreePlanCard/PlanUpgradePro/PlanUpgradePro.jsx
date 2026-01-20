@@ -10,8 +10,9 @@ import ProPlanSubheading from '../ProPlanSubheading'
 
 function PlanDetails({
   isSentryUpgrade,
-  sentryMonthlyUnitPrice,
+  sentryAnnualUnitPrice,
   proMonthlyUnitPrice,
+  proYearlyUnitPrice,
 }) {
   if (isSentryUpgrade) {
     return (
@@ -21,8 +22,8 @@ function PlanDetails({
           /month
         </p>
         <p className="text-ds-gray-senary">
-          over 5 users is ${sentryMonthlyUnitPrice} per user/month, billed
-          monthly
+          over 5 users is ${sentryAnnualUnitPrice} per user/month, billed
+          annually
         </p>
       </div>
     )
@@ -31,24 +32,27 @@ function PlanDetails({
   return (
     <div className="text-xs">
       <p className="font-semibold">
-        <span className="text-2xl">${proMonthlyUnitPrice}</span> per user/month
+        <span className="text-2xl">${proYearlyUnitPrice}</span> per user/month
       </p>
-      <p className="text-ds-gray-senary">billed monthly</p>
+      <p className="text-ds-gray-senary">
+        billed annually, or ${proMonthlyUnitPrice} per user billing monthly
+      </p>
     </div>
   )
 }
 
 PlanDetails.propTypes = {
   isSentryUpgrade: PropType.bool.isRequired,
-  sentryMonthlyUnitPrice: PropType.number,
+  sentryAnnualUnitPrice: PropType.number,
   proMonthlyUnitPrice: PropType.number,
+  proYearlyUnitPrice: PropType.number,
 }
 
 function PlanUpgradePro({ isSentryUpgrade, plans }) {
-  const { proPlanMonth } = findProPlans({ plans })
-  const { sentryPlanMonth } = findSentryPlans({ plans })
+  const { proPlanMonth, proPlanYear } = findProPlans({ plans })
+  const { sentryPlanYear } = findSentryPlans({ plans })
 
-  const upgradeToPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
+  const upgradeToPlan = isSentryUpgrade ? sentryPlanYear : proPlanMonth
 
   return (
     <div className="flex flex-col border">
@@ -57,7 +61,7 @@ function PlanUpgradePro({ isSentryUpgrade, plans }) {
           <h2 className="font-semibold">{upgradeToPlan?.marketingName} plan</h2>
           <ProPlanSubheading />
         </div>
-        <ActionsBilling buttonOptions={{ params: { plan: 'pro' } }} />
+        <ActionsBilling />
       </div>
       <hr />
       <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
@@ -75,8 +79,9 @@ function PlanUpgradePro({ isSentryUpgrade, plans }) {
           </p>
           <PlanDetails
             isSentryUpgrade={isSentryUpgrade}
-            sentryMonthlyUnitPrice={sentryPlanMonth?.baseUnitPrice}
+            sentryAnnualUnitPrice={sentryPlanYear?.baseUnitPrice}
             proMonthlyUnitPrice={proPlanMonth?.baseUnitPrice}
+            proYearlyUnitPrice={proPlanYear?.baseUnitPrice}
           />
         </div>
       </div>

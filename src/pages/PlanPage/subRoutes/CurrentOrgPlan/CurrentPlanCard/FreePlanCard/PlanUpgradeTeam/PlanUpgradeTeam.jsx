@@ -16,12 +16,13 @@ function PlanUpgradeTeam() {
   const currentPlan = planData?.plan
   const { data: plans } = useAvailablePlans({ provider, owner })
 
-  const { teamPlanMonth } = findTeamPlans({
+  const { teamPlanMonth, teamPlanYear } = findTeamPlans({
     plans,
   })
   const monthlyTeamBenefits = teamPlanMonth?.benefits
   const monthlyMarketingName = teamPlanMonth?.marketingName
   const monthlyUnitPrice = teamPlanMonth?.baseUnitPrice
+  const yearlyUnitPrice = teamPlanYear?.baseUnitPrice
 
   let buttonText = 'Manage plan'
   if (currentPlan?.isFreePlan || currentPlan?.isTrialPlan) {
@@ -64,10 +65,12 @@ function PlanUpgradeTeam() {
             <p className="text-xs font-semibold">Pricing</p>
             <div className="text-xs">
               <p className="font-semibold">
-                <span className="text-2xl">${monthlyUnitPrice}</span> per
+                <span className="text-2xl">${yearlyUnitPrice}</span> per
                 user/month
               </p>
-              <p className="text-ds-gray-senary">billed monthly</p>
+              <p className="text-ds-gray-senary">
+                billed annually, or ${monthlyUnitPrice} per user billing monthly
+              </p>
             </div>
           </div>
         </div>
