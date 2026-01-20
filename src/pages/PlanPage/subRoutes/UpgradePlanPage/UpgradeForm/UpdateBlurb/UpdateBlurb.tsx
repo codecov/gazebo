@@ -19,17 +19,19 @@ const UpdateBlurb = ({
   const diffPlanType = currentIsFree || currentIsTeam !== selectedIsTeam
 
   const currentIsAnnual = currentPlan?.billingRate === BillingRate.ANNUALLY
+  const selectedIsAnnual = newPlan?.billingRate === BillingRate.ANNUALLY
+  const diffBillingType = currentIsAnnual !== selectedIsAnnual
 
   const diffSeats = currentPlan?.planUserCount !== seats
 
-  const hasDiff = diffPlanType || diffSeats || currentIsAnnual
+  const hasDiff = diffPlanType || diffBillingType || diffSeats
 
   // A plan is considered an upgrade if we increase the number of seats,
-  // go from team -> pro or the current plan is a free plan
-  // (previously also from monthly -> annual billing)
+  // go from team -> pro, from monthly -> annual billing, or the current plan is a free plan
   const isUpgrade =
     seats > Number(currentPlan?.planUserCount) ||
     (currentIsTeam && !selectedIsTeam) ||
+    (!currentIsAnnual && selectedIsAnnual) ||
     currentIsFree
 
   if (!hasDiff) {
@@ -47,10 +49,10 @@ const UpdateBlurb = ({
         {diffSeats && (
           <li className="pl-2">{`You are changing seats from ${currentPlan?.planUserCount} to [${seats}]`}</li>
         )}
-        {currentIsAnnual && !currentIsFree && (
-          <li className="pl-2">
-            {'You are changing your billing cycle from Annual to [Monthly]'}
-          </li>
+        {diffBillingType && !currentIsFree && (
+          <li className="pl-2">{`You are changing your billing cycle from ${
+            currentIsAnnual ? 'Annual' : 'Monthly'
+          } to [${currentIsAnnual ? 'Monthly' : 'Annual'}]`}</li>
         )}
       </ul>
       <br />

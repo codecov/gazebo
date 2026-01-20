@@ -15,7 +15,7 @@ function TeamPlanDetails() {
   const { data: planData } = usePlanData({ provider, owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { teamPlanMonth } = findTeamPlans({ plans })
+  const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
 
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
 
@@ -25,23 +25,26 @@ function TeamPlanDetails() {
 
   return (
     <div className="h-fit border md:w-[280px]">
-      <h3 className="p-4 font-semibold">{teamPlanMonth?.marketingName} plan</h3>
+      <h3 className="p-4 font-semibold">{teamPlanYear?.marketingName} plan</h3>
       <hr />
       <div className="flex flex-col gap-6 p-4">
         <div>
           <p className="mb-2 text-xs font-semibold">Pricing</p>
           <p className="text-xs font-semibold">
-            <span className="text-2xl">${teamPlanMonth?.baseUnitPrice}</span>{' '}
-            per user/month
+            <span className="text-2xl">${teamPlanYear?.baseUnitPrice}</span> per
+            user/month
           </p>
-          <p className="text-xs text-ds-gray-senary">billed monthly</p>
+          <p className="text-xs text-ds-gray-senary">
+            billed annually, or ${teamPlanMonth?.baseUnitPrice} for monthly
+            billing
+          </p>
         </div>
         <div>
           <p className="mb-2 text-xs font-semibold">Includes</p>
           <BenefitList
             iconName="check"
             iconColor="text-ds-pink-default"
-            benefits={teamPlanMonth?.benefits}
+            benefits={teamPlanYear?.benefits}
           />
         </div>
         {scheduledPhase && (
