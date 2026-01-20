@@ -211,34 +211,38 @@ export const determineDefaultPlan = ({
   plans?: IndividualPlan[] | null
   isSentryUpgrade: boolean
 }): IndividualPlan | undefined => {
-  const { proPlanMonth } = findProPlans({ plans })
-  const { sentryPlanMonth } = findSentryPlans({ plans })
-  const { teamPlanMonth } = findTeamPlans({ plans })
+  const { proPlanMonth, proPlanYear } = findProPlans({ plans })
+  const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
+  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
 
-  let plan = proPlanMonth
+  // Check if user is currently on an annual plan to default to yearly variant
+  const isCurrentPlanAnnual = currentPlan?.billingRate === BillingRate.ANNUALLY
+
+  let plan = isCurrentPlanAnnual ? proPlanYear : proPlanMonth
 
   if (selectedPlan?.isTeamPlan) {
-    plan = teamPlanMonth
+    plan = isCurrentPlanAnnual ? teamPlanYear : teamPlanMonth
   } else if (selectedPlan?.isSentryPlan || currentPlan?.isSentryPlan) {
-    plan = sentryPlanMonth
+    plan = isCurrentPlanAnnual ? sentryPlanYear : sentryPlanMonth
   } else if (currentPlan?.isTeamPlan) {
-    plan = teamPlanMonth
+    plan = isCurrentPlanAnnual ? teamPlanYear : teamPlanMonth
   } else if (isSentryUpgrade && !currentPlan?.isSentryPlan) {
-    plan = sentryPlanMonth
-  } else if (selectedPlan && selectedPlan.billingRate === BillingRate.MONTHLY) {
+    plan = isCurrentPlanAnnual ? sentryPlanYear : sentryPlanMonth
+  } else if (
+    selectedPlan &&
+    selectedPlan.billingRate === currentPlan?.billingRate
+  ) {
     // selectedPlan is a Pro plan (already checked it's not Team or Sentry above, and currentPlan is not Team or Sentry)
     plan = selectedPlan
   }
 
-  // Fallback order if plans aren't available: preferred monthly plan -> selectedPlan if monthly -> currentPlan if monthly -> undefined
+  // Fallback order if plans aren't available: preferred plan -> selectedPlan if same billing rate -> currentPlan -> undefined
   plan =
     plan ??
-    (selectedPlan?.billingRate === BillingRate.MONTHLY
+    (selectedPlan?.billingRate === currentPlan?.billingRate
       ? selectedPlan
       : undefined) ??
-    (currentPlan?.billingRate === BillingRate.MONTHLY
-      ? currentPlan
-      : undefined) ??
+    currentPlan ??
     undefined
 
   return plan

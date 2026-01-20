@@ -271,6 +271,7 @@ describe('ProPlanController', () => {
     describe('when the user has a pro plan monthly', () => {
       const props = {
         setFormValue: vi.fn(),
+        setSelectedPlan: vi.fn(),
         register: vi.fn(),
         newPlan: proPlanMonth,
         seats: 10,
@@ -315,6 +316,7 @@ describe('ProPlanController', () => {
     describe('when the user has a pro plan yearly', () => {
       const props = {
         setFormValue: vi.fn(),
+        setSelectedPlan: vi.fn(),
         register: vi.fn(),
         newPlan: proPlanYear,
         seats: 13,
@@ -329,21 +331,21 @@ describe('ProPlanController', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('does not render annual option button', async () => {
+      it('renders annual option button when current plan is annual', async () => {
         setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = screen.queryByTestId('radio-annual')
-        expect(optionBtn).not.toBeInTheDocument()
+        const optionBtn = await screen.findByTestId('radio-annual')
+        expect(optionBtn).toBeInTheDocument()
       })
 
-      it('has the price for the month', async () => {
+      it('has the price for the year', async () => {
         setup({ planValue: proPlanYear, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$156/)
+        const price = await screen.findByText(/\$130/)
         expect(price).toBeInTheDocument()
-        const monthly = await screen.findByText(/billed monthly/)
+        const monthly = await screen.findByText(/\/month billed annually at/)
         expect(monthly).toBeInTheDocument()
       })
     })

@@ -611,6 +611,9 @@ describe('UpgradeForm', () => {
         setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
+        const monthlyBtn = await screen.findByTestId('radio-monthly')
+        expect(monthlyBtn).toBeInTheDocument()
+
         const optionBtn = screen.queryByTestId('radio-annual')
         expect(optionBtn).not.toBeInTheDocument()
       })
@@ -934,6 +937,9 @@ describe('UpgradeForm', () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
+        const monthlyBtn = await screen.findByTestId('radio-monthly')
+        expect(monthlyBtn).toBeInTheDocument()
+
         const optionBtn = screen.queryByTestId('radio-annual')
         expect(optionBtn).not.toBeInTheDocument()
       })
@@ -1192,12 +1198,11 @@ describe('UpgradeForm', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('does not render annual option button', async () => {
+      it('renders annual option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const optionBtn = screen.queryByTestId('radio-annual')
-        expect(optionBtn).not.toBeInTheDocument()
+        const optionBtn = await screen.findByTestId('radio-annual')
+        expect(optionBtn).toBeInTheDocument()
       })
 
       it('renders the seat input with 13 seats (existing subscription)', async () => {
@@ -1212,7 +1217,7 @@ describe('UpgradeForm', () => {
         expect(seatCount).toHaveValue(13)
       })
 
-      it('has the price for the month', async () => {
+      it('has the price for the year', async () => {
         setup({
           planValue: Plans.USERS_PR_INAPPY,
           monthlyPlan: false,
@@ -1220,7 +1225,7 @@ describe('UpgradeForm', () => {
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$156/)
+        const price = await screen.findByText(/\$130/)
         expect(price).toBeInTheDocument()
       })
 
@@ -1367,7 +1372,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: Plans.USERS_PR_INAPPM,
+                value: Plans.USERS_PR_INAPPY,
               },
             })
           )
@@ -1576,15 +1581,16 @@ describe('UpgradeForm', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('does not render annual option button', async () => {
+      it('renders annual option button', async () => {
         setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = screen.queryByTestId('radio-annual')
-        expect(optionBtn).not.toBeInTheDocument()
+        const optionBtn = await screen.findByTestId('radio-annual')
+        expect(optionBtn).toBeInTheDocument()
       })
 
       it('renders the seat input with 21 seats (existing subscription)', async () => {
@@ -1600,7 +1606,7 @@ describe('UpgradeForm', () => {
         expect(seatCount).toHaveValue(21)
       })
 
-      it('has the price for the month', async () => {
+      it('has the price for the year', async () => {
         setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
@@ -1609,7 +1615,7 @@ describe('UpgradeForm', () => {
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$221/)
+        const price = await screen.findByText(/\$189/)
         expect(price).toBeInTheDocument()
       })
 
@@ -1686,7 +1692,7 @@ describe('UpgradeForm', () => {
           const monthlyOption = await screen.findByTestId('radio-monthly')
           await user.click(monthlyOption)
 
-          const price = screen.getByText(/\$221/)
+          const price = await screen.findByText(/\$221/)
           expect(price).toBeInTheDocument()
         })
       })
@@ -1873,6 +1879,21 @@ describe('UpgradeForm', () => {
         expect(ownerTitle).toBeInTheDocument()
       })
 
+      it('renders up to 10 paid users text', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          monthlyPlan: false,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const teamOption = await screen.findByTestId('radio-team')
+        await user.click(teamOption)
+
+        const auxiliaryText = await screen.findByText(/Up to 10 paid users/)
+        expect(auxiliaryText).toBeInTheDocument()
+      })
+
       it('renders monthly option button', async () => {
         setup({
           planValue: Plans.USERS_TEAMY,
@@ -1885,7 +1906,7 @@ describe('UpgradeForm', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('does not render annual option button', async () => {
+      it('renders annual option button', async () => {
         setup({
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
@@ -1893,8 +1914,8 @@ describe('UpgradeForm', () => {
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = screen.queryByTestId('radio-annual')
-        expect(optionBtn).not.toBeInTheDocument()
+        const optionBtn = await screen.findByTestId('radio-annual')
+        expect(optionBtn).toBeInTheDocument()
       })
 
       it('renders the seat input with 5 seats (existing subscription)', async () => {
@@ -1917,7 +1938,7 @@ describe('UpgradeForm', () => {
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$10/)
+        const price = await screen.findByText(/\$4/)
         expect(price).toBeInTheDocument()
       })
 

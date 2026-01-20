@@ -61,12 +61,12 @@ const sentryProTeamYearly = {
 const availablePlans = [freePlan, sentryProTeamMonthly, sentryProTeamYearly]
 
 const mockPlanDataResponse = {
-  baseUnitPrice: 10,
+  baseUnitPrice: 12,
   benefits: [],
-  billingRate: BillingRate.ANNUALLY,
+  billingRate: BillingRate.MONTHLY,
   marketingName: 'Sentry',
   monthlyUploadLimit: 250,
-  value: Plans.USERS_SENTRYY,
+  value: Plans.USERS_SENTRYM,
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -125,19 +125,26 @@ describe('BillingOptions', () => {
     )
 
     const mockSetFormValue = vi.fn()
+    const mockSetSelectedPlan = vi.fn()
     const user = userEvent.setup()
 
-    return { user, mockSetFormValue }
+    return { user, mockSetFormValue, mockSetSelectedPlan }
   }
 
   describe('when rendered', () => {
     describe('planString is set to a monthly plan', () => {
       it('renders monthly button as "selected"', async () => {
-        setup()
+        const { mockSetFormValue, mockSetSelectedPlan } = setup()
 
-        render(<BillingOptions />, {
-          wrapper,
-        })
+        render(
+          <BillingOptions
+            setFormValue={mockSetFormValue}
+            setSelectedPlan={mockSetSelectedPlan}
+          />,
+          {
+            wrapper,
+          }
+        )
 
         const annualBtn = screen.queryByTestId('radio-annual')
         expect(annualBtn).not.toBeInTheDocument()
@@ -148,11 +155,17 @@ describe('BillingOptions', () => {
       })
 
       it('renders correct pricing scheme', async () => {
-        setup()
+        const { mockSetFormValue, mockSetSelectedPlan } = setup()
 
-        render(<BillingOptions />, {
-          wrapper,
-        })
+        render(
+          <BillingOptions
+            setFormValue={mockSetFormValue}
+            setSelectedPlan={mockSetSelectedPlan}
+          />,
+          {
+            wrapper,
+          }
+        )
 
         const cost = await screen.findByText(/\$12/)
         expect(cost).toBeInTheDocument()

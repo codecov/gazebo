@@ -43,14 +43,14 @@ function UpgradePlanPage() {
     paramSelectedPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
   }
 
-  const defaultPaidMonthlyPlan = determineDefaultPlan({
+  const defaultPaidPlan = determineDefaultPlan({
     selectedPlan: paramSelectedPlan,
     currentPlan: planData?.plan,
     plans,
     isSentryUpgrade,
   })
 
-  const [selectedPlan, setSelectedPlan] = useState(defaultPaidMonthlyPlan)
+  const [selectedPlan, setSelectedPlan] = useState(defaultPaidPlan)
 
   useLayoutEffect(() => {
     setCrumbs([

@@ -395,12 +395,12 @@ describe('TeamPlanController', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('does not render annual option button', async () => {
+      it('renders annual option button when current plan is annual', async () => {
         setup({ planValue: Plans.USERS_TEAMY, monthlyPlan: false })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = screen.queryByTestId('radio-annual')
-        expect(optionBtn).not.toBeInTheDocument()
+        const optionBtn = await screen.findByTestId('radio-annual')
+        expect(optionBtn).toBeInTheDocument()
       })
 
       it('does not have the price for the year', async () => {
