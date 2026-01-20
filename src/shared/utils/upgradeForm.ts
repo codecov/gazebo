@@ -185,7 +185,7 @@ export const calculatePriceSentryPlan = ({
   let price = SENTRY_PRICE
 
   if (seats > 5) {
-    price += Math.floor(seats - 5) * (baseUnitPrice ?? 0)
+    price += Math.floor(seats - 5) * baseUnitPrice
   }
 
   return price
@@ -198,51 +198,6 @@ export const calculateSentryNonBundledCost = ({
 }) =>
   MIN_SENTRY_SEATS * baseUnitPrice * MONTHS_PER_YEAR -
   SENTRY_PRICE * MONTHS_PER_YEAR
-
-// figures out the default plan to use based on the selected plan, current plan, and isSentryUpgrade
-export const determineDefaultPlan = ({
-  selectedPlan,
-  currentPlan,
-  plans,
-  isSentryUpgrade,
-}: {
-  selectedPlan?: IndividualPlan | null
-  currentPlan?: Plan | null
-  plans?: IndividualPlan[] | null
-  isSentryUpgrade: boolean
-}): IndividualPlan | undefined => {
-  const { proPlanMonth } = findProPlans({ plans })
-  const { sentryPlanMonth } = findSentryPlans({ plans })
-  const { teamPlanMonth } = findTeamPlans({ plans })
-
-  let plan = proPlanMonth
-
-  if (selectedPlan?.isTeamPlan) {
-    plan = teamPlanMonth
-  } else if (selectedPlan?.isSentryPlan || currentPlan?.isSentryPlan) {
-    plan = sentryPlanMonth
-  } else if (currentPlan?.isTeamPlan) {
-    plan = teamPlanMonth
-  } else if (isSentryUpgrade && !currentPlan?.isSentryPlan) {
-    plan = sentryPlanMonth
-  } else if (selectedPlan && selectedPlan.billingRate === BillingRate.MONTHLY) {
-    // selectedPlan is a Pro plan (already checked it's not Team or Sentry above, and currentPlan is not Team or Sentry)
-    plan = selectedPlan
-  }
-
-  // Fallback order if plans aren't available: preferred monthly plan -> selectedPlan if monthly -> currentPlan if monthly -> undefined
-  plan =
-    plan ??
-    (selectedPlan?.billingRate === BillingRate.MONTHLY
-      ? selectedPlan
-      : undefined) ??
-    (currentPlan?.billingRate === BillingRate.MONTHLY
-      ? currentPlan
-      : undefined) ??
-    undefined
-
-  return plan
-}
 
 export const getDefaultValuesUpgradeForm = ({
   accountDetails,
@@ -260,17 +215,27 @@ export const getDefaultValuesUpgradeForm = ({
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
+  const { proPlanYear } = findProPlans({ plans })
+  const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
+  const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
+
   const isSentryUpgrade = canApplySentryUpgrade({
     isEnterprisePlan: plan?.isEnterprisePlan,
     plans,
   })
 
-  const newPlan = determineDefaultPlan({
-    selectedPlan,
-    currentPlan: plan,
-    plans,
-    isSentryUpgrade,
-  })
+  const isMonthlyPlan = plan?.billingRate === BillingRate.MONTHLY
+
+  const isPaidPlan = !!plan?.billingRate // If the plan has a billing rate, it's a paid plan
+
+  let newPlan = proPlanYear
+  if (isSentryUpgrade && !plan?.isSentryPlan) {
+    newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
+  } else if (plan?.isTeamPlan || selectedPlan?.isTeamPlan) {
+    newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
+  } else if (isPaidPlan) {
+    newPlan = plan
+  }
 
   const seats = extractSeats({
     // free seats are included in planUserCount but we want to use the paid number

@@ -1,5 +1,6 @@
-import { UseFormRegister } from 'react-hook-form'
+import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
+import { IndividualPlan } from 'services/account/useAvailablePlans'
 import { MIN_SENTRY_SEATS } from 'shared/utils/upgradeForm'
 import { Card } from 'ui/Card'
 import TextInput from 'ui/TextInput'
@@ -12,7 +13,9 @@ import { UpgradeFormFields } from '../../UpgradeForm'
 
 interface SentryPlanControllerProps {
   seats: number
+  newPlan?: IndividualPlan
   register: UseFormRegister<UpgradeFormFields>
+  setFormValue: UseFormSetValue<UpgradeFormFields>
   errors?: {
     seats?: {
       message?: string
@@ -21,7 +24,9 @@ interface SentryPlanControllerProps {
 }
 
 const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
+  newPlan,
   seats,
+  setFormValue,
   register,
   errors,
 }) => {
@@ -29,7 +34,7 @@ const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
     <>
       <Card.Content>
         <div className="flex flex-col gap-2">
-          <BillingOptions />
+          <BillingOptions newPlan={newPlan} setFormValue={setFormValue} />
         </div>
       </Card.Content>
       <hr />
@@ -42,7 +47,7 @@ const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
             <TextInput
               data-cy="seats"
               dataMarketing="plan-pricing-seats"
-              {...register('seats', { valueAsNumber: true })}
+              {...register('seats')}
               id="nb-seats"
               size={20}
               type="number"
@@ -53,7 +58,11 @@ const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
         </div>
       </Card.Content>
       <Card.Content>
-        <PriceCallout seats={seats} />
+        <PriceCallout
+          seats={seats}
+          newPlan={newPlan}
+          setFormValue={setFormValue}
+        />
         {errors?.seats && (
           <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
             {errors?.seats?.message}
