@@ -236,10 +236,13 @@ export const determineDefaultPlan = ({
     plan = selectedPlan
   }
 
-  // Fallback order if plans aren't available: preferred plan -> selectedPlan if same billing rate -> currentPlan -> undefined
+  // Fallback order if plans aren't available:
+  // - Use selectedPlan if it's monthly OR if currentPlan is annual
+  // - Otherwise fall back to currentPlan (don't use selectedPlan if it's monthly and currentPlan is annual)
   plan =
     plan ??
-    (selectedPlan?.billingRate === currentPlan?.billingRate
+    (selectedPlan?.billingRate === BillingRate.MONTHLY ||
+    currentPlan?.billingRate === BillingRate.ANNUALLY
       ? selectedPlan
       : undefined) ??
     currentPlan ??
