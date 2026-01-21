@@ -60,11 +60,7 @@ const ProPlanController: React.FC<ProPlanControllerProps> = ({
         </div>
       </Card.Content>
       <Card.Content>
-        <PriceCallout
-          seats={seats}
-          newPlan={newPlan}
-          setFormValue={setFormValue}
-        />
+        <PriceCallout seats={seats} newPlan={newPlan} />
         {errors?.seats && (
           <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
             {errors?.seats?.message}

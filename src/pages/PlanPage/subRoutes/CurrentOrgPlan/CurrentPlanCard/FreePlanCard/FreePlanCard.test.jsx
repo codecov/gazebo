@@ -117,8 +117,8 @@ const sentryPlans = [
   {
     marketingName: 'Sentry',
     value: Plans.USERS_SENTRYM,
-    billingRate: null,
-    baseUnitPrice: 0,
+    billingRate: BillingRate.MONTHLY,
+    baseUnitPrice: 12,
     benefits: ['Includes 5 seats', 'Unlimited public repositories'],
     monthlyUploadLimit: null,
     isTeamPlan: false,
@@ -127,7 +127,7 @@ const sentryPlans = [
   {
     marketingName: 'Sentry',
     value: Plans.USERS_SENTRYY,
-    billingRate: null,
+    billingRate: BillingRate.ANNUALLY,
     baseUnitPrice: 10,
     benefits: ['Includes 5 seats', 'Unlimited private repositories'],
     monthlyUploadLimit: null,
@@ -315,7 +315,10 @@ describe('FreePlanCard', () => {
       const link = await screen.findByRole('link', { name: /Upgrade/ })
 
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
+      expect(link).toHaveAttribute(
+        'href',
+        '/plan/bb/critical-role/upgrade?plan=pro'
+      )
     })
 
     it('renders the help message', async () => {
@@ -362,15 +365,10 @@ describe('FreePlanCard', () => {
         wrapper,
       })
 
-      const cost = await screen.findByText(/\$10/)
+      const cost = await screen.findByText(/\$12/)
       expect(cost).toBeInTheDocument()
 
-      const annualBillingText = await screen.findByText(/per user\/month/)
-      expect(annualBillingText).toBeInTheDocument()
-
-      const monthlyBillingText = await screen.findByText(
-        /billed annually, or \$12 per user billing monthly/
-      )
+      const monthlyBillingText = await screen.findByText(/billed monthly/)
       expect(monthlyBillingText).toBeInTheDocument()
     })
 
@@ -481,7 +479,7 @@ describe('FreePlanCard', () => {
       expect(upgradeLink).toBeInTheDocument()
       expect(upgradeLink).toHaveAttribute(
         'href',
-        '/plan/bb/critical-role/upgrade'
+        '/plan/bb/critical-role/upgrade?plan=pro'
       )
     })
 
@@ -500,13 +498,14 @@ describe('FreePlanCard', () => {
       })
 
       const cost = await screen.findByText(/\$29/)
+
       expect(cost).toBeInTheDocument()
 
       const perMonth = await screen.findByText(/^\/month/)
       expect(perMonth).toBeInTheDocument()
 
       const billingCycleInfo = await screen.findByText(
-        /over 5 users is \$10 per user\/month, billed annually/
+        /over 5 users is \$12 per user\/month, billed monthly/
       )
       expect(billingCycleInfo).toBeInTheDocument()
     })

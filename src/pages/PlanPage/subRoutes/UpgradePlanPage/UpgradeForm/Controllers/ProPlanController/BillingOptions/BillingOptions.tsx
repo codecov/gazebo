@@ -32,9 +32,9 @@ const BillingControls: React.FC<BillingControlsProps> = ({
 
   const currentPlanBillingRate = planData?.plan?.billingRate
   const [option, setOption] = useState<OptionPeriod>(() =>
-    currentPlanBillingRate === BillingRate.MONTHLY
-      ? TimePeriods.MONTHLY
-      : TimePeriods.ANNUAL
+    currentPlanBillingRate === BillingRate.ANNUALLY
+      ? TimePeriods.ANNUAL
+      : TimePeriods.MONTHLY
   )
 
   // used to update option selection if user selects
@@ -78,13 +78,15 @@ const BillingControls: React.FC<BillingControlsProps> = ({
             setOption(value)
           }}
         >
-          <RadioTileGroup.Item
-            value={TimePeriods.ANNUAL}
-            className="w-32"
-            data-testid="radio-annual"
-          >
-            <RadioTileGroup.Label>{TimePeriods.ANNUAL}</RadioTileGroup.Label>
-          </RadioTileGroup.Item>
+          {currentPlanBillingRate === BillingRate.ANNUALLY && (
+            <RadioTileGroup.Item
+              value={TimePeriods.ANNUAL}
+              className="w-32"
+              data-testid="radio-annual"
+            >
+              <RadioTileGroup.Label>{TimePeriods.ANNUAL}</RadioTileGroup.Label>
+            </RadioTileGroup.Item>
+          )}
           <RadioTileGroup.Item
             value={TimePeriods.MONTHLY}
             className="w-32"

@@ -38,7 +38,6 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ provider, owner })
   const { proPlanYear, proPlanMonth } = findProPlans({ plans })
-  const planParam = usePlanParams()
 
   const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({
@@ -50,17 +49,22 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
     isEnterprisePlan: planData?.plan?.isEnterprisePlan,
     plans,
   })
+  const planParam = usePlanParams()
 
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
   const monthlyProPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
 
   const monthlyPlan = newPlan?.billingRate === BillingRate.MONTHLY
 
-  let planOption = null
-  if (hasTeamPlans && planParam === TierNames.TEAM) {
+  // Derive planOption from newPlan, with URL param as fallback for initial load
+  let planOption: typeof TierName.PRO | typeof TierName.TEAM = TierName.PRO
+  if (newPlan?.isTeamPlan) {
     planOption = TierName.TEAM
-  } else {
+  } else if (newPlan && !newPlan.isTeamPlan) {
     planOption = TierName.PRO
+  } else if (hasTeamPlans && planParam === TierNames.TEAM) {
+    // Fallback to URL param when newPlan hasn't loaded yet
+    planOption = TierName.TEAM
   }
 
   const { updateParams } = useLocationParams({ plan: planOption })

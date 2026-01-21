@@ -284,12 +284,13 @@ describe('ProPlanController', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders annual option button', async () => {
+      it('does not render annual option button', async () => {
         setup({ planValue: proPlanMonth })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
+        expect(screen.queryByTestId('radio-annual')).not.toBeInTheDocument()
       })
 
       it('renders monthly option button as "selected"', async () => {

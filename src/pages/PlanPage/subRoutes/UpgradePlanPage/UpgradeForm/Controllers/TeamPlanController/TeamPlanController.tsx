@@ -67,11 +67,7 @@ const PlanController: React.FC<PlanControllerProps> = ({
         </div>
       </Card.Content>
       <Card.Content>
-        <PriceCallout
-          seats={seats}
-          newPlan={newPlan}
-          setFormValue={setFormValue}
-        />
+        <PriceCallout seats={seats} newPlan={newPlan} />
         {errors?.seats?.message ? (
           <ErrorBanner
             errors={errors}

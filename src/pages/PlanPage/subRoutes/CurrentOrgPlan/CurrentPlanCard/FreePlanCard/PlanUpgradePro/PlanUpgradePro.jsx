@@ -10,9 +10,8 @@ import ProPlanSubheading from '../ProPlanSubheading'
 
 function PlanDetails({
   isSentryUpgrade,
-  sentryAnnualUnitPrice,
+  sentryMonthlyUnitPrice,
   proMonthlyUnitPrice,
-  proYearlyUnitPrice,
 }) {
   if (isSentryUpgrade) {
     return (
@@ -22,8 +21,8 @@ function PlanDetails({
           /month
         </p>
         <p className="text-ds-gray-senary">
-          over 5 users is ${sentryAnnualUnitPrice} per user/month, billed
-          annually
+          over 5 users is ${sentryMonthlyUnitPrice} per user/month, billed
+          monthly
         </p>
       </div>
     )
@@ -32,27 +31,24 @@ function PlanDetails({
   return (
     <div className="text-xs">
       <p className="font-semibold">
-        <span className="text-2xl">${proYearlyUnitPrice}</span> per user/month
+        <span className="text-2xl">${proMonthlyUnitPrice}</span> per user/month
       </p>
-      <p className="text-ds-gray-senary">
-        billed annually, or ${proMonthlyUnitPrice} per user billing monthly
-      </p>
+      <p className="text-ds-gray-senary">billed monthly</p>
     </div>
   )
 }
 
 PlanDetails.propTypes = {
   isSentryUpgrade: PropType.bool.isRequired,
-  sentryAnnualUnitPrice: PropType.number,
+  sentryMonthlyUnitPrice: PropType.number,
   proMonthlyUnitPrice: PropType.number,
-  proYearlyUnitPrice: PropType.number,
 }
 
 function PlanUpgradePro({ isSentryUpgrade, plans }) {
-  const { proPlanMonth, proPlanYear } = findProPlans({ plans })
-  const { sentryPlanYear } = findSentryPlans({ plans })
+  const { proPlanMonth } = findProPlans({ plans })
+  const { sentryPlanMonth } = findSentryPlans({ plans })
 
-  const upgradeToPlan = isSentryUpgrade ? sentryPlanYear : proPlanMonth
+  const upgradeToPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
 
   return (
     <div className="flex flex-col border">
@@ -79,9 +75,8 @@ function PlanUpgradePro({ isSentryUpgrade, plans }) {
           </p>
           <PlanDetails
             isSentryUpgrade={isSentryUpgrade}
-            sentryAnnualUnitPrice={sentryPlanYear?.baseUnitPrice}
+            sentryMonthlyUnitPrice={sentryPlanMonth?.baseUnitPrice}
             proMonthlyUnitPrice={proPlanMonth?.baseUnitPrice}
-            proYearlyUnitPrice={proPlanYear?.baseUnitPrice}
           />
         </div>
       </div>

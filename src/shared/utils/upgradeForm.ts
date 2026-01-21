@@ -215,7 +215,7 @@ export const getDefaultValuesUpgradeForm = ({
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
-  const { proPlanYear } = findProPlans({ plans })
+  const { proPlanYear, proPlanMonth } = findProPlans({ plans })
   const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
 
@@ -224,15 +224,16 @@ export const getDefaultValuesUpgradeForm = ({
     plans,
   })
 
-  const isMonthlyPlan = plan?.billingRate === BillingRate.MONTHLY
-
   const isPaidPlan = !!plan?.billingRate // If the plan has a billing rate, it's a paid plan
+  const isYearlyPlan = plan?.billingRate === BillingRate.ANNUALLY
 
-  let newPlan = proPlanYear
-  if (isSentryUpgrade && !plan?.isSentryPlan) {
-    newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
-  } else if (plan?.isTeamPlan || selectedPlan?.isTeamPlan) {
-    newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
+  let newPlan = isYearlyPlan ? proPlanYear : proPlanMonth
+  if (selectedPlan) {
+    newPlan = selectedPlan
+  } else if (isSentryUpgrade && !plan?.isSentryPlan) {
+    newPlan = isYearlyPlan ? sentryPlanYear : sentryPlanMonth
+  } else if (plan?.isTeamPlan) {
+    newPlan = isYearlyPlan ? teamPlanYear : teamPlanMonth
   } else if (isPaidPlan) {
     newPlan = plan
   }

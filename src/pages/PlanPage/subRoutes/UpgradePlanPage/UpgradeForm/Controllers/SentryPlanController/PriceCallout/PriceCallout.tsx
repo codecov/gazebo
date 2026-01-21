@@ -1,5 +1,4 @@
 import { Fragment } from 'react'
-import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { MONTHS_PER_YEAR } from 'pages/PlanPage/subRoutes/CurrentOrgPlan/BillingDetails/BillingDetails'
@@ -22,19 +21,12 @@ import {
 } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
-import { UpgradeFormFields } from '../../../UpgradeForm'
-
 interface PriceCalloutProps {
   newPlan?: IndividualPlan
   seats: number
-  setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 
-const PriceCallout: React.FC<PriceCalloutProps> = ({
-  newPlan,
-  seats,
-  setFormValue,
-}) => {
+const PriceCallout: React.FC<PriceCalloutProps> = ({ newPlan, seats }) => {
   const { provider, owner } = useParams<{ provider: Provider; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
@@ -107,29 +99,11 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
             save {formatNumberToUSD(nonBundledCost)}
           </span>{' '}
           with the Sentry bundle
-          {seats > 5 && (
-            <>
-              , save an{' '}
-              <span className="font-semibold">
-                additional{' '}
-                {formatNumberToUSD(
-                  (perMonthPrice - perYearPrice) * MONTHS_PER_YEAR
-                )}
-              </span>{' '}
-              a year with annual billing
-              {nextBillingDate && (
-                <Fragment>
-                  ,<span className="font-semibold"> next billing date</span> is{' '}
-                  {nextBillingDate}
-                </Fragment>
-              )}{' '}
-              <button
-                className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-                onClick={() => setFormValue('newPlan', sentryPlanYear)}
-              >
-                switch to annual
-              </button>
-            </>
+          {nextBillingDate && (
+            <Fragment>
+              ,<span className="font-semibold"> next billing date</span> is{' '}
+              {nextBillingDate}
+            </Fragment>
           )}
         </p>
       </div>
