@@ -33,15 +33,17 @@ function WorkflowYMLStep({
     owner,
   })
 
-  const workflowYMLConfig = `- name: Upload coverage reports to Codecov
-    uses: codecov/codecov-action@v5
-    with:
-      token: \${{ secrets.CODECOV_TOKEN }}${
-        orgUploadToken
-          ? `
-      slug: ${owner}/${repo}`
-          : ''
-      }`
+  // prettier-ignore
+  const actionString =
+  `- name: Upload coverage reports to Codecov
+  uses: codecov/codecov-action@v4.0.1
+  with:
+    token: \${{ secrets.CODECOV_TOKEN }}${
+      orgUploadToken
+        ? `
+    slug: ${owner}/${repo}`
+        : ''
+  }`
 
   return (
     <div>
