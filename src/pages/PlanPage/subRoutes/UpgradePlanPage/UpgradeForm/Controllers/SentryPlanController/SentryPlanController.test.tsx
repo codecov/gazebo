@@ -246,6 +246,7 @@ describe('SentryPlanController', () => {
     describe('when the user has a plan monthly', () => {
       const props = {
         setFormValue: vi.fn(),
+        setSelectedPlan: vi.fn(),
         register: vi.fn(),
         newPlan: sentryPlanMonth,
         seats: 10,
@@ -304,6 +305,7 @@ describe('SentryPlanController', () => {
     describe('when the user has a plan yearly', () => {
       const props = {
         setFormValue: vi.fn(),
+        setSelectedPlan: vi.fn(),
         register: vi.fn(),
         newPlan: sentryPlanYear,
         seats: 5,
@@ -311,23 +313,23 @@ describe('SentryPlanController', () => {
       }
 
       it('renders monthly option button', async () => {
-        setup({ planValue: Plans.USERS_SENTRYY })
+        setup({ planValue: Plans.USERS_SENTRYY, monthlyPlan: false })
         render(<SentryPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('does not render annual option button', async () => {
-        setup({ planValue: Plans.USERS_SENTRYY })
+      it('renders annual option button when current plan is annual', async () => {
+        setup({ planValue: Plans.USERS_SENTRYY, monthlyPlan: false })
         render(<SentryPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = screen.queryByTestId('radio-annual')
-        expect(optionBtn).not.toBeInTheDocument()
+        const optionBtn = await screen.findByTestId('radio-annual')
+        expect(optionBtn).toBeInTheDocument()
       })
 
       it('does not have the price for the year', async () => {
-        setup({ planValue: Plans.USERS_SENTRYY })
+        setup({ planValue: Plans.USERS_SENTRYY, monthlyPlan: false })
         render(<SentryPlanController {...props} />, { wrapper: wrapper() })
 
         const price = screen.queryByText(/\$29/)

@@ -8,6 +8,7 @@ import {
 import { usePlanData } from 'services/account/usePlanData'
 import { useLocationParams } from 'services/navigation/useLocationParams'
 import {
+  BillingRate,
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
@@ -35,10 +36,10 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ provider, owner })
-  const { proPlanMonth } = findProPlans({ plans })
+  const { proPlanMonth, proPlanYear } = findProPlans({ plans })
 
-  const { sentryPlanMonth } = findSentryPlans({ plans })
-  const { teamPlanMonth } = findTeamPlans({
+  const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
+  const { teamPlanMonth, teamPlanYear } = findTeamPlans({
     plans,
   })
 
@@ -47,7 +48,20 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
     isEnterprisePlan: planData?.plan?.isEnterprisePlan,
     plans,
   })
-  const monthlyProPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
+
+  // When switching plan types, respect the user's already selected billing rate
+  // Fall back to current plan's billing rate for initial default
+  const isSelectedPlanAnnual = selectedPlan
+    ? selectedPlan.billingRate === BillingRate.ANNUALLY
+    : planData?.plan?.billingRate === BillingRate.ANNUALLY
+  const proPlan = isSelectedPlanAnnual
+    ? isSentryUpgrade
+      ? sentryPlanYear
+      : proPlanYear
+    : isSentryUpgrade
+      ? sentryPlanMonth
+      : proPlanMonth
+  const teamPlan = isSelectedPlanAnnual ? teamPlanYear : teamPlanMonth
 
   // Use selectedPlan to determine which option is selected
   // This keeps it in sync with UpgradePlanPage's logic
@@ -67,13 +81,14 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
           <RadioTileGroup
             value={planOption}
             onValueChange={(value) => {
+              // set both form value and selected plan as form version is needed for submission and selected plan is needed for UI outside of form
               if (value === TierName.PRO) {
-                setSelectedPlan(monthlyProPlan)
-                setFormValue('newPlan', monthlyProPlan)
+                setSelectedPlan(proPlan)
+                setFormValue('newPlan', proPlan)
                 updateParams({ plan: TierNames.PRO })
               } else {
-                setSelectedPlan(teamPlanMonth)
-                setFormValue('newPlan', teamPlanMonth)
+                setSelectedPlan(teamPlan)
+                setFormValue('newPlan', teamPlan)
                 updateParams({ plan: TierNames.TEAM })
               }
             }}

@@ -1,10 +1,15 @@
 import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { MONTHS_PER_YEAR } from 'pages/PlanPage/subRoutes/CurrentOrgPlan/BillingDetails/BillingDetails'
 import { useAccountDetails } from 'services/account/useAccountDetails'
-import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import {
+  IndividualPlan,
+  useAvailablePlans,
+} from 'services/account/useAvailablePlans'
 import { Provider } from 'shared/api/helpers'
 import {
+  BillingRate,
   findSentryPlans,
   formatNumberToUSD,
   getNextBillingDate,
@@ -15,22 +20,61 @@ import {
 } from 'shared/utils/upgradeForm'
 
 interface PriceCalloutProps {
+  newPlan?: IndividualPlan
   seats: number
 }
 
-const PriceCallout: React.FC<PriceCalloutProps> = ({ seats }) => {
+const PriceCallout: React.FC<PriceCalloutProps> = ({ newPlan, seats }) => {
   const { provider, owner } = useParams<{ provider: Provider; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { sentryPlanMonth } = findSentryPlans({ plans })
+  const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
   const perMonthPrice = calculatePriceSentryPlan({
     seats,
     baseUnitPrice: sentryPlanMonth?.baseUnitPrice,
   })
+
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
 
+  const perYearPrice = calculatePriceSentryPlan({
+    seats,
+    baseUnitPrice: sentryPlanYear?.baseUnitPrice,
+  })
+  const isPerYear = newPlan?.billingRate === BillingRate.ANNUALLY
+
   if (seats < MIN_SENTRY_SEATS) {
     return null
+  }
+
+  // Sentry Pro plan specifically needs price diff check because annual and monthly are the same for base seat count
+  if (isPerYear && perMonthPrice - perYearPrice > 0) {
+    return (
+      <div className="bg-ds-gray-primary p-4">
+        <p className="pb-3">
+          <span className="font-semibold">
+            {formatNumberToUSD(perYearPrice)}
+          </span>
+          /month billed annually at{' '}
+          {formatNumberToUSD(perYearPrice * MONTHS_PER_YEAR)}
+        </p>
+        <p>
+          &#127881; You{' '}
+          <span className="font-semibold">
+            save{' '}
+            {formatNumberToUSD(
+              (perMonthPrice - perYearPrice) * MONTHS_PER_YEAR
+            )}
+          </span>{' '}
+          with annual billing
+          {nextBillingDate && (
+            <Fragment>
+              ,<span className="font-semibold"> next billing date</span> is{' '}
+              {nextBillingDate}
+            </Fragment>
+          )}
+        </p>
+      </div>
+    )
   }
 
   return (
