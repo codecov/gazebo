@@ -129,26 +129,47 @@ const CodeBody = ({
     codeDisplayOverlayRef.current.style.height = `${virtualizer.getTotalSize()}px`
     codeDisplayOverlayRef.current.style.position = 'relative'
 
-    const lineHash = location.hash.split('-')?.[0]?.slice(1)
-    if (lineHash === hashedPath) {
-      const lineIndicator = location.hash.split('-')?.[1]
-      const isBase = lineIndicator?.includes('L')
-      const isHead = lineIndicator?.includes('R')
-      const hashLineNumber = lineIndicator?.slice(1)
+    // More robust hash parsing to handle different formats
+    if (location.hash) {
+      // First try to parse the complex format: #path-[LR]number
+      const complexMatch = location.hash.match(/^#(.*)-([LR])(\d+)$/)
+      if (complexMatch && complexMatch.length === 4) {
+        const [, path, lineType, lineNumberStr] = complexMatch
+        
+        if (path === hashedPath) {
+          const lineNumber = lineNumberStr
+          const isBase = lineType === 'L'
+          const isHead = lineType === 'R'
+          
+          const index = lineData.findIndex(
+            (line) =>
+              (isHead && line.headNumber === lineNumber) ||
+              (isBase && line.baseNumber === lineNumber)
+          )
 
-      const index = lineData.findIndex(
-        (line) =>
-          (isHead && line.headNumber === hashLineNumber) ||
-          (isBase && line.baseNumber === hashLineNumber)
-      )
-
-      if (index >= 0 && index < tokens.length) {
-        virtualizer.scrollToIndex(index, { align: 'start' })
+          if (index >= 0 && index < tokens.length) {
+            virtualizer.scrollToIndex(index, { align: 'start' })
+          } else {
+            Sentry.captureMessage(
+              `Invalid line number in file renderer hash: ${location.hash}`,
+              { fingerprint: ['file-renderer-invalid-line-number'] }
+            )
+          }
+        }
       } else {
-        Sentry.captureMessage(
-          `Invalid line number in file renderer hash: ${location.hash}`,
-          { fingerprint: ['file-renderer-invalid-line-number'] }
-        )
+        // Try to handle simple format: #Lnumber
+        const simpleMatch = location.hash.match(/^#L(\d+)$/)
+        if (simpleMatch && simpleMatch[1]) {
+          const lineNumber = simpleMatch[1]
+          // For simple format, try to find a matching base line number
+          const index = lineData.findIndex(
+            (line) => line.baseNumber === lineNumber
+          )
+          
+          if (index >= 0 && index < tokens.length) {
+            virtualizer.scrollToIndex(index, { align: 'start' })
+          }
+        }
       }
     }
   }, [
