@@ -70,7 +70,10 @@ const TokenlessSection: React.FC = () => {
         </div>
       </Card.Header>
       <Card.Content>
-        <p className="mb-3">Select an authentication option</p>
+        <p className="mb-3">
+          Select an authentication option (only relevant for public
+          repositories)
+        </p>
         <RadioTileGroup
           value={
             tokenRequired
