@@ -12,14 +12,14 @@ const TeamPlanCard: React.FC = () => {
   }>()
 
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { teamPlanMonth, teamPlanYear } = findTeamPlans({
+  const { teamPlanMonth } = findTeamPlans({
     plans,
   })
 
   return (
     <div className="flex flex-col border">
       <div className="flex justify-between p-4">
-        <h2 className="font-semibold">{teamPlanYear?.marketingName} plan</h2>
+        <h2 className="font-semibold">{teamPlanMonth?.marketingName} plan</h2>
         <div className="flex self-start">
           <Button
             to={{
@@ -39,7 +39,7 @@ const TeamPlanCard: React.FC = () => {
         <div className="flex flex-col gap-2">
           <p className="text-xs font-semibold">Includes</p>
           <BenefitList
-            benefits={teamPlanYear?.benefits}
+            benefits={teamPlanMonth?.benefits}
             iconName="check"
             iconColor="text-ds-pink-default"
           />
@@ -47,13 +47,8 @@ const TeamPlanCard: React.FC = () => {
         <div className="flex flex-col gap-2 border-t pt-2 sm:border-0 sm:p-0">
           <p className="text-xs font-semibold">Pricing</p>
           <div>
-            <p className="font-semibold">
-              <span className="text-2xl">${teamPlanYear?.baseUnitPrice}</span>{' '}
-              per user/month
-            </p>
             <p className="text-ds-gray-senary">
-              billed annually, or ${teamPlanMonth?.baseUnitPrice} per user
-              billing monthly
+              ${teamPlanMonth?.baseUnitPrice} per user billing monthly
             </p>
           </div>
         </div>

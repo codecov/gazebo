@@ -110,7 +110,9 @@ afterAll(() => {
 })
 
 describe('BillingOptions', () => {
-  function setup() {
+  function setup({
+    billingRate = BillingRate.ANNUALLY,
+  }: { billingRate?: string } = {}) {
     server.use(
       graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({ data: { owner: { availablePlans } } })
@@ -118,7 +120,10 @@ describe('BillingOptions', () => {
       graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
-            owner: { hasPrivateRepos: true, plan: mockPlanDataResponse },
+            owner: {
+              hasPrivateRepos: true,
+              plan: { ...mockPlanDataResponse, billingRate },
+            },
           },
         })
       })
@@ -130,10 +135,12 @@ describe('BillingOptions', () => {
     return { user, mockSetFormValue }
   }
 
-  describe('when rendered', () => {
+  describe('when current plan billing rate is annual', () => {
     describe('planString is set to annual plan', () => {
       it('renders annual button as "selected"', async () => {
-        const { mockSetFormValue } = setup()
+        const { mockSetFormValue } = setup({
+          billingRate: BillingRate.ANNUALLY,
+        })
 
         render(
           <BillingOptions
@@ -155,7 +162,9 @@ describe('BillingOptions', () => {
       })
 
       it('renders annual pricing scheme', async () => {
-        const { mockSetFormValue } = setup()
+        const { mockSetFormValue } = setup({
+          billingRate: BillingRate.ANNUALLY,
+        })
 
         render(
           <BillingOptions
@@ -178,7 +187,9 @@ describe('BillingOptions', () => {
 
       describe('user clicks on monthly button', () => {
         it('calls setValue', async () => {
-          const { mockSetFormValue, user } = setup()
+          const { mockSetFormValue, user } = setup({
+            billingRate: BillingRate.ANNUALLY,
+          })
 
           render(
             <BillingOptions
@@ -206,7 +217,9 @@ describe('BillingOptions', () => {
 
     describe('planString is set to a monthly plan', () => {
       it('renders monthly button as "selected"', async () => {
-        const { mockSetFormValue } = setup()
+        const { mockSetFormValue } = setup({
+          billingRate: BillingRate.ANNUALLY,
+        })
 
         render(
           <BillingOptions
@@ -227,31 +240,11 @@ describe('BillingOptions', () => {
         expect(monthlyBtn).toBeChecked()
       })
 
-      it('renders correct pricing scheme', async () => {
-        const { mockSetFormValue } = setup()
-
-        render(
-          <BillingOptions
-            newPlan={sentryProTeamMonthly}
-            setFormValue={mockSetFormValue}
-          />,
-          {
-            wrapper,
-          }
-        )
-
-        const cost = await screen.findByText(/\$12/)
-        expect(cost).toBeInTheDocument()
-
-        const content = await screen.findByText(
-          /per seat\/month, billed monthly/
-        )
-        expect(content).toBeInTheDocument()
-      })
-
       describe('user clicks on annual button', () => {
         it('calls setValue', async () => {
-          const { mockSetFormValue, user } = setup()
+          const { mockSetFormValue, user } = setup({
+            billingRate: BillingRate.ANNUALLY,
+          })
 
           render(
             <BillingOptions
@@ -275,6 +268,49 @@ describe('BillingOptions', () => {
           )
         })
       })
+    })
+  })
+
+  describe('when current plan billing rate is monthly', () => {
+    it('does not render annual button', async () => {
+      const { mockSetFormValue } = setup({ billingRate: BillingRate.MONTHLY })
+
+      render(
+        <BillingOptions
+          newPlan={sentryProTeamMonthly}
+          setFormValue={mockSetFormValue}
+        />,
+        {
+          wrapper,
+        }
+      )
+
+      const monthlyBtn = await screen.findByTestId('radio-monthly')
+      expect(monthlyBtn).toBeInTheDocument()
+      expect(monthlyBtn).toBeChecked()
+
+      const annualBtn = screen.queryByTestId('radio-annual')
+      expect(annualBtn).not.toBeInTheDocument()
+    })
+
+    it('renders correct pricing scheme', async () => {
+      const { mockSetFormValue } = setup({ billingRate: BillingRate.MONTHLY })
+
+      render(
+        <BillingOptions
+          newPlan={sentryProTeamMonthly}
+          setFormValue={mockSetFormValue}
+        />,
+        {
+          wrapper,
+        }
+      )
+
+      const cost = await screen.findByText(/\$12/)
+      expect(cost).toBeInTheDocument()
+
+      const content = await screen.findByText(/per seat\/month, billed monthly/)
+      expect(content).toBeInTheDocument()
     })
   })
 })

@@ -118,6 +118,7 @@ function PaymentCard({ accountDetails, provider, owner }) {
           card={card}
           subscriptionDetail={subscriptionDetail}
           nextBillPrice={nextBillPrice}
+          isFreePlan={planData?.plan?.isFreePlan}
         />
       ) : usBankAccount ? (
         <BankInformation

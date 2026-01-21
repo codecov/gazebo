@@ -5,7 +5,7 @@ import { useAvailablePlans } from 'services/account/useAvailablePlans'
 import { usePlanData } from 'services/account/usePlanData'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
-import { findProPlans } from 'shared/utils/billing'
+import { BillingRate, findProPlans } from 'shared/utils/billing'
 import { shouldRenderCancelLink } from 'shared/utils/upgradeForm'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
@@ -22,6 +22,7 @@ function ProPlanDetails() {
   const cancelAtPeriodEnd =
     accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
   const trialStatus = planData?.plan?.trialStatus
+  const currentPlanBillingRate = planData?.plan?.billingRate
 
   return (
     <div className="h-fit border md:w-[280px]">
@@ -30,14 +31,26 @@ function ProPlanDetails() {
       <div className="flex flex-col gap-6 p-4">
         <div>
           <p className="mb-2 text-xs font-semibold">Pricing</p>
-          <p className="text-xs font-semibold">
-            <span className="text-2xl">${proPlanYear?.baseUnitPrice}</span> per
-            user/month
-          </p>
-          <p className="text-xs text-ds-gray-senary">
-            billed annually, or ${proPlanMonth?.baseUnitPrice} for monthly
-            billing
-          </p>
+          {currentPlanBillingRate === BillingRate.ANNUALLY ? (
+            <>
+              <p className="text-xs font-semibold">
+                <span className="text-2xl">${proPlanYear?.baseUnitPrice}</span>{' '}
+                per user/month
+              </p>
+              <p className="text-xs text-ds-gray-senary">
+                billed annually, or ${proPlanMonth?.baseUnitPrice} for monthly
+                billing
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-xs font-semibold">
+                <span className="text-2xl">${proPlanMonth?.baseUnitPrice}</span>{' '}
+                per user/month
+              </p>
+              <p className="text-xs text-ds-gray-senary">billed monthly</p>
+            </>
+          )}
         </div>
         <div>
           <p className="mb-2 text-xs font-semibold">Includes</p>

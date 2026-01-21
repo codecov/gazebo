@@ -1,9 +1,10 @@
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account/useAvailablePlans'
 import { usePlanData } from 'services/account/usePlanData'
 import {
+  BillingRate,
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
@@ -25,29 +26,49 @@ function UpgradePlanPage() {
   const { data: planData } = usePlanData({ provider, owner })
   const planParam = usePlanParams()
 
-  const { proPlanYear } = findProPlans({ plans })
-  const { sentryPlanYear } = findSentryPlans({ plans })
-  const { teamPlanYear } = findTeamPlans({ plans })
+  const { proPlanYear, proPlanMonth } = findProPlans({ plans })
+  const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
+  const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
   const hasTeamPlans = shouldDisplayTeamCard({ plans })
+  const isYearlyPlan = planData?.plan?.billingRate === BillingRate.ANNUALLY
 
   const isSentryUpgrade = canApplySentryUpgrade({
     isEnterprisePlan: planData?.plan?.isEnterprisePlan,
     plans,
   })
 
-  let defaultPaidYearlyPlan = null
-  if (
-    (hasTeamPlans && planParam === TierNames.TEAM) ||
-    planData?.plan?.isTeamPlan
-  ) {
-    defaultPaidYearlyPlan = teamPlanYear
+  // URL param takes priority over current plan type
+  let defaultPaidPlan = null
+  if (hasTeamPlans && planParam === TierNames.TEAM) {
+    // Explicit URL request for team plan
+    defaultPaidPlan = isYearlyPlan ? teamPlanYear : teamPlanMonth
+  } else if (planParam === TierNames.PRO) {
+    // Explicit URL request for pro plan
+    if (isSentryUpgrade) {
+      defaultPaidPlan = isYearlyPlan ? sentryPlanYear : sentryPlanMonth
+    } else {
+      defaultPaidPlan = isYearlyPlan ? proPlanYear : proPlanMonth
+    }
+  } else if (planData?.plan?.isTeamPlan) {
+    // No URL param, default to current plan type (team)
+    defaultPaidPlan = isYearlyPlan ? teamPlanYear : teamPlanMonth
   } else if (isSentryUpgrade) {
-    defaultPaidYearlyPlan = sentryPlanYear
+    defaultPaidPlan = isYearlyPlan ? sentryPlanYear : sentryPlanMonth
   } else {
-    defaultPaidYearlyPlan = proPlanYear
+    defaultPaidPlan = isYearlyPlan ? proPlanYear : proPlanMonth
   }
 
-  const [selectedPlan, setSelectedPlan] = useState(defaultPaidYearlyPlan)
+  const [selectedPlan, setSelectedPlan] = useState(defaultPaidPlan)
+
+  // Sync selectedPlan when data loads and plan becomes available
+  // This won't override user selections because:
+  // 1. Before API returns, no options exist to select
+  // 2. After user selects, selectedPlan is no longer null/undefined
+  useEffect(() => {
+    if (defaultPaidPlan && selectedPlan == null) {
+      setSelectedPlan(defaultPaidPlan)
+    }
+  }, [defaultPaidPlan, selectedPlan])
 
   useLayoutEffect(() => {
     setCrumbs([

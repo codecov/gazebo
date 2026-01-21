@@ -265,12 +265,13 @@ describe('TeamPlanController', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders annual option button', async () => {
+      it('does not render annual option button', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
+        expect(screen.queryByTestId('radio-annual')).not.toBeInTheDocument()
       })
 
       it('renders monthly option button as "selected"', async () => {
@@ -290,20 +291,19 @@ describe('TeamPlanController', () => {
         expect(price).toBeInTheDocument()
       })
 
-      it('has the price for the year', async () => {
+      it('does not have the price for the year', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$120/)
-        expect(price).toBeInTheDocument()
+        expect(screen.queryByText(/\$120/)).not.toBeInTheDocument()
       })
 
-      it('has the switch to annual button', async () => {
+      it('does not have the switch to annual button', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const switchToAnnualLink = await screen.findByText('switch to annual')
-        expect(switchToAnnualLink).toBeInTheDocument()
+        expect(await screen.findByTestId('radio-monthly')).toBeInTheDocument()
+        expect(screen.queryByText('switch to annual')).not.toBeInTheDocument()
       })
     })
 
