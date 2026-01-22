@@ -46,25 +46,44 @@ function UpgradePlanPage() {
   const defaultPaidPlan = useMemo(() => {
     if (!dataLoaded) return null
 
+    // Get the plan matching user's current billing rate only
+    // Users should only see yearly plans if they're currently on yearly
+    const getPlan = (yearlyPlan, monthlyPlan) =>
+      isYearlyPlan ? yearlyPlan : monthlyPlan
+
+    let plan = null
+
     // URL param takes priority over current plan type
     if (hasTeamPlans && planParam === TierNames.TEAM) {
       // Explicit URL request for team plan
-      return isYearlyPlan ? teamPlanYear : teamPlanMonth
+      plan = getPlan(teamPlanYear, teamPlanMonth)
     } else if (planParam === TierNames.PRO) {
       // Explicit URL request for pro plan
       if (isSentryUpgrade) {
-        return isYearlyPlan ? sentryPlanYear : sentryPlanMonth
+        plan = getPlan(sentryPlanYear, sentryPlanMonth)
       } else {
-        return isYearlyPlan ? proPlanYear : proPlanMonth
+        plan = getPlan(proPlanYear, proPlanMonth)
       }
     } else if (planData?.plan?.isTeamPlan) {
       // No URL param, default to current plan type (team)
-      return isYearlyPlan ? teamPlanYear : teamPlanMonth
+      plan = getPlan(teamPlanYear, teamPlanMonth)
     } else if (isSentryUpgrade) {
-      return isYearlyPlan ? sentryPlanYear : sentryPlanMonth
+      plan = getPlan(sentryPlanYear, sentryPlanMonth)
     } else {
-      return isYearlyPlan ? proPlanYear : proPlanMonth
+      plan = getPlan(proPlanYear, proPlanMonth)
     }
+
+    // Fallback chain: if requested plan type is unavailable, try others
+    // (same billing rate only, only try plans that are actually available)
+    // For sentry-eligible users, prefer sentry over pro
+    return (
+      plan ||
+      (isSentryUpgrade
+        ? getPlan(sentryPlanYear, sentryPlanMonth)
+        : getPlan(proPlanYear, proPlanMonth)) ||
+      (hasTeamPlans && getPlan(teamPlanYear, teamPlanMonth)) ||
+      null
+    )
   }, [
     dataLoaded,
     hasTeamPlans,
@@ -104,6 +123,17 @@ function UpgradePlanPage() {
   // redirect right away if the user is on an enterprise plan
   if (planData?.plan?.isEnterprisePlan) {
     return <Redirect to={`/plan/${provider}/${owner}`} />
+  }
+
+  // Show error if data loaded but no viable plans found
+  if (dataLoaded && !defaultPaidPlan) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 py-16">
+        <p className="text-ds-gray-octonary">
+          Unable to load available plans. Please try again later.
+        </p>
+      </div>
+    )
   }
 
   // Don't render form until both APIs have loaded and selectedPlan is set
