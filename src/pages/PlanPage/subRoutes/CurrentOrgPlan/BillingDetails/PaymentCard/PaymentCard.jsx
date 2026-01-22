@@ -40,23 +40,32 @@ const calculateNextBillPrice = ({ planData, scheduledPhase }) => {
     seats = scheduledPhaseQuantity ?? 0
     baseUnitPrice = scheduledPhaseBaseUnitPrice ?? 0
     calculatePriceFunction =
-      scheduledPhasePlanName === PlanMarketingNames.PRO
-        ? calculatePriceProPlan
-        : scheduledPhasePlanName === PlanMarketingNames.TEAM
-          ? calculatePriceTeamPlan
-          : calculatePriceSentryPlan
+      scheduledPhasePlanName === PlanMarketingNames.SENTRY
+        ? calculatePriceSentryPlan
+        : scheduledPhasePlanName === PlanMarketingNames.PRO
+          ? calculatePriceProPlan
+          : scheduledPhasePlanName === PlanMarketingNames.TEAM
+            ? calculatePriceTeamPlan
+            : null
   } else {
     isPerYear = planData?.plan?.billingRate === BillingRate.ANNUALLY
     seats =
       (planData?.plan?.planUserCount ?? 0) -
       (planData?.plan?.freeSeatCount ?? 0)
     baseUnitPrice = planData?.plan?.baseUnitPrice ?? 0
-    calculatePriceFunction = planData?.plan?.isProPlan
-      ? calculatePriceProPlan
-      : planData?.plan?.isTeamPlan
-        ? calculatePriceTeamPlan
-        : calculatePriceSentryPlan
+    calculatePriceFunction = planData?.plan?.isSentryPlan
+      ? calculatePriceSentryPlan
+      : planData?.plan?.isProPlan
+        ? calculatePriceProPlan
+        : planData?.plan?.isTeamPlan
+          ? calculatePriceTeamPlan
+          : null
   }
+
+  if (!calculatePriceFunction) {
+    return null
+  }
+
   // make sure seats is not negative
   seats = Math.max(seats, 0)
   const billPrice = calculatePriceFunction({
@@ -118,6 +127,7 @@ function PaymentCard({ accountDetails, provider, owner }) {
           card={card}
           subscriptionDetail={subscriptionDetail}
           nextBillPrice={nextBillPrice}
+          isFreePlan={planData?.plan?.isFreePlan}
         />
       ) : usBankAccount ? (
         <BankInformation

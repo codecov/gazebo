@@ -38,7 +38,6 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ provider, owner })
   const { proPlanYear, proPlanMonth } = findProPlans({ plans })
-  const planParam = usePlanParams()
 
   const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({
@@ -50,22 +49,35 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
     isEnterprisePlan: planData?.plan?.isEnterprisePlan,
     plans,
   })
+  const planParam = usePlanParams()
 
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
   const monthlyProPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
 
-  const monthlyPlan = newPlan?.billingRate === BillingRate.MONTHLY
+  // Determine if we should use monthly or yearly plans
+  // Falls back to current plan's billing rate if newPlan isn't loaded yet
+  // Default to monthly for free users (billingRate is null/undefined)
+  const monthlyPlan =
+    newPlan?.billingRate === BillingRate.MONTHLY ||
+    (newPlan?.billingRate === undefined &&
+      planData?.plan?.billingRate !== BillingRate.ANNUALLY)
 
-  let planOption = null
-  if (hasTeamPlans && planParam === TierNames.TEAM) {
+  // Derive planOption from newPlan, with URL param as fallback for initial load
+  let planOption: typeof TierName.PRO | typeof TierName.TEAM = TierName.PRO
+  if (newPlan?.isTeamPlan) {
     planOption = TierName.TEAM
-  } else {
+  } else if (newPlan && !newPlan.isTeamPlan) {
     planOption = TierName.PRO
+  } else if (hasTeamPlans && planParam === TierNames.TEAM) {
+    // Fallback to URL param when newPlan hasn't loaded yet
+    planOption = TierName.TEAM
   }
 
   const { updateParams } = useLocationParams({ plan: planOption })
 
-  if (hasTeamPlans) {
+  const hasProPlans = !!(monthlyProPlan && yearlyProPlan)
+
+  if (hasTeamPlans && hasProPlans) {
     return (
       <div className="flex w-fit flex-col gap-2">
         <h3 className="font-semibold">Step 1: Choose a plan</h3>
@@ -74,23 +86,25 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
             value={planOption}
             onValueChange={(value) => {
               if (value === TierName.PRO) {
-                if (monthlyPlan) {
-                  setSelectedPlan(monthlyProPlan)
-                  setFormValue('newPlan', monthlyProPlan)
-                } else {
-                  setSelectedPlan(yearlyProPlan)
-                  setFormValue('newPlan', yearlyProPlan)
+                const selectedProPlan = monthlyPlan
+                  ? monthlyProPlan
+                  : yearlyProPlan
+                // Guard against undefined plans
+                if (selectedProPlan) {
+                  setSelectedPlan(selectedProPlan)
+                  setFormValue('newPlan', selectedProPlan)
+                  updateParams({ plan: TierNames.PRO })
                 }
-                updateParams({ plan: TierNames.PRO })
               } else {
-                if (monthlyPlan) {
-                  setSelectedPlan(teamPlanMonth)
-                  setFormValue('newPlan', teamPlanMonth)
-                } else {
-                  setSelectedPlan(teamPlanYear)
-                  setFormValue('newPlan', teamPlanYear)
+                const selectedTeamPlan = monthlyPlan
+                  ? teamPlanMonth
+                  : teamPlanYear
+                // Guard against undefined plans
+                if (selectedTeamPlan) {
+                  setSelectedPlan(selectedTeamPlan)
+                  setFormValue('newPlan', selectedTeamPlan)
+                  updateParams({ plan: TierNames.TEAM })
                 }
-                updateParams({ plan: TierNames.TEAM })
               }
             }}
           >

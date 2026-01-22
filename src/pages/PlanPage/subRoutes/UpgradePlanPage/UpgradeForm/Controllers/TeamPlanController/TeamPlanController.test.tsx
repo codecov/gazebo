@@ -64,6 +64,17 @@ const teamPlanYear = {
   isSentryPlan: false,
 }
 
+const proPlanMonth = {
+  value: Plans.USERS_PR_INAPPM,
+  baseUnitPrice: 12,
+  benefits: ['asdf'],
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Pro',
+  monthlyUploadLimit: null,
+  isTeamPlan: false,
+  isSentryPlan: false,
+}
+
 const proPlanYear = {
   value: Plans.USERS_PR_INAPPY,
   baseUnitPrice: 10,
@@ -228,6 +239,7 @@ describe('TeamPlanController', () => {
                 basicPlan,
                 teamPlanMonth,
                 teamPlanYear,
+                proPlanMonth,
                 proPlanYear,
               ],
             },
@@ -265,12 +277,13 @@ describe('TeamPlanController', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders annual option button', async () => {
+      it('does not render annual option button', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
+        expect(screen.queryByTestId('radio-annual')).not.toBeInTheDocument()
       })
 
       it('renders monthly option button as "selected"', async () => {
@@ -290,20 +303,19 @@ describe('TeamPlanController', () => {
         expect(price).toBeInTheDocument()
       })
 
-      it('has the price for the year', async () => {
+      it('does not have the price for the year', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$120/)
-        expect(price).toBeInTheDocument()
+        expect(screen.queryByText(/\$120/)).not.toBeInTheDocument()
       })
 
-      it('has the switch to annual button', async () => {
+      it('does not have the switch to annual button', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const switchToAnnualLink = await screen.findByText('switch to annual')
-        expect(switchToAnnualLink).toBeInTheDocument()
+        expect(await screen.findByTestId('radio-monthly')).toBeInTheDocument()
+        expect(screen.queryByText('switch to annual')).not.toBeInTheDocument()
       })
     })
 
@@ -344,8 +356,33 @@ describe('TeamPlanController', () => {
       })
 
       describe('and user clicks Upgrade to Pro button', () => {
-        it('updates selected plan', async () => {
-          const { user } = setup({ planValue: Plans.USERS_TEAMM })
+        it('updates selected plan when current plan is monthly', async () => {
+          const { user } = setup({
+            planValue: Plans.USERS_TEAMM,
+            monthlyPlan: true,
+          })
+          render(<TeamPlanController {...props} />, { wrapper: wrapper() })
+
+          const button = await screen.findByRole('button', {
+            name: 'Upgrade to Pro',
+          })
+          expect(button).toBeInTheDocument()
+
+          await user.click(button)
+
+          expect(setSelectedPlan).toHaveBeenCalledWith(
+            expect.objectContaining({ value: Plans.USERS_PR_INAPPM })
+          )
+          expect(setFormValue).toHaveBeenCalledWith('newPlan', proPlanMonth, {
+            shouldValidate: true,
+          })
+        })
+
+        it('updates selected plan when current plan is yearly', async () => {
+          const { user } = setup({
+            planValue: Plans.USERS_TEAMY,
+            monthlyPlan: false,
+          })
           render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
           const button = await screen.findByRole('button', {

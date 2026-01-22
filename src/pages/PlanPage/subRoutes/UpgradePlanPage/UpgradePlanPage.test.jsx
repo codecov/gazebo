@@ -213,11 +213,13 @@ describe('UpgradePlanPage', () => {
       periodEnd = undefined,
       includeSentryPlans = false,
       includeTeamPlans = false,
+      customPlans = null,
     } = {
       planValue: Plans.UUSERS_PR_INAPPY,
       periodEnd: undefined,
       includeSentryPlans: false,
       includeTeamPlans: false,
+      customPlans: null,
     }
   ) {
     server.use(
@@ -245,7 +247,14 @@ describe('UpgradePlanPage', () => {
         })
       }),
       graphql.query('GetAvailablePlans', () => {
-        if (includeSentryPlans) {
+        // Allow custom plans array for testing fallback scenarios
+        if (customPlans !== null) {
+          return HttpResponse.json({
+            data: {
+              owner: { availablePlans: customPlans },
+            },
+          })
+        } else if (includeSentryPlans) {
           return HttpResponse.json({
             data: {
               owner: { availablePlans: [sentryPlanMonth, sentryPlanYear] },
@@ -375,7 +384,7 @@ describe('UpgradePlanPage', () => {
           wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
         })
 
-        const teamPlanPrice = await screen.findByText(/\$5/)
+        const teamPlanPrice = await screen.findByText(/\$6/)
         expect(teamPlanPrice).toBeInTheDocument()
 
         const teamPlanPricingScheme = await screen.findByText(/per user\/month/)
@@ -433,6 +442,114 @@ describe('UpgradePlanPage', () => {
 
       const title = await screen.findByText(/Sentry Pro Team/)
       expect(title).toBeInTheDocument()
+    })
+  })
+
+  describe('when isSentryUpgrade is true (sentry plans available)', () => {
+    describe('when user is on a free plan', () => {
+      it('defaults to sentry plan instead of pro plan', async () => {
+        setup({ planValue: Plans.USERS_DEVELOPER, includeSentryPlans: true })
+        render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+        const title = await screen.findByText(/Sentry Pro Team/)
+        expect(title).toBeInTheDocument()
+      })
+
+      it('renders sentry plan benefits', async () => {
+        setup({ planValue: Plans.USERS_DEVELOPER, includeSentryPlans: true })
+        render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+        const benefit = await screen.findByText(/Includes 5 seats/)
+        expect(benefit).toBeInTheDocument()
+      })
+    })
+
+    describe('when ?plan=pro URL param is set', () => {
+      it('uses sentry plan instead of regular pro plan', async () => {
+        setup({ planValue: Plans.USERS_DEVELOPER, includeSentryPlans: true })
+        render(<UpgradePlanPage />, {
+          wrapper: wrapper('/plan/gh/codecov/upgrade?plan=pro'),
+        })
+
+        const title = await screen.findByText(/Sentry Pro Team/)
+        expect(title).toBeInTheDocument()
+      })
+    })
+
+    describe('when user is already on a sentry plan', () => {
+      it('renders the sentry plan title', async () => {
+        setup({ planValue: Plans.USERS_SENTRYY, includeSentryPlans: true })
+        render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+        const title = await screen.findByText(/Sentry Pro Team/)
+        expect(title).toBeInTheDocument()
+      })
+
+      it('renders sentry plan benefits', async () => {
+        setup({ planValue: Plans.USERS_SENTRYY, includeSentryPlans: true })
+        render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+        const benefit = await screen.findByText(/Includes 5 seats/)
+        expect(benefit).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('defaultPaidPlan fallback chain', () => {
+    describe('when no plans are available', () => {
+      it('renders error message', async () => {
+        setup({ planValue: Plans.USERS_DEVELOPER, customPlans: [] })
+        render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+        const errorMessage = await screen.findByText(
+          /Unable to load available plans/
+        )
+        expect(errorMessage).toBeInTheDocument()
+      })
+    })
+
+    describe('when only team plans are available', () => {
+      it('falls back to team plan for non-sentry users', async () => {
+        setup({
+          planValue: Plans.USERS_DEVELOPER,
+          customPlans: [teamPlanMonth, teamPlanYear],
+        })
+        render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+        const title = await screen.findByText(/Team plan/)
+        expect(title).toBeInTheDocument()
+      })
+    })
+
+    describe('when sentry and team plans are available', () => {
+      it('prefers sentry plan over team plan for sentry-eligible users', async () => {
+        setup({
+          planValue: Plans.USERS_DEVELOPER,
+          customPlans: [
+            sentryPlanMonth,
+            sentryPlanYear,
+            teamPlanMonth,
+            teamPlanYear,
+          ],
+        })
+        render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+        const title = await screen.findByText(/Sentry Pro Team/)
+        expect(title).toBeInTheDocument()
+      })
+    })
+
+    describe('when pro and team plans are available', () => {
+      it('prefers pro plan over team plan for non-sentry users', async () => {
+        setup({
+          planValue: Plans.USERS_DEVELOPER,
+          customPlans: [...plans, teamPlanMonth, teamPlanYear],
+        })
+        render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+        const title = await screen.findByText(/Pro Team/)
+        expect(title).toBeInTheDocument()
+      })
     })
   })
 })

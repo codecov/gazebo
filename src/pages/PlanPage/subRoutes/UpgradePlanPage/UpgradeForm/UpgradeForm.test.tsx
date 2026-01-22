@@ -587,7 +587,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a developers plan', () => {
       const props = {
         setSelectedPlan: vi.fn(),
-        selectedPlan: proPlanYear,
+        selectedPlan: proPlanMonth,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_DEVELOPER })
@@ -607,28 +607,20 @@ describe('UpgradeForm', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders annual option button', async () => {
+      it('does not render annual option button', async () => {
         setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
+        const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
+        expect(screen.queryByTestId('radio-annual')).not.toBeInTheDocument()
       })
 
-      it('renders annual option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_DEVELOPER, monthlyPlan: false })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const optionBtn = await screen.findByTestId('radio-annual')
-        expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toBeChecked()
-      })
-
-      it('has the price for the year', async () => {
+      it('has the price for the month', async () => {
         setup({ planValue: Plans.USERS_DEVELOPER })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$240/)
+        const price = await screen.findByText(/\$24/)
         expect(price).toBeInTheDocument()
       })
 
@@ -708,7 +700,7 @@ describe('UpgradeForm', () => {
             expect(auxiliaryText).toBeInTheDocument()
           })
 
-          it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
+          it('calls setSelectedPlan with monthly team plan when selecting team button', async () => {
             const { user } = setup({
               planValue: Plans.USERS_DEVELOPER,
               hasTeamPlans: true,
@@ -717,7 +709,7 @@ describe('UpgradeForm', () => {
 
             const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
-            expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
           })
         })
       })
@@ -730,7 +722,7 @@ describe('UpgradeForm', () => {
           const monthOption = await screen.findByTestId('radio-monthly')
           await user.click(monthOption)
 
-          const price = screen.getByText(/\$48/)
+          const price = screen.getByText(/\$24/)
           expect(price).toBeInTheDocument()
         })
       })
@@ -766,13 +758,13 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: proPlanYear.value,
+                value: Plans.USERS_PR_INAPPM,
               },
             })
           )
         })
 
-        it('renders success notification when upgrading seats with monthly plan', async () => {
+        it('renders success notification when upgrading seats with monthly plan after selecting monthly', async () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
             planValue: Plans.USERS_DEVELOPER,
@@ -933,7 +925,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a pro plan monthly', () => {
       const props = {
         setSelectedPlan: vi.fn(),
-        selectedPlan: proPlanYear,
+        selectedPlan: proPlanMonth,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
@@ -953,12 +945,12 @@ describe('UpgradeForm', () => {
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders annual option button', async () => {
+      it('does not render annual option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
-        expect(optionBtn).toBeInTheDocument()
+        expect(await screen.findByTestId('radio-monthly')).toBeInTheDocument()
+        expect(screen.queryByTestId('radio-annual')).not.toBeInTheDocument()
       })
 
       it('renders monthly option button as "selected"', async () => {
@@ -978,7 +970,7 @@ describe('UpgradeForm', () => {
         expect(seatCount).toHaveValue(10)
       })
 
-      it('has the price for the year', async () => {
+      it('has the price for the month', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM, planUserCount: 10 })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1034,22 +1026,6 @@ describe('UpgradeForm', () => {
         expect(update).toBeInTheDocument()
       })
 
-      describe('when updating to a yearly plan', () => {
-        it('has the price for the year', async () => {
-          const { user } = setup({
-            planValue: Plans.USERS_PR_INAPPM,
-            planUserCount: 10,
-          })
-          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-          const annualOption = await screen.findByTestId('radio-annual')
-          await user.click(annualOption)
-
-          const price = screen.getByText(/\$100/)
-          expect(price).toBeInTheDocument()
-        })
-      })
-
       describe('when the user has team plans available', () => {
         it('renders the Pro button as "selected"', async () => {
           setup({
@@ -1089,16 +1065,16 @@ describe('UpgradeForm', () => {
             expect(auxiliaryText).toBeInTheDocument()
           })
 
-          it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
+          it('calls setSelectedPlan with monthly team plan when selecting team button', async () => {
             const { user } = setup({
-              planValue: Plans.USERS_DEVELOPER,
+              planValue: Plans.USERS_PR_INAPPM,
               hasTeamPlans: true,
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
             const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
-            expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
           })
         })
       })
@@ -1134,44 +1110,6 @@ describe('UpgradeForm', () => {
               plan: {
                 quantity: 20,
                 value: Plans.USERS_PR_INAPPM,
-              },
-            })
-          )
-        })
-
-        it('renders success notification when upgrading seats with yearly plan', async () => {
-          const { patchRequest, user } = setup({
-            successfulPatchRequest: true,
-            planValue: Plans.USERS_PR_INAPPM,
-          })
-          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-          const input = await screen.findByRole('spinbutton')
-          await user.type(input, '{backspace}{backspace}{backspace}')
-          await user.type(input, '20')
-
-          const optionBtn = await screen.findByTestId('radio-annual')
-          await user.click(optionBtn)
-
-          const update = await screen.findByRole('button', {
-            name: /Update/,
-          })
-          await user.click(update)
-
-          const confirmCheckoutCheckbox = await screen.findByTestId(
-            'upgrade-confirmation-checkbox'
-          )
-          await user.click(confirmCheckoutCheckbox)
-
-          const confirmCheckoutButton =
-            await screen.findByTestId('submit-upgrade')
-          await user.click(confirmCheckoutButton)
-
-          await waitFor(() =>
-            expect(patchRequest).toHaveBeenCalledWith({
-              plan: {
-                quantity: 20,
-                value: Plans.USERS_PR_INAPPY,
               },
             })
           )
@@ -1289,15 +1227,6 @@ describe('UpgradeForm', () => {
 
         const optionBtn = await screen.findByTestId('radio-annual')
         expect(optionBtn).toBeInTheDocument()
-      })
-
-      it('renders annual option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const optionBtn = await screen.findByTestId('radio-annual')
-        expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toBeChecked()
       })
 
       it('renders the seat input with 13 seats (existing subscription)', async () => {
@@ -1439,8 +1368,9 @@ describe('UpgradeForm', () => {
 
           it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
             const { user } = setup({
-              planValue: Plans.USERS_DEVELOPER,
+              planValue: Plans.USERS_PR_INAPPY,
               hasTeamPlans: true,
+              monthlyPlan: false,
             })
             render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1695,6 +1625,7 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 

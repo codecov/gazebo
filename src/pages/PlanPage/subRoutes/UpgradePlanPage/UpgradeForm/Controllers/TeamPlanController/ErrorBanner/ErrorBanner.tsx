@@ -8,6 +8,7 @@ import {
 import { usePlanData } from 'services/account/usePlanData'
 import { useLocationParams } from 'services/navigation/useLocationParams'
 import {
+  BillingRate,
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
@@ -38,15 +39,27 @@ export default function ErrorBanner({
   const { updateParams } = useLocationParams({ plan: null })
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ provider, owner })
-  const { proPlanYear } = findProPlans({ plans })
-  const { sentryPlanYear } = findSentryPlans({ plans })
+  const { proPlanYear, proPlanMonth } = findProPlans({ plans })
+  const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
   const isSentryUpgrade = canApplySentryUpgrade({
     isEnterprisePlan: planData?.plan?.isEnterprisePlan,
     plans,
   })
-  const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
+  const isYearlyPlan = planData?.plan?.billingRate === BillingRate.ANNUALLY
 
-  if (errors?.seats?.message === UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE) {
+  // Only show yearly plan if current plan is yearly
+  const proPlan = isYearlyPlan
+    ? isSentryUpgrade
+      ? sentryPlanYear
+      : proPlanYear
+    : isSentryUpgrade
+      ? sentryPlanMonth
+      : proPlanMonth
+
+  if (
+    errors?.seats?.message === UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE &&
+    proPlan
+  ) {
     return (
       <div
         className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary"
@@ -56,8 +69,8 @@ export default function ErrorBanner({
         <button
           className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
           onClick={() => {
-            setSelectedPlan(yearlyProPlan)
-            setFormValue('newPlan', yearlyProPlan, {
+            setSelectedPlan(proPlan)
+            setFormValue('newPlan', proPlan, {
               shouldValidate: true,
             })
             // without this line, the tier selector won't update

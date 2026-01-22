@@ -32,9 +32,9 @@ const BillingControls: React.FC<BillingControlsProps> = ({
 
   const currentPlanBillingRate = planData?.plan?.billingRate
   const [option, setOption] = useState<OptionPeriod>(() =>
-    currentPlanBillingRate === BillingRate.MONTHLY
-      ? TimePeriods.MONTHLY
-      : TimePeriods.ANNUAL
+    currentPlanBillingRate === BillingRate.ANNUALLY
+      ? TimePeriods.ANNUAL
+      : TimePeriods.MONTHLY
   )
 
   // used to update option selection if user selects
@@ -62,6 +62,11 @@ const BillingControls: React.FC<BillingControlsProps> = ({
       ? teamPlanMonth?.billingRate
       : teamPlanYear?.billingRate
 
+  // Don't render if no corresponding plans are available
+  if (!teamPlanMonth && !teamPlanYear) {
+    return null
+  }
+
   return (
     <div className="flex w-fit flex-col gap-2">
       <h3 className="font-semibold">Step 2: Choose a billing cycle</h3>
@@ -78,24 +83,37 @@ const BillingControls: React.FC<BillingControlsProps> = ({
             setOption(value)
           }}
         >
-          <RadioTileGroup.Item
-            value={TimePeriods.ANNUAL}
-            className="w-32"
-            data-testid="radio-annual"
-          >
-            <RadioTileGroup.Label>{TimePeriods.ANNUAL}</RadioTileGroup.Label>
-          </RadioTileGroup.Item>
-          <RadioTileGroup.Item
-            value={TimePeriods.MONTHLY}
-            className="w-32"
-            data-testid="radio-monthly"
-          >
-            <RadioTileGroup.Label>{TimePeriods.MONTHLY}</RadioTileGroup.Label>
-          </RadioTileGroup.Item>
+          {currentPlanBillingRate === BillingRate.ANNUALLY && teamPlanYear && (
+            <RadioTileGroup.Item
+              value={TimePeriods.ANNUAL}
+              className="w-32"
+              data-testid="radio-annual"
+            >
+              <RadioTileGroup.Label>{TimePeriods.ANNUAL}</RadioTileGroup.Label>
+            </RadioTileGroup.Item>
+          )}
+          {teamPlanMonth && (
+            <RadioTileGroup.Item
+              value={TimePeriods.MONTHLY}
+              className="w-32"
+              data-testid="radio-monthly"
+            >
+              <RadioTileGroup.Label>{TimePeriods.MONTHLY}</RadioTileGroup.Label>
+            </RadioTileGroup.Item>
+          )}
         </RadioTileGroup>
         <p>
-          <span className="font-semibold">${baseUnitPrice}</span> per
-          seat/month, billed {billingRate}
+          {baseUnitPrice !== undefined && (
+            <>
+              <span className="font-semibold">${baseUnitPrice}</span> per
+              seat/month
+            </>
+          )}
+          {billingRate && (
+            <>
+              {baseUnitPrice !== undefined && ', '}billed {billingRate}
+            </>
+          )}
         </p>
       </div>
     </div>

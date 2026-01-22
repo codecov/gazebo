@@ -55,7 +55,7 @@ const PlanController: React.FC<PlanControllerProps> = ({
             <TextInput
               data-cy="seats"
               dataMarketing="plan-pricing-seats"
-              {...register('seats')}
+              {...register('seats', { valueAsNumber: true })}
               id="nb-seats"
               size={20}
               type="number"
@@ -67,11 +67,7 @@ const PlanController: React.FC<PlanControllerProps> = ({
         </div>
       </Card.Content>
       <Card.Content>
-        <PriceCallout
-          seats={seats}
-          newPlan={newPlan}
-          setFormValue={setFormValue}
-        />
+        <PriceCallout seats={seats} newPlan={newPlan} />
         {errors?.seats?.message ? (
           <ErrorBanner
             errors={errors}

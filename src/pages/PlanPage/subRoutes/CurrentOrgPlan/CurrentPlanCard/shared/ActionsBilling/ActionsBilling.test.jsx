@@ -311,7 +311,7 @@ describe('Actions Billing', () => {
         expect(upgradeNowLink).toBeInTheDocument()
         expect(upgradeNowLink).toHaveAttribute(
           'href',
-          '/plan/gh/critical-role/upgrade'
+          '/plan/gh/critical-role/upgrade?plan=pro'
         )
       })
 
@@ -391,7 +391,7 @@ describe('Actions Billing', () => {
         expect(upgradeToProLink).toBeInTheDocument()
         expect(upgradeToProLink).toHaveAttribute(
           'href',
-          '/plan/gh/critical-role/upgrade'
+          '/plan/gh/critical-role/upgrade?plan=pro'
         )
       })
     })
@@ -418,7 +418,7 @@ describe('Actions Billing', () => {
         expect(upgradeLink).toBeInTheDocument()
         expect(upgradeLink).toHaveAttribute(
           'href',
-          '/plan/gh/critical-role/upgrade'
+          '/plan/gh/critical-role/upgrade?plan=pro'
         )
       })
     })
@@ -437,7 +437,7 @@ describe('Actions Billing', () => {
         expect(managePlanLink).toBeInTheDocument()
         expect(managePlanLink).toHaveAttribute(
           'href',
-          '/plan/gh/critical-role/upgrade'
+          '/plan/gh/critical-role/upgrade?plan=pro'
         )
       })
     })
@@ -548,7 +548,7 @@ describe('Actions Billing', () => {
           expect(upgradeLink).toBeInTheDocument()
           expect(upgradeLink).toHaveAttribute(
             'href',
-            '/plan/gh/critical-role/upgrade'
+            '/plan/gh/critical-role/upgrade?plan=pro'
           )
         })
 
@@ -630,7 +630,7 @@ describe('Actions Billing', () => {
           expect(upgradeLink).toBeInTheDocument()
           expect(upgradeLink).toHaveAttribute(
             'href',
-            '/plan/gh/critical-role/upgrade'
+            '/plan/gh/critical-role/upgrade?plan=pro'
           )
         })
       })
@@ -654,7 +654,7 @@ describe('Actions Billing', () => {
         expect(manageLink).toBeInTheDocument()
         expect(manageLink).toHaveAttribute(
           'href',
-          '/plan/gh/critical-role/upgrade'
+          '/plan/gh/critical-role/upgrade?plan=pro'
         )
       })
     })
