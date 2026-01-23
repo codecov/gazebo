@@ -183,10 +183,12 @@ describe('SentryPlanDetails', () => {
       isOngoingTrial = false,
       hasUserCanceledAtPeriodEnd = false,
       isProPlan = false,
+      billingRate = BillingRate.ANNUALLY,
     } = {
       isOngoingTrial: false,
       hasUserCanceledAtPeriodEnd: false,
       isProPlan: false,
+      billingRate: BillingRate.ANNUALLY,
     }
   ) {
     server.use(
@@ -197,6 +199,7 @@ describe('SentryPlanDetails', () => {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
+                billingRate,
                 isFreePlan: !isProPlan,
                 isTeamPlan: false,
                 trialStatus: isOngoingTrial
@@ -230,7 +233,6 @@ describe('SentryPlanDetails', () => {
   }
 
   describe('when rendered', () => {
-    // we still support existing yearly plans but no new ones
     it('renders sentry pro yearly marketing name', async () => {
       setup()
       render(<SentryPlanDetails />, { wrapper: wrapper() })
@@ -259,20 +261,34 @@ describe('SentryPlanDetails', () => {
       expect(benefitsList).toBeInTheDocument()
     })
 
-    it('renders pricing disclaimer', async () => {
-      setup()
+    describe('when current plan billing rate is annual', () => {
+      it('renders pricing disclaimer with annual billing', async () => {
+        setup({ billingRate: BillingRate.ANNUALLY })
 
-      render(<SentryPlanDetails />, { wrapper: wrapper() })
+        render(<SentryPlanDetails />, { wrapper: wrapper() })
 
-      const disclaimer = await screen.findByText(
-        /over 5 users is \$12 per user\/month, billed monthly/i
-      )
-      expect(disclaimer).toBeInTheDocument()
+        const disclaimer = await screen.findByText(
+          /over 5 users is \$10 per user\/month, billed annually/i
+        )
+        expect(disclaimer).toBeInTheDocument()
+      })
+    })
+
+    describe('when current plan billing rate is monthly', () => {
+      it('renders pricing disclaimer with monthly billing', async () => {
+        setup({ billingRate: BillingRate.MONTHLY })
+
+        render(<SentryPlanDetails />, { wrapper: wrapper() })
+
+        const disclaimer = await screen.findByText(
+          /over 5 users is \$12 per user\/month, billed monthly/i
+        )
+        expect(disclaimer).toBeInTheDocument()
+      })
     })
 
     it('renders cancellation link when it is valid', async () => {
       setup({
-        isSentryPlan: false,
         hasUserCanceledAtPeriodEnd: false,
         isOngoingTrial: false,
         isProPlan: true,
@@ -287,7 +303,6 @@ describe('SentryPlanDetails', () => {
 
     it('should not render cancellation link when user is ongoing trial', () => {
       setup({
-        isSentryPlan: false,
         isOngoingTrial: true,
       })
 
@@ -299,7 +314,6 @@ describe('SentryPlanDetails', () => {
 
     it('should not render cancellation link when user has already cancelled', () => {
       setup({
-        isSentryPlan: false,
         hasUserCanceledAtPeriodEnd: true,
       })
 
@@ -311,7 +325,6 @@ describe('SentryPlanDetails', () => {
 
     it('should not render cancellation link when user is on developers plan', () => {
       setup({
-        isSentryPlan: false,
         isOngoingTrial: false,
         isProPlan: false,
       })

@@ -144,6 +144,7 @@ describe('PriceCallout', () => {
   describe('when rendered', () => {
     describe('and seat count is below acceptable range', () => {
       const props = {
+        newPlan: proPlanYearly,
         seats: 1,
       }
 
@@ -158,8 +159,58 @@ describe('PriceCallout', () => {
       })
     })
 
-    describe('and seat count is within acceptable range', () => {
+    describe('isPerYear is set to true', () => {
       const props = {
+        newPlan: proPlanYearly,
+        seats: 10,
+      }
+
+      it('displays per month price', async () => {
+        setup()
+        render(<PriceCallout {...props} />, {
+          wrapper,
+        })
+
+        const perMonthPrice = await screen.findByText(/\$100.00/)
+        expect(perMonthPrice).toBeInTheDocument()
+      })
+
+      it('displays billed annually at price', async () => {
+        setup()
+        render(<PriceCallout {...props} />, {
+          wrapper,
+        })
+
+        const annualPrice = await screen.findByText(
+          /\/month billed annually at \$1,200.00/
+        )
+        expect(annualPrice).toBeInTheDocument()
+      })
+
+      it('displays how much the user saves', async () => {
+        setup()
+        render(<PriceCallout {...props} />, {
+          wrapper,
+        })
+
+        const moneySaved = await screen.findByText(/\$240.00/)
+        expect(moneySaved).toBeInTheDocument()
+      })
+
+      it('displays the next billing date', async () => {
+        setup()
+        render(<PriceCallout {...props} />, {
+          wrapper,
+        })
+
+        const nextBillingDate = await screen.findByText(/next billing date/)
+        expect(nextBillingDate).toBeInTheDocument()
+      })
+    })
+
+    describe('isPerYear is set to false', () => {
+      const props = {
+        newPlan: proPlanMonthly,
         seats: 10,
       }
 
@@ -182,18 +233,35 @@ describe('PriceCallout', () => {
         const nextBillingDate = await screen.findByText(/next billing date/)
         expect(nextBillingDate).toBeInTheDocument()
       })
+
+      it('does not display switch to annual button', async () => {
+        setup()
+        render(<PriceCallout {...props} />, {
+          wrapper,
+        })
+
+        expect(await screen.findByText(/\$120.00/)).toBeInTheDocument()
+
+        const switchToAnnual = screen.queryByRole('button', {
+          name: 'switch to annual',
+        })
+        expect(switchToAnnual).not.toBeInTheDocument()
+      })
     })
 
     describe('when no current end period date on subscription', () => {
       it('does not render next billing date info', async () => {
+        setup(null)
         const props = {
+          newPlan: proPlanMonthly,
           seats: 10,
         }
-        setup()
 
         render(<PriceCallout {...props} />, {
           wrapper,
         })
+
+        expect(await screen.findByText(/\$120.00/)).toBeInTheDocument()
 
         const nextBillingDate = screen.queryByText(/next billing date/)
         expect(nextBillingDate).not.toBeInTheDocument()

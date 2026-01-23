@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import githubLogo from 'assets/githublogo.png'
@@ -7,10 +6,10 @@ import { useAvailablePlans } from 'services/account/useAvailablePlans'
 import { TrialStatuses, usePlanData } from 'services/account/usePlanData'
 import { useStartTrial } from 'services/trial'
 import { canApplySentryUpgrade } from 'shared/utils/billing'
-import A from 'ui/A'
+import A from 'ui/A/A'
 import Button from 'ui/Button'
 
-function PlansActionsBilling({ buttonOptions }) {
+function PlansActionsBilling() {
   const { provider, owner } = useParams()
   const { data: plans } = useAvailablePlans({ provider, owner })
 
@@ -40,7 +39,14 @@ function PlansActionsBilling({ buttonOptions }) {
           Start trial
         </Button>
         <p className="font-semibold">OR</p>
-        <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade now</A>
+        <A
+          to={{
+            pageName: 'upgradeOrgPlan',
+            options: { params: { plan: 'pro' } },
+          }}
+        >
+          upgrade now
+        </A>
       </div>
     )
   }
@@ -56,7 +62,7 @@ function PlansActionsBilling({ buttonOptions }) {
         <Button
           to={{
             pageName: 'upgradeOrgPlan',
-            ...(buttonOptions && { options: buttonOptions }),
+            options: { params: { plan: 'pro' } },
           }}
           variant="primary"
         >
@@ -71,7 +77,7 @@ function PlansActionsBilling({ buttonOptions }) {
       <Button
         to={{
           pageName: 'upgradeOrgPlan',
-          ...(buttonOptions && { options: buttonOptions }),
+          options: { params: { plan: 'pro' } },
         }}
         variant="primary"
       >
@@ -83,11 +89,7 @@ function PlansActionsBilling({ buttonOptions }) {
   )
 }
 
-PlansActionsBilling.propTypes = {
-  buttonOptions: PropTypes.object,
-}
-
-function ActionsBilling({ buttonOptions }) {
+function ActionsBilling() {
   const { owner, provider } = useParams()
   const { data: accountDetails } = useAccountDetails({ owner, provider })
   const username = accountDetails?.rootOrganization?.username
@@ -133,11 +135,7 @@ function ActionsBilling({ buttonOptions }) {
     )
   }
 
-  return <PlansActionsBilling buttonOptions={buttonOptions} />
+  return <PlansActionsBilling />
 }
 
 export default ActionsBilling
-
-ActionsBilling.propTypes = {
-  buttonOptions: PropTypes.object,
-}

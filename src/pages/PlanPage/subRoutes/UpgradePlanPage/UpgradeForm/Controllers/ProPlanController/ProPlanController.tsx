@@ -1,5 +1,6 @@
-import { UseFormRegister } from 'react-hook-form'
+import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
+import { IndividualPlan } from 'services/account/useAvailablePlans'
 import { MIN_NB_SEATS_PRO } from 'shared/utils/upgradeForm'
 import { Card } from 'ui/Card'
 import TextInput from 'ui/TextInput'
@@ -12,8 +13,10 @@ import { UpgradeFormFields } from '../../UpgradeForm'
 
 interface ProPlanControllerProps {
   seats: number
+  newPlan?: IndividualPlan
 
   register: UseFormRegister<UpgradeFormFields>
+  setFormValue: UseFormSetValue<UpgradeFormFields>
   errors?: {
     seats?: {
       message?: string
@@ -22,7 +25,9 @@ interface ProPlanControllerProps {
 }
 
 const ProPlanController: React.FC<ProPlanControllerProps> = ({
+  newPlan,
   seats,
+  setFormValue,
   register,
   errors,
 }) => {
@@ -30,7 +35,7 @@ const ProPlanController: React.FC<ProPlanControllerProps> = ({
     <>
       <Card.Content>
         <div className="flex flex-col gap-2">
-          <BillingOptions />
+          <BillingOptions newPlan={newPlan} setFormValue={setFormValue} />
         </div>
       </Card.Content>
       <hr />
@@ -55,7 +60,7 @@ const ProPlanController: React.FC<ProPlanControllerProps> = ({
         </div>
       </Card.Content>
       <Card.Content>
-        <PriceCallout seats={seats} />
+        <PriceCallout seats={seats} newPlan={newPlan} />
         {errors?.seats && (
           <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
             {errors?.seats?.message}

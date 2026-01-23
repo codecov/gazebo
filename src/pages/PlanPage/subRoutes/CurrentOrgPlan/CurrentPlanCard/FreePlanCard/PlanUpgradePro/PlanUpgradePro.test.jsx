@@ -8,12 +8,8 @@ import { BillingRate, Plans } from 'shared/utils/billing'
 import PlanUpgradePro from './PlanUpgradePro'
 
 vi.mock('../ProPlanSubheading', () => ({ default: () => 'Pro Subheading' }))
-const mockActionsBilling = vi.fn(() => 'Actions Billing')
 vi.mock('../../shared/ActionsBilling/ActionsBilling', () => ({
-  default: (props) => {
-    mockActionsBilling(props)
-    return 'Actions Billing'
-  },
+  default: () => 'Actions Billing',
 }))
 vi.mock('shared/plan/BenefitList', () => ({ default: () => 'BenefitsList' }))
 
@@ -101,7 +97,7 @@ const plansWithSentryOptions = [
     marketingName: 'Sentry',
     value: Plans.USERS_SENTRYM,
     billingRate: null,
-    baseUnitPrice: 12,
+    baseUnitPrice: 456,
     benefits: ['Includes 5 seats', 'Unlimited public repositories'],
     monthlyUploadLimit: null,
   },
@@ -172,7 +168,7 @@ describe('PlanUpgradePro', () => {
       expect(benefitsList).toBeInTheDocument()
     })
 
-    it('shows sentry up to 5 users price', async () => {
+    it('shows sentry price', async () => {
       render(
         <PlanUpgradePro isSentryUpgrade plans={plansWithSentryOptions} />,
         {
@@ -184,7 +180,7 @@ describe('PlanUpgradePro', () => {
       expect(sentryPrice).toBeInTheDocument()
     })
 
-    it('shows sentry above 5 users price', async () => {
+    it('shows sentry monthly price', async () => {
       render(
         <PlanUpgradePro isSentryUpgrade plans={plansWithSentryOptions} />,
         {
@@ -192,7 +188,7 @@ describe('PlanUpgradePro', () => {
         }
       )
 
-      const annualSentryPrice = await screen.findByText(/12/)
+      const annualSentryPrice = await screen.findByText(/456/)
       expect(annualSentryPrice).toBeInTheDocument()
     })
 
@@ -206,21 +202,6 @@ describe('PlanUpgradePro', () => {
 
       const actionsBilling = await screen.findByText(/Actions Billing/)
       expect(actionsBilling).toBeInTheDocument()
-    })
-
-    it('passes buttonOptions prop to ActionsBilling', async () => {
-      render(
-        <PlanUpgradePro isSentryUpgrade plans={plansWithSentryOptions} />,
-        {
-          wrapper,
-        }
-      )
-
-      const actionsBilling = await screen.findByText(/Actions Billing/)
-      expect(actionsBilling).toBeInTheDocument()
-      expect(mockActionsBilling).toHaveBeenCalledWith({
-        buttonOptions: { params: { plan: 'pro' } },
-      })
     })
   })
 
@@ -285,7 +266,7 @@ describe('PlanUpgradePro', () => {
       expect(monthlyProPrice).toBeInTheDocument()
     })
 
-    it('does not shows pro yearly price', async () => {
+    it('does not show pro yearly price', async () => {
       render(
         <PlanUpgradePro
           isSentryUpgrade={false}
@@ -295,6 +276,9 @@ describe('PlanUpgradePro', () => {
           wrapper,
         }
       )
+
+      const monthlyProPrice = await screen.findByText(/789/)
+      expect(monthlyProPrice).toBeInTheDocument()
 
       const yearlyProPrice = screen.queryByText(/456/)
       expect(yearlyProPrice).not.toBeInTheDocument()
@@ -313,24 +297,6 @@ describe('PlanUpgradePro', () => {
 
       const actionsBilling = await screen.findByText(/Actions Billing/)
       expect(actionsBilling).toBeInTheDocument()
-    })
-
-    it('passes buttonOptions prop to ActionsBilling', async () => {
-      render(
-        <PlanUpgradePro
-          isSentryUpgrade={false}
-          plans={plansWithoutSentryOptions}
-        />,
-        {
-          wrapper,
-        }
-      )
-
-      const actionsBilling = await screen.findByText(/Actions Billing/)
-      expect(actionsBilling).toBeInTheDocument()
-      expect(mockActionsBilling).toHaveBeenCalledWith({
-        buttonOptions: { params: { plan: 'pro' } },
-      })
     })
   })
 })
