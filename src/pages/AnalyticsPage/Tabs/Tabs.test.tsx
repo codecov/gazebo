@@ -6,19 +6,7 @@ import config from 'config'
 
 import Tabs from './Tabs'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
 vi.mock('config')
-
-vi.mock('shared/featureFlags', async () => {
-  const actual = await vi.importActual('shared/featureFlags')
-  return {
-    ...actual,
-    useFlags: mocks.useFlags,
-  }
-})
 
 const queryClient = new QueryClient()
 
@@ -37,7 +25,6 @@ beforeEach(() => {
 describe('Tabs', () => {
   function setup(isSelfHosted: boolean = false) {
     config.IS_SELF_HOSTED = isSelfHosted
-    mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: true })
   }
 
   describe('when user is part of the org', () => {
@@ -100,24 +87,6 @@ describe('Tabs', () => {
 
       const link = screen.queryByRole('link', { name: /plan/i })
       expect(link).not.toBeInTheDocument()
-    })
-  })
-
-  describe('ai features tab', () => {
-    it('does not render tab when flag is off', () => {
-      mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: false })
-      render(<Tabs />, { wrapper })
-
-      const link = screen.queryByRole('link', { name: /Codecov AI beta/i })
-      expect(link).not.toBeInTheDocument()
-    })
-
-    it('renders tab when flag is on', () => {
-      setup()
-      render(<Tabs />, { wrapper })
-
-      const link = screen.getByRole('link', { name: /Codecov AI beta/i })
-      expect(link).toBeInTheDocument()
     })
   })
 })
