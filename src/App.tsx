@@ -21,7 +21,6 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 import AccountSettings from './pages/AccountSettings'
 import AdminSettings from './pages/AdminSettings'
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
-const CodecovAIPage = lazy(() => import('./pages/CodecovAIPage'))
 const CommitDetailPage = lazy(() => import('./pages/CommitDetailPage'))
 const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -116,11 +115,6 @@ const MainAppRoutes = () => (
     <SentryRoute path="/analytics/:provider/:owner" exact>
       <BaseLayout>
         <AnalyticsPage />
-      </BaseLayout>
-    </SentryRoute>
-    <SentryRoute path="/codecovai/:provider/:owner" exact>
-      <BaseLayout>
-        <CodecovAIPage />
       </BaseLayout>
     </SentryRoute>
     <SentryRoute path="/:provider" exact>
