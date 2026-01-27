@@ -52,6 +52,18 @@ const teamPlanYear = {
   isSentryPlan: false,
 }
 
+const proPlanMonth = {
+  value: Plans.USERS_PR_INAPPM,
+  baseUnitPrice: 12,
+  benefits: ['asdf'],
+  billingRate: BillingRate.MONTHLY,
+  marketingName: 'Users Pro',
+  monthlyUploadLimit: null,
+  hasSeatsLeft: true,
+  isTeamPlan: false,
+  isSentryPlan: false,
+}
+
 const proPlanYear = {
   value: Plans.USERS_PR_INAPPY,
   baseUnitPrice: 10,
@@ -62,23 +74,6 @@ const proPlanYear = {
   hasSeatsLeft: true,
   isTeamPlan: false,
   isSentryPlan: false,
-}
-
-const proPlanMonth = {
-  marketingName: 'Users Pro',
-  value: Plans.USERS_PR_INAPPM,
-  billingRate: BillingRate.MONTHLY,
-  baseUnitPrice: 12,
-  benefits: [
-    'Configurable # of users',
-    'Unlimited public repositories',
-    'Unlimited private repositories',
-    'Priority Support',
-  ],
-  monthlyUploadLimit: 250,
-  isTeamPlan: false,
-  isSentryPlan: false,
-  hasSeatsLeft: true,
 }
 
 const queryClient = new QueryClient({
@@ -143,8 +138,8 @@ describe('ErrorBanner', () => {
                 basicPlan,
                 teamPlanMonth,
                 teamPlanYear,
-                proPlanYear,
                 proPlanMonth,
+                proPlanYear,
               ],
             },
           },
@@ -233,7 +228,7 @@ describe('ErrorBanner', () => {
       })
 
       describe('and user clicks Upgrade to Pro button', () => {
-        it('updates selected plan', async () => {
+        it('updates selected plan to monthly when current plan is monthly', async () => {
           const { user } = setup({ planValue: Plans.USERS_TEAMM })
           render(<ErrorBanner {...props} />, { wrapper: wrapper() })
 
@@ -250,6 +245,27 @@ describe('ErrorBanner', () => {
           expect(props.setFormValue).toHaveBeenCalledWith(
             'newPlan',
             { ...proPlanMonth, hasSeatsLeft: undefined },
+            { shouldValidate: true }
+          )
+        })
+
+        it('updates selected plan to yearly when current plan is yearly', async () => {
+          const { user } = setup({ planValue: Plans.USERS_TEAMY })
+          render(<ErrorBanner {...props} />, { wrapper: wrapper() })
+
+          const button = await screen.findByRole('button', {
+            name: 'Upgrade to Pro',
+          })
+          expect(button).toBeInTheDocument()
+
+          await user.click(button)
+
+          expect(props.setSelectedPlan).toHaveBeenCalledWith(
+            expect.objectContaining({ value: Plans.USERS_PR_INAPPY })
+          )
+          expect(props.setFormValue).toHaveBeenCalledWith(
+            'newPlan',
+            { ...proPlanYear, hasSeatsLeft: undefined },
             { shouldValidate: true }
           )
         })

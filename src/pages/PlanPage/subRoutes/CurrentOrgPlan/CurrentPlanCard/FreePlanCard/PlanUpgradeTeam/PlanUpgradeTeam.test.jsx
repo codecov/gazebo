@@ -283,11 +283,11 @@ describe('PlanUpgradeTeam', () => {
         wrapper,
       })
 
-      const yearlyPrice = screen.queryByText(/5/)
-      expect(yearlyPrice).not.toBeInTheDocument()
-
       const monthlyPrice = await screen.findByText(/6/)
       expect(monthlyPrice).toBeInTheDocument()
+
+      const yearlyPrice = screen.queryByText(/5/)
+      expect(yearlyPrice).not.toBeInTheDocument()
 
       const auxiliaryText = await screen.findByText(/billed monthly/)
       expect(auxiliaryText).toBeInTheDocument()

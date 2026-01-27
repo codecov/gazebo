@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -110,7 +110,9 @@ afterAll(() => {
 })
 
 describe('BillingOptions', () => {
-  function setup() {
+  function setup({
+    billingRate = BillingRate.ANNUALLY,
+  }: { billingRate?: string } = {}) {
     server.use(
       graphql.query('GetAvailablePlans', () => {
         return HttpResponse.json({ data: { owner: { availablePlans } } })
@@ -118,7 +120,10 @@ describe('BillingOptions', () => {
       graphql.query('GetPlanData', () => {
         return HttpResponse.json({
           data: {
-            owner: { hasPrivateRepos: true, plan: mockPlanDataResponse },
+            owner: {
+              hasPrivateRepos: true,
+              plan: { ...mockPlanDataResponse, billingRate },
+            },
           },
         })
       })
@@ -130,38 +135,182 @@ describe('BillingOptions', () => {
     return { user, mockSetFormValue }
   }
 
-  describe('when rendered', () => {
-    describe('planString is set to a monthly plan', () => {
-      it('renders monthly button as "selected"', async () => {
-        setup()
-
-        render(<BillingOptions />, {
-          wrapper,
+  describe('when current plan billing rate is annual', () => {
+    describe('planString is set to annual plan', () => {
+      it('renders annual button as "selected"', async () => {
+        const { mockSetFormValue } = setup({
+          billingRate: BillingRate.ANNUALLY,
         })
 
-        const annualBtn = screen.queryByTestId('radio-annual')
-        expect(annualBtn).not.toBeInTheDocument()
+        render(
+          <BillingOptions
+            newPlan={sentryProTeamYearly}
+            setFormValue={mockSetFormValue}
+          />,
+          {
+            wrapper,
+          }
+        )
+
+        const annualBtn = await screen.findByTestId('radio-annual')
+        expect(annualBtn).toBeInTheDocument()
+        await waitFor(() => expect(annualBtn).toBeChecked())
+
+        const monthlyBtn = await screen.findByTestId('radio-monthly')
+        expect(monthlyBtn).toBeInTheDocument()
+        await waitFor(() => expect(monthlyBtn).not.toBeChecked())
+      })
+
+      it('renders annual pricing scheme', async () => {
+        const { mockSetFormValue } = setup({
+          billingRate: BillingRate.ANNUALLY,
+        })
+
+        render(
+          <BillingOptions
+            newPlan={sentryProTeamYearly}
+            setFormValue={mockSetFormValue}
+          />,
+          {
+            wrapper,
+          }
+        )
+
+        const cost = await screen.findByText(/\$10/)
+        expect(cost).toBeInTheDocument()
+
+        const content = await screen.findByText(
+          /per seat\/month, billed annually/
+        )
+        expect(content).toBeInTheDocument()
+      })
+
+      describe('user clicks on monthly button', () => {
+        it('calls setValue', async () => {
+          const { mockSetFormValue, user } = setup({
+            billingRate: BillingRate.ANNUALLY,
+          })
+
+          render(
+            <BillingOptions
+              newPlan={sentryProTeamYearly}
+              setFormValue={mockSetFormValue}
+            />,
+            {
+              wrapper,
+            }
+          )
+
+          const monthlyBtn = await screen.findByTestId('radio-monthly')
+          expect(monthlyBtn).toBeInTheDocument()
+          await user.click(monthlyBtn)
+
+          await waitFor(() =>
+            expect(mockSetFormValue).toHaveBeenCalledWith(
+              'newPlan',
+              sentryProTeamMonthly
+            )
+          )
+        })
+      })
+    })
+
+    describe('planString is set to a monthly plan', () => {
+      it('renders monthly button as "selected"', async () => {
+        const { mockSetFormValue } = setup({
+          billingRate: BillingRate.ANNUALLY,
+        })
+
+        render(
+          <BillingOptions
+            newPlan={sentryProTeamMonthly}
+            setFormValue={mockSetFormValue}
+          />,
+          {
+            wrapper,
+          }
+        )
+
+        const annualBtn = await screen.findByTestId('radio-annual')
+        expect(annualBtn).toBeInTheDocument()
+        expect(annualBtn).not.toBeChecked()
 
         const monthlyBtn = await screen.findByTestId('radio-monthly')
         expect(monthlyBtn).toBeInTheDocument()
         expect(monthlyBtn).toBeChecked()
       })
 
-      it('renders correct pricing scheme', async () => {
-        setup()
+      describe('user clicks on annual button', () => {
+        it('calls setValue', async () => {
+          const { mockSetFormValue, user } = setup({
+            billingRate: BillingRate.ANNUALLY,
+          })
 
-        render(<BillingOptions />, {
-          wrapper,
+          render(
+            <BillingOptions
+              newPlan={sentryProTeamMonthly}
+              setFormValue={mockSetFormValue}
+            />,
+            {
+              wrapper,
+            }
+          )
+
+          const annualBtn = await screen.findByTestId('radio-annual')
+          expect(annualBtn).toBeInTheDocument()
+          await user.click(annualBtn)
+
+          await waitFor(() =>
+            expect(mockSetFormValue).toHaveBeenCalledWith(
+              'newPlan',
+              sentryProTeamYearly
+            )
+          )
         })
-
-        const cost = await screen.findByText(/\$12/)
-        expect(cost).toBeInTheDocument()
-
-        const content = await screen.findByText(
-          /per seat\/month, billed monthly/
-        )
-        expect(content).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('when current plan billing rate is monthly', () => {
+    it('does not render annual button', async () => {
+      const { mockSetFormValue } = setup({ billingRate: BillingRate.MONTHLY })
+
+      render(
+        <BillingOptions
+          newPlan={sentryProTeamMonthly}
+          setFormValue={mockSetFormValue}
+        />,
+        {
+          wrapper,
+        }
+      )
+
+      const monthlyBtn = await screen.findByTestId('radio-monthly')
+      expect(monthlyBtn).toBeInTheDocument()
+      expect(monthlyBtn).toBeChecked()
+
+      const annualBtn = screen.queryByTestId('radio-annual')
+      expect(annualBtn).not.toBeInTheDocument()
+    })
+
+    it('renders correct pricing scheme', async () => {
+      const { mockSetFormValue } = setup({ billingRate: BillingRate.MONTHLY })
+
+      render(
+        <BillingOptions
+          newPlan={sentryProTeamMonthly}
+          setFormValue={mockSetFormValue}
+        />,
+        {
+          wrapper,
+        }
+      )
+
+      const cost = await screen.findByText(/\$12/)
+      expect(cost).toBeInTheDocument()
+
+      const content = await screen.findByText(/per seat\/month, billed monthly/)
+      expect(content).toBeInTheDocument()
     })
   })
 })

@@ -57,7 +57,7 @@ function PlanUpgradePro({ isSentryUpgrade, plans }) {
           <h2 className="font-semibold">{upgradeToPlan?.marketingName} plan</h2>
           <ProPlanSubheading />
         </div>
-        <ActionsBilling buttonOptions={{ params: { plan: 'pro' } }} />
+        <ActionsBilling />
       </div>
       <hr />
       <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
