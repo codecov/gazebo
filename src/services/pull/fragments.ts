@@ -254,6 +254,33 @@ fragment FileComparisonWithBase on Pull {
 
 const CoverageLineSchema = z.enum(['H', 'M', 'P'])
 
+const SegmentComparisonsSchema = z.object({
+  __typename: z.literal('SegmentComparisons'),
+  results: z.array(
+    z.object({
+      header: z.string(),
+      hasUnintendedChanges: z.boolean(),
+      lines: z.array(
+        z.object({
+          baseNumber: z.string().nullable(),
+          headNumber: z.string().nullable(),
+          baseCoverage: CoverageLineSchema.nullable(),
+          headCoverage: CoverageLineSchema.nullable(),
+          content: z.string().nullable(),
+        })
+      ),
+    })
+  ),
+})
+
+const UnknownPathSchema = z.object({
+  __typename: z.literal('UnknownPath'),
+})
+
+const ProviderErrorSchema = z.object({
+  __typename: z.literal('ProviderError'),
+})
+
 export const ImpactedFileSchema = z.object({
   headName: z.string().nullable(),
   hashedPath: z.string(),
@@ -276,23 +303,11 @@ export const ImpactedFileSchema = z.object({
       percentCovered: z.number().nullable(),
     })
     .nullable(),
-  segments: z.object({
-    results: z.array(
-      z.object({
-        header: z.string(),
-        hasUnintendedChanges: z.boolean(),
-        lines: z.array(
-          z.object({
-            baseNumber: z.string().nullable(),
-            headNumber: z.string().nullable(),
-            baseCoverage: CoverageLineSchema.nullable(),
-            headCoverage: CoverageLineSchema.nullable(),
-            content: z.string().nullable(),
-          })
-        ),
-      })
-    ),
-  }),
+  segments: z.discriminatedUnion('__typename', [
+    SegmentComparisonsSchema,
+    UnknownPathSchema,
+    ProviderErrorSchema,
+  ]),
 })
 
 export const ComparisonSchema = z.object({
