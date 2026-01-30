@@ -6,15 +6,8 @@ import config from 'config'
 
 import Header from './Header'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
 vi.mock('config')
 vi.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
-vi.mock('shared/featureFlags', () => ({
-  useFlags: mocks.useFlags,
-}))
 
 const queryClient = new QueryClient()
 
@@ -36,7 +29,6 @@ beforeEach(() => {
 describe('Header', () => {
   function setup(isSelfHosted: boolean = false) {
     config.IS_SELF_HOSTED = isSelfHosted
-    mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: true })
   }
 
   describe('when users is part of the org', () => {
@@ -117,30 +109,6 @@ describe('Header', () => {
           name: /plan/i,
         })
       ).not.toBeInTheDocument()
-    })
-  })
-
-  describe('ai features tab', () => {
-    it('does not render tab when flag is off', () => {
-      mocks.useFlags.mockReturnValue({ codecovAiFeaturesTab: false })
-      render(<Header />, { wrapper })
-
-      expect(
-        screen.queryByRole('link', {
-          name: /Codecov AI beta/i,
-        })
-      ).not.toBeInTheDocument()
-    })
-
-    it('renders tab when flag is on', () => {
-      setup()
-      render(<Header />, { wrapper })
-
-      expect(
-        screen.getByRole('link', {
-          name: /Codecov AI beta/i,
-        })
-      ).toBeInTheDocument()
     })
   })
 })
