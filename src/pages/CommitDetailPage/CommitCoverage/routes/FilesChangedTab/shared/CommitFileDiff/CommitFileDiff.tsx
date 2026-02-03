@@ -19,16 +19,20 @@ import {
 } from 'ui/VirtualRenderers/VirtualDiffRenderer'
 
 function transformSegmentsToLineData(
-  segments: ImpactedFileType['segments']['results'] | undefined,
+  segments: ImpactedFileType['segments'] | undefined,
   ignoredUploadIds: number[]
 ) {
-  if (!segments) {
+  if (
+    !segments ||
+    segments.__typename !== 'SegmentComparisons' ||
+    !segments.results
+  ) {
     return []
   }
 
   const ignoredUploadIdsSet = new Set(ignoredUploadIds)
 
-  return segments.map((segment) => {
+  return segments.results.map((segment) => {
     // we need to create a string of the diff content for the virtual diff renderer text area
     let newDiffContent = ''
     const lineData: LineData[] = []

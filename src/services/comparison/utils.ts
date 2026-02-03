@@ -32,7 +32,7 @@ export function transformImpactedFileToDiff(impactedFile: ImpactedFileType) {
   return {
     fileLabel,
     headName: impactedFile?.headName,
-    segments: impactedFile?.segments?.results,
+    segments: impactedFile?.segments,
     ...(!!hashedPath && { hashedPath }),
   }
 }
