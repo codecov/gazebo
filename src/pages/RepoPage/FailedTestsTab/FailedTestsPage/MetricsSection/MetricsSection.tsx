@@ -1,4 +1,4 @@
-import qs from 'qs'
+import { parse as qsParse } from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { MeasurementInterval } from 'pages/RepoPage/shared/constants'
@@ -358,7 +358,7 @@ function MetricsSection() {
   const { updateParams } = useLocationParams(defaultQueryParams)
 
   const location = useLocation()
-  const queryParams = qs.parse(location.search, {
+  const queryParams = qsParse(location.search, {
     ignoreQueryPrefix: true,
     depth: 1,
   })
