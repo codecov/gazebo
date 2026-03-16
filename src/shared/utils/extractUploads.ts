@@ -46,6 +46,8 @@ function humanReadableOverview(state: (typeof UploadErrorStates)[number]) {
       return 'carried forward'
     case UploadStateEnum.started:
       return 'started'
+    case UploadStateEnum.merged:
+      return 'merged'
   }
 }
 
