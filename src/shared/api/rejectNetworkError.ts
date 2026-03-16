@@ -72,12 +72,14 @@ export function rejectNetworkError(error: NetworkErrorObject) {
 
   Sentry.withScope((scope) => {
     const level = determineSentryLevel(errorName)
+    const err =
+      'error' in error.errorDetails ? error.errorDetails.error : undefined
+
     scope.addBreadcrumb({
       category: 'network.error',
       level: level,
       message: devMsg,
-      data:
-        'error' in error.errorDetails ? error.errorDetails.error : undefined,
+      data: err,
     })
 
     scope.setTags({
@@ -87,7 +89,20 @@ export function rejectNetworkError(error: NetworkErrorObject) {
 
     scope.setLevel(level)
     scope.setFingerprint([devMsg])
-    scope.captureMessage(devMsg)
+
+    // logm zod validation errors with full context
+    if (errorName === 'Parsing Error' && err) {
+      scope.captureException(err)
+      const errObj = err as { issues?: unknown[]; message?: string }
+      if (Array.isArray(errObj.issues)) {
+        scope.setContext('zod_validation', {
+          issues: errObj.issues,
+          message: errObj.message ?? err.message,
+        })
+      }
+    } else {
+      scope.captureMessage(devMsg)
+    }
   })
 
   const status = determineStatusCode(errorName)
