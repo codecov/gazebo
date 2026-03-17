@@ -92,7 +92,6 @@ export function rejectNetworkError(error: NetworkErrorObject) {
 
     // logm zod validation errors with full context
     if (errorName === 'Parsing Error' && err) {
-      scope.captureException(err)
       const errObj = err as { issues?: unknown[]; message?: string }
       if (Array.isArray(errObj.issues)) {
         scope.setContext('zod_validation', {
@@ -100,6 +99,7 @@ export function rejectNetworkError(error: NetworkErrorObject) {
           message: errObj.message ?? err.message,
         })
       }
+      scope.captureException(err)
     } else {
       scope.captureMessage(devMsg)
     }
