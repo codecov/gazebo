@@ -37,6 +37,22 @@ const travisObject2 = {
   uploadType: UploadTypeEnum.UPLOADED,
   errors: [],
 }
+const travisObject3 = {
+  id: 5,
+  jobCode: 'blah',
+  buildCode: 'ok',
+  name: 'merged-upload',
+  state: UploadStateEnum.merged,
+  provider: 'travis',
+  createdAt: '2020-08-25T16:36:25.820340+00:00',
+  updatedAt: '2020-08-25T16:36:25.859889+00:00',
+  flags: ['flag1', 'flag2'],
+  downloadUrl:
+    '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/18b19f8d-5df6-48bd-90eb-50578ed8812f.txt',
+  ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
+  uploadType: UploadTypeEnum.UPLOADED,
+  errors: [],
+}
 const circleciObject = {
   id: 1,
   jobCode: 'blah',
@@ -121,6 +137,7 @@ const noProviderObject3 = {
 const mockUploads: Upload[] = [
   travisObject,
   travisObject2,
+  travisObject3,
   circleciObject,
   circleciObject2,
   noProviderObject,
@@ -136,7 +153,7 @@ describe('extractUploads', () => {
       })
 
       expect(groupedUploads).toStrictEqual({
-        travis: [travisObject2, travisObject],
+        travis: [travisObject3, travisObject2, travisObject],
         circleci: [circleciObject2, circleciObject],
         none: [noProviderObject3, noProviderObject2, noProviderObject],
       })
@@ -156,8 +173,17 @@ describe('extractUploads', () => {
       })
 
       expect(uploadsOverview).toEqual(
-        '2 uploaded, 1 started, 3 errored, 1 successful'
+        '2 uploaded, 1 started, 3 errored, 1 successful, 1 merged'
       )
+    })
+
+    it('includes merged state in overview when uploads have merged state', () => {
+      const { uploadsOverview } = extractUploads({
+        unfilteredUploads: [...mockUploads, travisObject3],
+      })
+
+      expect(uploadsOverview).toContain('merged')
+      expect(uploadsOverview).toMatch(/\d+ merged/)
     })
 
     it('returns hasNoUploads', () => {
@@ -185,7 +211,7 @@ describe('extractUploads', () => {
       })
 
       expect(flagErrorUploads).toStrictEqual({
-        travis: [travisObject2, travisObject],
+        travis: [travisObject3, travisObject2, travisObject],
         none: [noProviderObject],
       })
     })
@@ -223,7 +249,7 @@ describe('extractUploads', () => {
       })
 
       expect(groupedUploads).toStrictEqual({
-        travis: [travisObject2, travisObject],
+        travis: [travisObject3, travisObject2, travisObject],
         none: [noProviderObject],
       })
     })
