@@ -4,6 +4,7 @@ export const UploadStateEnum = {
   complete: 'COMPLETE',
   error: 'ERROR',
   processed: 'PROCESSED',
+  merged: 'MERGED',
 } as const
 
 export const UploadErrorStates = Object.values(UploadStateEnum)

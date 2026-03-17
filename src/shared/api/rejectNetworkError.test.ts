@@ -12,6 +12,8 @@ const mocks = vi.hoisted(() => ({
   withScope: vi.fn(),
   addBreadcrumb: vi.fn(),
   captureMessage: vi.fn(),
+  captureException: vi.fn(),
+  setContext: vi.fn(),
   setFingerprint: vi.fn(),
   setTags: vi.fn(),
   setLevel: vi.fn(),
@@ -26,6 +28,8 @@ vi.mock('@sentry/react', async () => {
         addBreadcrumb: mocks.addBreadcrumb,
         setFingerprint: mocks.setFingerprint,
         captureMessage: mocks.captureMessage,
+        captureException: mocks.captureException,
+        setContext: mocks.setContext,
         setTags: mocks.setTags,
         setLevel: mocks.setLevel,
       })
@@ -110,9 +114,17 @@ describe('rejectNetworkError', () => {
       it('captures the error with Sentry', () => {
         rejectNetworkError(errorObject).catch((_e) => {})
 
-        expect(mocks.captureMessage).toHaveBeenCalledWith(
-          `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`
-        )
+        if (errorObject.errorName === 'Parsing Error') {
+          expect(mocks.captureException).toHaveBeenCalledWith(
+            errorObject.errorDetails.error
+          )
+          expect(mocks.captureMessage).not.toHaveBeenCalled()
+        } else {
+          expect(mocks.captureMessage).toHaveBeenCalledWith(
+            `${errorObject.errorDetails.callingFn} - ${errorObject.errorName}`
+          )
+          expect(mocks.captureException).not.toHaveBeenCalled()
+        }
       })
 
       it('returns a rejected promise', () => {
