@@ -112,12 +112,41 @@ const mockMissingBaseCommitResponse = {
   },
 }
 
+const mockUnknownPathResponse = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      pull: {
+        compareWithBase: {
+          __typename: 'Comparison',
+          impactedFile: {
+            __typename: 'ImpactedFile',
+            hashedPath: 'hashedPath',
+            headName: 'headName',
+            isRenamedFile: false,
+            isNewFile: false,
+            isDeletedFile: false,
+            baseCoverage: { percentCovered: 23 },
+            headCoverage: { percentCovered: 24 },
+            patchCoverage: { percentCovered: 25 },
+            changeCoverage: 0,
+            segments: {
+              __typename: 'UnknownPath',
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
 describe('useSingularImpactedFileComparison', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
     isMissingBaseCommit = false,
+    isUnknownPath = false,
   }) {
     server.use(
       graphql.query('ImpactedFileComparison', () => {
@@ -129,6 +158,8 @@ describe('useSingularImpactedFileComparison', () => {
           return HttpResponse.json({ data: mockIncorrectResponse })
         } else if (isMissingBaseCommit) {
           return HttpResponse.json({ data: mockMissingBaseCommitResponse })
+        } else if (isUnknownPath) {
+          return HttpResponse.json({ data: mockUnknownPathResponse })
         }
         return HttpResponse.json({ data: mockResponse })
       })
@@ -158,24 +189,33 @@ describe('useSingularImpactedFileComparison', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
-            fileLabel: null,
             hashedPath: 'hashedPath',
             headName: 'headName',
-            segments: [
-              {
-                hasUnintendedChanges: false,
-                header: 'header',
-                lines: [
-                  {
-                    baseCoverage: 'M',
-                    baseNumber: '1',
-                    content: 'content',
-                    headCoverage: 'H',
-                    headNumber: '1',
-                  },
-                ],
-              },
-            ],
+            isRenamedFile: false,
+            isNewFile: false,
+            isDeletedFile: false,
+            baseCoverage: { percentCovered: 23 },
+            headCoverage: { percentCovered: 24 },
+            patchCoverage: { percentCovered: 25 },
+            changeCoverage: 0,
+            segments: {
+              __typename: 'SegmentComparisons',
+              results: [
+                {
+                  hasUnintendedChanges: false,
+                  header: 'header',
+                  lines: [
+                    {
+                      baseCoverage: 'M',
+                      baseNumber: '1',
+                      content: 'content',
+                      headCoverage: 'H',
+                      headNumber: '1',
+                    },
+                  ],
+                },
+              ],
+            },
           })
         )
       })
@@ -284,6 +324,45 @@ describe('useSingularImpactedFileComparison', () => {
       )
 
       await waitFor(() => expect(result.current.error).toBeNull())
+    })
+  })
+
+  describe('when segments is UnknownPath', () => {
+    it('returns data without segments.results', async () => {
+      setup({ isUnknownPath: true })
+      const { result } = renderHook(
+        () =>
+          useSingularImpactedFileComparison({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'gazebo',
+            pullId: '1',
+            path: 'path',
+          }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          hashedPath: 'hashedPath',
+          headName: 'headName',
+          isRenamedFile: false,
+          isNewFile: false,
+          isDeletedFile: false,
+          baseCoverage: { percentCovered: 23 },
+          headCoverage: { percentCovered: 24 },
+          patchCoverage: { percentCovered: 25 },
+          changeCoverage: 0,
+          segments: {
+            __typename: 'UnknownPath',
+          },
+        })
+      )
     })
   })
 })

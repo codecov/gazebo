@@ -13,14 +13,7 @@ import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import A from 'ui/A'
 
-import {
-  ComparisonSchema,
-  FileComparisonWithBase,
-  ImpactedFileSchema,
-} from './fragments'
-import { transformImpactedPullFileToDiff } from './utils'
-
-export type PullImpactedFile = z.infer<typeof ImpactedFileSchema>
+import { ComparisonSchema, FileComparisonWithBase } from './fragments'
 
 const query = `
 query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!, $filters: SegmentsFilters) {
@@ -158,9 +151,7 @@ export function useSingularImpactedFileComparison({
           data?.owner?.repository?.pull?.compareWithBase?.__typename ===
           'Comparison'
         ) {
-          return transformImpactedPullFileToDiff(
-            data?.owner?.repository?.pull?.compareWithBase?.impactedFile
-          )
+          return data?.owner?.repository?.pull?.compareWithBase?.impactedFile
         }
 
         // we can set to null, and use the error display message we currently have, rather than throwing
