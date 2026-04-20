@@ -1,7 +1,6 @@
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import { useBranchHasCommits } from 'services/branches/useBranchHasCommits'
 import { useLocationParams } from 'services/navigation/useLocationParams'
 import { ALL_BRANCHES, useNavLinks } from 'services/navigation/useNavLinks'
 import { useRepoOverview } from 'services/repo'
@@ -60,37 +59,12 @@ function CommitsTab() {
     branchParam ?? overview?.defaultBranch
   )
 
-  const initialRenderDone = useRef(false)
-
-  const { data: branchHasCommits } = useBranchHasCommits({
-    provider,
-    owner,
-    repo,
-    branch: selectedBranch,
-    opts: {
-      suspense: true,
-      enabled: !initialRenderDone.current,
-    },
-  })
-
-  useEffect(() => {
-    if (
-      branchHasCommits === false &&
-      selectedBranch !== ALL_BRANCHES &&
-      !initialRenderDone.current
-    ) {
-      initialRenderDone.current = true
-      setSelectedBranch(ALL_BRANCHES)
-    }
-  }, [branchHasCommits, selectedBranch])
-
   const { updateParams, selectedStates, setSelectedStates, search } =
     useControlParams()
 
   const {
     branchList,
     branchSelectorProps,
-    branchesFetchNextPage,
     branchListIsFetching,
     branchListHasNextPage,
     branchListFetchNextPage,
@@ -139,7 +113,6 @@ function CommitsTab() {
                 }}
                 onLoadMore={() => {
                   if (branchListHasNextPage) {
-                    branchesFetchNextPage()
                     branchListFetchNextPage()
                   }
                 }}
