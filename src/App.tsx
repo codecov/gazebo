@@ -62,6 +62,21 @@ const HomePageRedirect = () => {
   return <Redirect to={`${redirectURL}?${queryString}`} />
 }
 
+export const REPO_PAGE_ROUTE_PATHS = [
+  // literal onboarding paths must come first so :branch isn't bound to "new"
+  '/:provider/:owner/:repo/bundles/new',
+  '/:provider/:owner/:repo/tests/new',
+  '/:provider/:owner/:repo/commits/:branch',
+  '/:provider/:owner/:repo/tree/:branch',
+  '/:provider/:owner/:repo/flags/:branch',
+  '/:provider/:owner/:repo/components/:branch',
+  '/:provider/:owner/:repo/bundles/:branch',
+  '/:provider/:owner/:repo/tests/:branch',
+  // paths above are for grabbing branch for components in tree between here and RepoPage
+  // where there is another set of SentryRoute matching
+  '/:provider/:owner/:repo',
+]
+
 const MainAppRoutes = () => (
   <Switch>
     <SentryRoute path="/login/:provider">
@@ -151,19 +166,7 @@ const MainAppRoutes = () => (
         <CommitDetailPage />
       </BaseLayout>
     </SentryRoute>
-    <SentryRoute
-      path={[
-        '/:provider/:owner/:repo/commits/:branch',
-        '/:provider/:owner/:repo/tree/:branch',
-        '/:provider/:owner/:repo/flags/:branch',
-        '/:provider/:owner/:repo/components/:branch',
-        '/:provider/:owner/:repo/bundles/:branch',
-        '/:provider/:owner/:repo/tests/:branch',
-        // paths above are for grabbing branch for components in tree between here and RepoPage
-        // where there is another set of SentryRoute matching
-        '/:provider/:owner/:repo',
-      ]}
-    >
+    <SentryRoute path={REPO_PAGE_ROUTE_PATHS}>
       <BaseLayout>
         <RepoPage />
       </BaseLayout>
