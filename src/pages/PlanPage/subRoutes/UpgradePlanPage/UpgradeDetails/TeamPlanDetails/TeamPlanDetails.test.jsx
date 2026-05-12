@@ -146,12 +146,10 @@ describe('TeamPlanDetails', () => {
       hasScheduledPhase = false,
       hasUserCanceledAtPeriodEnd = false,
       trialValue = TrialStatuses.NOT_STARTED,
-      billingRate = BillingRate.ANNUALLY,
     } = {
       hasScheduledPhase: false,
       hasUserCanceledAtPeriodEnd: false,
       isProPlan: false,
-      billingRate: BillingRate.ANNUALLY,
     }
   ) {
     server.use(
@@ -163,7 +161,6 @@ describe('TeamPlanDetails', () => {
               plan: {
                 ...mockPlanData,
                 trialStatus: trialValue,
-                billingRate,
               },
             },
           },
@@ -200,6 +197,7 @@ describe('TeamPlanDetails', () => {
   }
 
   describe('when rendered', () => {
+    // we still support existing yearly plans but no new ones
     it('shows team yearly marketing name', async () => {
       setup()
       render(<TeamPlanDetails />, { wrapper: wrapper() })
@@ -219,46 +217,22 @@ describe('TeamPlanDetails', () => {
       expect(benefitsList).toBeInTheDocument()
     })
 
-    describe('when current plan billing rate is annual', () => {
-      it('shows annual price', async () => {
-        setup({ billingRate: BillingRate.ANNUALLY })
+    it('shows price', async () => {
+      setup()
 
-        render(<TeamPlanDetails />, { wrapper: wrapper() })
+      render(<TeamPlanDetails />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$5/)
-        expect(price).toBeInTheDocument()
-      })
-
-      it('shows pricing disclaimer with monthly option', async () => {
-        setup({ billingRate: BillingRate.ANNUALLY })
-
-        render(<TeamPlanDetails />, { wrapper: wrapper() })
-
-        const disclaimer = await screen.findByText(
-          /billed annually, or \$6 for monthly billing/i
-        )
-        expect(disclaimer).toBeInTheDocument()
-      })
+      const price = await screen.findByText(/\$6/)
+      expect(price).toBeInTheDocument()
     })
 
-    describe('when current plan billing rate is monthly', () => {
-      it('shows monthly price', async () => {
-        setup({ billingRate: BillingRate.MONTHLY })
+    it('shows pricing disclaimer', async () => {
+      setup()
 
-        render(<TeamPlanDetails />, { wrapper: wrapper() })
+      render(<TeamPlanDetails />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$6/)
-        expect(price).toBeInTheDocument()
-      })
-
-      it('shows billed monthly disclaimer', async () => {
-        setup({ billingRate: BillingRate.MONTHLY })
-
-        render(<TeamPlanDetails />, { wrapper: wrapper() })
-
-        const disclaimer = await screen.findByText(/billed monthly/i)
-        expect(disclaimer).toBeInTheDocument()
-      })
+      const disclaimer = await screen.findByText(/billed monthly/i)
+      expect(disclaimer).toBeInTheDocument()
     })
 
     it('shows schedule phase when there is one', async () => {

@@ -32,7 +32,6 @@ const Controller: React.FC<BillingControlsProps> = ({
   if (newPlan?.isTeamPlan) {
     return (
       <TeamPlanController
-        newPlan={newPlan}
         seats={seats}
         setFormValue={setFormValue}
         setSelectedPlan={setSelectedPlan}
@@ -42,24 +41,10 @@ const Controller: React.FC<BillingControlsProps> = ({
     )
   } else if (newPlan?.isSentryPlan) {
     return (
-      <SentryPlanController
-        newPlan={newPlan}
-        seats={seats}
-        setFormValue={setFormValue}
-        register={register}
-        errors={errors}
-      />
+      <SentryPlanController seats={seats} register={register} errors={errors} />
     )
   }
-  return (
-    <ProPlanController
-      newPlan={newPlan}
-      seats={seats}
-      setFormValue={setFormValue}
-      register={register}
-      errors={errors}
-    />
-  )
+  return <ProPlanController seats={seats} register={register} errors={errors} />
 }
 
 export default Controller

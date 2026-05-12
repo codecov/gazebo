@@ -263,9 +263,8 @@ describe('SentryPlanController', () => {
         setup({ planValue: Plans.USERS_SENTRYM })
         render(<SentryPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-monthly')
-        expect(optionBtn).toBeInTheDocument()
-        expect(screen.queryByTestId('radio-annual')).not.toBeInTheDocument()
+        const optionBtn = screen.queryByTestId('radio-annual')
+        expect(optionBtn).not.toBeInTheDocument()
       })
 
       it('renders monthly option button as "selected"', async () => {
@@ -289,9 +288,16 @@ describe('SentryPlanController', () => {
         setup({ planValue: Plans.USERS_SENTRYM })
         render(<SentryPlanController {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$89/)
-        expect(price).toBeInTheDocument()
-        expect(screen.queryByText(/\$120/)).not.toBeInTheDocument()
+        const price = screen.queryByText(/\$120/)
+        expect(price).not.toBeInTheDocument()
+      })
+
+      it('does not have the switch to annual button', async () => {
+        setup({ planValue: Plans.USERS_SENTRYM })
+        render(<SentryPlanController {...props} />, { wrapper: wrapper() })
+
+        const switchToAnnualLink = screen.queryByText('switch to annual')
+        expect(switchToAnnualLink).not.toBeInTheDocument()
       })
     })
 
@@ -305,36 +311,27 @@ describe('SentryPlanController', () => {
       }
 
       it('renders monthly option button', async () => {
-        setup({ planValue: Plans.USERS_SENTRYY, monthlyPlan: false })
+        setup({ planValue: Plans.USERS_SENTRYY })
         render(<SentryPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByTestId('radio-monthly')
         expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders annual option button', async () => {
-        setup({ planValue: Plans.USERS_SENTRYY, monthlyPlan: false })
+      it('does not render annual option button', async () => {
+        setup({ planValue: Plans.USERS_SENTRYY })
         render(<SentryPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
-        expect(optionBtn).toBeInTheDocument()
+        const optionBtn = screen.queryByTestId('radio-annual')
+        expect(optionBtn).not.toBeInTheDocument()
       })
 
-      it('renders annual option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_SENTRYY, monthlyPlan: false })
+      it('does not have the price for the year', async () => {
+        setup({ planValue: Plans.USERS_SENTRYY })
         render(<SentryPlanController {...props} />, { wrapper: wrapper() })
 
-        const optionBtn = await screen.findByTestId('radio-annual')
-        expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toBeChecked()
-      })
-
-      it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_SENTRYY, monthlyPlan: false })
-        render(<SentryPlanController {...props} />, { wrapper: wrapper() })
-
-        const price = await screen.findByText(/\$29/)
-        expect(price).toBeInTheDocument()
+        const price = screen.queryByText(/\$29/)
+        expect(price).not.toBeInTheDocument()
       })
     })
   })

@@ -43,6 +43,7 @@ export const PlanMarketingNames = {
 
 export const BillingRate = {
   MONTHLY: 'monthly',
+  /** @deprecated no longer offering new annual plans */
   ANNUALLY: 'annually',
 } as const
 

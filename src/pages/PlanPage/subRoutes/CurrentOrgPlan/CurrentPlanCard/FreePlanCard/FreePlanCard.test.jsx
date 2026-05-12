@@ -117,7 +117,7 @@ const sentryPlans = [
   {
     marketingName: 'Sentry',
     value: Plans.USERS_SENTRYM,
-    billingRate: BillingRate.MONTHLY,
+    billingRate: null,
     baseUnitPrice: 12,
     benefits: ['Includes 5 seats', 'Unlimited public repositories'],
     monthlyUploadLimit: null,
@@ -127,7 +127,7 @@ const sentryPlans = [
   {
     marketingName: 'Sentry',
     value: Plans.USERS_SENTRYY,
-    billingRate: BillingRate.ANNUALLY,
+    billingRate: null,
     baseUnitPrice: 10,
     benefits: ['Includes 5 seats', 'Unlimited private repositories'],
     monthlyUploadLimit: null,
@@ -313,7 +313,6 @@ describe('FreePlanCard', () => {
       })
 
       const link = await screen.findByRole('link', { name: /Upgrade/ })
-
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute(
         'href',
@@ -367,6 +366,9 @@ describe('FreePlanCard', () => {
 
       const cost = await screen.findByText(/\$12/)
       expect(cost).toBeInTheDocument()
+
+      const billingText = await screen.findByText(/per user\/month/)
+      expect(billingText).toBeInTheDocument()
 
       const monthlyBillingText = await screen.findByText(/billed monthly/)
       expect(monthlyBillingText).toBeInTheDocument()
@@ -498,7 +500,6 @@ describe('FreePlanCard', () => {
       })
 
       const cost = await screen.findByText(/\$29/)
-
       expect(cost).toBeInTheDocument()
 
       const perMonth = await screen.findByText(/^\/month/)

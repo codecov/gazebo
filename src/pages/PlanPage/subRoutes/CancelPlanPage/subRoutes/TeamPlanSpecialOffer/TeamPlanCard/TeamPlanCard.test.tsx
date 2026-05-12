@@ -177,7 +177,7 @@ describe('TeamPlanCard', () => {
     const monthlyPrice = await screen.findByText(/6/)
     expect(monthlyPrice).toBeInTheDocument()
 
-    const auxiliaryText = await screen.findByText(/per user billed monthly/)
+    const auxiliaryText = await screen.findByText(/billed monthly/)
     expect(auxiliaryText).toBeInTheDocument()
   })
 

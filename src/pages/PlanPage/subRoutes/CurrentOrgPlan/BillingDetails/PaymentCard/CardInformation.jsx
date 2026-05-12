@@ -33,12 +33,7 @@ const cardBrand = {
   },
 }
 
-function CardInformation({
-  subscriptionDetail,
-  card,
-  nextBillPrice,
-  isFreePlan,
-}) {
+function CardInformation({ subscriptionDetail, card, nextBillPrice }) {
   const typeCard = cardBrand[card?.brand] ?? cardBrand?.fallback
   let nextBilling = null
 
@@ -63,7 +58,7 @@ function CardInformation({
       <p className="text-ds-gray-quinary">
         Expires {card?.expMonth}/{lastTwoDigits(card?.expYear)}
       </p>
-      {nextBilling && !isFreePlan && (
+      {nextBilling && (
         <p className="text-sm text-ds-gray-quinary">
           Your next billing date is{' '}
           <span className="text-ds-gray-octonary">
@@ -86,7 +81,6 @@ CardInformation.propTypes = {
     expYear: PropTypes.number.isRequired,
   }).isRequired,
   nextBillPrice: PropTypes.string,
-  isFreePlan: PropTypes.bool,
 }
 
 export default CardInformation
