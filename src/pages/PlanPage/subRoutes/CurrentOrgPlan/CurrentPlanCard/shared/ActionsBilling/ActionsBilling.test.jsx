@@ -658,47 +658,5 @@ describe('Actions Billing', () => {
         )
       })
     })
-
-    describe('when buttonOptions prop is provided', () => {
-      it('includes query params in upgrade link href', async () => {
-        setup({
-          accountDetails: mockedFreeAccountDetails,
-          plans: allPlans,
-        })
-
-        render(<ActionsBilling buttonOptions={{ params: { plan: 'pro' } }} />, {
-          wrapper,
-        })
-
-        const upgradeLink = await screen.findByRole('link', {
-          name: /Upgrade/,
-        })
-        expect(upgradeLink).toBeInTheDocument()
-        expect(upgradeLink).toHaveAttribute(
-          'href',
-          '/plan/gh/critical-role/upgrade?plan=pro'
-        )
-      })
-
-      it('includes query params in sentry upgrade button href', async () => {
-        setup({
-          accountDetails: mockedFreeAccountDetails,
-          plans: sentryPlans,
-        })
-
-        render(<ActionsBilling buttonOptions={{ params: { plan: 'pro' } }} />, {
-          wrapper,
-        })
-
-        const upgradeButton = await screen.findByRole('link', {
-          name: /Upgrade/,
-        })
-        expect(upgradeButton).toBeInTheDocument()
-        expect(upgradeButton).toHaveAttribute(
-          'href',
-          '/plan/gh/critical-role/upgrade?plan=pro'
-        )
-      })
-    })
   })
 })

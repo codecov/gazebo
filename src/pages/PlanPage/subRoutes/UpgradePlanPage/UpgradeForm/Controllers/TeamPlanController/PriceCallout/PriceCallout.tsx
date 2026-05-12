@@ -1,11 +1,17 @@
 import inRange from 'lodash/inRange'
 import { Fragment } from 'react'
+import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
+import { MONTHS_PER_YEAR } from 'pages/PlanPage/subRoutes/CurrentOrgPlan/BillingDetails/BillingDetails'
 import { useAccountDetails } from 'services/account/useAccountDetails'
-import { useAvailablePlans } from 'services/account/useAvailablePlans'
+import {
+  IndividualPlan,
+  useAvailablePlans,
+} from 'services/account/useAvailablePlans'
 import { Provider } from 'shared/api/helpers'
 import {
+  BillingRate,
   findTeamPlans,
   formatNumberToUSD,
   getNextBillingDate,
@@ -15,19 +21,33 @@ import {
   MIN_NB_SEATS_PRO,
   TEAM_PLAN_MAX_ACTIVE_USERS,
 } from 'shared/utils/upgradeForm'
+import Icon from 'ui/Icon'
+
+import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
+  newPlan?: IndividualPlan
   seats: number
+  setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 
-const PriceCallout: React.FC<PriceCalloutProps> = ({ seats }) => {
+const PriceCallout: React.FC<PriceCalloutProps> = ({
+  newPlan,
+  seats,
+  setFormValue,
+}) => {
   const { provider, owner } = useParams<{ provider: Provider; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { teamPlanMonth } = findTeamPlans({ plans })
+  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
   const perMonthPrice = calculatePriceTeamPlan({
     seats,
     baseUnitPrice: teamPlanMonth?.baseUnitPrice,
   })
+  const perYearPrice = calculatePriceTeamPlan({
+    seats,
+    baseUnitPrice: teamPlanYear?.baseUnitPrice,
+  })
+  const isPerYear = newPlan?.billingRate === BillingRate.ANNUALLY
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
 
@@ -35,20 +55,69 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({ seats }) => {
     return null
   }
 
+  if (isPerYear) {
+    return (
+      <div className="bg-ds-gray-primary p-4">
+        <p className="pb-3">
+          <span className="font-semibold">
+            {formatNumberToUSD(perYearPrice)}
+          </span>
+          /month billed annually at{' '}
+          {formatNumberToUSD(perYearPrice * MONTHS_PER_YEAR)}
+        </p>
+        <p>
+          &#127881; You{' '}
+          <span className="font-semibold">
+            save{' '}
+            {formatNumberToUSD(
+              (perMonthPrice - perYearPrice) * MONTHS_PER_YEAR
+            )}
+          </span>{' '}
+          with annual billing
+          {nextBillingDate && (
+            <Fragment>
+              ,<span className="font-semibold"> next billing date</span> is{' '}
+              {nextBillingDate}
+            </Fragment>
+          )}
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-ds-gray-primary p-4">
-      <p>
+      <p className="pb-3">
         <span className="font-semibold">
           {formatNumberToUSD(perMonthPrice)}
         </span>
         /month
-        {nextBillingDate && (
-          <Fragment>
-            ,<span className="font-semibold"> next billing date</span> is{' '}
-            {nextBillingDate}
-          </Fragment>
-        )}
       </p>
+      <div className="flex flex-row gap-1">
+        <Icon size="sm" name="lightBulb" variant="solid" />
+        <p>
+          You could{' '}
+          <span className="font-semibold">
+            save{' '}
+            {formatNumberToUSD(
+              (perMonthPrice - perYearPrice) * MONTHS_PER_YEAR
+            )}
+          </span>{' '}
+          a year with annual billing
+          {nextBillingDate && (
+            <Fragment>
+              ,<span className="font-semibold"> next billing date</span> is{' '}
+              {nextBillingDate}
+            </Fragment>
+          )}{' '}
+          <button
+            className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
+            onClick={() => setFormValue('newPlan', teamPlanYear)}
+          >
+            switch to annual
+          </button>
+        </p>
+      </div>
     </div>
   )
 }

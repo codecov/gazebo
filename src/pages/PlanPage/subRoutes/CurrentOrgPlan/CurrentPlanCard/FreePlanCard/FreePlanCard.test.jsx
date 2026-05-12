@@ -118,7 +118,7 @@ const sentryPlans = [
     marketingName: 'Sentry',
     value: Plans.USERS_SENTRYM,
     billingRate: null,
-    baseUnitPrice: 12,
+    baseUnitPrice: 0,
     benefits: ['Includes 5 seats', 'Unlimited public repositories'],
     monthlyUploadLimit: null,
     isTeamPlan: false,
@@ -313,11 +313,9 @@ describe('FreePlanCard', () => {
       })
 
       const link = await screen.findByRole('link', { name: /Upgrade/ })
+
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute(
-        'href',
-        '/plan/bb/critical-role/upgrade?plan=pro'
-      )
+      expect(link).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
     })
 
     it('renders the help message', async () => {
@@ -364,13 +362,15 @@ describe('FreePlanCard', () => {
         wrapper,
       })
 
-      const cost = await screen.findByText(/\$12/)
+      const cost = await screen.findByText(/\$10/)
       expect(cost).toBeInTheDocument()
 
-      const billingText = await screen.findByText(/per user\/month/)
-      expect(billingText).toBeInTheDocument()
+      const annualBillingText = await screen.findByText(/per user\/month/)
+      expect(annualBillingText).toBeInTheDocument()
 
-      const monthlyBillingText = await screen.findByText(/billed monthly/)
+      const monthlyBillingText = await screen.findByText(
+        /billed annually, or \$12 per user billing monthly/
+      )
       expect(monthlyBillingText).toBeInTheDocument()
     })
 
@@ -481,7 +481,7 @@ describe('FreePlanCard', () => {
       expect(upgradeLink).toBeInTheDocument()
       expect(upgradeLink).toHaveAttribute(
         'href',
-        '/plan/bb/critical-role/upgrade?plan=pro'
+        '/plan/bb/critical-role/upgrade'
       )
     })
 
@@ -506,7 +506,7 @@ describe('FreePlanCard', () => {
       expect(perMonth).toBeInTheDocument()
 
       const billingCycleInfo = await screen.findByText(
-        /over 5 users is \$12 per user\/month, billed monthly/
+        /over 5 users is \$10 per user\/month, billed annually/
       )
       expect(billingCycleInfo).toBeInTheDocument()
     })
