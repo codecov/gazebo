@@ -142,6 +142,44 @@ jobs:
     uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.14
     secrets: inherit
 
+  codecov-startup-test:
+    name: Codecov Startup
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          submodules: 'recursive'
+      - name: Install CLI
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          make test_env.install_cli
+      - name: Run Startup
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_URL }} create-commit --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_URL }} create-report --fail-on-error
+      - name: Run Startup Staging
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -v -u ${{ secrets.CODECOV_STAGING_URL }} create-commit -t ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
+          codecovcli -v -u ${{ secrets.CODECOV_STAGING_URL }} create-report -t ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
+      - name: Run Startup QA
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_QA_URL }} create-commit -t ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_QA_URL }} create-report -t ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
+      - name: Run Startup Public QA
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} create-commit -t ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} create-report -t ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
+    secrets: inherit
+
   runner-indexes-vitest:
     runs-on: ubuntu-latest
     name: Generate runner indexes Vitest
