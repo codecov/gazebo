@@ -178,7 +178,6 @@ jobs:
         run: |
           codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} create-commit -t ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
           codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} create-report -t ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
-    secrets: inherit
 
   runner-indexes-vitest:
     runs-on: ubuntu-latest
