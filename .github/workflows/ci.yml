@@ -156,35 +156,35 @@ jobs:
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
           make test_env.install_cli
-			- name: Debug CODECOV_STAGING_URL network
-				run: |
-					URL='${{ secrets.CODECOV_STAGING_URL }}'
-					HOST="$(printf '%s' "$URL" | sed -E 's|^https?://||; s|[/:].*$||')"
-					echo "host = $HOST"
+      - name: Debug CODECOV_STAGING_URL network
+        run: |
+          URL='${{ secrets.CODECOV_STAGING_URL }}'
+          HOST="$(printf '%s' "$URL" | sed -E 's|^https?://||; s|[/:].*$||')"
+          echo "host = $HOST"
 
-					echo "=== getent (libc resolver) ==="
-					getent hosts "$HOST" || echo "getent: NXDOMAIN"
+          echo "=== getent (libc resolver) ==="
+          getent hosts "$HOST" || echo "getent: NXDOMAIN"
 
-					echo "=== dig system resolver ==="
-					dig +short "$HOST" || true
+          echo "=== dig system resolver ==="
+          dig +short "$HOST" || true
 
-					echo "=== dig @8.8.8.8 ==="
-					dig +short @8.8.8.8 "$HOST" || true
+          echo "=== dig @8.8.8.8 ==="
+          dig +short @8.8.8.8 "$HOST" || true
 
-					echo "=== TCP/TLS handshake ==="
-					timeout 5 openssl s_client -servername "$HOST" -connect "$HOST:443" </dev/null 2>&1 \
-						| grep -E 'CONNECTED|subject=|issuer=|Verify return|errno' | head
+          echo "=== TCP/TLS handshake ==="
+          timeout 5 openssl s_client -servername "$HOST" -connect "$HOST:443" </dev/null 2>&1 \
+            | grep -E 'CONNECTED|subject=|issuer=|Verify return|errno' | head
 
-					echo "=== HTTPS GET / ==="
-					curl -sS -o /dev/null \
-							 -w "HTTP=%{http_code} ip=%{remote_ip} dns=%{time_namelookup}s conn=%{time_connect}s total=%{time_total}s\n" \
-							 --max-time 10 "$URL/" || echo "curl exit=$?"
+          echo "=== HTTPS GET / ==="
+          curl -sS -o /dev/null \
+               -w "HTTP=%{http_code} ip=%{remote_ip} dns=%{time_namelookup}s conn=%{time_connect}s total=%{time_total}s\n" \
+               --max-time 10 "$URL/" || echo "curl exit=$?"
 
-					echo "=== HTTPS POST /upload/... ==="
-					curl -sS -o /dev/null \
-							 -w "HTTP=%{http_code} ip=%{remote_ip} dns=%{time_namelookup}s conn=%{time_connect}s total=%{time_total}s\n" \
-							 --max-time 10 -X POST "$URL/upload/github/codecov::::gazebo/commits" \
-							 -H 'Authorization: token abc' || echo "curl exit=$?"
+          echo "=== HTTPS POST /upload/... ==="
+          curl -sS -o /dev/null \
+               -w "HTTP=%{http_code} ip=%{remote_ip} dns=%{time_namelookup}s conn=%{time_connect}s total=%{time_total}s\n" \
+               --max-time 10 -X POST "$URL/upload/github/codecov::::gazebo/commits" \
+               -H 'Authorization: token abc' || echo "curl exit=$?"
       - name: Run Startup
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         env:
