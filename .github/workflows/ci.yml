@@ -143,7 +143,7 @@ jobs:
     secrets: inherit
 
   codecov-startup-test:
-    name: Codecov Startup
+    name: Codecov Startup - Test
     needs: install
     runs-on: ubuntu-latest
     steps:
@@ -156,6 +156,11 @@ jobs:
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
           make test_env.install_cli
+      - name: Debug CODECOV_STAGING_URL
+        run: |
+          URL='${{ secrets.CODECOV_STAGING_URL }}'
+          printf 'len=%d\n' "${#URL}"
+          printf '%s' "$URL" | xxd
       - name: Run Startup
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         env:
