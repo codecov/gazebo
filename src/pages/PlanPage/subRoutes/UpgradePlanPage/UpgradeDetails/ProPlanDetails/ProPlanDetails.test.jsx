@@ -188,14 +188,12 @@ describe('ProPlanDetails', () => {
       hasScheduledPhase = false,
       hasUserCanceledAtPeriodEnd = false,
       isProPlan = false,
-      currentPlanBillingRate = BillingRate.MONTHLY,
     } = {
       isOngoingTrial: false,
       isSentryPlan: false,
       hasScheduledPhase: false,
       hasUserCanceledAtPeriodEnd: false,
       isProPlan: false,
-      currentPlanBillingRate: BillingRate.MONTHLY,
     }
   ) {
     server.use(
@@ -206,7 +204,7 @@ describe('ProPlanDetails', () => {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
-                billingRate: currentPlanBillingRate,
+                billingRate: BillingRate.MONTHLY,
                 isFreePlan: !isProPlan && !isSentryPlan,
                 isTeamPlan: false,
                 trialStatus: isOngoingTrial
@@ -292,34 +290,15 @@ describe('ProPlanDetails', () => {
       expect(benefitsList).toBeInTheDocument()
     })
 
-    describe('when current plan is billed monthly', () => {
-      it('shows monthly price', async () => {
-        setup({
-          isSentryPlan: false,
-          currentPlanBillingRate: BillingRate.MONTHLY,
-        })
+    it('shows annual price and monthly billing disclaimer', async () => {
+      setup({ isSentryPlan: false })
 
-        render(<ProPlanDetails />, { wrapper: wrapper() })
+      render(<ProPlanDetails />, { wrapper: wrapper() })
 
-        expect(await screen.findByText(/\$12/)).toBeInTheDocument()
-        expect(screen.getByText(/billed monthly/i)).toBeInTheDocument()
-      })
-    })
-
-    describe('when current plan is billed annually', () => {
-      it('shows annual price and monthly billing disclaimer', async () => {
-        setup({
-          isSentryPlan: false,
-          currentPlanBillingRate: BillingRate.ANNUALLY,
-        })
-
-        render(<ProPlanDetails />, { wrapper: wrapper() })
-
-        expect(await screen.findByText(/\$10/)).toBeInTheDocument()
-        expect(
-          screen.getByText(/billed annually, or \$12 for monthly billing/i)
-        ).toBeInTheDocument()
-      })
+      expect(await screen.findByText(/\$10/)).toBeInTheDocument()
+      expect(
+        screen.getByText(/billed annually, or \$12 for monthly billing/i)
+      ).toBeInTheDocument()
     })
 
     it('shows schedule phase when there is one', async () => {

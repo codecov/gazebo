@@ -10,6 +10,8 @@ import {
   findProPlans,
   findSentryPlans,
   findTeamPlans,
+  shouldDisplayTeamCard,
+  TierNames,
 } from 'shared/utils/billing'
 
 export const MIN_NB_SEATS_PRO = 2
@@ -199,6 +201,55 @@ export const calculateSentryNonBundledCost = ({
   MIN_SENTRY_SEATS * baseUnitPrice * MONTHS_PER_YEAR -
   SENTRY_PRICE * MONTHS_PER_YEAR
 
+export const getInitialUpgradeSelectedPlan = ({
+  plan,
+  plans,
+  planParam,
+  isSentryUpgrade,
+}: {
+  plan?: Plan | null
+  plans?: IndividualPlan[] | null
+  planParam?: string | null
+  isSentryUpgrade?: boolean
+}): IndividualPlan | undefined => {
+  const { proPlanYear, proPlanMonth } = findProPlans({ plans })
+  const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
+  const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
+  const hasTeamPlans = shouldDisplayTeamCard({ plans })
+
+  const isYearlyPlan = plan?.billingRate === BillingRate.ANNUALLY
+  const isPaidPlan =
+    !!plan?.billingRate && !plan?.isFreePlan && !plan?.isTrialPlan
+
+  if (plan?.isTeamPlan) {
+    return isYearlyPlan ? teamPlanYear : teamPlanMonth
+  }
+
+  if (plan?.isSentryPlan) {
+    return isYearlyPlan ? sentryPlanYear : sentryPlanMonth
+  }
+
+  if (isPaidPlan && plan?.value) {
+    const catalogPlan = plans?.find(
+      (availablePlan) => availablePlan.value === plan.value
+    )
+    if (catalogPlan) {
+      return catalogPlan
+    }
+    return isYearlyPlan ? proPlanYear : proPlanMonth
+  }
+
+  if ((hasTeamPlans && planParam === TierNames.TEAM) || plan?.isTeamPlan) {
+    return teamPlanYear
+  }
+
+  if (isSentryUpgrade) {
+    return sentryPlanYear
+  }
+
+  return proPlanYear
+}
+
 export const getDefaultValuesUpgradeForm = ({
   accountDetails,
   plans,
@@ -224,7 +275,8 @@ export const getDefaultValuesUpgradeForm = ({
     plans,
   })
 
-  const isPaidPlan = !!plan?.billingRate // If the plan has a billing rate, it's a paid plan
+  const isPaidPlan =
+    !!plan?.billingRate && !plan?.isFreePlan && !plan?.isTrialPlan
 
   const isYearlyPlan = plan?.billingRate === BillingRate.ANNUALLY
 

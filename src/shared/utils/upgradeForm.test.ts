@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import { AccountDetailsSchema } from 'services/account/useAccountDetails'
 import { Plan, TrialStatuses } from 'services/account/usePlanData'
-import { BillingRate, Plans } from 'shared/utils/billing'
+import { BillingRate, Plans, TierNames } from 'shared/utils/billing'
 
 import {
   calculatePrice,
@@ -11,6 +11,7 @@ import {
   calculateSentryNonBundledCost,
   extractSeats,
   getDefaultValuesUpgradeForm,
+  getInitialUpgradeSelectedPlan,
   getSchema,
   shouldRenderCancelLink,
 } from './upgradeForm'
@@ -95,6 +96,169 @@ describe('calculatePriceTeamPlan', () => {
     })
 
     expect(result).toBe(50)
+  })
+})
+
+describe('getInitialUpgradeSelectedPlan', () => {
+  const proPlanYear = {
+    value: Plans.USERS_PR_INAPPY,
+    billingRate: BillingRate.ANNUALLY,
+    isTeamPlan: false,
+    isSentryPlan: false,
+  }
+  const proPlanMonth = {
+    value: Plans.USERS_PR_INAPPM,
+    billingRate: BillingRate.MONTHLY,
+    isTeamPlan: false,
+    isSentryPlan: false,
+  }
+  const sentryPlanYear = {
+    value: Plans.USERS_SENTRYY,
+    billingRate: BillingRate.ANNUALLY,
+    isTeamPlan: false,
+    isSentryPlan: true,
+  }
+  const sentryPlanMonth = {
+    value: Plans.USERS_SENTRYM,
+    billingRate: BillingRate.MONTHLY,
+    isTeamPlan: false,
+    isSentryPlan: true,
+  }
+  const teamPlanYear = {
+    value: Plans.USERS_TEAMY,
+    billingRate: BillingRate.ANNUALLY,
+    isTeamPlan: true,
+    isSentryPlan: false,
+  }
+  const teamPlanMonth = {
+    value: Plans.USERS_TEAMM,
+    billingRate: BillingRate.MONTHLY,
+    isTeamPlan: true,
+    isSentryPlan: false,
+  }
+
+  it('returns monthly pro plan for monthly pro subscribers', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [proPlanYear, proPlanMonth],
+        plan: {
+          value: Plans.USERS_PR_INAPPM,
+          billingRate: BillingRate.MONTHLY,
+        } as Plan,
+      })
+    ).toStrictEqual(proPlanMonth)
+  })
+
+  it('returns annual pro plan for annual pro subscribers', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [proPlanYear, proPlanMonth],
+        plan: {
+          value: Plans.USERS_PR_INAPPY,
+          billingRate: BillingRate.ANNUALLY,
+        } as Plan,
+      })
+    ).toStrictEqual(proPlanYear)
+  })
+
+  it('returns monthly team plan for monthly team subscribers', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [teamPlanYear, teamPlanMonth],
+        plan: {
+          value: Plans.USERS_TEAMM,
+          billingRate: BillingRate.MONTHLY,
+          isTeamPlan: true,
+        } as Plan,
+      })
+    ).toStrictEqual(teamPlanMonth)
+  })
+
+  it('returns monthly sentry plan for monthly sentry subscribers', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [sentryPlanYear, sentryPlanMonth],
+        plan: {
+          value: Plans.USERS_SENTRYM,
+          billingRate: BillingRate.MONTHLY,
+          isSentryPlan: true,
+        } as Plan,
+      })
+    ).toStrictEqual(sentryPlanMonth)
+  })
+
+  it('returns annual pro plan for free users', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [proPlanYear, proPlanMonth],
+        plan: {
+          value: Plans.USERS_DEVELOPER,
+          billingRate: null,
+          isFreePlan: true,
+        } as Plan,
+      })
+    ).toStrictEqual(proPlanYear)
+  })
+
+  it('returns annual sentry plan when sentry upgrade is available', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [proPlanYear, proPlanMonth, sentryPlanYear, sentryPlanMonth],
+        plan: {
+          value: Plans.USERS_DEVELOPER,
+          billingRate: null,
+          isFreePlan: true,
+        } as Plan,
+        isSentryUpgrade: true,
+      })
+    ).toStrictEqual(sentryPlanYear)
+  })
+
+  it('returns annual team plan when team query param is set', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [teamPlanYear, teamPlanMonth],
+        plan: {
+          value: Plans.USERS_DEVELOPER,
+          billingRate: null,
+          isFreePlan: true,
+        } as Plan,
+        planParam: TierNames.TEAM,
+      })
+    ).toStrictEqual(teamPlanYear)
+  })
+
+  it('ignores billing rate on free plans when choosing upgrade defaults', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [teamPlanYear, teamPlanMonth],
+        plan: {
+          value: Plans.USERS_DEVELOPER,
+          billingRate: BillingRate.MONTHLY,
+          isFreePlan: true,
+        } as Plan,
+        planParam: TierNames.TEAM,
+      })
+    ).toStrictEqual(teamPlanYear)
+  })
+
+  it('aligns form defaults with initial selection for monthly subscribers', () => {
+    const plans = [proPlanYear, proPlanMonth]
+    const plan = {
+      billingRate: BillingRate.MONTHLY,
+      value: Plans.USERS_PR_INAPPM,
+      planUserCount: 2,
+    } as Plan
+    const selectedPlan = getInitialUpgradeSelectedPlan({ plans, plan })
+
+    const data = getDefaultValuesUpgradeForm({
+      accountDetails: {} as z.infer<typeof AccountDetailsSchema>,
+      plans,
+      plan,
+      selectedPlan,
+    })
+
+    expect(data.newPlan).toStrictEqual(proPlanMonth)
   })
 })
 

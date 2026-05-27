@@ -4,7 +4,7 @@ import { useAccountDetails } from 'services/account/useAccountDetails'
 import { useAvailablePlans } from 'services/account/useAvailablePlans'
 import { usePlanData } from 'services/account/usePlanData'
 import BenefitList from 'shared/plan/BenefitList'
-import { BillingRate, findSentryPlans } from 'shared/utils/billing'
+import { findSentryPlans } from 'shared/utils/billing'
 import { SENTRY_PRICE, shouldRenderCancelLink } from 'shared/utils/upgradeForm'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
@@ -19,7 +19,6 @@ function SentryPlanDetails() {
   const cancelAtPeriodEnd =
     accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
   const trialStatus = planData?.plan?.trialStatus
-  const currentPlanBillingRate = planData?.plan?.billingRate
   return (
     <div className="h-fit border md:w-[280px]">
       <h3 className="p-4 font-semibold">
@@ -29,27 +28,14 @@ function SentryPlanDetails() {
       <div className="flex flex-col gap-6 p-4">
         <div>
           <p className="mb-2 text-xs font-semibold">Pricing</p>
-          {currentPlanBillingRate === BillingRate.ANNUALLY ? (
-            <>
-              <p className="text-xs font-semibold">
-                <span className="text-2xl">${SENTRY_PRICE}</span>/month
-              </p>
-              <p className="text-xs text-ds-gray-senary">
-                over 5 users is ${sentryPlanYear?.baseUnitPrice} per user/month,
-                billed annually
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-xs font-semibold">
-                <span className="text-2xl">${SENTRY_PRICE}</span>/month
-              </p>
-              <p className="text-xs text-ds-gray-senary">
-                over 5 users is ${sentryPlanMonth?.baseUnitPrice} per
-                user/month, billed monthly
-              </p>
-            </>
-          )}
+          <p className="text-xs font-semibold">
+            <span className="text-2xl">${SENTRY_PRICE}</span>/month
+          </p>
+          <p className="text-xs text-ds-gray-senary">
+            over 5 users is ${sentryPlanYear?.baseUnitPrice} per user/month,
+            billed annually, or ${sentryPlanMonth?.baseUnitPrice} for monthly
+            billing
+          </p>
         </div>
         <div>
           <p className="mb-2 text-xs font-semibold">Includes</p>
