@@ -285,6 +285,62 @@ describe('getInitialUpgradeSelectedPlan', () => {
 
     expect(data.newPlan).toStrictEqual(proPlanMonth)
   })
+
+  it('prioritizes URL param over current plan - Team user with ?plan=pro gets Pro', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [proPlanYear, proPlanMonth, teamPlanYear, teamPlanMonth],
+        plan: {
+          value: Plans.USERS_TEAMM,
+          billingRate: BillingRate.MONTHLY,
+          isTeamPlan: true,
+        } as Plan,
+        planParam: TierNames.PRO,
+      })
+    ).toStrictEqual(proPlanYear)
+  })
+
+  it('prioritizes URL param over current plan - Pro user with ?plan=team gets Team', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [proPlanYear, proPlanMonth, teamPlanYear, teamPlanMonth],
+        plan: {
+          value: Plans.USERS_PR_INAPPM,
+          billingRate: BillingRate.MONTHLY,
+        } as Plan,
+        planParam: TierNames.TEAM,
+      })
+    ).toStrictEqual(teamPlanYear)
+  })
+
+  it('prioritizes URL param over current plan - Sentry user with ?plan=team gets Team', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [sentryPlanYear, sentryPlanMonth, teamPlanYear, teamPlanMonth],
+        plan: {
+          value: Plans.USERS_SENTRYM,
+          billingRate: BillingRate.MONTHLY,
+          isSentryPlan: true,
+        } as Plan,
+        planParam: TierNames.TEAM,
+      })
+    ).toStrictEqual(teamPlanYear)
+  })
+
+  it('respects Sentry upgrade when URL param is pro', () => {
+    expect(
+      getInitialUpgradeSelectedPlan({
+        plans: [proPlanYear, proPlanMonth, sentryPlanYear, sentryPlanMonth],
+        plan: {
+          value: Plans.USERS_DEVELOPER,
+          billingRate: null,
+          isFreePlan: true,
+        } as Plan,
+        planParam: TierNames.PRO,
+        isSentryUpgrade: true,
+      })
+    ).toStrictEqual(sentryPlanYear)
+  })
 })
 
 describe('getDefaultValuesUpgradeForm', () => {

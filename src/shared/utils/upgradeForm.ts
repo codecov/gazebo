@@ -221,6 +221,19 @@ export const getInitialUpgradeSelectedPlan = ({
   const isPaidPlan =
     !!plan?.billingRate && !plan?.isFreePlan && !plan?.isTrialPlan
 
+  // Priority 1: Honor explicit URL parameter (highest priority - user's explicit intent)
+  if (hasTeamPlans && planParam === TierNames.TEAM) {
+    return teamPlanYear
+  }
+  // Check for non-team planParam (means user wants Pro/Sentry)
+  if (planParam && planParam !== TierNames.TEAM) {
+    if (isSentryUpgrade) {
+      return sentryPlanYear
+    }
+    return proPlanYear
+  }
+
+  // Priority 2: Respect current plan type (fallback when no URL param)
   if (plan?.isTeamPlan) {
     return isYearlyPlan ? teamPlanYear : teamPlanMonth
   }
@@ -239,14 +252,12 @@ export const getInitialUpgradeSelectedPlan = ({
     return isYearlyPlan ? proPlanYear : proPlanMonth
   }
 
-  if ((hasTeamPlans && planParam === TierNames.TEAM) || plan?.isTeamPlan) {
-    return teamPlanYear
-  }
-
+  // Priority 3: Sentry upgrade eligibility (for free users)
   if (isSentryUpgrade) {
     return sentryPlanYear
   }
 
+  // Priority 4: Default to Pro annual
   return proPlanYear
 }
 
