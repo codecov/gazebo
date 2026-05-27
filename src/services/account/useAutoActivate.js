@@ -14,6 +14,7 @@ export function useAutoActivate({ provider, owner, opts = {} }) {
     // The following cache busts will trigger react-query to retry the api call updating components depending on this data.
     queryClient.invalidateQueries(['users'])
     queryClient.invalidateQueries(['accountDetails'])
+    queryClient.invalidateQueries({ queryKey: ['GetPlanData'] })
 
     if (onSuccess) {
       // Exicute passed onSuccess after invalidating queries

@@ -108,7 +108,7 @@ describe('getDefaultValuesUpgradeForm', () => {
     it('returns pro year plan', () => {
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
-        selectedPlan: proPlanYear,
+        selectedPlan: null,
         plans: [proPlanYear],
         plan: {
           billingRate: BillingRate.ANNUALLY,
@@ -130,7 +130,7 @@ describe('getDefaultValuesUpgradeForm', () => {
     it('returns sentry year plan if user is sentry upgrade', () => {
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
-        selectedPlan: proPlanYear,
+        selectedPlan: null,
         plans: [proPlanYear, sentryPlanYear],
         plan: {
           billingRate: BillingRate.ANNUALLY,
@@ -150,7 +150,7 @@ describe('getDefaultValuesUpgradeForm', () => {
     it('returns team monthly plan', () => {
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
-        selectedPlan: proPlanYear,
+        selectedPlan: null,
         plans: [teamPlanMonth],
         plan: {
           billingRate: BillingRate.MONTHLY,
@@ -169,7 +169,7 @@ describe('getDefaultValuesUpgradeForm', () => {
     it('returns correct seats when free seats are present', () => {
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
-        selectedPlan: proPlanYear,
+        selectedPlan: null,
         plans: [teamPlanMonth],
         plan: {
           billingRate: BillingRate.MONTHLY,
@@ -189,7 +189,7 @@ describe('getDefaultValuesUpgradeForm', () => {
     it('returns pro sentry plan if user is sentry upgrade', () => {
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
-        selectedPlan: proPlanYear,
+        selectedPlan: null,
         plans: [proPlanYear, sentryPlanYear],
         plan: {
           billingRate: BillingRate.MONTHLY,
@@ -216,7 +216,7 @@ describe('getDefaultValuesUpgradeForm', () => {
   it('returns current plan if the user is on a paid plan', () => {
     const data = getDefaultValuesUpgradeForm({
       accountDetails,
-      selectedPlan: proPlanYear,
+      selectedPlan: null,
       plans: [proPlanYear],
       plan: {
         billingRate: BillingRate.MONTHLY,
@@ -235,11 +235,28 @@ describe('getDefaultValuesUpgradeForm', () => {
     })
   })
 
+  it('prefers selectedPlan over current paid plan when both are set', () => {
+    const proPlanMonth = { value: Plans.USERS_PR_INAPPM } as Plan
+    const data = getDefaultValuesUpgradeForm({
+      accountDetails,
+      selectedPlan: proPlanYear,
+      plans: [proPlanYear, proPlanMonth],
+      plan: {
+        billingRate: BillingRate.MONTHLY,
+        value: Plans.USERS_PR_INAPPM,
+        planUserCount: 2,
+      } as Plan,
+    })
+
+    expect(data.newPlan).toStrictEqual({ value: Plans.USERS_PR_INAPPY })
+    expect(data.seats).toBe(2)
+  })
+
   describe('quantity calculation edge cases', () => {
     it('handles case where freeSeatCount equals planUserCount', () => {
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
-        selectedPlan: proPlanYear,
+        selectedPlan: null,
         plans: [proPlanYear],
         plan: {
           billingRate: BillingRate.MONTHLY,

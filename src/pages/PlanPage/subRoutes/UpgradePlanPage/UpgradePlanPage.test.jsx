@@ -129,7 +129,7 @@ const sentryPlanYear = {
 }
 
 const teamPlanMonth = {
-  baseUnitPrice: 6,
+  baseUnitPrice: 5,
   benefits: ['Up to 10 paid users'],
   billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
@@ -140,7 +140,7 @@ const teamPlanMonth = {
 }
 
 const teamPlanYear = {
-  baseUnitPrice: 5,
+  baseUnitPrice: 4,
   benefits: ['Up to 10 paid users'],
   billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
@@ -214,7 +214,7 @@ describe('UpgradePlanPage', () => {
       includeSentryPlans = false,
       includeTeamPlans = false,
     } = {
-      planValue: Plans.UUSERS_PR_INAPPY,
+      planValue: Plans.USERS_PR_INAPPY,
       periodEnd: undefined,
       includeSentryPlans: false,
       includeTeamPlans: false,

@@ -550,6 +550,45 @@ describe('PaymentCard', () => {
     })
 
     describe('Sentry Plan pricing', () => {
+      it('uses Sentry pricing when isProPlan and isSentryPlan are both true', async () => {
+        // Production can set both flags; Sentry must win over Pro (5 × $12 = $60 vs $29 bundle)
+        server.use(
+          graphql.query('GetPlanData', () => {
+            return HttpResponse.json({
+              data: {
+                owner: {
+                  hasPrivateRepos: true,
+                  plan: {
+                    ...mockPlanData,
+                    billingRate: BillingRate.MONTHLY,
+                    baseUnitPrice: 12,
+                    planUserCount: 5,
+                    freeSeatCount: 0,
+                    isProPlan: true,
+                    isTeamPlan: false,
+                    isSentryPlan: true,
+                  },
+                },
+              },
+            })
+          })
+        )
+
+        render(
+          <PaymentCard
+            accountDetails={accountDetails}
+            provider="gh"
+            owner="codecov"
+          />,
+          { wrapper }
+        )
+
+        await waitFor(() => {
+          expect(screen.getByText(/for \$29.00/)).toBeInTheDocument()
+        })
+        expect(screen.queryByText(/for \$60.00/)).not.toBeInTheDocument()
+      })
+
       it('calculates Sentry plan monthly billing with 5 or fewer seats correctly', async () => {
         // Sentry plan: 5 seats = $29.00 (base price)
         server.use(

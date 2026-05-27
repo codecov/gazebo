@@ -188,12 +188,14 @@ describe('ProPlanDetails', () => {
       hasScheduledPhase = false,
       hasUserCanceledAtPeriodEnd = false,
       isProPlan = false,
+      currentPlanBillingRate = BillingRate.MONTHLY,
     } = {
       isOngoingTrial: false,
       isSentryPlan: false,
       hasScheduledPhase: false,
       hasUserCanceledAtPeriodEnd: false,
       isProPlan: false,
+      currentPlanBillingRate: BillingRate.MONTHLY,
     }
   ) {
     server.use(
@@ -204,6 +206,7 @@ describe('ProPlanDetails', () => {
               hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
+                billingRate: currentPlanBillingRate,
                 isFreePlan: !isProPlan && !isSentryPlan,
                 isTeamPlan: false,
                 trialStatus: isOngoingTrial
@@ -253,15 +256,15 @@ describe('ProPlanDetails', () => {
             subscriptionDetail: {
               cancelAtPeriodEnd: hasUserCanceledAtPeriodEnd,
             },
-            scheduleDetail: {
-              scheduledPhase: hasScheduledPhase
-                ? {
+            scheduleDetail: hasScheduledPhase
+              ? {
+                  scheduledPhase: {
                     quantity: 0,
                     plan: '',
                     startDate: 123456789,
-                  }
-                : {},
-            },
+                  },
+                }
+              : undefined,
             activatedUserCount: 10,
           })
         }
@@ -289,24 +292,34 @@ describe('ProPlanDetails', () => {
       expect(benefitsList).toBeInTheDocument()
     })
 
-    it('shows price', async () => {
-      setup({ isSentryPlan: false })
+    describe('when current plan is billed monthly', () => {
+      it('shows monthly price', async () => {
+        setup({
+          isSentryPlan: false,
+          currentPlanBillingRate: BillingRate.MONTHLY,
+        })
 
-      render(<ProPlanDetails />, { wrapper: wrapper() })
+        render(<ProPlanDetails />, { wrapper: wrapper() })
 
-      const price = await screen.findByText(/\$10/)
-      expect(price).toBeInTheDocument()
+        expect(await screen.findByText(/\$12/)).toBeInTheDocument()
+        expect(screen.getByText(/billed monthly/i)).toBeInTheDocument()
+      })
     })
 
-    it('shows pricing disclaimer', async () => {
-      setup({ isSentryPlan: false })
+    describe('when current plan is billed annually', () => {
+      it('shows annual price and monthly billing disclaimer', async () => {
+        setup({
+          isSentryPlan: false,
+          currentPlanBillingRate: BillingRate.ANNUALLY,
+        })
 
-      render(<ProPlanDetails />, { wrapper: wrapper() })
+        render(<ProPlanDetails />, { wrapper: wrapper() })
 
-      const disclaimer = await screen.findByText(
-        /billed annually, or \$12 for monthly billing/i
-      )
-      expect(disclaimer).toBeInTheDocument()
+        expect(await screen.findByText(/\$10/)).toBeInTheDocument()
+        expect(
+          screen.getByText(/billed annually, or \$12 for monthly billing/i)
+        ).toBeInTheDocument()
+      })
     })
 
     it('shows schedule phase when there is one', async () => {

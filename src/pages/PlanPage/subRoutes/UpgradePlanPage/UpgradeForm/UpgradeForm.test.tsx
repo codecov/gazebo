@@ -444,9 +444,17 @@ describe('UpgradeForm', () => {
                 billingRate:
                   planValue === Plans.USERS_DEVELOPER
                     ? null
-                    : monthlyPlan
+                    : planValue === Plans.USERS_PR_INAPPM ||
+                        planValue === Plans.USERS_TEAMM ||
+                        planValue === Plans.USERS_SENTRYM
                       ? BillingRate.MONTHLY
-                      : BillingRate.ANNUALLY,
+                      : planValue === Plans.USERS_PR_INAPPY ||
+                          planValue === Plans.USERS_TEAMY ||
+                          planValue === Plans.USERS_SENTRYY
+                        ? BillingRate.ANNUALLY
+                        : monthlyPlan
+                          ? BillingRate.MONTHLY
+                          : BillingRate.ANNUALLY,
                 isFreePlan: planValue === Plans.USERS_DEVELOPER,
                 isEnterprisePlan: false,
                 isProPlan:
@@ -933,7 +941,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a pro plan monthly', () => {
       const props = {
         setSelectedPlan: vi.fn(),
-        selectedPlan: proPlanYear,
+        selectedPlan: proPlanMonth,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
@@ -1089,7 +1097,7 @@ describe('UpgradeForm', () => {
             expect(auxiliaryText).toBeInTheDocument()
           })
 
-          it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
+          it('calls setSelectedPlan with monthly team plan when selecting team button', async () => {
             const { user } = setup({
               planValue: Plans.USERS_DEVELOPER,
               hasTeamPlans: true,
@@ -1098,7 +1106,7 @@ describe('UpgradeForm', () => {
 
             const teamOption = await screen.findByTestId('radio-team')
             await user.click(teamOption)
-            expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanMonth)
           })
         })
       })
