@@ -277,7 +277,7 @@ export const getDefaultValuesUpgradeForm = ({
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
-  const { proPlanYear, proPlanMonth } = findProPlans({ plans })
+  const { proPlanYear } = findProPlans({ plans })
   const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
 
@@ -291,7 +291,8 @@ export const getDefaultValuesUpgradeForm = ({
 
   const isYearlyPlan = plan?.billingRate === BillingRate.ANNUALLY
 
-  let newPlan = isYearlyPlan ? proPlanYear : proPlanMonth
+  // Default to proPlanYear (maintains original behavior, can be undefined if not in catalog)
+  let newPlan = proPlanYear
   // selectedPlan is expected to only be falsy if plans from API are not available or still loading
   if (selectedPlan) {
     newPlan = selectedPlan
