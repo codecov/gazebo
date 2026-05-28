@@ -1,5 +1,6 @@
 import inRange from 'lodash/inRange'
 import { Fragment } from 'react'
+import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { MONTHS_PER_YEAR } from 'pages/PlanPage/subRoutes/CurrentOrgPlan/BillingDetails/BillingDetails'
@@ -20,23 +21,24 @@ import {
   MIN_NB_SEATS_PRO,
   TEAM_PLAN_MAX_ACTIVE_USERS,
 } from 'shared/utils/upgradeForm'
+import Icon from 'ui/Icon'
+
+import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
   newPlan?: IndividualPlan
   seats: number
+  setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 
-const PriceCallout: React.FC<PriceCalloutProps> = ({ newPlan, seats }) => {
+const PriceCallout: React.FC<PriceCalloutProps> = ({
+  newPlan,
+  seats,
+  setFormValue,
+}) => {
   const { provider, owner } = useParams<{ provider: Provider; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
-
-  // Don't render if no plans are available
-  if (!teamPlanMonth && !teamPlanYear) {
-    return null
-  }
-
   const perMonthPrice = calculatePriceTeamPlan({
     seats,
     baseUnitPrice: teamPlanMonth?.baseUnitPrice,
@@ -46,17 +48,10 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({ newPlan, seats }) => {
     baseUnitPrice: teamPlanYear?.baseUnitPrice,
   })
   const isPerYear = newPlan?.billingRate === BillingRate.ANNUALLY
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
 
   if (!inRange(seats, MIN_NB_SEATS_PRO, TEAM_PLAN_MAX_ACTIVE_USERS + 1)) {
-    return null
-  }
-
-  // Don't render if the required plan variant doesn't exist
-  if (isPerYear && !teamPlanYear) {
-    return null
-  }
-  if (!isPerYear && !teamPlanMonth) {
     return null
   }
 
@@ -70,50 +65,59 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({ newPlan, seats }) => {
           /month billed annually at{' '}
           {formatNumberToUSD(perYearPrice * MONTHS_PER_YEAR)}
         </p>
-        {/* Only show savings if both monthly and yearly plans exist */}
-        {teamPlanMonth && teamPlanYear && (
-          <p>
-            &#127881; You{' '}
-            <span className="font-semibold">
-              save{' '}
-              {formatNumberToUSD(
-                (perMonthPrice - perYearPrice) * MONTHS_PER_YEAR
-              )}
-            </span>{' '}
-            with annual billing
-            {nextBillingDate && (
-              <Fragment>
-                ,<span className="font-semibold"> next billing date</span> is{' '}
-                {nextBillingDate}
-              </Fragment>
+        <p>
+          &#127881; You{' '}
+          <span className="font-semibold">
+            save{' '}
+            {formatNumberToUSD(
+              (perMonthPrice - perYearPrice) * MONTHS_PER_YEAR
             )}
-          </p>
-        )}
-        {/* Show next billing date even without savings */}
-        {(!teamPlanMonth || !teamPlanYear) && nextBillingDate && (
-          <p>
-            <span className="font-semibold">Next billing date</span> is{' '}
-            {nextBillingDate}
-          </p>
-        )}
+          </span>{' '}
+          with annual billing
+          {nextBillingDate && (
+            <Fragment>
+              ,<span className="font-semibold"> next billing date</span> is{' '}
+              {nextBillingDate}
+            </Fragment>
+          )}
+        </p>
       </div>
     )
   }
 
   return (
     <div className="bg-ds-gray-primary p-4">
-      <p>
+      <p className="pb-3">
         <span className="font-semibold">
           {formatNumberToUSD(perMonthPrice)}
         </span>
         /month
-        {nextBillingDate && (
-          <Fragment>
-            ,<span className="font-semibold"> next billing date</span> is{' '}
-            {nextBillingDate}
-          </Fragment>
-        )}
       </p>
+      <div className="flex flex-row gap-1">
+        <Icon size="sm" name="lightBulb" variant="solid" />
+        <p>
+          You could{' '}
+          <span className="font-semibold">
+            save{' '}
+            {formatNumberToUSD(
+              (perMonthPrice - perYearPrice) * MONTHS_PER_YEAR
+            )}
+          </span>{' '}
+          a year with annual billing
+          {nextBillingDate && (
+            <Fragment>
+              ,<span className="font-semibold"> next billing date</span> is{' '}
+              {nextBillingDate}
+            </Fragment>
+          )}{' '}
+          <button
+            className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
+            onClick={() => setFormValue('newPlan', teamPlanYear)}
+          >
+            switch to annual
+          </button>
+        </p>
+      </div>
     </div>
   )
 }

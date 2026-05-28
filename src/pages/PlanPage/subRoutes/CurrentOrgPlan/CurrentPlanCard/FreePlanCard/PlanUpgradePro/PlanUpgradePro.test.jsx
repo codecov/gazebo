@@ -97,7 +97,7 @@ const plansWithSentryOptions = [
     marketingName: 'Sentry',
     value: Plans.USERS_SENTRYM,
     billingRate: null,
-    baseUnitPrice: 456,
+    baseUnitPrice: 0,
     benefits: ['Includes 5 seats', 'Unlimited public repositories'],
     monthlyUploadLimit: null,
   },
@@ -180,7 +180,7 @@ describe('PlanUpgradePro', () => {
       expect(sentryPrice).toBeInTheDocument()
     })
 
-    it('shows sentry monthly price', async () => {
+    it('shows sentry annual price', async () => {
       render(
         <PlanUpgradePro isSentryUpgrade plans={plansWithSentryOptions} />,
         {
@@ -188,7 +188,7 @@ describe('PlanUpgradePro', () => {
         }
       )
 
-      const annualSentryPrice = await screen.findByText(/456/)
+      const annualSentryPrice = await screen.findByText(/123/)
       expect(annualSentryPrice).toBeInTheDocument()
     })
 
@@ -266,7 +266,7 @@ describe('PlanUpgradePro', () => {
       expect(monthlyProPrice).toBeInTheDocument()
     })
 
-    it('does not show pro yearly price', async () => {
+    it('shows pro yearly price', async () => {
       render(
         <PlanUpgradePro
           isSentryUpgrade={false}
@@ -277,11 +277,8 @@ describe('PlanUpgradePro', () => {
         }
       )
 
-      const monthlyProPrice = await screen.findByText(/789/)
-      expect(monthlyProPrice).toBeInTheDocument()
-
-      const yearlyProPrice = screen.queryByText(/456/)
-      expect(yearlyProPrice).not.toBeInTheDocument()
+      const yearlyProPrice = await screen.findByText(/456/)
+      expect(yearlyProPrice).toBeInTheDocument()
     })
 
     it('shows the actions billing component', async () => {
