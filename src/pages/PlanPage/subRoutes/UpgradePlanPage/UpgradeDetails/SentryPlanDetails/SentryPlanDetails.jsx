@@ -14,7 +14,7 @@ function SentryPlanDetails() {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: planData } = usePlanData({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { sentryPlanYear } = findSentryPlans({ plans })
+  const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
 
   const cancelAtPeriodEnd =
     accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
@@ -33,7 +33,8 @@ function SentryPlanDetails() {
           </p>
           <p className="text-xs text-ds-gray-senary">
             over 5 users is ${sentryPlanYear?.baseUnitPrice} per user/month,
-            billed annually
+            billed annually, or ${sentryPlanMonth?.baseUnitPrice} for monthly
+            billing
           </p>
         </div>
         <div>

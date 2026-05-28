@@ -10,6 +10,8 @@ import {
   findProPlans,
   findSentryPlans,
   findTeamPlans,
+  shouldDisplayTeamCard,
+  TierNames,
 } from 'shared/utils/billing'
 
 export const MIN_NB_SEATS_PRO = 2
@@ -199,6 +201,66 @@ export const calculateSentryNonBundledCost = ({
   MIN_SENTRY_SEATS * baseUnitPrice * MONTHS_PER_YEAR -
   SENTRY_PRICE * MONTHS_PER_YEAR
 
+export const getInitialUpgradeSelectedPlan = ({
+  plan,
+  plans,
+  planParam,
+  isSentryUpgrade,
+}: {
+  plan?: Plan | null
+  plans?: IndividualPlan[] | null
+  planParam?: string | null
+  isSentryUpgrade?: boolean
+}): IndividualPlan | undefined => {
+  const { proPlanYear, proPlanMonth } = findProPlans({ plans })
+  const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
+  const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
+  const hasTeamPlans = shouldDisplayTeamCard({ plans })
+
+  const isYearlyPlan = plan?.billingRate === BillingRate.ANNUALLY
+  const isPaidPlan =
+    !!plan?.billingRate && !plan?.isFreePlan && !plan?.isTrialPlan
+
+  // Priority 1: Honor explicit URL parameter (highest priority - user's explicit intent)
+  if (hasTeamPlans && planParam === TierNames.TEAM) {
+    return teamPlanYear
+  }
+  // Check for non-team planParam (means user wants Pro/Sentry)
+  if (planParam && planParam !== TierNames.TEAM) {
+    if (isSentryUpgrade) {
+      return sentryPlanYear
+    }
+    return proPlanYear
+  }
+
+  // Priority 2: Respect current plan type (fallback when no URL param)
+  if (plan?.isTeamPlan) {
+    return isYearlyPlan ? teamPlanYear : teamPlanMonth
+  }
+
+  if (plan?.isSentryPlan) {
+    return isYearlyPlan ? sentryPlanYear : sentryPlanMonth
+  }
+
+  if (isPaidPlan && plan?.value) {
+    const catalogPlan = plans?.find(
+      (availablePlan) => availablePlan.value === plan.value
+    )
+    if (catalogPlan) {
+      return catalogPlan
+    }
+    return isYearlyPlan ? proPlanYear : proPlanMonth
+  }
+
+  // Priority 3: Sentry upgrade eligibility (for free users)
+  if (isSentryUpgrade) {
+    return sentryPlanYear
+  }
+
+  // Priority 4: Default to Pro annual
+  return proPlanYear
+}
+
 export const getDefaultValuesUpgradeForm = ({
   accountDetails,
   plans,
@@ -224,15 +286,20 @@ export const getDefaultValuesUpgradeForm = ({
     plans,
   })
 
-  const isMonthlyPlan = plan?.billingRate === BillingRate.MONTHLY
+  const isPaidPlan =
+    !!plan?.billingRate && !plan?.isFreePlan && !plan?.isTrialPlan
 
-  const isPaidPlan = !!plan?.billingRate // If the plan has a billing rate, it's a paid plan
+  const isYearlyPlan = plan?.billingRate === BillingRate.ANNUALLY
 
+  // Default to proPlanYear (maintains original behavior, can be undefined if not in catalog)
   let newPlan = proPlanYear
-  if (isSentryUpgrade && !plan?.isSentryPlan) {
-    newPlan = isMonthlyPlan ? sentryPlanMonth : sentryPlanYear
-  } else if (plan?.isTeamPlan || selectedPlan?.isTeamPlan) {
-    newPlan = isMonthlyPlan ? teamPlanMonth : teamPlanYear
+  // selectedPlan is expected to only be falsy if plans from API are not available or still loading
+  if (selectedPlan) {
+    newPlan = selectedPlan
+  } else if (isSentryUpgrade && !plan?.isSentryPlan) {
+    newPlan = isYearlyPlan ? sentryPlanYear : sentryPlanMonth
+  } else if (plan?.isTeamPlan) {
+    newPlan = isYearlyPlan ? teamPlanYear : teamPlanMonth
   } else if (isPaidPlan) {
     newPlan = plan
   }

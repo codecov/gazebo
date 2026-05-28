@@ -161,6 +161,7 @@ describe('TeamPlanDetails', () => {
               plan: {
                 ...mockPlanData,
                 trialStatus: trialValue,
+                billingRate: BillingRate.MONTHLY,
               },
             },
           },
@@ -216,7 +217,7 @@ describe('TeamPlanDetails', () => {
       expect(benefitsList).toBeInTheDocument()
     })
 
-    it('shows price', async () => {
+    it('shows annual price', async () => {
       setup()
 
       render(<TeamPlanDetails />, { wrapper: wrapper() })
@@ -225,7 +226,7 @@ describe('TeamPlanDetails', () => {
       expect(price).toBeInTheDocument()
     })
 
-    it('shows pricing disclaimer', async () => {
+    it('shows pricing disclaimer with monthly option', async () => {
       setup()
 
       render(<TeamPlanDetails />, { wrapper: wrapper() })

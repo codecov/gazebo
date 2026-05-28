@@ -28,6 +28,7 @@ export function useCancelPlan({ provider, owner }) {
     onSuccess: (data) => {
       // update the local cache of account details from what the server returns
       queryClient.setQueryData(['accountDetails', provider, owner], data)
+      queryClient.invalidateQueries({ queryKey: ['GetPlanData'] })
       setPlanUpdatedNotification({
         alertOption: 'info',
         isCancellation: true,

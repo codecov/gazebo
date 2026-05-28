@@ -57,10 +57,13 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const monthlyPlan = newPlan?.billingRate === BillingRate.MONTHLY
 
   let planOption = null
-  if (hasTeamPlans && planParam === TierNames.TEAM) {
+  if (planParam === TierNames.TEAM) {
     planOption = TierName.TEAM
-  } else {
+  } else if (planParam === TierNames.PRO) {
     planOption = TierName.PRO
+  } else {
+    // No URL param - use actual form state
+    planOption = newPlan?.isTeamPlan ? TierName.TEAM : TierName.PRO
   }
 
   const { updateParams } = useLocationParams({ plan: planOption })
