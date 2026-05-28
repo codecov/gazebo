@@ -168,10 +168,7 @@ export const CommitPageDataQueryOpts = ({
         const { data } = parsedData
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return rejectNetworkError({
-            errorName: 'Not Found Error',
-            errorDetails: { callingFn },
-          })
+          return { notFound: true as const }
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
