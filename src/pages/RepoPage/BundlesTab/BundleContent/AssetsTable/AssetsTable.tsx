@@ -115,7 +115,7 @@ const createColumns = (
 
   const filePathColumn = columnHelper.accessor('filePath', {
     header: includeFilePath ? 'File path' : undefined,
-    cell: (info) => info.renderValue()?.at(-1) ?? '',
+    cell: (info) => info.renderValue()?.slice(-1)[0] ?? '',
   })
 
   const extensionColumn = columnHelper.accessor('extension', {
@@ -425,7 +425,7 @@ export const AssetsTable: React.FC = () => {
                             <div className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] justify-between justify-items-stretch gap-x-8 gap-y-2 @md/filelist:justify-start @4xl/filelist:hidden">
                               <div>
                                 File path:{' '}
-                                {row.original.filePath?.at(-1) ?? '-'}
+                                {row.original.filePath?.slice(-1)[0] ?? '-'}
                               </div>
                               <div>Type: {row.original.extension}</div>
                               <div>
