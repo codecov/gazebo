@@ -85,8 +85,8 @@ CardInformation.propTypes = {
     expMonth: PropTypes.number.isRequired,
     expYear: PropTypes.number.isRequired,
   }).isRequired,
-  nextBillPrice: PropTypes.string,
   isFreePlan: PropTypes.bool,
+  nextBillPrice: PropTypes.string,
 }
 
 export default CardInformation

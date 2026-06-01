@@ -35,7 +35,7 @@ export const useUpgradeControls = () => {
           // we want to wait here as history.push can disrupt the query invalidation
           await Promise.all([
             queryClient.refetchQueries({ queryKey: ['accountDetails'] }),
-            queryClient.refetchQueries({ queryKey: ['GetPlanData'] }),
+            queryClient.invalidateQueries({ queryKey: ['GetPlanData'] }),
           ])
           setPlanUpdatedNotification({
             alertOption: 'success',

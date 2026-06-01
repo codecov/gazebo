@@ -278,7 +278,7 @@ describe('PlanTypeOptions', () => {
       })
 
       describe('plan param is set to team', () => {
-        it('renders Team button as "selected" when newPlan is undefined', async () => {
+        it('renders Team button as "selected"', async () => {
           const { mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_DEVELOPER,
             hasSentryPlans: false,
@@ -289,7 +289,7 @@ describe('PlanTypeOptions', () => {
             <PlanTypeOptions
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
-              newPlan={undefined}
+              newPlan={basicPlan}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=team'),
@@ -493,7 +493,7 @@ describe('PlanTypeOptions', () => {
       })
 
       describe('plan param is set to pro', () => {
-        it('renders Team button as "selected" because newPlan takes priority', async () => {
+        it('renders Pro button as "selected"', async () => {
           const { mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_TEAMY,
             hasSentryPlans: true,
@@ -513,16 +513,16 @@ describe('PlanTypeOptions', () => {
 
           const proBtn = await screen.findByTestId('radio-pro')
           expect(proBtn).toBeInTheDocument()
-          expect(proBtn).not.toBeChecked()
+          expect(proBtn).toBeChecked()
 
           const teamBtn = await screen.findByTestId('radio-team')
           expect(teamBtn).toBeInTheDocument()
-          expect(teamBtn).toBeChecked()
+          expect(teamBtn).not.toBeChecked()
         })
       })
 
       describe('user clicks Pro button', () => {
-        it('calls setValue and setSelectedPlan with sentry plan', async () => {
+        it('calls setValue and setSelectedPlan', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_TEAMY,
             hasSentryPlans: true,
@@ -925,7 +925,7 @@ describe('PlanTypeOptions', () => {
       })
 
       describe('user clicks Pro button', () => {
-        it('calls setValue and setSelectedPlan with pro plan', async () => {
+        it('calls setValue and setSelectedPlan', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_TEAMY,
             hasSentryPlans: false,
@@ -1083,8 +1083,8 @@ describe('PlanTypeOptions', () => {
     })
   })
   describe('when plan is monthly', () => {
-    it('renders Team button as selected for team plan', async () => {
-      const { mockSetFormValue, mockSetSelectedPlan } = setup({
+    it('keeps monthly selection when changing plans', async () => {
+      const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
         planValue: Plans.USERS_TEAMM,
         hasSentryPlans: false,
         hasTeamPlans: true,
@@ -1103,11 +1103,14 @@ describe('PlanTypeOptions', () => {
 
       const proBtn = await screen.findByTestId('radio-pro')
       expect(proBtn).toBeInTheDocument()
-      expect(proBtn).not.toBeChecked()
+      await user.click(proBtn)
 
-      const teamBtn = await screen.findByTestId('radio-team')
-      expect(teamBtn).toBeInTheDocument()
-      expect(teamBtn).toBeChecked()
+      await waitFor(() =>
+        expect(mockSetFormValue).toHaveBeenCalledWith('newPlan', proPlanMonth)
+      )
+      await waitFor(() =>
+        expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanMonth)
+      )
     })
   })
 })

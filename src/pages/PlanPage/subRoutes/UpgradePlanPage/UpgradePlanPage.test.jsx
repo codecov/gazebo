@@ -5,7 +5,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { graphql, http, HttpResponse } from 'msw'
+import { delay, graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -16,6 +16,7 @@ import { BillingRate, Plans } from 'shared/utils/billing'
 import UpgradePlanPage from './UpgradePlanPage'
 
 vi.mock('./UpgradeForm', () => ({ default: () => 'UpgradeForm' }))
+vi.mock('ui/LoadingLogo', () => ({ default: () => 'Loading billing' }))
 
 const plans = [
   {
@@ -129,7 +130,7 @@ const sentryPlanYear = {
 }
 
 const teamPlanMonth = {
-  baseUnitPrice: 6,
+  baseUnitPrice: 5,
   benefits: ['Up to 10 paid users'],
   billingRate: BillingRate.MONTHLY,
   marketingName: 'Users Team',
@@ -140,7 +141,7 @@ const teamPlanMonth = {
 }
 
 const teamPlanYear = {
-  baseUnitPrice: 5,
+  baseUnitPrice: 4,
   benefits: ['Up to 10 paid users'],
   billingRate: BillingRate.ANNUALLY,
   marketingName: 'Users Team',
@@ -175,13 +176,23 @@ const queryClient = new QueryClient({
     },
   },
 })
+
+const queryClientWithoutSuspense = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: false,
+      retry: false,
+    },
+  },
+})
+
 const server = setupServer()
 
 let testLocation
 const wrapper =
-  (initialWrappers = '/plan/gh/codecov/upgrade') =>
+  (initialWrappers = '/plan/gh/codecov/upgrade', client = queryClient) =>
   ({ children }) => (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={[initialWrappers]}>
         <Route path="/plan/:provider/:owner/upgrade">
           <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
@@ -200,11 +211,45 @@ const wrapper =
 beforeAll(() => server.listen())
 afterEach(() => {
   queryClient.clear()
+  queryClientWithoutSuspense.clear()
   server.resetHandlers()
 })
 afterAll(() => {
   server.close()
 })
+
+function mockPlanDataResponse(planValue = Plans.USERS_PR_INAPPY) {
+  return HttpResponse.json({
+    data: {
+      owner: {
+        hasPrivateRepos: true,
+        plan: {
+          ...mockPlanData,
+          isEnterprisePlan: planValue === Plans.USERS_ENTERPRISEM,
+          isTeamPlan:
+            planValue === Plans.USERS_TEAMM || planValue === Plans.USERS_TEAMY,
+          isFreePlan: planValue === Plans.USERS_DEVELOPER,
+          isProPlan: planValue === Plans.USERS_PR_INAPPY,
+          isTrialPlan: planValue === Plans.USERS_TRIAL,
+          isSentryPlan:
+            planValue === Plans.USERS_SENTRYY ||
+            planValue === Plans.USERS_SENTRYM,
+          value: planValue,
+        },
+      },
+    },
+  })
+}
+
+function mockAvailablePlansResponse(availablePlans = plans) {
+  return HttpResponse.json({
+    data: {
+      owner: {
+        availablePlans,
+      },
+    },
+  })
+}
 
 describe('UpgradePlanPage', () => {
   function setup(
@@ -213,13 +258,11 @@ describe('UpgradePlanPage', () => {
       periodEnd = undefined,
       includeSentryPlans = false,
       includeTeamPlans = false,
-      customPlans = null,
     } = {
-      planValue: Plans.UUSERS_PR_INAPPY,
+      planValue: Plans.USERS_PR_INAPPY,
       periodEnd: undefined,
       includeSentryPlans: false,
       includeTeamPlans: false,
-      customPlans: null,
     }
   ) {
     server.use(
@@ -247,14 +290,7 @@ describe('UpgradePlanPage', () => {
         })
       }),
       graphql.query('GetAvailablePlans', () => {
-        // Allow custom plans array for testing fallback scenarios
-        if (customPlans !== null) {
-          return HttpResponse.json({
-            data: {
-              owner: { availablePlans: customPlans },
-            },
-          })
-        } else if (includeSentryPlans) {
+        if (includeSentryPlans) {
           return HttpResponse.json({
             data: {
               owner: { availablePlans: [sentryPlanMonth, sentryPlanYear] },
@@ -384,7 +420,7 @@ describe('UpgradePlanPage', () => {
           wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
         })
 
-        const teamPlanPrice = await screen.findByText(/\$6/)
+        const teamPlanPrice = await screen.findByText(/\$5/)
         expect(teamPlanPrice).toBeInTheDocument()
 
         const teamPlanPricingScheme = await screen.findByText(/per user\/month/)
@@ -445,111 +481,143 @@ describe('UpgradePlanPage', () => {
     })
   })
 
-  describe('when isSentryUpgrade is true (sentry plans available)', () => {
-    describe('when user is on a free plan', () => {
-      it('defaults to sentry plan instead of pro plan', async () => {
-        setup({ planValue: Plans.USERS_DEVELOPER, includeSentryPlans: true })
-        render(<UpgradePlanPage />, { wrapper: wrapper() })
+  describe('loading and error states', () => {
+    const wrapperWithoutSuspense = wrapper(
+      '/plan/gh/codecov/upgrade',
+      queryClientWithoutSuspense
+    )
 
-        const title = await screen.findByText(/Sentry Pro Team/)
-        expect(title).toBeInTheDocument()
-      })
-
-      it('renders sentry plan benefits', async () => {
-        setup({ planValue: Plans.USERS_DEVELOPER, includeSentryPlans: true })
-        render(<UpgradePlanPage />, { wrapper: wrapper() })
-
-        const benefit = await screen.findByText(/Includes 5 seats/)
-        expect(benefit).toBeInTheDocument()
-      })
-    })
-
-    describe('when ?plan=pro URL param is set', () => {
-      it('uses sentry plan instead of regular pro plan', async () => {
-        setup({ planValue: Plans.USERS_DEVELOPER, includeSentryPlans: true })
-        render(<UpgradePlanPage />, {
-          wrapper: wrapper('/plan/gh/codecov/upgrade?plan=pro'),
+    it('renders loading state while billing data is loading', () => {
+      server.use(
+        graphql.query('GetPlanData', async () => {
+          await delay('infinite')
+          return mockPlanDataResponse()
+        }),
+        graphql.query('GetAvailablePlans', async () => {
+          await delay('infinite')
+          return mockAvailablePlansResponse()
         })
+      )
 
-        const title = await screen.findByText(/Sentry Pro Team/)
-        expect(title).toBeInTheDocument()
-      })
+      render(<UpgradePlanPage />, { wrapper: wrapperWithoutSuspense })
+
+      expect(screen.getByText('Loading billing')).toBeInTheDocument()
+      expect(screen.queryByText('UpgradeForm')).not.toBeInTheDocument()
     })
 
-    describe('when user is already on a sentry plan', () => {
-      it('renders the sentry plan title', async () => {
-        setup({ planValue: Plans.USERS_SENTRYY, includeSentryPlans: true })
-        render(<UpgradePlanPage />, { wrapper: wrapper() })
+    it('renders error when available plans fails to load', async () => {
+      server.use(
+        graphql.query('GetAvailablePlans', () =>
+          HttpResponse.json({
+            data: { owner: { availablePlans: 'invalid' } },
+          })
+        ),
+        graphql.query('GetPlanData', () => mockPlanDataResponse())
+      )
 
-        const title = await screen.findByText(/Sentry Pro Team/)
-        expect(title).toBeInTheDocument()
-      })
+      render(<UpgradePlanPage />, { wrapper: wrapperWithoutSuspense })
 
-      it('renders sentry plan benefits', async () => {
-        setup({ planValue: Plans.USERS_SENTRYY, includeSentryPlans: true })
-        render(<UpgradePlanPage />, { wrapper: wrapper() })
-
-        const benefit = await screen.findByText(/Includes 5 seats/)
-        expect(benefit).toBeInTheDocument()
-      })
+      expect(
+        await screen.findByRole('heading', {
+          name: /Unable to load billing information/i,
+        })
+      ).toBeInTheDocument()
+      expect(screen.queryByText('UpgradeForm')).not.toBeInTheDocument()
     })
-  })
 
-  describe('defaultPaidPlan fallback chain', () => {
-    describe('when no plans are available', () => {
-      it('renders error message', async () => {
-        setup({ planValue: Plans.USERS_DEVELOPER, customPlans: [] })
-        render(<UpgradePlanPage />, { wrapper: wrapper() })
+    it('renders error when plan data fails to load', async () => {
+      server.use(
+        graphql.query('GetPlanData', () =>
+          HttpResponse.json({
+            data: { owner: { hasPrivateRepos: true, plan: 'invalid' } },
+          })
+        ),
+        graphql.query('GetAvailablePlans', () => mockAvailablePlansResponse())
+      )
 
-        const errorMessage = await screen.findByText(
-          /Unable to load available plans/
+      render(<UpgradePlanPage />, { wrapper: wrapperWithoutSuspense })
+
+      expect(
+        await screen.findByRole('heading', {
+          name: /Unable to load billing information/i,
+        })
+      ).toBeInTheDocument()
+      expect(screen.queryByText('UpgradeForm')).not.toBeInTheDocument()
+    })
+
+    it('renders error when no upgrade options are available', async () => {
+      server.use(
+        graphql.query('GetAvailablePlans', () =>
+          mockAvailablePlansResponse([])
+        ),
+        graphql.query('GetPlanData', () => mockPlanDataResponse())
+      )
+
+      render(<UpgradePlanPage />, { wrapper: wrapperWithoutSuspense })
+
+      expect(
+        await screen.findByRole('heading', {
+          name: /No upgrade options available/i,
+        })
+      ).toBeInTheDocument()
+      expect(screen.queryByText('UpgradeForm')).not.toBeInTheDocument()
+    })
+
+    it('renders error when available plans are not returned', async () => {
+      server.use(
+        graphql.query('GetAvailablePlans', () =>
+          HttpResponse.json({ data: { owner: { availablePlans: null } } })
+        ),
+        graphql.query('GetPlanData', () => mockPlanDataResponse())
+      )
+
+      render(<UpgradePlanPage />, { wrapper: wrapperWithoutSuspense })
+
+      expect(
+        await screen.findByRole('heading', {
+          name: /No upgrade options available/i,
+        })
+      ).toBeInTheDocument()
+      expect(screen.queryByText('UpgradeForm')).not.toBeInTheDocument()
+    })
+
+    it('renders error when plan details are missing', async () => {
+      server.use(
+        graphql.query('GetPlanData', () =>
+          HttpResponse.json({ data: { owner: null } })
+        ),
+        graphql.query('GetAvailablePlans', () => mockAvailablePlansResponse())
+      )
+
+      render(<UpgradePlanPage />, { wrapper: wrapperWithoutSuspense })
+
+      expect(
+        await screen.findByRole('heading', {
+          name: /Unable to load plan details/i,
+        })
+      ).toBeInTheDocument()
+      expect(screen.queryByText('UpgradeForm')).not.toBeInTheDocument()
+    })
+
+    it('renders upgrade content when billing data loads successfully', async () => {
+      server.use(
+        graphql.query('GetPlanData', () => mockPlanDataResponse()),
+        graphql.query('GetAvailablePlans', () => mockAvailablePlansResponse()),
+        http.get('/internal/gh/codecov/account-details', () =>
+          HttpResponse.json({
+            plan: {
+              marketingName: 'Pro Team',
+              value: Plans.USERS_PR_INAPPY,
+            },
+            activatedUserCount: 10,
+          })
         )
-        expect(errorMessage).toBeInTheDocument()
-      })
-    })
+      )
 
-    describe('when only team plans are available', () => {
-      it('falls back to team plan for non-sentry users', async () => {
-        setup({
-          planValue: Plans.USERS_DEVELOPER,
-          customPlans: [teamPlanMonth, teamPlanYear],
-        })
-        render(<UpgradePlanPage />, { wrapper: wrapper() })
+      render(<UpgradePlanPage />, { wrapper: wrapperWithoutSuspense })
 
-        const title = await screen.findByText(/Team plan/)
-        expect(title).toBeInTheDocument()
-      })
-    })
-
-    describe('when sentry and team plans are available', () => {
-      it('prefers sentry plan over team plan for sentry-eligible users', async () => {
-        setup({
-          planValue: Plans.USERS_DEVELOPER,
-          customPlans: [
-            sentryPlanMonth,
-            sentryPlanYear,
-            teamPlanMonth,
-            teamPlanYear,
-          ],
-        })
-        render(<UpgradePlanPage />, { wrapper: wrapper() })
-
-        const title = await screen.findByText(/Sentry Pro Team/)
-        expect(title).toBeInTheDocument()
-      })
-    })
-
-    describe('when pro and team plans are available', () => {
-      it('prefers pro plan over team plan for non-sentry users', async () => {
-        setup({
-          planValue: Plans.USERS_DEVELOPER,
-          customPlans: [...plans, teamPlanMonth, teamPlanYear],
-        })
-        render(<UpgradePlanPage />, { wrapper: wrapper() })
-
-        const title = await screen.findByText(/Pro Team/)
-        expect(title).toBeInTheDocument()
-      })
+      expect(await screen.findByText('UpgradeForm')).toBeInTheDocument()
+      expect(screen.queryByText('Loading billing')).not.toBeInTheDocument()
     })
   })
 })

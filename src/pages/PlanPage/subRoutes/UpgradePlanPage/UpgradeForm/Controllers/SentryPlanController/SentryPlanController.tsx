@@ -47,7 +47,7 @@ const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
             <TextInput
               data-cy="seats"
               dataMarketing="plan-pricing-seats"
-              {...register('seats', { valueAsNumber: true })}
+              {...register('seats')}
               id="nb-seats"
               size={20}
               type="number"
@@ -58,7 +58,11 @@ const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
         </div>
       </Card.Content>
       <Card.Content>
-        <PriceCallout seats={seats} newPlan={newPlan} />
+        <PriceCallout
+          seats={seats}
+          newPlan={newPlan}
+          setFormValue={setFormValue}
+        />
         {errors?.seats && (
           <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
             {errors?.seats?.message}
