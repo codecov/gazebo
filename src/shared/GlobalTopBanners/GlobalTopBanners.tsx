@@ -1,5 +1,6 @@
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 
+import AnnouncementBanner from './AnnouncementBanner'
 import BundleFeedbackBanner from './BundleFeedbackBanner'
 import OktaBanners from './OktaBanners'
 import ProPlanFeedbackBanner from './ProPlanFeedbackBanner'
@@ -11,6 +12,10 @@ const GlobalTopBanners: React.FC = () => {
   return (
     <SilentNetworkErrorWrapper>
       <div className="[&>*:last-child]:block">
+        <SilentNetworkErrorWrapper>
+          <AnnouncementBanner />
+        </SilentNetworkErrorWrapper>
+
         <SilentNetworkErrorWrapper>
           <OktaBanners />
         </SilentNetworkErrorWrapper>
