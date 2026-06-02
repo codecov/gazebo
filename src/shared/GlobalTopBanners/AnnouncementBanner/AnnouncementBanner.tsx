@@ -5,7 +5,7 @@ const AnnouncementBanner = () => {
   return (
     <TopBanner variant="importantAnnouncement">
       <TopBanner.Start>
-        <p className="font-semibold">
+        <p className="font-semibold text-white">
           Codecov is joining Harness. Read more about the announcement{' '}
           <A
             to={{ pageName: 'announcementBlog' }}
