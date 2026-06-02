@@ -544,7 +544,7 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     announcementBlog: {
-      text: 'Codecov is a part of',
+      text: 'Codecov is a part of Harness',
       path: () => 'https://about.codecov.io/blog/a-new-chapter-for-codecov/',
       isExternalLink: true,
       openNewTab: true,

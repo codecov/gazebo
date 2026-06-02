@@ -13,7 +13,7 @@ describe('AnnouncementBanner', () => {
   describe('when rendered', () => {
     it('renders banner text', async () => {
       render(<AnnouncementBanner />, { wrapper })
-      const bannerText = await screen.findByText(/Codecov is joining/)
+      const bannerText = await screen.findByText(/Codecov is joining Harness/)
       expect(bannerText).toBeInTheDocument()
     })
     it('renders the correct link', async () => {

@@ -6,7 +6,7 @@ const AnnouncementBanner = () => {
     <TopBanner variant="importantAnnouncement">
       <TopBanner.Start>
         <p className="font-semibold">
-          Codecov is joining . Read more about the announcement{' '}
+          Codecov is joining Harness. Read more about the announcement{' '}
           <A
             to={{ pageName: 'announcementBlog' }}
             isExternal
