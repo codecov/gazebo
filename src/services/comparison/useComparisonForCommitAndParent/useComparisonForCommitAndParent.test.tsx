@@ -279,7 +279,7 @@ describe('useComparisonForCommitAndParent', () => {
       )
     })
 
-    it('can return not found error', async () => {
+    it('returns null data when not found error', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
@@ -293,15 +293,8 @@ describe('useComparisonForCommitAndParent', () => {
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-      await waitFor(() =>
-        expect(result.current.error).toEqual(
-          expect.objectContaining({
-            dev: 'useComparisonForCommitAndParent - Not Found Error',
-            status: 404,
-          })
-        )
-      )
+      await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+      expect(result.current.data).toBeNull()
     })
 
     it('can return owner not activated error', async () => {
