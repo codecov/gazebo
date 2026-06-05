@@ -20,6 +20,9 @@ vi.mock('./OktaBanners', () => ({
 vi.mock('./TokenlessBanner', () => ({
   default: () => 'TokenlessBanner',
 }))
+vi.mock('./AnnouncementBanner', () => ({
+  default: () => 'AnnouncementBanner',
+}))
 
 describe('GlobalTopBanners', () => {
   it('renders sentry trial banner', async () => {
@@ -61,6 +64,13 @@ describe('GlobalTopBanners', () => {
     render(<GlobalTopBanners />)
 
     const banner = await screen.findByText(/TokenlessBanner/)
+    expect(banner).toBeInTheDocument()
+  })
+
+  it('renders announcement banner', async () => {
+    render(<GlobalTopBanners />)
+
+    const banner = await screen.findByText(/AnnouncementBanner/)
     expect(banner).toBeInTheDocument()
   })
 })
