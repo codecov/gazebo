@@ -62,6 +62,9 @@ describe('Profile', () => {
         return HttpResponse.json({
           data: { config: { seatsUsed: 0, seatsLimit: 10 } },
         })
+      }),
+      graphql.query('CurrentUser', () => {
+        return HttpResponse.json({ data: { me: null } })
       })
     )
   }
