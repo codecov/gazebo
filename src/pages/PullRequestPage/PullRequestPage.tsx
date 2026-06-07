@@ -108,7 +108,7 @@ function PullRequestPage() {
     })
   )
 
-  if (!isPending && !data?.pull) {
+  if (!isPending && (data?.notFound || !data?.pull)) {
     return <NotFound />
   }
 
