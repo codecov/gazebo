@@ -7,7 +7,6 @@ import { SelfHostedCurrentUserQueryOpts } from 'services/selfHosted/SelfHostedCu
 import ActivationBanner from './ActivationBanner'
 import AdminBanner from './AdminBanner'
 import NameEmailCard from './NameEmailCard'
-import SupportPinCard from './SupportPinCard'
 
 import DeletionCard from '../DeletionCard'
 
@@ -29,7 +28,6 @@ function Profile({ provider, owner }) {
       {currentUser?.isAdmin && <AdminBanner />}
       <ActivationBanner />
       <NameEmailCard currentUser={currentUser} provider={provider} />
-      <SupportPinCard />
       <DeletionCard isPersonalSettings={isPersonalSettings} />
     </div>
   )
