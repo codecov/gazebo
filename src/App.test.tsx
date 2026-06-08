@@ -7,14 +7,14 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import React, { Suspense } from 'react'
-import { MemoryRouter, Route, useLocation } from 'react-router-dom'
+import { matchPath, MemoryRouter, Route, useLocation } from 'react-router-dom'
 import { type Mock, vi } from 'vitest'
 
 import config from 'config'
 
 import { useLocationParams } from 'services/navigation/useLocationParams'
 
-import App from './App'
+import App, { REPO_PAGE_ROUTE_PATHS } from './App'
 
 vi.mock('./pages/AccountSettings', () => ({ default: () => 'AccountSettings' }))
 vi.mock('./pages/AdminSettings', () => ({ default: () => 'AdminSettingsPage' }))
@@ -663,5 +663,43 @@ describe('App', () => {
         await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
       })
     })
+  })
+})
+
+describe('REPO_PAGE_ROUTE_PATHS', () => {
+  // The bundle and test onboarding URLs (/bundles/new, /tests/new) must not be
+  // captured as `:branch="new"` by the repo-page route, or sibling tab links
+  // emit `/tests/new` and `/commits/new` and break branch filtering.
+
+  it('does not capture "new" as :branch from /bundles/new', () => {
+    const match = matchPath<{ branch?: string }>(
+      '/gh/codecov/cool-repo/bundles/new',
+      { path: REPO_PAGE_ROUTE_PATHS }
+    )
+    expect(match?.params.branch).toBeUndefined()
+  })
+
+  it('does not capture "new" as :branch from /tests/new', () => {
+    const match = matchPath<{ branch?: string }>(
+      '/gh/codecov/cool-repo/tests/new',
+      { path: REPO_PAGE_ROUTE_PATHS }
+    )
+    expect(match?.params.branch).toBeUndefined()
+  })
+
+  it('captures :branch from /bundles/<branch>', () => {
+    const match = matchPath<{ branch?: string }>(
+      '/gh/codecov/cool-repo/bundles/main',
+      { path: REPO_PAGE_ROUTE_PATHS }
+    )
+    expect(match?.params.branch).toBe('main')
+  })
+
+  it('captures :branch from /tests/<branch>', () => {
+    const match = matchPath<{ branch?: string }>(
+      '/gh/codecov/cool-repo/tests/main',
+      { path: REPO_PAGE_ROUTE_PATHS }
+    )
+    expect(match?.params.branch).toBe('main')
   })
 })
