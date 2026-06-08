@@ -24,6 +24,11 @@ const variants = {
     iconColor: '',
     bgColor: 'bg-ds-primary-red',
   },
+  importantAnnouncement: {
+    icon: 'exclamationCircle',
+    iconColor: '',
+    bgColor: 'bg-ds-pink-default',
+  },
 } as const
 
 type Variants = keyof typeof variants
@@ -33,6 +38,7 @@ const topBannerContext = z.object({
     z.literal('default'),
     z.literal('warning'),
     z.literal('error'),
+    z.literal('importantAnnouncement'),
   ]),
   localStorageKey: z.string().optional(),
   setHideBanner: z.function().args(z.boolean()).returns(z.void()),
