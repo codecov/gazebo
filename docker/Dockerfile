@@ -3,7 +3,7 @@ FROM            alpine:3.22 as uploader
 USER            root
 WORKDIR         /tmp
 RUN             apk -U add gpg gpg-agent curl
-RUN             curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
+RUN             curl https://keybase.io/codecovsecops/pgp_keys.asc | gpg --import
 RUN             mkdir uploader && \
   mkdir uploader/linux && \
   mkdir uploader/macos && \
