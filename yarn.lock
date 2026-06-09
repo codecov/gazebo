@@ -5713,10 +5713,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prismjs@npm:^1.26.4":
-  version: 1.26.4
-  resolution: "@types/prismjs@npm:1.26.4"
-  checksum: 10c0/996be7d119779c4cbe66e58342115a12d35a02226dae3aaa4a744c9652d5a3939c93c26182e18156965ac4f93575ebb309c3469c36f52e60ee5c0f8f27e874df
+"@types/prismjs@npm:^1.26.5":
+  version: 1.26.5
+  resolution: "@types/prismjs@npm:1.26.5"
+  checksum: 10c0/5619cb449e0d8df098c8759d6f47bf8fdd510abf5dbdfa999e55c6a2545efbd1e209cc85a33d8d9f4ff2898089a1a6d9a70737c9baffaae635c46852c40d384a
   languageName: node
   linkType: hard
 
@@ -9136,7 +9136,7 @@ __metadata:
     "@types/lodash": "npm:4.17.6"
     "@types/node": "npm:^22.9.0"
     "@types/pluralize": "npm:^0.0.33"
-    "@types/prismjs": "npm:^1.26.4"
+    "@types/prismjs": "npm:^1.26.5"
     "@types/prop-types": "npm:15.7.12"
     "@types/qs": "npm:6.9.15"
     "@types/react": "npm:^18.3.1"
@@ -9193,7 +9193,7 @@ __metadata:
     postcss: "npm:^8.4.31"
     prettier: "npm:^3.3.3"
     prism-react-renderer: "npm:^1.3.1"
-    prismjs: "npm:^1.29.0"
+    prismjs: "npm:^1.30.0"
     prop-types: "npm:^15.8.1"
     qs: "npm:^6.11.1"
     react: "npm:^18.3.1"
@@ -12225,10 +12225,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prismjs@npm:^1.29.0":
-  version: 1.29.0
-  resolution: "prismjs@npm:1.29.0"
-  checksum: 10c0/d906c4c4d01b446db549b4f57f72d5d7e6ccaca04ecc670fb85cea4d4b1acc1283e945a9cbc3d81819084a699b382f970e02f9d1378e14af9808d366d9ed7ec6
+"prismjs@npm:^1.30.0":
+  version: 1.30.0
+  resolution: "prismjs@npm:1.30.0"
+  checksum: 10c0/f56205bfd58ef71ccfcbcb691fd0eb84adc96c6ff21b0b69fc6fdcf02be42d6ef972ba4aed60466310de3d67733f6a746f89f2fb79c00bf217406d465b3e8f23
   languageName: node
   linkType: hard
 
