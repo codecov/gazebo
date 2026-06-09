@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import { forwardRef, useEffect, useRef, useState } from 'react'
-import { useDebounce } from 'react-use'
+import * as ReactUse from 'react-use'
 
 import { dataMarketingType } from 'shared/propTypes'
 import TextInput from 'ui/TextInput'
@@ -31,7 +31,7 @@ const SearchField = forwardRef(
       }
     }, [searchValue, search])
 
-    useDebounce(
+    ReactUse.useDebounce(
       () => {
         setSearchValue(search)
         debouncing.current = false
