@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranch, query as useBranchQuery } from 'services/branches/useBranch'
 import { useBranches } from 'services/branches/useBranches'
 
 interface URLParams {
@@ -23,7 +22,7 @@ export const useCommitsTabBranchSelector = ({
   const [branchSearchTerm, setBranchSearchTerm] = useState('')
 
   const {
-    data: branchList,
+    data: branchesData,
     isFetching: branchListIsFetching,
     hasNextPage: branchListHasNextPage,
     fetchNextPage: branchListFetchNextPage,
@@ -37,39 +36,17 @@ export const useCommitsTabBranchSelector = ({
     },
   })
 
-  const { data: branchesData, fetchNextPage: branchesFetchNextPage } =
-    useBranches({
-      repo,
-      owner,
-      provider,
-      filters: {},
-      opts: { suspense: false },
-    })
-
   const selectedBranch = passedBranch ?? defaultBranch
 
-  const { data: searchBranchValue } = useBranch({
-    provider,
-    owner,
-    repo,
-    branch: selectedBranch,
-    opts: {
-      queryKey: [
-        'GetCommitsTabSelectedBranch',
-        provider,
-        owner,
-        repo,
-        selectedBranch,
-        useBranchQuery,
-      ],
-      enabled: !!selectedBranch,
-    },
-  })
+  // Check if the selected branch exists in the branches list
+  const branchExists = branchesData?.branches?.some(
+    (branch) => branch?.name === selectedBranch
+  )
 
-  let selection = searchBranchValue?.branch?.name
+  let selection = selectedBranch
   if (isAllCommits) {
     selection = 'All branches'
-  } else if (!selection) {
+  } else if (!branchExists) {
     selection = 'Select branch'
   }
 
@@ -80,8 +57,7 @@ export const useCommitsTabBranchSelector = ({
       value: selection,
     },
     currentBranchSelected: selection,
-    branchesFetchNextPage,
-    branchList: branchList?.branches?.map((branch) => branch?.name) || [],
+    branchList: branchesData?.branches?.map((branch) => branch?.name) || [],
     branchListIsFetching,
     branchListHasNextPage,
     branchListFetchNextPage,
