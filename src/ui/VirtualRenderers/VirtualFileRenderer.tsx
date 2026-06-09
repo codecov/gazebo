@@ -89,12 +89,26 @@ const CodeBody = ({
     codeDisplayOverlayRef.current.style.height = `${virtualizer.getTotalSize()}px`
     codeDisplayOverlayRef.current.style.position = 'relative'
 
-    const index = parseInt(location.hash.slice(2), 10)
-    // need to check !isNaN because parseInt return NaN if the string is not a number which is still a valid number.
-    if (!isNaN(index) && index > 0 && index <= tokens.length) {
+    // More robust hash parsing to handle different formats
+    let lineNumber = null
+    if (location.hash) {
+      const simpleLineMatch = location.hash.match(/^#L(\d+)$/)
+      if (simpleLineMatch && simpleLineMatch[1]) {
+        lineNumber = parseInt(simpleLineMatch[1], 10)
+      } else {
+        const complexLineMatch = location.hash.match(/^#.*-[LR](\d+)$/)
+        if (complexLineMatch && complexLineMatch[1]) {
+          lineNumber = parseInt(complexLineMatch[1], 10)
+        }
+      }
+    }
+
+    // If we found a valid line number and it's within range, scroll to it
+    if (lineNumber && !isNaN(lineNumber) && lineNumber > 0 && lineNumber <= tokens.length) {
       // need to adjust from line number back to array index
-      virtualizer.scrollToIndex(index - 1, { align: 'start' })
-    } else {
+      virtualizer.scrollToIndex(lineNumber - 1, { align: 'start' })
+    } else if (location.hash) {
+      // Only log the error if there was a hash that we couldn't parse properly
       Sentry.captureMessage(
         `Invalid line number in file renderer hash: ${location.hash}`,
         { fingerprint: ['file-renderer-invalid-line-number'] }
