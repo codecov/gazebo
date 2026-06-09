@@ -13,6 +13,7 @@ import { cn } from 'shared/utils/cn'
 import Spinner from 'ui/Spinner'
 import { ToggleElement } from 'ui/ToggleElement'
 
+import { CoverageMetrics } from './components/CoverageMetrics/CoverageMetrics'
 import FirstPullRequestBanner from './FirstPullRequestBanner'
 import { CoverageTabDataQueryOpts } from './queries/CoverageTabDataQueryOpts'
 import CoverageChart from './subroute/CoverageChart'
@@ -122,6 +123,26 @@ function CoverageOverviewTab() {
             </Suspense>
           </SentryRoute>
         ) : null}
+        <SentryRoute
+          path={[
+            '/:provider/:owner/:repo/tree/:branch/:path+',
+            '/:provider/:owner/:repo/tree/:branch',
+            '/:provider/:owner/:repo',
+          ]}
+          exact
+        >
+          <Suspense fallback={null}>
+            <ToggleElement
+              showButtonContent="Show detailed metrics"
+              hideButtonContent="Hide detailed metrics"
+              localStorageKey="is-coverage-metrics-hidden"
+            >
+              <div className="mt-4 pl-4">
+                <CoverageMetrics threshold={70} />
+              </div>
+            </ToggleElement>
+          </Suspense>
+        </SentryRoute>
         <Switch>
           <SentryRoute path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
             <Suspense fallback={<Loader />}>
