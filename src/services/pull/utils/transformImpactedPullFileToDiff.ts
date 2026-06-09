@@ -35,7 +35,7 @@ export function transformImpactedPullFileToDiff(
   return {
     fileLabel,
     headName: impactedFile?.headName,
-    segments: impactedFile?.segments?.results,
+    segments: impactedFile?.segments,
     ...(!!hashedPath && { hashedPath }),
   }
 }

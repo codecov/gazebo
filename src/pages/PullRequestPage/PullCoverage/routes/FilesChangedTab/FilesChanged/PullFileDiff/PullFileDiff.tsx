@@ -2,10 +2,8 @@ import { Fragment, useMemo } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation/useNavLinks'
-import {
-  type PullImpactedFile,
-  useSingularImpactedFileComparison,
-} from 'services/pull/useSingularImpactedFileComparison'
+import { useSingularImpactedFileComparison } from 'services/pull/useSingularImpactedFileComparison'
+import { transformImpactedPullFileToDiff } from 'services/pull/utils'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
@@ -14,13 +12,21 @@ import { CoverageValue } from 'ui/VirtualRenderers/types'
 import { LineData } from 'ui/VirtualRenderers/VirtualDiffRenderer'
 
 function transformSegmentsToLineData(
-  segments: PullImpactedFile['segments']['results'] | undefined
+  segments:
+    | NonNullable<
+        ReturnType<typeof transformImpactedPullFileToDiff>
+      >['segments']
+    | undefined
 ) {
-  if (!segments) {
+  if (
+    !segments ||
+    segments.__typename !== 'SegmentComparisons' ||
+    !segments.results
+  ) {
     return []
   }
 
-  return segments.map((segment) => {
+  return segments.results.map((segment) => {
     // we need to create a string of the diff content for the virtual diff renderer text area
     let newDiffContent = ''
     const lineData: LineData[] = []
@@ -57,7 +63,7 @@ function DiffRenderer({
   impactedFile,
   path,
 }: {
-  impactedFile: ReturnType<typeof useSingularImpactedFileComparison>['data']
+  impactedFile: ReturnType<typeof transformImpactedPullFileToDiff>
   path: string
 }) {
   const { pullFileView } = useNavLinks()
@@ -134,13 +140,44 @@ function ErrorDisplayMessage() {
   )
 }
 
+function UnknownPathErrorDisplayMessage({ path }: { path: string }) {
+  const location = useLocation()
+
+  return (
+    <p className="border border-solid border-ds-gray-tertiary p-4">
+      There was a problem getting the source code from your provider by path
+      for: <strong>{path}</strong>. Unable to show line by line coverage.
+      <br />
+      <span>
+        If you continue to experience this issue, please try{' '}
+        <A
+          to={{ pageName: 'login', options: { to: location.pathname } }}
+          hook={undefined}
+          isExternal={undefined}
+        >
+          logging in
+        </A>{' '}
+        again to refresh your credentials. Otherwise, please visit our{' '}
+        <A
+          to={{ pageName: 'pathFixing', options: { to: location.pathname } }}
+          hook={undefined}
+          isExternal={undefined}
+        >
+          Path Fixing
+        </A>{' '}
+        documentation for troubleshooting tips.
+      </span>
+    </p>
+  )
+}
+
 interface PullFileDiffProps {
   path: string | null | undefined
 }
 
 function PullFileDiff({ path }: PullFileDiffProps) {
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { data } = useSingularImpactedFileComparison({
+  const { data: impactedFile } = useSingularImpactedFileComparison({
     provider,
     owner,
     repo,
@@ -149,9 +186,23 @@ function PullFileDiff({ path }: PullFileDiffProps) {
     filters: { hasUnintendedChanges: false },
   })
 
-  if (!data || typeof path !== 'string') {
+  const segments = impactedFile?.segments
+
+  if (
+    !impactedFile ||
+    typeof path !== 'string' ||
+    !segments ||
+    segments.__typename === 'ProviderError'
+  ) {
     return <ErrorDisplayMessage />
   }
+
+  if (segments.__typename === 'UnknownPath') {
+    return <UnknownPathErrorDisplayMessage path={path} />
+  }
+
+  // Transform the data to form needed for rendering
+  const data = transformImpactedPullFileToDiff(impactedFile)
 
   return <DiffRenderer impactedFile={data} path={path} />
 }
