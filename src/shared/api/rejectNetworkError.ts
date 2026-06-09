@@ -9,6 +9,26 @@ export type NetworkErrorName =
   | NotFoundError
   | OwnerNotActivatedError
 
+export class NetworkError extends Error {
+  status: number
+  data: { detail?: React.ReactNode } | undefined
+
+  constructor({
+    status,
+    data,
+    dev,
+  }: {
+    status: number
+    data?: { detail?: React.ReactNode }
+    dev: string
+  }) {
+    super(dev)
+    this.name = 'NetworkError'
+    this.status = status
+    this.data = data
+  }
+}
+
 export type ParsingErrorObject = {
   errorName: ParsingError
   errorDetails: { error: Error; callingFn: string }
@@ -107,9 +127,11 @@ export function rejectNetworkError(error: NetworkErrorObject) {
 
   const status = determineStatusCode(errorName)
 
-  return Promise.reject({
-    dev: devMsg,
-    data: 'data' in error ? error.data : undefined,
-    status: status,
-  })
+  return Promise.reject(
+    new NetworkError({
+      dev: devMsg,
+      data: 'data' in error ? error.data : undefined,
+      status: status,
+    })
+  )
 }
