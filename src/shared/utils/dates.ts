@@ -1,4 +1,4 @@
-import { formatDistanceToNow, fromUnixTime, parseISO } from 'date-fns'
+import * as dateFns from 'date-fns'
 
 const SECONDS_PER_DAY = 86400
 const SECONDS_PER_HOUR = 3600
@@ -8,8 +8,10 @@ export function formatTimeToNow(date?: string | number | null) {
   if (!date) return null
 
   const parsedDate =
-    typeof date === 'number' ? fromUnixTime(date) : parseISO(date + 'Z')
-  return formatDistanceToNow(parsedDate, {
+    typeof date === 'number'
+      ? dateFns.fromUnixTime(date)
+      : dateFns.parseISO(date + 'Z')
+  return dateFns.formatDistanceToNow(parsedDate, {
     addSuffix: true,
   })
 }
