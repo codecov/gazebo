@@ -81,6 +81,7 @@ const currentUserFragment = `
 fragment CurrentUserFragment on Me {
   owner {
     defaultOrgUsername
+    isOnlyUsingSentryApp
   }
   email
   privateAccess

@@ -23,7 +23,7 @@ const GitHubRateLimitExceededBanner = () => {
           Unable to calculate coverage due to GitHub rate limit exceeded. Please
           retry later. More info on rate limits:{' '}
           <A
-            data-testid="codecovGithubApp-link"
+            data-testid="codecovGitHubApp-link"
             to={{ pageName: 'githubRateLimitExceeded' }}
             hook={undefined}
             isExternal={true}
