@@ -78,8 +78,6 @@ function OwnerPage() {
 
   const hasGhApp = !!accountDetails?.integrationId
 
-  console.log('ownerPage')
-
   if (!ownerData) {
     return <NotFound />
   }

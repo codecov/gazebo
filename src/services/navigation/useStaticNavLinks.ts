@@ -193,13 +193,13 @@ export function useStaticNavLinks() {
       text: 'Uploader Integrity Check',
       openNewTab: true,
     },
-    codecovGithubApp: {
+    codecovGitHubApp: {
       path: () => `https://github.com/apps/${config.GH_APP}`,
       isExternalLink: true,
       text: 'Codecov GitHub App',
       openNewTab: true,
     },
-    codecovGithubAppSelectTarget: {
+    codecovGitHubAppSelectTarget: {
       path: () =>
         `https://github.com/apps/${config.GH_APP}/installations/select_target`,
       isExternalLink: true,

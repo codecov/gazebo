@@ -20,8 +20,8 @@ const GithubConfigBanner = () => {
           <h2 className="flex justify-center gap-2 font-semibold">
             Configure{' '}
             <A
-              data-testid="codecovGithubApp-link"
-              to={{ pageName: 'codecovGithubAppSelectTarget' }}
+              data-testid="codecovGitHubApp-link"
+              to={{ pageName: 'codecovGitHubAppSelectTarget' }}
               onClick={() =>
                 eventTracker().track({
                   type: 'Button Clicked',
