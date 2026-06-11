@@ -6,6 +6,7 @@ import DetailsSection from './DetailsSection'
 import GithubIntegrationSection from './GithubIntegrationSection'
 import ManageAdminCard from './ManageAdminCard'
 import StudentSection from './StudentSection'
+import SupportPinCard from './SupportPinCard'
 
 import DeletionCard from '../DeletionCard'
 
@@ -24,6 +25,7 @@ function Admin() {
             name={currentUser.user.name}
           />
           <StudentSection isStudent={currentUser.user.student} />
+          <SupportPinCard />
         </>
       ) : (
         <ManageAdminCard />

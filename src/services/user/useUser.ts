@@ -35,6 +35,7 @@ const MeSchema = z.object({
   onboardingCompleted: z.boolean(),
   businessEmail: z.string().nullable(),
   termsAgreement: z.boolean().nullable(),
+  supportPin: z.string().nullish(),
   user: z.object({
     name: z.string().nullable(),
     username: z.string(),
@@ -87,6 +88,7 @@ fragment CurrentUserFragment on Me {
   onboardingCompleted
   businessEmail
   termsAgreement
+  supportPin
   user {
     name
     username
