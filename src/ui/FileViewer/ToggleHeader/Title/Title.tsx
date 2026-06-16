@@ -50,14 +50,19 @@ interface TitleFlagsProps {
 }
 
 type LocationParams = {
-  params: { flags?: string[] }
+  params: { flags?: string | string[] }
   updateParams: (params: Record<string, string[]>) => void
 }
 
 export const TitleFlags = ({ commitDetailView = false }: TitleFlagsProps) => {
   const { params, updateParams }: LocationParams =
     useLocationParams(defaultQueryParams)
-  const [selectedFlags, setSelectedFlags] = useState(params?.flags)
+  const flagsParam = Array.isArray(params?.flags)
+    ? params.flags
+    : params?.flags
+      ? [params.flags]
+      : []
+  const [selectedFlags, setSelectedFlags] = useState(flagsParam)
   const [flagSearch, setFlagSearch] = useState<string | null>(null)
 
   const { data: repoBackfilledData } = useRepoBackfilled()
@@ -81,7 +86,7 @@ export const TitleFlags = ({ commitDetailView = false }: TitleFlagsProps) => {
 
   const flagNames = new Set()
   if (flagsMeasurementsActive) {
-    params?.flags?.forEach((flag) => flagNames.add(flag))
+    flagsParam.forEach((flag) => flagNames.add(flag))
 
     if (!isUndefined(flagsData)) {
       flagsData?.forEach((flag) => flagNames.add(flag?.name))
