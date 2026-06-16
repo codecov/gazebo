@@ -44,7 +44,7 @@ const BotErrorContent = () => {
         The bot posts the coverage report comment on pull requests. If
         you&apos;re using GitHub, the best way to integrate with Codecov.io is
         to Install{' '}
-        <A to={{ pageName: 'codecovGithubAppSelectTarget' }}>
+        <A to={{ pageName: 'codecovGitHubAppSelectTarget' }}>
           Codecov&apos;s GitHub App.
         </A>
       </p>

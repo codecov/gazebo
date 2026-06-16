@@ -14,6 +14,7 @@ vi.mock('./GithubIntegrationSection', () => ({
   default: () => 'GithubIntegrationSection',
 }))
 vi.mock('./ManageAdminCard', () => ({ default: () => 'ManageAdminCard' }))
+vi.mock('./SupportPinCard', () => ({ default: () => 'SupportPinCard' }))
 vi.mock('../DeletionCard', () => ({ default: () => 'DeletionCard' }))
 
 const user = {
@@ -114,6 +115,13 @@ describe('AdminTab', () => {
       expect(card).toBeInTheDocument()
     })
 
+    it('renders the SupportPinCard', async () => {
+      render(<Admin />, { wrapper })
+
+      const card = await screen.findByText(/SupportPinCard/)
+      expect(card).toBeInTheDocument()
+    })
+
     it('renders the GithubIntegrationSection', async () => {
       render(<Admin />, { wrapper })
 
@@ -139,6 +147,13 @@ describe('AdminTab', () => {
 
       const card = await screen.findByText(/ManageAdminCard/)
       expect(card).toBeInTheDocument()
+    })
+
+    it('does not render the SupportPinCard', async () => {
+      render(<Admin />, { wrapper })
+
+      await screen.findByText(/ManageAdminCard/)
+      expect(screen.queryByText(/SupportPinCard/)).not.toBeInTheDocument()
     })
 
     it('renders the GithubIntegrationSection', async () => {

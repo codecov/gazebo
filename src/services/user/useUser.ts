@@ -35,6 +35,7 @@ const MeSchema = z.object({
   onboardingCompleted: z.boolean(),
   businessEmail: z.string().nullable(),
   termsAgreement: z.boolean().nullable(),
+  supportPin: z.string().nullish(),
   user: z.object({
     name: z.string().nullable(),
     username: z.string(),
@@ -81,12 +82,14 @@ const currentUserFragment = `
 fragment CurrentUserFragment on Me {
   owner {
     defaultOrgUsername
+    isOnlyUsingSentryApp
   }
   email
   privateAccess
   onboardingCompleted
   businessEmail
   termsAgreement
+  supportPin
   user {
     name
     username

@@ -12,6 +12,7 @@ const OwnerSchema = z.object({
   avatarUrl: z.string().nullish(),
   isCurrentUserPartOfOrg: z.boolean().nullish(),
   isAdmin: z.boolean().nullish(),
+  isOnlyUsingSentryApp: z.boolean().nullish(),
 })
 
 export type Owner = z.infer<typeof OwnerSchema>
@@ -40,6 +41,7 @@ const query = `
         avatarUrl
         isCurrentUserPartOfOrg
         isAdmin
+        isOnlyUsingSentryApp
       }
     }
   `
