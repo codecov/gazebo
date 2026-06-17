@@ -281,7 +281,7 @@ export function useNavLinks() {
           const encodedRef = encodeURIComponent(ref)
 
           if (tree) {
-            const encodedTree = encodeURIComponent(tree)
+            const encodedTree = tree.split('/').map(encodeURIComponent).join('/')
             return `/${provider}/${owner}/${repo}/tree/${encodedRef}/${encodedTree}${query}`
           }
 
@@ -344,7 +344,8 @@ export function useNavLinks() {
         }
 
         if (tree) {
-          return `/${provider}/${owner}/${repo}/commit/${commit}/tree/${tree}${query}`
+          const encodedTree = tree.split('/').map(encodeURIComponent).join('/')
+          return `/${provider}/${owner}/${repo}/commit/${commit}/tree/${encodedTree}${query}`
         }
         return `/${provider}/${owner}/${repo}/commit/${commit}/tree${query}`
       },
@@ -741,7 +742,8 @@ export function useNavLinks() {
         }
 
         if (tree) {
-          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${tree}${query}`
+          const encodedTree = tree.split('/').map(encodeURIComponent).join('/')
+          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${encodedTree}${query}`
         }
         return `/${provider}/${owner}/${repo}/pull/${pullId}/tree${query}`
       },
