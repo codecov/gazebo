@@ -73,4 +73,11 @@ describe('GlobalTopBanners', () => {
     const banner = await screen.findByText(/AnnouncementBanner/)
     expect(banner).toBeInTheDocument()
   })
+
+  it('renders sentry login deprecation banner', async () => {
+    render(<GlobalTopBanners />)
+
+    const banner = await screen.findByText(/SentryLoginDeprecationBanner/)
+    expect(banner).toBeInTheDocument()
+  })
 })
