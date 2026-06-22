@@ -23,6 +23,9 @@ vi.mock('./TokenlessBanner', () => ({
 vi.mock('./AnnouncementBanner', () => ({
   default: () => 'AnnouncementBanner',
 }))
+vi.mock('./SentryLoginDeprecationBanner', () => ({
+  default: () => 'SentryLoginDeprecationBanner',
+}))
 
 describe('GlobalTopBanners', () => {
   it('renders sentry trial banner', async () => {
