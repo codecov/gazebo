@@ -27,6 +27,7 @@ const user = {
     onboardingCompleted: true,
     businessEmail: 'jane.doe@codecov.io',
     termsAgreement: true,
+    hasLinkedSentryLogin: null,
     user: {
       name: 'Jane Doe',
       username: 'janedoe',
@@ -104,36 +105,33 @@ describe('AdminTab', () => {
     it('renders the DetailsSection', async () => {
       render(<Admin />, { wrapper })
 
-      const card = await screen.findByText(/DetailsSection/)
-      expect(card).toBeInTheDocument()
+      expect(await screen.findByText(/DetailsSection/)).toBeInTheDocument()
     })
 
     it('renders the StudentSection', async () => {
       render(<Admin />, { wrapper })
 
-      const card = await screen.findByText(/StudentSection/)
-      expect(card).toBeInTheDocument()
+      expect(await screen.findByText(/StudentSection/)).toBeInTheDocument()
     })
 
     it('renders the SupportPinCard', async () => {
       render(<Admin />, { wrapper })
 
-      const card = await screen.findByText(/SupportPinCard/)
-      expect(card).toBeInTheDocument()
+      expect(await screen.findByText(/SupportPinCard/)).toBeInTheDocument()
     })
 
     it('renders the GithubIntegrationSection', async () => {
       render(<Admin />, { wrapper })
 
-      const card = await screen.findByText(/GithubIntegrationSection/)
-      expect(card).toBeInTheDocument()
+      expect(
+        await screen.findByText(/GithubIntegrationSection/)
+      ).toBeInTheDocument()
     })
 
     it('renders the DeletionCard', async () => {
       render(<Admin />, { wrapper })
 
-      const card = await screen.findByText(/DeletionCard/)
-      expect(card).toBeInTheDocument()
+      expect(await screen.findByText(/DeletionCard/)).toBeInTheDocument()
     })
   })
 
@@ -145,29 +143,28 @@ describe('AdminTab', () => {
     it('renders the ManageAdminCard', async () => {
       render(<Admin />, { wrapper })
 
-      const card = await screen.findByText(/ManageAdminCard/)
-      expect(card).toBeInTheDocument()
+      expect(await screen.findByText(/ManageAdminCard/)).toBeInTheDocument()
     })
 
     it('does not render the SupportPinCard', async () => {
       render(<Admin />, { wrapper })
 
-      await screen.findByText(/ManageAdminCard/)
+      expect(await screen.findByText(/ManageAdminCard/)).toBeInTheDocument()
       expect(screen.queryByText(/SupportPinCard/)).not.toBeInTheDocument()
     })
 
     it('renders the GithubIntegrationSection', async () => {
       render(<Admin />, { wrapper })
 
-      const card = await screen.findByText(/GithubIntegrationSection/)
-      expect(card).toBeInTheDocument()
+      expect(
+        await screen.findByText(/GithubIntegrationSection/)
+      ).toBeInTheDocument()
     })
 
     it('renders the DeletionCard', async () => {
       render(<Admin />, { wrapper })
 
-      const card = await screen.findByText(/DeletionCard/)
-      expect(card).toBeInTheDocument()
+      expect(await screen.findByText(/DeletionCard/)).toBeInTheDocument()
     })
   })
 })

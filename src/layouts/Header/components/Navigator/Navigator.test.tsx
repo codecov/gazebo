@@ -60,6 +60,7 @@ const mockUser = {
   onboardingCompleted: true,
   businessEmail: 'jane.doe@codecov.io',
   termsAgreement: true,
+  hasLinkedSentryLogin: true,
   user: {
     name: 'Jane Doe',
     username: 'janedoe',
