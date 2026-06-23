@@ -99,6 +99,7 @@ const mockMe = {
   onboardingCompleted: true,
   businessEmail: 'jane.doe@codecov.io',
   termsAgreement: true,
+  hasLinkedSentryLogin: null,
   user: mockUser,
   trackingMetadata: mockTrackingMetadata,
 }

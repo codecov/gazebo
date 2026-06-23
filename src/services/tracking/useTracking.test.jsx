@@ -68,6 +68,7 @@ describe('useTracking', () => {
       onboardingCompleted: true,
       businessEmail: 'fake@test.com',
       termsAgreement: true,
+      hasLinkedSentryLogin: null,
       user: {
         name: 'Eugene Onegin',
         username: 'eugene_onegin',
@@ -136,6 +137,7 @@ describe('useTracking', () => {
       onboardingCompleted: true,
       businessEmail: null,
       termsAgreement: null,
+      hasLinkedSentryLogin: null,
       user: {
         name: null,
         username: 'eugene_onegin',

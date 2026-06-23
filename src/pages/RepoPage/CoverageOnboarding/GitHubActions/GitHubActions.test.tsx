@@ -85,6 +85,7 @@ const mockCurrentUser = {
     onboardingCompleted: true,
     businessEmail: 'jane.doe@codecov.io',
     termsAgreement: true,
+    hasLinkedSentryLogin: null,
     user: {
       name: 'Jane Doe',
       username: 'janedoe',
