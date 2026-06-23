@@ -5,8 +5,7 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
-import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
-import { useIsTeamPlan } from 'services/useIsTeamPlan'
+import { useRepoRateLimitStatus } from 'services/repo'
 import ComparisonErrorBanner from 'shared/ComparisonErrorBanner'
 import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
 import { ComparisonReturnType, ReportUploadType } from 'shared/utils/comparison'
@@ -41,8 +40,6 @@ interface URLParams {
 
 function PullCoverageContent() {
   const { owner, repo, pullId, provider } = useParams<URLParams>()
-  const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
 
   const { data } = useSuspenseQueryV5(
     PullPageDataQueryOpts({
@@ -50,7 +47,6 @@ function PullCoverageContent() {
       owner,
       repo,
       pullId,
-      isTeamPlan: (isTeamPlan && overview?.private) ?? false,
     })
   )
 
@@ -129,8 +125,6 @@ function PullCoverageContent() {
 
 function PullCoverage() {
   const { owner, repo, pullId, provider } = useParams<URLParams>()
-  const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
   const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
 
   const { data } = useSuspenseQueryV5(
@@ -139,7 +133,6 @@ function PullCoverage() {
       owner,
       repo,
       pullId,
-      isTeamPlan: (isTeamPlan && overview?.private) ?? false,
     })
   )
 

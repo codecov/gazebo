@@ -105,7 +105,6 @@ query PullPageData(
   $owner: String!
   $repo: String!
   $pullId: Int!
-  $isTeamPlan: Boolean!
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
@@ -136,10 +135,10 @@ query PullPageData(
             __typename
             ... on Comparison {
               impactedFilesCount
-              indirectChangedFilesCount @skip(if: $isTeamPlan)
+              indirectChangedFilesCount
               directChangedFilesCount
-              flagComparisonsCount @skip(if: $isTeamPlan)
-              componentComparisonsCount @skip(if: $isTeamPlan)
+              flagComparisonsCount
+              componentComparisonsCount
             }
             ... on FirstPullRequest {
               message
@@ -181,7 +180,6 @@ interface PullPageDataQueryArgs {
   owner: string
   repo: string
   pullId: string
-  isTeamPlan?: boolean
 }
 
 export const PullPageDataQueryOpts = ({
@@ -189,7 +187,6 @@ export const PullPageDataQueryOpts = ({
   owner,
   repo,
   pullId,
-  isTeamPlan = false,
 }: PullPageDataQueryArgs) =>
   queryOptionsV5({
     queryKey: [
@@ -198,7 +195,6 @@ export const PullPageDataQueryOpts = ({
       owner,
       repo,
       pullId,
-      isTeamPlan,
       query,
     ],
     queryFn: ({ signal }) =>
@@ -211,7 +207,6 @@ export const PullPageDataQueryOpts = ({
           owner,
           repo,
           pullId: parseInt(pullId, 10),
-          isTeamPlan,
         },
       }).then((res) => {
         const callingFn = 'PullPageDataQueryOpts'
