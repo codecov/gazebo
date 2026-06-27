@@ -21,6 +21,13 @@ const customIgnoredErrors = [
    */
   // Removing this for the time being, to see if we can resolve it fully
   // 'Failed to fetch dynamically imported module',
+  /*
+   * Android WebView host apps inject JavaScript that calls global bridge
+   * functions (e.g. setPaddingBottom, setTheme) which do not exist in
+   * Codecov's frontend. These ReferenceErrors are not bugs in Gazebo.
+   */
+  'setPaddingBottom is not defined',
+  'setTheme is not defined',
 ]
 
 // common ignore errors / URLs to de-clutter Sentry
@@ -173,6 +180,13 @@ export const setupSentry = ({
     profilesSampleRate: config?.SENTRY_PROFILING_SAMPLE_RATE,
     beforeSend: (event, _hint) => {
       if (checkForBlockedUserAgents()) {
+        return null
+      }
+
+      // Drop events identified as third-party code (e.g. browser extensions,
+      // Android WebView host apps injecting JavaScript bridge calls).
+      // The thirdPartyErrorFilterIntegration above applies this tag.
+      if (event.tags?.['third_party_code'] === true) {
         return null
       }
 
