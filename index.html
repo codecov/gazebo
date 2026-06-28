@@ -61,6 +61,20 @@
       window.addEventListener('vite:preloadError', (event) => {
         window.location.reload()
       })
+      // If a <script type="module"> fails to load (e.g. the browser fetches a
+      // stale hashed asset URL after a deployment and receives HTML instead of
+      // JS), reload the page so the browser picks up the fresh index.html and
+      // correct asset URLs.
+      window.addEventListener(
+        'error',
+        (event) => {
+          var t = event.target
+          if (t && t.tagName === 'SCRIPT' && t.type === 'module') {
+            window.location.reload()
+          }
+        },
+        true
+      )
     </script>
 
     <% if(isProduction) { %>
