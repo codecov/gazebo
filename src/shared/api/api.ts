@@ -40,10 +40,13 @@ function _fetch({
     body: body ? JSON.stringify(snakeifyKeys(body)) : null,
   }).then(async (res) => {
     let data = null
-    try {
-      data = camelizeKeys(await res.json())
-    } catch {
-      // nothing to do, body can be empty
+    const contentType = res.headers.get('content-type')
+    if (contentType?.includes('application/json')) {
+      try {
+        data = camelizeKeys(await res.json())
+      } catch {
+        // nothing to do, body can be empty
+      }
     }
 
     return res.ok
