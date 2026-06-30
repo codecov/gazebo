@@ -37,7 +37,7 @@ describe('Footer', () => {
     it('renders a link', () => {
       render(<Footer />, { wrapper })
 
-      const copyright = screen.getByText(`© 3301 Sentry`)
+      const copyright = screen.getByText(`© 3301 Harness`)
       expect(copyright).toBeInTheDocument()
     })
   })
