@@ -41,11 +41,11 @@ function InvoiceHeader({ invoice, accountDetails }: InvoiceHeaderProps) {
         <div>
           <p className="font-semibold">Codecov</p>
           <address className="not-italic text-ds-gray-octonary">
-            Functional Software, dba Sentry
+            Harness, Inc.
             <br />
-            45 Fremont St. 8th Floor
+            55 Stockton Street, Floor 8
             <br />
-            San Francisco, CA 94105
+            San Francisco, CA 94108
             <br />
             United States
           </address>
