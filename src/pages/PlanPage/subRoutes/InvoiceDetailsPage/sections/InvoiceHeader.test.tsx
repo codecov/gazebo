@@ -153,7 +153,7 @@ describe('Invoice Header', () => {
       const paymentMethod = screen.getByText(/Payment method/)
       expect(paymentMethod).toBeInTheDocument()
 
-      const address = screen.getByText(/San Francisco, CA 94105/)
+      const address = screen.getByText(/San Francisco, CA 94108/)
       expect(address).toBeInTheDocument()
 
       const paidOn = screen.getByText(/December 30th 2020/)
