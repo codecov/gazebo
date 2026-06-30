@@ -4,7 +4,6 @@ import AnnouncementBanner from './AnnouncementBanner'
 import BundleFeedbackBanner from './BundleFeedbackBanner'
 import OktaBanners from './OktaBanners'
 import ProPlanFeedbackBanner from './ProPlanFeedbackBanner'
-import SentryLoginDeprecationBanner from './SentryLoginDeprecationBanner'
 import TeamPlanFeedbackBanner from './TeamPlanFeedbackBanner'
 import TokenlessBanner from './TokenlessBanner'
 import TrialBanner from './TrialBanner'
@@ -15,10 +14,6 @@ const GlobalTopBanners: React.FC = () => {
       <div className="[&>*:last-child]:block">
         <SilentNetworkErrorWrapper>
           <AnnouncementBanner />
-        </SilentNetworkErrorWrapper>
-
-        <SilentNetworkErrorWrapper>
-          <SentryLoginDeprecationBanner />
         </SilentNetworkErrorWrapper>
 
         <SilentNetworkErrorWrapper>
