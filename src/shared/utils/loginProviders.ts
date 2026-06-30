@@ -5,8 +5,6 @@ import githubLogoWhite from 'assets/providers/github-icon-white.svg'
 import githubLogo from 'assets/providers/github-icon.svg'
 import gitlabLogo from 'assets/providers/gitlab-icon.svg'
 import oktaLogo from 'assets/providers/okta-icon.svg'
-import sentryLogoWhite from 'assets/providers/sentry-icon-white.svg'
-import sentryLogo from 'assets/providers/sentry-icon.svg'
 
 export const LoginProvidersEnum = {
   BITBUCKET: {
@@ -55,7 +53,6 @@ export const LOGIN_PROVIDER_SHORT_NAMES = {
   bitbucket: 'bb',
   gl: 'gl',
   gitlab: 'gl',
-  sentry: 'sentry',
   okta: 'okta',
 } as const
 
@@ -82,7 +79,6 @@ export const LOGIN_PROVIDER_NAMES = {
   github_enterprise: 'GitHub Enterprise',
   gitlab_enterprise: 'GitLab Enterprise',
   bitbucket_server: 'Bitbucket Server',
-  sentry: 'Sentry',
   okta: 'Okta',
 } as const
 
@@ -103,7 +99,6 @@ export const LOGIN_PROVIDER_IMAGES = {
   'GitHub Enterprise': githubLogo,
   'GitLab Enterprise': gitlabLogo,
   'Bitbucket Server': bitbucketLogo,
-  Sentry: sentryLogo,
   Okta: oktaLogo,
 } as const
 
@@ -114,7 +109,6 @@ export const LOGIN_PROVIDER_DARK_MODE_IMAGES = {
   'GitHub Enterprise': githubLogoWhite,
   'GitLab Enterprise': gitlabLogo,
   'Bitbucket Server': bitbucketLogo,
-  Sentry: sentryLogoWhite,
   Okta: oktaLogo,
 } as const
 

@@ -28,7 +28,6 @@ function LoginPage() {
         ) : (
           <div className="space-y-4">
             <LoginButton provider="gh" />
-            <LoginButton provider="sentry" />
             <LoginButton provider="bb" />
             <LoginButton provider="gl" />
           </div>
