@@ -28,6 +28,20 @@ const variantClasses = {
   black: `text-ds-secondary-text`,
   blueSeptenary: `text-ds-blue-septenary`,
   configure: `rounded bg-ds-blue-default px-4 py-1 font-semibold text-ds-gray-primary dark:text-white dark:bg-ds-blue-nonary`,
+  unstyled: '',
+}
+
+function getClassName(variant, classNameProp) {
+  if (variant === 'unstyled') {
+    return classNameProp
+  }
+
+  return cs(
+    baseClass,
+    variantClasses[variant],
+    'inline-flex items-center gap-1',
+    classNameProp
+  )
 }
 
 export const getHostnameFromRegex = (url) => {
@@ -56,12 +70,16 @@ function _adjustPathForGLSubgroups(path) {
   return domain + owner.replace(/:/g, '/') + rest
 }
 
-function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
-  const className = cs(
-    baseClass,
-    variantClasses[variant],
-    'inline-flex items-center gap-1'
-  )
+function A({
+  to,
+  hook,
+  variant = 'default',
+  children,
+  isExternal,
+  className: classNameProp,
+  ...props
+}) {
+  const className = getClassName(variant, classNameProp)
 
   const completeProps = {
     ...props,
@@ -124,6 +142,7 @@ A.propTypes = {
     'black',
     'blueSeptenary',
     'configure',
+    'unstyled',
   ]),
   isExternal: PropTypes.bool,
 }

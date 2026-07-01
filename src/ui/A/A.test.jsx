@@ -56,6 +56,37 @@ describe('A', () => {
     })
   })
 
+  describe('when rendered with a custom className', () => {
+    it('merges the custom className with variant styles', () => {
+      setup({
+        children: 'hola',
+        href: '/banana',
+        hook: 'banana',
+        className: 'custom-class',
+      })
+
+      expect(screen.getByRole('link')).toHaveClass('custom-class')
+      expect(screen.getByRole('link')).toHaveClass('text-ds-blue-default')
+    })
+  })
+
+  describe('when rendered with the unstyled variant', () => {
+    it('uses only the provided className', () => {
+      setup({
+        children: 'hola',
+        href: '/banana',
+        hook: 'banana',
+        variant: 'unstyled',
+        className: 'custom-class',
+      })
+
+      const link = screen.getByRole('link')
+      expect(link).toHaveClass('custom-class')
+      expect(link).not.toHaveClass('text-ds-blue-default')
+      expect(link).not.toHaveClass('hover:underline')
+    })
+  })
+
   describe('when rendered without `to` prop', () => {
     let mockError
 
