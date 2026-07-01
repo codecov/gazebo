@@ -76,7 +76,7 @@ function A({
   variant = 'default',
   children,
   isExternal,
-  className: classNameProp,
+  className: classNameProp = undefined,
   ...props
 }) {
   const className = getClassName(variant, classNameProp)
