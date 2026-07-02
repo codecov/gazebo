@@ -70,16 +70,8 @@ function _adjustPathForGLSubgroups(path) {
   return domain + owner.replace(/:/g, '/') + rest
 }
 
-function A({
-  to,
-  hook,
-  variant = 'default',
-  children,
-  isExternal,
-  className: classNameProp = undefined,
-  ...props
-}) {
-  const className = getClassName(variant, classNameProp)
+function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
+  const className = getClassName(variant, props.className)
 
   const completeProps = {
     ...props,
@@ -145,6 +137,7 @@ A.propTypes = {
     'unstyled',
   ]),
   isExternal: PropTypes.bool,
+  className: PropTypes.string,
 }
 
 export default A

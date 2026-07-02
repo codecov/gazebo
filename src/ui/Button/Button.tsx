@@ -171,8 +171,8 @@ function Button({
         href={href}
         hook={hook}
         variant="unstyled"
-        className={className}
         {...props}
+        className={className}
       >
         {content}
       </A>
