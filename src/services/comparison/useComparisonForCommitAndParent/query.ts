@@ -6,7 +6,7 @@ export const query = `
     $repo: String!
     $commitid: String!
     $path: String!
-    $filters: SegmentsFilters
+    $filters: SegmentFilters
   ) {
     owner(username: $owner) {
       repository (name: $repo) {

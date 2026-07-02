@@ -23,7 +23,7 @@ import { transformImpactedPullFileToDiff } from './utils'
 export type PullImpactedFile = z.infer<typeof ImpactedFileSchema>
 
 const query = `
-query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!, $filters: SegmentsFilters) {
+query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!, $filters: SegmentFilters) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename

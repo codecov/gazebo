@@ -53,7 +53,7 @@ query ImpactedFileComparison(
   $repo: String!
   $pullId: Int!
   $path: String!
-  $filters: SegmentsFilters
+  $filters: SegmentFilters
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
