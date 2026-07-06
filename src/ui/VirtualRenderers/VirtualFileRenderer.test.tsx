@@ -455,15 +455,51 @@ describe('VirtualFileRenderer', () => {
             coverage={coverageData}
             fileName="tsx"
           />,
-          { wrapper: wrapper('/#RandomNumber') }
+          { wrapper: wrapper('/#L99999') }
         )
 
         await waitFor(() => {
           expect(Sentry.captureMessage).toHaveBeenCalledWith(
-            'Invalid line number in file renderer hash: #RandomNumber',
+            'Invalid line number in file renderer hash: #L99999',
             { fingerprint: ['file-renderer-invalid-line-number'] }
           )
         })
+      })
+    })
+
+    describe('hash is not a line anchor', () => {
+      it('does not capture message to sentry', async () => {
+        render(
+          <VirtualFileRenderer
+            code={code}
+            coverage={coverageData}
+            fileName="tsx"
+          />,
+          { wrapper: wrapper('/#RandomNumber') }
+        )
+
+        expect(
+          await screen.findByTestId('virtual-file-renderer-text-area')
+        ).toBeInTheDocument()
+        expect(Sentry.captureMessage).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('no hash present', () => {
+      it('does not capture message to sentry', async () => {
+        render(
+          <VirtualFileRenderer
+            code={code}
+            coverage={coverageData}
+            fileName="tsx"
+          />,
+          { wrapper: wrapper('/') }
+        )
+
+        expect(
+          await screen.findByTestId('virtual-file-renderer-text-area')
+        ).toBeInTheDocument()
+        expect(Sentry.captureMessage).not.toHaveBeenCalled()
       })
     })
   })
