@@ -94,7 +94,7 @@ const CodeBody = ({
     if (!isNaN(index) && index > 0 && index <= tokens.length) {
       // need to adjust from line number back to array index
       virtualizer.scrollToIndex(index - 1, { align: 'start' })
-    } else {
+    } else if (location.hash.startsWith('#L')) {
       Sentry.captureMessage(
         `Invalid line number in file renderer hash: ${location.hash}`,
         { fingerprint: ['file-renderer-invalid-line-number'] }
