@@ -94,7 +94,9 @@ const CodeBody = ({
     if (!isNaN(index) && index > 0 && index <= tokens.length) {
       // need to adjust from line number back to array index
       virtualizer.scrollToIndex(index - 1, { align: 'start' })
-    } else {
+    } else if (location.hash.startsWith('#L')) {
+      // only report genuinely malformed line anchors (e.g. #L0, #Labc, out of range).
+      // the common case of no hash at all is expected navigation and must not be logged.
       Sentry.captureMessage(
         `Invalid line number in file renderer hash: ${location.hash}`,
         { fingerprint: ['file-renderer-invalid-line-number'] }
