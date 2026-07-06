@@ -16,7 +16,7 @@ function Footer() {
   const pricing = config.IS_SELF_HOSTED ? [] : [{ to: { pageName: 'pricing' } }]
 
   const menu = [
-    { text: `© ${year} Sentry` },
+    { text: `© ${year} Harness` },
     ...version,
     { to: { pageName: 'terms' } },
     { to: { pageName: 'privacy' } },

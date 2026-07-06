@@ -135,11 +135,11 @@ describe('InvoiceDetail', () => {
   describe('when rendering', () => {
     it('renders the Codecov address', () => {
       setup()
+      expect(screen.getByText(/Harness, Inc./i)).toBeInTheDocument()
       expect(
-        screen.getByText(/Functional Software, dba Sentry/i)
+        screen.getByText(/55 Stockton Street, Floor 8/i)
       ).toBeInTheDocument()
-      expect(screen.getByText(/45 Fremont St. 8th Floor/i)).toBeInTheDocument()
-      expect(screen.getByText(/San Francisco, CA 94105/i)).toBeInTheDocument()
+      expect(screen.getByText(/San Francisco, CA 94108/i)).toBeInTheDocument()
       expect(screen.getByText(/United States/i)).toBeInTheDocument()
       expect(screen.getByText(/support@codecov.io/i)).toBeInTheDocument()
     })
