@@ -114,6 +114,7 @@ describe('MyContextSwitcher', () => {
           owner: {
             username: 'codecov',
             avatarUrl: 'http://127.0.0.1/avatar-url',
+            externalId: 'ext-id-123',
           },
         }
         return HttpResponse.json({ data: queryData })
@@ -145,6 +146,16 @@ describe('MyContextSwitcher', () => {
         name: /codecov/i,
       })
       expect(button).toBeInTheDocument()
+    })
+
+    it('renders the copyable external id', async () => {
+      setup()
+      render(<MyContextSwitcher pageName="owner" />, {
+        wrapper: wrapper('/gh/codecov'),
+      })
+
+      const externalId = await screen.findByText(/ID: ext-id-123/)
+      expect(externalId).toBeInTheDocument()
     })
   })
 

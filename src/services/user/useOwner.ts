@@ -13,6 +13,7 @@ const OwnerSchema = z.object({
   isCurrentUserPartOfOrg: z.boolean().nullish(),
   isAdmin: z.boolean().nullish(),
   isOnlyUsingSentryApp: z.boolean().nullish(),
+  externalId: z.string().nullish(),
 })
 
 export type Owner = z.infer<typeof OwnerSchema>
@@ -42,6 +43,7 @@ const query = `
         isCurrentUserPartOfOrg
         isAdmin
         isOnlyUsingSentryApp
+        externalId
       }
     }
   `
