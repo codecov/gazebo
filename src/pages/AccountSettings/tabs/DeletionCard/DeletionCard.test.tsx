@@ -89,12 +89,12 @@ describe('DeletionCard', () => {
   })
 
   describe('when the owner has an external id', () => {
-    it('renders the support id', async () => {
+    it('renders the owner id', async () => {
       setup({ externalId: 'ext-id-123' })
       render(<DeletionCard isPersonalSettings={true} />, { wrapper })
 
-      const supportId = await screen.findByText(/Support ID: ext-id-123/)
-      expect(supportId).toBeInTheDocument()
+      const ownerId = await screen.findByText(/Owner ID: ext-id-123/)
+      expect(ownerId).toBeInTheDocument()
     })
   })
 })

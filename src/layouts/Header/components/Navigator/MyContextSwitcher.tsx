@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 import { useMyContexts, useOwner } from 'services/user'
 import { Provider } from 'shared/api/helpers'
 import ContextSwitcher from 'ui/ContextSwitcher'
-import ExternalId from 'ui/ExternalId'
 
 interface URLParams {
   provider: Provider
@@ -40,17 +39,14 @@ function MyContextSwitcher({ pageName }: MyContextSwitcherProps) {
   ]
 
   return (
-    <div className="flex items-center gap-3">
-      <div className="max-w-[500px]">
-        <ContextSwitcher
-          activeContext={activeContext}
-          contexts={contexts}
-          currentUser={currentUser}
-          isLoading={isLoading}
-          onLoadMore={() => hasNextPage && fetchNextPage()}
-        />
-      </div>
-      <ExternalId externalId={activeContext?.externalId} />
+    <div className="max-w-[500px]">
+      <ContextSwitcher
+        activeContext={activeContext}
+        contexts={contexts}
+        currentUser={currentUser}
+        isLoading={isLoading}
+        onLoadMore={() => hasNextPage && fetchNextPage()}
+      />
     </div>
   )
 }

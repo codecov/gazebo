@@ -10,6 +10,7 @@ import AdminLink from './components/AdminLink'
 import GuestHeader from './components/GuestHeader'
 import HelpDropdown from './components/HelpDropdown'
 import Navigator from './components/Navigator'
+import OwnerExternalId from './components/OwnerExternalId'
 import SeatDetails from './components/SeatDetails'
 import ThemeToggle from './components/ThemeToggle'
 import UserDropdown from './components/UserDropdown'
@@ -50,6 +51,9 @@ function Header({ hasRepoAccess }: HeaderProps) {
                 </Suspense>
               </div>
             ) : null}
+            <Suspense fallback={null}>
+              <OwnerExternalId />
+            </Suspense>
             <ThemeToggle />
             <HelpDropdown />
             <UserDropdown />

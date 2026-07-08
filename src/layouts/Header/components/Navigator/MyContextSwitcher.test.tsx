@@ -147,16 +147,6 @@ describe('MyContextSwitcher', () => {
       })
       expect(button).toBeInTheDocument()
     })
-
-    it('renders the copyable external id', async () => {
-      setup()
-      render(<MyContextSwitcher pageName="owner" />, {
-        wrapper: wrapper('/gh/codecov'),
-      })
-
-      const externalId = await screen.findByText(/ID: ext-id-123/)
-      expect(externalId).toBeInTheDocument()
-    })
   })
 
   describe('user "scrolls" and fetches next page', () => {

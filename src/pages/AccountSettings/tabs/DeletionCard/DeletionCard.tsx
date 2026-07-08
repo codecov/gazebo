@@ -38,7 +38,7 @@ function DeletionCard({ isPersonalSettings }: DeletionCardProps) {
               Contact support
             </A>
           </p>
-          <ExternalId externalId={ownerData?.externalId} label="Support ID" />
+          <ExternalId externalId={ownerData?.externalId} label="Owner ID" />
         </div>
       </Card>
     </div>
