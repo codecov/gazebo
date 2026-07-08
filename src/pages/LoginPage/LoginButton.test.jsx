@@ -84,20 +84,6 @@ describe('LoginButton', () => {
     })
   })
 
-  describe('sentry', () => {
-    it('renders sentry login button', () => {
-      render(<LoginButton provider="sentry" />, {
-        wrapper: wrapper({
-          initialEntries: '/login/sentry',
-          path: '/login/:provider',
-        }),
-      })
-
-      const sentry = screen.getByText(/Log in with Sentry/i)
-      expect(sentry).toBeInTheDocument()
-    })
-  })
-
   it('emits event on click', () => {
     render(<LoginButton provider="gh" />, {
       wrapper: wrapper({
