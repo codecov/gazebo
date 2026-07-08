@@ -24,6 +24,20 @@ describe('Button', () => {
     })
   })
 
+  describe('when rendered with the prop `href`', () => {
+    it('renders a link with the right URL', () => {
+      render(
+        <Button href="mailto:support@harness.io" hook="support-email">
+          Contact support
+        </Button>,
+        { wrapper: MemoryRouter }
+      )
+
+      const link = screen.getByRole('link', { name: 'Contact support' })
+      expect(link).toHaveAttribute('href', 'mailto:support@harness.io')
+    })
+  })
+
   describe('when rendered without `to` prop with a hook', () => {
     it('renders a button', () => {
       render(<Button hook="hola">hola</Button>, { wrapper: MemoryRouter })

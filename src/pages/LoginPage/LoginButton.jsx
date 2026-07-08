@@ -49,7 +49,7 @@ function LoginButton({ provider }) {
 }
 
 LoginButton.propTypes = {
-  provider: PropTypes.oneOf(['gh', 'gl', 'bb', 'sentry']).isRequired,
+  provider: PropTypes.oneOf(['gh', 'gl', 'bb']).isRequired,
 }
 
 export default LoginButton

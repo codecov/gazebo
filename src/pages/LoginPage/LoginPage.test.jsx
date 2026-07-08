@@ -62,15 +62,6 @@ describe('LoginPage', () => {
       expect(githubLink).toBeInTheDocument()
     })
 
-    it('renders sentry login button', () => {
-      render(<LoginPage />, { wrapper: wrapper('/login') })
-
-      const sentryLink = screen.getByRole('link', {
-        name: /Log in with sentry/i,
-      })
-      expect(sentryLink).toBeInTheDocument()
-    })
-
     it('renders gitlab login button', () => {
       render(<LoginPage />, { wrapper: wrapper('/login') })
 

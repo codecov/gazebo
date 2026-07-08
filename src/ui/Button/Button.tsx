@@ -1,6 +1,7 @@
 import cs from 'classnames'
 
 import AppLink, { AppLinkProps } from 'shared/AppLink'
+import A from 'ui/A'
 import Spinner from 'ui/Spinner'
 
 /*  
@@ -105,10 +106,17 @@ function pickVariant(
 
 interface WithTo {
   to: AppLinkProps
+  href?: never
   hook?: string
+}
+interface WithHref {
+  href: string
+  to?: never
+  hook: string
 }
 interface WithoutTo {
   to?: never
+  href?: never
   hook: string
 }
 
@@ -119,11 +127,12 @@ interface ButtonProps extends React.HTMLProps<HTMLButtonElement> {
 }
 
 type ExtendedButtonProps = ButtonProps &
-  (WithTo | WithoutTo) &
+  (WithTo | WithHref | WithoutTo) &
   Partial<AppLinkProps>
 
 function Button({
   to,
+  href,
   variant = 'default',
   isLoading = false,
   disabled,
@@ -153,6 +162,21 @@ function Button({
     disabled: disabled || isLoading,
     className,
     children: content,
+  }
+
+  if (href) {
+    return (
+      // @ts-expect-error A is an untyped JS component
+      <A
+        href={href}
+        hook={hook}
+        variant="unstyled"
+        {...props}
+        className={className}
+      >
+        {content}
+      </A>
+    )
   }
 
   return to ? (
