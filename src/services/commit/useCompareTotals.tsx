@@ -84,7 +84,7 @@ query CompareTotals(
   $owner: String!
   $repo: String!
   $commitid: String!
-  $filters: ImpactedFilesFilters
+  $filters: FiltersInput
 ) {
   owner(username: $owner) {
     repository(name: $repo) {

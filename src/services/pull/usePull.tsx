@@ -201,7 +201,7 @@ const query = `query Pull(
   $owner: String!
   $repo: String!
   $pullId: Int!
-  $filters: ImpactedFilesFilters
+  $filters: FiltersInput
 ) {
   owner(username: $owner) {
     isCurrentUserPartOfOrg

@@ -164,7 +164,7 @@ query Commit(
   $owner: String!
   $repo: String!
   $commitid: String!
-  $filters: ImpactedFilesFilters
+  $filters: FiltersInput
   $isTeamPlan: Boolean!
 ) {
   owner(username: $owner) {

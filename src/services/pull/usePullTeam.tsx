@@ -101,7 +101,7 @@ const query = `query GetPullTeam(
   $owner: String!
   $repo: String!
   $pullId: Int!
-  $filters: ImpactedFilesFilters
+  $filters: FiltersInput
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
