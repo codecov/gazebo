@@ -13,18 +13,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { AssetsTable, ChangeOverTime } from './AssetsTable'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn().mockReturnValue({ renderBundleFilePathColumn: true }),
-}))
-
-vi.mock('shared/featureFlags', async () => {
-  const original = await vi.importActual('shared/featureFlags')
-  return {
-    ...original,
-    useFlags: mocks.useFlags,
-  }
-})
-
 const mockAssets = ({
   hasNextPage = true,
   pluginName = '@codecov/vite-plugin',

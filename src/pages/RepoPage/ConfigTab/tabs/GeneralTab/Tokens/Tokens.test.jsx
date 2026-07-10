@@ -6,18 +6,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import Tokens from './Tokens'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
-vi.mock('shared/featureFlags', async () => {
-  const actual = await vi.importActual('shared/featureFlags')
-  return {
-    ...actual,
-    useFlags: mocks.useFlags,
-  }
-})
-
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -43,11 +31,7 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('Tokens', () => {
-  function setup({ showStaticAnalysis = true } = { showStaticAnalysis: true }) {
-    mocks.useFlags.mockReturnValue({
-      staticAnalysisToken: showStaticAnalysis,
-    })
-
+  function setup() {
     server.use(
       graphql.query('GetRepoSettings', () => {
         return HttpResponse.json({
@@ -88,16 +72,6 @@ describe('Tokens', () => {
 
       const title = await screen.findByText(/Static analysis token/)
       expect(title).toBeInTheDocument()
-    })
-  })
-
-  describe('when static analysis flag is disabled', () => {
-    it('does not render static token component', () => {
-      setup({ showStaticAnalysis: false })
-      render(<Tokens />, { wrapper })
-
-      const title = screen.queryByText(/Static analysis token/)
-      expect(title).not.toBeInTheDocument()
     })
   })
 })

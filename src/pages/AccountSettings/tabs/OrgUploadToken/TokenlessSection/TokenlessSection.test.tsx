@@ -13,7 +13,6 @@ import TokenlessSection from './TokenlessSection'
 
 const mocks = vi.hoisted(() => ({
   useAddNotification: vi.fn(),
-  useFlags: vi.fn(),
 }))
 
 vi.mock('services/toastNotification/context', async () => {
@@ -21,14 +20,6 @@ vi.mock('services/toastNotification/context', async () => {
   return {
     ...actual,
     useAddNotification: mocks.useAddNotification,
-  }
-})
-
-vi.mock('shared/featureFlags', async () => {
-  const actual = await vi.importActual('shared/featureFlags')
-  return {
-    ...actual,
-    useFlags: mocks.useFlags,
   }
 })
 
@@ -73,7 +64,6 @@ describe('TokenlessSection', () => {
     orgUploadToken = 'test-mock-org-upload-token',
     uploadTokenRequired = false,
   } = {}) {
-    mocks.useFlags.mockReturnValue({ tokenlessSection: true })
     mocks.useAddNotification.mockReturnValue(vi.fn())
     const mutate = vi.fn()
     const user = userEvent.setup()

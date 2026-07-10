@@ -13,7 +13,6 @@ import { useParams } from 'react-router-dom'
 
 import { OrderingDirection } from 'types'
 
-import { useFlags } from 'shared/featureFlags'
 import {
   formatSizeToString,
   formatTimeToString,
@@ -229,9 +228,6 @@ export const AssetsTable: React.FC = () => {
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [sorting, setSorting] = useState([{ id: 'size', desc: true }])
   const { provider, owner, repo, branch, bundle } = useParams<URLParams>()
-  const { renderBundleFilePathColumn } = useFlags({
-    renderBundleFilePathColumn: false,
-  })
 
   let ordering: 'NAME' | 'SIZE' | 'TYPE' | undefined
   const sortColumn = sorting?.[0]?.id
@@ -299,9 +295,9 @@ export const AssetsTable: React.FC = () => {
     [data?.pages]
   )
 
-  const includeFilePath =
-    renderBundleFilePathColumn &&
-    SUPPORTED_FILE_PATH_PLUGINS.includes(tableData.bundleInfo?.pluginName ?? '')
+  const includeFilePath = SUPPORTED_FILE_PATH_PLUGINS.includes(
+    tableData.bundleInfo?.pluginName ?? ''
+  )
 
   const columns = useMemo(
     () => createColumns(bundleSize, includeFilePath),

@@ -13,7 +13,6 @@ import { CompatRouter } from 'react-router-dom-v5-compat'
 
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import { initEventTracker } from 'services/events/events'
-import { withFeatureFlagProvider } from 'shared/featureFlags'
 
 import App from './App'
 import './globals.css'
@@ -37,10 +36,7 @@ const TOO_MANY_REQUESTS_ERROR_CODE = 429
 initEventTracker()
 setupSentry({ history })
 
-// use with pattern to not block app loading.
-const FeatureFlagApp = withFeatureFlagProvider(App)
-
-const ProfiledApp = Sentry.withProfiler(FeatureFlagApp)
+const ProfiledApp = Sentry.withProfiler(App)
 
 // setting to 2 minutes, this value will ensure that components that are mounted
 // after suspense do not trigger a new query to be fetched. By default, the

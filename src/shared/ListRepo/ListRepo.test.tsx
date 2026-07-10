@@ -10,18 +10,6 @@ import { Plans } from 'shared/utils/billing'
 
 import ListRepo from './ListRepo'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
-vi.mock('shared/featureFlags', async () => {
-  const original = await vi.importActual('shared/featureFlags')
-  return {
-    ...original,
-    useFlags: mocks.useFlags,
-  }
-})
-
 vi.mock('./OrgControlTable/RepoOrgNotFound', () => ({
   default: () => 'RepoOrgNotFound',
 }))
