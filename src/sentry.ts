@@ -5,14 +5,7 @@ import { Route } from 'react-router-dom'
 import config from './config'
 
 // Custom ignored errors
-const customIgnoredErrors = [
-  /*
-   * LD could fail for a multiple reasons, network issues, server issues, rate
-   * limiting, etc. We can't really help if if LD fails to fetch, so we ignore
-   * it. We also provide a fallback value to our feature flags so if this
-   * fails the app won't break.
-   */
-  'LaunchDarklyFlagFetchError',
+const customIgnoredErrors: string[] = [
   /*
    * App throwing an error if it can't find a module. We have resolved this
    * with two different methods, we're storing assets from previous builds, as
@@ -153,9 +146,6 @@ export const setupSentry = ({
         filterKeys: ['gazebo'],
         behaviour: 'apply-tag-if-contains-third-party-frames',
       }),
-
-      // Adds LaunchDarkly integration for feature flag tracking/errors
-      Sentry.launchDarklyIntegration(),
 
       // Conditionally adds Spotlight browser integration when in development mode
       // Note - you'll need to have a valid Sentry DSN to use this, and please set the SENTRY_ENVIRONMENT to your username or something unique

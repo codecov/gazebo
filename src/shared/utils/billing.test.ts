@@ -14,18 +14,6 @@ import {
   shouldDisplayTeamCard,
 } from './billing'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
-vi.mock('shared/featureFlags', async () => {
-  const actual = await vi.importActual('shared/featureFlags')
-  return {
-    ...actual,
-    useFlags: mocks.useFlags,
-  }
-})
-
 function getPlans() {
   return [
     {

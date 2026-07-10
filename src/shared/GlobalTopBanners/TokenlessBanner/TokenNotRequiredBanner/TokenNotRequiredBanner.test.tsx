@@ -8,13 +8,6 @@ import ResizeObserver from 'resize-observer-polyfill'
 
 import TokenNotRequiredBanner from './TokenNotRequiredBanner'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
-vi.mock('shared/featureFlags', () => ({
-  useFlags: mocks.useFlags,
-}))
 global.ResizeObserver = ResizeObserver
 
 const queryClient = new QueryClient({
@@ -48,8 +41,6 @@ describe('TokenNotRequiredBanner', () => {
     isAdmin?: boolean
     orgUploadToken?: string | null
   } = {}) {
-    mocks.useFlags.mockReturnValue({ tokenlessSection: true })
-
     server.use(
       graphql.query('GetUploadTokenRequired', () => {
         return HttpResponse.json({

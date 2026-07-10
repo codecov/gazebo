@@ -7,7 +7,6 @@ import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import Title, { TitleFlags, TitleHitCount } from './Title'
 
-vi.mock('shared/featureFlags')
 const mocks = vi.hoisted(() => ({
   useIntersection: vi.fn(),
 }))

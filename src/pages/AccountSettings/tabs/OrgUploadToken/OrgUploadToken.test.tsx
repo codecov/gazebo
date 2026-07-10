@@ -6,13 +6,14 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { useAddNotification } from 'services/toastNotification/context'
-import { useFlags } from 'shared/featureFlags'
 
 import OrgUploadToken from './OrgUploadToken'
 
+vi.mock('config')
 vi.mock('services/toastNotification/context')
-vi.mock('shared/featureFlags')
 vi.mock('./TokenlessSection', () => ({ default: () => 'TokenlessSection' }))
 
 const mockOwner = {
@@ -57,6 +58,7 @@ type SetupOptions = {
   orgUploadToken?: string | null
   error?: string | null
   isAdmin?: boolean
+  isSelfHosted?: boolean
 }
 
 describe('OrgUploadToken', () => {
@@ -64,12 +66,13 @@ describe('OrgUploadToken', () => {
     orgUploadToken = null,
     error = null,
     isAdmin = true,
+    isSelfHosted = false,
   }: SetupOptions = {}) {
     const user = userEvent.setup()
     const mutate = vi.fn()
     const addNotification = vi.fn()
 
-    vi.mocked(useFlags).mockReturnValue({ tokenlessSection: true })
+    config.IS_SELF_HOSTED = isSelfHosted
     vi.mocked(useAddNotification).mockReturnValue(addNotification)
 
     server.use(
@@ -165,6 +168,17 @@ describe('OrgUploadToken', () => {
 
       const tokenlessSection = await screen.findByText('TokenlessSection')
       expect(tokenlessSection).toBeInTheDocument()
+    })
+
+    it('does not render TokenlessSection component when self hosted', async () => {
+      setup({ orgUploadToken: 'upload-token', isSelfHosted: true })
+      render(<OrgUploadToken />, { wrapper })
+
+      const title = await screen.findByText(/Global upload token/)
+      expect(title).toBeInTheDocument()
+
+      const tokenlessSection = screen.queryByText('TokenlessSection')
+      expect(tokenlessSection).not.toBeInTheDocument()
     })
   })
 
