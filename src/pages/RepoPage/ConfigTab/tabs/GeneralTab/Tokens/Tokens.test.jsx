@@ -4,7 +4,11 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import Tokens from './Tokens'
+
+vi.mock('config')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -31,7 +35,9 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('Tokens', () => {
-  function setup() {
+  function setup({ isSelfHosted = false } = {}) {
+    config.IS_SELF_HOSTED = isSelfHosted
+
     server.use(
       graphql.query('GetRepoSettings', () => {
         return HttpResponse.json({
@@ -72,6 +78,19 @@ describe('Tokens', () => {
 
       const title = await screen.findByText(/Static analysis token/)
       expect(title).toBeInTheDocument()
+    })
+  })
+
+  describe('when self hosted', () => {
+    it('does not render static token component', async () => {
+      setup({ isSelfHosted: true })
+      render(<Tokens />, { wrapper })
+
+      const uploadToken = await screen.findByText(/Repository upload token/)
+      expect(uploadToken).toBeInTheDocument()
+
+      const title = screen.queryByText(/Static analysis token/)
+      expect(title).not.toBeInTheDocument()
     })
   })
 })

@@ -11,6 +11,8 @@ import { Fragment, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { OrderingDirection } from 'types'
 
 import {
@@ -295,9 +297,9 @@ export const AssetsTable: React.FC = () => {
     [data?.pages]
   )
 
-  const includeFilePath = SUPPORTED_FILE_PATH_PLUGINS.includes(
-    tableData.bundleInfo?.pluginName ?? ''
-  )
+  const includeFilePath =
+    !config.IS_SELF_HOSTED &&
+    SUPPORTED_FILE_PATH_PLUGINS.includes(tableData.bundleInfo?.pluginName ?? '')
 
   const columns = useMemo(
     () => createColumns(bundleSize, includeFilePath),

@@ -11,7 +11,11 @@ import { Suspense } from 'react'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { AssetsTable, ChangeOverTime } from './AssetsTable'
+
+vi.mock('config')
 
 const mockAssets = ({
   hasNextPage = true,
@@ -225,6 +229,7 @@ interface SetupArgs {
   isMissingHeadReport?: boolean
   multipleAssets?: boolean
   pluginName?: string
+  isSelfHosted?: boolean
 }
 
 describe('AssetsTable', () => {
@@ -233,10 +238,13 @@ describe('AssetsTable', () => {
     isMissingHeadReport = false,
     multipleAssets = true,
     pluginName = '@codecov/vite-plugin',
+    isSelfHosted = false,
   }: SetupArgs) {
     const user = userEvent.setup()
     const mockOrdering = vi.fn()
     const mockOrderingDirection = vi.fn()
+
+    config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
       graphql.query('BundleAssets', (info) => {
@@ -340,6 +348,17 @@ describe('AssetsTable', () => {
 
           const filePath = await screen.findByText('File path')
           expect(filePath).toBeInTheDocument()
+        })
+
+        it('does not render file path column when self hosted', async () => {
+          setup({ pluginName: '@codecov/sveltekit-plugin', isSelfHosted: true })
+          render(<AssetsTable />, { wrapper })
+
+          const asset = await screen.findByText('Asset')
+          expect(asset).toBeInTheDocument()
+
+          const filePath = screen.queryByText('File path')
+          expect(filePath).not.toBeInTheDocument()
         })
       })
 

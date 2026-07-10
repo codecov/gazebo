@@ -1,3 +1,5 @@
+import config from 'config'
+
 import { useRepoSettings } from 'services/repo'
 
 import RepoUploadToken from './RepoUploadToken'
@@ -12,9 +14,11 @@ function Tokens() {
       <h2 className="text-lg font-semibold">Tokens</h2>
       <hr />
       <RepoUploadToken uploadToken={repository?.uploadToken} />
-      <StaticAnalysisToken
-        staticAnalysisToken={repository?.staticAnalysisToken}
-      />
+      {!config.IS_SELF_HOSTED && (
+        <StaticAnalysisToken
+          staticAnalysisToken={repository?.staticAnalysisToken}
+        />
+      )}
     </>
   )
 }
