@@ -11,7 +11,7 @@ const RequestSchema = z.object({
       uploadTokenRequired: z.boolean().nullable(),
       isAdmin: z.boolean().nullable(),
     })
-    .nullable(),
+    .nullish(),
 })
 
 const query = `query GetUploadTokenRequired ($owner: String!) {
