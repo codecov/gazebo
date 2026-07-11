@@ -4,19 +4,11 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import Tokens from './Tokens'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
-vi.mock('shared/featureFlags', async () => {
-  const actual = await vi.importActual('shared/featureFlags')
-  return {
-    ...actual,
-    useFlags: mocks.useFlags,
-  }
-})
+vi.mock('config')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -43,10 +35,8 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('Tokens', () => {
-  function setup({ showStaticAnalysis = true } = { showStaticAnalysis: true }) {
-    mocks.useFlags.mockReturnValue({
-      staticAnalysisToken: showStaticAnalysis,
-    })
+  function setup({ isSelfHosted = false } = {}) {
+    config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
       graphql.query('GetRepoSettings', () => {
@@ -91,10 +81,13 @@ describe('Tokens', () => {
     })
   })
 
-  describe('when static analysis flag is disabled', () => {
-    it('does not render static token component', () => {
-      setup({ showStaticAnalysis: false })
+  describe('when self hosted', () => {
+    it('does not render static token component', async () => {
+      setup({ isSelfHosted: true })
       render(<Tokens />, { wrapper })
+
+      const uploadToken = await screen.findByText(/Repository upload token/)
+      expect(uploadToken).toBeInTheDocument()
 
       const title = screen.queryByText(/Static analysis token/)
       expect(title).not.toBeInTheDocument()

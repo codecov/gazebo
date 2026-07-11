@@ -11,9 +11,10 @@ import { Fragment, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { OrderingDirection } from 'types'
 
-import { useFlags } from 'shared/featureFlags'
 import {
   formatSizeToString,
   formatTimeToString,
@@ -229,9 +230,6 @@ export const AssetsTable: React.FC = () => {
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [sorting, setSorting] = useState([{ id: 'size', desc: true }])
   const { provider, owner, repo, branch, bundle } = useParams<URLParams>()
-  const { renderBundleFilePathColumn } = useFlags({
-    renderBundleFilePathColumn: false,
-  })
 
   let ordering: 'NAME' | 'SIZE' | 'TYPE' | undefined
   const sortColumn = sorting?.[0]?.id
@@ -300,7 +298,7 @@ export const AssetsTable: React.FC = () => {
   )
 
   const includeFilePath =
-    renderBundleFilePathColumn &&
+    !config.IS_SELF_HOSTED &&
     SUPPORTED_FILE_PATH_PLUGINS.includes(tableData.bundleInfo?.pluginName ?? '')
 
   const columns = useMemo(

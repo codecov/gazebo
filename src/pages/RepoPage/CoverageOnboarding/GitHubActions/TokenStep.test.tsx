@@ -11,14 +11,12 @@ import TokenStepSection from './TokenStep'
 vi.mock('services/uploadTokenRequired')
 vi.mock('services/orgUploadToken/useOrgUploadToken')
 vi.mock('services/repo')
-vi.mock('shared/featureFlags')
 vi.mock('services/user')
 
 const mocks = vi.hoisted(() => ({
   useUploadTokenRequired: vi.fn(),
   useOrgUploadToken: vi.fn(),
   useRepo: vi.fn(),
-  useFlags: vi.fn(),
   useIsCurrentUserAnAdmin: vi.fn(),
 }))
 
@@ -45,14 +43,6 @@ vi.mock('services/repo', async () => {
   return {
     ...original,
     useRepo: mocks.useRepo,
-  }
-})
-
-vi.mock('shared/featureFlags', async () => {
-  const original = await vi.importActual('shared/featureFlags')
-  return {
-    ...original,
-    useFlags: mocks.useFlags,
   }
 })
 
@@ -84,7 +74,6 @@ describe('TokenStepSection', () => {
       data: { repository: { uploadToken: 'repo-upload-token' } },
       isLoading: false,
     })
-    mocks.useFlags.mockReturnValue({ newRepoFlag: true })
     mocks.useIsCurrentUserAnAdmin.mockReturnValue(true)
     mocks.useIsCurrentUserAnAdmin.mockReturnValue(false)
   }

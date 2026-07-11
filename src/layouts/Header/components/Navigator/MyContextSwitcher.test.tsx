@@ -114,6 +114,7 @@ describe('MyContextSwitcher', () => {
           owner: {
             username: 'codecov',
             avatarUrl: 'http://127.0.0.1/avatar-url',
+            externalId: 'ext-id-123',
           },
         }
         return HttpResponse.json({ data: queryData })

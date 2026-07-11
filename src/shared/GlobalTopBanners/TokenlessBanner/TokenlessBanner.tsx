@@ -2,13 +2,14 @@ import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
 import React from 'react'
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { ONBOARDING_SOURCE } from 'pages/TermsOfService/constants'
 import { useLocationParams } from 'services/navigation/useLocationParams'
 import { useUploadTokenRequired } from 'services/uploadTokenRequired'
 import { useUser } from 'services/user'
 import { TokenlessQueryOpts } from 'services/user/TokenlessQueryOpts'
 import { Provider } from 'shared/api/helpers'
-import { useFlags } from 'shared/featureFlags'
 
 import TokenNotRequiredBanner from './TokenNotRequiredBanner'
 import TokenRequiredBanner from './TokenRequiredBanner'
@@ -19,9 +20,6 @@ type UseParams = {
 }
 
 const TokenlessBanner: React.FC = () => {
-  const { tokenlessSection } = useFlags({
-    tokenlessSection: false,
-  })
   const { provider, owner } = useParams<UseParams>()
   const { data } = useUploadTokenRequired({ provider, owner, enabled: !!owner })
   const { data: ownerTokenlessData } = useSuspenseQueryV5(
@@ -39,7 +37,7 @@ const TokenlessBanner: React.FC = () => {
   const relevantToCurrentOwner = hasActiveRepos && hasPublicRepos
 
   if (
-    !tokenlessSection ||
+    config.IS_SELF_HOSTED ||
     !owner ||
     !data ||
     !currentUser?.user ||

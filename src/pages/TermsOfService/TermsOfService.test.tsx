@@ -71,25 +71,11 @@ const mockedUserData = {
   defaultOrg: null,
 }
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-  mutate: vi.fn(),
-}))
-
-vi.mock('shared/featureFlags', async () => {
-  const actual = await vi.importActual('shared/featureFlags')
-  return {
-    ...actual,
-    useFlags: mocks.useFlags,
-  }
-})
-
 interface Setup {
   internalUserData?: InternalUserData
   isValidationError?: boolean
   isUnAuthError?: boolean
   isUnknownError?: boolean
-  termsOfServicePageFlag?: boolean
 }
 
 describe('TermsOfService', () => {
@@ -98,14 +84,9 @@ describe('TermsOfService', () => {
     isValidationError = false,
     isUnAuthError = false,
     isUnknownError = false,
-    termsOfServicePageFlag = true,
   }: Setup = {}) {
     const mockMutationVariables = vi.fn()
     const user = userEvent.setup()
-
-    mocks.useFlags.mockReturnValue({
-      termsOfServicePage: termsOfServicePageFlag,
-    })
 
     server.use(
       http.get('/internal/user', () => {

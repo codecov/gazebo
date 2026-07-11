@@ -12,18 +12,7 @@ import { Plans } from 'shared/utils/billing'
 
 import GitHubActions from './GitHubActions'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
 vi.mock('services/events/events')
-vi.mock('shared/featureFlags', async () => {
-  const actual = await vi.importActual('shared/featureFlags')
-  return {
-    ...actual,
-    useFlags: mocks.useFlags,
-  }
-})
 
 const mockGetRepo = {
   owner: {
@@ -156,16 +145,8 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-interface SetupArgs {
-  hasOrgUploadToken?: boolean
-}
-
 describe('GitHubActions', () => {
-  function setup({ hasOrgUploadToken = false }: SetupArgs) {
-    mocks.useFlags.mockReturnValue({
-      newRepoFlag: hasOrgUploadToken,
-    })
-
+  function setup() {
     server.use(
       graphql.query('GetRepo', () => {
         return HttpResponse.json({ data: mockGetRepo })
@@ -193,7 +174,7 @@ describe('GitHubActions', () => {
 
   describe('when Go is selected', () => {
     it('updates example yaml', async () => {
-      const { user } = setup({})
+      const { user } = setup()
       render(<GitHubActions />, { wrapper })
 
       const selector = await screen.findByRole('combobox')
@@ -219,7 +200,7 @@ describe('GitHubActions', () => {
   })
 
   describe('feedback CTA', () => {
-    beforeEach(() => setup({}))
+    beforeEach(() => setup())
     it('renders body', async () => {
       render(<GitHubActions />, { wrapper })
 
@@ -236,7 +217,7 @@ describe('GitHubActions', () => {
 
   describe('learn more blurb', () => {
     it('renders body', async () => {
-      setup({})
+      setup()
       render(<GitHubActions />, { wrapper })
 
       const body = await screen.findByText(/Visit our guide to/)
@@ -253,7 +234,7 @@ describe('GitHubActions', () => {
 
   describe('user copies text', () => {
     it('tracks an event', async () => {
-      setup({ hasOrgUploadToken: true })
+      setup()
       const user = userEvent.setup()
       render(<GitHubActions />, { wrapper })
 

@@ -234,16 +234,10 @@ module.exports = {
           {
             paths: [
               {
-                name: 'Launch Darkly',
-                message:
-                  "Always access Launch Darkly through 'shared/featureFlags instead",
-              },
-              {
                 name: 'lodash',
                 message: 'Import [module] from lodash/[module] instead',
               },
             ],
-            patterns: ['launchdarkly-react-client-sdk'],
           },
         ],
       },

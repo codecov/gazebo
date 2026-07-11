@@ -9,18 +9,13 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { Plans } from 'shared/utils/billing'
 
 import TokenlessBanner from './TokenlessBanner'
 
-const mocks = vi.hoisted(() => ({
-  useFlags: vi.fn(),
-}))
-
-vi.mock('shared/featureFlags', () => ({
-  useFlags: mocks.useFlags,
-}))
-
+vi.mock('config')
 vi.mock('services/users')
 
 vi.mock('./TokenRequiredBanner', () => ({
@@ -113,19 +108,19 @@ const wrapper =
 
 describe('TokenlessBanner', () => {
   function setup({
-    tokenlessSection = true,
+    isSelfHosted = false,
     uploadTokenRequired = false,
     currentUser,
     hasActiveRepos = true,
     hasPublicRepos = true,
   }: {
-    tokenlessSection?: boolean
+    isSelfHosted?: boolean
     uploadTokenRequired?: boolean
     currentUser?: any
     hasActiveRepos?: boolean
     hasPublicRepos?: boolean
   } = {}) {
-    mocks.useFlags.mockReturnValue({ tokenlessSection })
+    config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
       graphql.query('GetUploadTokenRequired', () => {
@@ -155,8 +150,8 @@ describe('TokenlessBanner', () => {
     )
   }
 
-  it('renders nothing when tokenlessSection flag is false', async () => {
-    setup({ tokenlessSection: false, currentUser: mockSignedInUser })
+  it('renders nothing when self hosted', async () => {
+    setup({ isSelfHosted: true, currentUser: mockSignedInUser })
     const { container } = render(<TokenlessBanner />, {
       wrapper: wrapper(['/gh/codecov']),
     })

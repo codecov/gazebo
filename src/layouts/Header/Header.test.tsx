@@ -31,6 +31,9 @@ vi.mock('src/layouts/Header/components/SeatDetails', () => ({
 vi.mock('src/layouts/Header/components/ThemeToggle', () => ({
   default: () => 'Theme Toggle',
 }))
+vi.mock('src/layouts/Header/components/OwnerExternalId', () => ({
+  default: () => 'Owner External Id',
+}))
 
 vi.mock('services/impersonate/useImpersonate')
 const mockedUseImpersonate = useImpersonate as Mock
