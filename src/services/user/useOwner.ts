@@ -77,7 +77,7 @@ export function useOwner({
           })
         }
 
-        return parsedRes?.data?.owner
+        return parsedRes?.data?.owner ?? null
       }),
     ...opts,
   })
