@@ -56,7 +56,7 @@ const OwnerContextSchema = z.object({
     .object({
       ownerid: z.number().nullable(),
     })
-    .nullable(),
+    .nullish(),
 })
 
 const ownerContextQuery = `
@@ -122,7 +122,7 @@ const RepoContextSchema = z.object({
         ])
         .nullable(),
     })
-    .nullable(),
+    .nullish(),
 })
 
 const repoContextQuery = `
