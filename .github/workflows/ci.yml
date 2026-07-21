@@ -410,25 +410,6 @@ jobs:
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
-  fossa:
-    name: Run Fossa
-    runs-on: ubuntu-latest
-    needs: install
-    if: ${{ github.repository_owner == 'codecov' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Run Fossa
-        uses: fossas/fossa-action@v1.3.3
-        with:
-          api-key: ${{secrets.FOSSA_API_KEY}}
-
   build:
     name: Build App
     runs-on: ubuntu-latest
