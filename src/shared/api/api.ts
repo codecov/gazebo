@@ -136,6 +136,12 @@ function graphql({
       })
     })
     .catch((error) => {
+      // Normalize network-level failures (e.g. Safari "Load failed", Chrome
+      // "Failed to fetch") and aborted requests into a consistent shape so
+      // callers can distinguish them from API/application errors.
+      if (error instanceof TypeError || error?.name === 'AbortError') {
+        return Promise.reject({ status: 0, message: error.message })
+      }
       return Promise.reject(error)
     })
 }
