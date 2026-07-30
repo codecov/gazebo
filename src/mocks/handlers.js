@@ -426,18 +426,26 @@ graphql.query('CommitBundleList', () => {
                   {
                     name: 'bundle.js',
                     changeType: 'added',
-                    sizeDelta: 1,
-                    sizeTotal: 2,
-                    loadTimeDelta: 3,
-                    loadTimeTotal: 4,
+                    bundleData: {
+                      loadTime: { threeG: 4, highSpeed: 1 },
+                      size: { gzip: 1, uncompress: 2 },
+                    },
+                    bundleChange: {
+                      loadTime: { threeG: 3, highSpeed: 1 },
+                      size: { gzip: 0, uncompress: 1 },
+                    },
                   },
                   {
                     name: 'bundle.css',
                     changeType: 'removed',
-                    sizeDelta: 5,
-                    sizeTotal: 6,
-                    loadTimeDelta: 7,
-                    loadTimeTotal: 8,
+                    bundleData: {
+                      loadTime: { threeG: 8, highSpeed: 2 },
+                      size: { gzip: 4, uncompress: 6 },
+                    },
+                    bundleChange: {
+                      loadTime: { threeG: 7, highSpeed: 2 },
+                      size: { gzip: 3, uncompress: 5 },
+                    },
                   },
                 ],
               },
@@ -463,18 +471,26 @@ graphql.query('PullBundleComparisonList', () => {
                   {
                     name: 'bundle.js',
                     changeType: 'added',
-                    sizeDelta: 1,
-                    sizeTotal: 2,
-                    loadTimeDelta: 3,
-                    loadTimeTotal: 4,
+                    bundleData: {
+                      loadTime: { threeG: 4, highSpeed: 1 },
+                      size: { gzip: 1, uncompress: 2 },
+                    },
+                    bundleChange: {
+                      loadTime: { threeG: 3, highSpeed: 1 },
+                      size: { gzip: 0, uncompress: 1 },
+                    },
                   },
                   {
                     name: 'bundle.css',
                     changeType: 'removed',
-                    sizeDelta: 5,
-                    sizeTotal: 6,
-                    loadTimeDelta: 7,
-                    loadTimeTotal: 8,
+                    bundleData: {
+                      loadTime: { threeG: 8, highSpeed: 2 },
+                      size: { gzip: 4, uncompress: 6 },
+                    },
+                    bundleChange: {
+                      loadTime: { threeG: 7, highSpeed: 2 },
+                      size: { gzip: 3, uncompress: 5 },
+                    },
                   },
                 ],
               },
