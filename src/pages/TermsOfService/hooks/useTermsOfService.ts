@@ -55,9 +55,7 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
           saveTermsAgreement(input: $tosInput) {
             error {
               __typename
-              ... on ResolverError {
-                message
-              }
+              message
             }
           }
         }
