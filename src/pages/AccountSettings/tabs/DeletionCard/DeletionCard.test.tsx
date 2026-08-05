@@ -162,6 +162,31 @@ describe('DeletionCard', () => {
     })
   })
 
+  describe('when account details are loading', () => {
+    it('renders nothing', () => {
+      setup({ isLoading: true })
+      const { container } = render(<DeletionCard isPersonalSettings={true} />, {
+        wrapper,
+      })
+
+      expect(container).toBeEmptyDOMElement()
+    })
+  })
+
+  describe('when owner details are loading for org settings', () => {
+    it('renders nothing', () => {
+      setup({ isLoadingOwner: true })
+      const { container } = render(
+        <DeletionCard isPersonalSettings={false} />,
+        {
+          wrapper,
+        }
+      )
+
+      expect(container).toBeEmptyDOMElement()
+    })
+  })
+
   describe('when the delete button is clicked', () => {
     it('opens the confirmation modal', async () => {
       const user = userEvent.setup()

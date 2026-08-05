@@ -75,11 +75,47 @@ describe('useEraseAccount', () => {
         expect(Cookie.remove).toHaveBeenCalledWith('github-token')
       )
     })
+
+    it('redirects to the home page', async () => {
+      const location = window.location
+      // @ts-expect-error - deleting for test mock
+      delete window.location
+      window.location = { ...location, href: '' }
+
+      setup()
+      const { result } = renderHook(
+        () => useEraseAccount({ provider, owner }),
+        { wrapper: wrapper() }
+      )
+
+      result.current.mutate()
+
+      await waitFor(() => expect(window.location.href).toBe('/'))
+
+      window.location = location
+    })
   })
 
   describe('when the mutation returns an error', () => {
     it('surfaces an error toast', async () => {
       setup({ error: { __typename: 'UnauthorizedError', message: 'nope' } })
+      const { result } = renderHook(
+        () => useEraseAccount({ provider, owner }),
+        { wrapper: wrapper() }
+      )
+
+      result.current.mutate()
+
+      await waitFor(() => expect(mockAddToast).toHaveBeenCalled())
+      expect(mockAddToast).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'error' })
+      )
+    })
+  })
+
+  describe('when the mutation request fails', () => {
+    it('surfaces an error toast', async () => {
+      server.use(graphql.mutation('DeleteOwner', () => HttpResponse.error()))
       const { result } = renderHook(
         () => useEraseAccount({ provider, owner }),
         { wrapper: wrapper() }
