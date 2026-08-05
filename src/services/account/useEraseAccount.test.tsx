@@ -5,6 +5,8 @@ import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import Api from 'shared/api'
+
 import { useEraseAccount } from './useEraseAccount'
 
 const mockAddToast = vi.fn()
@@ -115,7 +117,7 @@ describe('useEraseAccount', () => {
 
   describe('when the mutation request fails', () => {
     it('surfaces an error toast', async () => {
-      server.use(graphql.mutation('DeleteOwner', () => HttpResponse.error()))
+      vi.spyOn(Api, 'graphqlMutation').mockRejectedValueOnce(new Error('fail'))
       const { result } = renderHook(
         () => useEraseAccount({ provider, owner }),
         { wrapper: wrapper() }
