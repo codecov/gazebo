@@ -99,8 +99,23 @@ describe('useEraseAccount', () => {
   })
 
   describe('when the mutation returns an error', () => {
-    it('surfaces an error toast', async () => {
+    it('surfaces an error toast for unauthorized errors', async () => {
       setup({ error: { __typename: 'UnauthorizedError', message: 'nope' } })
+      const { result } = renderHook(
+        () => useEraseAccount({ provider, owner }),
+        { wrapper: wrapper() }
+      )
+
+      result.current.mutate()
+
+      await waitFor(() => expect(mockAddToast).toHaveBeenCalled())
+      expect(mockAddToast).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'error' })
+      )
+    })
+
+    it('surfaces an error toast for non-throwable mutation errors', async () => {
+      setup({ error: { __typename: 'UnexpectedError', message: 'nope' } })
       const { result } = renderHook(
         () => useEraseAccount({ provider, owner }),
         { wrapper: wrapper() }
