@@ -178,5 +178,18 @@ describe('DeletionCard', () => {
         screen.getByText(/Warning: this action is not reversible/i)
       ).toBeInTheDocument()
     })
+
+    it('closes the confirmation modal when cancel is clicked', async () => {
+      const user = userEvent.setup()
+      setup()
+      render(<DeletionCard isPersonalSettings={true} />, { wrapper })
+
+      await user.click(await screen.findByTestId('show-deletion-modal'))
+      await user.click(screen.getByRole('button', { name: 'Cancel' }))
+
+      expect(
+        screen.queryByText(/Warning: this action is not reversible/i)
+      ).not.toBeInTheDocument()
+    })
   })
 })
