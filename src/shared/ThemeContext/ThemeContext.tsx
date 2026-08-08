@@ -38,7 +38,10 @@ export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
     systemTheme = Theme.DARK
   }
 
-  const currentTheme = localStorage.getItem('theme') as Theme
+  const currentTheme = (typeof localStorage !== 'undefined'
+    ? localStorage.getItem('theme')
+    : null) as Theme | null
+
   const [theme, setTheme] = useState<Theme>(currentTheme ?? systemTheme)
   const initialRender = useRef(true)
 
@@ -46,7 +49,9 @@ export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
     if (typeof document !== 'undefined' && document.body) {
       document.body.classList.remove(Theme.LIGHT, Theme.DARK)
       document.body.classList.add(theme)
-      localStorage.setItem('theme', theme)
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('theme', theme)
+      }
     }
     initialRender.current = false
   }
@@ -55,7 +60,9 @@ export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
     if (typeof document !== 'undefined' && document.body) {
       document.body.classList.remove(Theme.LIGHT, Theme.DARK)
       document.body.classList.add(theme)
-      localStorage.setItem('theme', theme)
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('theme', theme)
+      }
       setTheme(theme)
     }
   }, [])
