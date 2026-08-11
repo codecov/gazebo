@@ -139,11 +139,11 @@ describe('BillingOptions', () => {
 
         const annualBtn = await screen.findByTestId('radio-annual')
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).toBeChecked()
+        await waitFor(() => expect(annualBtn).toBeChecked())
 
         const monthlyBtn = await screen.findByTestId('radio-monthly')
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).not.toBeChecked()
+        await waitFor(() => expect(monthlyBtn).not.toBeChecked())
       })
 
       it('renders annual pricing scheme', async () => {
@@ -211,11 +211,11 @@ describe('BillingOptions', () => {
         )
 
         const annualBtn = await screen.findByTestId('radio-annual')
-        expect(annualBtn).not.toBeChecked()
+        await waitFor(() => expect(annualBtn).not.toBeChecked())
 
         const monthlyBtn = await screen.findByTestId('radio-monthly')
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).toBeChecked()
+        await waitFor(() => expect(monthlyBtn).toBeChecked())
       })
 
       it('renders correct pricing scheme', async () => {
