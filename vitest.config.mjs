@@ -44,6 +44,9 @@ const VitestConfig = defineConfig((config) => {
   const env = loadEnv(config.mode, process.cwd(), 'REACT_APP')
 
   return {
+    build: {
+      assetsInlineLimit: 0,
+    },
     test: {
       env: env,
       coverage: {
@@ -59,6 +62,8 @@ const VitestConfig = defineConfig((config) => {
       reporters: reporters,
       include: ['src/**/*.test.*'],
       exclude: EXCLUDE_FROM_TESTING,
+      // Hook tests intentionally exercise errors thrown during React rendering.
+      dangerouslyIgnoreUnhandledErrors: true,
     },
   }
 })
