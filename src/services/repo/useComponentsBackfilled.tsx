@@ -24,6 +24,12 @@ query BackfillComponentMemberships($name: String!, $repo: String!) {
           componentsCount
         }
       }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
+      }
     }
   }
 }
