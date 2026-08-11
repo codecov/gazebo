@@ -1,7 +1,7 @@
 import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useOwner } from 'services/user'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
@@ -16,17 +16,13 @@ export const ProvidersEnum = Object.freeze({
 
 function useProviderSetting() {
   const { owner, provider: paramProvider } = useParams()
-  const { data: accountDetails } = useAccountDetails({
-    provider: paramProvider,
-    owner,
-  })
+  const { data: ownerData } = useOwner({ username: owner })
 
   const provider = providerToName(paramProvider)
-  const ghWithApp =
-    accountDetails?.integrationId && provider === ProvidersEnum.Github
+  const hasGithubApp = !!ownerData?.hasGithubApp
+  const ghWithApp = hasGithubApp && provider === ProvidersEnum.Github
 
-  const ghWithNoApp =
-    !accountDetails?.integrationId && provider === ProvidersEnum.Github
+  const ghWithNoApp = !hasGithubApp && provider === ProvidersEnum.Github
 
   const bbProvider = provider === ProvidersEnum.Bitbucket
   const glProvider = provider === ProvidersEnum.Gitlab

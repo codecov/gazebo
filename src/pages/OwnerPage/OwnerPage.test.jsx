@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, http, HttpResponse } from 'msw'
+import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -21,7 +21,9 @@ vi.mock('services/toast/renderToast', async () => {
 
 vi.mock('./HeaderBanners', () => ({ default: () => 'HeaderBanners' }))
 vi.mock('./Tabs', () => ({ default: () => 'Tabs' }))
-vi.mock('shared/ListRepo', () => ({ default: () => 'ListRepo' }))
+vi.mock('shared/ListRepo', () => ({
+  default: ({ hasGhApp }) => `ListRepo hasGhApp:${String(hasGhApp)}`,
+}))
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -59,10 +61,9 @@ afterAll(() => {
 
 describe('OwnerPage', () => {
   function setup(
-    { owner, successfulMutation = true, integrationId = 9 } = {
+    { owner, successfulMutation = true } = {
       owner: null,
       successfulMutation: true,
-      integrationId: 9,
     }
   ) {
     server.use(
@@ -86,9 +87,6 @@ describe('OwnerPage', () => {
         return HttpResponse.json({
           data: { saveSentryState: null },
         })
-      }),
-      http.get('/internal/gh/codecov/account-details/', () => {
-        return HttpResponse.json({ integrationId })
       })
     )
   }
@@ -132,6 +130,36 @@ describe('OwnerPage', () => {
       render(<OwnerPage />, { wrapper })
 
       const listRepo = await screen.findByText(/ListRepo/)
+      expect(listRepo).toBeInTheDocument()
+    })
+
+    it('passes along the GitHub app install state to ListRepo', async () => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+          hasGithubApp: true,
+        },
+      })
+
+      render(<OwnerPage />, { wrapper })
+
+      const listRepo = await screen.findByText(/ListRepo hasGhApp:true/)
+      expect(listRepo).toBeInTheDocument()
+    })
+
+    it('tells ListRepo the app is missing when the owner has no install', async () => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+          hasGithubApp: false,
+        },
+      })
+
+      render(<OwnerPage />, { wrapper })
+
+      const listRepo = await screen.findByText(/ListRepo hasGhApp:false/)
       expect(listRepo).toBeInTheDocument()
     })
 
