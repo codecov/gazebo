@@ -61,7 +61,9 @@ describe('DeletionCard', () => {
   }: {
     usesInvoice?: boolean
     planProvider?: string | null
-    subscriptionDetail?: typeof accountDetailsParsedObj.subscriptionDetail
+    subscriptionDetail?:
+      | typeof accountDetailsParsedObj.subscriptionDetail
+      | null
     isFreePlan?: boolean
     rootOrganization?: { username?: string } | null
     isLoading?: boolean
@@ -86,10 +88,8 @@ describe('DeletionCard', () => {
       data: isLoadingPlan
         ? undefined
         : {
-            owner: {
-              plan: {
-                isFreePlan,
-              },
+            plan: {
+              isFreePlan,
             },
           },
       isLoading: isLoadingPlan,
@@ -180,7 +180,7 @@ describe('DeletionCard', () => {
         subscriptionDetail: {
           ...accountDetailsParsedObj.subscriptionDetail!,
           collectionMethod: 'send_invoice',
-        },
+        } as unknown as typeof accountDetailsParsedObj.subscriptionDetail,
       })
       render(<DeletionCard isPersonalSettings={true} />, { wrapper })
 

@@ -44,7 +44,7 @@ function DeletionCard({ isPersonalSettings }: DeletionCardProps) {
       CollectionMethods.INVOICED_CUSTOMER_METHOD || accountDetails?.usesInvoice
 
   const isBillingManagedByRootOrg = !!accountDetails?.rootOrganization?.username
-  const isOnFreePlan = planData?.owner?.plan?.isFreePlan ?? false
+  const isOnFreePlan = planData?.plan?.isFreePlan ?? false
   const isGitHubMarketplace = accountDetails?.planProvider === 'github'
   const hasStripeSubscription = !!accountDetails?.subscriptionDetail
   const mustCancelSubscriptionFirst =
@@ -103,7 +103,11 @@ function DeletionCard({ isPersonalSettings }: DeletionCardProps) {
             {isGitHubMarketplace ? (
               <>
                 Cancel or downgrade your subscription in{' '}
-                <A to={{ pageName: 'githubMarketplace' }} isExternal>
+                <A
+                  to={{ pageName: 'githubMarketplace' }}
+                  hook="github-marketplace-link"
+                  isExternal
+                >
                   GitHub Marketplace
                 </A>{' '}
                 before deleting.
@@ -111,8 +115,14 @@ function DeletionCard({ isPersonalSettings }: DeletionCardProps) {
             ) : (
               <>
                 Cancel or downgrade your subscription on the{' '}
-                <A to={{ pageName: 'upgradeOrgPlan' }}>Plan page</A> before
-                deleting.
+                <A
+                  to={{ pageName: 'upgradeOrgPlan' }}
+                  hook="plan-page-link"
+                  isExternal={false}
+                >
+                  Plan page
+                </A>{' '}
+                before deleting.
               </>
             )}
           </p>
