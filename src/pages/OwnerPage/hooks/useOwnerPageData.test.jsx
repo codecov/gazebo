@@ -11,6 +11,7 @@ const mockOwner = {
   isCurrentUserPartOfOrg: true,
   numberOfUploads: 30,
   avatarUrl: 'cool-image-url',
+  hasGithubApp: true,
 }
 
 const queryClient = new QueryClient({

@@ -1,10 +1,16 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import Card from 'old_ui/Card'
+import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useEraseAccount } from 'services/account/useEraseAccount'
+import { usePlanData } from 'services/account/usePlanData'
 import { useOwner } from 'services/user'
-import { Provider } from 'shared/api/helpers'
+import { type Provider } from 'shared/api/helpers'
+import { CollectionMethods } from 'shared/utils/billing'
 import A from 'ui/A'
-import ExternalId from 'ui/ExternalId'
+import Button from 'ui/Button'
+
+import EraseOwnerModal from './EraseOwnerModal'
 
 interface DeletionCardProps {
   isPersonalSettings: boolean
@@ -16,31 +22,144 @@ interface URLParams {
 }
 
 function DeletionCard({ isPersonalSettings }: DeletionCardProps) {
-  const { owner } = useParams<URLParams>()
-  const { data: ownerData } = useOwner({ username: owner })
+  const { provider, owner } = useParams<URLParams>()
+  const [showModal, setShowModal] = useState(false)
+  const { data: accountDetails, isLoading: isLoadingAccountDetails } =
+    useAccountDetails({ provider, owner })
+  const { data: planData, isLoading: isLoadingPlanData } = usePlanData({
+    provider,
+    owner,
+  })
+  const { data: ownerData, isLoading: isLoadingOwner } = useOwner({
+    username: owner,
+    opts: { enabled: !isPersonalSettings },
+  })
+  const { mutate: eraseOwner, isLoading: isDeleting } = useEraseAccount({
+    provider,
+    owner,
+  })
 
-  return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-lg font-semibold">
-        {isPersonalSettings ? 'Delete account' : 'Delete organization'}
-      </h2>
-      <Card>
-        <div className="flex flex-col gap-4">
+  const isInvoicedCustomer =
+    accountDetails?.subscriptionDetail?.collectionMethod ===
+      CollectionMethods.INVOICED_CUSTOMER_METHOD || accountDetails?.usesInvoice
+
+  const isBillingManagedByRootOrg = !!accountDetails?.rootOrganization?.username
+  const isOnFreePlan = planData?.plan?.isFreePlan ?? false
+  const isGitHubMarketplace = accountDetails?.planProvider === 'github'
+  const hasStripeSubscription = !!accountDetails?.subscriptionDetail
+  const mustCancelSubscriptionFirst =
+    !isBillingManagedByRootOrg &&
+    !isOnFreePlan &&
+    (isGitHubMarketplace || hasStripeSubscription)
+
+  const title = isPersonalSettings ? 'Delete account' : 'Delete organization'
+  const description = isPersonalSettings
+    ? 'Erase my personal account and all my repositories. '
+    : 'Erase organization and all its repositories. '
+  const buttonLabel = isPersonalSettings
+    ? 'Delete personal account'
+    : 'Delete organization'
+
+  if (
+    isLoadingAccountDetails ||
+    isLoadingPlanData ||
+    (!isPersonalSettings && isLoadingOwner)
+  ) {
+    return null
+  }
+
+  if (!isPersonalSettings && !ownerData?.isAdmin) {
+    return null
+  }
+
+  if (isInvoicedCustomer) {
+    return (
+      <div className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <div className="rounded border border-ds-gray-secondary bg-ds-container p-4">
           <p>
-            {isPersonalSettings
-              ? 'Erase my personal account and all my repositories. '
-              : 'Erase organization and all its repositories. '}
+            {description}
             <A
               to={{ pageName: 'support' }}
               hook="contact-support-link"
               isExternal
             >
               Contact support
-            </A>
+            </A>{' '}
+            to request account deletion.
           </p>
-          <ExternalId externalId={ownerData?.externalId} label="Owner ID" />
         </div>
-      </Card>
+      </div>
+    )
+  }
+
+  if (mustCancelSubscriptionFirst) {
+    return (
+      <div className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <div className="rounded border border-ds-gray-secondary bg-ds-container p-4">
+          <p>
+            {description}
+            {isGitHubMarketplace ? (
+              <>
+                Cancel or downgrade your subscription in{' '}
+                <A
+                  to={{ pageName: 'githubMarketplace' }}
+                  hook="github-marketplace-link"
+                  isExternal
+                >
+                  GitHub Marketplace
+                </A>{' '}
+                before deleting.
+              </>
+            ) : (
+              <>
+                Cancel or downgrade your subscription on the{' '}
+                <A
+                  to={{ pageName: 'upgradeOrgPlan' }}
+                  hook="plan-page-link"
+                  isExternal={false}
+                >
+                  Plan page
+                </A>{' '}
+                before deleting.
+              </>
+            )}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-lg font-semibold text-ds-primary-red">{title}</h2>
+      <div className="rounded border border-ds-primary-red bg-ds-primary-red/5 p-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            {description}
+            <span className="font-semibold">This action is irreversible.</span>
+          </p>
+          <div>
+            <Button
+              variant="danger"
+              hook="show-deletion-modal"
+              disabled={isDeleting}
+              onClick={() => setShowModal(true)}
+            >
+              {buttonLabel}
+            </Button>
+          </div>
+        </div>
+      </div>
+      <EraseOwnerModal
+        isPersonalSettings={isPersonalSettings}
+        ownerName={owner}
+        isLoading={isDeleting}
+        showModal={showModal}
+        closeModal={() => setShowModal(false)}
+        eraseOwner={eraseOwner}
+      />
     </div>
   )
 }

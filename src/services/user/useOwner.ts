@@ -13,6 +13,7 @@ const OwnerSchema = z.object({
   isCurrentUserPartOfOrg: z.boolean().nullish(),
   isAdmin: z.boolean().nullish(),
   isOnlyUsingSentryApp: z.boolean().nullish(),
+  hasGithubApp: z.boolean().nullish(),
   externalId: z.string().nullish(),
 })
 
@@ -43,6 +44,7 @@ const query = `
         isCurrentUserPartOfOrg
         isAdmin
         isOnlyUsingSentryApp
+        hasGithubApp
         externalId
       }
     }
