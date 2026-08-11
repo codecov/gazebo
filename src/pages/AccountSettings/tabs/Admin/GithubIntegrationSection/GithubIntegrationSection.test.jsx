@@ -1,12 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { http, HttpResponse } from 'msw'
+import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
-
-import { Plans } from 'shared/utils/billing'
 
 import GithubIntegrationSection from './GithubIntegrationSection'
 
@@ -45,8 +43,8 @@ afterAll(() => {
 
 describe('GithubIntegrationSection', () => {
   function setup(
-    { accountDetails, isSelfHosted } = {
-      accountDetails: {},
+    { hasGithubApp, isSelfHosted } = {
+      hasGithubApp: true,
       isSelfHosted: false,
     }
   ) {
@@ -54,19 +52,20 @@ describe('GithubIntegrationSection', () => {
     config.GH_APP = 'codecov'
 
     server.use(
-      http.get(`/internal/gh/codecov/account-details/`, () => {
+      graphql.query('DetailOwner', () => {
         return HttpResponse.json({
-          plan: {
-            marketingName: Plans.USERS_DEVELOPER,
-            baseUnitPrice: 12,
-            benefits: ['Configurable # of users', 'Unlimited repos'],
-            quantity: 5,
-            value: Plans.USERS_INAPPM,
+          data: {
+            owner: {
+              ownerid: 1,
+              username: 'codecov',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+              isCurrentUserPartOfOrg: true,
+              isAdmin: true,
+              isOnlyUsingSentryApp: false,
+              hasGithubApp,
+              externalId: 'external-id',
+            },
           },
-          activatedUserCount: 2,
-          inactiveUserCount: 1,
-          integrationId: 2,
-          ...accountDetails,
         })
       })
     )
@@ -88,7 +87,7 @@ describe('GithubIntegrationSection', () => {
 
   describe('when github user but enterprise', () => {
     beforeEach(() => {
-      setup({ isSelfHosted: true })
+      setup({ hasGithubApp: true, isSelfHosted: true })
     })
 
     it('renders nothing', () => {
@@ -102,7 +101,7 @@ describe('GithubIntegrationSection', () => {
 
   describe('when the user does not have the integration installed', () => {
     beforeEach(() => {
-      setup({ accountDetails: { integrationId: null } })
+      setup({ hasGithubApp: false, isSelfHosted: false })
     })
 
     it('renders the copy to explain the integration', async () => {

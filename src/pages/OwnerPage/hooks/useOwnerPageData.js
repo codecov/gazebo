@@ -12,6 +12,7 @@ export function useOwnerPageData(opts = {}) {
           isCurrentUserPartOfOrg
           numberOfUploads
           avatarUrl
+          hasGithubApp
         }
       }
     `

@@ -1,7 +1,7 @@
 import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { http, HttpResponse } from 'msw'
+import { graphql, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -42,17 +42,30 @@ afterAll(() => {
 })
 
 describe('BotErrorBanner', () => {
-  function setup({ integrationId } = { integrationId: null }) {
+  function setup({ hasGithubApp } = { hasGithubApp: false }) {
     server.use(
-      http.get('/internal/:provider/codecov/account-details/', () => {
-        return HttpResponse.json({ integrationId })
+      graphql.query('DetailOwner', () => {
+        return HttpResponse.json({
+          data: {
+            owner: {
+              ownerid: 1,
+              username: 'codecov',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+              isCurrentUserPartOfOrg: true,
+              isAdmin: true,
+              isOnlyUsingSentryApp: false,
+              hasGithubApp,
+              externalId: 'external-id',
+            },
+          },
+        })
       })
     )
   }
 
-  describe('when rendered with gh provider and integration id', () => {
+  describe('when rendered with gh provider and the app installed', () => {
     it('renders heading of banner', async () => {
-      setup({ integrationId: 2 })
+      setup({ hasGithubApp: true })
 
       render(<BotErrorBanner {...defaultProps} />, {
         wrapper: wrapper({ provider: 'gh' }),
@@ -65,7 +78,7 @@ describe('BotErrorBanner', () => {
     })
 
     it('renders content', async () => {
-      setup({ integrationId: 2 })
+      setup({ hasGithubApp: true })
 
       render(<BotErrorBanner {...defaultProps} />, {
         wrapper: wrapper({ provider: 'gh' }),
@@ -78,7 +91,11 @@ describe('BotErrorBanner', () => {
     })
   })
 
-  describe('when rendered with gh provider and no integration id', () => {
+  describe('when rendered with gh provider and no app installed', () => {
+    beforeEach(() => {
+      setup({ hasGithubApp: false })
+    })
+
     it('renders heading of banner', () => {
       render(<BotErrorBanner {...defaultProps} />, {
         wrapper: wrapper({ provider: 'gh' }),
@@ -107,6 +124,10 @@ describe('BotErrorBanner', () => {
   })
 
   describe('when rendered with gl provider', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('renders heading of banner', () => {
       render(<BotErrorBanner {...defaultProps} />, {
         wrapper: wrapper({ provider: 'gl' }),
@@ -135,6 +156,10 @@ describe('BotErrorBanner', () => {
   })
 
   describe('when rendered with bb provider', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('renders heading of banner', () => {
       render(<BotErrorBanner {...defaultProps} />, {
         wrapper: wrapper({ provider: 'bb' }),
@@ -163,6 +188,10 @@ describe('BotErrorBanner', () => {
   })
 
   describe('when rendered without errors', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('renders empty dom', () => {
       const { container } = render(<BotErrorBanner botErrorsCount={0} />, {
         wrapper: wrapper({ provider: 'gh' }),
