@@ -1,4 +1,4 @@
-import { useSuspenseQuery as useSuspenseQueryV5 } from '@tanstack/react-queryV5'
+import { useQuery as useQueryV5 } from '@tanstack/react-queryV5'
 import React from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -22,7 +22,7 @@ type UseParams = {
 const TokenlessBanner: React.FC = () => {
   const { provider, owner } = useParams<UseParams>()
   const { data } = useUploadTokenRequired({ provider, owner, enabled: !!owner })
-  const { data: ownerTokenlessData } = useSuspenseQueryV5(
+  const { data: ownerTokenlessData } = useQueryV5(
     TokenlessQueryOpts({ username: owner, provider })
   )
   const { data: currentUser } = useUser()
