@@ -5,6 +5,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { accountDetailsParsedObj } from 'services/account/mocks'
 import { useAccountDetails } from 'services/account/useAccountDetails'
+import { usePlanData } from 'services/account/usePlanData'
 import { useOwner } from 'services/user'
 
 import DeletionCard from './DeletionCard'
@@ -16,6 +17,9 @@ vi.mock('services/account/useEraseAccount', () => ({
 
 vi.mock('services/account/useAccountDetails')
 const mockedUseAccountDetails = vi.mocked(useAccountDetails)
+
+vi.mock('services/account/usePlanData')
+const mockedUsePlanData = vi.mocked(usePlanData)
 
 vi.mock('services/user', async () => {
   const actual = await vi.importActual('services/user')
@@ -46,14 +50,22 @@ afterEach(() => {
 describe('DeletionCard', () => {
   function setup({
     usesInvoice = false,
-    collectionMethod = 'charge_automatically',
+    planProvider = null as string | null,
+    subscriptionDetail = accountDetailsParsedObj.subscriptionDetail,
+    isFreePlan = true,
+    rootOrganization = null as { username?: string } | null,
     isLoading = false,
+    isLoadingPlan = false,
     isAdmin = true,
     isLoadingOwner = false,
   }: {
     usesInvoice?: boolean
-    collectionMethod?: string
+    planProvider?: string | null
+    subscriptionDetail?: typeof accountDetailsParsedObj.subscriptionDetail
+    isFreePlan?: boolean
+    rootOrganization?: { username?: string } | null
     isLoading?: boolean
+    isLoadingPlan?: boolean
     isAdmin?: boolean
     isLoadingOwner?: boolean
   } = {}) {
@@ -63,13 +75,25 @@ describe('DeletionCard', () => {
         : {
             ...accountDetailsParsedObj,
             usesInvoice,
-            subscriptionDetail: {
-              ...accountDetailsParsedObj.subscriptionDetail,
-              collectionMethod,
-            },
+            planProvider,
+            rootOrganization,
+            subscriptionDetail,
           },
       isLoading,
     } as ReturnType<typeof useAccountDetails>)
+
+    mockedUsePlanData.mockReturnValue({
+      data: isLoadingPlan
+        ? undefined
+        : {
+            owner: {
+              plan: {
+                isFreePlan,
+              },
+            },
+          },
+      isLoading: isLoadingPlan,
+    } as ReturnType<typeof usePlanData>)
 
     mockedUseOwner.mockReturnValue({
       data: isLoadingOwner ? undefined : { isAdmin },
@@ -152,13 +176,72 @@ describe('DeletionCard', () => {
     })
 
     it('does not render the delete button for send_invoice collection', async () => {
-      setup({ collectionMethod: 'send_invoice' })
+      setup({
+        subscriptionDetail: {
+          ...accountDetailsParsedObj.subscriptionDetail!,
+          collectionMethod: 'send_invoice',
+        },
+      })
       render(<DeletionCard isPersonalSettings={true} />, { wrapper })
 
       expect(screen.getByText(/Contact support/)).toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Delete personal account' })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the account has an active paid subscription', () => {
+    it('does not render the delete button for GitHub Marketplace billing', async () => {
+      setup({
+        planProvider: 'github',
+        isFreePlan: false,
+        subscriptionDetail: null,
+      })
+      render(<DeletionCard isPersonalSettings={true} />, { wrapper })
+
+      expect(screen.getByText(/GitHub Marketplace/)).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Delete personal account' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('does not render the delete button for Stripe billing', async () => {
+      setup({
+        isFreePlan: false,
+        subscriptionDetail: accountDetailsParsedObj.subscriptionDetail,
+      })
+      render(<DeletionCard isPersonalSettings={true} />, { wrapper })
+
+      expect(screen.getByText(/Plan page/)).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Delete personal account' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders the delete button when billing is managed by a root org', async () => {
+      setup({
+        isFreePlan: false,
+        planProvider: 'github',
+        rootOrganization: { username: 'root-org' },
+        subscriptionDetail: null,
+      })
+      render(<DeletionCard isPersonalSettings={false} />, { wrapper })
+
+      expect(
+        await screen.findByRole('button', { name: 'Delete organization' })
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when plan data are loading', () => {
+    it('renders nothing', () => {
+      setup({ isLoadingPlan: true })
+      const { container } = render(<DeletionCard isPersonalSettings={true} />, {
+        wrapper,
+      })
+
+      expect(container).toBeEmptyDOMElement()
     })
   })
 

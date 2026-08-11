@@ -19,6 +19,9 @@ const query = `
         ... on NotFoundError {
           message
         }
+        ... on ValidationError {
+          message
+        }
       }
     }
   }
@@ -45,7 +48,10 @@ export function useEraseAccount({ provider, owner }: UseEraseAccountArgs) {
       if (error) {
         addToast({
           type: 'error',
-          text: 'Something went wrong while deleting the account. Please try again.',
+          text:
+            error.__typename === 'ValidationError' && error.message
+              ? error.message
+              : 'Something went wrong while deleting the account. Please try again.',
         })
         return
       }

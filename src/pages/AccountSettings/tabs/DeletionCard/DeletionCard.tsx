@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account/useAccountDetails'
 import { useEraseAccount } from 'services/account/useEraseAccount'
+import { usePlanData } from 'services/account/usePlanData'
 import { useOwner } from 'services/user'
 import { type Provider } from 'shared/api/helpers'
 import { CollectionMethods } from 'shared/utils/billing'
@@ -25,6 +26,10 @@ function DeletionCard({ isPersonalSettings }: DeletionCardProps) {
   const [showModal, setShowModal] = useState(false)
   const { data: accountDetails, isLoading: isLoadingAccountDetails } =
     useAccountDetails({ provider, owner })
+  const { data: planData, isLoading: isLoadingPlanData } = usePlanData({
+    provider,
+    owner,
+  })
   const { data: ownerData, isLoading: isLoadingOwner } = useOwner({
     username: owner,
     opts: { enabled: !isPersonalSettings },
@@ -38,6 +43,15 @@ function DeletionCard({ isPersonalSettings }: DeletionCardProps) {
     accountDetails?.subscriptionDetail?.collectionMethod ===
       CollectionMethods.INVOICED_CUSTOMER_METHOD || accountDetails?.usesInvoice
 
+  const isBillingManagedByRootOrg = !!accountDetails?.rootOrganization?.username
+  const isOnFreePlan = planData?.owner?.plan?.isFreePlan ?? false
+  const isGitHubMarketplace = accountDetails?.planProvider === 'github'
+  const hasStripeSubscription = !!accountDetails?.subscriptionDetail
+  const mustCancelSubscriptionFirst =
+    !isBillingManagedByRootOrg &&
+    !isOnFreePlan &&
+    (isGitHubMarketplace || hasStripeSubscription)
+
   const title = isPersonalSettings ? 'Delete account' : 'Delete organization'
   const description = isPersonalSettings
     ? 'Erase my personal account and all my repositories. '
@@ -46,7 +60,11 @@ function DeletionCard({ isPersonalSettings }: DeletionCardProps) {
     ? 'Delete personal account'
     : 'Delete organization'
 
-  if (isLoadingAccountDetails || (!isPersonalSettings && isLoadingOwner)) {
+  if (
+    isLoadingAccountDetails ||
+    isLoadingPlanData ||
+    (!isPersonalSettings && isLoadingOwner)
+  ) {
     return null
   }
 
@@ -69,6 +87,34 @@ function DeletionCard({ isPersonalSettings }: DeletionCardProps) {
               Contact support
             </A>{' '}
             to request account deletion.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (mustCancelSubscriptionFirst) {
+    return (
+      <div className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <div className="rounded border border-ds-gray-secondary bg-ds-container p-4">
+          <p>
+            {description}
+            {isGitHubMarketplace ? (
+              <>
+                Cancel or downgrade your subscription in{' '}
+                <A to={{ pageName: 'githubMarketplace' }} isExternal>
+                  GitHub Marketplace
+                </A>{' '}
+                before deleting.
+              </>
+            ) : (
+              <>
+                Cancel or downgrade your subscription on the{' '}
+                <A to={{ pageName: 'upgradeOrgPlan' }}>Plan page</A> before
+                deleting.
+              </>
+            )}
           </p>
         </div>
       </div>

@@ -114,6 +114,27 @@ describe('useEraseAccount', () => {
       )
     })
 
+    it('surfaces the validation error message from the API', async () => {
+      setup({
+        error: {
+          __typename: 'ValidationError',
+          message: 'Cancel or downgrade your subscription before deleting.',
+        },
+      })
+      const { result } = renderHook(
+        () => useEraseAccount({ provider, owner }),
+        { wrapper: wrapper() }
+      )
+
+      result.current.mutate()
+
+      await waitFor(() => expect(mockAddToast).toHaveBeenCalled())
+      expect(mockAddToast).toHaveBeenCalledWith({
+        type: 'error',
+        text: 'Cancel or downgrade your subscription before deleting.',
+      })
+    })
+
     it('surfaces an error toast for non-throwable mutation errors', async () => {
       setup({ error: { __typename: 'UnexpectedError', message: 'nope' } })
       const { result } = renderHook(
