@@ -14,6 +14,9 @@ const customIgnoredErrors: string[] = [
    */
   // Removing this for the time being, to see if we can resolve it fully
   // 'Failed to fetch dynamically imported module',
+
+  // Browser extension API not available in content script context (third-party, not our code)
+  'userScripts is not defined',
 ]
 
 // common ignore errors / URLs to de-clutter Sentry
@@ -163,6 +166,11 @@ export const setupSentry = ({
     profilesSampleRate: config?.SENTRY_PROFILING_SAMPLE_RATE,
     beforeSend: (event, _hint) => {
       if (checkForBlockedUserAgents()) {
+        return null
+      }
+
+      // Drop errors originating from browser extensions or other third-party injected code
+      if (event.tags?.['third_party_code'] === true) {
         return null
       }
 
