@@ -5,12 +5,6 @@ import GlobalTopBanners from './GlobalTopBanners'
 vi.mock('./TrialBanner', () => ({
   default: () => 'TrialBanner',
 }))
-vi.mock('./TeamPlanFeedbackBanner', () => ({
-  default: () => 'TeamPlanFeedbackBanner',
-}))
-vi.mock('./ProPlanFeedbackBanner', () => ({
-  default: () => 'ProPlanFeedbackBanner',
-}))
 vi.mock('./BundleFeedbackBanner', () => ({
   default: () => 'BundleFeedbackBanner',
 }))
@@ -32,24 +26,10 @@ describe('GlobalTopBanners', () => {
     expect(banner).toBeInTheDocument()
   })
 
-  it('renders team plan feedback banner', async () => {
-    render(<GlobalTopBanners />)
-
-    const banner = await screen.findByText(/TeamPlanFeedbackBanner/)
-    expect(banner).toBeInTheDocument()
-  })
-
-  it('renders pro plan feedback banner', async () => {
-    render(<GlobalTopBanners />)
-
-    const banner = await screen.findByText(/ProPlanFeedbackBanner/)
-    expect(banner).toBeInTheDocument()
-  })
-
   it('renders bundle feedback banner', async () => {
     render(<GlobalTopBanners />)
 
-    const banner = await screen.findByText(/ProPlanFeedbackBanner/)
+    const banner = await screen.findByText(/BundleFeedbackBanner/)
     expect(banner).toBeInTheDocument()
   })
 
