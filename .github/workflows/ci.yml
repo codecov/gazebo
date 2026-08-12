@@ -139,7 +139,7 @@ jobs:
   codecov-startup:
     name: Codecov Startup
     needs: install
-    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.14
+    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.39
     secrets: inherit
 
   runner-indexes-vitest:
