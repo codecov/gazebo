@@ -291,7 +291,7 @@ export const ImpactedFileSchema = z.object({
           })
         ),
       })
-    ),
+    ).optional(),
   }),
 })
 
