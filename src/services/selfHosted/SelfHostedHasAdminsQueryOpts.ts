@@ -12,7 +12,8 @@ export const HasAdminsSchema = z.object({
     .object({
       hasAdmins: z.boolean().nullable(),
     })
-    .nullable(),
+    .nullable()
+    .optional(),
 })
 
 const query = `query HasAdmins { config { hasAdmins } }`

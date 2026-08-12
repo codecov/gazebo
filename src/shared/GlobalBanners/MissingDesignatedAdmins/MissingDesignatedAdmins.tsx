@@ -51,7 +51,7 @@ interface URLParams {
 const MissingDesignatedAdminsWrapper = () => {
   const { provider } = useParams<URLParams>()
 
-  if (provider) {
+  if (config.IS_SELF_HOSTED && provider) {
     return <MissingDesignatedAdmins provider={provider} />
   }
 
