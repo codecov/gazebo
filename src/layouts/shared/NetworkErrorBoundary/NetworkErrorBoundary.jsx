@@ -6,6 +6,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 
 import config from 'config'
 
+import { NetworkError } from 'shared/api/rejectNetworkError'
 import { useUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -213,7 +214,10 @@ class NetworkErrorBoundary extends Component {
   static getDerivedStateFromError(error) {
     // if the error is not a network error, we don't do anything and
     // another error boundary will take it from there
-    if (Object.keys(errorToUI).includes(String(error.status))) {
+    if (
+      error instanceof NetworkError &&
+      Object.keys(errorToUI).includes(String(error.status))
+    ) {
       return { hasNetworkError: true, error }
     }
 
