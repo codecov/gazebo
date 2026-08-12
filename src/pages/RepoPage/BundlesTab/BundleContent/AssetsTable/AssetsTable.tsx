@@ -13,6 +13,8 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
+import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
+
 import { OrderingDirection } from 'types'
 
 import {
@@ -453,12 +455,14 @@ export const AssetsTable: React.FC = () => {
                     </div>
                     <div data-expanded={row.getIsExpanded()}>
                       {row.getIsExpanded() ? (
-                        <Suspense
-                          key={i}
-                          fallback={<Loader className="bg-ds-gray-secondary" />}
-                        >
-                          <ModulesTable asset={row.getValue('name')} />
-                        </Suspense>
+                        <NetworkErrorBoundary>
+                          <Suspense
+                            key={i}
+                            fallback={<Loader className="bg-ds-gray-secondary" />}
+                          >
+                            <ModulesTable asset={row.getValue('name')} />
+                          </Suspense>
+                        </NetworkErrorBoundary>
                       ) : null}
                     </div>
                   </Fragment>
