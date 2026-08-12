@@ -10,6 +10,7 @@ export const PlanSchema = z
       .object({
         plan: z.object({ isTeamPlan: z.boolean() }).nullable(),
       })
+      .optional()
       .nullable(),
   })
   .nullable()
