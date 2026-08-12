@@ -14,6 +14,15 @@ const customIgnoredErrors: string[] = [
    */
   // Removing this for the time being, to see if we can resolve it fully
   // 'Failed to fetch dynamically imported module',
+
+  /*
+   * Safari/iOS raises a TypeError: "Load failed" when a fetch() call is
+   * blocked or aborted at the network level (e.g. by a content blocker or
+   * network interruption). This surfaces from the Amplitude analytics SDK
+   * when it tries to POST events to amplitude.codecov.io and the request
+   * is blocked — it is not an application bug.
+   */
+  'Load failed',
 ]
 
 // common ignore errors / URLs to de-clutter Sentry
@@ -58,6 +67,9 @@ const deClutterConfig = {
     // Other plugins
     /127\.0\.0\.1:4001\/isrunning/i, // Cacaoweb
     /webappstoolbarba\.texthelp\.com\//i,
+    // Amplitude analytics endpoint — network errors from this host (e.g.
+    // content blockers on iOS Safari) are not application bugs.
+    /amplitude\.codecov\.io/i,
     /metrics\.itunes\.apple\.com\.edgesuite\.net\//i,
   ],
 }
