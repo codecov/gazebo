@@ -8,6 +8,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { useIntersection } from 'react-use'
 
 import { dataMarketingType } from 'shared/propTypes'
+import useDownshiftEnvironment from 'ui/shared/useDownshiftEnvironment'
 
 import Icon from '../Icon'
 import SearchField from '../SearchField'
@@ -171,6 +172,7 @@ const MultiSelect = forwardRef(
     ref
   ) => {
     const intersectionRef = useRef(null)
+    const environment = useDownshiftEnvironment()
 
     const {
       getDropdownProps,
@@ -212,6 +214,7 @@ const MultiSelect = forwardRef(
       isOpen,
       highlightedIndex,
     } = useCombobox({
+      environment,
       selectedItem: null,
       items: listItems,
       stateReducer: (_state, { changes, type }) => {
