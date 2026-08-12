@@ -6,8 +6,6 @@ on:
       - main
     types: [closed]
 
-permissions:
-  contents: write
 
 jobs:
   create-release:
