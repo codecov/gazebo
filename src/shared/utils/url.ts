@@ -18,12 +18,12 @@ export function getFilenameFromPath(path?: string) {
   if (typeof path !== 'string') {
     return null
   }
-  return path?.split('/').at(-1)
+  return path?.split('/').slice(-1)[0]
 }
 
 export function getFileExtension(fileName: string) {
   if (!fileName.includes('.')) {
     return null
   }
-  return fileName.split('.').at(-1)?.toLowerCase()
+  return fileName.split('.').slice(-1)[0]?.toLowerCase()
 }
