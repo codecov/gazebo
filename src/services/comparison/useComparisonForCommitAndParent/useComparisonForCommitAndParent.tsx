@@ -188,10 +188,7 @@ export function useComparisonForCommitAndParent({
         const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return rejectNetworkError({
-            errorName: 'Not Found Error',
-            errorDetails: { callingFn },
-          })
+          return null
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
