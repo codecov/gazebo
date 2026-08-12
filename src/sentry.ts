@@ -28,6 +28,7 @@ const deClutterConfig = {
     'MyApp_RemoveAllHighlights',
     'http://tt.epicplay.com',
     "Can't find variable: ZiteReader",
+    "Can't find variable: CONFIG",
     'jigsaw is not defined',
     'ComboSearch is not defined',
     'http://loading.retry.widdit.com/',
