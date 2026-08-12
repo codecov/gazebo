@@ -14,6 +14,14 @@ const customIgnoredErrors: string[] = [
    */
   // Removing this for the time being, to see if we can resolve it fully
   // 'Failed to fetch dynamically imported module',
+  /*
+   * Pendo guide on the repo config page references a `test` variable that was
+   * previously provided by the LaunchDarkly integration. Since LD has been
+   * removed, `test` is no longer defined. This error originates from Pendo
+   * third-party guide code and should be suppressed until the Pendo guide is
+   * updated to remove the stale reference.
+   */
+  "Can't find variable: test",
 ]
 
 // common ignore errors / URLs to de-clutter Sentry
