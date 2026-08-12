@@ -98,25 +98,21 @@ Currently there's three env variables you may want to change when working locall
 - REACT_APP_MSW_BROWSER (boolean to enable mocking api requests in browser, see [How to mock HTTP responses in the browser](#How-to-mock-HTTP-responses-in-the-browser))
 - REACT_APP_BASE_URL (This is the base url where the legacy web container resides, needed for login/signout links)
 
-## How to mock HTTP responses in the browser:
+## How to Mock HTTP Responses in the Browser
+Sometimes, when working locally, it helps to control API responses for edge cases or investigating support incidents.
 
-Sometimes when working locally it helps to control API responses. For edge cases, for investigating support or on call incidents.
-
-If you need to mock a response add `REACT_APP_MSW_BROWSER=true` to `.env.development.local` to enable browser mocks.
-Mocks are located in `src/mocks/handlers`
+To mock a response, add REACT_APP_MSW_BROWSER=true to .env.development.local to enable browser mocks. Mocks are located in src/mocks/handlers.
 
 Example:
-
-```js
-import { http, HttpResponse } from 'msw'
+``` js
+import { http, HttpResponse } from 'msw';
 
 export const handlers = [
   http.get('internal/user', (req, res, ctx) => {
-    return HttpResponse.json({ data: { mock: 'data' } })
+    return HttpResponse.json({ data: { mock: 'data' } });
   }),
-]
+];
 ```
-
 Read more at the [official documentation.](https://mswjs.io/docs/getting-started/mocks/rest-api)
 
 ## Contributing
