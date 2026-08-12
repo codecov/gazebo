@@ -21,7 +21,7 @@ const RequestSchema = z.object({
         RepoOwnerNotActivatedErrorSchema,
       ]),
     })
-    .nullable(),
+    .nullish(),
 })
 
 const query = `
