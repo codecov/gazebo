@@ -71,6 +71,13 @@ export function useResyncUser() {
     useErrorBoundary: false,
     onSuccess: (data) =>
       queryClient.setQueryData(['isSyncing', provider, owner], data),
+    onError: (error: { status?: number; message?: string }) => {
+      // Network-level failures (status 0) are transient; swallow them silently
+      // so they don't surface as unhandled promise rejections in the UI.
+      if (error?.status === 0) {
+        return
+      }
+    },
   })
 
   // we consider that data is syncing when the user triggered the mutation
@@ -114,6 +121,6 @@ export function useResyncUser() {
 
   return {
     isSyncing,
-    triggerResync: mutationData.mutateAsync,
+    triggerResync: mutationData.mutate,
   }
 }
