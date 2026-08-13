@@ -193,10 +193,7 @@ export function usePullCompareTotalsTeam({
         const data = parsedRes.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return rejectNetworkError({
-            errorName: 'Not Found Error',
-            errorDetails: { callingFn },
-          })
+          return Promise.resolve(null)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
