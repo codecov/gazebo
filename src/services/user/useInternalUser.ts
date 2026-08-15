@@ -24,14 +24,14 @@ export type InternalUserOwnerData = z.infer<typeof OwnerSchema>
 
 const InternalUserSchema = z
   .object({
-    email: z.string().nullable(),
-    name: z.string().nullable(),
-    externalId: z.string().nullable(),
-    owners: z.array(OwnerSchema).nullable(),
-    termsAgreement: z.boolean().nullable(),
-    defaultOrg: z.string().nullable(),
+    email: z.string().nullish(),
+    name: z.string().nullish(),
+    externalId: z.string().nullish(),
+    owners: z.array(OwnerSchema).nullish(),
+    termsAgreement: z.boolean().nullish(),
+    defaultOrg: z.string().nullish(),
   })
-  .nullable()
+  .nullish()
 
 export type InternalUserData = z.infer<typeof InternalUserSchema>
 
