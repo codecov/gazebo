@@ -42,6 +42,8 @@ const deClutterConfig = {
     // See http://toolbar.conduit.com/Developer/HtmlAndGadget/Methods/JSInjection.aspx
     'conduitPage',
     ...customIgnoredErrors,
+    // Android WebView host apps injecting native JS bridge calls that Codecov doesn't implement
+    /window\.native\w+ is not a function/i,
   ],
   denyUrls: [
     // Facebook flakiness
