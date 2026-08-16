@@ -10,9 +10,9 @@ export const PlanSchema = z
       .object({
         plan: z.object({ isTeamPlan: z.boolean() }).nullable(),
       })
-      .nullable(),
+      .nullish(),
   })
-  .nullable()
+  .nullish()
 
 export interface UseIsTeamPlanArgs {
   provider: string
