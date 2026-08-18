@@ -3,11 +3,11 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useAccountDetails } from 'services/account/useAccountDetails'
+import { useOwner } from 'services/user'
 import A from 'ui/A'
 
-function GithubIntegrationCopy({ integrationId }) {
-  if (integrationId)
+function GithubIntegrationCopy({ hasGithubApp }) {
+  if (hasGithubApp)
     return (
       <p>
         This account is configured via the GitHub App. You can manage the apps
@@ -29,15 +29,14 @@ function GithubIntegrationCopy({ integrationId }) {
 }
 
 GithubIntegrationCopy.propTypes = {
-  integrationId: PropTypes.number,
+  hasGithubApp: PropTypes.bool,
 }
 
 function GithubIntegrationSection() {
   const { provider, owner } = useParams()
   const shouldRender = provider === 'gh' && !config.IS_SELF_HOSTED
-  const { data: accountDetails } = useAccountDetails({
-    provider,
-    owner,
+  const { data: ownerData } = useOwner({
+    username: owner,
     opts: {
       enabled: shouldRender,
     },
@@ -48,7 +47,7 @@ function GithubIntegrationSection() {
   return (
     <div className="flex flex-col gap-2">
       <h2 className="text-lg font-semibold">GitHub Integration</h2>
-      <GithubIntegrationCopy integrationId={accountDetails?.integrationId} />
+      <GithubIntegrationCopy hasGithubApp={!!ownerData?.hasGithubApp} />
     </div>
   )
 }

@@ -4,7 +4,6 @@ import { useHistory, useParams } from 'react-router-dom'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
-import { useAccountDetails } from 'services/account/useAccountDetails'
 import { useSentryToken } from 'services/account/useSentryToken'
 import { useLocationParams } from 'services/navigation/useLocationParams'
 import { renderToast } from 'services/toast/renderToast'
@@ -39,7 +38,7 @@ const useSentryTokenRedirect = ({ ownerData }) => {
 }
 
 function OwnerPage() {
-  const { owner, provider } = useParams()
+  const { provider } = useParams()
   const { data: ownerData } = useOwnerPageData()
   const { params } = useLocationParams({
     repoDisplay: 'All',
@@ -67,16 +66,7 @@ function OwnerPage() {
     }
   }, [userStartedTrial])
 
-  // TODO: refactor this to add a gql field for the integration id used to determine if the org has a GH app
-  const { data: accountDetails } = useAccountDetails({
-    provider,
-    owner,
-    opts: {
-      enabled: !!ownerData?.isCurrentUserPartOfOrg,
-    },
-  })
-
-  const hasGhApp = !!accountDetails?.integrationId
+  const hasGhApp = !!ownerData?.hasGithubApp
 
   if (!ownerData) {
     return <NotFound />

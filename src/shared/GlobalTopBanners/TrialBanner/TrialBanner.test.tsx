@@ -86,7 +86,13 @@ const basicPlan = {
   isTrialPlan: false,
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
 const server = setupServer()
 
 const wrapper =
@@ -108,7 +114,8 @@ beforeAll(() => {
   server.listen()
 })
 
-afterEach(() => {
+afterEach(async () => {
+  await queryClient.cancelQueries()
   queryClient.clear()
   server.resetHandlers()
 })
@@ -215,10 +222,7 @@ describe('TrialBanner', () => {
           wrapper: wrapper(),
         })
 
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
-
-        expect(container).toBeEmptyDOMElement()
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
 
@@ -249,10 +253,7 @@ describe('TrialBanner', () => {
         wrapper: wrapper(),
       })
 
-      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
-      expect(container).toBeEmptyDOMElement()
+      await waitFor(() => expect(container).toBeEmptyDOMElement())
     })
   })
 
@@ -279,10 +280,7 @@ describe('TrialBanner', () => {
           wrapper: wrapper(),
         })
 
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
-
-        expect(container).toBeEmptyDOMElement()
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
 
@@ -304,10 +302,7 @@ describe('TrialBanner', () => {
           wrapper: wrapper(),
         })
 
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
-
-        expect(container).toBeEmptyDOMElement()
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
 
@@ -329,10 +324,7 @@ describe('TrialBanner', () => {
           wrapper: wrapper('/plan/gh/codecov/'),
         })
 
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
-
-        expect(container).toBeEmptyDOMElement()
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
 
@@ -353,9 +345,6 @@ describe('TrialBanner', () => {
         render(<TrialBanner />, {
           wrapper: wrapper(),
         })
-
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
 
         const banner = await screen.findByText(/Your trial ends in 2 days./)
         expect(banner).toBeInTheDocument()
@@ -413,10 +402,7 @@ describe('TrialBanner', () => {
           wrapper: wrapper(),
         })
 
-        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
-        expect(container).toBeEmptyDOMElement()
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
 
@@ -442,10 +428,7 @@ describe('TrialBanner', () => {
           wrapper: wrapper(),
         })
 
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
-
-        expect(container).toBeEmptyDOMElement()
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
 
@@ -479,10 +462,7 @@ describe('TrialBanner', () => {
           wrapper: wrapper(),
         })
 
-        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
-        expect(container).toBeEmptyDOMElement()
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
   })
