@@ -79,9 +79,11 @@ const GetTestResultsSchema = z.object({
             .object({
               testResults: z.object({
                 edges: z.array(
-                  z.object({
-                    node: TestResultSchema,
-                  })
+                  z
+                    .object({
+                      node: TestResultSchema,
+                    })
+                    .nullable()
                 ),
                 pageInfo: z.object({
                   endCursor: z.string().nullable(),
