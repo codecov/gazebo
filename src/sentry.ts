@@ -14,6 +14,12 @@ const customIgnoredErrors: string[] = [
    */
   // Removing this for the time being, to see if we can resolve it fully
   // 'Failed to fetch dynamically imported module',
+  /*
+   * TanStack Query automatically aborts in-flight fetch requests when a
+   * component unmounts (e.g. user navigates away). This is expected behavior
+   * and should not be reported to Sentry.
+   */
+  'AbortError: signal is aborted without reason',
 ]
 
 // common ignore errors / URLs to de-clutter Sentry
