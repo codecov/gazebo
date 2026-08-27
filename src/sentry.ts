@@ -6,6 +6,10 @@ import config from './config'
 
 // Custom ignored errors
 const customIgnoredErrors: string[] = [
+  // Honor Browser (Huawei) injects its own ad SDK that calls a native bridge
+  // function not implemented in this browser version. This is third-party code
+  // and not an error in our application.
+  'window.nativeBridge.reportOperationGeneralEvent is not a function',
   /*
    * App throwing an error if it can't find a module. We have resolved this
    * with two different methods, we're storing assets from previous builds, as
@@ -65,7 +69,7 @@ const deClutterConfig = {
 export const SentryRoute = Sentry.withSentryRouting(Route)
 
 const checkForBlockedUserAgents = () => {
-  const userAgents = ['Bytespider']
+  const userAgents = ['Bytespider', 'HonorBrowser']
 
   return userAgents.some((agent) =>
     window?.navigator?.userAgent.includes(agent)
