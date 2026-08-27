@@ -41,6 +41,8 @@ const deClutterConfig = {
     'EBCallBackMessageReceived',
     // See http://toolbar.conduit.com/Developer/HtmlAndGadget/Methods/JSInjection.aspx
     'conduitPage',
+    // Third-party Android WebView apps injecting JS callbacks not defined in Codecov
+    'window.setDgResult is not a function',
     ...customIgnoredErrors,
   ],
   denyUrls: [
