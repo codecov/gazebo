@@ -228,6 +228,12 @@ fragment FileComparisonWithBase on Pull {
               }
             }
           }
+          ... on UnknownPath {
+            message
+          }
+          ... on ProviderError {
+            message
+          }
         }
       }
     }
@@ -254,6 +260,22 @@ fragment FileComparisonWithBase on Pull {
 
 const CoverageLineSchema = z.enum(['H', 'M', 'P'])
 
+export const SegmentSchema = z.object({
+  header: z.string(),
+  hasUnintendedChanges: z.boolean(),
+  lines: z.array(
+    z.object({
+      baseNumber: z.string().nullable(),
+      headNumber: z.string().nullable(),
+      baseCoverage: CoverageLineSchema.nullable(),
+      headCoverage: CoverageLineSchema.nullable(),
+      content: z.string().nullable(),
+    })
+  ),
+})
+
+export type Segment = z.infer<typeof SegmentSchema>
+
 export const ImpactedFileSchema = z.object({
   headName: z.string().nullable(),
   hashedPath: z.string(),
@@ -276,23 +298,20 @@ export const ImpactedFileSchema = z.object({
       percentCovered: z.number().nullable(),
     })
     .nullable(),
-  segments: z.object({
-    results: z.array(
-      z.object({
-        header: z.string(),
-        hasUnintendedChanges: z.boolean(),
-        lines: z.array(
-          z.object({
-            baseNumber: z.string().nullable(),
-            headNumber: z.string().nullable(),
-            baseCoverage: CoverageLineSchema.nullable(),
-            headCoverage: CoverageLineSchema.nullable(),
-            content: z.string().nullable(),
-          })
-        ),
-      })
-    ),
-  }),
+  segments: z.discriminatedUnion('__typename', [
+    z.object({
+      __typename: z.literal('SegmentComparisons'),
+      results: z.array(SegmentSchema),
+    }),
+    z.object({
+      __typename: z.literal('UnknownPath'),
+      message: z.string().nullable(),
+    }),
+    z.object({
+      __typename: z.literal('ProviderError'),
+      message: z.string().nullable(),
+    }),
+  ]),
 })
 
 export const ComparisonSchema = z.object({
