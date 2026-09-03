@@ -166,6 +166,13 @@ export const setupSentry = ({
         return null
       }
 
+      // Drop errors originating from browser extensions or other third-party
+      // injected scripts. These are tagged by thirdPartyErrorFilterIntegration
+      // and are not actionable by the gazebo team.
+      if (event.tags?.['third_party_code'] === true) {
+        return null
+      }
+
       return event
     },
     beforeSendTransaction: (event, _hint) => {
