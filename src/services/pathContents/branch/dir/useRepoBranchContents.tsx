@@ -2,93 +2,25 @@ import * as Sentry from '@sentry/react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
-import { UnknownFlagsSchema } from 'services/impactedFiles/schemas/UnknownFlags'
 import { RepoNotFoundErrorSchema } from 'services/repo/schemas/RepoNotFoundError'
 import { RepoOwnerNotActivatedErrorSchema } from 'services/repo/schemas/RepoOwnerNotActivatedError'
-import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
 import { rejectNetworkError } from 'shared/api/rejectNetworkError'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
 import { query } from './constants'
-
-const BasePathContentSchema = z.object({
-  hits: z.number(),
-  misses: z.number(),
-  partials: z.number(),
-  lines: z.number(),
-  name: z.string(),
-  path: z.string(),
-  percentCovered: z.number(),
-})
-
-const PathContentFileSchema = BasePathContentSchema.extend({
-  __typename: z.literal('PathContentFile'),
-})
-
-const PathContentDirSchema = BasePathContentSchema.extend({
-  __typename: z.literal('PathContentDir'),
-})
-
-const PathContentsResultSchema = z.discriminatedUnion('__typename', [
-  PathContentFileSchema,
-  PathContentDirSchema,
-])
-
-const PathContentEdgeSchema = z.object({
-  node: PathContentsResultSchema,
-})
-
-export const PathContentConnectionSchema = z.object({
-  __typename: z.literal('PathContentConnection'),
-  edges: z.array(PathContentEdgeSchema),
-  pageInfo: z.object({
-    hasNextPage: z.boolean(),
-    endCursor: z.string().nullable(),
-  }),
-})
-
-export type PathContentsSchemaType = z.infer<typeof PathContentsResultSchema>
-
-export const UnknownPathSchema = z.object({
-  __typename: z.literal('UnknownPath'),
-  message: z.string().nullish(),
-})
-
-export const MissingCoverageSchema = z.object({
-  __typename: z.literal('MissingCoverage'),
-  message: z.string().nullish(),
-})
-
-const MissingHeadReportSchema = z.object({
-  __typename: z.literal('MissingHeadReport'),
-  message: z.string().nullish(),
-})
-
-const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
+import {
   PathContentConnectionSchema,
-  UnknownPathSchema,
+  PathContentsResultSchema,
   MissingCoverageSchema,
-  MissingHeadReportSchema,
-  UnknownFlagsSchema,
-])
+  RepositorySchema,
+  UnknownPathSchema,
+} from './schemas'
 
+export { PathContentConnectionSchema, MissingCoverageSchema, UnknownPathSchema }
+export type PathContentsSchemaType = z.infer<typeof PathContentsResultSchema>
 export type PathContentResultType = z.infer<typeof PathContentsResultSchema>
-
-const RepositorySchema = z.object({
-  __typename: z.literal('Repository'),
-  repositoryConfig: RepositoryConfigSchema,
-  branch: z
-    .object({
-      head: z
-        .object({
-          deprecatedPathContents: PathContentsUnionSchema.nullish(),
-        })
-        .nullable(),
-    })
-    .nullable(),
-})
 
 const BranchContentsSchema = z.object({
   owner: z
