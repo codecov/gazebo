@@ -24,7 +24,11 @@ export const useTruncation = () => {
     }
   }, [])
 
-  const [resizeObs] = useState(() => new ResizeObserver(handleResize))
+  const [resizeObs] = useState<ResizeObserver | null>(() =>
+    typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(handleResize)
+      : null
+  )
 
   useLayoutEffect(() => {
     if (!resizeObs) return
