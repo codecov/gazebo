@@ -277,21 +277,23 @@ export const ImpactedFileSchema = z.object({
     })
     .nullable(),
   segments: z.object({
-    results: z.array(
-      z.object({
-        header: z.string(),
-        hasUnintendedChanges: z.boolean(),
-        lines: z.array(
-          z.object({
-            baseNumber: z.string().nullable(),
-            headNumber: z.string().nullable(),
-            baseCoverage: CoverageLineSchema.nullable(),
-            headCoverage: CoverageLineSchema.nullable(),
-            content: z.string().nullable(),
-          })
-        ),
-      })
-    ),
+    results: z
+      .array(
+        z.object({
+          header: z.string(),
+          hasUnintendedChanges: z.boolean(),
+          lines: z.array(
+            z.object({
+              baseNumber: z.string().nullable(),
+              headNumber: z.string().nullable(),
+              baseCoverage: CoverageLineSchema.nullable(),
+              headCoverage: CoverageLineSchema.nullable(),
+              content: z.string().nullable(),
+            })
+          ),
+        })
+      )
+      .optional(),
   }),
 })
 
