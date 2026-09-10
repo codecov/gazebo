@@ -25,6 +25,12 @@ query ComponentMeasurements(
   owner(username: $name) {
     repository(name: $repo) {
       __typename
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
+      }
       ... on Repository {
         coverageAnalytics {
           components(
