@@ -181,7 +181,7 @@ function CommitCoverage() {
     })
   )
 
-  const showCommitSummary = !(overview.private && isTeamPlan)
+  const showCommitSummary = !(overview?.private && isTeamPlan)
   const showFirstPullBanner =
     commitPageData?.commit?.compareWithParent?.__typename === 'FirstPullRequest'
   return (
