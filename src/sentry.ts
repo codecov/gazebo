@@ -161,9 +161,20 @@ export const setupSentry = ({
     replaysOnErrorSampleRate: config?.SENTRY_ERROR_SAMPLE_RATE,
     // profiling sample rate
     profilesSampleRate: config?.SENTRY_PROFILING_SAMPLE_RATE,
-    beforeSend: (event, _hint) => {
+    beforeSend: (event, hint) => {
       if (checkForBlockedUserAgents()) {
         return null
+      }
+
+      // Drop DOM NotFoundErrors caused by browser extensions directly
+      // manipulating React-managed DOM nodes (e.g. insertBefore/removeChild).
+      // These are non-actionable third-party interference errors.
+      const error = hint?.originalException
+      if (error instanceof Error && error.name === 'NotFoundError') {
+        const msg = error.message ?? ''
+        if (msg.includes('insertBefore') || msg.includes('removeChild')) {
+          return null
+        }
       }
 
       return event
