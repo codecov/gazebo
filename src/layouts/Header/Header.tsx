@@ -45,13 +45,13 @@ function Header({ hasRepoAccess }: HeaderProps) {
           <div className="flex items-center justify-end gap-4">
             {config.IS_SELF_HOSTED ? (
               <div className="hidden items-center justify-end gap-4 md:flex">
-                <Suspense fallback={null}>
+                <Suspense fallback={<span />}>
                   <SeatDetails />
                   <AdminLink />
                 </Suspense>
               </div>
             ) : null}
-            <Suspense fallback={null}>
+            <Suspense fallback={<span />}>
               <OwnerExternalId />
             </Suspense>
             <ThemeToggle />
