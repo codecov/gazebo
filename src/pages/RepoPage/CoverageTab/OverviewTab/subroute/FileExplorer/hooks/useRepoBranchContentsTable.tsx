@@ -182,7 +182,7 @@ export function useRepoBranchContentsTable(sortItem?: {
     return adjustListIfUpDir({
       treePaths,
       displayType: selectedDisplayType,
-      rawTableRows: rawTableRows as Row[],
+      rawTableRows: rawTableRows.filter(Boolean) as Row[],
     })
   }, [branchData?.pages, branch, treePaths, urlPath, selectedDisplayType])
 
