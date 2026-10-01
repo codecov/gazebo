@@ -99,7 +99,7 @@ export const query = `
               lowerRange
             }
           }
-          pull(id: $pullId) {
+          pull(pullId: $pullId) {
             head {
               commitid
               pathContents(path: $path, filters: $filters) {

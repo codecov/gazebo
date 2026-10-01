@@ -28,7 +28,7 @@ query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $pa
     repository(name: $repo) {
       __typename
       ... on Repository {
-        pull(id: $pullId) {
+        pull(pullId: $pullId) {
           ...FileComparisonWithBase
         }
       }

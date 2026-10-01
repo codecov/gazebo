@@ -77,7 +77,7 @@ query PullBundleComparisonList($owner: String!, $repo: String!, $pullId: Int!) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        pull(id: $pullId) {
+        pull(pullId: $pullId) {
           bundleAnalysisCompareWithBase {
             __typename
             ... on BundleAnalysisComparison {
