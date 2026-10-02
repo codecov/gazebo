@@ -38,8 +38,13 @@ export const ThemeContextProvider: FC<ThemeContextProviderProps> = ({
     systemTheme = Theme.DARK
   }
 
-  const currentTheme = localStorage.getItem('theme') as Theme
-  const [theme, setTheme] = useState<Theme>(currentTheme ?? systemTheme)
+  const storedTheme = localStorage.getItem('theme')
+  const currentTheme: Theme | null = Object.values(Theme).includes(
+    storedTheme as Theme
+  )
+    ? (storedTheme as Theme)
+    : null
+  const [theme, setTheme] = useState<Theme>(currentTheme || systemTheme)
   const initialRender = useRef(true)
 
   if (initialRender.current) {
