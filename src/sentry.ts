@@ -166,6 +166,10 @@ export const setupSentry = ({
         return null
       }
 
+      if (event.tags?.['third_party_code'] === 'true') {
+        return null
+      }
+
       return event
     },
     beforeSendTransaction: (event, _hint) => {
