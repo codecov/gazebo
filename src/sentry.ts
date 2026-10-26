@@ -5,7 +5,15 @@ import { Route } from 'react-router-dom'
 import config from './config'
 
 // Custom ignored errors
-const customIgnoredErrors: string[] = [
+const customIgnoredErrors: Array<string | RegExp> = [
+  /*
+   * Gazebo is bundled by Vite as ES modules, where top-level `await` is valid
+   * and any invalid `await` usage fails at build time. This SyntaxError can
+   * therefore only originate from scripts injected into the page by bots,
+   * automation tools, or browser extensions (reported at the document URL,
+   * line 1 column 1), and is not actionable for us.
+   */
+  /await is only valid in async functions and the top level bodies of modules/,
   /*
    * App throwing an error if it can't find a module. We have resolved this
    * with two different methods, we're storing assets from previous builds, as
