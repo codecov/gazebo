@@ -63,6 +63,7 @@ export function useRepoBranchContentsTable(sortItem?: {
   const queryParams = qs.parse(location.search, {
     ignoreQueryPrefix: true,
     depth: 1,
+    arrayLimit: 1000,
   })
 
   const urlPath = pathParam || ''
