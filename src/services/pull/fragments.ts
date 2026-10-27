@@ -330,7 +330,7 @@ fragment PullCompareWithBaseFragment on Pull {
       }
       changeCoverage
       hasDifferentNumberOfHeadAndBaseReports
-      impactedFiles(filters: $filters) {
+      impactedFiles(filters: $impactedFilesFilters) {
         __typename
         ... on ImpactedFiles {
           results {
