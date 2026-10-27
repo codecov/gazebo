@@ -173,7 +173,7 @@
     "vitest": "^3.2.6"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.23.4"
   },
   "msw": {
     "workerDirectory": "public"
