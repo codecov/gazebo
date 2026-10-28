@@ -14,7 +14,7 @@ class SilentNetworkError extends Component {
 
   static getDerivedStateFromError(error) {
     // Suppress flags rest endpoint when it errors.
-    if (error.status) {
+    if (error?.status) {
       return { hasNetworkError: true, error }
     }
     return {}
