@@ -165,7 +165,9 @@ jobs:
           INDEX_LIST=$(seq 0 ${MAX_INDEX})
           INDEX_JSON=$(jq --null-input --compact-output '. |= [inputs]' <<< ${INDEX_LIST})
           echo json=${INDEX_JSON} >> $GITHUB_OUTPUT
-          echo test_list_array=$(echo ${TEST_LIST} | jq -c '[_nwise(${{ env.TEST_SPLIT_NUMBER }})]') >> $GITHUB_OUTPUT
+          # _nwise was removed in jq 1.7, which Ubuntu 26.04 runners ship.
+          TEST_LIST_ARRAY=$(echo "$TEST_LIST" | jq -c --argjson n "$TEST_SPLIT_NUMBER" '[range(0; length; $n) as $i | .[$i:$i+$n]]')
+          echo "test_list_array=${TEST_LIST_ARRAY}" >> "$GITHUB_OUTPUT"
 
   test-vitest:
     name: 'Test Runner #${{ matrix.runner-index }} - Vitest'
