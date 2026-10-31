@@ -65,7 +65,7 @@ query PullBundleHeadList($owner: String!, $repo: String!, $pullId: Int!) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        pull(id: $pullId) {
+        pull(pullId: $pullId) {
           head {
             bundleAnalysis {
               bundleAnalysisReport {

@@ -209,7 +209,7 @@ const query = `query Pull(
       __typename
       ... on Repository {
         defaultBranch
-        pull(id: $pullId) {
+        pull(pullId: $pullId) {
           behindBy
           behindByCommit
           pullId
