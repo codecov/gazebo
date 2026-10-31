@@ -41,6 +41,10 @@ const deClutterConfig = {
     'EBCallBackMessageReceived',
     // See http://toolbar.conduit.com/Developer/HtmlAndGadget/Methods/JSInjection.aspx
     'conduitPage',
+    // Third-party browser extension (injects a #nf-shadow-host overlay, seen on
+    // iOS Safari) whose inline onclick handler throws when `.nf-blur-bg` is
+    // missing. Not gazebo code and harmless to the app. See GAZEBO-18B5.
+    "querySelector('.nf-blur-bg')",
     ...customIgnoredErrors,
   ],
   denyUrls: [
