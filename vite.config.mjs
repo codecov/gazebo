@@ -132,7 +132,13 @@ export default defineConfig((config) => {
         // which legacy browsers to support
         targets: ['>0.2%', 'not dead', 'not op_mini all'],
         // which polyfills to include in the modern build
-        modernPolyfills: ['es.promise.all-settled'],
+        modernPolyfills: [
+          'es.promise.all-settled',
+          // Array/String/TypedArray.prototype.at are missing in Safari < 15.4
+          'es.array.at',
+          'es.string.at-alternative',
+          'es.typed-array.at',
+        ],
       }),
       react(),
       svgr(),
