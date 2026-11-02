@@ -1,14 +1,4 @@
-import * as Sentry from '@sentry/react'
-
 import { prismLanguageMapper } from './prismLanguageMapper'
-
-vi.mock('@sentry/react', async () => {
-  const originalModule = await vi.importActual('@sentry/react')
-  return {
-    ...originalModule,
-    captureMessage: vi.fn(),
-  }
-})
 
 describe('prismLanguageMapper', () => {
   describe('when called with a file with a valid extension', () => {
@@ -29,6 +19,7 @@ describe('prismLanguageMapper', () => {
       { extension: 'cs', expected: 'csharp' },
       { extension: 'cshtml', expected: 'cshtml' },
       { extension: 'css', expected: 'css' },
+      { extension: 'd', expected: 'markup' },
       { extension: 'dart', expected: 'dart' },
       { extension: 'f', expected: 'fortran' },
       { extension: 'fpp', expected: 'fortran' },
@@ -85,21 +76,6 @@ describe('prismLanguageMapper', () => {
   })
 
   describe('when called with a file with an invalid extension', () => {
-    it('sends a message to Sentry', () => {
-      prismLanguageMapper('file.omgwhatisdis')
-
-      expect(Sentry.captureMessage).toHaveBeenCalled()
-      expect(Sentry.captureMessage).toHaveBeenCalledWith(
-        'Unsupported language type for filename file.omgwhatisdis',
-        {
-          fingerprint: ['unsupported-prism-language'],
-          tags: {
-            'file.extension': 'omgwhatisdis',
-          },
-        }
-      )
-    })
-
     it('defaults to the default language type', () => {
       expect(prismLanguageMapper('file.omgwhatisdis')).toBe('markup')
     })

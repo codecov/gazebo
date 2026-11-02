@@ -3,7 +3,6 @@
  * The full list can be found in the prism-react-renderer package:
  * https://github.com/FormidableLabs/prism-react-renderer/blob/v1.3.5/src/vendor/prism/includeLangs.js
  */
-import * as Sentry from '@sentry/react'
 import { type Language } from 'prism-react-renderer'
 // @ts-expect-error - there's no types associated with this package
 import Prism from 'prism-react-renderer/prism'
@@ -29,6 +28,7 @@ const prismSupportedLanguages = new Map<string, string>([
   ['cs', 'csharp'],
   ['cshtml', 'cshtml'],
   ['css', 'css'],
+  ['d', 'markup'],
   ['dart', 'dart'],
   ['ex', 'elixir'],
   ['exs', 'elixir'],
@@ -96,11 +96,5 @@ export function prismLanguageMapper(fileName: string): Language {
   // we need to cast this, because we're adding in extra languages that aren't in the prism-react-renderer package
   if (supportedLanguage) return supportedLanguage as Language
 
-  Sentry.captureMessage(`Unsupported language type for filename ${fileName}`, {
-    fingerprint: ['unsupported-prism-language'],
-    tags: {
-      'file.extension': fileExtension,
-    },
-  })
   return DEFAULT_LANGUAGE_TYPE
 }
