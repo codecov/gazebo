@@ -62,6 +62,17 @@ const HomePageRedirect = () => {
   return <Redirect to={`${redirectURL}?${queryString}`} />
 }
 
+function InvalidURLGuard({ children }: React.PropsWithChildren) {
+  try {
+    decodeURIComponent(window.location.pathname)
+  } catch (e) {
+    if (e instanceof URIError) {
+      return <Redirect to="/" />
+    }
+  }
+  return <>{children}</>
+}
+
 const MainAppRoutes = () => (
   <Switch>
     <SentryRoute path="/login/:provider">
@@ -189,7 +200,9 @@ function App() {
       <ThemeContextProvider>
         <ToastNotificationProvider>
           <ReactQueryDevtools initialIsOpen={false} />
-          <MainAppRoutes />
+          <InvalidURLGuard>
+            <MainAppRoutes />
+          </InvalidURLGuard>
         </ToastNotificationProvider>
         <Toaster />
       </ThemeContextProvider>
