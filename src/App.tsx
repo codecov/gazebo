@@ -4,6 +4,40 @@ import { lazy } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { Redirect, Switch } from 'react-router-dom'
 
+const CHUNK_RELOAD_KEY = 'chunk-load-force-refreshed'
+
+/**
+ * Wraps React.lazy with a chunk-load error handler. When a dynamic import
+ * fails due to a stale chunk after a deployment (e.g. a SyntaxError about a
+ * missing export), the page is hard-reloaded once so the browser fetches the
+ * latest bundles. sessionStorage prevents an infinite reload loop if the error
+ * persists after the refresh.
+ */
+function lazyWithRetry<T extends React.ComponentType<unknown>>(
+  factory: () => Promise<{ default: T }>
+): React.LazyExoticComponent<T> {
+  return lazy(async () => {
+    const hasRefreshed = JSON.parse(
+      window.sessionStorage.getItem(CHUNK_RELOAD_KEY) ?? 'false'
+    ) as boolean
+    try {
+      const module = await factory()
+      // Successful load — reset the flag so future deployments can also reload.
+      window.sessionStorage.setItem(CHUNK_RELOAD_KEY, 'false')
+      return module
+    } catch (error) {
+      if (!hasRefreshed) {
+        window.sessionStorage.setItem(CHUNK_RELOAD_KEY, 'true')
+        window.location.reload()
+        // Return a no-op component while the reload is in progress.
+        return { default: (() => null) as unknown as T }
+      }
+      // Already tried a reload — re-throw so the ErrorBoundary can handle it.
+      throw error
+    }
+  })
+}
+
 import config from 'config'
 
 import { SentryRoute } from 'sentry'
@@ -20,16 +54,18 @@ import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import AccountSettings from './pages/AccountSettings'
 import AdminSettings from './pages/AdminSettings'
-const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
-const CommitDetailPage = lazy(() => import('./pages/CommitDetailPage'))
-const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))
-const LoginPage = lazy(() => import('./pages/LoginPage'))
-const MembersPage = lazy(() => import('./pages/MembersPage'))
-const PlanPage = lazy(() => import('./pages/PlanPage'))
-const OwnerPage = lazy(() => import('./pages/OwnerPage'))
-const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
-const RepoPage = lazy(() => import('./pages/RepoPage'))
-const SyncProviderPage = lazy(() => import('./pages/SyncProviderPage'))
+const AnalyticsPage = lazyWithRetry(() => import('./pages/AnalyticsPage'))
+const CommitDetailPage = lazyWithRetry(() => import('./pages/CommitDetailPage'))
+const EnterpriseLandingPage = lazyWithRetry(
+  () => import('pages/EnterpriseLandingPage')
+)
+const LoginPage = lazyWithRetry(() => import('./pages/LoginPage'))
+const MembersPage = lazyWithRetry(() => import('./pages/MembersPage'))
+const PlanPage = lazyWithRetry(() => import('./pages/PlanPage'))
+const OwnerPage = lazyWithRetry(() => import('./pages/OwnerPage'))
+const PullRequestPage = lazyWithRetry(() => import('./pages/PullRequestPage'))
+const RepoPage = lazyWithRetry(() => import('./pages/RepoPage'))
+const SyncProviderPage = lazyWithRetry(() => import('./pages/SyncProviderPage'))
 
 const HomePageRedirect = () => {
   const { data: internalUser } = useInternalUser({})
