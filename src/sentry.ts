@@ -64,6 +64,42 @@ const deClutterConfig = {
 
 export const SentryRoute = Sentry.withSentryRouting(Route)
 
+/*
+ * Firefox reports `throw undefined` (or rejecting with a non-Error) from code
+ * outside our bundle (e.g. browser extensions) as "uncaught exception: undefined"
+ * via window.onerror, with no stack trace at all. These events have no
+ * actionable information and do not originate in gazebo, so they are dropped.
+ * Any event with a real stack frame is still reported.
+ */
+const STACKLESS_UNDEFINED_THROW_MESSAGE = 'uncaught exception: undefined'
+
+export const isStacklessThirdPartyUndefinedThrow = (
+  event: Sentry.ErrorEvent
+): boolean => {
+  if (event?.tags?.third_party_code !== true) {
+    return false
+  }
+
+  const exceptions = event?.exception?.values
+  if (!exceptions || exceptions.length !== 1) {
+    return false
+  }
+
+  const exception = exceptions[0]
+  if (exception?.mechanism?.type !== 'onerror') {
+    return false
+  }
+
+  if (exception?.value !== STACKLESS_UNDEFINED_THROW_MESSAGE) {
+    return false
+  }
+
+  const frames = exception?.stacktrace?.frames ?? []
+  const hasRealFrame = frames.some((frame) => !!frame?.lineno)
+
+  return !hasRealFrame
+}
+
 const checkForBlockedUserAgents = () => {
   const userAgents = ['Bytespider']
 
@@ -163,6 +199,10 @@ export const setupSentry = ({
     profilesSampleRate: config?.SENTRY_PROFILING_SAMPLE_RATE,
     beforeSend: (event, _hint) => {
       if (checkForBlockedUserAgents()) {
+        return null
+      }
+
+      if (isStacklessThirdPartyUndefinedThrow(event)) {
         return null
       }
 
