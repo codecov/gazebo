@@ -2,10 +2,8 @@ import { Fragment, useMemo } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation/useNavLinks'
-import {
-  type PullImpactedFile,
-  useSingularImpactedFileComparison,
-} from 'services/pull/useSingularImpactedFileComparison'
+import { type Segment } from 'services/pull/fragments'
+import { useSingularImpactedFileComparison } from 'services/pull/useSingularImpactedFileComparison'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
@@ -14,7 +12,7 @@ import { CoverageValue } from 'ui/VirtualRenderers/types'
 import { LineData } from 'ui/VirtualRenderers/VirtualDiffRenderer'
 
 function transformSegmentsToLineData(
-  segments: PullImpactedFile['segments']['results'] | undefined
+  segments: Segment[] | undefined
 ) {
   if (!segments) {
     return []
