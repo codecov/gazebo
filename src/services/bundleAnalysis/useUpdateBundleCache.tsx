@@ -24,6 +24,10 @@ const MutationErrorSchema = z.discriminatedUnion('__typename', [
     message: z.string(),
   }),
   z.object({
+    __typename: z.literal('UnauthorizedError'),
+    message: z.string(),
+  }),
+  z.object({
     __typename: z.literal('ValidationError'),
     message: z.string(),
   }),
@@ -53,6 +57,9 @@ const query = `mutation UpdateBundleCacheConfig(
     error {
       __typename
       ... on UnauthenticatedError {
+        message
+      }
+      ... on UnauthorizedError {
         message
       }
       ... on ValidationError {
@@ -107,6 +114,15 @@ export const useUpdateBundleCache = ({
         ) {
           return Promise.reject({
             error: 'UnauthenticatedError',
+            message: updateBundleCacheConfig?.error?.message,
+          })
+        }
+
+        if (
+          updateBundleCacheConfig?.error?.__typename === 'UnauthorizedError'
+        ) {
+          return Promise.reject({
+            error: 'UnauthorizedError',
             message: updateBundleCacheConfig?.error?.message,
           })
         }
