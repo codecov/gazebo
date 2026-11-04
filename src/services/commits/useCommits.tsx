@@ -251,6 +251,16 @@ export function useCommits({
 
   return useInfiniteQuery({
     queryKey: ['GetCommits', provider, owner, repo, variables],
+    throwOnError: (error: unknown) => {
+      // Don't propagate abort errors (e.g. Safari's "Load failed") to error boundaries.
+      if (
+        error instanceof DOMException && error.name === 'AbortError' ||
+        (error as { name?: string })?.name === 'AbortError'
+      ) {
+        return false
+      }
+      return true
+    },
     queryFn: ({ pageParam, signal }) => {
       return Api.graphql({
         provider,
