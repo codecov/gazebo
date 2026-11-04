@@ -119,7 +119,7 @@ describe('TokenlessSection', () => {
     render(<TokenlessSection />, { wrapper })
 
     const optionText = await screen.findByText(
-      'Select an authentication option'
+      'Select an authentication option (only relevant for public repositories)'
     )
     expect(optionText).toBeInTheDocument()
   })
