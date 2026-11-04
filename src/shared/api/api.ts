@@ -124,6 +124,12 @@ function graphql({
         ) {
           window.location.href = '/login'
         }
+
+        if (!('data' in data)) {
+          // Error-only response with no 'data' field — treat as a failure so
+          // callers never receive undefined where an object is expected.
+          return Promise.reject({ status: res.status || 400, data })
+        }
       }
 
       if (res.ok) {
