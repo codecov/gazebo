@@ -19,6 +19,7 @@ describe('transformImpactedPullFileToDiff', () => {
       },
       changeCoverage: 0,
       segments: {
+        __typename: 'SegmentComparisons' as const,
         results: [
           {
             header: 'header',
