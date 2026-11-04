@@ -9,6 +9,9 @@ export function useLocationParams(defaultParams: Record<string, unknown> = {}) {
     ...defaultParams,
     ...qs.parse(search, {
       ignoreQueryPrefix: true,
+      // qs defaults to arrayLimit: 20, which turns indexed arrays with more
+      // than 21 entries (e.g. many selected flags) into plain objects.
+      arrayLimit: 1000,
     }),
   }
 

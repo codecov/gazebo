@@ -25,6 +25,7 @@ const useSunburstChart = () => {
   const queryParams = qs.parse(location.search, {
     ignoreQueryPrefix: true,
     depth: 1,
+    arrayLimit: 1000,
   })
 
   const flags = queryParams?.flags as string[] | undefined
