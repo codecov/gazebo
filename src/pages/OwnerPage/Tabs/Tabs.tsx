@@ -28,7 +28,7 @@ function Tabs() {
         },
       ]}
       component={
-        <Suspense fallback={null}>
+        <Suspense fallback={<span />}>
           <TrialReminder />
         </Suspense>
       }
