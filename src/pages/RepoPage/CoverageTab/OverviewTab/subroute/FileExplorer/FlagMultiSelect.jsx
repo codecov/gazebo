@@ -23,7 +23,12 @@ const defaultQueryParams = {
 function FlagMultiSelect() {
   const { provider, owner } = useParams()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
-  const [selectedFlags, setSelectedFlags] = useState(params?.flags)
+  const flagsParam = Array.isArray(params?.flags)
+    ? params.flags
+    : params?.flags
+      ? [params.flags]
+      : []
+  const [selectedFlags, setSelectedFlags] = useState(flagsParam)
   const [flagSearch, setFlagSearch] = useState('')
 
   const { data: isTeamPlan } = useIsTeamPlan({ provider, owner })
@@ -57,7 +62,7 @@ function FlagMultiSelect() {
 
   const flagNames = new Set()
   if (flagsMeasurementsActive) {
-    params?.flags?.forEach((flag) => flagNames.add(flag))
+    flagsParam.forEach((flag) => flagNames.add(flag))
 
     if (!isUndefined(flagsData)) {
       flagsData?.forEach((flag) => flagNames.add(flag?.name))
