@@ -20,6 +20,11 @@ const customIgnoredErrors: string[] = [
 // https://docs.sentry.io/platforms/javascript/guides/react/configuration/filtering/#decluttering-sentry
 const deClutterConfig = {
   ignoreErrors: [
+    // React reconciler fails when rrweb (Sentry Replay SDK) patches removeChild
+    // and its DOM tracking is in an inconsistent state due to adoptedStyleSheets
+    // redefinition failure on Chrome/Windows. Not fixable in application code.
+    "Failed to execute 'removeChild' on 'Node'",
+
     // Random plugins/extensions
     'top.GLOBALS',
     // See: http://blog.errorception.com/2012/03/tale-of-unfindable-js-error.html
