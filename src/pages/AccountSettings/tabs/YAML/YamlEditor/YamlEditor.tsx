@@ -3,6 +3,7 @@ import AceEditor from 'react-ace'
 
 import 'ace-builds/src-noconflict/theme-github'
 import 'ace-builds/src-noconflict/mode-yaml'
+import 'ace-builds/src-noconflict/ext-searchbox'
 import './codecov-theme.css'
 
 const YamlEditor = forwardRef<AceEditor>(({ ...props }, ref) => {
